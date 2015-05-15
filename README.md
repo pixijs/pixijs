@@ -1,87 +1,97 @@
-Pixi Renderer
+Pixi.js - A 2D JavaScript Renderer
 =============
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
 
+[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects)
 
+## Pixi.js ##
 
-
-
-[<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
-
-#### JavaScript 2D Renderer ####
+[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
+[![Build Status](https://travis-ci.org/GoodBoyDigital/pixi.js.svg?branch=dev)](https://travis-ci.org/GoodBoyDigital/pixi.js)
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The Pixi renderer allows everyone to enjoy the power of
-hardware acceleration without prior knowledge of webGL. Also, it's fast.
+hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
-If you’re interested in pixi.js then feel free to follow me on twitter
-([@doormat23](https://twitter.com/doormat23)) and I will keep you posted!  And
-of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
-any breakthroughs will be posted up there too!
+If you want to keep up to date with the latest pixi.js news then feel free to follow us on twitter
+([@doormat23](https://twitter.com/doormat23), and [@rolnaaba](https://twitter.com/rolnaaba))
+and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
+as any breakthroughs will be posted up there too!
 
-[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-### Demos ###
+<div style="float:left; width:50%; box-sizing: border-box; padding: 10px">
+    <h3 id="demos">Demos</h3>
 
-- [WebGL Filters!](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
+    <ul>
+        <li>[WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)</li>
+        <li>[Run pixie run](http://www.goodboydigital.com/runpixierun)</li>
+        <li>[Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)</li>
+        <li>[Flash vs HTML](http://flashvhtml.com)</li>
+        <li>[Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)</li>
+        <li>[Storm Brewing](http://www.goodboydigital.com/pixijs/storm)</li>
+        <li>[Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)</li>
+        <li>[Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)</li>
+        <li>[Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)</li>
+        <li>[Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)</li>
+        <li>[Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)</li>
+        <li>[photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)</li>
+        <li>[photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)</li>
+    </ul>
 
-- [Run pixie run](<http://www.goodboydigital.com/runpixierun/>)
+    <p>
+        Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
+        those last 2 examples and allowing us to share the source code :)
+    </p>
+</div>
 
-- [Fight for Everyone](<http://www.goodboydigital.com/casestudies/fightforeveryone/>)
+<div style="float:left; width:50%; box-sizing: border-box; padding: 10px">
+    <h3 id="">Resources</h3>
 
-- [Flash vs HTML](<http://flashvhtml.com>)
+    <ul>
+        <li>
+            API Documentation is [here](http://pixijs.github.io/docs).
+        </li>
+        <li>
+            Feature Examples are [here](https://pixijs.github.io/examples).
+        </li>
+        <li>
+            The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
+        </li>
+        <li>
+            Other misc tutorials and resources are [on the Wiki](https://github.com/GoodBoyDigital/pixi.js/wiki/Resources).
+        </li>
+    </ul>
 
-- [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
+    <h3 id="">Contribute</h3>
 
-- [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
+    <p>
+        Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker
+        together :) Whether you find a bug, have a great feature request or you fancy owning a task
+        from the road map above feel free to get in touch.
+    </p>
 
-- [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
+    <p>
+        Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+        before submitting changes.
+    </p>
+</div>
 
-- [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
+<br style="clear:both;" />
 
-- [Primitives Demo](<http://www.goodboydigital.com/pixijs/examples/13/>)
+## How to build ##
 
-- [Masking Demo](<http://www.goodboydigital.com/pixijs/examples/14/>)
+Note that for most users you don't need to build this project. If all you want is to use pixi, then
+just download one of our [prebuilt releases](https://github.com/GoodBoyDigital/pixi.js/releases). Really
+the only time you should need to build pixi.js is if you are developing it.
 
-- [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
-
-- [photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
-
-- [photonstorm Morph Demo](<http://gametest.mobi/pixi/morph/>)
-
-Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing those
-last 2 examples and allowing us to share the source code :)
-
-### Docs ###
-
-[Documentation can be found here](<http://pixijs.github.io/docs/>)
-
-### Resources ###
-
-[Tutorials and other helpful bits](<https://github.com/GoodBoyDigital/pixi.js/wiki/Resources>)
-
-[Pixi.js forum](<http://www.html5gamedevs.com/forum/15-pixijs/>)
-
-### Contribute ###
-
-Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
-Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
-
-Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
-before submitting changes.
-
-### How to build ###
-
-PixiJS is built with Gulp.
-If you don't already have Node.js and NPM, go install them.
-Once you do, then install Gulp.
+If you don't already have Node.js and NPM, go install them. Once you do, you can then install the gulp
+executable:
 
 ```
 $> npm install -g gulp
 ```
 
-Then, in the folder where you have downloaded the source, install the build dependencies using npm:
+Then, in the folder where you have cloned the repository, install the build dependencies using npm:
 
 ```
 $> npm install
@@ -93,7 +103,8 @@ Then, to build the source, run:
 $> gulp build
 ```
 
-This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js with all the plugins.
+This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
+with all the plugins in the pixi.js project.
 
 If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
 
@@ -110,11 +121,13 @@ $> gulp build -e extras -e spine -e interaction -e filters
 ### How to generate the documentation ###
 
 The docs can be generated using npm:
+
 ```
 $> npm run docs
 ```
 
 There is also a gulp task to generate them if you want to:
+
 ```
 $> gulp jsdoc
 ```
@@ -141,38 +154,49 @@ file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigi
 - Masking
 - Filters
 
-### Usage ###
+### Basic Usage Example ###
 
-```javascript
+```js
+    // You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
+    // which will try to choose the best renderer for the environment you are in.
+    var renderer = new PIXI.WebGLRenderer(800, 600);
 
-	// You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
-	var renderer = new PIXI.WebGLRenderer(800, 600);
+    // The renderer will create a canvas element for you that you can then insert into the DOM.
+    document.body.appendChild(renderer.view);
 
-	document.body.appendChild(renderer.view);
+    // You need to create a root container that will hold the scene you want to draw.
+    var stage = new PIXI.Container();
 
-	var stage = new PIXI.Container();
+    // This creates a texture from a 'bunny.png' image.
+    var bunnyTexture = PIXI.Texture.fromImage('bunny.png');
+    var bunny = new PIXI.Sprite(bunnyTexture);
 
-	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
-	var bunny = new PIXI.Sprite(bunnyTexture);
+    // Setup the position and scale of the bunny
+    bunny.position.x = 400;
+    bunny.position.y = 300;
 
-	bunny.position.x = 400;
-	bunny.position.y = 300;
+    bunny.scale.x = 2;
+    bunny.scale.y = 2;
 
-	bunny.scale.x = 2;
-	bunny.scale.y = 2;
+    // Add the bunny to the scene we are building.
+    stage.addChild(bunny);
 
-	stage.addChild(bunny);
+    // kick off the animation loop (defined below)
+    animate();
 
-	requestAnimationFrame(animate);
+    function animate() {
+        // start the timer for the next animation loop
+        requestAnimationFrame(animate);
 
-	function animate() {
-		bunny.rotation += 0.01;
+        // each frame we spin the bunny around a bit
+        bunny.rotation += 0.01;
 
-		renderer.render(stage);
-
-		requestAnimationFrame(animate);
-	}
+        // this is the main render call that makes pixi draw your container and its children.
+        renderer.render(stage);
+    }
 ```
+
+### License ###
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
