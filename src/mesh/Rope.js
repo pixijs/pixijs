@@ -20,8 +20,6 @@ var core = require('../core');
  */
 function Rope(texture, points)
 {
-    Mesh.call(this, texture);
-
     /*
      * @member {Array} An array of points that determine the rope
      */
@@ -47,7 +45,8 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
-    this.refresh();
+    // call base ctor (which will set texture and cause refresh to be called)
+    Mesh.call(this, texture);
 }
 
 
