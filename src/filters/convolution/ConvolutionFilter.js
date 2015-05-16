@@ -26,7 +26,7 @@ function ConvolutionFilter(matrix, width, height)
         // custom uniforms
         {
             matrix:     { type: '1fv', value: new Float32Array(matrix) },
-            texelSize:  { type: '2v', value: { x: 1 / width, y: 1 / height } }
+            texelSize:  { type: 'v2', value: { x: 1 / width, y: 1 / height } }
         }
     );
 }
