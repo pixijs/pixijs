@@ -108,7 +108,7 @@ There is also a gulp task to generate them if you want to:
 $> gulp jsdoc
 ```
 
-The documentation uses [DocStrap](https://github.com/terryweiss/docstrap) and the jsdoc format, the configuration
+The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration
 file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
 
 ### Current features ###

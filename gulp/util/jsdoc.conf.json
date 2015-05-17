@@ -31,11 +31,8 @@
         "systemName"    : "PIXI",
         "footer"        : "Made with ♥ by <a href='http://goodboydigital.com'>Goodboy Digital</a>",
         "copyright"     : "PIXI Copyright © 2013-2015 Mat Groves.",
-        "navType"       : "vertical",
-        "theme"         : "cerulean",
         "linenums"      : true,
-        "collapseSymbols": false,
-        "inverseNav"    : true
+        "collapseSymbols": false
     },
     "markdown"  : {
         "parser"        : "gfm",
@@ -47,7 +44,6 @@
         "private"       : false,
         "lenient"       : true,
         "destination"   : "./docs",
-        "template"      : "./node_modules/ink-docstrap/template"
-
+        "template"      : "./node_modules/jaguarjs-jsdoc"
     }
 }
