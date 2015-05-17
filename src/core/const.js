@@ -1,7 +1,7 @@
 /**
  * Constant values used in pixi
- * @class
- * @memberof PIXI
+ *
+ * @lends PIXI
  */
 var CONST = {
     /**

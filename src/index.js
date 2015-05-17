@@ -11,6 +11,13 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 
 // export a premade loader instance
+/**
+ * A premade instance of the loader that can be used to loader resources.
+ *
+ * @name loader
+ * @memberof PIXI
+ * @property {PIXI.loaders.Loader}
+ */
 core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
