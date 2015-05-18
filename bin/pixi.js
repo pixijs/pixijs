@@ -13,6 +13,13 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 
 // export a premade loader instance
+/**
+ * A premade instance of the loader that can be used to loader resources.
+ *
+ * @name loader
+ * @memberof PIXI
+ * @property {PIXI.loaders.Loader}
+ */
 core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
@@ -6311,7 +6318,7 @@ module.exports = function () {
 },{"../../Resource":16,"../../b64":17}],21:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -6353,7 +6360,7 @@ module.exports={
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.4",
-    "ink-docstrap": "git+https://github.com/Pilatch/docstrap.git",
+    "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
     "jsdoc": "^3.3.0-beta3",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.1.1",
@@ -6375,8 +6382,8 @@ module.exports={
 },{}],22:[function(require,module,exports){
 /**
  * Constant values used in pixi
- * @class
- * @memberof PIXI
+ *
+ * @lends PIXI
  */
 var CONST = {
     /**
@@ -7609,7 +7616,6 @@ DisplayObject.prototype.destroy = function ()
 
 },{"../const":22,"../math":32,"../textures/RenderTexture":70,"eventemitter3":11}],25:[function(require,module,exports){
 var Container = require('../display/Container'),
-    Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
@@ -8390,6 +8396,9 @@ Graphics.prototype._renderCanvas = function (renderer)
         this._prevTint = this.tint;
     }
 
+    // this code may still be needed so leaving for now..
+    //
+    /*
     if (this._cacheAsBitmap)
     {
         if (this.dirty || this.cachedSpriteDirty)
@@ -8409,29 +8418,27 @@ Graphics.prototype._renderCanvas = function (renderer)
 
         return;
     }
-    else
+    */
+    var context = renderer.context;
+    var transform = this.worldTransform;
+
+    if (this.blendMode !== renderer.currentBlendMode)
     {
-        var context = renderer.context;
-        var transform = this.worldTransform;
-
-        if (this.blendMode !== renderer.currentBlendMode)
-        {
-            renderer.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
-        }
-
-        var resolution = renderer.resolution;
-        context.setTransform(
-            transform.a * resolution,
-            transform.b * resolution,
-            transform.c * resolution,
-            transform.d * resolution,
-            transform.tx * resolution,
-            transform.ty * resolution
-        );
-
-        CanvasGraphics.renderGraphics(this, context);
+        renderer.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
+
+    var resolution = renderer.resolution;
+    context.setTransform(
+        transform.a * resolution,
+        transform.b * resolution,
+        transform.c * resolution,
+        transform.d * resolution,
+        transform.tx * resolution,
+        transform.ty * resolution
+    );
+
+    CanvasGraphics.renderGraphics(this, context);
 };
 
 /**
@@ -8789,7 +8796,7 @@ Graphics.prototype.destroy = function () {
     this._localBounds = null;
 };
 
-},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/canvas/utils/CanvasGraphics":45,"../sprites/Sprite":66,"../textures/Texture":71,"./GraphicsData":26}],26:[function(require,module,exports){
+},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/canvas/utils/CanvasGraphics":45,"../textures/Texture":71,"./GraphicsData":26}],26:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -15908,9 +15915,9 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
     var uniforms = {
 
         uSampler:           { type: 'sampler2D', value: 0 },
-        projectionMatrix:   { type: 'mat3', value: new Float32Array(1, 0, 0,
-                                                                    0, 1, 0,
-                                                                    0, 0, 1) }
+        projectionMatrix:   { type: 'mat3', value: new Float32Array([1, 0, 0,
+                                                                     0, 1, 0,
+                                                                     0, 0, 1]) }
     };
 
     if (customUniforms)
