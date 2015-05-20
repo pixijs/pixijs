@@ -26,14 +26,15 @@ function SpriteRenderer(renderer)
     ObjectRenderer.call(this, renderer);
 
     /**
-     *
+     * Number of values sent in the vertex buffer.
+     * positionX, positionY, colorR, colorG, colorB = 5
      *
      * @member {number}
      */
     this.vertSize = 5;
 
     /**
-     *
+     * The size of the vertex information in bytes.
      *
      * @member {number}
      */
@@ -47,45 +48,40 @@ function SpriteRenderer(renderer)
     this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     // the total number of bytes in our batch
-    var numVerts = this.size * 4 * this.vertByteSize;
+    var numVerts = (this.size * 4) * this.vertByteSize;
+
     // the total number of indices in our batch
     var numIndices = this.size * 6;
 
     /**
-     * Holds the vertices
+     * Holds the vertex data that will be sent to the vertex shader.
      *
      * @member {ArrayBuffer}
      */
     this.vertices = new ArrayBuffer(numVerts);
 
     /**
-     * View on the vertices as a Float32Array
+     * View on the vertices as a Float32Array for positions
      *
      * @member {Float32Array}
      */
     this.positions = new Float32Array(this.vertices);
 
     /**
-     * Holds the color components
+     * View on the vertices as a Uint32Array for colors
      *
      * @member {Uint32Array}
      */
     this.colors = new Uint32Array(this.vertices);
 
     /**
-     * Holds the indices
+     * Holds the indices of the geometry (quads) to draw
      *
      * @member {Uint16Array}
      */
     this.indices = new Uint16Array(numIndices);
 
-    /**
-     *
-     *
-     * @member {number}
-     */
-    this.lastIndexCount = 0;
-
+    // fill the indices with the quads to draw
     for (var i=0, j=0; i < numIndices; i += 6, j += 4)
     {
         this.indices[i + 0] = j + 0;
@@ -97,49 +93,14 @@ function SpriteRenderer(renderer)
     }
 
     /**
-     *
-     *
-     * @member {boolean}
-     */
-    this.drawing = false;
-
-    /**
-     *
+     * The current size of the batch, each render() call adds to this number.
      *
      * @member {number}
      */
     this.currentBatchSize = 0;
 
     /**
-     *
-     *
-     * @member {BaseTexture}
-     */
-    this.currentBaseTexture = null;
-
-    /**
-     *
-     *
-     * @member {Array}
-     */
-    this.textures = [];
-
-    /**
-     *
-     *
-     * @member {Array}
-     */
-    this.blendModes = [];
-
-    /**
-     *
-     *
-     * @member {Array}
-     */
-    this.shaders = [];
-
-    /**
-     *
+     * The current sprites in the batch.
      *
      * @member {Array}
      */
@@ -203,7 +164,6 @@ SpriteRenderer.prototype.render = function (sprite)
     if (this.currentBatchSize >= this.size)
     {
         this.flush();
-        this.currentBaseTexture = texture.baseTexture;
     }
 
     // get the uvs for the texture
@@ -503,13 +463,6 @@ SpriteRenderer.prototype.destroy = function ()
     this.vertexBuffer = null;
     this.indexBuffer = null;
 
-    this.currentBaseTexture = null;
-
-    this.drawing = false;
-
-    this.textures = null;
-    this.blendModes = null;
-    this.shaders = null;
     this.sprites = null;
     this.shader = null;
 };
