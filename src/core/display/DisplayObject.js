@@ -223,7 +223,6 @@ Object.defineProperties(DisplayObject.prototype, {
      * To remove a mask, set this property to null.
      *
      * @member {Graphics}
-     * @property {Graphics}
      * @memberof PIXI.DisplayObject#
      */
     mask: {
