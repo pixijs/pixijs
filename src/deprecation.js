@@ -2,7 +2,7 @@
 var core = require('./core'),
     mesh = require('./mesh'),
     extras = require('./extras'),
-    utils = require('./core/utils');
+    filters = require('./filters');
 
 /**
  * @class
@@ -159,7 +159,7 @@ Object.defineProperties(core, {
     BaseTextureCache: {
         get: function () {
             console.warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
-            return utils.BaseTextureCache;
+            return core.utils.BaseTextureCache;
         }
     },
     /**
@@ -172,7 +172,7 @@ Object.defineProperties(core, {
     TextureCache: {
         get: function () {
             console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
-            return utils.TextureCache;
+            return core.utils.TextureCache;
         }
     }
 });
@@ -232,3 +232,49 @@ core.Texture.prototype.setFrame = function(frame) {
     this.frame = frame;
     console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
 };
+
+Object.defineProperties(filters, {
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.AbstractFilter
+     * @see {@link PIXI.AbstractFilter}
+     * @deprecated since version 3.0.6
+     */
+    AbstractFilter: {
+        get: function() {
+            console.warn('filters.AbstractFilter is an undocumented alias, please use AbstractFilter from now on.');
+            return core.AbstractFilter;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.FXAAFilter
+     * @see {@link PIXI.FXAAFilter}
+     * @deprecated since version 3.0.6
+     */
+    FXAAFilter: {
+        get: function() {
+            console.warn('filters.AbstractFilter is an undocumented alias, please use FXAAFilter from now on.');
+            return core.FXAAFilter;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.SpriteMaskFilter
+     * @see {@link PIXI.SpriteMaskFilter}
+     * @deprecated since version 3.0.6
+     */
+    SpriteMaskFilter: {
+        get: function() {
+            console.warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
+            return core.SpriteMaskFilter;
+        }
+    }
+});
+
