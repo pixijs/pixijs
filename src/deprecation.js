@@ -280,8 +280,8 @@ Object.defineProperties(filters, {
 
 /**
  * @method
- * @name PIXI.Texture#setFrame
- * @see {@link PIXI.Texture#setFrame}
+ * @name PIXI.utils.uuid
+ * @see {@link PIXI.utils.uid}
  * @deprecated since version 3.0.6
  */
 core.utils.uuid = function () {
