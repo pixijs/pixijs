@@ -258,7 +258,7 @@ Object.defineProperties(filters, {
      */
     FXAAFilter: {
         get: function() {
-            console.warn('filters.AbstractFilter is an undocumented alias, please use FXAAFilter from now on.');
+            console.warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
             return core.FXAAFilter;
         }
     },
