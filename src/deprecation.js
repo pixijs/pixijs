@@ -278,3 +278,13 @@ Object.defineProperties(filters, {
     }
 });
 
+/**
+ * @method
+ * @name PIXI.Texture#setFrame
+ * @see {@link PIXI.Texture#setFrame}
+ * @deprecated since version 3.0.6
+ */
+core.utils.uuid = function () {
+    console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
+    return core.utils.uid();
+};

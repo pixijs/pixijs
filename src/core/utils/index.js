@@ -11,11 +11,11 @@ var utils = module.exports = {
     async:          require('async'),
 
     /**
-     * Gets the next uuid
+     * Gets the next unique identifier
      *
-     * @return {number} The next uuid to use.
+     * @return {number} The next unique identifier to use.
      */
-    uuid: function ()
+    uid: function ()
     {
         return ++utils._uid;
     },
