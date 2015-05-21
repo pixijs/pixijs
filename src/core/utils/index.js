@@ -223,6 +223,15 @@ var utils = module.exports = {
         }
     },
 
+    /**
+     * @todo Describe property usage
+     * @private
+     */
     TextureCache: {},
+
+    /**
+     * @todo Describe property usage
+     * @private
+     */
     BaseTextureCache: {}
 };
