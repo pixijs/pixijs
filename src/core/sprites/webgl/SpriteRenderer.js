@@ -50,7 +50,7 @@ function SpriteRenderer(renderer)
     // the total number of bytes in our batch
     var numVerts = (this.size * 4) * this.vertByteSize;
 
-    // the total number of indices in our batch
+    // the total number of indices in our batch, there are 6 points per quad.
     var numIndices = this.size * 6;
 
     /**
@@ -137,8 +137,6 @@ SpriteRenderer.prototype.onContextChange = function ()
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
-
-    // 65535 is max index, so 65535 / 6 = 10922.
 
     //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
