@@ -106,6 +106,31 @@ var CONST = {
     },
 
     /**
+     * Various webgl draw modes. These can be used to specify which GL drawMode to use
+     * under certain situations and renderers.
+     *
+     * @static
+     * @constant
+     * @property {object} DRAW_MODES
+     * @property {number} DRAW_MODES.POINTS
+     * @property {number} DRAW_MODES.LINES
+     * @property {number} DRAW_MODES.LINE_LOOP
+     * @property {number} DRAW_MODES.LINE_STRIP
+     * @property {number} DRAW_MODES.TRIANGLES
+     * @property {number} DRAW_MODES.TRIANGLE_STRIP
+     * @property {number} DRAW_MODES.TRIANGLE_FAN
+     */
+    DRAW_MODES: {
+        POINTS:         0,
+        LINES:          1,
+        LINE_LOOP:      2,
+        LINE_STRIP:     3,
+        TRIANGLES:      4,
+        TRIANGLE_STRIP: 5,
+        TRIANGLE_FAN:   6
+    },
+
+    /**
      * The scale modes that are supported by pixi.
      *
      * The DEFAULT scale mode affects the default scaling mode of future operations.
