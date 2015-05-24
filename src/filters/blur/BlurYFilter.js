@@ -6,7 +6,7 @@ var fs = require('fs');
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function BlurYFilter()
@@ -34,7 +34,7 @@ BlurYFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);
 
-    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.height / input.size.height);
+    this.uniforms.strength.value = Math.abs(this.strength) / 4 / this.passes * (input.frame.height / input.size.height);
 
     if(this.passes === 1)
     {
@@ -48,7 +48,7 @@ BlurYFilter.prototype.applyFilter = function (renderer, input, output, clear)
 
         for(var i = 0; i < this.passes-1; i++)
         {
-            renderer.filterManager.applyFilter(shader, flip, flop, clear);
+            renderer.filterManager.applyFilter(shader, flip, flop, true);
 
            var temp = flop;
            flop = flip;
@@ -77,7 +77,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value * 0.5;
+            this.padding = Math.abs(value) * 0.5;
             this.strength = value;
         }
     }

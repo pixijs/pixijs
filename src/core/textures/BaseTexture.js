@@ -146,7 +146,7 @@ function BaseTexture(source, scaleMode, resolution)
      * Fired when a not-immediately-available source finishes loading.
      *
      * @event loaded
-     * @memberof BaseTexture#
+     * @memberof PIXI.BaseTexture#
      * @protected
      */
 
@@ -154,7 +154,7 @@ function BaseTexture(source, scaleMode, resolution)
      * Fired when a not-immediately-available source fails to load.
      *
      * @event error
-     * @memberof BaseTexture#
+     * @memberof PIXI.BaseTexture#
      * @protected
      */
 }

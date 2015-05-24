@@ -3,7 +3,7 @@ var Shader = require('./Shader');
 /**
  * @class
  * @memberof PIXI
- * @extends Shader
+ * @extends PIXI.Shader
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
@@ -15,9 +15,9 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
     var uniforms = {
 
         uSampler:           { type: 'sampler2D', value: 0 },
-        projectionMatrix:   { type: 'mat3', value: new Float32Array(1, 0, 0,
-                                                                    0, 1, 0,
-                                                                    0, 0, 1) }
+        projectionMatrix:   { type: 'mat3', value: new Float32Array([1, 0, 0,
+                                                                     0, 1, 0,
+                                                                     0, 0, 1]) }
     };
 
     if (customUniforms)

@@ -1,30 +1,21 @@
 var core = require('../../core'),
-    BlurDirFilter = require('./BlurDirFilter');
+    BlurXFilter = require('./BlurXFilter'),
+    BlurYFilter = require('./BlurYFilter');
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function BlurFilter()
 {
     core.AbstractFilter.call(this);
-    this.defaultFilter = new core.AbstractFilter();
 
-    this.blurFilters = [
-        new BlurDirFilter( 1, 0),
-        new BlurDirFilter(-1, 0),
-        new BlurDirFilter( 0, 1),
-        new BlurDirFilter( 0,-1),
-        new BlurDirFilter( 0.7, 0.7),
-        new BlurDirFilter(-0.7, 0.7),
-        new BlurDirFilter( 0.7,-0.7),
-        new BlurDirFilter(-0.7,-0.7)
-    ];
-
+    this.blurXFilter = new BlurXFilter();
+    this.blurYFilter = new BlurYFilter();
 }
 
 BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -35,14 +26,10 @@ BlurFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var renderTarget = renderer.filterManager.getRenderTarget(true);
 
-    for (var e = 0; e < this.blurFilters.length; e++) {
-        this.blurFilters[e].applyFilter(renderer, input, renderTarget);
-    }
-
-    this.defaultFilter.applyFilter(renderer, renderTarget, output);
+    this.blurXFilter.applyFilter(renderer, input, renderTarget);
+    this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
-
 };
 
 Object.defineProperties(BlurFilter.prototype, {
@@ -56,14 +43,12 @@ Object.defineProperties(BlurFilter.prototype, {
     blur: {
         get: function ()
         {
-            return this.blurFilters[0].blur;
+            return this.blurXFilter.blur;
         },
         set: function (value)
         {
-            this.padding = value * 0.5;
-            for (var i = 0; i < this.blurFilters.length; i++) {
-                this.blurFilters[i].blur = value;
-            }
+            this.padding = Math.abs(value) * 0.5;
+            this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
 
@@ -77,13 +62,11 @@ Object.defineProperties(BlurFilter.prototype, {
     passes: {
         get: function ()
         {
-            return this.blurFilters[0].passes;
+            return  this.blurXFilter.passes;
         },
         set: function (value)
         {
-            for (var i = 0; i < this.blurFilters.length; i++) {
-                this.blurFilters[i].passes = value;
-            }
+            this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
 
@@ -97,18 +80,11 @@ Object.defineProperties(BlurFilter.prototype, {
     blurX: {
         get: function ()
         {
-            return this.blurFilters[0].blur;
+            return this.blurXFilter.blur;
         },
         set: function (value)
         {
-            this.blurFilters[0].blur = value;
-            this.blurFilters[1].blur = value;
-
-            this.blurFilters[4].blur = value * this.blurFilters[2].blur;
-            this.blurFilters[5].blur = value * this.blurFilters[2].blur;
-
-            this.blurFilters[6].blur = value * this.blurFilters[3].blur;
-            this.blurFilters[7].blur = value * this.blurFilters[3].blur;
+            this.blurXFilter.blur = value;
         }
     },
 
@@ -126,14 +102,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.blurFilters[2].blur = value;
-            this.blurFilters[3].blur = value;
-
-            this.blurFilters[4].blur = value * this.blurFilters[0].blur;
-            this.blurFilters[5].blur = value * this.blurFilters[0].blur;
-
-            this.blurFilters[6].blur = value * this.blurFilters[1].blur;
-            this.blurFilters[7].blur = value * this.blurFilters[1].blur;
+            this.blurYFilter.blur = value;
         }
     }
 });

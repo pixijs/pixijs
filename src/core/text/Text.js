@@ -1,6 +1,7 @@
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
+    utils = require('../utils'),
     CONST = require('../const');
 
 /**
@@ -14,7 +15,7 @@ var Sprite = require('../sprites/Sprite'),
  * ```
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
@@ -30,7 +31,8 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
@@ -143,18 +145,19 @@ Object.defineProperties(Text.prototype, {
      *
      * @param [style] {object} The style parameters
      * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+     * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
      * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-     * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+     * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
      * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
      * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
      * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
      * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
      * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-     * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+     *      prevent this from happening by adding padding to the top and bottom of text height.
      * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
      * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
      *      spiked text issues. Default is 'miter' (creates a sharp corner).
@@ -170,6 +173,19 @@ Object.defineProperties(Text.prototype, {
         set: function (style)
         {
             style = style || {};
+
+            if (typeof style.fill === 'number') {
+                style.fill = utils.hex2string(style.fill);
+            }
+
+            if (typeof style.stroke === 'number') {
+                style.stroke = utils.hex2string(style.stroke);
+            }
+
+            if (typeof style.dropShadowColor === 'number') {
+                style.dropShadowColor = utils.hex2string(style.dropShadowColor);
+            }
+
             style.font = style.font || 'bold 20pt Arial';
             style.fill = style.fill || 'black';
             style.align = style.align || 'left';

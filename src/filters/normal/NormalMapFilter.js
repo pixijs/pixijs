@@ -7,7 +7,7 @@ var fs = require('fs');
  * to project lighting onto an object.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  * @param texture {Texture} The texture used for the normal map, must be power of 2 texture at the moment
  */

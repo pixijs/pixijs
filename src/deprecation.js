@@ -6,6 +6,7 @@ var core = require('./core'),
 
 /**
  * @class
+ * @private
  * @name PIXI.SpriteBatch
  * @see {@link PIXI.ParticleContainer}
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
@@ -16,6 +17,7 @@ core.SpriteBatch = function() {
 
 /**
  * @class
+ * @private
  * @name PIXI.AssetLoader
  * @see {@link PIXI.loaders.Loader}
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
@@ -28,6 +30,7 @@ Object.defineProperties(core, {
 
     /**
      * @class
+     * @private
      * @name PIXI.Stage
      * @see {@link PIXI.Container}
      * @deprecated since version 3.0
@@ -41,6 +44,7 @@ Object.defineProperties(core, {
 
     /**
      * @class
+     * @private
      * @name PIXI.DisplayObjectContainer
      * @see {@link PIXI.Container}
      * @deprecated since version 3.0
@@ -54,6 +58,7 @@ Object.defineProperties(core, {
 
     /**
      * @class
+     * @private
      * @name PIXI.Strip
      * @see {@link PIXI.mesh.Mesh}
      * @deprecated since version 3.0
@@ -67,6 +72,7 @@ Object.defineProperties(core, {
 
     /**
      * @class
+     * @private
      * @name PIXI.Rope
      * @see {@link PIXI.mesh.Rope}
      * @deprecated since version 3.0
@@ -80,6 +86,7 @@ Object.defineProperties(core, {
 
     /**
      * @class
+     * @private
      * @name PIXI.MovieClip
      * @see {@link PIXI.MovieClip}
      * @deprecated since version 3.0
@@ -92,6 +99,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.TilingSprite
      * @see {@link PIXI.TilingSprite}
      * @deprecated since version 3.0
@@ -104,6 +112,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.BitmapText
      * @see {@link PIXI.extras.BitmapText}
      * @deprecated since version 3.0
@@ -116,6 +125,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.blendModes
      * @see {@link PIXI.BLEND_MODES}
      * @deprecated since version 3.0
@@ -128,6 +138,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.scaleModes
      * @see {@link PIXI.SCALE_MODES}
      * @deprecated since version 3.0
@@ -140,6 +151,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.BaseTextureCache
      * @see {@link PIXI.utils.BaseTextureCache}
      * @deprecated since version 3.0
@@ -152,6 +164,7 @@ Object.defineProperties(core, {
     },
     /**
      * @class
+     * @private
      * @name PIXI.TextureCache
      * @see {@link PIXI.utils.TextureCache}
      * @deprecated since version 3.0
@@ -166,6 +179,7 @@ Object.defineProperties(core, {
 
 /**
  * @method
+ * @private
  * @name PIXI.Sprite#setTexture
  * @see {@link PIXI.Sprite#texture}
  * @deprecated since version 3.0

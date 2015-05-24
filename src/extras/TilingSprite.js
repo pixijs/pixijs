@@ -6,7 +6,7 @@ var core = require('../core'),
  * A tiling sprite is a fast way of rendering a tiling image
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param texture {Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
@@ -69,7 +69,7 @@ function TilingSprite(texture, width, height)
         'attribute vec4 aColor;',
 
         'uniform mat3 projectionMatrix;',
-        
+
         'uniform vec4 uFrame;',
         'uniform vec4 uTransform;',
 
@@ -96,7 +96,7 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
-                
+
         'void main(void){',
 
         '   vec2 coord = fract(vTextureCoord);',
@@ -190,15 +190,15 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.height = this.height;
 
     //PADDING
-    
-    // apply padding to stop gaps in the tile when numbers are not rounded
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
 
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
+    // apply padding to stop gaps in the tile when numbers are not rounded
+    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
+    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
+    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
+    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
+
+    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
+    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
     this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
     this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
 
@@ -229,8 +229,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         transform = this.worldTransform,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
-        modX = this.tilePosition.x % baseTexture.width,
-        modY = this.tilePosition.y % baseTexture.height;
+        modX = this.tilePosition.x % (texture._frame.width * this.tileScale.x),
+        modY = this.tilePosition.y % (texture._frame.height * this.tileScale.y);
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -254,8 +254,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-    
-    context.translate(modX + (this.anchor.x * -this._width ), 
+
+    context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
 
     // check blend mode

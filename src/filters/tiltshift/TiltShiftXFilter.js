@@ -9,7 +9,7 @@ var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
  * A TiltShiftXFilter.
  *
  * @class
- * @extends TiltShiftAxisFilter
+ * @extends PIXI.TiltShiftAxisFilter
  * @memberof PIXI.filters
  */
 function TiltShiftXFilter()

@@ -3,7 +3,7 @@ var core = require('../core');
 /**
  * Base mesh class
  * @class
- * @extends Container
+ * @extends PIXI.Container
  * @memberof PIXI.mesh
  * @param texture {Texture} The texture to use
  * @param [vertices] {Float32Arrif you want to specify the vertices
@@ -19,8 +19,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * The texture of the Mesh
      *
      * @member {Texture}
+     * @private
      */
-    this.texture = texture;
+    this._texture = null;
 
     /**
      * The Uvs of the Mesh
@@ -76,12 +77,52 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {number}
      */
     this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
+
+    // run texture setter;
+    this.texture = texture;
 }
 
 // constructor
 Mesh.prototype = Object.create(core.Container.prototype);
 Mesh.prototype.constructor = Mesh;
 module.exports = Mesh;
+
+Object.defineProperties(Mesh.prototype, {
+    /**
+     * The texture that the sprite is using
+     *
+     * @member {PIXI.Texture}
+     * @memberof PIXI.mesh.Mesh#
+     */
+    texture: {
+        get: function ()
+        {
+            return  this._texture;
+        },
+        set: function (value)
+        {
+            if (this._texture === value)
+            {
+                return;
+            }
+
+            this._texture = value;
+
+            if (value)
+            {
+                // wait for the texture to load
+                if (value.baseTexture.hasLoaded)
+                {
+                    this._onTextureUpdate();
+                }
+                else
+                {
+                    value.once('update', this._onTextureUpdate, this);
+                }
+            }
+        }
+    }
+});
 
 /**
  * Renders the object using the WebGL renderer
@@ -186,9 +227,9 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this.texture.baseTexture.source;
-    var textureWidth = this.texture.width;
-    var textureHeight = this.texture.height;
+    var textureSource = this._texture.baseTexture.source;
+    var textureWidth = this._texture.baseTexture.width;
+    var textureHeight = this._texture.baseTexture.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
@@ -312,8 +353,7 @@ Mesh.prototype.setTexture = function (texture)
  * @param event
  * @private
  */
-
-Mesh.prototype.onTextureUpdate = function ()
+Mesh.prototype._onTextureUpdate = function ()
 {
     this.updateFrame = true;
 };

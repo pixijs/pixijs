@@ -1,4 +1,5 @@
 var Mesh = require('./Mesh');
+var core = require('../core');
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -11,7 +12,7 @@ var Mesh = require('./Mesh');
  *  ```
  *
  * @class
- * @extends Mesh
+ * @extends PIXI.Mesh
  * @memberof PIXI.mesh
  * @param {Texture} texture - The texture to use on the rope.
  * @param {Array} points - An array of {Point} objects to construct this rope.
@@ -46,7 +47,16 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
-    this.refresh();
+    /**
+     * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
+     * call _onTextureUpdated which could call refresh too early.
+     *
+     * @member {boolean}
+     * @private
+     */
+     this._ready = true;
+
+     this.refresh();
 }
 
 
@@ -63,7 +73,8 @@ Rope.prototype.refresh = function ()
 {
     var points = this.points;
 
-    if (points.length < 1)
+    // if too little points, or texture hasn't got UVs set yet just move on.
+    if (points.length < 1 || !this._texture._uvs)
     {
         return;
     }
@@ -73,12 +84,14 @@ Rope.prototype.refresh = function ()
     var indices = this.indices;
     var colors = this.colors;
 
-    // this.count -= 0.2;
+    var textureUvs = this._texture._uvs;
+    var offset = new core.math.Point(textureUvs.x0, textureUvs.y0);
+    var factor = new core.math.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
-    uvs[0] = 0;
-    uvs[1] = 0;
-    uvs[2] = 0;
-    uvs[3] = 1;
+    uvs[0] = 0 + offset.x;
+    uvs[1] = 0 + offset.y;
+    uvs[2] = 0 + offset.x;
+    uvs[3] = 1 * factor.y + offset.y;
 
     colors[0] = 1;
     colors[1] = 1;
@@ -96,22 +109,11 @@ Rope.prototype.refresh = function ()
         // time to do some smart drawing!
         amount = i / (total-1);
 
-        if (i%2)
-        {
-            uvs[index] = amount;
-            uvs[index+1] = 0;
+        uvs[index] = amount * factor.x + offset.x;
+        uvs[index+1] = 0 + offset.y;
 
-            uvs[index+2] = amount;
-            uvs[index+3] = 1;
-        }
-        else
-        {
-            uvs[index] = amount;
-            uvs[index+1] = 0;
-
-            uvs[index+2] = amount;
-            uvs[index+3] = 1;
-        }
+        uvs[index+2] = amount * factor.x + offset.x;
+        uvs[index+3] = 1 * factor.y + offset.y;
 
         index = i * 2;
         colors[index] = 1;
@@ -121,9 +123,26 @@ Rope.prototype.refresh = function ()
         indices[index] = index;
         indices[index + 1] = index + 1;
     }
+
+    this.dirty = true;
 };
 
-/*
+/**
+ * Clear texture UVs when new texture is set
+ *
+ * @private
+ */
+Rope.prototype._onTextureUpdate = function ()
+{
+    Mesh.prototype._onTextureUpdate.call(this);
+
+    // wait for the Rope ctor to finish before calling refresh
+    if (this._ready) {
+        this.refresh();
+    }
+};
+
+/**
  * Updates the object transform for rendering
  *
  * @private
@@ -173,7 +192,7 @@ Rope.prototype.updateTransform = function ()
         }
 
         perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-        num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+        num = this._texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
         perpX /= perpLength;
         perpY /= perpLength;
 

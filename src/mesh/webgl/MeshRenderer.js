@@ -1,5 +1,6 @@
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
+    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
+    Mesh = require('../Mesh');
 
 /**
  * @author Mat Groves
@@ -17,7 +18,7 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
  * @class
  * @private
  * @memberof PIXI.mesh
- * @extends ObjectRenderer
+ * @extends PIXI.ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function MeshRenderer(renderer)
@@ -68,7 +69,6 @@ MeshRenderer.prototype.onContextChange = function ()
  */
 MeshRenderer.prototype.render = function (mesh)
 {
-//    return;
     if(!mesh._vertexBuffer)
     {
         this._initWebGL(mesh);
@@ -76,11 +76,10 @@ MeshRenderer.prototype.render = function (mesh)
 
     var renderer = this.renderer,
         gl = renderer.gl,
-        texture = mesh.texture.baseTexture,
+        texture = mesh._texture.baseTexture,
         shader = renderer.shaderManager.plugins.meshShader;
 
-//    var drawMode = mesh.drawMode === Strip.DRAW_MODES.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
-    var drawMode =  gl.TRIANGLE_STRIP;
+    var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     renderer.blendModeManager.setBlendMode(mesh.blendMode);
 
@@ -98,7 +97,6 @@ MeshRenderer.prototype.render = function (mesh)
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.vertices);
         gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 
-
         // update the uvs
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
         gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
@@ -115,6 +113,9 @@ MeshRenderer.prototype.render = function (mesh)
             // bind the current texture
             gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
         }
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
+        gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, mesh.indices);
     }
     else
     {
@@ -127,11 +128,11 @@ MeshRenderer.prototype.render = function (mesh)
         // update the uvs
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, mesh.uvs, gl.STATIC_DRAW);
-         gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
          gl.activeTexture(gl.TEXTURE0);
 
-       if (!texture._glTextures[gl.id])
+        if (!texture._glTextures[gl.id])
         {
             this.renderer.updateTexture(texture);
         }
@@ -163,7 +164,8 @@ MeshRenderer.prototype._initWebGL = function (mesh)
     mesh._vertexBuffer = gl.createBuffer();
     mesh._indexBuffer = gl.createBuffer();
     mesh._uvBuffer = gl.createBuffer();
-    mesh._colorBuffer = gl.createBuffer();
+
+
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.DYNAMIC_DRAW);
@@ -171,8 +173,11 @@ MeshRenderer.prototype._initWebGL = function (mesh)
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,  mesh.uvs, gl.STATIC_DRAW);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh._colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, mesh.colors, gl.STATIC_DRAW);
+    if(mesh.colors){
+        mesh._colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, mesh._colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, mesh.colors, gl.STATIC_DRAW);
+    }
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, mesh.indices, gl.STATIC_DRAW);

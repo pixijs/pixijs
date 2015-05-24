@@ -10,7 +10,7 @@ var fs = require('fs');
  * See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  * @param matrix {number[]} An array of values used for matrix transformation. Specified as a 9 point Array.
  * @param width {number} Width of the object you are transforming
@@ -26,7 +26,7 @@ function ConvolutionFilter(matrix, width, height)
         // custom uniforms
         {
             matrix:     { type: '1fv', value: new Float32Array(matrix) },
-            texelSize:  { type: '2v', value: { x: 1 / width, y: 1 / height } }
+            texelSize:  { type: 'v2', value: { x: 1 / width, y: 1 / height } }
         }
     );
 }

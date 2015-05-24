@@ -33,11 +33,9 @@
     "trailing"      : true,     // Prohibit trailing whitespaces.
     "maxparams"     : 8,        // Prohibit having more than X number of params in a function.
     "maxdepth"      : 8,        // Prohibit nested blocks from going more than X levels deep.
-    "maxstatements" : false,    // Restrict the number of statements in a function.
-    "maxcomplexity" : false,    // Restrict the cyclomatic complexity of the code.
     "maxlen"        : 220,      // Require that all lines are 100 characters or less.
     "globals"       : {         // Register globals that are used in the code.
-        "performance": false    // Depends on polyfill, simplifies usage
+        "performance": false   // Depends on polyfill, simplifies usage
     },
 
     // == Relaxing Options ================================================

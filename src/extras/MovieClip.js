@@ -1,5 +1,4 @@
-var core    = require('../core'),
-    ticker  = require('../ticker');
+var core = require('../core');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -18,7 +17,7 @@ var core    = require('../core'),
  * ```
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
@@ -82,8 +81,8 @@ Object.defineProperties(MovieClip.prototype, {
      * totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
      * assigned to the MovieClip.
      *
-     * @member
-     * @memberof MovieClip#
+     * @member {number}
+     * @memberof PIXI.MovieClip#
      * @default 0
      * @readonly
      */
@@ -97,8 +96,8 @@ Object.defineProperties(MovieClip.prototype, {
     /**
      * The array of textures used for this MovieClip
      *
-     * @member {Texture[]}
-     * @memberof MovieClip#
+     * @member {PIXI.Texture[]}
+     * @memberof PIXI.MovieClip#
      *
      */
     textures: {
@@ -118,6 +117,7 @@ Object.defineProperties(MovieClip.prototype, {
     * The MovieClips current frame index
     *
     * @member {number}
+    * @memberof PIXI.MovieClip#
     * @readonly
     */
     currentFrame: {
@@ -141,7 +141,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    ticker.shared.remove(this.update, this);
+    core.ticker.shared.remove(this.update, this);
 };
 
 /**
@@ -156,7 +156,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    ticker.shared.add(this.update, this);
+    core.ticker.shared.add(this.update, this);
 };
 
 /**
@@ -200,8 +200,7 @@ MovieClip.prototype.update = function (deltaTime)
     {
         if (this.loop)
         {
-            this._currentTime += this._textures.length;
-            this._texture = this._textures[this._currentTime];
+            this._texture = this._textures[this._textures.length - 1 + floor % this._textures.length];
         }
         else
         {

@@ -16,7 +16,7 @@ var core = require('../core');
  * http://www.bmglyph.com/ for mac.
  *
  * @class
- * @extends Container
+ * @extends PIXI.Container
  * @memberof PIXI.extras
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters
@@ -344,13 +344,34 @@ BitmapText.prototype.updateText = function ()
  */
 BitmapText.prototype.updateTransform = function ()
 {
+    this.validate();
+    this.containerUpdateTransform();
+};
+
+/**
+ * Validates text before calling parent's getLocalBounds
+ *
+ * @return {Rectangle} The rectangular bounding area
+ */
+
+BitmapText.prototype.getLocalBounds = function()
+{
+    this.validate();
+    return core.Container.prototype.getLocalBounds.call(this);
+};
+
+/**
+ * Updates text when needed
+ *
+ * @private
+ */
+BitmapText.prototype.validate = function()
+{
     if (this.dirty)
     {
         this.updateText();
         this.dirty = false;
     }
-
-    this.containerUpdateTransform();
 };
 
 BitmapText.fonts = {};

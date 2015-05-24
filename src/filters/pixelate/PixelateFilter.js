@@ -6,7 +6,7 @@ var fs = require('fs');
  * This filter applies a pixelate effect making display objects appear 'blocky'.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function PixelateFilter()

@@ -18,7 +18,7 @@ var SystemRenderer = require('../SystemRenderer'),
  *
  * @class
  * @memberof PIXI
- * @extends SystemRenderer
+ * @extends PIXI.SystemRenderer
  * @param [width=0] {number} the width of the canvas view
  * @param [height=0] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters
@@ -140,11 +140,12 @@ function WebGLRenderer(width, height, options)
 
     this.initPlugins();
 
-     // initialize the context so it is ready for the managers.
+    // initialize the context so it is ready for the managers.
+    this._createContext();
     this._initContext();
 
     // map some webGL blend modes..
-    this._mapBlendModes();
+    this._mapGlModes();
 
     /**
      * An array of render targets
@@ -162,12 +163,7 @@ utils.pluginTarget.mixin(WebGLRenderer);
 
 WebGLRenderer.glContextId = 0;
 
-/**
- * Creates the WebGL context
- * @private
- */
-WebGLRenderer.prototype._initContext = function ()
-{
+WebGLRenderer.prototype._createContext = function () {
     var gl = this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
     this.gl = gl;
 
@@ -180,13 +176,22 @@ WebGLRenderer.prototype._initContext = function ()
     this.glContextId = WebGLRenderer.glContextId++;
     gl.id = this.glContextId;
     gl.renderer = this;
+};
+
+/**
+ * Creates the WebGL context
+ * @private
+ */
+WebGLRenderer.prototype._initContext = function ()
+{
+    var gl = this.gl;
 
     // set up the default pixi settings..
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
+    this.renderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
 
     this.setRenderTarget(this.renderTarget);
 
@@ -197,7 +202,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     if(!this._useFXAA)
     {
-        this._useFXAA = ( this._contextOptions.antialias && ! gl.getContextAttributes().antialias );
+        this._useFXAA = (this._contextOptions.antialias && ! gl.getContextAttributes().antialias);
     }
 
 
@@ -496,7 +501,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
  *
  * @private
  */
-WebGLRenderer.prototype._mapBlendModes = function ()
+WebGLRenderer.prototype._mapGlModes = function ()
 {
     var gl = this.gl;
 
@@ -521,5 +526,18 @@ WebGLRenderer.prototype._mapBlendModes = function ()
         this.blendModes[CONST.BLEND_MODES.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+    }
+
+    if (!this.drawModes)
+    {
+        this.drawModes = {};
+
+        this.drawModes[CONST.DRAW_MODES.POINTS]         = gl.POINTS;
+        this.drawModes[CONST.DRAW_MODES.LINES]          = gl.LINES;
+        this.drawModes[CONST.DRAW_MODES.LINE_LOOP]      = gl.LINE_LOOP;
+        this.drawModes[CONST.DRAW_MODES.LINE_STRIP]     = gl.LINE_STRIP;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLES]      = gl.TRIANGLES;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLE_STRIP] = gl.TRIANGLE_STRIP;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLE_FAN]   = gl.TRIANGLE_FAN;
     }
 };

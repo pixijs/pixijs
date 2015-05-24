@@ -138,6 +138,14 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
+
+    /**
+     * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
+     *
+     * @event update
+     * @memberof PIXI.Texture#
+     * @protected
+     */
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -182,7 +190,7 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-             if (this.valid)
+            if (this.valid)
             {
                 this._updateUvs();
             }
@@ -216,7 +224,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
         this.frame = this._frame;
     }
 
-    this.emit( 'update', this );
+    this.emit('update', this);
 };
 
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
@@ -224,7 +232,7 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
-    this.emit( 'update', this );
+    this.emit('update', this);
 };
 
 /**
@@ -241,8 +249,8 @@ Texture.prototype.destroy = function (destroyBase)
             this.baseTexture.destroy();
         }
 
-        this.baseTexture.off('update', this.onBaseTextureUpdated);
-        this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+        this.baseTexture.off('update', this.onBaseTextureUpdated, this);
+        this.baseTexture.off('loaded', this.onBaseTextureLoaded, this);
 
         this.baseTexture = null;
     }

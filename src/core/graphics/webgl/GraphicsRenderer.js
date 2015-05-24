@@ -3,7 +3,8 @@ var utils = require('../../utils'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData');
+    WebGLGraphicsData = require('./WebGLGraphicsData'),
+    earcut = require('earcut');
 
 /**
  * Renders the graphics object.
@@ -11,7 +12,7 @@ var utils = require('../../utils'),
  * @class
  * @private
  * @memberof PIXI
- * @extends ObjectRenderer
+ * @extends PIXI.ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this object renderer works for.
  */
 function GraphicsRenderer(renderer)
@@ -90,6 +91,8 @@ GraphicsRenderer.prototype.render = function(graphics)
             webGLData = webGL.data[i];
 
             renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+
+            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
@@ -380,6 +383,7 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
     this.quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
     this.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
     this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+
     // this tiny number deals with the issue that occurs when points overlap and polyK fails to triangulate the item.
     // TODO - fix this properly, this is not very elegant.. but it works for now.
 
@@ -397,9 +401,7 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
 
         var vecPos = verts.length/6;
 
-        //TODO use this https://github.com/mapbox/earcut
-        var triangles = utils.PolyK.Triangulate(recPoints);
-        //
+        var triangles = earcut(recPoints, null, 2);
 
         var i = 0;
         for (i = 0; i < triangles.length; i+=3)
@@ -867,7 +869,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     var g = color[1] * alpha;
     var b = color[2] * alpha;
 
-    var triangles = utils.PolyK.Triangulate(points);
+    var triangles = earcut(points, null, 2);
 
     if (!triangles) {
         return false;

@@ -13,7 +13,7 @@ var fs = require('fs');
  * An ASCII filter.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function AsciiFilter()
