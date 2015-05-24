@@ -37,7 +37,14 @@ Sprite3d.prototype.constructor = Sprite3d;
 
 Sprite3d.prototype.updateTransform = function()
 {
-    this.parent.convertFrom2dTo3d(true)//this.parent);
+    if(this.parent.convertFrom2dTo3d)
+    {
+        this.parent.convertFrom2dTo3d(true)//this.parent);
+    }
+    else
+    {
+        if(!this.parent.worldTransform3d)this.parent.worldTransform3d = glMat.mat4.create()
+    }
 
     this.updateTransform3d();
 };
