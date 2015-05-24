@@ -69,10 +69,7 @@ Sprite3d.prototype.renderWebGL = function(renderer)
 Sprite3d.prototype.containsPoint = function( point )
 {
     var ray = math3d.getRayFromScreen(point, renderer);
-    window.ray2 = ray;
- //   console.log(ray);
-    var contactPoint = math3d.get2DContactPoint(ray, this); // return 2d coords//
-//    console.log(contactPoint);
+    var contactPoint = math3d.get2DContactPoint(ray, this); 
 
     if(!contactPoint)
     {

@@ -7,7 +7,8 @@ var glMat = require('gl-matrix'),
 	vec3 = glMat.vec3,
 	mat4 = glMat.mat4,
 	mat3 = glMat.mat3,
-	tempPoint = new Point3d();
+	mat3 = glMat.mat3,
+	core = require('../../core')
 
 module.exports = {
     Point3d:      Point3d,
@@ -36,8 +37,8 @@ module.exports = {
 	{
 	    var tempP = vec3.create();
 
-	     var combinedMatrix = window.combinedMatrix//mat4.multiply(mat4.create(), perspectiveMatrix, projection3d);
-	     if(!combinedMatrix)return [[0,0,0], [0,0,0]]
+	     var combinedMatrix = window.combinedMatrix;//mat4.multiply(mat4.create(), perspectiveMatrix, projection3d);
+	     if(!combinedMatrix)return [[0,0,0], [0,0,0]];
 	     var inverse = mat4.invert(mat4.create(), combinedMatrix);
 
 	  	
@@ -81,6 +82,11 @@ module.exports = {
 	        transposeInverse[7],
 	        transposeInverse[8]
 	    ]
+	    	
+	    if(normal[2] < 0)
+	    {
+	    	normal[2] *= -1
+	    }
 
 	    var position = [
 	        container.worldTransform3d[12],
@@ -101,7 +107,7 @@ module.exports = {
 
 	        var cord2D = vec3.transformMat4(vec3.create(), contact, inverse);
 
-	        return new PIXI.Point(cord2D[0], cord2D[1]);
+	        return new core.Point(cord2D[0], cord2D[1]);
 	    }
 	    else
 	    {
