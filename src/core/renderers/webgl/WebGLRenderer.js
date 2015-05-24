@@ -145,7 +145,7 @@ function WebGLRenderer(width, height, options)
     this._initContext();
 
     // map some webGL blend modes..
-    this._mapBlendModes();
+    this._mapGlModes();
 
     /**
      * An array of render targets
@@ -501,7 +501,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
  *
  * @private
  */
-WebGLRenderer.prototype._mapBlendModes = function ()
+WebGLRenderer.prototype._mapGlModes = function ()
 {
     var gl = this.gl;
 
@@ -526,5 +526,18 @@ WebGLRenderer.prototype._mapBlendModes = function ()
         this.blendModes[CONST.BLEND_MODES.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+    }
+
+    if (!this.drawModes)
+    {
+        this.drawModes = {};
+
+        this.drawModes[CONST.DRAW_MODES.POINTS]         = gl.POINTS;
+        this.drawModes[CONST.DRAW_MODES.LINES]          = gl.LINES;
+        this.drawModes[CONST.DRAW_MODES.LINE_LOOP]      = gl.LINE_LOOP;
+        this.drawModes[CONST.DRAW_MODES.LINE_STRIP]     = gl.LINE_STRIP;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLES]      = gl.TRIANGLES;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLE_STRIP] = gl.TRIANGLE_STRIP;
+        this.drawModes[CONST.DRAW_MODES.TRIANGLE_FAN]   = gl.TRIANGLE_FAN;
     }
 };
