@@ -80,8 +80,8 @@ function Sprite3dShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, c
         'void main(void){',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
 
-        '   if(gl_FragColor.a < 0.5)',
-        '   discard;',
+//        '   if(gl_FragColor.a < 0.5)',
+  //      '   discard;',
         '}'
     ].join('\n');
 

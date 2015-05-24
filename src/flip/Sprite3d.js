@@ -66,36 +66,6 @@ Sprite3d.prototype.renderWebGL = function(renderer)
 };
 
 
-Sprite3d.prototype.containsPoint = function( point )
-{
-    var ray = math3d.getRayFromScreen(point, renderer);
-    var contactPoint = math3d.get2DContactPoint(ray, this); 
-
-    if(!contactPoint)
-    {
-        return false;
-    }
-
-    this.worldTransform.applyInverse(contactPoint,  tempPoint);
-
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
-    var x1 = -width * this.anchor.x;
-    var y1;
-
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
-    {
-        y1 = -height * this.anchor.y;
-
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
-        {
-            return true;
-        }
-    }
-
-    return false;
-};
-
 
 /**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId

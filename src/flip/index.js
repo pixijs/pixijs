@@ -14,10 +14,12 @@ module.exports = {
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer')
 };
 
-var core            = require('../core'),
-    glMat           = require('gl-matrix'),
-    temp3dTransform = glMat.mat4.create(),
-    tempQuat        = glMat.quat.create();
+var core             = require('../core'),
+    glMat            = require('gl-matrix'),
+    math3d           = require('./math'),
+    temp3dTransform  = glMat.mat4.create(),
+    tempQuat         = glMat.quat.create(),
+    tempPoint        = new core.Point();
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
@@ -57,6 +59,9 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
     glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
 
     glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
+
+     // multiply the alphas..
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 
 core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
@@ -247,6 +252,65 @@ core.Container.prototype._renderWebGL3d = function(/*renderer*/)
 {
 
 };
+
+core.Sprite.prototype.containsPoint = function( point )
+{
+    if(this.worldTransform3d)
+    {
+        return this.containsPoint3d(point);
+    }
+    else
+    {
+
+        this.worldTransform.applyInverse(point,  tempPoint);
+
+        var width = this._texture._frame.width;
+        var height = this._texture._frame.height;
+        var x1 = -width * this.anchor.x;
+        var y1;
+
+        if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+        {
+            y1 = -height * this.anchor.y;
+
+            if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+core.Sprite.prototype.containsPoint3d = function( point )
+{
+    var ray = math3d.getRayFromScreen(point, renderer);
+    var contactPoint = math3d.get2DContactPoint(ray, this); 
+
+    if(!contactPoint)
+    {
+        return false;
+    }
+
+    var width = this._texture._frame.width;
+    var height = this._texture._frame.height;
+    var x1 = -width * this.anchor.x;
+    var y1;
+
+    if ( contactPoint.x > x1 && contactPoint.x < x1 + width )
+    {
+        y1 = -height * this.anchor.y;
+
+        if ( contactPoint.y > y1 && contactPoint.y < y1 + height )
+        {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 
 core.Sprite.prototype._renderWebGL3d = function(renderer)
 {
