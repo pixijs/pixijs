@@ -39,7 +39,14 @@ Container3d.prototype.constructor = Container3d;
 
 Container3d.prototype.updateTransform = function()
 {
-    this.parent.convertFrom2dTo3d(true);
+    if(this.parent.convertFrom2dTo3d)
+    {
+        this.parent.convertFrom2dTo3d(true)//this.parent);
+    }
+    else
+    {
+        if(!this.parent.worldTransform3d)this.parent.worldTransform3d = glMat.mat4.create()
+    }
 
     this.updateTransform3d();
 };
