@@ -188,15 +188,58 @@ core.Container.prototype.renderWebGL3d = function (renderer)
         return;
     }
 
-    // no support for filters...
-
-    this._renderWebGL3d(renderer);
-
-    var i, j;
-    // simple render children!
-    for (i = 0, j = this.children.length; i < j; ++i)
+    // BIT of code dupliactions going on here...
+    if (this._mask || this._filters)
     {
-        this.children[i].renderWebGL3d(renderer);
+        renderer.currentRenderer.flush();
+
+        // push filter first as we need to ensure the stencil buffer is correct for any masking
+        if (this._filters)
+        {
+            renderer.filterManager.pushFilter(this, this._filters);
+        }
+
+        if (this._mask)
+        {
+            renderer.maskManager.pushMask(this, this._mask);
+        }
+
+        renderer.currentRenderer.start();
+
+        // add this object to the batch, only rendered if it has a texture.
+        this._renderWebGL3d(renderer);
+
+        // now loop through the children and make sure they get rendered
+        for (i = 0, j = this.children.length; i < j; i++)
+        {
+            this.children[i].renderWebGL3d(renderer);
+        }
+
+        renderer.currentRenderer.flush();
+
+        if (this._mask)
+        {
+            renderer.maskManager.popMask(this, this._mask);
+        }
+
+        if (this._filters)
+        {
+            renderer.filterManager.popFilter();
+
+        }
+        renderer.currentRenderer.start();
+    }
+    else
+    {
+
+        this._renderWebGL3d(renderer);
+
+        var i, j;
+        // simple render children!
+        for (i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].renderWebGL3d(renderer);
+        }
     }
 };
 
