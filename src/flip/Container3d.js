@@ -41,7 +41,7 @@ Container3d.prototype.updateTransform = function()
 {
     if(this.parent.convertFrom2dTo3d)
     {
-        this.parent.convertFrom2dTo3d(true)//this.parent);
+        this.parent.convertFrom2dTo3d(true);
     }
     else
     {

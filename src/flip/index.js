@@ -314,7 +314,6 @@ core.Sprite.prototype.containsPoint3d = function( point )
 
 core.Sprite.prototype._renderWebGL3d = function(renderer)
 {
-  //  console.log(this)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
 };
@@ -324,11 +323,9 @@ core.Text.prototype._renderWebGL3d = function(renderer)
 {
     if (this.dirty)
     {
-     //   this.resolution = 1//renderer.resolution;
-
         this.updateText();
     }
-  //  console.log(this)
+
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
 };
