@@ -1148,7 +1148,7 @@ Graphics.prototype.drawShape = function (shape)
 
     if (data.type === CONST.SHAPES.POLY)
     {
-        data.shape.closed = this.filling;
+        data.shape.closed = data.shape.closed || this.filling;
         this.currentPath = data;
     }
 
