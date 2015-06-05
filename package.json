@@ -17,6 +17,7 @@
   },
   "scripts": {
     "test": "gulp && testem ci",
+    "build": "gulp",
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
   },
   "files": [
