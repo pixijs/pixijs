@@ -18,15 +18,16 @@ describe('PIXI.Container', function () {
                 triggeredAdded = false,
                 triggeredRemoved = false;
 
-            child.on('added', function() {
+            child.on('added', function(to) {
                 triggeredAdded = true;
                 expect(container.children.length).to.be.equals(1);
-                expect(child.parent).to.be.equals(container);
+                expect(child.parent).to.be.equals(to);
             });
-            child.on('removed', function() {
+            child.on('removed', function(from) {
                 triggeredRemoved = true;
                 expect(container.children.length).to.be.equals(0);
                 expect(child.parent).to.be.null();
+                expect(container).to.be.equals(from);
             });
 
             container.addChild(child);

@@ -131,7 +131,7 @@ Container.prototype.addChildAt = function (child, index)
 
         this.children.splice(index, 0, child);
 
-        child.emit('added');
+        child.emit('added', this);
 
         return child;
     }
@@ -250,7 +250,7 @@ Container.prototype.removeChildAt = function (index)
     child.parent = null;
     this.children.splice(index, 1);
 
-    child.emit('removed');
+    child.emit('removed', this);
 
     return child;
 };
