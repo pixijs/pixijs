@@ -204,17 +204,14 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             {
                 if (data.points.length >= 6)
                 {
-                    window.console.log(data.points.length);
                     if (data.points.length < this.maximumSimplePolySize * 2)
                     {
                         webGLData = this.switchMode(webGL, 0);
 
                         var canDrawUsingSimple = this.buildPoly(data, webGLData);
-                      //  console.log(canDrawUsingSimple);
 
                         if (!canDrawUsingSimple)
                         {
-                        //    console.log("<>>>")
                             webGLData = this.switchMode(webGL, 1);
                             this.buildComplexPoly(data, webGLData);
                         }
