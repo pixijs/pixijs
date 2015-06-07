@@ -51,7 +51,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
         a10 = worldTransform.b, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10);
 
-    point = point || new core.math.Point();
+    point = point || new core.Point();
 
     point.x = a11 * id * global.x + -a01 * id * global.x + (a12 * a01 - a02 * a11) * id;
     point.y = a00 * id * global.y + -a10 * id * global.y + (-a12 * a00 + a02 * a10) * id;

@@ -1,12 +1,12 @@
 describe('PIXI.utils', function () {
-    describe('.uuid', function () {
+    describe('.uid', function () {
         it('should exist', function () {
-            expect(PIXI.utils.uuid)
+            expect(PIXI.utils.uid)
                 .to.be.a('function');
         });
 
         it('should return a number', function () {
-            expect(PIXI.utils.uuid())
+            expect(PIXI.utils.uid())
                 .to.be.a('number');
         });
     });

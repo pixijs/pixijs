@@ -21,7 +21,7 @@ function TilingSprite(texture, width, height)
      *
      * @member {Point}
      */
-    this.tileScale = new core.math.Point(1,1);
+    this.tileScale = new core.Point(1,1);
 
 
     /**
@@ -29,7 +29,7 @@ function TilingSprite(texture, width, height)
      *
      * @member {Point}
      */
-    this.tilePosition = new core.math.Point(0,0);
+    this.tilePosition = new core.Point(0,0);
 
     ///// private
 

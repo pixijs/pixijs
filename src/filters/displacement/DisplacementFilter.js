@@ -14,7 +14,7 @@ var fs = require('fs');
  */
 function DisplacementFilter(sprite)
 {
-    var maskMatrix = new core.math.Matrix();
+    var maskMatrix = new core.Matrix();
     sprite.renderable = false;
 
     core.AbstractFilter.call(this,
@@ -34,7 +34,7 @@ function DisplacementFilter(sprite)
     this.maskMatrix = maskMatrix;
 
 
-    this.scale = new core.math.Point(20,20);
+    this.scale = new core.Point(20,20);
 
 }
 
