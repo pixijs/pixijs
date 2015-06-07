@@ -38,16 +38,16 @@ module.exports = function ()
                     var trim = null;
 
                     if (frames[i].rotated) {
-                        size = new core.math.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
                     }
                     else {
-                        size = new core.math.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
                     }
 
                     //  Check to see if the sprite is trimmed
                     if (frames[i].trimmed)
                     {
-                        trim = new core.math.Rectangle(
+                        trim = new core.Rectangle(
                             frames[i].spriteSourceSize.x / resolution,
                             frames[i].spriteSourceSize.y / resolution,
                             frames[i].sourceSize.w / resolution,

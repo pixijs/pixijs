@@ -397,7 +397,7 @@ Mesh.prototype.getBounds = function (matrix)
 
     if (minX === -Infinity || maxY === Infinity)
     {
-        return core.math.Rectangle.EMPTY;
+        return core.Rectangle.EMPTY;
     }
 
     var bounds = this._bounds;

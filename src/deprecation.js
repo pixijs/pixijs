@@ -193,6 +193,21 @@ Object.defineProperties(core, {
             console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
             return core.utils.TextureCache;
         }
+    },
+
+    /**
+     * @namespace
+     * @private
+     * @name PIXI.math
+     * @see {@link PIXI}
+     * @deprecated since version 3.0.6
+     */
+    math: {
+        get: function ()
+        {
+            console.warn('The math namespace is deprecated, please access members already accessible on PIXI.');
+            return core;
+        }
     }
 });
 

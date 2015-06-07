@@ -21,7 +21,7 @@ function parse(resource, texture) {
     {
         var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-        var textureRect = new core.math.Rectangle(
+        var textureRect = new core.Rectangle(
             parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
             parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
             parseInt(letters[i].getAttribute('width'), 10),
