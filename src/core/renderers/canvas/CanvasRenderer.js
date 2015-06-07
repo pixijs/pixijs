@@ -216,8 +216,9 @@ CanvasRenderer.prototype.resize = function (w, h)
 {
     SystemRenderer.prototype.resize.call(this, w, h);
 
-    //reset the scale mode.. oddly this seems to be reset??
-    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT
+    //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
+    //surely a browser bug?? Let pixi fix that for you..
+    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
     
     if(this.smoothProperty)
     {
