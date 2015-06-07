@@ -212,6 +212,20 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
     this.context = tempContext;
 };
 
+CanvasRenderer.prototype.resize = function (w, h)
+{
+    SystemRenderer.prototype.resize.call(this, w, h);
+
+    //reset the scale mode.. oddly this seems to be reset??
+    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT
+    
+    if(this.smoothProperty)
+    {
+        this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+    }
+
+};
+
 /**
  * Maps Pixi blend modes to canvas blend modes.
  *
