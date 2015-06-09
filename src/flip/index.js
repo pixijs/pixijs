@@ -23,41 +23,102 @@ var core             = require('../core'),
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
+core.Container.prototype._customMatrix = null;
+
 
 core.Container.prototype.displayObjectUpdateTransform3d = function()
 {
-    var quat = tempQuat;
+    if(!this._customMatrix)
+    {
+        var quat = tempQuat;
 
-    var rx = this.rotation.x;
-    var ry = this.rotation.y;
-    var rz = this.rotation.z;
+        var rx = this.rotation.x;
+        var ry = this.rotation.y;
+        var rz = this.rotation.z;
 
-    //TODO cach sin cos?
-    var c1 = Math.cos( rx / 2 );
-    var c2 = Math.cos( ry / 2 );
-    var c3 = Math.cos( rz / 2 );
+        //TODO cach sin cos?
+        var c1 = Math.cos( rx / 2 );
+        var c2 = Math.cos( ry / 2 );
+        var c3 = Math.cos( rz / 2 );
 
-    var s1 = Math.sin( rx / 2 );
-    var s2 = Math.sin( ry / 2 );
-    var s3 = Math.sin( rz / 2 );
+        var s1 = Math.sin( rx / 2 );
+        var s2 = Math.sin( ry / 2 );
+        var s3 = Math.sin( rz / 2 );
 
-    quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
-    quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
-    quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
-    quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
+        quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
+        quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
+        quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
+        quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
 
-    temp3dTransform[0] = this.position.x;
-    temp3dTransform[1] = this.position.y;
-    temp3dTransform[2] = this.position.z;
+        temp3dTransform[0] = this.position.x;
+        temp3dTransform[1] = this.position.y;
+        temp3dTransform[2] = this.position.z;
 
-    glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
+        glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
 
-    temp3dTransform[0] = this.scale.x;
-    temp3dTransform[1] = this.scale.y;
-    temp3dTransform[2] = this.scale.z;
+        temp3dTransform[0] = this.scale.x;
+        temp3dTransform[1] = this.scale.y;
+        temp3dTransform[2] = this.scale.z;
 
-    glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
+        glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
+    
+        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
+    
+    }
+    else
+    {
+        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this._customMatrix);
+    }
 
+
+     // multiply the alphas..
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+};
+
+core.Container.prototype.setMatrix = function( matrix )
+{
+    this._customMatrix = matrix;
+}
+
+core.Container.prototype.displayObjectUpdateTransform3d = function()
+{
+    if(!this.override)
+    {
+        var quat = tempQuat;
+
+        var rx = this.rotation.x;
+        var ry = this.rotation.y;
+        var rz = this.rotation.z;
+
+        //TODO cach sin cos?
+        var c1 = Math.cos( rx / 2 );
+        var c2 = Math.cos( ry / 2 );
+        var c3 = Math.cos( rz / 2 );
+
+        var s1 = Math.sin( rx / 2 );
+        var s2 = Math.sin( ry / 2 );
+        var s3 = Math.sin( rz / 2 );
+
+        quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
+        quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
+        quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
+        quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+        temp3dTransform[0] = this.position.x;
+        temp3dTransform[1] = this.position.y;
+        temp3dTransform[2] = this.position.z;
+
+        glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
+
+        temp3dTransform[0] = this.scale.x;
+        temp3dTransform[1] = this.scale.y;
+        temp3dTransform[2] = this.scale.z;
+
+        glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
+
+    }
+
+    // multiply parent matrix
     glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
 
      // multiply the alphas..
