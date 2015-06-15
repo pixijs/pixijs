@@ -31,7 +31,7 @@
     "earcut": "^2.0.1",
     "eventemitter3": "^1.1.0",
     "object-assign": "^2.0.0",
-    "resource-loader": "^1.6.0"
+    "resource-loader": "^1.6.1"
   },
   "devDependencies": {
     "browserify": "^10.2.3",
