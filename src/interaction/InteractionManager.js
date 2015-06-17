@@ -206,15 +206,14 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mouseup',      this.onMouseUp, true);
 
     this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
     this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
     this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
-
-    window.addEventListener('mouseup',  this.onMouseUp, true);
 
     this.eventsAdded = true;
 };
@@ -238,17 +237,16 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    window.document.removeEventListener('mousemove', this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mouseup',  this.onMouseUp, true);
 
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
     this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
     this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
 
     this.interactionDOMElement = null;
-
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
 
     this.eventsAdded = false;
 };
@@ -414,7 +412,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 {
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
-    this.eventData.stopped = false;
+    this.eventData.stopped = event.defaultPrevented;
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
@@ -459,7 +457,7 @@ InteractionManager.prototype.onMouseUp = function (event)
 {
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
-    this.eventData.stopped = false;
+    this.eventData.stopped = event.defaultPrevented;
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
@@ -512,7 +510,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 {
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
-    this.eventData.stopped = false;
+    this.eventData.stopped = event.defaultPrevented;
 
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
@@ -554,7 +552,7 @@ InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 InteractionManager.prototype.onMouseOut = function (event)
 {
     this.mouse.originalEvent = event;
-    this.eventData.stopped = false;
+    this.eventData.stopped = event.defaultPrevented;
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
@@ -608,11 +606,6 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
  */
 InteractionManager.prototype.onTouchStart = function (event)
 {
-    if (this.autoPreventDefault)
-    {
-        event.preventDefault();
-    }
-
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
 
@@ -625,11 +618,16 @@ InteractionManager.prototype.onTouchStart = function (event)
         touchData.originalEvent = event;
 
         this.eventData.data = touchData;
-        this.eventData.stopped = false;
+        this.eventData.stopped = event.defaultPrevented;
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
         this.returnTouchData( touchData );
+    }
+
+    if (this.autoPreventDefault)
+    {
+        event.preventDefault();
     }
 };
 
@@ -658,11 +656,6 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
-    if (this.autoPreventDefault)
-    {
-        event.preventDefault();
-    }
-
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
 
@@ -676,12 +669,16 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
         //TODO this should be passed along.. no set
         this.eventData.data = touchData;
-        this.eventData.stopped = false;
-
+        this.eventData.stopped = event.defaultPrevented;
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
         this.returnTouchData( touchData );
+    }
+
+    if (this.autoPreventDefault)
+    {
+        event.preventDefault();
     }
 };
 
@@ -722,11 +719,6 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchMove = function (event)
 {
-    if (this.autoPreventDefault)
-    {
-        event.preventDefault();
-    }
-
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
 
@@ -739,11 +731,16 @@ InteractionManager.prototype.onTouchMove = function (event)
         touchData.originalEvent = event;
 
         this.eventData.data = touchData;
-        this.eventData.stopped = false;
+        this.eventData.stopped = event.defaultPrevented;
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, false );
 
         this.returnTouchData( touchData );
+    }
+
+    if (this.autoPreventDefault)
+    {
+        event.preventDefault();
     }
 };
 
