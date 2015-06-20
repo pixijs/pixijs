@@ -82,7 +82,6 @@ function TilingSprite(texture, width, height)
         '   vec2 coord = aTextureCoord;',
         '   coord -= uTransform.xy;',
         '   coord /= uTransform.zw;',
-        '   coord /= uFrame.zw;',
         '   vTextureCoord = coord;',
 
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
@@ -96,11 +95,12 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
+        'uniform vec2 uPixelSize;',
 
         'void main(void){',
 
-        '   vec2 coord = fract(vTextureCoord);',
-        '   coord *= uFrame.zw;',
+        '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
+        '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
         '   coord += uFrame.xy;',
 
         '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
@@ -110,8 +110,8 @@ function TilingSprite(texture, width, height)
             // set the uniforms
             {
                 uFrame: { type: '4fv', value: [0,0,1,1] },
-
-                uTransform: { type: '4fv', value: [0,0,1,1] }
+                uTransform: { type: '4fv', value: [0,0,1,1] },
+                uPixelSize : { type : '2fv', value: [1, 1]}
             }
       );
 }
@@ -189,9 +189,9 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.width = this.width;
     texture._frame.height = this.height;
 
-    //PADDING
+    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
+    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
 
-    // apply padding to stop gaps in the tile when numbers are not rounded
     this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
     this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
     this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
