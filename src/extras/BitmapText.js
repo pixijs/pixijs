@@ -98,6 +98,13 @@ function BitmapText(text, style)
     this.maxWidth = 0;
 
     /**
+     * The max line height. This is useful when trying to use the total height of the Text, ie: when trying to vertically align.
+     *
+     * @member {number}
+     */
+    this.maxLineHeight = 0;
+
+    /**
      * The dirty state of this object.
      *
      * @member {boolean}
@@ -225,6 +232,7 @@ BitmapText.prototype.updateText = function ()
     var line = 0;
     var scale = this._font.size / data.size;
     var lastSpace = -1;
+    var maxLineHeight = 0;
 
     for (var i = 0; i < this.text.length; i++)
     {
@@ -274,7 +282,7 @@ BitmapText.prototype.updateText = function ()
         chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
         pos.x += charData.xAdvance;
-
+        maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
         prevCharCode = charCode;
     }
 
@@ -335,6 +343,7 @@ BitmapText.prototype.updateText = function ()
 
     this.textWidth = maxLineWidth * scale;
     this.textHeight = (pos.y + data.lineHeight) * scale;
+    this.maxLineHeight = maxLineHeight * scale;
 };
 
 /**
