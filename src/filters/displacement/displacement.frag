@@ -17,5 +17,5 @@ void main(void)
    map -= 0.5;
    map.xy *= scale;
 
-   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));
+   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + 0.999 * map.x, vTextureCoord.y + 0.999 * map.y));
 }
