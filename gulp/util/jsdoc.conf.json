@@ -7,19 +7,12 @@
             "./src/"
         ],
         "exclude": [
-            "./src/polyfill/",
-            "./src/core/utils/PolyK.js",
-            "./src/spine/SpineRuntime.js"
+            "./src/polyfill/"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
     },
     "plugins": [
-        // "./tasks/jsdoc-plugins/namealias",
-        // "./tasks/jsdoc-plugins/filterpixi",
-        // "./tasks/jsdoc-plugins/proptomember",
-        // "./tasks/jsdoc-plugins/sourceproxy",
-        // "./tasks/jsdoc-plugins/shortlinks",
         "plugins/markdown"
     ],
     "templates": {
@@ -28,11 +21,24 @@
         "default"       : {
             "outputSourceFiles" : true
         },
-        "systemName"    : "PIXI",
+        "applicationName": "PIXI",
         "footer"        : "Made with ♥ by <a href='http://goodboydigital.com'>Goodboy Digital</a>",
         "copyright"     : "PIXI Copyright © 2013-2015 Mat Groves.",
-        "linenums"      : true,
-        "collapseSymbols": false
+        "disqus": "",
+        "googleAnalytics": "",
+        "openGraph": {
+            "title": "",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": ""
+        },
+        "meta": {
+            "title": "",
+            "description": "",
+            "keyword": ""
+        },
+        "linenums"      : true
     },
     "markdown"  : {
         "parser"        : "gfm",

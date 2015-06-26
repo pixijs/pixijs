@@ -163,7 +163,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
 {
     if (!video._pixiId)
     {
-        video._pixiId = 'video_' + utils.uuid();
+        video._pixiId = 'video_' + utils.uid();
     }
 
     var baseTexture = utils.BaseTextureCache[video._pixiId];

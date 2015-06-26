@@ -216,7 +216,7 @@ Object.defineProperties(BitmapText.prototype, {
 BitmapText.prototype.updateText = function ()
 {
     var data = BitmapText.fonts[this._font.name];
-    var pos = new core.math.Point();
+    var pos = new core.Point();
     var prevCharCode = null;
     var chars = [];
     var lastLineWidth = 0;
@@ -271,7 +271,7 @@ BitmapText.prototype.updateText = function ()
             pos.x += charData.kerning[prevCharCode];
         }
 
-        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
         pos.x += charData.xAdvance;
 

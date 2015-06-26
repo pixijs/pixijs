@@ -3,7 +3,7 @@ Pixi.js — A 2D JavaScript Renderer
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
 
-[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects)
+[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
 
 ## Pixi.js ##
 

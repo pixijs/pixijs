@@ -22,7 +22,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
      * @member {number}
      * @readonly
      */
-    this.uuid = utils.uuid();
+    this.uid = utils.uid();
 
     /**
      * The current WebGL drawing context
@@ -226,6 +226,12 @@ Shader.prototype.syncUniform = function (uniform)
 
     switch (uniform.type)
     {
+        case 'b':
+        case 'bool':
+        case 'boolean':
+            gl.uniform1i(location, value ? 1 : 0);
+            break;
+
         // single int value
         case 'i':
         case '1i':

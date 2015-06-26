@@ -15,7 +15,7 @@ function BaseTexture(source, scaleMode, resolution)
 {
     EventEmitter.call(this);
 
-    this.uuid = utils.uuid();
+    this.uid = utils.uid();
 
     /**
      * The Resolution of the texture.
@@ -416,7 +416,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
 {
     if (!canvas._pixiId)
     {
-        canvas._pixiId = 'canvas_' + utils.uuid();
+        canvas._pixiId = 'canvas_' + utils.uid();
     }
 
     var baseTexture = utils.BaseTextureCache[canvas._pixiId];

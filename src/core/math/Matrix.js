@@ -80,14 +80,14 @@ Matrix.prototype.fromArray = function (array)
  * @param transpose {boolean} Whether we need to transpose the matrix or not
  * @return {number[]} the newly created array which contains the matrix
  */
-Matrix.prototype.toArray = function (transpose)
+Matrix.prototype.toArray = function (transpose, out)
 {
     if (!this.array)
     {
         this.array = new Float32Array(9);
     }
 
-    var array = this.array;
+    var array = out || this.array;
 
     if (transpose)
     {

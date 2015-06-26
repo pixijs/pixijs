@@ -4,8 +4,7 @@
       "src/**/*.js"
     ],
     "excluded": [
-      "src/spine/Spine.js",
-      "src/spine/SpineRuntime.js"
+      "src/polyfill/"
     ]
   }
 }

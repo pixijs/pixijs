@@ -84,8 +84,10 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
     {
         return;
     }
-    
+
     this._initCachedDisplayObject( renderer );
+
+    this._cachedSprite.worldAlpha = this.worldAlpha;
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render( this._cachedSprite );
