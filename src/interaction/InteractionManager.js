@@ -622,6 +622,7 @@ InteractionManager.prototype.onTouchStart = function (event)
         //TODO POOL
         var touchData = this.getTouchData( touchEvent );
 
+        touchData.id = touchEvent.identifier;
         touchData.originalEvent = event;
 
         this.eventData.data = touchData;
@@ -672,6 +673,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
         var touchData = this.getTouchData( touchEvent );
 
+        touchData.id = touchEvent.identifier;
         touchData.originalEvent = event;
 
         //TODO this should be passed along.. no set
@@ -736,6 +738,7 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         var touchData = this.getTouchData( touchEvent );
 
+        touchData.id = touchEvent.identifier;
         touchData.originalEvent = event;
 
         this.eventData.data = touchData;

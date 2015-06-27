@@ -28,6 +28,14 @@ function InteractionData()
      * @member {Event}
      */
     this.originalEvent = null;
+
+    /**
+     * The touch identifier from the browser, or -1 if it is a mouse event.
+     *
+     * @property id
+     * @type int
+     */
+    this.id = -1;
 }
 
 InteractionData.prototype.constructor = InteractionData;
