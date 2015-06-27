@@ -370,13 +370,14 @@ DisplayObject.prototype.getLocalBounds = function ()
  * Calculates the global position of the display object
  *
  * @param position {Point} The world origin to calculate from
+ * @param [outPoint] {Point} An existing point to store the output in, if you don't want a new point.
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position)
+DisplayObject.prototype.toGlobal = function (position, outPoint)
 {
     // don't need to update the lot
     this.displayObjectUpdateTransform();
-    return this.worldTransform.apply(position);
+    return this.worldTransform.apply(position, outPoint);
 };
 
 /**
@@ -384,18 +385,19 @@ DisplayObject.prototype.toGlobal = function (position)
  *
  * @param position {Point} The world origin to calculate from
  * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
+ * @param [outPoint] {Point} An existing point to store the output in, if you don't want a new point.
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from)
+DisplayObject.prototype.toLocal = function (position, from, outPoint)
 {
     if (from)
     {
-        position = from.toGlobal(position);
+        position = from.toGlobal(position, outPoint);
     }
 
     // don't need to update the lot
     this.displayObjectUpdateTransform();
-    return this.worldTransform.applyInverse(position);
+    return this.worldTransform.applyInverse(position, outPoint);
 };
 
 /**
