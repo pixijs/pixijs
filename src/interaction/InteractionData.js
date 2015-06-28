@@ -35,7 +35,7 @@ function InteractionData()
      * @property id
      * @type int
      */
-    this.id = -1;
+    this.identifier = -1;
 }
 
 InteractionData.prototype.constructor = InteractionData;
