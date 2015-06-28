@@ -373,7 +373,12 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
-    var baseTexture = utils.BaseTextureCache[imageUrl];
+    var id = imageUrl;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(imageUrl);
+    }
+    var baseTexture = utils.BaseTextureCache[id];
 
     if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
     {
@@ -395,7 +400,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 
         image.src = imageUrl;
 
-        utils.BaseTextureCache[imageUrl] = baseTexture;
+        utils.BaseTextureCache[id] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
         baseTexture.resolution = utils.getResolutionOfUrl(imageUrl);

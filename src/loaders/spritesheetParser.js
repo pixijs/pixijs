@@ -68,10 +68,15 @@ module.exports = function ()
                     size.width /= resolution;
                     size.height /= resolution;
 
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
+                    var id = i;
+                    if(core.utils.useFilenamesForTextures)
+                    {
+                        id = core.utils.getFilenameFromUrl(i);
+                    }
+                    resource.textures[id] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
 
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    core.utils.TextureCache[i] = resource.textures[i];
+                    core.utils.TextureCache[id] = resource.textures[id];
                 }
             }
 
