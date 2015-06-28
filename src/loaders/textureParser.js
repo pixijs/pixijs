@@ -9,7 +9,12 @@ module.exports = function ()
         {
             resource.texture = new core.Texture(new core.BaseTexture(resource.data, null, core.utils.getResolutionOfUrl(resource.url)));
             // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-            core.utils.TextureCache[resource.url] = resource.texture;
+            var id = resource.url;
+            if(core.utils.useFilenamesForTextures)
+            {
+                id = core.utils.getFilenameFromUrl(id);
+            }
+            core.utils.TextureCache[id] = resource.texture;
         }
 
         next();
