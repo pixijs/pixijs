@@ -233,5 +233,28 @@ var utils = module.exports = {
      * @todo Describe property usage
      * @private
      */
-    BaseTextureCache: {}
+    BaseTextureCache: {},
+    
+    useFilenamesForTextures: false,
+    
+    /**
+     * Gets a file name from a url, so that textures and such can be referenced by filename alone.
+     *
+     * @param {String} url The url to pull the filename from.
+     * @return {String} The filename (excluding extension).
+     */
+    getFilenameFromUrl: function(url)
+    {
+        if(url.indexOf('data:') === 0)
+        {
+            return url;
+        }
+    	var name = url.substring(url.lastIndexOf('/') + 1);
+    	var i = name.lastIndexOf('.');
+    	if(i !== -1)
+        {
+    		name = name.substring(0, i);
+        }
+    	return name;
+    }
 };

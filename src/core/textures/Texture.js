@@ -295,12 +295,17 @@ Texture.prototype._updateUvs = function ()
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
-    var texture = utils.TextureCache[imageUrl];
+    var id = imageUrl;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(imageUrl);
+    }
+    var texture = utils.TextureCache[id];
 
     if (!texture)
     {
         texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
-        utils.TextureCache[imageUrl] = texture;
+        utils.TextureCache[id] = texture;
     }
 
     return texture;
@@ -312,13 +317,19 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
  *
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
+ * @param [suppressErrors=false] {boolean} If the error from a non-existant texture should be thrown
  * @return {Texture} The newly created texture
  */
-Texture.fromFrame = function (frameId)
+Texture.fromFrame = function (frameId, suppressErrors)
 {
-    var texture = utils.TextureCache[frameId];
+    var id = frameId;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(frameId);
+    }
+    var texture = utils.TextureCache[id];
 
-    if (!texture)
+    if (!texture && !suppressErrors)
     {
         throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
