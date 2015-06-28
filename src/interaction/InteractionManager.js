@@ -1,5 +1,6 @@
 var core = require('../core'),
-    InteractionData = require('./InteractionData');
+    InteractionData = require('./InteractionData'),
+    EventEmitter = require('eventemitter3');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -22,6 +23,8 @@ Object.assign(
 function InteractionManager(renderer, options)
 {
     options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * The renderer this interaction manager works for.
@@ -113,6 +116,11 @@ function InteractionManager(renderer, options)
     this.processMouseMove = this.processMouseMove.bind( this );
 
     /**
+	 * @member {Function}
+	 */
+	this.onMouseOver = this.onMouseOver.bind(this);
+
+    /**
      * @member {Function}
      */
     this.onMouseOut = this.onMouseOut.bind(this);
@@ -147,6 +155,13 @@ function InteractionManager(renderer, options)
      * @member {string}
      */
     this.currentCursorStyle = 'inherit';
+
+    /**
+     * A function to be called when the cursor changes. If this is set, then the css cursor
+     * style on the canvas will not be set.
+     * @member {Function}
+     */
+    this.handleCursorChange = null;
 
     /**
      * Internal cached var
@@ -209,6 +224,7 @@ InteractionManager.prototype.addEvents = function ()
     window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mouseover',    this.onMouseOver, true);
 
     this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
     this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
@@ -241,6 +257,7 @@ InteractionManager.prototype.removeEvents = function ()
     window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mouseover', this.onMouseOver, true);
 
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
     this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
@@ -290,7 +307,14 @@ InteractionManager.prototype.update = function (deltaTime)
     if (this.currentCursorStyle !== this.cursor)
     {
         this.currentCursorStyle = this.cursor;
-        this.interactionDOMElement.style.cursor = this.cursor;
+        if(this.handleCursorChange)
+        {
+            this.handleCursorChange(this.cursor);
+        }
+        else
+        {
+            this.interactionDOMElement.style.cursor = this.cursor;
+        }
     }
 
     //TODO
@@ -525,7 +549,14 @@ InteractionManager.prototype.onMouseMove = function (event)
     if (this.currentCursorStyle !== this.cursor)
     {
         this.currentCursorStyle = this.cursor;
-        this.interactionDOMElement.style.cursor = this.cursor;
+        if(this.handleCursorChange)
+        {
+            this.handleCursorChange(this.cursor);
+        }
+        else
+        {
+            this.interactionDOMElement.style.cursor = this.cursor;
+        }
     }
 
     //TODO BUG for parents ineractive object (border order issue)
@@ -559,12 +590,17 @@ InteractionManager.prototype.onMouseOut = function (event)
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    if(!this.handleCursorChange)
+    {
+        this.interactionDOMElement.style.cursor = 'inherit';
+    }
 
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY );
 
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
+    
+    this.emit('stageout');
 };
 
 /**
@@ -597,6 +633,11 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
             this.dispatchEvent( displayObject, 'mouseout', this.eventData);
         }
     }
+};
+
+InteractionManager.prototype.onMouseOver = function(/*event*/)
+{
+	this.emit('stagein');
 };
 
 
@@ -835,6 +876,7 @@ InteractionManager.prototype.destroy = function () {
     this.onMouseOut = null;
     this.processMouseOverOut = null;
 
+    this.onMouseOver = null;
 
     this.onTouchStart = null;
     this.processTouchStart = null;
@@ -846,6 +888,8 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
+
+    this.handleCursorChange = null;
 };
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
