@@ -1,4 +1,4 @@
-precision lowp float;
+precision mediump float;
 
 varying vec2 vMapCoord;
 varying vec2 vTextureCoord;
