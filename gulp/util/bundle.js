@@ -26,7 +26,7 @@ function rebundle(devBundle) {
     min = rename({ suffix: '.min' });
     min.pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(sourcemaps.write('./', {sourceRoot: './', addComment: false}))
+        .pipe(sourcemaps.write('./', {sourceRoot: './', addComment: true}))
         .pipe(gulp.dest(paths.out));
 
     var stream = this.bundle()
