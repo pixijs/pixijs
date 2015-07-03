@@ -2,7 +2,7 @@
 var core = require('./core'),
     mesh = require('./mesh'),
     extras = require('./extras'),
-    utils = require('./core/utils');
+    filters = require('./filters');
 
 /**
  * @class
@@ -11,7 +11,8 @@ var core = require('./core'),
  * @see {@link PIXI.ParticleContainer}
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
  */
-core.SpriteBatch = function() {
+core.SpriteBatch = function()
+{
     throw new ReferenceError('SpriteBatch does not exist any more, please use the new ParticleContainer instead.');
 };
 
@@ -22,7 +23,8 @@ core.SpriteBatch = function() {
  * @see {@link PIXI.loaders.Loader}
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
  */
-core.AssetLoader = function() {
+core.AssetLoader = function()
+{
     throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.');
 };
 
@@ -36,7 +38,8 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Stage: {
-        get: function() {
+        get: function()
+        {
             console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
             return core.Container;
         }
@@ -50,7 +53,8 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     DisplayObjectContainer: {
-        get: function() {
+        get: function()
+        {
             console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
             return core.Container;
         }
@@ -64,7 +68,8 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Strip: {
-        get: function() {
+        get: function()
+        {
             console.warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
             return mesh.Mesh;
         }
@@ -78,7 +83,8 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Rope: {
-        get: function() {
+        get: function()
+        {
             console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
             return mesh.Rope;
         }
@@ -92,11 +98,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     MovieClip: {
-        get: function() {
+        get: function()
+        {
             console.warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
             return extras.MovieClip;
         }
     },
+
     /**
      * @class
      * @private
@@ -105,11 +113,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     TilingSprite: {
-        get: function() {
+        get: function()
+        {
             console.warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
             return extras.TilingSprite;
         }
     },
+
     /**
      * @class
      * @private
@@ -118,11 +128,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     BitmapText: {
-        get: function() {
+        get: function()
+        {
             console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
             return extras.BitmapText;
         }
     },
+
     /**
      * @class
      * @private
@@ -131,11 +143,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     blendModes: {
-        get: function() {
+        get: function()
+        {
             console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
             return core.BLEND_MODES;
         }
     },
+
     /**
      * @class
      * @private
@@ -144,11 +158,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     scaleModes: {
-        get: function() {
+        get: function()
+        {
             console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
             return core.SCALE_MODES;
         }
     },
+
     /**
      * @class
      * @private
@@ -157,11 +173,13 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     BaseTextureCache: {
-        get: function () {
+        get: function ()
+        {
             console.warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
-            return utils.BaseTextureCache;
+            return core.utils.BaseTextureCache;
         }
     },
+
     /**
      * @class
      * @private
@@ -170,9 +188,25 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     TextureCache: {
-        get: function () {
+        get: function ()
+        {
             console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
-            return utils.TextureCache;
+            return core.utils.TextureCache;
+        }
+    },
+
+    /**
+     * @namespace
+     * @private
+     * @name PIXI.math
+     * @see {@link PIXI}
+     * @deprecated since version 3.0.6
+     */
+    math: {
+        get: function ()
+        {
+            console.warn('The math namespace is deprecated, please access members already accessible on PIXI.');
+            return core;
         }
     }
 });
@@ -184,7 +218,8 @@ Object.defineProperties(core, {
  * @see {@link PIXI.Sprite#texture}
  * @deprecated since version 3.0
  */
-core.Sprite.prototype.setTexture = function(texture) {
+core.Sprite.prototype.setTexture = function(texture)
+{
     this.texture = texture;
     console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
@@ -195,7 +230,8 @@ core.Sprite.prototype.setTexture = function(texture) {
  * @see {@link PIXI.BitmapText#text}
  * @deprecated since version 3.0
  */
-extras.BitmapText.prototype.setText = function(text) {
+extras.BitmapText.prototype.setText = function(text)
+{
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
 };
@@ -206,7 +242,8 @@ extras.BitmapText.prototype.setText = function(text) {
  * @see {@link PIXI.Text#text}
  * @deprecated since version 3.0
  */
-core.Text.prototype.setText = function(text) {
+core.Text.prototype.setText = function(text)
+{
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
@@ -217,7 +254,8 @@ core.Text.prototype.setText = function(text) {
  * @see {@link PIXI.Text#style}
  * @deprecated since version 3.0
  */
-core.Text.prototype.setStyle = function(style) {
+core.Text.prototype.setStyle = function(style)
+{
     this.style = style;
     console.warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
@@ -228,7 +266,68 @@ core.Text.prototype.setStyle = function(style) {
  * @see {@link PIXI.Texture#setFrame}
  * @deprecated since version 3.0
  */
-core.Texture.prototype.setFrame = function(frame) {
+core.Texture.prototype.setFrame = function(frame)
+{
     this.frame = frame;
     console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
+};
+
+Object.defineProperties(filters, {
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.AbstractFilter
+     * @see {@link PIXI.AbstractFilter}
+     * @deprecated since version 3.0.6
+     */
+    AbstractFilter: {
+        get: function()
+        {
+            console.warn('filters.AbstractFilter is an undocumented alias, please use AbstractFilter from now on.');
+            return core.AbstractFilter;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.FXAAFilter
+     * @see {@link PIXI.FXAAFilter}
+     * @deprecated since version 3.0.6
+     */
+    FXAAFilter: {
+        get: function()
+        {
+            console.warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
+            return core.FXAAFilter;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name PIXI.filters.SpriteMaskFilter
+     * @see {@link PIXI.SpriteMaskFilter}
+     * @deprecated since version 3.0.6
+     */
+    SpriteMaskFilter: {
+        get: function()
+        {
+            console.warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
+            return core.SpriteMaskFilter;
+        }
+    }
+});
+
+/**
+ * @method
+ * @name PIXI.utils.uuid
+ * @see {@link PIXI.utils.uid}
+ * @deprecated since version 3.0.6
+ */
+core.utils.uuid = function ()
+{
+    console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
+    return core.utils.uid();
 };

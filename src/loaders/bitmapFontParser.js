@@ -1,6 +1,5 @@
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
-    utils = require('../core/utils'),
     extras = require('../extras'),
     path = require('path');
 
@@ -22,7 +21,7 @@ function parse(resource, texture) {
     {
         var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-        var textureRect = new core.math.Rectangle(
+        var textureRect = new core.Rectangle(
             parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
             parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
             parseInt(letters[i].getAttribute('width'), 10),
@@ -99,9 +98,9 @@ module.exports = function ()
             xmlUrl += '/';
         }
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (utils.TextureCache[textureUrl]) {
+        if (core.utils.TextureCache[textureUrl]) {
             //reuse existing texture
-            parse(resource, utils.TextureCache[textureUrl]);
+            parse(resource, core.utils.TextureCache[textureUrl]);
             next();
         }
         else {

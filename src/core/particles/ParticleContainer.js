@@ -320,7 +320,7 @@ ParticleContainer.prototype.destroy = function () {
 
     if (this._buffers) {
         for (var i = 0; i < this._buffers.length; ++i) {
-            this._buffers.destroy();
+            this._buffers[i].destroy();
         }
     }
 
