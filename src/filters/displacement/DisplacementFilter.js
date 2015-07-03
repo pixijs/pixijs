@@ -12,9 +12,9 @@ var fs = require('fs');
  * @memberof PIXI.filters
  * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
-function DisplacementFilter(sprite)
+function DisplacementFilter(sprite, scale)
 {
-    var maskMatrix = new core.math.Matrix();
+    var maskMatrix = new core.Matrix();
     sprite.renderable = false;
 
     core.AbstractFilter.call(this,
@@ -33,8 +33,13 @@ function DisplacementFilter(sprite)
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 
+    if (scale === 0) {
+        console.warn('Pixi.js DisplacementFilter warning: given scale is 0, the displacement filter would have no effect');
+    } else if (scale === null || scale === undefined) {
+        scale = 20;
+    }
 
-    this.scale = new core.math.Point(20,20);
+    this.scale = new core.Point(scale, scale);
 
 }
 
