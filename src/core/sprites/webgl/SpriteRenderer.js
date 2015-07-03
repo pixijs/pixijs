@@ -323,7 +323,7 @@ SpriteRenderer.prototype.flush = function ()
         nextShader = sprite.shader || this.shader;
 
         blendSwap = currentBlendMode !== nextBlendMode;
-        shaderSwap = currentShader !== nextShader; // should I use uuidS???
+        shaderSwap = currentShader !== nextShader; // should I use uidS???
 
         if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap)
         {

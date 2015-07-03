@@ -7,9 +7,7 @@
             "./src/"
         ],
         "exclude": [
-            "./src/polyfill/",
-            "./src/core/utils/PolyK.js",
-            "./src/spine/SpineRuntime.js"
+            "./src/polyfill/"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"

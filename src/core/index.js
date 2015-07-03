@@ -12,7 +12,6 @@
 var core = module.exports = Object.assign(require('./const'), require('./math'), {
     // utils
     utils: require('./utils'),
-    math: require('./math'),
     ticker: require('./ticker'),
 
     // display
@@ -54,6 +53,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // filters - webgl
     AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
+    FXAAFilter:             require('./renderers/webgl/filters/FXAAFilter'),
+    SpriteMaskFilter:       require('./renderers/webgl/filters/SpriteMaskFilter'),
 
     /**
      * This helper function will automatically detect which renderer you should be using.

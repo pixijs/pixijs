@@ -40,7 +40,6 @@ function DisplacementFilter(sprite, scale)
     }
 
     this.scale = new core.Point(scale, scale);
-
 }
 
 DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
