@@ -224,6 +224,16 @@ var utils = module.exports = {
     },
 
     /**
+     * Retunrs sign of number
+     *
+     * @param n {number}
+     * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
+     */
+    sgn: function (n){
+        return n === 0 ? 0 : n < 0 ? -1 : 1;
+    },
+
+    /**
      * @todo Describe property usage
      * @private
      */
