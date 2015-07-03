@@ -11,7 +11,6 @@ uniform sampler2D mapSampler;
 
 void main(void)
 {
-   vec4 original =  texture2D(uSampler, vTextureCoord);
    vec4 map =  texture2D(mapSampler, vMapCoord);
 
    map -= 0.5;
