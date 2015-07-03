@@ -166,7 +166,7 @@ ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.staticData.subarray(0, 4 * amount * this.dynamicStride));
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.staticData.subarray(0, 4 * amount * this.staticStride));
 };
 
 /**
