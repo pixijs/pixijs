@@ -54,6 +54,10 @@ function createBundler(args) {
         argv = require('minimist')(process.argv.slice(2)),
         exclude = (argv.exclude || []).concat(argv.e || []);
 
+    if (!Array.isArray(exclude)) {
+        exclude = [exclude]
+    }
+
     for (var i = 0; i < exclude.length; ++i) {
         bundle.ignore(require.resolve('../../src/' + exclude[i]));
     }
