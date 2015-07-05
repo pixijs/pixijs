@@ -33,9 +33,8 @@ function DisplacementFilter(sprite, scale)
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 
-    if (scale === 0) {
-        console.warn('Pixi.js DisplacementFilter warning: given scale is 0, the displacement filter would have no effect');
-    } else if (scale === null || scale === undefined) {
+    if (scale === null || scale === undefined)
+    {
         scale = 20;
     }
 
