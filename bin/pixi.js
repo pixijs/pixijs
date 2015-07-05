@@ -25555,12 +25555,12 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         {
             if(! hit  && hitTest)
             {
-                hit = this.processInteractive(point, children[i], func, true, interactive );
+                hit = this.processInteractive(point, children[i], func, hitTest, interactive );
             }
             else
             {
                 // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false, false );
+                this.processInteractive(point, children[i], func, hitTest, false );
             }
         }
 
