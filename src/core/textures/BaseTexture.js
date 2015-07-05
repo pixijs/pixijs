@@ -313,10 +313,16 @@ BaseTexture.prototype._sourceLoaded = function ()
  */
 BaseTexture.prototype.destroy = function ()
 {
+    var id;
     if (this.imageUrl)
     {
-        delete utils.BaseTextureCache[this.imageUrl];
-        delete utils.TextureCache[this.imageUrl];
+        id = this.imageUrl;
+        if(utils.useFilenamesForTextures)
+        {
+            id = utils.getFilenameFromUrl(this.imageUrl);
+        }
+        delete utils.BaseTextureCache[id];
+        delete utils.TextureCache[id];
 
         this.imageUrl = null;
 
@@ -333,6 +339,27 @@ BaseTexture.prototype.destroy = function ()
     this.source = null;
 
     this.dispose();
+    
+    //go through and destroy any textures that use this as the base texture
+    //that way a destroyed spritesheet cleans up all the sprite frames
+    var TextureCache = utils.TextureCache;
+    for(id in TextureCache)
+    {
+        var texture = TextureCache[id];
+        if(!texture)
+        {
+            delete TextureCache[id];
+            continue;
+        }
+        if(texture.baseTexture === this)
+        {
+            texture.destroy();
+            delete TextureCache[id];
+        }
+    }
+    
+    //remove any remaining listeners
+    this.removeAllListeners();
 };
 
 /**
