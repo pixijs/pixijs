@@ -295,6 +295,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+    this.renderer.drawCount++;
 };
 
 /*

@@ -109,7 +109,6 @@ GraphicsRenderer.prototype.render = function(graphics)
         {
             webGLData = webGL.data[i];
 
-
             shader = renderer.shaderManager.primitiveShader;
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
@@ -132,6 +131,8 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
+
+        renderer.drawCount++;
     }
 };
 
