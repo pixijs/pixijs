@@ -98,9 +98,14 @@ module.exports = function ()
             xmlUrl += '/';
         }
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (core.utils.TextureCache[textureUrl]) {
+        var id = textureUrl;
+        if(core.utils.useFilenamesForTextures)
+        {
+            id = core.utils.getFilenameFromUrl(id);
+        }
+        if (core.utils.TextureCache[id]) {
             //reuse existing texture
-            parse(resource, core.utils.TextureCache[textureUrl]);
+            parse(resource, core.utils.TextureCache[id]);
             next();
         }
         else {
