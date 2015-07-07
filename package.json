@@ -23,7 +23,11 @@
   },
   "files": [
     "bin/",
-    "src/"
+    "src/",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "dependencies": {
     "async": "^0.9.0",
