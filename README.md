@@ -82,16 +82,16 @@ $> gulp build
 This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
 with all the plugins in the pixi.js project.
 
-If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
+If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> gulp build --exclude spine --exclude interaction
+$> gulp build --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> gulp build -e extras -e spine -e interaction -e filters
+$> gulp build -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
@@ -125,27 +125,28 @@ file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigi
 - BitmapFont text
 - Multiline Text
 - Render Texture
-- Spine support
 - Primitive Drawing
 - Masking
 - Filters
+- [User Plugins](https://github.com/GoodBoyDigital/pixi.js/wiki/Pixi-v3-Plugins)
 
 ### Basic Usage Example ###
 
 ```js
-    // You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
-    // which will try to choose the best renderer for the environment you are in.
-    var renderer = new PIXI.WebGLRenderer(800, 600);
+// You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
+// which will try to choose the best renderer for the environment you are in.
+var renderer = new PIXI.WebGLRenderer(800, 600);
 
-    // The renderer will create a canvas element for you that you can then insert into the DOM.
-    document.body.appendChild(renderer.view);
+// The renderer will create a canvas element for you that you can then insert into the DOM.
+document.body.appendChild(renderer.view);
 
-    // You need to create a root container that will hold the scene you want to draw.
-    var stage = new PIXI.Container();
+// You need to create a root container that will hold the scene you want to draw.
+var stage = new PIXI.Container();
 
+// load the texture we need
+PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
     // This creates a texture from a 'bunny.png' image.
-    var bunnyTexture = PIXI.Texture.fromImage('bunny.png');
-    var bunny = new PIXI.Sprite(bunnyTexture);
+    var bunny = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position and scale of the bunny
     bunny.position.x = 400;
@@ -159,17 +160,18 @@ file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigi
 
     // kick off the animation loop (defined below)
     animate();
+});
 
-    function animate() {
-        // start the timer for the next animation loop
-        requestAnimationFrame(animate);
+function animate() {
+    // start the timer for the next animation loop
+    requestAnimationFrame(animate);
 
-        // each frame we spin the bunny around a bit
-        bunny.rotation += 0.01;
+    // each frame we spin the bunny around a bit
+    bunny.rotation += 0.01;
 
-        // this is the main render call that makes pixi draw your container and its children.
-        renderer.render(stage);
-    }
+    // this is the main render call that makes pixi draw your container and its children.
+    renderer.render(stage);
+}
 ```
 
 ### License ###
