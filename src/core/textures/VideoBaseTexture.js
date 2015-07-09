@@ -198,7 +198,7 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
     {
         for (var i = 0; i < videoSrc.length; ++i)
         {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+            video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
         }
     }
     // single object or string
