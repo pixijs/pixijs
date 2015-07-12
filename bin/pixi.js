@@ -32,7 +32,7 @@ global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./core":29,"./deprecation":78,"./extras":85,"./filters":102,"./flip":117,"./interaction":124,"./loaders":127,"./mesh":133,"./polyfill":137}],2:[function(require,module,exports){
+},{"./core":29,"./deprecation":78,"./extras":85,"./filters":102,"./flip":118,"./interaction":127,"./loaders":130,"./mesh":136,"./polyfill":140}],2:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -20354,7 +20354,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
- *
+*
  * @class
  * @private
  * @memberof PIXI
@@ -23998,7 +23998,7 @@ core.Texture.prototype.setFrame = function(frame) {
     console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
 };
 
-},{"./core":29,"./core/utils":76,"./extras":85,"./mesh":133}],79:[function(require,module,exports){
+},{"./core":29,"./core/utils":76,"./extras":85,"./mesh":136}],79:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -28238,7 +28238,84 @@ Container3d.prototype.renderWebGL = function(renderer)
 
 module.exports = Container3d;
 
-},{"../core":29,"./math":119,"gl-matrix":12}],116:[function(require,module,exports){
+},{"../core":29,"./math":120,"gl-matrix":12}],116:[function(require,module,exports){
+var core = require('../core'),
+    glMat = require('gl-matrix'),
+    math3d = require('./math'),
+    tempPoint = new core.Point();
+/**
+ * The Sprite object is the base for all textured objects that are rendered to the screen
+ *
+ * A sprite can be created directly from an image like this:
+ *
+ * ```js
+ * var sprite = new Sprite.fromImage('assets/image.png');
+ * ```
+ *
+ * @class Sprite
+ * @extends Container
+ * @namespace PIXI
+ * @param texture {Texture} The texture for this sprite
+ */
+function Graphics3d(texture)
+{
+    core.Graphics.call(this, texture);
+
+
+    // pixin some new 3d magic!
+    this.position = new math3d.Point3d(0, 0, 0);
+    this.scale = new math3d.Point3d(1, 1, 1);
+    this.rotation = new math3d.Point3d(0, 0, 0);
+
+    this.worldTransform3d = glMat.mat4.create();
+
+    this.is3d = true;
+}
+
+
+// constructor
+Graphics3d.prototype = Object.create(core.Graphics.prototype);
+Graphics3d.prototype.constructor = Graphics3d;
+
+Graphics3d.prototype.updateTransform = function()
+{
+    if(this.parent.convertFrom2dTo3d)
+    {
+        this.parent.convertFrom2dTo3d(true);//this.parent);
+    }
+    else
+    {
+        if(!this.parent.worldTransform3d)
+        {
+            this.parent.worldTransform3d = glMat.mat4.create()
+        }
+    }
+
+    this.updateTransform3d();
+};
+
+Graphics3d.prototype.updateTransform3d = function()
+{
+    this.displayObjectUpdateTransform3d();
+    var i,j;
+
+    for (i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].updateTransform3d();
+    }
+};
+
+Graphics3d.prototype.renderWebGL = function(renderer)
+{
+    this.renderWebGL3d( renderer );
+};
+
+
+
+
+module.exports = Graphics3d;
+
+},{"../core":29,"./math":120,"gl-matrix":12}],117:[function(require,module,exports){
 var core = require('../core'),
     glMat = require('gl-matrix'),
     math3d = require('./math'),
@@ -28344,7 +28421,7 @@ Sprite3d.fromImage = function (imageId, crossorigin, scaleMode)
 
 module.exports = Sprite3d;
 
-},{"../core":29,"./math":119,"gl-matrix":12}],117:[function(require,module,exports){
+},{"../core":29,"./math":120,"gl-matrix":12}],118:[function(require,module,exports){
 /**
  * @file       FLIP
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28358,7 +28435,9 @@ module.exports = Sprite3d;
 module.exports = {
     Container3d    :require('./Container3d'),
     Sprite3d            :require('./Sprite3d'),
-    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer')
+    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
+    Graphics3d          :require('./Graphics3d'),
+    Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
 };
 
 var core             = require('../core'),
@@ -28681,6 +28760,18 @@ core.Sprite.prototype._renderWebGL3d = function(renderer)
     renderer.plugins.sprite3d.render(this);
 };
 
+core.Graphics.prototype._renderWebGL3d = function(renderer)
+{
+    if (this.glDirty)
+    {
+        this.dirty = true;
+        this.glDirty = false;
+    }
+
+    renderer.setObjectRenderer(renderer.plugins.graphics3d);
+    renderer.plugins.graphics3d.render(this);
+};
+
 
 core.Text.prototype._renderWebGL3d = function(renderer)
 {
@@ -28694,7 +28785,7 @@ core.Text.prototype._renderWebGL3d = function(renderer)
 };
 
 
-},{"../core":29,"./Container3d":115,"./Sprite3d":116,"./math":119,"./webgl/Sprite3dRenderer":120,"gl-matrix":12}],118:[function(require,module,exports){
+},{"../core":29,"./Container3d":115,"./Graphics3d":116,"./Sprite3d":117,"./math":120,"./webgl/Graphics3dRenderer":121,"./webgl/Sprite3dRenderer":123,"gl-matrix":12}],119:[function(require,module,exports){
 /**
  * The Point3d object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -28751,7 +28842,7 @@ Point3d.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],119:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 /**
  * @namespace PIXI.math
  */
@@ -28871,7 +28962,217 @@ module.exports = {
 
 };
 
-},{"../../core":29,"./Point3d":118,"gl-matrix":12}],120:[function(require,module,exports){
+},{"../../core":29,"./Point3d":119,"gl-matrix":12}],121:[function(require,module,exports){
+var GraphicsRenderer = require('../../core/graphics/webgl/GraphicsRenderer'),
+    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
+    Primitive3dShader = require('./Primitive3dShader'),
+    utils = require('../../core/utils'),
+    glMat = require('gl-matrix')
+
+/**
+ * @author Mat Groves
+ *
+ * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
+ * for creating the original pixi version!
+ * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
+ *
+ * Heavily inspired by LibGDX's Graphics3dRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/Graphics3dRenderer.java
+ */
+
+/**
+ *
+ * @class
+ * @private
+ * @namespace PIXI
+ * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ */
+function Graphics3dRenderer(renderer)
+{
+    GraphicsRenderer.call(this, renderer);
+
+    this.shader3d = null;
+
+      // TODO will need to set up this proper fov. but this works great for now!
+    this.perspectiveMatrix = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 1,
+        0, 0, 0, 1
+    ];
+
+    //this.perspectiveMatrix = makePerspective(45 * (Math.PI / 180), 1, 1, 2000)
+    this.projection3d = glMat.mat4.create();
+}
+
+
+Graphics3dRenderer.prototype = Object.create(GraphicsRenderer.prototype);
+Graphics3dRenderer.prototype.constructor = Graphics3dRenderer;
+
+/**
+ * Renders a graphics object.
+ *
+ * @param graphics {Graphics} The graphics object to render.
+ */
+Graphics3dRenderer.prototype.render = function(graphics)
+{
+    var renderer = this.renderer;
+    var gl = renderer.gl;
+
+    var shader =  this.shader3d,
+        webGLData;
+
+    if (graphics.dirty)
+    {
+        this.updateGraphics(graphics, gl);
+    }
+
+    var webGL = graphics._webGL[gl.id];
+
+  //  console.log("HI MAAMM")
+    // This  could be speeded up for sure!
+
+    renderer.blendModeManager.setBlendMode( graphics.blendMode );
+
+//    var matrix =  graphics.worldTransform.clone();
+//    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
+//    matrix.append(graphics.worldTransform);
+
+    for (var i = 0; i < webGL.data.length; i++)
+    {
+        if (webGL.data[i].mode === 1)
+        {
+            webGLData = webGL.data[i];
+
+            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+
+            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
+
+            // render quad..
+            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
+
+            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+        }
+        else
+        {
+            webGLData = webGL.data[i];
+
+
+            shader =  this.shader3d//renderer.shaderManager.primitiveShader;
+
+            renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
+
+
+
+            var projection2d = this.renderer.currentRenderTarget.projectionMatrix;
+            var projection3d = this.projection3d;
+
+            projection3d[0] = projection2d.a;
+            projection3d[5] = projection2d.d;
+            projection3d[10] = 2 / 1700;
+
+            // tx // ty
+            projection3d[12] = projection2d.tx;
+            projection3d[13] = projection2d.ty;
+
+             // time to make a 3d one!
+            var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
+
+            gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, combinedMatrix);
+            gl.uniformMatrix4fv(shader.uniforms.translationMatrix3d._location, false, graphics.worldTransform3d);
+
+            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
+            gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
+
+            gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+            gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+
+            // set the index buffer!
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
+            gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+        }
+    }
+};
+
+Graphics3dRenderer.prototype.onContextChange = function ()
+{
+    var gl = this.renderer.gl;
+
+    // setup default shader
+    this.shader3d = new Primitive3dShader(this.renderer.shaderManager);// this.renderer.shaderManager.defaultShader;
+
+}
+
+module.exports = Graphics3dRenderer;
+
+WebGLRenderer.registerPlugin('graphics3d', Graphics3dRenderer);
+
+
+},{"../../core/graphics/webgl/GraphicsRenderer":27,"../../core/renderers/webgl/WebGLRenderer":48,"../../core/utils":76,"./Primitive3dShader":122,"gl-matrix":12}],122:[function(require,module,exports){
+var Shader = require('../../core/renderers/webgl/shaders/Shader');
+
+
+/**
+ * @class
+ * @memberof PIXI
+ * @extends PIXI.Shader
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ */
+function Primitive3dShader(shaderManager)
+{
+    Shader.call(this,
+        shaderManager,
+        // vertex shader
+        [
+            'attribute vec2 aVertexPosition;',
+            'attribute vec4 aColor;',
+
+            'uniform mat4 projectionMatrix3d;',
+            'uniform mat4 translationMatrix3d;',
+
+            'uniform float alpha;',
+            'uniform float flipY;',
+            'uniform vec3 tint;',
+
+            'varying vec4 vColor;',
+
+            'void main(void){',
+            '   gl_Position = projectionMatrix3d * translationMatrix3d * vec4(aVertexPosition, 0.0, 1.0);',
+            '   vColor = aColor * vec4(tint * alpha, alpha);',
+            '}'
+        ].join('\n'),
+        // fragment shader
+        [
+            'precision mediump float;',
+
+            'varying vec4 vColor;',
+
+            'void main(void){',
+            '   gl_FragColor = vColor;',
+            '}'
+        ].join('\n'),
+        // custom uniforms
+        {
+            tint:   { type: '3f', value: [0, 0, 0] },
+            alpha:  { type: '1f', value: 0 },
+            translationMatrix3d: { type: 'mat4', value: new Float32Array(16) },
+            projectionMatrix3d: { type: 'mat4', value: new Float32Array(16) }
+        },
+        // custom attributes
+        {
+            aVertexPosition:0,
+            aColor:0
+        }
+    );
+}
+
+Primitive3dShader.prototype = Object.create(Shader.prototype);
+Primitive3dShader.prototype.constructor = Primitive3dShader;
+module.exports = Primitive3dShader;
+
+},{"../../core/renderers/webgl/shaders/Shader":60}],123:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../core/renderers/webgl/shaders/Shader'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
@@ -29449,7 +29750,7 @@ Sprite3dRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../core/const":22,"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/shaders/Shader":60,"../../core/renderers/webgl/utils/ObjectRenderer":62,"./Sprite3dShader":121,"gl-matrix":12}],121:[function(require,module,exports){
+},{"../../core/const":22,"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/shaders/Shader":60,"../../core/renderers/webgl/utils/ObjectRenderer":62,"./Sprite3dShader":124,"gl-matrix":12}],124:[function(require,module,exports){
 var Shader = require('../../core/renderers/webgl/shaders/Shader');
 
 /**
@@ -29545,7 +29846,7 @@ Sprite3dShader.prototype = Object.create(Shader.prototype);
 Sprite3dShader.prototype.constructor = Sprite3dShader;
 module.exports = Sprite3dShader;
 
-},{"../../core/renderers/webgl/shaders/Shader":60}],122:[function(require,module,exports){
+},{"../../core/renderers/webgl/shaders/Shader":60}],125:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -29608,7 +29909,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":29}],123:[function(require,module,exports){
+},{"../core":29}],126:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -30459,7 +30760,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":29,"./InteractionData":122,"./interactiveTarget":125}],124:[function(require,module,exports){
+},{"../core":29,"./InteractionData":125,"./interactiveTarget":128}],127:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -30476,7 +30777,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":122,"./InteractionManager":123,"./interactiveTarget":125}],125:[function(require,module,exports){
+},{"./InteractionData":125,"./InteractionManager":126,"./interactiveTarget":128}],128:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -30525,7 +30826,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],126:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     utils = require('../core/utils'),
@@ -30646,7 +30947,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":29,"../core/utils":76,"../extras":85,"path":3,"resource-loader":18}],127:[function(require,module,exports){
+},{"../core":29,"../core/utils":76,"../extras":85,"path":3,"resource-loader":18}],130:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -30667,7 +30968,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":126,"./loader":128,"./spritesheetParser":129,"./textureParser":130,"resource-loader":18}],128:[function(require,module,exports){
+},{"./bitmapFontParser":129,"./loader":131,"./spritesheetParser":132,"./textureParser":133,"resource-loader":18}],131:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -30729,7 +31030,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":126,"./spritesheetParser":129,"./textureParser":130,"resource-loader":18}],129:[function(require,module,exports){
+},{"./bitmapFontParser":129,"./spritesheetParser":132,"./textureParser":133,"resource-loader":18}],132:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -30812,7 +31113,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":29,"path":3,"resource-loader":18}],130:[function(require,module,exports){
+},{"../core":29,"path":3,"resource-loader":18}],133:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -30831,7 +31132,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":29}],131:[function(require,module,exports){
+},{"../core":29}],134:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -31262,7 +31563,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":29}],132:[function(require,module,exports){
+},{"../core":29}],135:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -31475,7 +31776,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":29,"./Mesh":131}],133:[function(require,module,exports){
+},{"../core":29,"./Mesh":134}],136:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -31493,7 +31794,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":131,"./Rope":132,"./webgl/MeshRenderer":134,"./webgl/MeshShader":135}],134:[function(require,module,exports){
+},{"./Mesh":134,"./Rope":135,"./webgl/MeshRenderer":137,"./webgl/MeshShader":138}],137:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
     Mesh = require('../Mesh');
@@ -31708,7 +32009,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/utils/ObjectRenderer":62,"../Mesh":131}],135:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/utils/ObjectRenderer":62,"../Mesh":134}],138:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -31769,7 +32070,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":29}],136:[function(require,module,exports){
+},{"../../core":29}],139:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -31779,11 +32080,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":13}],137:[function(require,module,exports){
+},{"object-assign":13}],140:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":136,"./requestAnimationFrame":138}],138:[function(require,module,exports){
+},{"./Object.assign":139,"./requestAnimationFrame":141}],141:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/

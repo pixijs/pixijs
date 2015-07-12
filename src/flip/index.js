@@ -11,7 +11,9 @@
 module.exports = {
     Container3d    :require('./Container3d'),
     Sprite3d            :require('./Sprite3d'),
-    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer')
+    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
+    Graphics3d          :require('./Graphics3d'),
+    Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
 };
 
 var core             = require('../core'),
@@ -332,6 +334,18 @@ core.Sprite.prototype._renderWebGL3d = function(renderer)
 {
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
+};
+
+core.Graphics.prototype._renderWebGL3d = function(renderer)
+{
+    if (this.glDirty)
+    {
+        this.dirty = true;
+        this.glDirty = false;
+    }
+
+    renderer.setObjectRenderer(renderer.plugins.graphics3d);
+    renderer.plugins.graphics3d.render(this);
 };
 
 

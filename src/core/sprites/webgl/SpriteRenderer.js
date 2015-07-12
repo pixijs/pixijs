@@ -14,7 +14,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
- *
+*
  * @class
  * @private
  * @memberof PIXI
