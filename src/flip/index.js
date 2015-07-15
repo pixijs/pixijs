@@ -271,11 +271,11 @@ core.Container.prototype._renderWebGL3d = function(/*renderer*/)
 
 };
 
-core.Sprite.prototype.containsPoint = function( point )
+core.Sprite.prototype.containsPoint = function( point, renderer)
 {
     if(this.worldTransform3d)
     {
-        return this.containsPoint3d(point);
+        return this.containsPoint3d(point, renderer);
     }
     else
     {
@@ -301,8 +301,9 @@ core.Sprite.prototype.containsPoint = function( point )
     }
 };
 
-core.Sprite.prototype.containsPoint3d = function( point )
+core.Sprite.prototype.containsPoint3d = function( point, renderer )
 {
+    //
     var ray = math3d.getRayFromScreen(point, renderer);
     var contactPoint = math3d.get2DContactPoint(ray, this); 
 

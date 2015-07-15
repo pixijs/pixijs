@@ -388,7 +388,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             }
             else if(displayObject.containsPoint)
             {
-                hit = displayObject.containsPoint(point);
+                hit = displayObject.containsPoint(point, this.renderer );
             }
         }
 

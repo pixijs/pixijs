@@ -77,6 +77,8 @@ module.exports = {
 	{
 	    var transposeInverse = mat3.normalFromMat4(mat3.create(), container.worldTransform3d);
 
+	    if(!transposeInverse)return;
+	    
 	    var normal = [
 	        transposeInverse[6],
 	        transposeInverse[7],
