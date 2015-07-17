@@ -25,6 +25,8 @@ var SystemRenderer = require('../SystemRenderer'),
  */
 function CanvasRenderer(width, height, options)
 {
+    options = options || {};
+
     SystemRenderer.call(this, 'Canvas', width, height, options);
 
     this.type = CONST.RENDERER_TYPE.CANVAS;
@@ -56,7 +58,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {boolean}
      */
-    this.roundPixels = options.roundPixels === true;
+    this.roundPixels = options.roundPixels;
 
     /**
      * Tracks the active scale mode for this renderer.
