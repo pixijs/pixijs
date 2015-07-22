@@ -25,20 +25,21 @@ var Container = require('../display/Container'),
  * @extends PIXI.Container
  * @memberof PIXI
  *
- * @param [totalSize=15000] {number} The maximum number of particles that can be renderer by the container.
+ * @param [maxSize=15000] {number} The maximum number of particles that can be renderer by the container.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
  * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
  * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
  * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
  * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
+ * @param [batchSize=15000] {number} Number of particles per batch.
  */
-function ParticleContainer(totalSize, properties, batchSize)
+function ParticleContainer(maxSize, properties, batchSize)
 {
     Container.call(this);
 
     batchSize = batchSize || 15000; //CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
-    totalSize = totalSize || 15000;
+    maxSize = maxSize || 15000;
 
     // Making sure the batch size is valid
     // 65535 is max vertex index in the index buffer (see ParticleRenderer)
@@ -48,8 +49,8 @@ function ParticleContainer(totalSize, properties, batchSize)
         batchSize = maxBatchSize;
     }
 
-    if (batchSize > totalSize) {
-        batchSize = totalSize;
+    if (batchSize > maxSize) {
+        batchSize = maxSize;
     }
 
     /**
@@ -64,7 +65,7 @@ function ParticleContainer(totalSize, properties, batchSize)
      * @member {number}
      * @private
      */
-    this._totalSize = totalSize;
+    this._maxSize = maxSize;
 
     /**
      * @member {number}
