@@ -95,6 +95,13 @@ Object.defineProperties(Container.prototype, {
 });
 
 /**
+ * Overridable method that can be used by Container subclasses whenever the children array is modified
+ *
+ * @private
+ */
+Container.prototype.handleChildrenChange = function () {};
+
+/**
  * Adds a child to the container.
  *
  * @param child {DisplayObject} The DisplayObject to add to the container
@@ -130,6 +137,7 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
+        this.handleChildrenChange();
 
         child.emit('added', this);
 
@@ -164,6 +172,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
+    this.handleChildrenChange();
 };
 
 /**
@@ -201,6 +210,7 @@ Container.prototype.setChildIndex = function (child, index)
 
     this.children.splice(currentIndex, 1); //remove from old position
     this.children.splice(index, 0, child); //add at new position
+    this.handleChildrenChange();
 };
 
 /**
@@ -249,6 +259,7 @@ Container.prototype.removeChildAt = function (index)
 
     child.parent = null;
     this.children.splice(index, 1);
+    this.handleChildrenChange();
 
     child.emit('removed', this);
 
@@ -274,6 +285,13 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
         for (var i = 0; i < removed.length; ++i)
         {
             removed[i].parent = null;
+        }
+
+        this.handleChildrenChange();
+
+        for (var i = 0; i < removed.length; ++i)
+        {
+            removed[i].emit('removed', this);
         }
 
         return removed;
