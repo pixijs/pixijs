@@ -250,6 +250,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
             // draw the triangle strip!
             gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
 
+            this.renderer.drawCount += 2;
+
             if (!sms.reverse)
             {
                 gl.stencilFunc(gl.EQUAL,0xFF-(level), 0xFF);
@@ -275,6 +277,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
             }
 
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+
+            this.renderer.drawCount++;
 
             if (!sms.reverse)
             {

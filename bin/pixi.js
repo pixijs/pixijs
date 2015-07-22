@@ -1,3 +1,36 @@
+/**
+ * @license
+ * pixi.js - v3.0.8-dev
+ * Compiled 2015-07-07T17:33:19.615Z
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ *
+ * The MIT License
+ * 
+ * Copyright (c) 2013-2015 Mathew Groves
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ * 
+ */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PIXI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 // run the polyfills
@@ -6323,7 +6356,7 @@ module.exports = function () {
 },{"../../Resource":16,"../../b64":17}],21:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.7",
+  "version": "3.0.8-dev",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -6352,36 +6385,37 @@ module.exports={
     "async": "^0.9.0",
     "brfs": "^1.4.0",
     "earcut": "^2.0.1",
-    "eventemitter3": "^1.1.0",
+    "eventemitter3": "^1.1.1",
+    "gulp-header": "^1.2.2",
     "object-assign": "^2.0.0",
     "resource-loader": "^1.6.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.3",
+    "browserify": "^10.2.4",
     "chai": "^3.0.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
-    "gulp-concat": "^2.5.2",
+    "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.0.1",
-    "gulp-jshint": "^1.11.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
-    "gulp-util": "^3.0.5",
+    "gulp-util": "^3.0.6",
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
-    "jsdoc": "^3.3.0",
+    "jsdoc": "^3.3.2",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.1.1",
     "mocha": "^2.2.5",
     "require-dir": "^0.3.0",
-    "run-sequence": "^1.1.0",
-    "testem": "^0.8.3",
+    "run-sequence": "^1.1.1",
+    "testem": "^0.8.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.2.1"
+    "watchify": "^3.2.3"
   },
   "browserify": {
     "transform": [
@@ -9038,7 +9072,6 @@ GraphicsRenderer.prototype.render = function(graphics)
         {
             webGLData = webGL.data[i];
 
-
             shader = renderer.shaderManager.primitiveShader;
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
@@ -9061,6 +9094,8 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
+
+        renderer.drawCount++;
     }
 };
 
@@ -12347,6 +12382,7 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function CanvasRenderer(width, height, options)
 {
@@ -12381,7 +12417,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {boolean}
      */
-    this.roundPixels = false;
+    this.roundPixels = options.roundPixels === true;
 
     /**
      * Tracks the active scale mode for this renderer.
@@ -12545,7 +12581,7 @@ CanvasRenderer.prototype.resize = function (w, h)
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..
     this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-    
+
     if(this.smoothProperty)
     {
         this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
@@ -14506,6 +14542,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+    this.renderer.drawCount++;
 };
 
 /*
@@ -15178,6 +15215,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
             // draw the triangle strip!
             gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
 
+            this.renderer.drawCount += 2;
+
             if (!sms.reverse)
             {
                 gl.stencilFunc(gl.EQUAL,0xFF-(level), 0xFF);
@@ -15203,6 +15242,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
             }
 
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+
+            this.renderer.drawCount++;
 
             if (!sms.reverse)
             {
@@ -23748,7 +23789,7 @@ var core = require('../../core');
  * @memberof PIXI.filters
  * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
-function DisplacementFilter(sprite)
+function DisplacementFilter(sprite, scale)
 {
     var maskMatrix = new core.Matrix();
     sprite.renderable = false;
@@ -23757,7 +23798,7 @@ function DisplacementFilter(sprite)
         // vertex shader
         "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 original =  texture2D(uSampler, vTextureCoord);\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n",
+        "precision mediump float;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n",
         // uniforms
         {
             mapSampler:     { type: 'sampler2D', value: sprite.texture },
@@ -23769,9 +23810,12 @@ function DisplacementFilter(sprite)
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 
+    if (scale === null || scale === undefined)
+    {
+        scale = 20;
+    }
 
-    this.scale = new core.Point(20,20);
-
+    this.scale = new core.Point(scale, scale);
 }
 
 DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);

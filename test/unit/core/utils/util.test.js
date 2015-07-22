@@ -86,4 +86,25 @@ describe('PIXI.utils', function () {
                 .to.be.a('function');
         });
     });
+
+    describe('.sign', function () {
+        it('should return 0 for 0', function () {
+            expect(PIXI.utils.sign(0))
+                .to.be.equal(0);
+        });
+
+        it('should return -1 for negative numbers', function () {
+            for (var i = 0;i<10;i+=1){
+                expect(PIXI.utils.sign(-Math.random()))
+                    .to.be.equal(-1);
+            }
+        });
+
+        it('should return 1 for positive numbers', function () {
+            for (var i = 0;i<10;i+=1){
+                expect(PIXI.utils.sign(Math.random() + 0.000001))
+                    .to.be.equal(1);
+            }
+        });
+    });
 });
