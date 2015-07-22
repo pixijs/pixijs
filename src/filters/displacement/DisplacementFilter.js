@@ -33,7 +33,8 @@ function DisplacementFilter(sprite, scale)
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 
-    if (scale === null || scale === undefined) {
+    if (scale === null || scale === undefined)
+    {
         scale = 20;
     }
 
