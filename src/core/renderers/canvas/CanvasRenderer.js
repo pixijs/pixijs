@@ -21,9 +21,12 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function CanvasRenderer(width, height, options)
 {
+    options = options || {};
+
     SystemRenderer.call(this, 'Canvas', width, height, options);
 
     this.type = CONST.RENDERER_TYPE.CANVAS;
@@ -55,7 +58,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {boolean}
      */
-    this.roundPixels = false;
+    this.roundPixels = options.roundPixels;
 
     /**
      * Tracks the active scale mode for this renderer.
@@ -219,7 +222,7 @@ CanvasRenderer.prototype.resize = function (w, h)
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..
     this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-    
+
     if(this.smoothProperty)
     {
         this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
