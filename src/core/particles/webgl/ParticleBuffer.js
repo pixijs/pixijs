@@ -17,7 +17,7 @@
  * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function ParticleBuffer(gl, properties, size)
+function ParticleBuffer(gl, properties, dynamicPropertyFlags, size)
 {
     /**
      * the current WebGL drawing context
@@ -40,7 +40,7 @@ function ParticleBuffer(gl, properties, size)
     this.vertByteSize = this.vertSize * 4;
 
     /**
-     * The number of images in the SpriteBatch before it flushes.
+     * The number of particles the buffer can hold
      *
      * @member {number}
      */
@@ -62,15 +62,13 @@ function ParticleBuffer(gl, properties, size)
 
     for (var i = 0; i < properties.length; i++)
     {
-        var property = properties[i];
-
-        if(property.dynamic)
+        if(dynamicPropertyFlags[i])
         {
-            this.dynamicProperties.push(property);
+            this.dynamicProperties.push(properties[i]);
         }
         else
         {
-            this.staticProperties.push(property);
+            this.staticProperties.push(properties[i]);
         }
     }
 

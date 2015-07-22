@@ -9,7 +9,6 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
  * for creating the original pixi version!
- * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's ParticleRenderer:
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/ParticleRenderer.java
@@ -27,19 +26,26 @@ function ParticleRenderer(renderer)
     ObjectRenderer.call(this, renderer);
 
     /**
-     * The number of images in the Particle before it flushes.
-     *
-     * @member {number}
-     */
-    this.size = 15000;//CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
-
-    var numIndices = this.size * 6;
-
-    /**
      * Holds the indices
      *
      * @member {Uint16Array}
      */
+    this.indices = null;
+
+    /**
+     * The default shader that is used if a sprite doesn't have a more specific one.
+     *
+     * @member {Shader}
+     */
+    this.shader = null;
+
+    // 65535 is max vertex index in the index buffer (see ParticleRenderer)
+    // so max number of particles is 65536 / 4 = 16384
+    // and max number of element in the index buffer is 16384 * 6 = 98304
+    // Creating a full index buffer, overhead is 98304 * 2 = 196Ko
+    var numIndices = 98304;
+
+    // Creating array of indices
     this.indices = new Uint16Array(numIndices);
 
     for (var i=0, j=0; i < numIndices; i += 6, j += 4)
@@ -51,13 +57,6 @@ function ParticleRenderer(renderer)
         this.indices[i + 4] = j + 2;
         this.indices[i + 5] = j + 3;
     }
-
-    /**
-     * The default shader that is used if a sprite doesn't have a more specific one.
-     *
-     * @member {Shader}
-     */
-    this.shader = null;
 
     this.indexBuffer = null;
 
@@ -87,9 +86,6 @@ ParticleRenderer.prototype.onContextChange = function ()
 
     this.indexBuffer = gl.createBuffer();
 
-    // 65535 is max index, so 65535 / 6 = 10922.
-
-    //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 
@@ -97,7 +93,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // verticesData
         {
             attribute:this.shader.attributes.aVertexPosition,
-            dynamic:false,
             size:2,
             uploadFunction:this.uploadVertices,
             offset:0
@@ -105,7 +100,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // positionData
         {
             attribute:this.shader.attributes.aPositionCoord,
-            dynamic:true,
             size:2,
             uploadFunction:this.uploadPosition,
             offset:0
@@ -113,7 +107,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // rotationData
         {
             attribute:this.shader.attributes.aRotation,
-            dynamic:false,
             size:1,
             uploadFunction:this.uploadRotation,
             offset:0
@@ -121,7 +114,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // uvsData
         {
             attribute:this.shader.attributes.aTextureCoord,
-            dynamic:false,
             size:2,
             uploadFunction:this.uploadUvs,
             offset:0
@@ -129,7 +121,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // alphaData
         {
             attribute:this.shader.attributes.aColor,
-            dynamic:false,
             size:1,
             uploadFunction:this.uploadAlpha,
             offset:0
@@ -167,7 +158,9 @@ ParticleRenderer.prototype.render = function ( container )
 {
     var children = container.children,
         totalChildren = children.length,
-        maxSize = container._size;
+        maxSize = container._totalSize,
+        buffersToUpdate = container._buffersToUpdate,
+        batchSize = container._batchSize;
 
     if(totalChildren === 0)
     {
@@ -196,7 +189,7 @@ ParticleRenderer.prototype.render = function ( container )
     gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
 
 
-    // if this variable is true then we will upload the static contents as well as the dynamic contens
+    // if this variable is true then we will upload the static contents as well as the dynamic contents
     var uploadStatic = container._updateStatic;
 
     // make sure the texture is bound..
@@ -210,7 +203,7 @@ ParticleRenderer.prototype.render = function ( container )
             return;
         }
 
-        if(!this.properties[0].dynamic || !this.properties[3].dynamic)
+        if(!container._properties[0] || !container._properties[3])
         {
             uploadStatic = true;
         }
@@ -221,16 +214,15 @@ ParticleRenderer.prototype.render = function ( container )
     }
 
     // now lets upload and render the buffers..
-    var j = 0;
-    for (var i = 0; i < totalChildren; i+=this.size)
+    for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
     {
-         var amount = ( totalChildren - i);
-        if(amount > this.size)
+        var amount = ( totalChildren - i);
+        if(amount > batchSize)
         {
-            amount = this.size;
+            amount = batchSize;
         }
 
-        var buffer = container._buffers[j++];
+        var buffer = container._buffers[j];
 
         // we always upload the dynamic
         buffer.uploadDynamic(children, i, amount);
@@ -239,6 +231,7 @@ ParticleRenderer.prototype.render = function ( container )
         if(uploadStatic)
         {
             buffer.uploadStatic(children, i, amount);
+            container._updateStatic = false;
         }
 
         // bind the buffer
@@ -248,8 +241,6 @@ ParticleRenderer.prototype.render = function ( container )
         gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
         this.renderer.drawCount++;
     }
-
-    container._updateStatic = false;
 };
 
 /**
@@ -261,18 +252,14 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
 {
     var gl = this.renderer.gl,
         buffers = [],
-        size = container._size,
+        size = container._totalSize,
+        batchSize = container._batchSize,
+        dynamicPropertyFlags = container._properties,
         i;
 
-    // update the properties to match the state of the container..
-    for (i = 0; i < container._properties.length; i++)
+    for (i = 0; i < size; i += batchSize)
     {
-        this.properties[i].dynamic = container._properties[i];
-    }
-
-    for (i = 0; i < size; i += this.size)
-    {
-        buffers.push( new ParticleBuffer(gl,  this.properties, this.size, this.shader) );
+        buffers.push( new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize) );
     }
 
     return buffers;
