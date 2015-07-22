@@ -25,17 +25,34 @@ var Container = require('../display/Container'),
  * @extends PIXI.Container
  * @memberof PIXI
  *
- * @param [size=15000] {number} The number of images in the SpriteBatch before it flushes.
+ * @param [totalSize=15000] {number} The maximum number of particles that can be renderer by the container.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
  * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
  * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
  * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
  * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
+ * @param [batchSize=15000] {number} Number of particles per batch.
  */
-function ParticleContainer(size, properties)
+function ParticleContainer(totalSize, properties, batchSize)
 {
     Container.call(this);
+
+    batchSize = batchSize || 15000; //CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+    totalSize = totalSize || 15000;
+
+    // 65535 is max vertex index in the index buffer (see ParticleRenderer)
+    // so max number of particles is 65536 / 4 = 16384
+    var maxBatchSize = 16384;
+    if (batchSize > maxBatchSize) {
+        console.warn('Pixi.js ParticleContainer warning: maximum batch size is', maxBatchSize);
+        batchSize = maxBatchSize;
+    }
+
+    if (batchSize > totalSize) {
+        console.warn('Pixi.js ParticleContainer warning: given batchSize of', batchSize, 'is greater than the total container size of', totalSize);
+        batchSize = totalSize;
+    }
 
     /**
      * Set properties to be dynamic (true) / static (false)
@@ -49,7 +66,13 @@ function ParticleContainer(size, properties)
      * @member {number}
      * @private
      */
-    this._size = size || 15000;
+    this._totalSize = totalSize;
+
+    /**
+     * @member {number}
+     * @private
+     */
+    this._batchSize = batchSize;
 
     /**
      * @member {WebGLBuffer}
@@ -139,56 +162,13 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
 };
 
 /**
- * Adds a child to this particle container at a specified index. If the index is out of bounds an error will be thrown
+ * Set the flag that static data should be updated to true
  *
- * @param child {DisplayObject} The child to add
- * @param index {Number} The index to place the child in
- * @return {DisplayObject} The child that was added.
+ * @private
  */
-ParticleContainer.prototype.addChildAt = function (child, index)
+ParticleContainer.prototype.handleChildrenChange = function ()
 {
-    // prevent adding self as child
-    if (child === this)
-    {
-        return child;
-    }
-
-    if (index >= 0 && index <= this.children.length)
-    {
-        if (child.parent)
-        {
-            child.parent.removeChild(child);
-        }
-
-        child.parent = this;
-
-        this.children.splice(index, 0, child);
-
-        this._updateStatic = true;
-
-        return child;
-    }
-    else
-    {
-        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
-    }
-};
-
-/**
- * Removes a child from the specified index position.
- *
- * @param index {Number} The index to get the child from
- * @return {DisplayObject} The child that was removed.
- */
-ParticleContainer.prototype.removeChildAt = function (index)
-{
-    var child = this.getChildAt(index);
-
-    child.parent = null;
-    this.children.splice(index, 1);
     this._updateStatic = true;
-
-    return child;
 };
 
 /**
