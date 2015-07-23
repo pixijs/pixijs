@@ -12446,6 +12446,7 @@ function CanvasRenderer(width, height, options)
 // constructor
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
 CanvasRenderer.prototype.constructor = CanvasRenderer;
+CanvasRenderer.prototype.mouseLock = null;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
 
@@ -13518,6 +13519,8 @@ function WebGLRenderer(width, height, options)
 // constructor
 WebGLRenderer.prototype = Object.create(SystemRenderer.prototype);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
+WebGLRenderer.prototype.mouseLock = null;
+
 module.exports = WebGLRenderer;
 utils.pluginTarget.mixin(WebGLRenderer);
 
@@ -25308,7 +25311,6 @@ function InteractionManager(renderer, options)
     this.onMouseOut = this.onMouseOut.bind(this);
     this.processMouseOverOut = this.processMouseOverOut.bind( this );
 
-
     /**
      * @member {Function}
      */
@@ -25328,6 +25330,11 @@ function InteractionManager(renderer, options)
     this.processTouchMove = this.processTouchMove.bind(this);
 
     /**
+     * @member {Function}
+     */
+    this.lockchange = this.lockchange.bind(this);
+
+    /**
      * @member {number}
      */
     this.last = 0;
@@ -25337,6 +25344,18 @@ function InteractionManager(renderer, options)
      * @member {string}
      */
     this.currentCursorStyle = 'inherit';
+
+    /**
+     * Lock status of the cursor
+     * @member {string}
+     */
+    this.cursorLocked = false;
+
+    /**
+     * Position of the locked cursor
+     * @member PIXI.Point
+     */
+    this.cursorLockedPosition = new core.Point();
 
     /**
      * Internal cached var
@@ -25378,6 +25397,30 @@ InteractionManager.prototype.setTargetElement = function (element, resolution)
 };
 
 /**
+ * Returns mouse position for the locked cursor
+ *
+ * @param event {MouseEvent} The DOM mouse event
+ * @private
+ */
+InteractionManager.prototype.getLockedPointerPosition = function (event)
+{
+    var movementX = event.movementX ||
+        event.mozMovementX          ||
+        event.webkitMovementX       ||
+        0;
+
+    var movementY = event.movementY ||
+        event.mozMovementY      ||
+        event.webkitMovementY   ||
+        0;
+
+    return new PIXI.Point(
+        this.cursorLockedPosition.x + movementX,
+        this.cursorLockedPosition.y + movementY
+    )
+};
+
+/**
  * Registers all the DOM events
  * @private
  */
@@ -25396,7 +25439,15 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
+    this.interactionDOMElement.requestPointerLock = this.interactionDOMElement.requestPointerLock ||
+        this.interactionDOMElement.mozRequestPointerLock ||
+        this.interactionDOMElement.webkitRequestPointerLock;
+
+    document.addEventListener('pointerlockchange',              this.lockchange, true);
+    document.addEventListener('mozpointerlockchange',           this.lockchange, true);
+    document.addEventListener('webkitpointerlockchange',        this.lockchange, true);
+
+    window.document.addEventListener('mousemove',               this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
@@ -25408,6 +25459,7 @@ InteractionManager.prototype.addEvents = function ()
 
     this.eventsAdded = true;
 };
+
 
 /**
  * Removes all the DOM events that were previously registered
@@ -25428,6 +25480,10 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
+    document.removeEventListener('pointerlockchange',              this.lockchange, true);
+    document.removeEventListener('mozpointerlockchange',           this.lockchange, true);
+    document.removeEventListener('webkitpointerlockchange',        this.lockchange, true);
+
     window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
@@ -25442,6 +25498,23 @@ InteractionManager.prototype.removeEvents = function ()
 
     this.eventsAdded = false;
 };
+
+/**
+ * Sets mouse lock status and fires according event
+ * @private
+ */
+InteractionManager.prototype.lockchange = function (event)
+{
+    var state = !!(document.pointerLockElement || document.mozPointerLockElement || document.webkitPointerLockElement);
+    if (state == this.cursorLocked) {
+        return;
+    }
+    this.cursorLocked = state;
+
+    this.cursorLockedPosition = this.eventData.data.global;
+
+    this.renderer.emit(state ? 'mouselock' : 'mouseunlock', this.eventData)
+}
 
 /**
  * Updates the state of interactive objects.
@@ -25519,6 +25592,12 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
  */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
+    if (this.cursorLocked) {
+        var newPosition = this.getLockedPointerPosition(event);
+
+        x = newPosition.x;
+        y = newPosition.y;
+    }
     var rect = this.interactionDOMElement.getBoundingClientRect();
     point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
@@ -25560,7 +25639,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             else
             {
                 // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false, false );
+                this.processInteractive(point, children[i], func, hitTest, false );
             }
         }
 
@@ -25602,6 +25681,11 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
  */
 InteractionManager.prototype.onMouseDown = function (event)
 {
+    if (this.renderer.mouseLock)
+    {
+        this.renderer.view.requestPointerLock();
+    }
+
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
@@ -25700,6 +25784,8 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
  */
 InteractionManager.prototype.onMouseMove = function (event)
 {
+
+
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
@@ -26031,6 +26117,8 @@ InteractionManager.prototype.destroy = function () {
 
     this.onTouchMove = null;
     this.processTouchMove = null;
+
+    this.cursorLockedPosition = null;
 
     this._tempPoint = null;
 };
