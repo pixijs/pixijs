@@ -83,7 +83,7 @@ function ParticleContainer(maxSize, properties, batchSize)
      * @member {boolean}
      * @private
      */
-    this._updateStatic = false;
+    this._bufferToUpdate = 0;
 
     /**
      * @member {boolean}
@@ -165,9 +165,12 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
  *
  * @private
  */
-ParticleContainer.prototype.onChildrenChange = function ()
+ParticleContainer.prototype.onChildrenChange = function (smallestChildIndex)
 {
-    this._updateStatic = true;
+    var bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
+    if (bufferIndex < this._bufferToUpdate) {
+        this._bufferToUpdate = bufferIndex;
+    }
 }
 
 /**

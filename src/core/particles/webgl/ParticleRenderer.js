@@ -189,9 +189,6 @@ ParticleRenderer.prototype.render = function ( container )
     gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
 
 
-    // if this variable is true then we will upload the static contents as well as the dynamic contents
-    var uploadStatic = container._updateStatic;
-
     // make sure the texture is bound..
     var baseTexture = children[0]._texture.baseTexture;
 
@@ -205,7 +202,7 @@ ParticleRenderer.prototype.render = function ( container )
 
         if(!container._properties[0] || !container._properties[3])
         {
-            uploadStatic = true;
+            container._bufferToUpdate = 0;
         }
     }
     else
@@ -214,8 +211,7 @@ ParticleRenderer.prototype.render = function ( container )
     }
 
     // now lets upload and render the buffers..
-    var j = 0;
-    for (var i = 0; i < totalChildren; i+=batchSize)
+    for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
     {
         var amount = ( totalChildren - i);
         if(amount > batchSize)
@@ -223,16 +219,16 @@ ParticleRenderer.prototype.render = function ( container )
             amount = batchSize;
         }
 
-        var buffer = container._buffers[j++];
+        var buffer = container._buffers[j];
 
         // we always upload the dynamic
         buffer.uploadDynamic(children, i, amount);
 
         // we only upload the static content when we have to!
-        if(uploadStatic)
+        if(container._bufferToUpdate === j)
         {
             buffer.uploadStatic(children, i, amount);
-            container._updateStatic = false;
+            container._bufferToUpdate = j + 1;
         }
 
         // bind the buffer
@@ -260,7 +256,7 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
 
     for (i = 0; i < size; i += batchSize)
     {
-        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, this.size));
+        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize));
     }
 
     return buffers;
