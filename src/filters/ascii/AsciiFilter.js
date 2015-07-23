@@ -40,7 +40,7 @@ Object.defineProperties(AsciiFilter.prototype, {
      * The pixel size used by the filter.
      *
      * @member {number}
-     * @memberof AsciiFilter#
+     * @memberof PIXI.filters.AsciiFilter#
      */
     size: {
         get: function ()

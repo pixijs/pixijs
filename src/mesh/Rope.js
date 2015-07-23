@@ -12,10 +12,10 @@ var core = require('../core');
  *  ```
  *
  * @class
- * @extends PIXI.Mesh
+ * @extends PIXI.mesh.Mesh
  * @memberof PIXI.mesh
- * @param {Texture} texture - The texture to use on the rope.
- * @param {Array} points - An array of {Point} objects to construct this rope.
+ * @param {PIXI.Texture} texture - The texture to use on the rope.
+ * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
  *
  */
 function Rope(texture, points)
@@ -23,7 +23,7 @@ function Rope(texture, points)
     Mesh.call(this, texture);
 
     /*
-     * @member {Array} An array of points that determine the rope
+     * @member {PIXI.Point[]} An array of points that determine the rope
      */
     this.points = points;
 

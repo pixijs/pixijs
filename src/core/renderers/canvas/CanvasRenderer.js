@@ -48,7 +48,7 @@ function CanvasRenderer(width, height, options)
     /**
      * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
      *
-     * @member {CanvasMaskManager}
+     * @member {PIXI.CanvasMaskManager}
      */
     this.maskManager = new CanvasMaskManager();
 
@@ -63,14 +63,18 @@ function CanvasRenderer(width, height, options)
     /**
      * Tracks the active scale mode for this renderer.
      *
-     * @member {SCALE_MODE}
+     * @member {number}
+     * @default PIXI.SCALE_MODES.DEFAULT
+     * @see PIXI.SCALE_MODES
      */
     this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
 
     /**
      * Tracks the active blend mode for this renderer.
      *
-     * @member {SCALE_MODE}
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
      */
     this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
 
@@ -108,7 +112,7 @@ function CanvasRenderer(width, height, options)
     /**
      * This temporary display object used as the parent of the currently being rendered item
      *
-     * @member {DisplayObject}
+     * @member {PIXI.DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {
@@ -129,7 +133,7 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {DisplayObject} the object to be rendered
+ * @param object {PIXI.DisplayObject} the object to be rendered
  */
 CanvasRenderer.prototype.render = function (object)
 {
@@ -203,7 +207,7 @@ CanvasRenderer.prototype.destroy = function (removeView)
 /**
  * Renders a display object
  *
- * @param displayObject {DisplayObject} The displayObject to render
+ * @param displayObject {PIXI.DisplayObject} The displayObject to render
  * @private
  */
 CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)

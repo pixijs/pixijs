@@ -19,10 +19,10 @@ var BaseTexture = require('./BaseTexture'),
  *
  * @class
  * @memberof PIXI
- * @param baseTexture {BaseTexture} The base texture source to create the texture from
- * @param [frame] {Rectangle} The rectangle frame of the texture to show
- * @param [crop] {Rectangle} The area of original texture
- * @param [trim] {Rectangle} Trimmed texture rectangle
+ * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
+ * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
+ * @param [crop] {PIXI.Rectangle} The area of original texture
+ * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
  * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
@@ -47,19 +47,17 @@ function Texture(baseTexture, frame, crop, trim, rotate)
         baseTexture = baseTexture.baseTexture;
     }
 
-  //  console.log(frame);
-
     /**
      * The base texture that this texture uses.
      *
-     * @member {BaseTexture}
+     * @member {PIXI.BaseTexture}
      */
     this.baseTexture = baseTexture;
 
     /**
      * The frame specifies the region of the base texture that this texture uses
      *
-     * @member {Rectangle}
+     * @member {PIXI.Rectangle}
      * @private
      */
     this._frame = frame;
@@ -67,7 +65,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     /**
      * The texture trim data.
      *
-     * @member {Rectangle}
+     * @member {PIXI.Rectangle}
      */
     this.trim = trim;
 
@@ -88,7 +86,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     /**
      * The WebGL UV data cache.
      *
-     * @member {TextureUvs}
+     * @member {PIXI.TextureUvs}
      * @private
      */
     this._uvs = null;
@@ -111,7 +109,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
      * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
-     * @member {Rectangle}
+     * @member {PIXI.Rectangle}
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
@@ -153,6 +151,12 @@ Texture.prototype.constructor = Texture;
 module.exports = Texture;
 
 Object.defineProperties(Texture.prototype, {
+    /**
+     * The frame specifies the region of the base texture that this texture uses.
+     *
+     * @member {PIXI.Rectangle}
+     * @memberof PIXI.Texture#
+     */
     frame: {
         get: function ()
         {
@@ -167,8 +171,6 @@ Object.defineProperties(Texture.prototype, {
             this.width = frame.width;
             this.height = frame.height;
 
-
-
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
@@ -179,7 +181,6 @@ Object.defineProperties(Texture.prototype, {
 
             if (this.trim)
             {
-
                 this.width = this.trim.width;
                 this.height = this.trim.height;
                 this._frame.width = this.trim.width;
@@ -227,6 +228,11 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
     this.emit('update', this);
 };
 
+/**
+ * Called when the base texture is updated
+ *
+ * @private
+ */
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 {
     this._frame.width = baseTexture.width;
@@ -238,7 +244,7 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 /**
  * Destroys this texture
  *
- * @param destroyBase {boolean} Whether to destroy the base texture as well
+ * @param [destroyBase=false] {boolean} Whether to destroy the base texture as well
  */
 Texture.prototype.destroy = function (destroyBase)
 {
@@ -263,6 +269,11 @@ Texture.prototype.destroy = function (destroyBase)
     this.valid = false;
 };
 
+/**
+ * Creates a new texture object that acts the same as this one.
+ *
+ * @return {PIXI.Texture}
+ */
 Texture.prototype.clone = function ()
 {
     return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
@@ -290,8 +301,8 @@ Texture.prototype._updateUvs = function ()
  * @static
  * @param imageUrl {string} The image url of the texture
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return {Texture} The newly created texture
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
@@ -311,8 +322,8 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
  * The frame ids are created when a Texture packer file has been loaded
  *
  * @static
- * @param frameId {String} The frame Id of the texture in the cache
- * @return {Texture} The newly created texture
+ * @param frameId {string} The frame Id of the texture in the cache
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromFrame = function (frameId)
 {
@@ -331,8 +342,8 @@ Texture.fromFrame = function (frameId)
  *
  * @static
  * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return {Texture}
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture}
  */
 Texture.fromCanvas = function (canvas, scaleMode)
 {
@@ -344,8 +355,8 @@ Texture.fromCanvas = function (canvas, scaleMode)
  *
  * @static
  * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return {Texture} A Texture
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideo = function (video, scaleMode)
 {
@@ -364,8 +375,8 @@ Texture.fromVideo = function (video, scaleMode)
  *
  * @static
  * @param videoUrl {string}
- * @param scaleMode {number} See {{@link SCALE_MODES}} for possible values
- * @return {Texture} A Texture
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
@@ -376,7 +387,7 @@ Texture.fromVideoUrl = function (videoUrl, scaleMode)
  * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.
  *
  * @static
- * @param texture {Texture} The Texture to add to the cache.
+ * @param texture {PIXI.Texture} The Texture to add to the cache.
  * @param id {string} The id that the texture will be stored against.
  */
 Texture.addTextureToCache = function (texture, id)
@@ -389,7 +400,7 @@ Texture.addTextureToCache = function (texture, id)
  *
  * @static
  * @param id {string} The id of the texture to be removed
- * @return {Texture} The texture that was removed
+ * @return {PIXI.Texture} The texture that was removed
  */
 Texture.removeTextureFromCache = function (id)
 {
@@ -401,4 +412,10 @@ Texture.removeTextureFromCache = function (id)
     return texture;
 };
 
+/**
+ * An empty texture, used often to not have to create multiple empty textures.
+ *
+ * @static
+ * @constant
+ */
 Texture.EMPTY = new Texture(new BaseTexture());

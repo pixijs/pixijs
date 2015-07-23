@@ -16,6 +16,7 @@ var CONST = require('../const'),
 function Ticker()
 {
     var _this = this;
+
     /**
      * Internal tick method bound to ticker instance.
      * This is because in early 2015, Function.bind
@@ -41,16 +42,19 @@ function Ticker()
             }
         }
     };
+
     /**
      * Internal emitter used to fire 'tick' event
      * @private
      */
     this._emitter = new EventEmitter();
+
     /**
      * Internal current frame request ID
      * @private
      */
     this._requestId = null;
+
     /**
      * Internal value managed by minFPS property setter and getter.
      * This is the maximum allowed milliseconds between updates.

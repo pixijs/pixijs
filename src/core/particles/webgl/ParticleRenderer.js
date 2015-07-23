@@ -20,7 +20,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * @class
  * @private
  * @memberof PIXI
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
 function ParticleRenderer(renderer)
 {
@@ -52,7 +52,7 @@ function ParticleRenderer(renderer)
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
      *
-     * @member {Shader}
+     * @member {PIXI.Shader}
      */
     this.shader = null;
 
@@ -73,7 +73,6 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  * When there is a WebGL context change
  *
  * @private
- *
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
@@ -130,7 +129,7 @@ ParticleRenderer.prototype.onContextChange = function ()
 };
 
 /**
- * Starts a new sprite batch.
+ * Starts a new particle batch.
  *
  */
 ParticleRenderer.prototype.start = function ()
@@ -151,11 +150,11 @@ ParticleRenderer.prototype.start = function ()
 
 
 /**
- * Renders the sprite object.
+ * Renders the particle container object.
  *
- * @param container {Container|Sprite} the sprite to render using this ParticleRenderer
+ * @param container {PIXI.ParticleContainer} The container to render using this ParticleRenderer
  */
-ParticleRenderer.prototype.render = function ( container )
+ParticleRenderer.prototype.render = function (container)
 {
     var children = container.children,
         totalChildren = children.length,
@@ -175,8 +174,6 @@ ParticleRenderer.prototype.render = function ( container )
     {
         container._buffers = this.generateBuffers( container );
     }
-
-
 
     // if the uvs have not updated then no point rendering just yet!
     this.renderer.blendModeManager.setBlendMode(container.blendMode);
@@ -247,9 +244,9 @@ ParticleRenderer.prototype.render = function ( container )
 /**
  * Creates one particle buffer for each child in the container we want to render and updates internal properties
  *
- * @param container {Container|Sprite} the sprite to render using this ParticleRenderer
+ * @param container {PIXI.ParticleContainer} The container to render using this ParticleRenderer
  */
-ParticleRenderer.prototype.generateBuffers = function ( container )
+ParticleRenderer.prototype.generateBuffers = function (container)
 {
     var gl = this.renderer.gl,
         buffers = [],
@@ -266,13 +263,13 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
     return buffers;
 };
 
-
 /**
+ * Uploads the verticies.
  *
- * @param children {Array} the array of display objects to render
+ * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their vertices uploaded
- * @param array {Array}
+ * @param array {number[]}
  * @param stride {number}
  * @param offset {number}
  */
@@ -331,10 +328,10 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
 
 /**
  *
- * @param children {Array} the array of display objects to render
+ * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their positions uploaded
- * @param array {Array}
+ * @param array {number[]}
  * @param stride {number}
  * @param offset {number}
  */
@@ -363,10 +360,10 @@ ParticleRenderer.prototype.uploadPosition = function (children,startIndex, amoun
 
 /**
  *
- * @param children {Array} the array of display objects to render
+ * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their rotation uploaded
- * @param array {Array}
+ * @param array {number[]}
  * @param stride {number}
  * @param offset {number}
  */
@@ -388,10 +385,10 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
 
 /**
  *
- * @param children {Array} the array of display objects to render
+ * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their Uvs uploaded
- * @param array {Array}
+ * @param array {number[]}
  * @param stride {number}
  * @param offset {number}
  */
@@ -439,10 +436,10 @@ ParticleRenderer.prototype.uploadUvs = function (children,startIndex, amount, ar
 
 /**
  *
- * @param children {Array} the array of display objects to render
+ * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their alpha uploaded
- * @param array {Array}
+ * @param array {number[]}
  * @param stride {number}
  * @param offset {number}
  */
@@ -463,7 +460,7 @@ ParticleRenderer.prototype.uploadAlpha = function (children,startIndex, amount, 
 
 
 /**
- * Destroys the Particle.
+ * Destroys the ParticleRenderer.
  *
  */
 ParticleRenderer.prototype.destroy = function ()

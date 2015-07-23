@@ -10,7 +10,7 @@ var fs = require('fs');
  * @class
  * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
- * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
+ * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
 function DisplacementFilter(sprite, scale)
 {
@@ -65,8 +65,8 @@ Object.defineProperties(DisplacementFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
-     * @member {Texture}
-     * @memberof DisplacementFilter#
+     * @member {PIXI.Texture}
+     * @memberof PIXI.filters.DisplacementFilter#
      */
     map: {
         get: function ()

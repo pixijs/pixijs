@@ -18,7 +18,7 @@ var core = require('../../core'),
  * @private
  * @memberof PIXI.mesh
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
 function MeshRenderer(renderer)
 {
@@ -64,7 +64,7 @@ MeshRenderer.prototype.onContextChange = function ()
 /**
  * Renders the sprite object.
  *
- * @param mesh {Mesh} the mesh to render
+ * @param mesh {PIXI.mesh.Mesh} the mesh to render
  */
 MeshRenderer.prototype.render = function (mesh)
 {
@@ -153,7 +153,7 @@ MeshRenderer.prototype.render = function (mesh)
 
 /**
  * Prepares all the buffers to render this mesh
- * @param mesh {Mesh} the mesh to render
+ * @param mesh {PIXI.mesh.Mesh} the mesh to render
  */
 MeshRenderer.prototype._initWebGL = function (mesh)
 {

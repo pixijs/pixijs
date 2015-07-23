@@ -8,7 +8,7 @@ var utils = require('../utils'),
  * @class
  * @memberof PIXI
  * @param source {Image|Canvas} the source object of the texture.
- * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param resolution {number} the resolution of the texture for devices with different pixel ratios
  */
 function BaseTexture(source, scaleMode, resolution)
@@ -60,8 +60,9 @@ function BaseTexture(source, scaleMode, resolution)
     /**
      * The scale mode to apply when scaling this texture
      *
-     * @member {{number}}
-     * @default scaleModes.LINEAR
+     * @member {number}
+     * @default PIXI.SCALE_MODES.LINEAR
+     * @see PIXI.SCALE_MODES
      */
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
 
@@ -368,8 +369,8 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  * @static
  * @param imageUrl {string} The image url of the texture
  * @param [crossorigin=(auto)] {boolean} Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
- * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
- * @return BaseTexture
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return PIXI.BaseTexture
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
@@ -409,8 +410,8 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
  *
  * @static
  * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return BaseTexture
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return PIXI.BaseTexture
  */
 BaseTexture.fromCanvas = function (canvas, scaleMode)
 {

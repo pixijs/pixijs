@@ -24,7 +24,6 @@ var Container = require('../display/Container'),
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
- *
  * @param [maxSize=15000] {number} The maximum number of particles that can be renderer by the container.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
@@ -56,7 +55,7 @@ function ParticleContainer(maxSize, properties, batchSize)
     /**
      * Set properties to be dynamic (true) / static (false)
      *
-     * @member {array}
+     * @member {boolean[]}
      * @private
      */
     this._properties = [false, true, false, false, false];
@@ -92,10 +91,11 @@ function ParticleContainer(maxSize, properties, batchSize)
     this.interactiveChildren = false;
 
     /**
-     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
      * @member {number}
-     * @default CONST.BLEND_MODES.NORMAL;
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
      */
     this.blendMode = CONST.BLEND_MODES.NORMAL;
 
@@ -146,7 +146,7 @@ ParticleContainer.prototype.updateTransform = function ()
 /**
  * Renders the container using the WebGL renderer
  *
- * @param renderer {WebGLRenderer} The webgl renderer
+ * @param renderer {PIXI.WebGLRenderer} The webgl renderer
  * @private
  */
 ParticleContainer.prototype.renderWebGL = function (renderer)
@@ -173,7 +173,7 @@ ParticleContainer.prototype.onChildrenChange = function ()
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer} The canvas renderer
+ * @param renderer {PIXI.CanvasRenderer} The canvas renderer
  * @private
  */
 ParticleContainer.prototype.renderCanvas = function (renderer)

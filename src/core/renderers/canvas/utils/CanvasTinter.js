@@ -12,7 +12,7 @@ module.exports = CanvasTinter;
 /**
  * Basically this method just needs a sprite and a color and tints the sprite with the given color.
  *
- * @param sprite {Sprite} the sprite to tint
+ * @param sprite {PIXI.Sprite} the sprite to tint
  * @param color {number} the color to use to tint the sprite with
  * @return {HTMLCanvasElement} The tinted canvas
  */
@@ -58,7 +58,7 @@ CanvasTinter.getTintedTexture = function (sprite, color)
 /**
  * Tint a texture using the 'multiply' operation.
  *
- * @param texture {Texture} the texture to tint
+ * @param texture {PIXI.Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
@@ -107,7 +107,7 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 /**
  * Tint a texture using the 'overlay' operation.
  *
- * @param texture {Texture} the texture to tint
+ * @param texture {PIXI.Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
@@ -143,7 +143,7 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 /**
  * Tint a texture pixel per pixel.
  *
- * @param texture {Texture} the texture to tint
+ * @param texture {PIXI.Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
