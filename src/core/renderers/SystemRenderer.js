@@ -168,7 +168,7 @@ Object.defineProperties(SystemRenderer.prototype, {
      * The background color to fill if not transparent
      *
      * @member {number}
-     * @memberof SystemRenderer#
+     * @memberof PIXI.SystemRenderer#
      */
     backgroundColor:
     {
