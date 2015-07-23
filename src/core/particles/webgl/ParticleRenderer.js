@@ -260,7 +260,7 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
 
     for (i = 0; i < size; i += batchSize)
     {
-        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, this.size));
+        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize));
     }
 
     return buffers;
