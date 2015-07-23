@@ -99,7 +99,7 @@ Object.defineProperties(Container.prototype, {
  *
  * @private
  */
-Container.prototype.handleChildrenChange = function () {};
+Container.prototype.onChildrenChange = function () {};
 
 /**
  * Adds a child to the container.
@@ -137,7 +137,7 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
-        this.handleChildrenChange();
+        this.onChildrenChange();
 
         child.emit('added', this);
 
@@ -172,7 +172,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
-    this.handleChildrenChange();
+    this.onChildrenChange();
 };
 
 /**
@@ -210,7 +210,7 @@ Container.prototype.setChildIndex = function (child, index)
 
     this.children.splice(currentIndex, 1); //remove from old position
     this.children.splice(index, 0, child); //add at new position
-    this.handleChildrenChange();
+    this.onChildrenChange();
 };
 
 /**
@@ -259,7 +259,7 @@ Container.prototype.removeChildAt = function (index)
 
     child.parent = null;
     this.children.splice(index, 1);
-    this.handleChildrenChange();
+    this.onChildrenChange();
 
     child.emit('removed', this);
 
@@ -287,7 +287,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
             removed[i].parent = null;
         }
 
-        this.handleChildrenChange();
+        this.onChildrenChange();
 
         for (var i = 0; i < removed.length; ++i)
         {

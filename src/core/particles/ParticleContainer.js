@@ -143,7 +143,7 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
  *
  * @private
  */
-ParticleContainer.prototype.handleChildrenChange = function ()
+ParticleContainer.prototype.onChildrenChange = function ()
 {
     this._updateStatic = true;
 }
