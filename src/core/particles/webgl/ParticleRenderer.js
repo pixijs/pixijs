@@ -94,7 +94,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // verticesData
         {
             attribute:this.shader.attributes.aVertexPosition,
-            dynamic:false,
             size:2,
             uploadFunction:this.uploadVertices,
             offset:0
@@ -102,7 +101,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // positionData
         {
             attribute:this.shader.attributes.aPositionCoord,
-            dynamic:true,
             size:2,
             uploadFunction:this.uploadPosition,
             offset:0
@@ -110,7 +108,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // rotationData
         {
             attribute:this.shader.attributes.aRotation,
-            dynamic:false,
             size:1,
             uploadFunction:this.uploadRotation,
             offset:0
@@ -118,7 +115,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // uvsData
         {
             attribute:this.shader.attributes.aTextureCoord,
-            dynamic:false,
             size:2,
             uploadFunction:this.uploadUvs,
             offset:0
@@ -126,7 +122,6 @@ ParticleRenderer.prototype.onContextChange = function ()
         // alphaData
         {
             attribute:this.shader.attributes.aColor,
-            dynamic:false,
             size:1,
             uploadFunction:this.uploadAlpha,
             offset:0
@@ -194,7 +189,7 @@ ParticleRenderer.prototype.render = function ( container )
     gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
 
 
-    // if this variable is true then we will upload the static contents as well as the dynamic contens
+    // if this variable is true then we will upload the static contents as well as the dynamic contents
     var uploadStatic = container._updateStatic;
 
     // make sure the texture is bound..
@@ -208,7 +203,7 @@ ParticleRenderer.prototype.render = function ( container )
             return;
         }
 
-        if(!this.properties[0].dynamic || !this.properties[3].dynamic)
+        if(!container._properties[0] || !container._properties[3])
         {
             uploadStatic = true;
         }
@@ -237,6 +232,7 @@ ParticleRenderer.prototype.render = function ( container )
         if(uploadStatic)
         {
             buffer.uploadStatic(children, i, amount);
+            container._updateStatic = false;
         }
 
         // bind the buffer
@@ -246,8 +242,6 @@ ParticleRenderer.prototype.render = function ( container )
         gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
         this.renderer.drawCount++;
     }
-
-    container._updateStatic = false;
 };
 
 /**
@@ -261,17 +255,12 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
         buffers = [],
         size = container._maxSize,
         batchSize = container._batchSize,
+        dynamicPropertyFlags = container._properties,
         i;
-
-    // update the properties to match the state of the container..
-    for (i = 0; i < container._properties.length; i++)
-    {
-        this.properties[i].dynamic = container._properties[i];
-    }
 
     for (i = 0; i < size; i += batchSize)
     {
-        buffers.push( new ParticleBuffer(gl,  this.properties, batchSize, this.shader) );
+        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, this.size));
     }
 
     return buffers;
