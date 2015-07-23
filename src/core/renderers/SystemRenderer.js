@@ -145,6 +145,12 @@ function SystemRenderer(system, width, height, options)
      */
     this._backgroundColorString = '#000000';
 
+    /**
+     * The background color as a number.
+     *
+     * @member {number}
+     * @default 0x000000
+     */
     this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
 
     /**
