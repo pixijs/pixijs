@@ -376,10 +376,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         return;
     }
 
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== renderer.context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        renderer.context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        renderer.context.globalCompositeOperation = compositeOperation;
     }
 
     //  Ignore null sources
@@ -395,10 +395,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderer.smoothProperty && renderer.currentScaleMode !== texture.baseTexture.scaleMode)
+        var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
+        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
         {
-            renderer.currentScaleMode = texture.baseTexture.scaleMode;
-            renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+            renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions

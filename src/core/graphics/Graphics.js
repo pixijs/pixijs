@@ -805,10 +805,10 @@ Graphics.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
     var transform = this.worldTransform;
 
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        context.globalCompositeOperation = compositeOperation;
     }
 
     var resolution = renderer.resolution;

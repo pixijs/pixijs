@@ -259,10 +259,10 @@ TilingSprite.prototype._renderCanvas = function (renderer)
                       modY + (this.anchor.y * -this._height));
 
     // check blend mode
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== renderer.context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        context.globalCompositeOperation = compositeOperation;
     }
 
     // fill the pattern!
