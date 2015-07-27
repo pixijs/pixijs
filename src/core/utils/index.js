@@ -7,6 +7,7 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
+    EventEmitter:   require('eventemitter3'),
     pluginTarget:   require('./pluginTarget'),
     async:          require('async'),
 
