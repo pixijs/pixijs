@@ -164,7 +164,7 @@ Object.defineProperties(Sprite.prototype, {
                 {
                     this._onTextureUpdate();
                 }
-                else
+                else if (value.baseTexture.source)
                 {
                     value.once('update', this._onTextureUpdate, this);
                 }
