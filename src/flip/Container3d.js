@@ -29,7 +29,9 @@ function Container3d()
     this.worldTransform3d = glMat.mat4.create();
 
     this.is3d = true;
-    this.projectionMatrix = glMat.mat4.create();
+    this.projectionMatrix = null//glMat.mat4.create();
+
+
 }
 
 

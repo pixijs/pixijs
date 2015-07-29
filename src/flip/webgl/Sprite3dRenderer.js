@@ -186,7 +186,6 @@ function makePerspective(fieldOfViewInRadians, aspect, near, far) {
 }
 
 
-
 Sprite3dRenderer.prototype = Object.create(ObjectRenderer.prototype);
 Sprite3dRenderer.prototype.constructor = Sprite3dRenderer;
 module.exports = Sprite3dRenderer;
@@ -394,10 +393,30 @@ Sprite3dRenderer.prototype.flush = function ()
     var currentBaseTexture = null;
     var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
     var currentShader = null;
+    var currentProjection = null;
 
     var blendSwap = false;
     var shaderSwap = false;
+    var projectionSwap = false;
+
     var sprite;
+
+    var projection2d = this.renderer.currentRenderTarget.projectionMatrix;
+    var projection3d = this.projection3d;
+
+    projection3d[0] = projection2d.a;
+    projection3d[5] = projection2d.d;
+    projection3d[10] = 2 / 1700;
+
+    // tx // ty
+    projection3d[12] = projection2d.tx;
+    projection3d[13] = projection2d.ty;
+
+    // time to make a 3d one!
+    var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
+    this.combinedMatrix = combinedMatrix;
+    window.combinedMatrix = combinedMatrix;
+
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++)
     {
@@ -407,11 +426,13 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-
+        nextProjection = sprite.projectionMatrix || this.combinedMatrix;
+        
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
+        projectionSwap = currentProjection !== nextProjection;
 
-        if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap)
+        if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap || projectionSwap)
         {
             this.renderBatch(currentBaseTexture, batchSize, start);
 
@@ -446,23 +467,8 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set the projection
                 //gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
-                var projection2d = this.renderer.currentRenderTarget.projectionMatrix;
-                var projection3d = this.projection3d;
-
-                projection3d[0] = projection2d.a;
-                projection3d[5] = projection2d.d;
-                projection3d[10] = 2 / 1700;
-
-                // tx // ty
-                projection3d[12] = projection2d.tx;
-                projection3d[13] = projection2d.ty;
-
-                // time to make a 3d one!
-                var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
-                this.combinedMatrix = combinedMatrix;
-                window.combinedMatrix = combinedMatrix;
-
-                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, combinedMatrix);
+                currentProjection = nextProjection
+                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
             }
         }
 
