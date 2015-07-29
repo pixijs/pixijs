@@ -137,7 +137,7 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
-        this.onChildrenChange();
+        this.onChildrenChange(index);
 
         child.emit('added', this);
 
@@ -172,7 +172,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
-    this.onChildrenChange();
+    this.onChildrenChange(index1 < index2 ? index1 : index2);
 };
 
 /**
@@ -210,7 +210,7 @@ Container.prototype.setChildIndex = function (child, index)
 
     this.children.splice(currentIndex, 1); //remove from old position
     this.children.splice(index, 0, child); //add at new position
-    this.onChildrenChange();
+    this.onChildrenChange(index);
 };
 
 /**
@@ -259,7 +259,7 @@ Container.prototype.removeChildAt = function (index)
 
     child.parent = null;
     this.children.splice(index, 1);
-    this.onChildrenChange();
+    this.onChildrenChange(index);
 
     child.emit('removed', this);
 
@@ -287,7 +287,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
             removed[i].parent = null;
         }
 
-        this.onChildrenChange();
+        this.onChildrenChange(beginIndex);
 
         for (var i = 0; i < removed.length; ++i)
         {
