@@ -11,52 +11,53 @@
  */
 
 /**
+ * The particle buffer manages the static and dynamic buffers for a particle container.
  *
  * @class
  * @private
  * @memberof PIXI
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function ParticleBuffer(gl, properties, size)
+function ParticleBuffer(gl, properties, dynamicPropertyFlags, size)
 {
     /**
-     * the current WebGL drawing context
+     * The current WebGL drawing context.
+     *
      * @member {WebGLRenderingContext}
      */
     this.gl = gl;
 
     /**
-     *
+     * Size of a single vertex.
      *
      * @member {number}
      */
     this.vertSize = 2;
 
     /**
-     *
+     * Size of a single vertex in bytes.
      *
      * @member {number}
      */
     this.vertByteSize = this.vertSize * 4;
 
     /**
-     * The number of images in the SpriteBatch before it flushes.
+     * The number of particles the buffer can hold
      *
      * @member {number}
      */
     this.size = size;
 
     /**
+     * A list of the properties that are dynamic.
      *
-     *
-     * @member {Array}
+     * @member {object[]}
      */
     this.dynamicProperties = [];
 
     /**
+     * A list of the properties that are static.
      *
-     *
-     * @member {Array}
+     * @member {object[]}
      */
     this.staticProperties = [];
 
@@ -64,7 +65,7 @@ function ParticleBuffer(gl, properties, size)
     {
         var property = properties[i];
 
-        if(property.dynamic)
+        if(dynamicPropertyFlags[i])
         {
             this.dynamicProperties.push(property);
         }
@@ -93,7 +94,6 @@ module.exports = ParticleBuffer;
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 ParticleBuffer.prototype.initBuffers = function ()
 {
@@ -138,9 +138,12 @@ ParticleBuffer.prototype.initBuffers = function ()
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, this.staticData, gl.DYNAMIC_DRAW);
-
 };
 
+/**
+ * Uploads the dynamic properties.
+ *
+ */
 ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
 {
     var gl = this.gl;
@@ -155,6 +158,10 @@ ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.dynamicData);
 };
 
+/**
+ * Uploads the static properties.
+ *
+ */
 ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
 {
     var gl = this.gl;
@@ -170,7 +177,7 @@ ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
 };
 
 /**
- * Starts a new sprite batch.
+ * Binds the buffers to the GPU
  *
  */
 ParticleBuffer.prototype.bind = function ()
@@ -196,7 +203,7 @@ ParticleBuffer.prototype.bind = function ()
 };
 
 /**
- * Destroys the SpriteBatch.
+ * Destroys the ParticleBuffer.
  *
  */
 ParticleBuffer.prototype.destroy = function ()

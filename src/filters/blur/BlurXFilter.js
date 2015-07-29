@@ -26,7 +26,6 @@ function BlurXFilter()
      * Sets the number of passes for blur. More passes means higher quaility bluring.
      *
      * @member {number}
-     * @memberof BlurXFilter#
      * @default 1
      */
     this.passes = 1;
@@ -75,7 +74,7 @@ Object.defineProperties(BlurXFilter.prototype, {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof BlurXFilter#
+     * @memberof PIXI.filters.BlurXFilter#
      * @default 2
      */
     blur: {

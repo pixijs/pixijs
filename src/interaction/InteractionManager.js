@@ -14,7 +14,7 @@ Object.assign(
  *
  * @class
  * @memberof PIXI.interaction
- * @param renderer {CanvasRenderer|WebGLRenderer} A reference to the current renderer
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
  * @param [options] {object}
  * @param [options.autoPreventDefault=true] {boolean} Should the manager automatically prevent default browser actions.
  * @param [options.interactionFrequency=10] {number} Frequency increases the interaction events will be checked.
@@ -26,7 +26,7 @@ function InteractionManager(renderer, options)
     /**
      * The renderer this interaction manager works for.
      *
-     * @member {SystemRenderer}
+     * @member {PIXI.SystemRenderer}
      */
     this.renderer = renderer;
 
@@ -49,14 +49,14 @@ function InteractionManager(renderer, options)
     /**
      * The mouse data
      *
-     * @member {InteractionData}
+     * @member {PIXI.interaction.InteractionData}
      */
     this.mouse = new InteractionData();
 
     /**
      * An event data object to handle all the event tracking/dispatching
      *
-     * @member {EventData}
+     * @member {object}
      */
     this.eventData = {
         stopped: false,
@@ -71,7 +71,7 @@ function InteractionManager(renderer, options)
     /**
      * Tiny little interactiveData pool !
      *
-     * @member {Array}
+     * @member {PIXI.interaction.InteractionData[]}
      */
     this.interactiveDataPool = [];
 
@@ -150,7 +150,7 @@ function InteractionManager(renderer, options)
 
     /**
      * Internal cached var
-     * @member {Point}
+     * @member {PIXI.Point}
      * @private
      */
     this._tempPoint = new core.Point();
@@ -189,6 +189,7 @@ InteractionManager.prototype.setTargetElement = function (element, resolution)
 
 /**
  * Registers all the DOM events
+ *
  * @private
  */
 InteractionManager.prototype.addEvents = function ()
@@ -221,6 +222,7 @@ InteractionManager.prototype.addEvents = function ()
 
 /**
  * Removes all the DOM events that were previously registered
+ *
  * @private
  */
 InteractionManager.prototype.removeEvents = function ()
@@ -298,9 +300,10 @@ InteractionManager.prototype.update = function (deltaTime)
 
 /**
  * Dispatches an event on the display object that was interacted with
- * @param displayObject {Container|Sprite|TilingSprite} the display object in question
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the display object in question
  * @param eventString {string} the name of the event (e.g, mousedown)
- * @param eventData {EventData} the event data object
+ * @param eventData {object} the event data object
  * @private
  */
 InteractionManager.prototype.dispatchEvent = function ( displayObject, eventString, eventData )
@@ -323,7 +326,7 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
  * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The resulting value is stored in the point.
  * This takes into account the fact that the DOM element could be scaled and positioned anywhere on the screen.
  *
- * @param  {Point} point the point that the result will be stored in
+ * @param  {PIXI.Point} point the point that the result will be stored in
  * @param  {number} x     the x coord of the position to map
  * @param  {number} y     the y coord of the position to map
  */
@@ -338,9 +341,9 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
  *
- * @param  {Point} point the point that is tested for collision
- * @param  {Container|Sprite|TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param  {PIXI.Point} point the point that is tested for collision
+ * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
  * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
  * @return {boolean} returns true if the displayObject hit the point
  */
@@ -430,7 +433,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 /**
  * Processes the result of the mouse down check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the dispay object
  * @private
  */
@@ -470,7 +473,7 @@ InteractionManager.prototype.onMouseUp = function (event)
 /**
  * Processes the result of the mouse up check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
@@ -534,13 +537,16 @@ InteractionManager.prototype.onMouseMove = function (event)
 /**
  * Processes the result of the mouse move check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
-    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    }
     this.processMouseOverOut(displayObject, hit);
 };
 
@@ -570,7 +576,7 @@ InteractionManager.prototype.onMouseOut = function (event)
 /**
  * Processes the result of the mouse over/out check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
@@ -636,7 +642,7 @@ InteractionManager.prototype.onTouchStart = function (event)
 /**
  * Processes the result of a touch check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
@@ -653,8 +659,8 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 
 /**
  * Is called when a touch ends on the renderer element
- * @param event {Event} The DOM event of a touch ending on the renderer view
  *
+ * @param event {Event} The DOM event of a touch ending on the renderer view
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
@@ -688,7 +694,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
 /**
  * Processes the result of the end of a touch and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
@@ -750,14 +756,16 @@ InteractionManager.prototype.onTouchMove = function (event)
 /**
  * Processes the result of a touch move check and dispatches the event if need be
  *
- * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
-    hit = hit;
-    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    if (hit)
+    {
+        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    }
 };
 
 /**
@@ -794,7 +802,7 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 /**
  * Returns an interaction data object to the internal pool
  *
- * @param touchData {InteractionData} The touch data object we want to return to the pool
+ * @param touchData {PIXI.interaction.InteractionData} The touch data object we want to return to the pool
  *
  * @private
  */
@@ -805,6 +813,7 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
 
 /**
  * Destroys the interaction manager
+ *
  */
 InteractionManager.prototype.destroy = function () {
     this.removeEvents();

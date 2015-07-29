@@ -37,6 +37,7 @@ module.exports = {
 	{
 	    var tempP = vec3.create();
 
+	    //TODO MAKE THIS NOT THIS!
 	     var combinedMatrix = window.combinedMatrix;//mat4.multiply(mat4.create(), perspectiveMatrix, projection3d);
 	     if(!combinedMatrix)return [[0,0,0], [0,0,0]];
 	     var inverse = mat4.invert(mat4.create(), combinedMatrix);

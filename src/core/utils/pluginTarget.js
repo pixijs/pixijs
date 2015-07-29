@@ -17,7 +17,7 @@ function pluginTarget(obj)
      * Adds a plugin to an object
      *
      * @param pluginName {string} The events that should be listed.
-     * @param ctor {Object} ?? @alvin
+     * @param ctor {Function} The constructor function for the plugin.
      */
     obj.registerPlugin = function (pluginName, ctor)
     {

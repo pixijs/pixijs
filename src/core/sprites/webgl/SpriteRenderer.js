@@ -14,12 +14,17 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
+<<<<<<< HEAD
 *
+=======
+ * Renderer dedicated to drawing and batching sprites.
+ *
+>>>>>>> dev
  * @class
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
 function SpriteRenderer(renderer)
 {
@@ -102,17 +107,16 @@ function SpriteRenderer(renderer)
     /**
      * The current sprites in the batch.
      *
-     * @member {Array}
+     * @member {PIXI.Sprite[]}
      */
     this.sprites = [];
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
      *
-     * @member {Shader}
+     * @member {PIXI.Shader}
      */
     this.shader = null;
-
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -151,7 +155,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 /**
  * Renders the sprite object.
  *
- * @param sprite {Sprite} the sprite to render when using this spritebatch
+ * @param sprite {PIXI.Sprite} the sprite to render when using this spritebatch
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
@@ -179,9 +183,9 @@ SpriteRenderer.prototype.render = function (sprite)
 
     var w0, w1, h0, h1;
 
-    if (texture.trim)
+    if (texture.trim && sprite.tileScale === undefined)
     {
-        // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
+        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
         var trim = texture.trim;
 
         w1 = trim.x - aX * trim.width;
@@ -323,7 +327,7 @@ SpriteRenderer.prototype.flush = function ()
         nextShader = sprite.shader || this.shader;
 
         blendSwap = currentBlendMode !== nextBlendMode;
-        shaderSwap = currentShader !== nextShader; // should I use uuidS???
+        shaderSwap = currentShader !== nextShader; // should I use uidS???
 
         if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap)
         {
@@ -386,7 +390,7 @@ SpriteRenderer.prototype.flush = function ()
  * Draws the currently batches sprites.
  *
  * @private
- * @param texture {Texture}
+ * @param texture {PIXI.Texture}
  * @param size {number}
  * @param startIndex {number}
  */

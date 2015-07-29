@@ -69,7 +69,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberOf DropShadowFilter#
+     * @memberOf PIXI.filters.DropShadowFilter#
      * @default 2
      */
     blur: {
@@ -87,7 +87,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
      * Sets the strength of the blurX property
      *
      * @member {number}
-     * @memberOf DropShadowFilter#
+     * @memberOf PIXI.filters.DropShadowFilter#
      * @default 2
      */
     blurX: {
@@ -105,7 +105,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
      * Sets the strength of the blurY property
      *
      * @member {number}
-     * @memberOf DropShadowFilter#
+     * @memberOf PIXI.filters.DropShadowFilter#
      * @default 2
      */
     blurY: {
@@ -119,6 +119,12 @@ Object.defineProperties(DropShadowFilter.prototype, {
         }
     },
 
+    /**
+     * Sets the color of the shadow
+     *
+     * @member {number}
+     * @memberOf PIXI.filters.DropShadowFilter#
+     */
     color: {
         get: function ()
         {
@@ -130,6 +136,12 @@ Object.defineProperties(DropShadowFilter.prototype, {
         }
     },
 
+    /**
+     * Sets the alpha of the shadow
+     *
+     * @member {number}
+     * @memberOf PIXI.filters.DropShadowFilter#
+     */
     alpha: {
         get: function ()
         {
@@ -141,6 +153,12 @@ Object.defineProperties(DropShadowFilter.prototype, {
         }
     },
 
+    /**
+     * Sets the distance of the shadow
+     *
+     * @member {number}
+     * @memberOf PIXI.filters.DropShadowFilter#
+     */
     distance: {
         get: function ()
         {
@@ -153,6 +171,12 @@ Object.defineProperties(DropShadowFilter.prototype, {
         }
     },
 
+    /**
+     * Sets the angle of the shadow
+     *
+     * @member {number}
+     * @memberOf PIXI.filters.DropShadowFilter#
+     */
     angle: {
         get: function ()
         {

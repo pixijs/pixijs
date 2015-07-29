@@ -49,7 +49,9 @@ function ParticleShader(shaderManager)
             'uniform float uAlpha;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor * uAlpha ;',
+            '  vec4 color = texture2D(uSampler, vTextureCoord) * vColor * uAlpha;',
+            '  if (color.a == 0.0) discard;',
+            '  gl_FragColor = color;',
             '}'
         ].join('\n'),
         // custom uniforms

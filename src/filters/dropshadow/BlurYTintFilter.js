@@ -72,7 +72,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof BlurYFilter#
+     * @memberof PIXI.filters.BlurYTintFilter#
      * @default 2
      */
     blur: {

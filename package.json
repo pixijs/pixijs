@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "3.0.6",
+  "version": "3.0.8-dev",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -16,51 +16,63 @@
     "url": "https://github.com/GoodBoyDigital/pixi.js.git"
   },
   "scripts": {
+    "start": "gulp && gulp watch",
     "test": "gulp && testem ci",
+    "build": "gulp",
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
   },
   "files": [
     "bin/",
-    "src/"
+    "src/",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "dependencies": {
     "async": "^0.9.0",
     "brfs": "^1.4.0",
+<<<<<<< HEAD
 
     "gl-matrix": "^2.1.0",
 
     "earcut": "^2.0.0",
     "eventemitter3": "^1.1.0",
 
+=======
+    "earcut": "^2.0.1",
+    "eventemitter3": "^1.1.1",
+    "gulp-header": "^1.2.2",
+>>>>>>> dev
     "object-assign": "^2.0.0",
-    "resource-loader": "^1.6.0"
+    "resource-loader": "^1.6.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.1",
-    "chai": "^2.3.0",
+    "browserify": "^10.2.4",
+    "chai": "^3.0.0",
     "del": "^1.2.0",
-    "gulp": "^3.8.11",
+    "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
-    "gulp-concat": "^2.5.2",
+    "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.0.1",
-    "gulp-jshint": "^1.10.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
-    "gulp-util": "^3.0.4",
+    "gulp-util": "^3.0.6",
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
-    "jsdoc": "^3.3.0-beta3",
+    "jsdoc": "^3.3.2",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.1.1",
     "mocha": "^2.2.5",
     "require-dir": "^0.3.0",
-    "run-sequence": "^1.1.0",
-    "testem": "^0.8.3",
+    "run-sequence": "^1.1.1",
+    "testem": "^0.8.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.2.1"
+    "watchify": "^3.2.3"
   },
   "browserify": {
     "transform": [

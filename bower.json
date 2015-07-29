@@ -1,16 +1,19 @@
 {
     "name": "pixi.js",
-    "version": "3.0.6",
 
     "main": "bin/pixi.js",
 
     "ignore": [
         "**/.*",
+        "docs",
+        "gulp",
         "node_modules",
         "bower_components",
         "test",
-        "examples",
-        "tasks"
+        "bower.json",
+        "gulpfile.js",
+        "inch.json",
+        "testem.json"
     ],
     "dependencies": {
     },

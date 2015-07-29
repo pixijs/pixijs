@@ -40,7 +40,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * An array of values used for matrix transformation. Specified as a 9 point Array.
      *
      * @member {number[]}
-     * @memberof ConvolutionFilter#
+     * @memberof PIXI.filters.ConvolutionFilter#
      */
     matrix: {
         get: function ()
@@ -57,7 +57,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * Width of the object you are transforming
      *
      * @member {number}
-     * @memberof ConvolutionFilter#
+     * @memberof PIXI.filters.ConvolutionFilter#
      */
     width: {
         get: function ()
@@ -74,7 +74,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * Height of the object you are transforming
      *
      * @member {number}
-     * @memberof ConvolutionFilter#
+     * @memberof PIXI.filters.ConvolutionFilter#
      */
     height: {
         get: function ()

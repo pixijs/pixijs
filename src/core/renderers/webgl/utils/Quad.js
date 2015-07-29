@@ -1,5 +1,6 @@
 /**
  * Helper class to create a quad
+ *
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
@@ -83,8 +84,8 @@ Quad.prototype.constructor = Quad;
 
 /**
  * Maps two Rectangle to the quad
- * @param rect {Rectangle} the first rectangle
- * @param rect2 {Rectangle} the second rectangle
+ * @param rect {PIXI.Rectangle} the first rectangle
+ * @param rect2 {PIXI.Rectangle} the second rectangle
  */
 Quad.prototype.map = function(rect, rect2)
 {

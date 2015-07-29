@@ -55,7 +55,7 @@ function BitmapText(text, style)
     /**
      * Private tracker for the letter sprite pool.
      *
-     * @member {Sprite[]}
+     * @member {PIXI.Sprite[]}
      * @private
      */
     this._glyphs = [];
@@ -117,7 +117,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The tint of the BitmapText object
      *
      * @member {number}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     tint: {
         get: function ()
@@ -137,7 +137,7 @@ Object.defineProperties(BitmapText.prototype, {
      *
      * @member {string}
      * @default 'left'
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     align: {
         get: function ()
@@ -156,7 +156,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The font descriptor of the BitmapText object
      *
      * @member {Font}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     font: {
         get: function ()
@@ -188,7 +188,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The text of the BitmapText object
      *
      * @member {string}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     text: {
         get: function ()
@@ -216,7 +216,7 @@ Object.defineProperties(BitmapText.prototype, {
 BitmapText.prototype.updateText = function ()
 {
     var data = BitmapText.fonts[this._font.name];
-    var pos = new core.math.Point();
+    var pos = new core.Point();
     var prevCharCode = null;
     var chars = [];
     var lastLineWidth = 0;
@@ -271,7 +271,7 @@ BitmapText.prototype.updateText = function ()
             pos.x += charData.kerning[prevCharCode];
         }
 
-        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
         pos.x += charData.xAdvance;
 
@@ -351,7 +351,7 @@ BitmapText.prototype.updateTransform = function ()
 /**
  * Validates text before calling parent's getLocalBounds
  *
- * @return {Rectangle} The rectangular bounding area
+ * @return {PIXI.Rectangle} The rectangular bounding area
  */
 
 BitmapText.prototype.getLocalBounds = function()

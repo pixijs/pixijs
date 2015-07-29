@@ -4,7 +4,7 @@ var Shader = require('./Shader');
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {PIXI.ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
@@ -45,13 +45,15 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
 
     /**
      * The vertex shader.
-     * @member {Array}
+     *
+     * @member {string}
      */
     vertexSrc = vertexSrc || TextureShader.defaultVertexSrc;
 
     /**
      * The fragment shader.
-     * @member {Array}
+     *
+     * @member {string}
      */
     fragmentSrc = fragmentSrc || TextureShader.defaultFragmentSrc;
 
@@ -63,6 +65,12 @@ TextureShader.prototype = Object.create(Shader.prototype);
 TextureShader.prototype.constructor = TextureShader;
 module.exports = TextureShader;
 
+/**
+ * The default vertex shader source
+ *
+ * @static
+ * @constant
+ */
 TextureShader.defaultVertexSrc = [
     'precision lowp float;',
     'attribute vec2 aVertexPosition;',
@@ -81,6 +89,12 @@ TextureShader.defaultVertexSrc = [
     '}'
 ].join('\n');
 
+/**
+ * The default fragment shader source
+ *
+ * @static
+ * @constant
+ */
 TextureShader.defaultFragmentSrc = [
     'precision lowp float;',
 

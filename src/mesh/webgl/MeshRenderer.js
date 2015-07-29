@@ -1,5 +1,4 @@
-var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
+var core = require('../../core'),
     Mesh = require('../Mesh');
 
 /**
@@ -19,11 +18,11 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
  * @private
  * @memberof PIXI.mesh
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
 function MeshRenderer(renderer)
 {
-    ObjectRenderer.call(this, renderer);
+    core.ObjectRenderer.call(this, renderer);
 
 
     /**
@@ -45,11 +44,11 @@ function MeshRenderer(renderer)
     }
 }
 
-MeshRenderer.prototype = Object.create(ObjectRenderer.prototype);
+MeshRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
 MeshRenderer.prototype.constructor = MeshRenderer;
 module.exports = MeshRenderer;
 
-WebGLRenderer.registerPlugin('mesh', MeshRenderer);
+core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
 /**
  * Sets up the renderer context and necessary buffers.
@@ -65,7 +64,7 @@ MeshRenderer.prototype.onContextChange = function ()
 /**
  * Renders the sprite object.
  *
- * @param mesh {Mesh} the mesh to render
+ * @param mesh {PIXI.mesh.Mesh} the mesh to render
  */
 MeshRenderer.prototype.render = function (mesh)
 {
@@ -154,7 +153,7 @@ MeshRenderer.prototype.render = function (mesh)
 
 /**
  * Prepares all the buffers to render this mesh
- * @param mesh {Mesh} the mesh to render
+ * @param mesh {PIXI.mesh.Mesh} the mesh to render
  */
 MeshRenderer.prototype._initWebGL = function (mesh)
 {

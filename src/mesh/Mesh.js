@@ -1,11 +1,13 @@
-var core = require('../core');
+var core = require('../core'),
+    tempPoint = new core.Point(),
+    tempPolygon = new core.Polygon();
 
 /**
  * Base mesh class
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.mesh
- * @param texture {Texture} The texture to use
+ * @param texture {PIXI.Texture} The texture to use
  * @param [vertices] {Float32Arrif you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
  * @param [indices] {Uint16Array} if you want to specify the indices
@@ -18,7 +20,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     /**
      * The texture of the Mesh
      *
-     * @member {Texture}
+     * @member {PIXI.Texture}
      * @private
      */
     this._texture = null;
@@ -29,9 +31,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Float32Array}
      */
     this.uvs = uvs || new Float32Array([0, 1,
-                                 1, 1,
-                                 1, 0,
-                                 0, 1]);
+        1, 1,
+        1, 0,
+        0, 1]);
 
     /**
      * An array of vertices
@@ -39,9 +41,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Float32Array}
      */
     this.vertices = vertices || new Float32Array([0, 0,
-                                      100, 0,
-                                      100, 100,
-                                      0, 100]);
+        100, 0,
+        100, 100,
+        0, 100]);
 
     /*
      * @member {Uint16Array} An array containing the indices of the vertices
@@ -57,10 +59,11 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     this.dirty = true;
 
     /**
-     * The blend mode to be applied to the sprite. Set to blendModes.NORMAL to remove any blend mode.
+     * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
      *
      * @member {number}
-     * @default CONST.BLEND_MODES.NORMAL;
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
      */
     this.blendMode = core.BLEND_MODES.NORMAL;
 
@@ -72,9 +75,10 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     this.canvasPadding = 0;
 
     /**
-     * The way the Mesh should be drawn, can be any of the Mesh.DRAW_MODES consts
+     * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
      *
      * @member {number}
+     * @see PIXI.mesh.Mesh.DRAW_MODES
      */
     this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
 
@@ -127,7 +131,7 @@ Object.defineProperties(Mesh.prototype, {
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer} a reference to the WebGL renderer
+ * @param renderer {PIXI.WebGLRenderer} a reference to the WebGL renderer
  * @private
  */
 Mesh.prototype._renderWebGL = function (renderer)
@@ -139,7 +143,7 @@ Mesh.prototype._renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer}
+ * @param renderer {PIXI.CanvasRenderer}
  * @private
  */
 Mesh.prototype._renderCanvas = function (renderer)
@@ -302,7 +306,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
 /**
  * Renders a flat Mesh
  *
- * @param Mesh {Mesh} The Mesh to render
+ * @param Mesh {PIXI.mesh.Mesh} The Mesh to render
  * @private
  */
 Mesh.prototype.renderMeshFlat = function (Mesh)
@@ -332,21 +336,6 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
     context.closePath();
 };
 
-/*
-Mesh.prototype.setTexture = function (texture)
-{
-    //TODO SET THE TEXTURES
-    //TODO VISIBILITY
-    //TODO SETTER
-
-    // stop current texture
-    this.texture = texture;
-    this.width   = texture.frame.width;
-    this.height  = texture.frame.height;
-    this.updateFrame = true;
-};
- */
-
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
@@ -361,57 +350,106 @@ Mesh.prototype._onTextureUpdate = function ()
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {Matrix} the transformation matrix of the sprite
- * @return {Rectangle} the framing rectangle
+ * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 Mesh.prototype.getBounds = function (matrix)
 {
-    var worldTransform = matrix || this.worldTransform;
+    if (!this._currentBounds) {
+        var worldTransform = matrix || this.worldTransform;
 
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
+        var a = worldTransform.a;
+        var b = worldTransform.b;
+        var c = worldTransform.c;
+        var d = worldTransform.d;
+        var tx = worldTransform.tx;
+        var ty = worldTransform.ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
 
-    var minX = Infinity;
-    var minY = Infinity;
+        var minX = Infinity;
+        var minY = Infinity;
+
+        var vertices = this.vertices;
+        for (var i = 0, n = vertices.length; i < n; i += 2) {
+            var rawX = vertices[i], rawY = vertices[i + 1];
+            var x = (a * rawX) + (c * rawY) + tx;
+            var y = (d * rawY) + (b * rawX) + ty;
+
+            minX = x < minX ? x : minX;
+            minY = y < minY ? y : minY;
+
+            maxX = x > maxX ? x : maxX;
+            maxY = y > maxY ? y : maxY;
+        }
+
+        if (minX === -Infinity || maxY === Infinity) {
+            return core.Rectangle.EMPTY;
+        }
+
+        var bounds = this._bounds;
+
+        bounds.x = minX;
+        bounds.width = maxX - minX;
+
+        bounds.y = minY;
+        bounds.height = maxY - minY;
+
+        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
+        this._currentBounds = bounds;
+    }
+
+    return this._currentBounds;
+};
+
+/**
+ * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+ *
+ * @param point {PIXI.Point} the point to test
+ * @return {boolean} the result of the test
+ */
+Mesh.prototype.containsPoint = function( point ) {
+    if (!this.getBounds().contains(point.x, point.y)) {
+        return false;
+    }
+    this.worldTransform.applyInverse(point,  tempPoint);
 
     var vertices = this.vertices;
-    for (var i = 0, n = vertices.length; i < n; i += 2)
-    {
-        var rawX = vertices[i], rawY = vertices[i + 1];
-        var x = (a * rawX) + (c * rawY) + tx;
-        var y = (d * rawY) + (b * rawX) + ty;
+    var points = tempPolygon.points;
+    var i, len;
 
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
+        var indices = this.indices;
+        len = this.indices.length;
+        //TODO: inline this.
+        for (i=0;i<len;i+=3) {
+            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+            points[0] = vertices[ind0];
+            points[1] = vertices[ind0+1];
+            points[2] = vertices[ind1];
+            points[3] = vertices[ind1+1];
+            points[4] = vertices[ind2];
+            points[5] = vertices[ind2+1];
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+                return true;
+            }
+        }
+    } else {
+        len = vertices.length;
+        for (i=0;i<len;i+=6) {
+            points[0] = vertices[i];
+            points[1] = vertices[i+1];
+            points[2] = vertices[i+2];
+            points[3] = vertices[i+3];
+            points[4] = vertices[i+4];
+            points[5] = vertices[i+5];
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+                return true;
+            }
+        }
     }
-
-    if (minX === -Infinity || maxY === Infinity)
-    {
-        return core.math.Rectangle.EMPTY;
-    }
-
-    var bounds = this._bounds;
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    this._currentBounds = bounds;
-
-    return bounds;
+    return false;
 };
 
 /**

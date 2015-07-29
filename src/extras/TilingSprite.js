@@ -19,17 +19,17 @@ function TilingSprite(texture, width, height)
     /**
      * The scaling of the image that is being tiled
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
-    this.tileScale = new core.math.Point(1,1);
+    this.tileScale = new core.Point(1,1);
 
 
     /**
      * The offset position of the image that is being tiled
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
-    this.tilePosition = new core.math.Point(0,0);
+    this.tilePosition = new core.Point(0,0);
 
     ///// private
 
@@ -52,7 +52,7 @@ function TilingSprite(texture, width, height)
     /**
      * An internal WebGL UV cache.
      *
-     * @member {TextureUvs}
+     * @member {PIXI.TextureUvs}
      * @private
      */
     this._uvs = new core.TextureUvs();
@@ -82,7 +82,6 @@ function TilingSprite(texture, width, height)
         '   vec2 coord = aTextureCoord;',
         '   coord -= uTransform.xy;',
         '   coord /= uTransform.zw;',
-        '   coord /= uFrame.zw;',
         '   vTextureCoord = coord;',
 
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
@@ -96,11 +95,12 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
+        'uniform vec2 uPixelSize;',
 
         'void main(void){',
 
-        '   vec2 coord = fract(vTextureCoord);',
-        '   coord *= uFrame.zw;',
+        '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
+        '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
         '   coord += uFrame.xy;',
 
         '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
@@ -110,8 +110,8 @@ function TilingSprite(texture, width, height)
             // set the uniforms
             {
                 uFrame: { type: '4fv', value: [0,0,1,1] },
-
-                uTransform: { type: '4fv', value: [0,0,1,1] }
+                uTransform: { type: '4fv', value: [0,0,1,1] },
+                uPixelSize : { type : '2fv', value: [1, 1]}
             }
       );
 }
@@ -126,7 +126,7 @@ Object.defineProperties(TilingSprite.prototype, {
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof TilingSprite#
+     * @memberof PIXI.extras.TilingSprite#
      */
     width: {
         get: function ()
@@ -143,7 +143,7 @@ Object.defineProperties(TilingSprite.prototype, {
      * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof TilingSprite#
+     * @memberof PIXI.extras.TilingSprite#
      */
     height: {
         get: function ()
@@ -166,7 +166,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer}
  * @private
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
@@ -189,9 +189,9 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.width = this.width;
     texture._frame.height = this.height;
 
-    //PADDING
+    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
+    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
 
-    // apply padding to stop gaps in the tile when numbers are not rounded
     this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
     this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
     this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
@@ -213,7 +213,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer} a reference to the canvas renderer
+ * @param renderer {PIXI.CanvasRenderer} a reference to the canvas renderer
  * @private
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
@@ -282,7 +282,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 /**
  * Returns the framing rectangle of the sprite as a Rectangle object
 *
- * @return {Rectangle} the framing rectangle
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 TilingSprite.prototype.getBounds = function ()
 {
@@ -357,7 +357,7 @@ TilingSprite.prototype.getBounds = function ()
 
 /**
  * Checks if a point is inside this tiling sprite
- * @param point {Point} the point to check
+ * @param point {PIXI.Point} the point to check
  */
 TilingSprite.prototype.containsPoint = function( point )
 {
@@ -400,8 +400,8 @@ TilingSprite.prototype.destroy = function () {
  * The frame ids are created when a Texture packer file has been loaded
  *
  * @static
- * @param frameId {String} The frame Id of the texture in the cache
- * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
+ * @param frameId {string} The frame Id of the texture in the cache
+ * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
@@ -422,12 +422,12 @@ TilingSprite.fromFrame = function (frameId,width,height)
  * If the image is not in the texture cache it will be loaded
  *
  * @static
- * @param imageId {String} The image url of the texture
+ * @param imageId {string} The image url of the texture
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=scaleModes.DEFAULT] {number} if you want to specify the scale mode, see {@link SCALE_MODES} for possible values
- * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
  */
 TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMode)
 {

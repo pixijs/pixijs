@@ -1,4 +1,4 @@
-precision lowp float;
+precision mediump float;
 
 varying vec2 vMapCoord;
 varying vec2 vTextureCoord;
@@ -11,6 +11,7 @@ uniform sampler2D mapSampler;
 
 void main(void)
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     vec2 mapCords = vTextureCoord;
     mapCords += (dimensions.zw + offset)/ dimensions.xy ;
@@ -26,6 +27,8 @@ void main(void)
  //    gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb, 0.5);
 =======
    vec4 original =  texture2D(uSampler, vTextureCoord);
+=======
+>>>>>>> dev
    vec4 map =  texture2D(mapSampler, vMapCoord);
 
    map -= 0.5;

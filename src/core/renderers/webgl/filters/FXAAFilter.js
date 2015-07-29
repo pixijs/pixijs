@@ -36,6 +36,13 @@ FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
 FXAAFilter.prototype.constructor = FXAAFilter;
 module.exports = FXAAFilter;
 
+/**
+ * Applies the filter
+ *
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {PIXI.RenderTarget}
+ * @param output {PIXI.RenderTarget}
+ */
 FXAAFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;

@@ -13,7 +13,7 @@ var utils = require('../../utils'),
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this object renderer works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
 function GraphicsRenderer(renderer)
 {
@@ -23,6 +23,12 @@ function GraphicsRenderer(renderer)
 
     this.primitiveShader = null;
     this.complexPrimitiveShader = null;
+
+    /**
+     * This is the maximum number of points a poly can contain before it is rendered as a complex polygon (using the stencil buffer)
+     * @type {Number}
+     */
+    this.maximumSimplePolySize = 200;
 }
 
 GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -59,7 +65,7 @@ GraphicsRenderer.prototype.destroy = function () {
 /**
  * Renders a graphics object.
  *
- * @param graphics {Graphics} The graphics object to render.
+ * @param graphics {PIXI.Graphics} The graphics object to render.
  */
 GraphicsRenderer.prototype.render = function(graphics)
 {
@@ -103,7 +109,6 @@ GraphicsRenderer.prototype.render = function(graphics)
         {
             webGLData = webGL.data[i];
 
-
             shader = renderer.shaderManager.primitiveShader;
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
@@ -126,6 +131,8 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
+
+        renderer.drawCount++;
     }
 };
 
@@ -133,7 +140,7 @@ GraphicsRenderer.prototype.render = function(graphics)
  * Updates the graphics object
  *
  * @private
- * @param graphicsData {Graphics} The graphics object to update
+ * @param graphicsData {PIXI.Graphics} The graphics object to update
  */
 GraphicsRenderer.prototype.updateGraphics = function(graphics)
 {
@@ -198,16 +205,14 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             {
                 if (data.points.length >= 6)
                 {
-                    if (data.points.length < 6 * 2)
+                    if (data.points.length < this.maximumSimplePolySize * 2)
                     {
                         webGLData = this.switchMode(webGL, 0);
 
                         var canDrawUsingSimple = this.buildPoly(data, webGLData);
-                   //     console.log(canDrawUsingSimple);
 
                         if (!canDrawUsingSimple)
                         {
-                        //    console.log("<>>>")
                             webGLData = this.switchMode(webGL, 1);
                             this.buildComplexPoly(data, webGLData);
                         }
@@ -298,7 +303,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
  * Builds a rectangle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
@@ -364,7 +369,7 @@ GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
  * Builds a rounded rectangle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGLData)
@@ -384,7 +389,7 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
     this.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
     this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
 
-    // this tiny number deals with the issue that occurs when points overlap and polyK fails to triangulate the item.
+    // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
     // TODO - fix this properly, this is not very elegant.. but it works for now.
 
     if (graphicsData.fill)
@@ -486,7 +491,7 @@ GraphicsRenderer.prototype.quadraticBezierCurve = function (fromX, fromY, cpX, c
  * Builds a circle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object to draw
+ * @param graphicsData {PIXI.Graphics} The graphics object to draw
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
@@ -567,7 +572,7 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
  * Builds a line to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
@@ -782,7 +787,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
  * Builds a complex polygon to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
@@ -844,7 +849,7 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
  * Builds a polygon to draw
  *
  * @private
- * @param graphicsData {WebGLGraphicsData} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
