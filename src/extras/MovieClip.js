@@ -39,6 +39,18 @@ function MovieClip(textures)
     this.animationSpeed = 1;
 
     /**
+     * @private
+     */
+    this._durationMultipliers = null;
+
+    /**
+     * Elepsed Time of current frame (Only active if durationMultipliers is used)
+     *
+     * @private
+     */
+    this._lag = 0;
+
+    /**
      * Whether or not the movie clip repeats after playing.
      *
      * @member {boolean}
@@ -109,7 +121,41 @@ Object.defineProperties(MovieClip.prototype, {
         {
             this._textures = value;
 
-            this.texture = this._textures[Math.floor(this._currentTime) % this._textures.length];
+            this._texture = this._textures[this.currentFrame];
+
+            this._durationMultipliers = null;
+        }
+    },
+
+    /**
+     * An array of numbers telling how long a frame should be shown relative to animationspeed
+     *
+     * @member {number[]}
+     * @memberof PIXI.extras.MovieClip#
+     *
+     */
+    durationMultipliers: {
+        get: function ()
+        {
+            if(this._durationMultipliers === null)
+            {
+                this._durationMultipliers = [];
+            }
+
+            while(this._durationMultipliers.length < this._textures.length)
+            {
+                this._durationMultipliers.push(1);
+            }
+            if(this._durationMultipliers.length > this._textures.length)
+            {
+                this._durationMultipliers.length = this._textures.length;
+            }
+
+            return this._durationMultipliers;
+        },
+        set: function (value)
+        {
+            this._durationMultipliers = value;
         }
     },
 
@@ -123,7 +169,12 @@ Object.defineProperties(MovieClip.prototype, {
     currentFrame: {
         get: function ()
         {
-            return Math.floor(this._currentTime) % this._textures.length;
+            var currentFrame = Math.floor(this._currentTime) % this._textures.length;
+            if (currentFrame < 0)
+            {
+                currentFrame += this._textures.length;
+            }
+            return currentFrame;
         }
     }
 
@@ -170,8 +221,16 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this._currentTime = frameNumber;
 
-    var round = Math.floor(this._currentTime);
-    this._texture = this._textures[round % this._textures.length];
+    if (this._durationMultipliers !== null)
+    {
+        this._lag = frameNumber % 1 * this.durationMultipliers[this.currentFrame];
+        if(this._lag < 0)
+        {
+            this._lag++;
+        }
+    }
+
+    this._texture = this._textures[this.currentFrame];
 };
 
 /**
@@ -182,6 +241,16 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
     this._currentTime = frameNumber;
+
+    if (this._durationMultipliers !== null)
+    {
+        this._lag = frameNumber % 1 * this.durationMultipliers[this.currentFrame];
+        if(this._lag < 0)
+        {
+            this._lag++;
+        }
+    }
+
     this.play();
 };
 
@@ -192,39 +261,67 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 MovieClip.prototype.update = function (deltaTime)
 {
 
-    this._currentTime += this.animationSpeed * deltaTime;
+    var elapsed = this.animationSpeed * deltaTime;
 
-    var floor = Math.floor(this._currentTime);
-
-    if (floor < 0)
+    if (this._durationMultipliers !== null)
     {
-        if (this.loop)
-        {
-            this._texture = this._textures[this._textures.length - 1 + floor % this._textures.length];
-        }
-        else
-        {
-            this.gotoAndStop(0);
+        this._lag += elapsed;
+        var step = 0;
 
-            if (this.onComplete)
+        var multilpiers = this.durationMultipliers;
+        var currentFrame = this.currentFrame;
+
+        while (Math.abs(this._lag) >= multilpiers[currentFrame])
+        {
+            var sign = Math.abs(this._lag) / this._lag;
+            step += sign;
+
+            this._lag -= multilpiers[currentFrame] * sign;
+            currentFrame += sign;
+
+            if (currentFrame < 0 || currentFrame >= this._textures.length)
             {
-                this.onComplete();
+                if(currentFrame < 0)
+                {
+                    currentFrame = this._textures.length - 1;
+                }
+                else
+                {
+                    currentFrame = 0;
+                }
             }
         }
+
+        this._currentTime = (this._lag > 0 ? Math.floor(this._currentTime) : Math.ceil(this._currentTime)) + step + this._lag / multilpiers[currentFrame];
     }
-    else if (this.loop || floor < this._textures.length)
+    else
     {
-        this._texture = this._textures[floor % this._textures.length];
+        this._currentTime += elapsed;
     }
-    else if (floor >= this._textures.length)
+
+    if (this._currentTime < 0 && !this.loop)
     {
-        this.gotoAndStop(this.textures.length - 1);
+        this.gotoAndStop(0);
 
         if (this.onComplete)
         {
             this.onComplete();
         }
     }
+    else if (this._currentTime >= this._textures.length && !this.loop)
+    {
+        this.gotoAndStop(this._textures.length - 1);
+
+        if (this.onComplete)
+        {
+            this.onComplete();
+        }
+    }
+    else
+    {
+        this._texture = this._textures[this.currentFrame];
+    }
+
 };
 
 /*
