@@ -80,7 +80,7 @@ function ParticleContainer(maxSize, properties, batchSize)
     this._buffers = null;
 
     /**
-     * @member {boolean}
+     * @member {number}
      * @private
      */
     this._bufferToUpdate = 0;
