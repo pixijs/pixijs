@@ -277,19 +277,20 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     var begin = beginIndex || 0;
     var end = typeof endIndex === 'number' ? endIndex : this.children.length;
     var range = end - begin;
+    var removed, i;
 
     if (range > 0 && range <= end)
     {
-        var removed = this.children.splice(begin, range);
+        removed = this.children.splice(begin, range);
 
-        for (var i = 0; i < removed.length; ++i)
+        for (i = 0; i < removed.length; ++i)
         {
             removed[i].parent = null;
         }
 
         this.onChildrenChange(beginIndex);
 
-        for (var i = 0; i < removed.length; ++i)
+        for (i = 0; i < removed.length; ++i)
         {
             removed[i].emit('removed', this);
         }
