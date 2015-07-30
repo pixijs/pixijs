@@ -171,7 +171,7 @@ ParticleContainer.prototype.onChildrenChange = function (smallestChildIndex)
     if (bufferIndex < this._bufferToUpdate) {
         this._bufferToUpdate = bufferIndex;
     }
-}
+};
 
 /**
  * Renders the object using the Canvas renderer
