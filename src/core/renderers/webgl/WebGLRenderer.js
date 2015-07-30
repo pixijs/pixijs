@@ -148,6 +148,14 @@ function WebGLRenderer(width, height, options)
     this._mapGlModes();
 
     /**
+     * If set to true, requests the mouse cursor lock inside the canvas.
+     *
+     * @member {boolean}
+     * @default false
+     */
+    this.mouseLock = false;
+
+    /**
      * An array of render targets
      * @member {Array}
      * @private
