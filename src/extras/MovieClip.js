@@ -19,8 +19,8 @@ var core = require('../core');
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {PIXI.Texture[]|Object[]} an array of {PIXI.Texture} or frame objects that make up the animation
- * @param textures[].texture {PIXI.Texture} the {PIXI.Texture} of the frame
+ * @param textures {PIXI.Texture[]|Object[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
+ * @param textures[].texture {PIXI.Texture} the {@link PIXI.Texture} of the frame
  * @param textures[].time {number} the duration of the frame in ms
  */
 function MovieClip(textures)
