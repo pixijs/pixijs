@@ -27,7 +27,7 @@ var BaseTexture = require('./BaseTexture'),
  * @extends PIXI.BaseTexture
  * @memberof PIXI
  * @param source {HTMLVideoElement}
- * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  */
 function VideoBaseTexture(source, scaleMode)
 {
@@ -76,6 +76,7 @@ module.exports = VideoBaseTexture;
 
 /**
  * The internal update loop of the video base texture, only runs when autoUpdate is set to true
+ *
  * @private
  */
 VideoBaseTexture.prototype._onUpdate = function ()
@@ -89,6 +90,7 @@ VideoBaseTexture.prototype._onUpdate = function ()
 
 /**
  * Runs the update loop when the video is ready to play
+ *
  * @private
  */
 VideoBaseTexture.prototype._onPlayStart = function ()
@@ -102,6 +104,7 @@ VideoBaseTexture.prototype._onPlayStart = function ()
 
 /**
  * Fired when a pause event is triggered, stops the update loop
+ *
  * @private
  */
 VideoBaseTexture.prototype._onPlayStop = function ()
@@ -111,6 +114,7 @@ VideoBaseTexture.prototype._onPlayStop = function ()
 
 /**
  * Fired when the video is loaded and ready to play
+ *
  * @private
  */
 VideoBaseTexture.prototype._onCanPlay = function ()
@@ -156,8 +160,8 @@ VideoBaseTexture.prototype.destroy = function ()
  *
  * @static
  * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link SCALE_MODES} for possible values
- * @return {VideoBaseTexture}
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.VideoBaseTexture}
  */
 VideoBaseTexture.fromVideo = function (video, scaleMode)
 {
@@ -186,8 +190,8 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
  * @param [videoSrc.src] {string} One of the source urls for the video
  * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
  *  the url's extension will be used as the second part of the mime type.
- * @param scaleMode {number} See {@link SCALE_MODES} for possible values
- * @return {VideoBaseTexture}
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.VideoBaseTexture}
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
 {
@@ -198,7 +202,7 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
     {
         for (var i = 0; i < videoSrc.length; ++i)
         {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+            video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
         }
     }
     // single object or string

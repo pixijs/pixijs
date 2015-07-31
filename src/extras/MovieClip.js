@@ -50,7 +50,7 @@ function MovieClip(textures)
      * Function to call when a MovieClip finishes playing
      *
      * @method
-     * @memberof MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      */
     this.onComplete = null;
 
@@ -82,7 +82,7 @@ Object.defineProperties(MovieClip.prototype, {
      * assigned to the MovieClip.
      *
      * @member {number}
-     * @memberof PIXI.MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      * @default 0
      * @readonly
      */
@@ -97,7 +97,7 @@ Object.defineProperties(MovieClip.prototype, {
      * The array of textures used for this MovieClip
      *
      * @member {PIXI.Texture[]}
-     * @memberof PIXI.MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      *
      */
     textures: {
@@ -117,7 +117,7 @@ Object.defineProperties(MovieClip.prototype, {
     * The MovieClips current frame index
     *
     * @member {number}
-    * @memberof PIXI.MovieClip#
+    * @memberof PIXI.extras.MovieClip#
     * @readonly
     */
     currentFrame: {

@@ -25,4 +25,5 @@ node_modules
 docs/
 examples_old/
 
-.idea/
+# jetBrains IDE ignores
+.idea

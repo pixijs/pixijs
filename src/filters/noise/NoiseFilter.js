@@ -37,7 +37,7 @@ Object.defineProperties(NoiseFilter.prototype, {
      * The amount of noise to apply.
      *
      * @member {number}
-     * @memberof NoiseFilter#
+     * @memberof PIXI.filters.NoiseFilter#
      * @default 0.5
      */
     noise: {

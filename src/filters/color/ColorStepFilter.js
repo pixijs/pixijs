@@ -32,7 +32,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
      * The number of steps to reduce the palette by.
      *
      * @member {number}
-     * @memberof ColorStepFilter#
+     * @memberof PIXI.filters.ColorStepFilter#
      */
     step: {
         get: function ()

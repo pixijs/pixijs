@@ -54,7 +54,70 @@ from the road map above feel free to get in touch.
 Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
 before submitting changes.
 
-## How to build ##
+### Current features ###
+
+- WebGL renderer (with automatic smart batching allowing for REALLY fast performance)
+- Canvas renderer (Fastest in town!)
+- Full scene graph
+- Super easy to use API (similar to the flash display list API)
+- Support for texture atlases
+- Asset loader / sprite sheet loader
+- Auto-detect which renderer should be used
+- Full Mouse and Multi-touch Interaction
+- Text
+- BitmapFont text
+- Multiline Text
+- Render Texture
+- Primitive Drawing
+- Masking
+- Filters
+- [User Plugins](https://github.com/GoodBoyDigital/pixi.js/wiki/Pixi-v3-Plugins)
+
+### Basic Usage Example ###
+
+```js
+// You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
+// which will try to choose the best renderer for the environment you are in.
+var renderer = new PIXI.WebGLRenderer(800, 600);
+
+// The renderer will create a canvas element for you that you can then insert into the DOM.
+document.body.appendChild(renderer.view);
+
+// You need to create a root container that will hold the scene you want to draw.
+var stage = new PIXI.Container();
+
+// load the texture we need
+PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
+    // This creates a texture from a 'bunny.png' image.
+    var bunny = new PIXI.Sprite(resources.bunny.texture);
+
+    // Setup the position and scale of the bunny
+    bunny.position.x = 400;
+    bunny.position.y = 300;
+
+    bunny.scale.x = 2;
+    bunny.scale.y = 2;
+
+    // Add the bunny to the scene we are building.
+    stage.addChild(bunny);
+
+    // kick off the animation loop (defined below)
+    animate();
+});
+
+function animate() {
+    // start the timer for the next animation loop
+    requestAnimationFrame(animate);
+
+    // each frame we spin the bunny around a bit
+    bunny.rotation += 0.01;
+
+    // this is the main render call that makes pixi draw your container and its children.
+    renderer.render(stage);
+}
+```
+
+### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use pixi, then
 just download one of our [prebuilt releases](https://github.com/GoodBoyDigital/pixi.js/releases). Really
@@ -82,16 +145,16 @@ $> gulp build
 This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
 with all the plugins in the pixi.js project.
 
-If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
+If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> gulp build --exclude spine --exclude interaction
+$> gulp build --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> gulp build -e extras -e spine -e interaction -e filters
+$> gulp build -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
@@ -110,67 +173,6 @@ $> gulp jsdoc
 
 The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration
 file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
-
-### Current features ###
-
-- WebGL renderer (with automatic smart batching allowing for REALLY fast performance)
-- Canvas renderer (Fastest in town!)
-- Full scene graph
-- Super easy to use API (similar to the flash display list API)
-- Support for texture atlases
-- Asset loader / sprite sheet loader
-- Auto-detect which renderer should be used
-- Full Mouse and Multi-touch Interaction
-- Text
-- BitmapFont text
-- Multiline Text
-- Render Texture
-- Spine support
-- Primitive Drawing
-- Masking
-- Filters
-
-### Basic Usage Example ###
-
-```js
-    // You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
-    // which will try to choose the best renderer for the environment you are in.
-    var renderer = new PIXI.WebGLRenderer(800, 600);
-
-    // The renderer will create a canvas element for you that you can then insert into the DOM.
-    document.body.appendChild(renderer.view);
-
-    // You need to create a root container that will hold the scene you want to draw.
-    var stage = new PIXI.Container();
-
-    // This creates a texture from a 'bunny.png' image.
-    var bunnyTexture = PIXI.Texture.fromImage('bunny.png');
-    var bunny = new PIXI.Sprite(bunnyTexture);
-
-    // Setup the position and scale of the bunny
-    bunny.position.x = 400;
-    bunny.position.y = 300;
-
-    bunny.scale.x = 2;
-    bunny.scale.y = 2;
-
-    // Add the bunny to the scene we are building.
-    stage.addChild(bunny);
-
-    // kick off the animation loop (defined below)
-    animate();
-
-    function animate() {
-        // start the timer for the next animation loop
-        requestAnimationFrame(animate);
-
-        // each frame we spin the bunny around a bit
-        bunny.rotation += 0.01;
-
-        // this is the main render call that makes pixi draw your container and its children.
-        renderer.render(stage);
-    }
-```
 
 ### License ###
 

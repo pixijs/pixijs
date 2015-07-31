@@ -44,7 +44,7 @@ module.exports = Circle;
 /**
  * Creates a clone of this Circle instance
  *
- * @return {Circle} a copy of the Circle
+ * @return {PIXI.Circle} a copy of the Circle
  */
 Circle.prototype.clone = function ()
 {
@@ -78,7 +78,7 @@ Circle.prototype.contains = function (x, y)
 /**
 * Returns the framing rectangle of the circle as a Rectangle object
 *
-* @return {Rectangle} the framing rectangle
+* @return {PIXI.Rectangle} the framing rectangle
 */
 Circle.prototype.getBounds = function ()
 {

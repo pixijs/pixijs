@@ -28,7 +28,7 @@ module.exports = Point;
 /**
  * Creates a clone of this point
  *
- * @return {Point} a copy of the point
+ * @return {PIXI.Point} a copy of the point
  */
 Point.prototype.clone = function ()
 {
@@ -38,7 +38,7 @@ Point.prototype.clone = function ()
 /**
  * Copies x and y from the given point
  *
- * @param p {Point}
+ * @param p {PIXI.Point}
  */
 Point.prototype.copy = function (p) {
     this.set(p.x, p.y);
@@ -47,7 +47,7 @@ Point.prototype.copy = function (p) {
 /**
  * Returns true if the given point is equal to this point
  *
- * @param p {Point}
+ * @param p {PIXI.Point}
  * @returns {boolean}
  */
 Point.prototype.equals = function (p) {

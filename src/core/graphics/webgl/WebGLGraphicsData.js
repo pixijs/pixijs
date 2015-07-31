@@ -18,19 +18,19 @@ function WebGLGraphicsData(gl) {
     //TODO does this need to be split before uploding??
     /**
      * An array of color components (r,g,b)
-     * @member {Array}
+     * @member {number[]}
      */
     this.color = [0,0,0]; // color split!
 
     /**
      * An array of points to draw
-     * @member {Array}
+     * @member {PIXI.Point[]}
      */
     this.points = [];
 
     /**
      * The indices of the vertices
-     * @member {Array}
+     * @member {number[]}
      */
     this.indices = [];
     /**

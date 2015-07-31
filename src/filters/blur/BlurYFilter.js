@@ -67,7 +67,7 @@ Object.defineProperties(BlurYFilter.prototype, {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof BlurYFilter#
+     * @memberof PIXI.filters.BlurYFilter#
      * @default 2
      */
     blur: {
