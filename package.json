@@ -32,15 +32,15 @@
   "dependencies": {
     "async": "^0.9.0",
     "brfs": "^1.4.0",
-    "earcut": "^2.0.1",
+    "earcut": "^2.0.2",
     "eventemitter3": "^1.1.1",
     "gulp-header": "^1.2.2",
     "object-assign": "^2.0.0",
     "resource-loader": "^1.6.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.4",
-    "chai": "^3.0.0",
+    "browserify": "^11.0.1",
+    "chai": "^3.2.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
@@ -56,14 +56,14 @@
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
     "jsdoc": "^3.3.2",
     "jshint-summary": "^0.4.0",
-    "minimist": "^1.1.1",
+    "minimist": "^1.1.2",
     "mocha": "^2.2.5",
     "require-dir": "^0.3.0",
-    "run-sequence": "^1.1.1",
+    "run-sequence": "^1.1.2",
     "testem": "^0.8.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.2.3"
+    "watchify": "^3.3.1"
   },
   "browserify": {
     "transform": [
