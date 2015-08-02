@@ -48,13 +48,6 @@ function MovieClip(textures)
     this.animationSpeed = 1;
 
     /**
-     * Elepsed Time of current frame in ms (Only active if timed frames are used)
-     *
-     * @private
-     */
-    this._lag = 0;
-
-    /**
      * Whether or not the movie clip repeats after playing.
      *
      * @member {boolean}
@@ -203,15 +196,6 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this._currentTime = frameNumber;
 
-    if (this._durations !== null)
-    {
-        this._lag = frameNumber % 1 * this._durations[this.currentFrame];
-        if(this._lag < 0)
-        {
-            this._currentTime++;
-        }
-    }
-
     this._texture = this._textures[this.currentFrame];
 };
 
@@ -223,15 +207,6 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
     this._currentTime = frameNumber;
-
-    if (this._durations !== null)
-    {
-        this._lag = frameNumber % 1 * this._durations[this.currentFrame];
-        if(this._lag < 0)
-        {
-            this._currentTime++;
-        }
-    }
 
     this.play();
 };
@@ -246,24 +221,26 @@ MovieClip.prototype.update = function (deltaTime)
 
     if (this._durations !== null)
     {
-        this._lag += elapsed / 60 * 1000;
+        var lag = this._currentTime % 1 * this._durations[this.currentFrame];
 
-        while (this._lag < 0)
+        lag += elapsed / 60 * 1000;
+
+        while (lag < 0)
         {
             this._currentTime--;
-            this._lag += this._durations[this.currentFrame];
+            lag += this._durations[this.currentFrame];
         }
 
         var sign = Math.sign(this.animationSpeed * deltaTime);
         this._currentTime = Math.floor(this._currentTime);
 
-        while (this._lag >= this._durations[this.currentFrame])
+        while (lag >= this._durations[this.currentFrame])
         {
-            this._lag -= this._durations[this.currentFrame] * sign;
+            lag -= this._durations[this.currentFrame] * sign;
             this._currentTime += sign;
         }
 
-        this._currentTime += this._lag / this._durations[this.currentFrame];
+        this._currentTime += lag / this._durations[this.currentFrame];
     }
     else
     {
