@@ -220,16 +220,27 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
+            // reset previous mask
             if (this._mask)
             {
                 this._mask.renderable = true;
+                this._mask.parent = null;
             }
 
+            // set mask to the passed in value
             this._mask = value;
 
-            if (this._mask)
-            {
-                this._mask.renderable = false;
+            // if a non-null value
+            if (value) {
+                // remove new mask from scene if it is in it
+                if (value.parent) {
+                    value.parent.removeChild(value);
+                }
+
+                // set this as the parent of the mask object
+                value.parent = this;
+
+                value.renderable = false;
             }
         }
     },
@@ -319,6 +330,10 @@ DisplayObject.prototype.updateTransform = function ()
         wt.d  = d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+    }
+
+    if (this._mask) {
+        this._mask.updateTransform();
     }
 
     // multiply the alphas..
