@@ -181,8 +181,8 @@ Graphics.prototype.clone = function ()
     clone.blendMode     = this.blendMode;
     clone.isMask        = this.isMask;
     clone.boundsPadding = this.boundsPadding;
-    clone.dirty         = this.dirty;
-    clone.glDirty       = this.glDirty;
+    clone.dirty         = true;
+    clone.glDirty       = true;
     clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
     // copy graphics data
