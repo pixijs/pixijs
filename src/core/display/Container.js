@@ -41,6 +41,7 @@ Object.defineProperties(Container.prototype, {
      * @memberof PIXI.Container#
      */
     width: {
+        configurable: true,
         get: function ()
         {
             return this.scale.x * this.getLocalBounds().width;
@@ -71,6 +72,7 @@ Object.defineProperties(Container.prototype, {
      * @memberof PIXI.Container#
      */
     height: {
+        configurable: true,
         get: function ()
         {
             return  this.scale.y * this.getLocalBounds().height;
