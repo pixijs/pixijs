@@ -229,8 +229,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         transform = this.worldTransform,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
-        modX = this.tilePosition.x % (texture._frame.width * this.tileScale.x),
-        modY = this.tilePosition.y % (texture._frame.height * this.tileScale.y);
+        modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width,
+        modY = (this.tilePosition.y / this.tileScale.y) % texture._frame.height;
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -253,7 +253,6 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
-
 
     context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
