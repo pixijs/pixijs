@@ -483,26 +483,11 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
 
     if (this.currentPath)
     {
-        if (anticlockwise && this.filling)
-        {
-            this.currentPath.shape.points.push(cx, cy);
-        }
-        else
-        {
-            this.currentPath.shape.points.push(startX, startY);
-        }
+        this.currentPath.shape.points.push(startX, startY);
     }
     else
     {
-        if (anticlockwise && this.filling)
-        {
-
-            this.moveTo(cx, cy);
-        }
-        else
-        {
-            this.moveTo(startX, startY);
-        }
+        this.moveTo(startX, startY);
     }
 
     var points = this.currentPath.shape.points;
