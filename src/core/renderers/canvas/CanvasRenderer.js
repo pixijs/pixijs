@@ -113,6 +113,13 @@ function CanvasRenderer(width, height, options)
         worldAlpha: 1
     };
 
+    /**
+     * If set to true, requests the mouse cursor lock inside the canvas.
+     *
+     * @member {boolean}
+     * @default false
+     */
+    this.mouseLock = false;
 
     this.resize(width, height);
 }
