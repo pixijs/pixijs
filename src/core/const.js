@@ -189,7 +189,8 @@ var CONST = {
         transparent: false,
         backgroundColor: 0x000000,
         clearBeforeRender: true,
-        preserveDrawingBuffer: false
+        preserveDrawingBuffer: false,
+        roundPixels: false
     },
 
     /**

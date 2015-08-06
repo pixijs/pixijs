@@ -7,6 +7,7 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
+    EventEmitter:   require('eventemitter3'),
     pluginTarget:   require('./pluginTarget'),
     async:          require('async'),
 
@@ -221,6 +222,16 @@ var utils = module.exports = {
         {
             return false;
         }
+    },
+
+    /**
+     * Retunrs sign of number
+     *
+     * @param n {number}
+     * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
+     */
+    sign: function (n) {
+        return n ? (n < 0 ? -1 : 1) : 0;
     },
 
     /**

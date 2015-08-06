@@ -2,9 +2,11 @@
 var utils = require('../../../utils');
 
 /**
+ * Base shader class for PIXI managed shaders.
+ *
  * @class
  * @memberof PIXI
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {PIXI.ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Uniforms for this shader.
@@ -98,7 +100,8 @@ Shader.prototype.init = function ()
 };
 
 /*
- * Caches the locations of the uniform for reuse
+ * Caches the locations of the uniform for reuse.
+
  * @param keys {string} the uniforms to cache
  */
 Shader.prototype.cacheUniformLocations = function (keys)
@@ -110,7 +113,8 @@ Shader.prototype.cacheUniformLocations = function (keys)
 };
 
 /*
- * Caches the locations of the attribute for reuse
+ * Caches the locations of the attribute for reuse.
+
  * @param keys {string} the attributes to cache
  */
 Shader.prototype.cacheAttributeLocations = function (keys)
@@ -136,7 +140,8 @@ Shader.prototype.cacheAttributeLocations = function (keys)
 };
 
 /*
- * Attaches the shaders and creates the program
+ * Attaches the shaders and creates the program.
+
  * @return {WebGLProgram}
  */
 Shader.prototype.compile = function ()
@@ -215,7 +220,7 @@ Shader.prototype.buildSync = function ()
 /**
 * Adds a new uniform
 *
-* @param uniform {Object} the new uniform to attach
+* @param uniform {object} the new uniform to attach
 */
 Shader.prototype.syncUniform = function (uniform)
 {
@@ -457,8 +462,9 @@ Shader.prototype.syncUniform = function (uniform)
     }
 };
 
-/*
+/**
  * Updates the shader uniform values.
+ *
  */
 Shader.prototype.syncUniforms = function ()
 {

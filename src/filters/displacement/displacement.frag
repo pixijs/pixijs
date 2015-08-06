@@ -1,4 +1,4 @@
-precision lowp float;
+precision mediump float;
 
 varying vec2 vMapCoord;
 varying vec2 vTextureCoord;
@@ -11,7 +11,6 @@ uniform sampler2D mapSampler;
 
 void main(void)
 {
-   vec4 original =  texture2D(uSampler, vTextureCoord);
    vec4 map =  texture2D(mapSampler, vMapCoord);
 
    map -= 0.5;

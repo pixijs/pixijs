@@ -10,9 +10,9 @@ var fs = require('fs');
  * @class
  * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
- * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
+ * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
-function DisplacementFilter(sprite)
+function DisplacementFilter(sprite, scale)
 {
     var maskMatrix = new core.Matrix();
     sprite.renderable = false;
@@ -33,9 +33,12 @@ function DisplacementFilter(sprite)
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 
+    if (scale === null || scale === undefined)
+    {
+        scale = 20;
+    }
 
-    this.scale = new core.Point(20,20);
-
+    this.scale = new core.Point(scale, scale);
 }
 
 DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -62,8 +65,8 @@ Object.defineProperties(DisplacementFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
-     * @member {Texture}
-     * @memberof DisplacementFilter#
+     * @member {PIXI.Texture}
+     * @memberof PIXI.filters.DisplacementFilter#
      */
     map: {
         get: function ()

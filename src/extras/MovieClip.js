@@ -19,16 +19,25 @@ var core = require('../core');
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {Texture[]} an array of {Texture} objects that make up the animation
+ * @param textures {PIXI.Texture[]|Object[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
+ * @param textures[].texture {PIXI.Texture} the {@link PIXI.Texture} of the frame
+ * @param textures[].time {number} the duration of the frame in ms
  */
 function MovieClip(textures)
 {
-    core.Sprite.call(this, textures[0]);
+    core.Sprite.call(this, textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
 
     /**
      * @private
      */
-    this._textures = textures;
+    this._textures = null;
+
+    /**
+     * @private
+     */
+    this._durations = null;
+
+    this.textures = textures;
 
     /**
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
@@ -50,7 +59,7 @@ function MovieClip(textures)
      * Function to call when a MovieClip finishes playing
      *
      * @method
-     * @memberof MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      */
     this.onComplete = null;
 
@@ -82,7 +91,7 @@ Object.defineProperties(MovieClip.prototype, {
      * assigned to the MovieClip.
      *
      * @member {number}
-     * @memberof PIXI.MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      * @default 0
      * @readonly
      */
@@ -97,7 +106,7 @@ Object.defineProperties(MovieClip.prototype, {
      * The array of textures used for this MovieClip
      *
      * @member {PIXI.Texture[]}
-     * @memberof PIXI.MovieClip#
+     * @memberof PIXI.extras.MovieClip#
      *
      */
     textures: {
@@ -107,9 +116,21 @@ Object.defineProperties(MovieClip.prototype, {
         },
         set: function (value)
         {
-            this._textures = value;
-
-            this.texture = this._textures[Math.floor(this._currentTime) % this._textures.length];
+            if(value[0] instanceof core.Texture)
+            {
+                this._textures = value;
+                this._durations = null;
+            }
+            else
+            {
+                this._textures = [];
+                this._durations = [];
+                for(var i = 0; i < value.length; i++)
+                {
+                    this._textures.push(value[i].texture);
+                    this._durations.push(value[i].time);
+                }
+            }
         }
     },
 
@@ -117,13 +138,18 @@ Object.defineProperties(MovieClip.prototype, {
     * The MovieClips current frame index
     *
     * @member {number}
-    * @memberof PIXI.MovieClip#
+    * @memberof PIXI.extras.MovieClip#
     * @readonly
     */
     currentFrame: {
         get: function ()
         {
-            return Math.floor(this._currentTime) % this._textures.length;
+            var currentFrame = Math.floor(this._currentTime) % this._textures.length;
+            if (currentFrame < 0)
+            {
+                currentFrame += this._textures.length;
+            }
+            return currentFrame;
         }
     }
 
@@ -170,8 +196,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this._currentTime = frameNumber;
 
-    var round = Math.floor(this._currentTime);
-    this._texture = this._textures[round % this._textures.length];
+    this._texture = this._textures[this.currentFrame];
 };
 
 /**
@@ -182,6 +207,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
     this._currentTime = frameNumber;
+
     this.play();
 };
 
@@ -191,40 +217,59 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
  */
 MovieClip.prototype.update = function (deltaTime)
 {
+    var elapsed = this.animationSpeed * deltaTime;
 
-    this._currentTime += this.animationSpeed * deltaTime;
-
-    var floor = Math.floor(this._currentTime);
-
-    if (floor < 0)
+    if (this._durations !== null)
     {
-        if (this.loop)
+        var lag = this._currentTime % 1 * this._durations[this.currentFrame];
+
+        lag += elapsed / 60 * 1000;
+
+        while (lag < 0)
         {
-            this._texture = this._textures[this._textures.length - 1 + floor % this._textures.length];
+            this._currentTime--;
+            lag += this._durations[this.currentFrame];
         }
-        else
-        {
-            this.gotoAndStop(0);
 
-            if (this.onComplete)
-            {
-                this.onComplete();
-            }
+        var sign = Math.sign(this.animationSpeed * deltaTime);
+        this._currentTime = Math.floor(this._currentTime);
+
+        while (lag >= this._durations[this.currentFrame])
+        {
+            lag -= this._durations[this.currentFrame] * sign;
+            this._currentTime += sign;
         }
+
+        this._currentTime += lag / this._durations[this.currentFrame];
     }
-    else if (this.loop || floor < this._textures.length)
+    else
     {
-        this._texture = this._textures[floor % this._textures.length];
+        this._currentTime += elapsed;
     }
-    else if (floor >= this._textures.length)
+
+    if (this._currentTime < 0 && !this.loop)
     {
-        this.gotoAndStop(this.textures.length - 1);
+        this.gotoAndStop(0);
 
         if (this.onComplete)
         {
             this.onComplete();
         }
     }
+    else if (this._currentTime >= this._textures.length && !this.loop)
+    {
+        this.gotoAndStop(this._textures.length - 1);
+
+        if (this.onComplete)
+        {
+            this.onComplete();
+        }
+    }
+    else
+    {
+        this._texture = this._textures[this.currentFrame];
+    }
+
 };
 
 /*

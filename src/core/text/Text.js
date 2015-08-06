@@ -98,7 +98,7 @@ Object.defineProperties(Text.prototype, {
      * The width of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof Text#
+     * @memberof PIXI.Text#
      */
     width: {
         get: function ()
@@ -121,7 +121,7 @@ Object.defineProperties(Text.prototype, {
      * The height of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof Text#
+     * @memberof PIXI.Text#
      */
     height: {
         get: function ()
@@ -163,7 +163,7 @@ Object.defineProperties(Text.prototype, {
      *      spiked text issues. Default is 'miter' (creates a sharp corner).
      * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
      *      or increase the spikiness of rendered text.
-     * @memberof Text#
+     * @memberof PIXI.Text#
      */
     style: {
         get: function ()
@@ -215,7 +215,7 @@ Object.defineProperties(Text.prototype, {
      * Set the copy for the text object. To split a line you can use '\n'.
      *
      * @param text {string} The copy that you would like the text to display
-     * @memberof Text#
+     * @memberof PIXI.Text#
      */
     text: {
         get: function()
@@ -396,7 +396,7 @@ Text.prototype.updateTexture = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer}
  */
 Text.prototype.renderWebGL = function (renderer)
 {
@@ -413,7 +413,7 @@ Text.prototype.renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer}
+ * @param renderer {PIXI.CanvasRenderer}
  * @private
  */
 Text.prototype._renderCanvas = function (renderer)
@@ -581,8 +581,8 @@ Text.prototype.wordWrap = function (text)
 /**
  * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {Matrix} the transformation matrix of the Text
- * @return {Rectangle} the framing rectangle
+ * @param matrix {PIXI.Matrix} the transformation matrix of the Text
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 Text.prototype.getBounds = function (matrix)
 {

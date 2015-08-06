@@ -34,8 +34,8 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     /**
      * Red channel offset.
      *
-     * @member {Point}
-     * @memberof RGBSplitFilter#
+     * @member {PIXI.Point}
+     * @memberof PIXI.filters.RGBSplitFilter#
      */
     red: {
         get: function ()
@@ -51,8 +51,8 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     /**
      * Green channel offset.
      *
-     * @member {Point}
-     * @memberof RGBSplitFilter#
+     * @member {PIXI.Point}
+     * @memberof PIXI.filters.RGBSplitFilter#
      */
     green: {
         get: function ()
@@ -68,8 +68,8 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     /**
      * Blue offset.
      *
-     * @member {Point}
-     * @memberof RGBSplitFilter#
+     * @member {PIXI.Point}
+     * @memberof PIXI.filters.RGBSplitFilter#
      */
     blue: {
         get: function ()

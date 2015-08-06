@@ -19,7 +19,7 @@ function TilingSprite(texture, width, height)
     /**
      * The scaling of the image that is being tiled
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
     this.tileScale = new core.Point(1,1);
 
@@ -27,7 +27,7 @@ function TilingSprite(texture, width, height)
     /**
      * The offset position of the image that is being tiled
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
     this.tilePosition = new core.Point(0,0);
 
@@ -52,7 +52,7 @@ function TilingSprite(texture, width, height)
     /**
      * An internal WebGL UV cache.
      *
-     * @member {TextureUvs}
+     * @member {PIXI.TextureUvs}
      * @private
      */
     this._uvs = new core.TextureUvs();
@@ -126,7 +126,7 @@ Object.defineProperties(TilingSprite.prototype, {
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof TilingSprite#
+     * @memberof PIXI.extras.TilingSprite#
      */
     width: {
         get: function ()
@@ -143,7 +143,7 @@ Object.defineProperties(TilingSprite.prototype, {
      * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof TilingSprite#
+     * @memberof PIXI.extras.TilingSprite#
      */
     height: {
         get: function ()
@@ -166,7 +166,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer}
  * @private
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
@@ -213,7 +213,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer} a reference to the canvas renderer
+ * @param renderer {PIXI.CanvasRenderer} a reference to the canvas renderer
  * @private
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
@@ -229,8 +229,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         transform = this.worldTransform,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
-        modX = this.tilePosition.x % (texture._frame.width * this.tileScale.x),
-        modY = this.tilePosition.y % (texture._frame.height * this.tileScale.y);
+        modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width,
+        modY = (this.tilePosition.y / this.tileScale.y) % texture._frame.height;
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -254,15 +254,14 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-
     context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
 
     // check blend mode
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== renderer.context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        context.globalCompositeOperation = compositeOperation;
     }
 
     // fill the pattern!
@@ -282,7 +281,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 /**
  * Returns the framing rectangle of the sprite as a Rectangle object
 *
- * @return {Rectangle} the framing rectangle
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 TilingSprite.prototype.getBounds = function ()
 {
@@ -357,7 +356,7 @@ TilingSprite.prototype.getBounds = function ()
 
 /**
  * Checks if a point is inside this tiling sprite
- * @param point {Point} the point to check
+ * @param point {PIXI.Point} the point to check
  */
 TilingSprite.prototype.containsPoint = function( point )
 {
@@ -400,8 +399,8 @@ TilingSprite.prototype.destroy = function () {
  * The frame ids are created when a Texture packer file has been loaded
  *
  * @static
- * @param frameId {String} The frame Id of the texture in the cache
- * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
+ * @param frameId {string} The frame Id of the texture in the cache
+ * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
@@ -422,12 +421,12 @@ TilingSprite.fromFrame = function (frameId,width,height)
  * If the image is not in the texture cache it will be loaded
  *
  * @static
- * @param imageId {String} The image url of the texture
+ * @param imageId {string} The image url of the texture
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=scaleModes.DEFAULT] {number} if you want to specify the scale mode, see {@link SCALE_MODES} for possible values
- * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
  */
 TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMode)
 {

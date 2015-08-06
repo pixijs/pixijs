@@ -11,14 +11,14 @@ function InteractionData()
     /**
      * This point stores the global coords of where the touch/mouse event happened
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
     this.global = new core.Point();
 
     /**
      * The target Sprite that was interacted with
      *
-     * @member {Sprite}
+     * @member {PIXI.Sprite}
      */
     this.target = null;
 
@@ -36,10 +36,10 @@ module.exports = InteractionData;
 /**
  * This will return the local coordinates of the specified displayObject for this InteractionData
  *
- * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
- * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
- * param [globalPos] {Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
- * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
+ * @param displayObject {PIXI.DisplayObject} The DisplayObject that you would like the local coords off
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new point)
+ * param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
+ * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {

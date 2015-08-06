@@ -34,7 +34,7 @@ Object.defineProperties(CanvasBuffer.prototype, {
      * The width of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof CanvasBuffer#
+     * @memberof PIXI.CanvasBuffer#
      */
     width: {
         get: function ()
@@ -50,7 +50,7 @@ Object.defineProperties(CanvasBuffer.prototype, {
      * The height of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof CanvasBuffer#
+     * @memberof PIXI.CanvasBuffer#
      */
     height: {
         get: function ()

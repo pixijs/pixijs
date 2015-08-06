@@ -59,7 +59,7 @@ Rectangle.EMPTY = new Rectangle(0, 0, 0, 0);
 /**
  * Creates a clone of this Rectangle
  *
- * @return {Rectangle} a copy of the rectangle
+ * @return {PIXI.Rectangle} a copy of the rectangle
  */
 Rectangle.prototype.clone = function ()
 {

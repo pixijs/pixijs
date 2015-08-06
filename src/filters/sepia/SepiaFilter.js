@@ -33,7 +33,7 @@ Object.defineProperties(SepiaFilter.prototype, {
      * `0` will make the object its normal color.
      *
      * @member {number}
-     * @memberof SepiaFilter#
+     * @memberof PIXI.filters.SepiaFilter#
      */
     sepia: {
         get: function ()
