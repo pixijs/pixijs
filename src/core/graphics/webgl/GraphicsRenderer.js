@@ -72,17 +72,18 @@ GraphicsRenderer.prototype.render = function(graphics)
     var renderer = this.renderer;
     var gl = renderer.gl;
 
-    var shader = renderer.shaderManager.plugins.primitiveShader,
-        webGLData;
-
     if (graphics.dirty)
     {
-        this.updateGraphics(graphics, gl);
+        this.updateGraphics(graphics);
     }
 
     var webGL = graphics._webGL[gl.id];
+    var webGLDataLength = webGL.data.length;
+    var graphicsTintRGB =  utils.hex2rgb(graphics.tint);
+    var i = 0;
+    var webGLDataElement, shader;
 
-    // This  could be speeded up for sure!
+    //@TODO This  could be speeded up for sure!
 
     renderer.blendModeManager.setBlendMode( graphics.blendMode );
 
@@ -90,25 +91,23 @@ GraphicsRenderer.prototype.render = function(graphics)
 //    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
 //    matrix.append(graphics.worldTransform);
 
-    for (var i = 0; i < webGL.data.length; i++)
+    for (i; i < webGLDataLength; i++)
     {
-        if (webGL.data[i].mode === 1)
+        webGLDataElement = webGL.data[i];
+
+        if (webGLDataElement.mode === 1)
         {
-            webGLData = webGL.data[i];
+            renderer.stencilManager.pushStencil(graphics, webGLDataElement);
 
-            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
-
-            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
+            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLDataElement.alpha);
 
             // render quad..
-            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
+            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLDataElement.indices.length - 4 ) * 2 );
 
-            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.popStencil(graphics, webGLDataElement);
         }
         else
         {
-            webGLData = webGL.data[i];
-
             shader = renderer.shaderManager.primitiveShader;
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
@@ -117,19 +116,19 @@ GraphicsRenderer.prototype.render = function(graphics)
 
             gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
-            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
+            gl.uniform3fv(shader.uniforms.tint._location, graphicsTintRGB);
 
             gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
 
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
+            gl.bindBuffer(gl.ARRAY_BUFFER, webGLDataElement.buffer);
 
             gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-            gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+            gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
 
             // set the index buffer!
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-            gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLDataElement.indexBuffer);
+            gl.drawElements(gl.TRIANGLE_STRIP,  webGLDataElement.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
 
         renderer.drawCount++;
@@ -140,7 +139,7 @@ GraphicsRenderer.prototype.render = function(graphics)
  * Updates the graphics object
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object to update
+ * @param graphics {PIXI.Graphics} The graphics object to update
  */
 GraphicsRenderer.prototype.updateGraphics = function(graphics)
 {
@@ -515,7 +514,7 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
         height = circleData.height;
     }
 
-    var totalSegs = 40;
+    var totalSegs = Math.floor(30 * Math.sqrt(circleData.radius));
     var seg = (Math.PI * 2) / totalSegs ;
 
     var i = 0;
@@ -813,10 +812,11 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
     var minY = Infinity;
     var maxY = -Infinity;
 
-    var x,y;
+    var x, y, i, length;
 
     // get size..
-    for (var i = 0; i < points.length; i+=2)
+    length = points.length;
+    for (i = 0; i < length; i+=2)
     {
         x = points[i];
         y = points[i+1];
@@ -837,7 +837,7 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
     // push a quad onto the end..
 
     //TODO - this aint needed!
-    var length = points.length / 2;
+    length = points.length / 2;
     for (i = 0; i < length; i++)
     {
         indices.push( i );
