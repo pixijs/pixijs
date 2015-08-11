@@ -434,7 +434,7 @@ DisplayObject.prototype.generateTexture = function (renderer, scaleMode, resolut
  * Set the parent Container of this DisplayObject
  *
  * @param container {Container} The Container to add this DisplayObject to
- * @return {DisplayObject} This DisplayObject
+ * @return {Container} The Container that this DisplayObject was added to
  */
 DisplayObject.prototype.setParent = function (container)
 {
@@ -442,11 +442,9 @@ DisplayObject.prototype.setParent = function (container)
     {
         throw new Error('setParent: Argument must be a Container');
     }
-    else
-    {
-        container.addChild(this);
-        return this;
-    }
+
+    container.addChild(this);
+    return container;
 };
 
 /**
