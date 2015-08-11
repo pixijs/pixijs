@@ -55,7 +55,7 @@ function BitmapText(text, style)
     /**
      * Private tracker for the letter sprite pool.
      *
-     * @member {Sprite[]}
+     * @member {PIXI.Sprite[]}
      * @private
      */
     this._glyphs = [];
@@ -98,6 +98,13 @@ function BitmapText(text, style)
     this.maxWidth = 0;
 
     /**
+     * The max line height. This is useful when trying to use the total height of the Text, ie: when trying to vertically align.
+     *
+     * @member {number}
+     */
+    this.maxLineHeight = 0;
+
+    /**
      * The dirty state of this object.
      *
      * @member {boolean}
@@ -117,7 +124,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The tint of the BitmapText object
      *
      * @member {number}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     tint: {
         get: function ()
@@ -137,7 +144,7 @@ Object.defineProperties(BitmapText.prototype, {
      *
      * @member {string}
      * @default 'left'
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     align: {
         get: function ()
@@ -156,7 +163,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The font descriptor of the BitmapText object
      *
      * @member {Font}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     font: {
         get: function ()
@@ -188,7 +195,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The text of the BitmapText object
      *
      * @member {string}
-     * @memberof BitmapText#
+     * @memberof PIXI.BitmapText#
      */
     text: {
         get: function ()
@@ -225,6 +232,7 @@ BitmapText.prototype.updateText = function ()
     var line = 0;
     var scale = this._font.size / data.size;
     var lastSpace = -1;
+    var maxLineHeight = 0;
 
     for (var i = 0; i < this.text.length; i++)
     {
@@ -274,7 +282,7 @@ BitmapText.prototype.updateText = function ()
         chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
         pos.x += charData.xAdvance;
-
+        maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
         prevCharCode = charCode;
     }
 
@@ -335,6 +343,7 @@ BitmapText.prototype.updateText = function ()
 
     this.textWidth = maxLineWidth * scale;
     this.textHeight = (pos.y + data.lineHeight) * scale;
+    this.maxLineHeight = maxLineHeight * scale;
 };
 
 /**
@@ -351,7 +360,7 @@ BitmapText.prototype.updateTransform = function ()
 /**
  * Validates text before calling parent's getLocalBounds
  *
- * @return {Rectangle} The rectangular bounding area
+ * @return {PIXI.Rectangle} The rectangular bounding area
  */
 
 BitmapText.prototype.getLocalBounds = function()

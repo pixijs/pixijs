@@ -37,7 +37,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
      * (0,0) is the top-left and (1,1) is the bottom right.
      *
      * @member {object<string, number>}
-     * @memberof ShockwaveFilter#
+     * @memberof PIXI.filters.ShockwaveFilter#
      */
     center: {
         get: function ()
@@ -54,7 +54,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
      * the shockwave as it ripples out.
      *
      * @member {object<string, number>}
-     * @memberof ShockwaveFilter#
+     * @memberof PIXI.filters.ShockwaveFilter#
      */
     params: {
         get: function ()
@@ -71,7 +71,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
      * the shockwave ripples out.
      *
      * @member {number}
-     * @memberof ShockwaveFilter#
+     * @memberof PIXI.filters.ShockwaveFilter#
      */
     time: {
         get: function ()

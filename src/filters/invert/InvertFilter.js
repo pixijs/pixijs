@@ -33,7 +33,7 @@ Object.defineProperties(InvertFilter.prototype, {
      * `0` will make the object its normal color.
      *
      * @member {number}
-     * @memberof InvertFilter#
+     * @memberof PIXI.filters.InvertFilter#
      */
     invert: {
         get: function ()

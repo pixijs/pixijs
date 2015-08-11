@@ -57,7 +57,7 @@ module.exports = RoundedRectangle;
 /**
  * Creates a clone of this Rounded Rectangle
  *
- * @return {RoundedRectangle} a copy of the rounded rectangle
+ * @return {PIXI.RoundedRectangle} a copy of the rounded rectangle
  */
 RoundedRectangle.prototype.clone = function ()
 {

@@ -15,7 +15,7 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 
     /**
      * An array of shaders
-     * @member {Shader[]}
+     * @member {PIXI.Shader[]}
      * @private
      */
     this.shaders = [];
@@ -56,10 +56,10 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
-/*
+/**
  * Grabs a shader from the current renderer
- * @param renderer {WebGLRenderer} The renderer to retrieve the shader from
  *
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the shader from
  */
 AbstractFilter.prototype.getShader = function (renderer)
 {
@@ -82,11 +82,12 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
-/*
+/**
  * Applies the filter
- * @param renderer {WebGLRenderer} The renderer to retrieve the filter from
- * @param input {RenderTarget}
- * @param output {RenderTarget}
+ *
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {PIXI.RenderTarget}
+ * @param output {PIXI.RenderTarget}
  * @param clear {boolean} Whether or not we want to clear the outputTarget
  */
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
@@ -107,10 +108,3 @@ AbstractFilter.prototype.syncUniform = function (uniform)
         this.shaders[i].syncUniform(uniform);
     }
 };
-
-/*
-AbstractFilter.prototype.apply = function (frameBuffer)
-{
-    // TODO :)
-};
-*/

@@ -5,11 +5,15 @@
 
     "ignore": [
         "**/.*",
+        "docs",
+        "gulp",
         "node_modules",
         "bower_components",
         "test",
-        "examples",
-        "tasks"
+        "bower.json",
+        "gulpfile.js",
+        "inch.json",
+        "testem.json"
     ],
     "dependencies": {
     },

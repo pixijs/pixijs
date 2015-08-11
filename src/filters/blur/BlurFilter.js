@@ -37,7 +37,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
     blur: {
@@ -56,7 +56,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the number of passes for blur. More passes means higher quaility bluring.
      *
      * @member {number}
-     * @memberof BlurYFilter#
+     * @memberof PIXI.filters.BlurYFilter#
      * @default 1
      */
     passes: {
@@ -74,7 +74,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the strength of the blurX property
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
     blurX: {
@@ -92,7 +92,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the strength of the blurY property
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
     blurY: {

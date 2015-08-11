@@ -20,6 +20,7 @@ var utils = require('../utils'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
+ * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
  */
 function SystemRenderer(system, width, height, options)
 {
@@ -46,8 +47,9 @@ function SystemRenderer(system, width, height, options)
     /**
      * The type of the renderer.
      *
-     * @member {RENDERER_TYPE}
-     * @default CONT.RENDERER_TYPE.UNKNOWN
+     * @member {number}
+     * @default PIXI.RENDERER_TYPE.UNKNOWN
+     * @see PIXI.RENDERER_TYPE
      */
     this.type = CONST.RENDERER_TYPE.UNKNOWN;
 
@@ -149,12 +151,18 @@ function SystemRenderer(system, width, height, options)
 
     /**
      * This temporary display object used as the parent of the currently being rendered item
-     * @member {DisplayObject}
+     *
+     * @member {PIXI.DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
-    //
+    /**
+     * The last root object that the renderer tried to render.
+     *
+     * @member {PIXI.DisplayObject}
+     * @private
+     */
     this._lastObjectRendered = this._tempDisplayObjectParent;
 }
 
@@ -168,7 +176,7 @@ Object.defineProperties(SystemRenderer.prototype, {
      * The background color to fill if not transparent
      *
      * @member {number}
-     * @memberof SystemRenderer#
+     * @memberof PIXI.SystemRenderer#
      */
     backgroundColor:
     {

@@ -2,14 +2,14 @@
  * Generic Mask Stack data structure
  * @class
  * @memberof PIXI
- * @param renderer {WebGLRenderer} The renderer this manager works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function StencilMaskStack()
 {
 	/**
      * The actual stack
      *
-     * @member {Array}
+     * @member {any[]}
      */
     this.stencilStack = [];
 
