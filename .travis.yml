@@ -1,3 +1,4 @@
+sudo: false
 language: node_js
 node_js:
     - "0.10"
@@ -10,9 +11,7 @@ branches:
 install:
     - npm install
 
-cache:
-    directories:
-        - node_modules
+cache: node_modules
 
 before_script:
     - export DISPLAY=:99.0
