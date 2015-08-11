@@ -11,7 +11,9 @@ branches:
 install:
     - npm install
 
-cache: node_modules
+cache:
+    directories:
+        - node_modules
 
 before_script:
     - export DISPLAY=:99.0
