@@ -1,6 +1,7 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
-    tempPoint = new core.Point();
+    tempPoint = new core.Point(),
+    CanvasTinter = require('../core/renderers/canvas/utils/CanvasTinter');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -238,7 +239,22 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     {
         // cut an object from a spritesheet..
         var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
-        tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x,-texture._frame.y);
+
+        // Tint the tiling sprite
+        if (this.tint !== 0xFFFFFF)
+        {
+            if (this.cachedTint !== this.tint)
+            {
+                this.cachedTint = this.tint;
+
+                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
+            }
+            tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
+        }
+        else
+        {
+            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+        }
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
 
