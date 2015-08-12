@@ -446,6 +446,8 @@ SpriteRenderer.prototype.start = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
+    ObjectRenderer.prototype.destroy.call(this);
+    
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
 

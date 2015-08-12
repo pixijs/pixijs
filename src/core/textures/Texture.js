@@ -261,6 +261,9 @@ Texture.prototype.destroy = function (destroyBase)
     this.crop = null;
 
     this.valid = false;
+
+    this.off('dispose', this.dispose, this);
+    this.off('update', this.update, this);
 };
 
 Texture.prototype.clone = function ()
