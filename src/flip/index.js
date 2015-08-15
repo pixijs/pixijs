@@ -339,6 +339,7 @@ core.Sprite.prototype._renderWebGL3d = function(renderer)
 
 core.Graphics.prototype._renderWebGL3d = function(renderer)
 {
+
     if (this.glDirty)
     {
         this.dirty = true;
@@ -360,4 +361,55 @@ core.Text.prototype._renderWebGL3d = function(renderer)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
 };
+
+
+core.RenderTarget.prototype.projectionMatrix3d = glMat.mat4.create();
+
+core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
+{
+    var pm = this.projectionMatrix;
+
+    pm.identity();
+
+    if (!this.root)
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = 1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a;
+        pm.ty = -1 - projectionFrame.y * pm.d;
+    }
+    else
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = -1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a;
+        pm.ty = 1 - projectionFrame.y * pm.d;
+    }
+
+
+    var perspectiveMatrix = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 1,
+        0, 0, 0, 1
+    ]
+
+    projection3d = this.projectionMatrix3d;
+    glMat.mat4.identity( projection3d );
+
+    projection3d[0] = pm.a;
+    projection3d[5] = pm.d;
+    projection3d[10] = 2 / 1700;
+
+    // tx // ty
+    projection3d[12] = pm.tx;
+    projection3d[13] = pm.ty;
+
+    // time to make a 3d one!
+    glMat.mat4.multiply(this.projectionMatrix3d, perspectiveMatrix, projection3d);
+
+};
+
 

@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.8-dev
- * Compiled 2015-07-29T21:28:23.848Z
+ * Compiled 2015-08-15T14:53:52.238Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -28932,6 +28932,7 @@ core.Sprite.prototype._renderWebGL3d = function(renderer)
 
 core.Graphics.prototype._renderWebGL3d = function(renderer)
 {
+
     if (this.glDirty)
     {
         this.dirty = true;
@@ -28953,6 +28954,57 @@ core.Text.prototype._renderWebGL3d = function(renderer)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
 };
+
+
+core.RenderTarget.prototype.projectionMatrix3d = glMat.mat4.create();
+
+core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
+{
+    var pm = this.projectionMatrix;
+
+    pm.identity();
+
+    if (!this.root)
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = 1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a;
+        pm.ty = -1 - projectionFrame.y * pm.d;
+    }
+    else
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = -1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a;
+        pm.ty = 1 - projectionFrame.y * pm.d;
+    }
+
+
+    var perspectiveMatrix = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 1,
+        0, 0, 0, 1
+    ]
+
+    projection3d = this.projectionMatrix3d;
+    glMat.mat4.identity( projection3d );
+
+    projection3d[0] = pm.a;
+    projection3d[5] = pm.d;
+    projection3d[10] = 2 / 1700;
+
+    // tx // ty
+    projection3d[12] = pm.tx;
+    projection3d[13] = pm.ty;
+
+    // time to make a 3d one!
+    glMat.mat4.multiply(this.projectionMatrix3d, perspectiveMatrix, projection3d);
+
+};
+
 
 
 },{"../core":27,"./Container3d":112,"./Graphics3d":113,"./Sprite3d":114,"./math":117,"./webgl/Graphics3dRenderer":118,"./webgl/Sprite3dRenderer":120,"gl-matrix":11}],116:[function(require,module,exports){
@@ -29514,10 +29566,7 @@ function Sprite3dRenderer(renderer)
     //this.perspectiveMatrix = makePerspective(45 * (Math.PI / 180), 1, 1, 2000)
     this.projection3d = glMat.mat4.create();
 
-    this.combinedMatrix = glMat.mat4.create();
-   // console.log(this.perspectiveMatrix)
- //   glMat.mat4.identity(mvMatrix);
-  //  glMat.mat4.translate(mvMatrix, [0, 0, -2.0]);
+    this.projectionPerspectiveMatrix = glMat.mat4.create();
 }
 
 // test function...
@@ -29761,10 +29810,7 @@ Sprite3dRenderer.prototype.flush = function ()
     projection3d[13] = projection2d.ty;
 
     // time to make a 3d one!
-    var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
-    this.combinedMatrix = combinedMatrix;
-    window.combinedMatrix = combinedMatrix;
-
+    glMat.mat4.multiply(this.projectionPerspectiveMatrix, this.perspectiveMatrix, projection3d);
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++)
     {
@@ -29809,12 +29855,8 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set shader function???
                 this.renderer.shaderManager.setShader(shader);
 
-                ///console.log(shader.uniforms.projectionMatrix);
-
                 // both thease only need to be set if they are changing..
                 // set the projection
-                //gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
-
                 currentProjection = nextProjection
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
             }
