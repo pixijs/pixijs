@@ -1,6 +1,5 @@
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
-    glMat            = require('gl-matrix'),
     _tempMatrix = new core.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
@@ -29,6 +28,7 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
+           
             if (this._cacheAsBitmap === value)
             {
                 return;
@@ -39,7 +39,6 @@ Object.defineProperties(DisplayObject.prototype, {
             if (value)
             {
                 this._originalRenderWebGL = this.renderWebGL;
-                this._originalRenderWebGL3d = this.renderWebGL3d;
                 this._originalRenderCanvas = this.renderCanvas;
 
                 this._originalUpdateTransform = this.updateTransform;
@@ -50,8 +49,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._originalContainsPoint = this.containsPoint;
 
                 this.renderWebGL = this._renderCachedWebGL;
-                this.renderWebGL3d = this._renderCachedWebGL3d;
-
                 this.renderCanvas = this._renderCachedCanvas;
 
                 this.destroy = this._cacheAsBitmapDestroy;
@@ -65,8 +62,6 @@ Object.defineProperties(DisplayObject.prototype, {
                 }
 
                 this.renderWebGL = this._originalRenderWebGL;
-                this.renderWebGL3d = this._originalRenderWebGL3d;
-              
                 this.renderCanvas = this._originalRenderCanvas;
                 this.getBounds = this._originalGetBounds;
 
@@ -91,36 +86,14 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
         return;
     }
 
+    console.log("LOVE RENDERING")
     this._initCachedDisplayObject( renderer );
 
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
-
-
     renderer.plugins.sprite.render( this._cachedSprite );
 };
-
-
-DisplayObject.prototype._renderCachedWebGL3d = function (renderer)
-{
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-    {
-        return;
-    }
-
-    this._initCachedDisplayObject( renderer );
-
-    this._cachedSprite.worldAlpha = this.worldAlpha;
-
-    this._cachedSprite.worldTransform3d = this.worldTransform3d;
-    renderer.setObjectRenderer( renderer.plugins.sprite3d );
-    renderer.plugins.sprite3d.render( this._cachedSprite );
-
-//    renderer.setObjectRenderer(renderer.plugins.sprite);
-  //  renderer.plugins.sprite.render( this._cachedSprite );
-};
-
 
 /**
 * Prepares the WebGL renderer to cache the sprite
@@ -182,27 +155,12 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this.renderWebGL     = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
-    
-    // TODO THIS NEEDS TO BE REFACTORED! But lets wait till we know its all working..
-    this.updateTransform3d = function(){
-        this.convertFrom2dTo3d();
-        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-    }
-
     this.getBounds       = this._getCachedBounds;
 
 
     // create our cached sprite
     this._cachedSprite = new core.Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
-
-    if(!this.worldTransform3d)
-    {
-        this.worldTransform3d = glMat.mat4.create();
-    }
-
-    this._cachedSprite.worldTransform3d = this.worldTransform3d;
-
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
