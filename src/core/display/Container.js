@@ -471,7 +471,7 @@ Container.prototype.renderWebGL = function (renderer)
         renderer.currentRenderer.flush();
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters)
+        if (this._filters && this._filters.length)
         {
             renderer.filterManager.pushFilter(this, this._filters);
         }
