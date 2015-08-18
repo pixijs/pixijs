@@ -177,3 +177,13 @@ file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigi
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
 [![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
+
+## Changes made for SpringRoll ##
+* Added 'id' property to InteractionData, for easier tracking of distinct touches.
+* Added optional outPoint parameters to toLocal() and toGlobal() on DisplayObject.
+* Added 'stageout', 'stagein', 'stagedown', 'stagemove', and 'stageup' events to InteractionManager.
+* Added 'handleCursorChange' property to InteractionManager as a callback to handle cursor changes instead of modifying the canvas's CSS.
+* Added PIXI.utils.useFilenamesForTextures, a boolean to globally use filenames for texture ids instead of the full url.
+* Destruction of a BaseTexture destroys all Textures in the texture dictionary that reference that BaseTexture.
+* Made 'width' and 'height' properties on Container overrideable.
+
