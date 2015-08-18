@@ -217,7 +217,9 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
         if (this.currentPath.shape.points.length)
         {
             // halfway through a line? start a new one!
-            this.drawShape( new math.Polygon( this.currentPath.shape.points.slice(-2) ));
+            var shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
+            shape.closed = false;
+            this.drawShape(shape);
         }
         else
         {
@@ -240,7 +242,9 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
   */
 Graphics.prototype.moveTo = function (x, y)
 {
-    this.drawShape(new math.Polygon([x,y]));
+    var shape = new math.Polygon([x,y]);
+    shape.closed = false;
+    this.drawShape(shape);
 
     return this;
 };
@@ -650,6 +654,14 @@ Graphics.prototype.drawPolygon = function (path)
     // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
     var points = path;
 
+    var closed = true;
+    
+    if (points instanceof math.Polygon)
+    {
+        closed = points.closed;
+        points = points.points;
+    }
+    
     if (!Array.isArray(points))
     {
         // prevents an argument leak deopt
@@ -662,7 +674,10 @@ Graphics.prototype.drawPolygon = function (path)
         }
     }
 
-    this.drawShape(new math.Polygon(points));
+    var shape = new math.Polygon(points);
+    shape.closed = closed;
+    
+    this.drawShape(shape);
 
     return this;
 };
