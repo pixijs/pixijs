@@ -1,36 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PIXI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (global){
-// run the polyfills
-require('./polyfill');
-
-var core = module.exports = require('./core');
-
-// add core plugins.
-core.extras         = require('./extras');
-core.filters        = require('./filters');
-core.interaction    = require('./interaction');
-core.loaders        = require('./loaders');
-core.mesh           = require('./mesh');
-
-// export a premade loader instance
-/**
- * A premade instance of the loader that can be used to loader resources.
- *
- * @name loader
- * @memberof PIXI
- * @property {PIXI.loaders.Loader}
- */
-core.loader = new core.loaders.Loader();
-
-// mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
-
-// Always export pixi globally.
-global.PIXI = core;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./core":29,"./deprecation":78,"./extras":85,"./filters":102,"./interaction":117,"./loaders":120,"./mesh":126,"./polyfill":130}],2:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -76,9 +44,6 @@ global.PIXI = core;
     };
 
     var _each = function (arr, iterator) {
-        if (arr.forEach) {
-            return arr.forEach(iterator);
-        }
         for (var i = 0; i < arr.length; i += 1) {
             iterator(arr[i], i, arr);
         }
@@ -855,23 +820,26 @@ global.PIXI = core;
             pause: function () {
                 if (q.paused === true) { return; }
                 q.paused = true;
-                q.process();
             },
             resume: function () {
                 if (q.paused === false) { return; }
                 q.paused = false;
-                q.process();
+                // Need to call q.process once per concurrent
+                // worker to preserve full concurrency after pause
+                for (var w = 1; w <= q.concurrency; w++) {
+                    async.setImmediate(q.process);
+                }
             }
         };
         return q;
     };
-    
+
     async.priorityQueue = function (worker, concurrency) {
-        
+
         function _compareTasks(a, b){
           return a.priority - b.priority;
         };
-        
+
         function _binarySearch(sequence, item, compare) {
           var beg = -1,
               end = sequence.length - 1;
@@ -885,7 +853,7 @@ global.PIXI = core;
           }
           return beg;
         }
-        
+
         function _insert(q, data, priority, callback) {
           if (!q.started){
             q.started = true;
@@ -907,7 +875,7 @@ global.PIXI = core;
                   priority: priority,
                   callback: typeof callback === 'function' ? callback : null
               };
-              
+
               q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
 
               if (q.saturated && q.tasks.length === q.concurrency) {
@@ -916,15 +884,15 @@ global.PIXI = core;
               async.setImmediate(q.process);
           });
         }
-        
+
         // Start with a normal queue
         var q = async.queue(worker, concurrency);
-        
+
         // Override push to accept second parameter representing priority
         q.push = function (data, priority, callback) {
           _insert(q, data, priority, callback);
         };
-        
+
         // Remove unshift function
         delete q.unshift;
 
@@ -1158,7 +1126,7 @@ global.PIXI = core;
 
 }).call(this,require('_process'))
 
-},{"_process":4}],3:[function(require,module,exports){
+},{"_process":3}],2:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1387,38 +1355,70 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this,require('_process'))
 
-},{"_process":4}],4:[function(require,module,exports){
+},{"_process":3}],3:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = setTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            currentQueue[queueIndex].run();
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    clearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
         setTimeout(drainQueue, 0);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -1447,17 +1447,22 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (global){
-/*! http://mths.be/punycode v1.2.4 by @mathias */
+/*! https://mths.be/punycode v1.3.2 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports;
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
 	var freeModule = typeof module == 'object' && module &&
-		module.exports == freeExports && module;
+		!module.nodeType && module;
 	var freeGlobal = typeof global == 'object' && global;
-	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
 		root = freeGlobal;
 	}
 
@@ -1483,8 +1488,8 @@ process.umask = function() { return 0; };
 
 	/** Regular expressions */
 	regexPunycode = /^xn--/,
-	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /\x2E|\u3002|\uFF0E|\uFF61/g, // RFC 3490 separators
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
 
 	/** Error messages */
 	errors = {
@@ -1523,23 +1528,37 @@ process.umask = function() { return 0; };
 	 */
 	function map(array, fn) {
 		var length = array.length;
+		var result = [];
 		while (length--) {
-			array[length] = fn(array[length]);
+			result[length] = fn(array[length]);
 		}
-		return array;
+		return result;
 	}
 
 	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings.
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
 	 * @private
-	 * @param {String} domain The domain name.
+	 * @param {String} domain The domain name or email address.
 	 * @param {Function} callback The function that gets called for every
 	 * character.
 	 * @returns {Array} A new string of characters returned by the callback
 	 * function.
 	 */
 	function mapDomain(string, fn) {
-		return map(string.split(regexSeparators), fn).join('.');
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
 	}
 
 	/**
@@ -1549,7 +1568,7 @@ process.umask = function() { return 0; };
 	 * UCS-2 exposes as separate characters) into a single code point,
 	 * matching UTF-16.
 	 * @see `punycode.ucs2.encode`
-	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
 	 * @memberOf punycode.ucs2
 	 * @name decode
 	 * @param {String} string The Unicode input string (UCS-2).
@@ -1758,8 +1777,8 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a string of Unicode symbols to a Punycode string of ASCII-only
-	 * symbols.
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
 	 * @memberOf punycode
 	 * @param {String} input The string of Unicode symbols.
 	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
@@ -1872,17 +1891,18 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a Punycode string representing a domain name to Unicode. Only the
-	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it on a string that has already been converted to
-	 * Unicode.
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
 	 * @memberOf punycode
-	 * @param {String} domain The Punycode domain name to convert to Unicode.
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
 	 * @returns {String} The Unicode representation of the given Punycode
 	 * string.
 	 */
-	function toUnicode(domain) {
-		return mapDomain(domain, function(string) {
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
 			return regexPunycode.test(string)
 				? decode(string.slice(4).toLowerCase())
 				: string;
@@ -1890,15 +1910,18 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a Unicode string representing a domain name to Punycode. Only the
-	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it with a domain that's already in ASCII.
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
 	 * @memberOf punycode
-	 * @param {String} domain The domain name to convert, as a Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name.
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
 	 */
-	function toASCII(domain) {
-		return mapDomain(domain, function(string) {
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
 			return regexNonASCII.test(string)
 				? 'xn--' + encode(string)
 				: string;
@@ -1914,11 +1937,11 @@ process.umask = function() { return 0; };
 		 * @memberOf punycode
 		 * @type String
 		 */
-		'version': '1.2.4',
+		'version': '1.3.2',
 		/**
 		 * An object of methods to convert from JavaScript's internal character
 		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
 		 * @memberOf punycode
 		 * @type Object
 		 */
@@ -1943,8 +1966,8 @@ process.umask = function() { return 0; };
 		define('punycode', function() {
 			return punycode;
 		});
-	} else if (freeExports && !freeExports.nodeType) {
-		if (freeModule) { // in Node.js or RingoJS v0.8.0+
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
 			freeModule.exports = punycode;
 		} else { // in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
@@ -1959,7 +1982,7 @@ process.umask = function() { return 0; };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2045,7 +2068,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2132,13 +2155,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":6,"./encode":7}],9:[function(require,module,exports){
+},{"./decode":5,"./encode":6}],8:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2847,7 +2870,7 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":5,"querystring":8}],10:[function(require,module,exports){
+},{"punycode":4,"querystring":7}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -2920,7 +2943,7 @@ function filterPoints(data, start, end) {
     do {
         again = false;
 
-        if (equals(data, node.i, node.next.i) || orient(data, node.prev.i, node.i, node.next.i) === 0) {
+        if (!node.steiner && (equals(data, node.i, node.next.i) || orient(data, node.prev.i, node.i, node.next.i) === 0)) {
 
             // remove node
             node.prev.next = node.next;
@@ -3174,7 +3197,9 @@ function eliminateHoles(data, holeIndices, outerNode, dim) {
     for (i = 0, len = holeIndices.length; i < len; i++) {
         start = holeIndices[i] * dim;
         end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
-        list = filterPoints(data, linkedList(data, start, end, dim, false));
+        list = linkedList(data, start, end, dim, false);
+        if (list === list.next) list.steiner = true;
+        list = filterPoints(data, list);
         if (list) queue.push(getLeftmost(data, list));
     }
 
@@ -3385,7 +3410,8 @@ function getLeftmost(data, start) {
 
 // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 function isValidDiagonal(data, a, b) {
-    return !intersectsPolygon(data, a, a.i, b.i) &&
+    return a.next.i !== b.i && a.prev.i !== b.i &&
+           !intersectsPolygon(data, a, a.i, b.i) &&
            locallyInside(data, a, b) && locallyInside(data, b, a) &&
            middleInside(data, a, a.i, b.i);
 }
@@ -3504,9 +3530,12 @@ function Node(i) {
     // previous and next nodes in z-order
     this.prevZ = null;
     this.nextZ = null;
+
+    // indicates whether this is a steiner point
+    this.steiner = false;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 //
@@ -3564,10 +3593,10 @@ EventEmitter.prototype.listeners = function listeners(event, exists) {
 
   if (exists) return !!available;
   if (!available) return [];
-  if (this._events[evt].fn) return [this._events[evt].fn];
+  if (available.fn) return [available.fn];
 
-  for (var i = 0, l = this._events[evt].length, ee = new Array(l); i < l; i++) {
-    ee[i] = this._events[evt][i].fn;
+  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
+    ee[i] = available[i].fn;
   }
 
   return ee;
@@ -3766,9 +3795,11 @@ EventEmitter.prefixed = prefix;
 //
 // Expose the module.
 //
-module.exports = EventEmitter;
+if ('undefined' !== typeof module) {
+  module.exports = EventEmitter;
+}
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -3796,1137 +3827,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],13:[function(require,module,exports){
-(function (process){
-/*!
- * async
- * https://github.com/caolan/async
- *
- * Copyright 2010-2014 Caolan McMahon
- * Released under the MIT license
- */
-/*jshint onevar: false, indent:4 */
-/*global setImmediate: false, setTimeout: false, console: false */
-(function () {
-
-    var async = {};
-
-    // global on the server, window in the browser
-    var root, previous_async;
-
-    root = this;
-    if (root != null) {
-      previous_async = root.async;
-    }
-
-    async.noConflict = function () {
-        root.async = previous_async;
-        return async;
-    };
-
-    function only_once(fn) {
-        var called = false;
-        return function() {
-            if (called) throw new Error("Callback was already called.");
-            called = true;
-            fn.apply(root, arguments);
-        }
-    }
-
-    //// cross-browser compatiblity functions ////
-
-    var _toString = Object.prototype.toString;
-
-    var _isArray = Array.isArray || function (obj) {
-        return _toString.call(obj) === '[object Array]';
-    };
-
-    var _each = function (arr, iterator) {
-        if (arr.forEach) {
-            return arr.forEach(iterator);
-        }
-        for (var i = 0; i < arr.length; i += 1) {
-            iterator(arr[i], i, arr);
-        }
-    };
-
-    var _map = function (arr, iterator) {
-        if (arr.map) {
-            return arr.map(iterator);
-        }
-        var results = [];
-        _each(arr, function (x, i, a) {
-            results.push(iterator(x, i, a));
-        });
-        return results;
-    };
-
-    var _reduce = function (arr, iterator, memo) {
-        if (arr.reduce) {
-            return arr.reduce(iterator, memo);
-        }
-        _each(arr, function (x, i, a) {
-            memo = iterator(memo, x, i, a);
-        });
-        return memo;
-    };
-
-    var _keys = function (obj) {
-        if (Object.keys) {
-            return Object.keys(obj);
-        }
-        var keys = [];
-        for (var k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    };
-
-    //// exported async module functions ////
-
-    //// nextTick implementation with browser-compatible fallback ////
-    if (typeof process === 'undefined' || !(process.nextTick)) {
-        if (typeof setImmediate === 'function') {
-            async.nextTick = function (fn) {
-                // not a direct alias for IE10 compatibility
-                setImmediate(fn);
-            };
-            async.setImmediate = async.nextTick;
-        }
-        else {
-            async.nextTick = function (fn) {
-                setTimeout(fn, 0);
-            };
-            async.setImmediate = async.nextTick;
-        }
-    }
-    else {
-        async.nextTick = process.nextTick;
-        if (typeof setImmediate !== 'undefined') {
-            async.setImmediate = function (fn) {
-              // not a direct alias for IE10 compatibility
-              setImmediate(fn);
-            };
-        }
-        else {
-            async.setImmediate = async.nextTick;
-        }
-    }
-
-    async.each = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        _each(arr, function (x) {
-            iterator(x, only_once(done) );
-        });
-        function done(err) {
-          if (err) {
-              callback(err);
-              callback = function () {};
-          }
-          else {
-              completed += 1;
-              if (completed >= arr.length) {
-                  callback();
-              }
-          }
-        }
-    };
-    async.forEach = async.each;
-
-    async.eachSeries = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        var iterate = function () {
-            iterator(arr[completed], function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed >= arr.length) {
-                        callback();
-                    }
-                    else {
-                        iterate();
-                    }
-                }
-            });
-        };
-        iterate();
-    };
-    async.forEachSeries = async.eachSeries;
-
-    async.eachLimit = function (arr, limit, iterator, callback) {
-        var fn = _eachLimit(limit);
-        fn.apply(null, [arr, iterator, callback]);
-    };
-    async.forEachLimit = async.eachLimit;
-
-    var _eachLimit = function (limit) {
-
-        return function (arr, iterator, callback) {
-            callback = callback || function () {};
-            if (!arr.length || limit <= 0) {
-                return callback();
-            }
-            var completed = 0;
-            var started = 0;
-            var running = 0;
-
-            (function replenish () {
-                if (completed >= arr.length) {
-                    return callback();
-                }
-
-                while (running < limit && started < arr.length) {
-                    started += 1;
-                    running += 1;
-                    iterator(arr[started - 1], function (err) {
-                        if (err) {
-                            callback(err);
-                            callback = function () {};
-                        }
-                        else {
-                            completed += 1;
-                            running -= 1;
-                            if (completed >= arr.length) {
-                                callback();
-                            }
-                            else {
-                                replenish();
-                            }
-                        }
-                    });
-                }
-            })();
-        };
-    };
-
-
-    var doParallel = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.each].concat(args));
-        };
-    };
-    var doParallelLimit = function(limit, fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [_eachLimit(limit)].concat(args));
-        };
-    };
-    var doSeries = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.eachSeries].concat(args));
-        };
-    };
-
-
-    var _asyncMap = function (eachfn, arr, iterator, callback) {
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        if (!callback) {
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err) {
-                    callback(err);
-                });
-            });
-        } else {
-            var results = [];
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err, v) {
-                    results[x.index] = v;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-    async.map = doParallel(_asyncMap);
-    async.mapSeries = doSeries(_asyncMap);
-    async.mapLimit = function (arr, limit, iterator, callback) {
-        return _mapLimit(limit)(arr, iterator, callback);
-    };
-
-    var _mapLimit = function(limit) {
-        return doParallelLimit(limit, _asyncMap);
-    };
-
-    // reduce only has a series version, as doing reduce in parallel won't
-    // work in many situations.
-    async.reduce = function (arr, memo, iterator, callback) {
-        async.eachSeries(arr, function (x, callback) {
-            iterator(memo, x, function (err, v) {
-                memo = v;
-                callback(err);
-            });
-        }, function (err) {
-            callback(err, memo);
-        });
-    };
-    // inject alias
-    async.inject = async.reduce;
-    // foldl alias
-    async.foldl = async.reduce;
-
-    async.reduceRight = function (arr, memo, iterator, callback) {
-        var reversed = _map(arr, function (x) {
-            return x;
-        }).reverse();
-        async.reduce(reversed, memo, iterator, callback);
-    };
-    // foldr alias
-    async.foldr = async.reduceRight;
-
-    var _filter = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.filter = doParallel(_filter);
-    async.filterSeries = doSeries(_filter);
-    // select alias
-    async.select = async.filter;
-    async.selectSeries = async.filterSeries;
-
-    var _reject = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (!v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.reject = doParallel(_reject);
-    async.rejectSeries = doSeries(_reject);
-
-    var _detect = function (eachfn, arr, iterator, main_callback) {
-        eachfn(arr, function (x, callback) {
-            iterator(x, function (result) {
-                if (result) {
-                    main_callback(x);
-                    main_callback = function () {};
-                }
-                else {
-                    callback();
-                }
-            });
-        }, function (err) {
-            main_callback();
-        });
-    };
-    async.detect = doParallel(_detect);
-    async.detectSeries = doSeries(_detect);
-
-    async.some = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (v) {
-                    main_callback(true);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(false);
-        });
-    };
-    // any alias
-    async.any = async.some;
-
-    async.every = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (!v) {
-                    main_callback(false);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(true);
-        });
-    };
-    // all alias
-    async.all = async.every;
-
-    async.sortBy = function (arr, iterator, callback) {
-        async.map(arr, function (x, callback) {
-            iterator(x, function (err, criteria) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, {value: x, criteria: criteria});
-                }
-            });
-        }, function (err, results) {
-            if (err) {
-                return callback(err);
-            }
-            else {
-                var fn = function (left, right) {
-                    var a = left.criteria, b = right.criteria;
-                    return a < b ? -1 : a > b ? 1 : 0;
-                };
-                callback(null, _map(results.sort(fn), function (x) {
-                    return x.value;
-                }));
-            }
-        });
-    };
-
-    async.auto = function (tasks, callback) {
-        callback = callback || function () {};
-        var keys = _keys(tasks);
-        var remainingTasks = keys.length
-        if (!remainingTasks) {
-            return callback();
-        }
-
-        var results = {};
-
-        var listeners = [];
-        var addListener = function (fn) {
-            listeners.unshift(fn);
-        };
-        var removeListener = function (fn) {
-            for (var i = 0; i < listeners.length; i += 1) {
-                if (listeners[i] === fn) {
-                    listeners.splice(i, 1);
-                    return;
-                }
-            }
-        };
-        var taskComplete = function () {
-            remainingTasks--
-            _each(listeners.slice(0), function (fn) {
-                fn();
-            });
-        };
-
-        addListener(function () {
-            if (!remainingTasks) {
-                var theCallback = callback;
-                // prevent final callback from calling itself if it errors
-                callback = function () {};
-
-                theCallback(null, results);
-            }
-        });
-
-        _each(keys, function (k) {
-            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
-            var taskCallback = function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (args.length <= 1) {
-                    args = args[0];
-                }
-                if (err) {
-                    var safeResults = {};
-                    _each(_keys(results), function(rkey) {
-                        safeResults[rkey] = results[rkey];
-                    });
-                    safeResults[k] = args;
-                    callback(err, safeResults);
-                    // stop subsequent errors hitting callback multiple times
-                    callback = function () {};
-                }
-                else {
-                    results[k] = args;
-                    async.setImmediate(taskComplete);
-                }
-            };
-            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
-            var ready = function () {
-                return _reduce(requires, function (a, x) {
-                    return (a && results.hasOwnProperty(x));
-                }, true) && !results.hasOwnProperty(k);
-            };
-            if (ready()) {
-                task[task.length - 1](taskCallback, results);
-            }
-            else {
-                var listener = function () {
-                    if (ready()) {
-                        removeListener(listener);
-                        task[task.length - 1](taskCallback, results);
-                    }
-                };
-                addListener(listener);
-            }
-        });
-    };
-
-    async.retry = function(times, task, callback) {
-        var DEFAULT_TIMES = 5;
-        var attempts = [];
-        // Use defaults if times not passed
-        if (typeof times === 'function') {
-            callback = task;
-            task = times;
-            times = DEFAULT_TIMES;
-        }
-        // Make sure times is a number
-        times = parseInt(times, 10) || DEFAULT_TIMES;
-        var wrappedTask = function(wrappedCallback, wrappedResults) {
-            var retryAttempt = function(task, finalAttempt) {
-                return function(seriesCallback) {
-                    task(function(err, result){
-                        seriesCallback(!err || finalAttempt, {err: err, result: result});
-                    }, wrappedResults);
-                };
-            };
-            while (times) {
-                attempts.push(retryAttempt(task, !(times-=1)));
-            }
-            async.series(attempts, function(done, data){
-                data = data[data.length - 1];
-                (wrappedCallback || callback)(data.err, data.result);
-            });
-        }
-        // If a callback is passed, run this as a controll flow
-        return callback ? wrappedTask() : wrappedTask
-    };
-
-    async.waterfall = function (tasks, callback) {
-        callback = callback || function () {};
-        if (!_isArray(tasks)) {
-          var err = new Error('First argument to waterfall must be an array of functions');
-          return callback(err);
-        }
-        if (!tasks.length) {
-            return callback();
-        }
-        var wrapIterator = function (iterator) {
-            return function (err) {
-                if (err) {
-                    callback.apply(null, arguments);
-                    callback = function () {};
-                }
-                else {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    var next = iterator.next();
-                    if (next) {
-                        args.push(wrapIterator(next));
-                    }
-                    else {
-                        args.push(callback);
-                    }
-                    async.setImmediate(function () {
-                        iterator.apply(null, args);
-                    });
-                }
-            };
-        };
-        wrapIterator(async.iterator(tasks))();
-    };
-
-    var _parallel = function(eachfn, tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            eachfn.map(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            eachfn.each(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.parallel = function (tasks, callback) {
-        _parallel({ map: async.map, each: async.each }, tasks, callback);
-    };
-
-    async.parallelLimit = function(tasks, limit, callback) {
-        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
-    };
-
-    async.series = function (tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            async.mapSeries(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            async.eachSeries(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.iterator = function (tasks) {
-        var makeCallback = function (index) {
-            var fn = function () {
-                if (tasks.length) {
-                    tasks[index].apply(null, arguments);
-                }
-                return fn.next();
-            };
-            fn.next = function () {
-                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
-            };
-            return fn;
-        };
-        return makeCallback(0);
-    };
-
-    async.apply = function (fn) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return function () {
-            return fn.apply(
-                null, args.concat(Array.prototype.slice.call(arguments))
-            );
-        };
-    };
-
-    var _concat = function (eachfn, arr, fn, callback) {
-        var r = [];
-        eachfn(arr, function (x, cb) {
-            fn(x, function (err, y) {
-                r = r.concat(y || []);
-                cb(err);
-            });
-        }, function (err) {
-            callback(err, r);
-        });
-    };
-    async.concat = doParallel(_concat);
-    async.concatSeries = doSeries(_concat);
-
-    async.whilst = function (test, iterator, callback) {
-        if (test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.whilst(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doWhilst = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (test.apply(null, args)) {
-                async.doWhilst(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.until = function (test, iterator, callback) {
-        if (!test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.until(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doUntil = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (!test.apply(null, args)) {
-                async.doUntil(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.queue = function (worker, concurrency) {
-        if (concurrency === undefined) {
-            concurrency = 1;
-        }
-        function _insert(q, data, pos, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-
-              if (pos) {
-                q.tasks.unshift(item);
-              } else {
-                q.tasks.push(item);
-              }
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-
-        var workers = 0;
-        var q = {
-            tasks: [],
-            concurrency: concurrency,
-            saturated: null,
-            empty: null,
-            drain: null,
-            started: false,
-            paused: false,
-            push: function (data, callback) {
-              _insert(q, data, false, callback);
-            },
-            kill: function () {
-              q.drain = null;
-              q.tasks = [];
-            },
-            unshift: function (data, callback) {
-              _insert(q, data, true, callback);
-            },
-            process: function () {
-                if (!q.paused && workers < q.concurrency && q.tasks.length) {
-                    var task = q.tasks.shift();
-                    if (q.empty && q.tasks.length === 0) {
-                        q.empty();
-                    }
-                    workers += 1;
-                    var next = function () {
-                        workers -= 1;
-                        if (task.callback) {
-                            task.callback.apply(task, arguments);
-                        }
-                        if (q.drain && q.tasks.length + workers === 0) {
-                            q.drain();
-                        }
-                        q.process();
-                    };
-                    var cb = only_once(next);
-                    worker(task.data, cb);
-                }
-            },
-            length: function () {
-                return q.tasks.length;
-            },
-            running: function () {
-                return workers;
-            },
-            idle: function() {
-                return q.tasks.length + workers === 0;
-            },
-            pause: function () {
-                if (q.paused === true) { return; }
-                q.paused = true;
-                q.process();
-            },
-            resume: function () {
-                if (q.paused === false) { return; }
-                q.paused = false;
-                q.process();
-            }
-        };
-        return q;
-    };
-    
-    async.priorityQueue = function (worker, concurrency) {
-        
-        function _compareTasks(a, b){
-          return a.priority - b.priority;
-        };
-        
-        function _binarySearch(sequence, item, compare) {
-          var beg = -1,
-              end = sequence.length - 1;
-          while (beg < end) {
-            var mid = beg + ((end - beg + 1) >>> 1);
-            if (compare(item, sequence[mid]) >= 0) {
-              beg = mid;
-            } else {
-              end = mid - 1;
-            }
-          }
-          return beg;
-        }
-        
-        function _insert(q, data, priority, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  priority: priority,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-              
-              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-        
-        // Start with a normal queue
-        var q = async.queue(worker, concurrency);
-        
-        // Override push to accept second parameter representing priority
-        q.push = function (data, priority, callback) {
-          _insert(q, data, priority, callback);
-        };
-        
-        // Remove unshift function
-        delete q.unshift;
-
-        return q;
-    };
-
-    async.cargo = function (worker, payload) {
-        var working     = false,
-            tasks       = [];
-
-        var cargo = {
-            tasks: tasks,
-            payload: payload,
-            saturated: null,
-            empty: null,
-            drain: null,
-            drained: true,
-            push: function (data, callback) {
-                if (!_isArray(data)) {
-                    data = [data];
-                }
-                _each(data, function(task) {
-                    tasks.push({
-                        data: task,
-                        callback: typeof callback === 'function' ? callback : null
-                    });
-                    cargo.drained = false;
-                    if (cargo.saturated && tasks.length === payload) {
-                        cargo.saturated();
-                    }
-                });
-                async.setImmediate(cargo.process);
-            },
-            process: function process() {
-                if (working) return;
-                if (tasks.length === 0) {
-                    if(cargo.drain && !cargo.drained) cargo.drain();
-                    cargo.drained = true;
-                    return;
-                }
-
-                var ts = typeof payload === 'number'
-                            ? tasks.splice(0, payload)
-                            : tasks.splice(0, tasks.length);
-
-                var ds = _map(ts, function (task) {
-                    return task.data;
-                });
-
-                if(cargo.empty) cargo.empty();
-                working = true;
-                worker(ds, function () {
-                    working = false;
-
-                    var args = arguments;
-                    _each(ts, function (data) {
-                        if (data.callback) {
-                            data.callback.apply(null, args);
-                        }
-                    });
-
-                    process();
-                });
-            },
-            length: function () {
-                return tasks.length;
-            },
-            running: function () {
-                return working;
-            }
-        };
-        return cargo;
-    };
-
-    var _console_fn = function (name) {
-        return function (fn) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            fn.apply(null, args.concat([function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (typeof console !== 'undefined') {
-                    if (err) {
-                        if (console.error) {
-                            console.error(err);
-                        }
-                    }
-                    else if (console[name]) {
-                        _each(args, function (x) {
-                            console[name](x);
-                        });
-                    }
-                }
-            }]));
-        };
-    };
-    async.log = _console_fn('log');
-    async.dir = _console_fn('dir');
-    /*async.info = _console_fn('info');
-    async.warn = _console_fn('warn');
-    async.error = _console_fn('error');*/
-
-    async.memoize = function (fn, hasher) {
-        var memo = {};
-        var queues = {};
-        hasher = hasher || function (x) {
-            return x;
-        };
-        var memoized = function () {
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            var key = hasher.apply(null, args);
-            if (key in memo) {
-                async.nextTick(function () {
-                    callback.apply(null, memo[key]);
-                });
-            }
-            else if (key in queues) {
-                queues[key].push(callback);
-            }
-            else {
-                queues[key] = [callback];
-                fn.apply(null, args.concat([function () {
-                    memo[key] = arguments;
-                    var q = queues[key];
-                    delete queues[key];
-                    for (var i = 0, l = q.length; i < l; i++) {
-                      q[i].apply(null, arguments);
-                    }
-                }]));
-            }
-        };
-        memoized.memo = memo;
-        memoized.unmemoized = fn;
-        return memoized;
-    };
-
-    async.unmemoize = function (fn) {
-      return function () {
-        return (fn.unmemoized || fn).apply(null, arguments);
-      };
-    };
-
-    async.times = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.map(counter, iterator, callback);
-    };
-
-    async.timesSeries = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.mapSeries(counter, iterator, callback);
-    };
-
-    async.seq = function (/* functions... */) {
-        var fns = arguments;
-        return function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            async.reduce(fns, args, function (newargs, fn, cb) {
-                fn.apply(that, newargs.concat([function () {
-                    var err = arguments[0];
-                    var nextargs = Array.prototype.slice.call(arguments, 1);
-                    cb(err, nextargs);
-                }]))
-            },
-            function (err, results) {
-                callback.apply(that, [err].concat(results));
-            });
-        };
-    };
-
-    async.compose = function (/* functions... */) {
-      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
-    };
-
-    var _applyEach = function (eachfn, fns /*args...*/) {
-        var go = function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            return eachfn(fns, function (fn, cb) {
-                fn.apply(that, args.concat([cb]));
-            },
-            callback);
-        };
-        if (arguments.length > 2) {
-            var args = Array.prototype.slice.call(arguments, 2);
-            return go.apply(this, args);
-        }
-        else {
-            return go;
-        }
-    };
-    async.applyEach = doParallel(_applyEach);
-    async.applyEachSeries = doSeries(_applyEach);
-
-    async.forever = function (fn, callback) {
-        function next(err) {
-            if (err) {
-                if (callback) {
-                    return callback(err);
-                }
-                throw err;
-            }
-            fn(next);
-        }
-        next();
-    };
-
-    // Node.js
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = async;
-    }
-    // AMD / RequireJS
-    else if (typeof define !== 'undefined' && define.amd) {
-        define([], function () {
-            return async;
-        });
-    }
-    // included directly via <script> tag
-    else {
-        root.async = async;
-    }
-
-}());
-
-}).call(this,require('_process'))
-
-},{"_process":4}],14:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],15:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
     Resource    = require('./Resource'),
@@ -5381,7 +4282,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":16,"async":13,"eventemitter3":14,"url":9}],16:[function(require,module,exports){
+},{"./Resource":13,"async":1,"eventemitter3":10,"url":8}],13:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     _url = require('url'),
     // tests is CORS is supported in XHR, if not we need to use XDR
@@ -6158,7 +5059,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":14,"url":9}],17:[function(require,module,exports){
+},{"eventemitter3":10,"url":8}],14:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -6224,7 +5125,7 @@ module.exports = {
     }
 };
 
-},{}],18:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -6238,7 +5139,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":15,"./Resource":16,"./middlewares/caching/memory":19,"./middlewares/parsing/blob":20}],19:[function(require,module,exports){
+},{"./Loader":12,"./Resource":13,"./middlewares/caching/memory":16,"./middlewares/parsing/blob":17}],16:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -6260,7 +5161,7 @@ module.exports = function () {
     };
 };
 
-},{}],20:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -6320,7 +5221,7 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":16,"../../b64":17}],21:[function(require,module,exports){
+},{"../../Resource":13,"../../b64":14}],18:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
   "version": "3.0.7",
@@ -6390,7 +5291,7 @@ module.exports={
   }
 }
 
-},{}],22:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -6612,7 +5513,7 @@ var CONST = {
 
 module.exports = CONST;
 
-},{"../../package.json":21}],23:[function(require,module,exports){
+},{"../../package.json":18}],20:[function(require,module,exports){
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
@@ -6656,6 +5557,7 @@ Object.defineProperties(Container.prototype, {
      * @memberof PIXI.Container#
      */
     width: {
+        configurable: true,
         get: function ()
         {
             return this.scale.x * this.getLocalBounds().width;
@@ -6686,6 +5588,7 @@ Object.defineProperties(Container.prototype, {
      * @memberof PIXI.Container#
      */
     height: {
+        configurable: true,
         get: function ()
         {
             return  this.scale.y * this.getLocalBounds().height;
@@ -7188,7 +6091,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":32,"../textures/RenderTexture":70,"./DisplayObject":24}],24:[function(require,module,exports){
+},{"../math":29,"../textures/RenderTexture":67,"./DisplayObject":21}],21:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
@@ -7561,13 +6464,14 @@ DisplayObject.prototype.getLocalBounds = function ()
  * Calculates the global position of the display object
  *
  * @param position {Point} The world origin to calculate from
+ * @param [outPoint] {Point} An existing point to store the output in, if you don't want a new point.
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position)
+DisplayObject.prototype.toGlobal = function (position, outPoint)
 {
     // don't need to update the lot
     this.displayObjectUpdateTransform();
-    return this.worldTransform.apply(position);
+    return this.worldTransform.apply(position, outPoint);
 };
 
 /**
@@ -7575,18 +6479,19 @@ DisplayObject.prototype.toGlobal = function (position)
  *
  * @param position {Point} The world origin to calculate from
  * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
+ * @param [outPoint] {Point} An existing point to store the output in, if you don't want a new point.
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from)
+DisplayObject.prototype.toLocal = function (position, from, outPoint)
 {
     if (from)
     {
-        position = from.toGlobal(position);
+        position = from.toGlobal(position, outPoint);
     }
 
     // don't need to update the lot
     this.displayObjectUpdateTransform();
-    return this.worldTransform.applyInverse(position);
+    return this.worldTransform.applyInverse(position, outPoint);
 };
 
 /**
@@ -7654,7 +6559,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":22,"../math":32,"../textures/RenderTexture":70,"eventemitter3":11}],25:[function(require,module,exports){
+},{"../const":19,"../math":29,"../textures/RenderTexture":67,"eventemitter3":10}],22:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
@@ -8836,7 +7741,7 @@ Graphics.prototype.destroy = function () {
     this._localBounds = null;
 };
 
-},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/canvas/utils/CanvasGraphics":45,"../textures/Texture":71,"./GraphicsData":26}],26:[function(require,module,exports){
+},{"../const":19,"../display/Container":20,"../math":29,"../renderers/canvas/utils/CanvasBuffer":41,"../renderers/canvas/utils/CanvasGraphics":42,"../textures/Texture":68,"./GraphicsData":23}],23:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -8926,7 +7831,7 @@ GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };
 
-},{}],27:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -9830,7 +8735,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":22,"../../math":32,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62,"../../utils":76,"./WebGLGraphicsData":28,"earcut":10}],28:[function(require,module,exports){
+},{"../../const":19,"../../math":29,"../../renderers/webgl/WebGLRenderer":45,"../../renderers/webgl/utils/ObjectRenderer":59,"../../utils":73,"./WebGLGraphicsData":25,"earcut":9}],25:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -9948,7 +8853,7 @@ WebGLGraphicsData.prototype.destroy = function () {
     this.glIndices = null;
 };
 
-},{}],29:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -10040,7 +8945,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":22,"./display/Container":23,"./display/DisplayObject":24,"./graphics/Graphics":25,"./graphics/GraphicsData":26,"./graphics/webgl/GraphicsRenderer":27,"./math":32,"./particles/ParticleContainer":38,"./particles/webgl/ParticleRenderer":40,"./renderers/canvas/CanvasRenderer":43,"./renderers/canvas/utils/CanvasBuffer":44,"./renderers/canvas/utils/CanvasGraphics":45,"./renderers/webgl/WebGLRenderer":48,"./renderers/webgl/filters/AbstractFilter":49,"./renderers/webgl/filters/FXAAFilter":50,"./renderers/webgl/filters/SpriteMaskFilter":51,"./renderers/webgl/managers/ShaderManager":55,"./renderers/webgl/shaders/Shader":60,"./renderers/webgl/utils/ObjectRenderer":62,"./renderers/webgl/utils/RenderTarget":64,"./sprites/Sprite":66,"./sprites/webgl/SpriteRenderer":67,"./text/Text":68,"./textures/BaseTexture":69,"./textures/RenderTexture":70,"./textures/Texture":71,"./textures/TextureUvs":72,"./textures/VideoBaseTexture":73,"./ticker":75,"./utils":76}],30:[function(require,module,exports){
+},{"./const":19,"./display/Container":20,"./display/DisplayObject":21,"./graphics/Graphics":22,"./graphics/GraphicsData":23,"./graphics/webgl/GraphicsRenderer":24,"./math":29,"./particles/ParticleContainer":35,"./particles/webgl/ParticleRenderer":37,"./renderers/canvas/CanvasRenderer":40,"./renderers/canvas/utils/CanvasBuffer":41,"./renderers/canvas/utils/CanvasGraphics":42,"./renderers/webgl/WebGLRenderer":45,"./renderers/webgl/filters/AbstractFilter":46,"./renderers/webgl/filters/FXAAFilter":47,"./renderers/webgl/filters/SpriteMaskFilter":48,"./renderers/webgl/managers/ShaderManager":52,"./renderers/webgl/shaders/Shader":57,"./renderers/webgl/utils/ObjectRenderer":59,"./renderers/webgl/utils/RenderTarget":61,"./sprites/Sprite":63,"./sprites/webgl/SpriteRenderer":64,"./text/Text":65,"./textures/BaseTexture":66,"./textures/RenderTexture":67,"./textures/Texture":68,"./textures/TextureUvs":69,"./textures/VideoBaseTexture":70,"./ticker":72,"./utils":73}],27:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -10400,7 +9305,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":31}],31:[function(require,module,exports){
+},{"./Point":28}],28:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -10470,7 +9375,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],32:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -10492,7 +9397,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":30,"./Point":31,"./shapes/Circle":33,"./shapes/Ellipse":34,"./shapes/Polygon":35,"./shapes/Rectangle":36,"./shapes/RoundedRectangle":37}],33:[function(require,module,exports){
+},{"./Matrix":27,"./Point":28,"./shapes/Circle":30,"./shapes/Ellipse":31,"./shapes/Polygon":32,"./shapes/Rectangle":33,"./shapes/RoundedRectangle":34}],30:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -10580,7 +9485,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":22,"./Rectangle":36}],34:[function(require,module,exports){
+},{"../../const":19,"./Rectangle":33}],31:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -10675,7 +9580,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":22,"./Rectangle":36}],35:[function(require,module,exports){
+},{"../../const":19,"./Rectangle":33}],32:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -10778,7 +9683,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":22,"../Point":31}],36:[function(require,module,exports){
+},{"../../const":19,"../Point":28}],33:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -10872,7 +9777,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":22}],37:[function(require,module,exports){
+},{"../../const":19}],34:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -10964,7 +9869,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":22}],38:[function(require,module,exports){
+},{"../../const":19}],35:[function(require,module,exports){
 var Container = require('../display/Container'),
     CONST = require('../const');
 
@@ -11295,7 +10200,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../const":22,"../display/Container":23}],39:[function(require,module,exports){
+},{"../const":19,"../display/Container":20}],36:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -11508,7 +10413,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.gl.deleteBuffer(this.staticBuffer);
 };
 
-},{}],40:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -12003,7 +10908,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../math":32,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62,"./ParticleBuffer":39,"./ParticleShader":41}],41:[function(require,module,exports){
+},{"../../math":29,"../../renderers/webgl/WebGLRenderer":45,"../../renderers/webgl/utils/ObjectRenderer":59,"./ParticleBuffer":36,"./ParticleShader":38}],38:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -12081,7 +10986,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":61}],42:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":58}],39:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -12323,7 +11228,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":22,"../math":32,"../utils":76,"eventemitter3":11}],43:[function(require,module,exports){
+},{"../const":19,"../math":29,"../utils":73,"eventemitter3":10}],40:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -12608,7 +11513,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":22,"../../math":32,"../../utils":76,"../SystemRenderer":42,"./utils/CanvasMaskManager":46}],44:[function(require,module,exports){
+},{"../../const":19,"../../math":29,"../../utils":73,"../SystemRenderer":39,"./utils/CanvasMaskManager":43}],41:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -12708,7 +11613,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],45:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -13061,7 +11966,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":22}],46:[function(require,module,exports){
+},{"../../../const":19}],43:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -13123,7 +12028,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"./CanvasGraphics":45}],47:[function(require,module,exports){
+},{"./CanvasGraphics":42}],44:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -13357,7 +12262,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":76}],48:[function(require,module,exports){
+},{"../../../utils":73}],45:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -13902,7 +12807,7 @@ WebGLRenderer.prototype._mapGlModes = function ()
     }
 };
 
-},{"../../const":22,"../../utils":76,"../SystemRenderer":42,"./filters/FXAAFilter":50,"./managers/BlendModeManager":52,"./managers/FilterManager":53,"./managers/MaskManager":54,"./managers/ShaderManager":55,"./managers/StencilManager":56,"./utils/ObjectRenderer":62,"./utils/RenderTarget":64}],49:[function(require,module,exports){
+},{"../../const":19,"../../utils":73,"../SystemRenderer":39,"./filters/FXAAFilter":47,"./managers/BlendModeManager":49,"./managers/FilterManager":50,"./managers/MaskManager":51,"./managers/ShaderManager":52,"./managers/StencilManager":53,"./utils/ObjectRenderer":59,"./utils/RenderTarget":61}],46:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -14020,7 +12925,7 @@ AbstractFilter.prototype.apply = function (frameBuffer)
 };
 */
 
-},{"../shaders/TextureShader":61}],50:[function(require,module,exports){
+},{"../shaders/TextureShader":58}],47:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -14044,9 +12949,9 @@ function FXAAFilter()
 {
     AbstractFilter.call(this,
         // vertex shader
-        "\nprecision mediump float;\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform vec2 resolution;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\n            out vec2 v_rgbM) {\n    vec2 inverseVP = 1.0 / resolution.xy;\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n    v_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n   vResolution = resolution;\n\n   //compute the texture coords and send them to varyings\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}\n",
+        "\r\nprecision mediump float;\r\n\r\nattribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform mat3 projectionMatrix;\r\nuniform vec2 resolution;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nvarying vec2 vResolution;\r\n\r\n//texcoords computed in vertex step\r\n//to avoid dependent texture reads\r\nvarying vec2 v_rgbNW;\r\nvarying vec2 v_rgbNE;\r\nvarying vec2 v_rgbSW;\r\nvarying vec2 v_rgbSE;\r\nvarying vec2 v_rgbM;\r\n\r\n\r\nvoid texcoords(vec2 fragCoord, vec2 resolution,\r\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\r\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\r\n            out vec2 v_rgbM) {\r\n    vec2 inverseVP = 1.0 / resolution.xy;\r\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\r\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\r\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\r\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\r\n    v_rgbM = vec2(fragCoord * inverseVP);\r\n}\r\n\r\nvoid main(void){\r\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\r\n   vTextureCoord = aTextureCoord;\r\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n   vResolution = resolution;\r\n\r\n   //compute the texture coords and send them to varyings\r\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\n\n/**\nBasic FXAA implementation based on the code on geeks3d.com with the\nmodification that the texture2DLod stuff was removed since it's\nunsupported by WebGL.\n\n--\n\nFrom:\nhttps://github.com/mitsuhiko/webgl-meincraft\n\nCopyright (c) 2011 by Armin Ronacher.\n\nSome rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n    * Redistributions of source code must retain the above copyright\n      notice, this list of conditions and the following disclaimer.\n\n    * Redistributions in binary form must reproduce the above\n      copyright notice, this list of conditions and the following\n      disclaimer in the documentation and/or other materials provided\n      with the distribution.\n\n    * The names of the contributors may not be used to endorse or\n      promote products derived from this software without specific\n      prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n*/\n\n#ifndef FXAA_REDUCE_MIN\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\n#endif\n#ifndef FXAA_REDUCE_MUL\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\n#endif\n#ifndef FXAA_SPAN_MAX\n    #define FXAA_SPAN_MAX     8.0\n#endif\n\n//optimized version for mobile, where dependent\n//texture reads can be a bottleneck\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\n            vec2 v_rgbNW, vec2 v_rgbNE,\n            vec2 v_rgbSW, vec2 v_rgbSE,\n            vec2 v_rgbM) {\n    vec4 color;\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\n    vec4 texColor = texture2D(tex, v_rgbM);\n    vec3 rgbM  = texColor.xyz;\n    vec3 luma = vec3(0.299, 0.587, 0.114);\n    float lumaNW = dot(rgbNW, luma);\n    float lumaNE = dot(rgbNE, luma);\n    float lumaSW = dot(rgbSW, luma);\n    float lumaSE = dot(rgbSE, luma);\n    float lumaM  = dot(rgbM,  luma);\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\n\n    mediump vec2 dir;\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\n\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\n\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\n              dir * rcpDirMin)) * inverseVP;\n\n    vec3 rgbA = 0.5 * (\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\n\n    float lumaB = dot(rgbB, luma);\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\n        color = vec4(rgbA, texColor.a);\n    else\n        color = vec4(rgbB, texColor.a);\n    return color;\n}\n\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nuniform sampler2D uSampler;\n\n\nvoid main(void){\n\n    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n\n}\n",
+        "precision lowp float;\r\n\r\n\r\n/**\r\nBasic FXAA implementation based on the code on geeks3d.com with the\r\nmodification that the texture2DLod stuff was removed since it's\r\nunsupported by WebGL.\r\n\r\n--\r\n\r\nFrom:\r\nhttps://github.com/mitsuhiko/webgl-meincraft\r\n\r\nCopyright (c) 2011 by Armin Ronacher.\r\n\r\nSome rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without\r\nmodification, are permitted provided that the following conditions are\r\nmet:\r\n\r\n    * Redistributions of source code must retain the above copyright\r\n      notice, this list of conditions and the following disclaimer.\r\n\r\n    * Redistributions in binary form must reproduce the above\r\n      copyright notice, this list of conditions and the following\r\n      disclaimer in the documentation and/or other materials provided\r\n      with the distribution.\r\n\r\n    * The names of the contributors may not be used to endorse or\r\n      promote products derived from this software without specific\r\n      prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\r\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\r\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\r\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\r\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\r\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\r\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\r\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\r\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\r\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\r\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n*/\r\n\r\n#ifndef FXAA_REDUCE_MIN\r\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\r\n#endif\r\n#ifndef FXAA_REDUCE_MUL\r\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\r\n#endif\r\n#ifndef FXAA_SPAN_MAX\r\n    #define FXAA_SPAN_MAX     8.0\r\n#endif\r\n\r\n//optimized version for mobile, where dependent\r\n//texture reads can be a bottleneck\r\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\r\n            vec2 v_rgbNW, vec2 v_rgbNE,\r\n            vec2 v_rgbSW, vec2 v_rgbSE,\r\n            vec2 v_rgbM) {\r\n    vec4 color;\r\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\r\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\r\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\r\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\r\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\r\n    vec4 texColor = texture2D(tex, v_rgbM);\r\n    vec3 rgbM  = texColor.xyz;\r\n    vec3 luma = vec3(0.299, 0.587, 0.114);\r\n    float lumaNW = dot(rgbNW, luma);\r\n    float lumaNE = dot(rgbNE, luma);\r\n    float lumaSW = dot(rgbSW, luma);\r\n    float lumaSE = dot(rgbSE, luma);\r\n    float lumaM  = dot(rgbM,  luma);\r\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\r\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\r\n\r\n    mediump vec2 dir;\r\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\r\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\r\n\r\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\r\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\r\n\r\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\r\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\r\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\r\n              dir * rcpDirMin)) * inverseVP;\r\n\r\n    vec3 rgbA = 0.5 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\r\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\r\n\r\n    float lumaB = dot(rgbB, luma);\r\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\r\n        color = vec4(rgbA, texColor.a);\r\n    else\r\n        color = vec4(rgbB, texColor.a);\r\n    return color;\r\n}\r\n\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vResolution;\r\n\r\n//texcoords computed in vertex step\r\n//to avoid dependent texture reads\r\nvarying vec2 v_rgbNW;\r\nvarying vec2 v_rgbNE;\r\nvarying vec2 v_rgbSW;\r\nvarying vec2 v_rgbSE;\r\nvarying vec2 v_rgbM;\r\n\r\nuniform sampler2D uSampler;\r\n\r\n\r\nvoid main(void){\r\n\r\n    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\r\n\r\n}\r\n",
         // uniforms
         {
             resolution: { type: 'v2', value: { x: 1, y: 1 } }
@@ -14068,7 +12973,7 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":49}],51:[function(require,module,exports){
+},{"./AbstractFilter":46}],48:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
@@ -14088,8 +12993,8 @@ function SpriteMaskFilter(sprite)
     var maskMatrix = new math.Matrix();
 
     AbstractFilter.call(this,
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n    vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        "precision lowp float;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform float alpha;\nuniform sampler2D mask;\n\nvoid main(void)\n{\n    // check clip! this will stop the mask bleeding out from the edges\n    vec2 text = abs( vMaskCoord - 0.5 );\n    text = step(0.5, text);\n    float clip = 1.0 - max(text.y, text.x);\n    vec4 original = texture2D(uSampler, vTextureCoord);\n    vec4 masky = texture2D(mask, vMaskCoord);\n    original *= (masky.r * masky.a * alpha * clip);\n    gl_FragColor = original;\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform mat3 projectionMatrix;\r\nuniform mat3 otherMatrix;\r\n\r\nvarying vec2 vMaskCoord;\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nvoid main(void)\r\n{\r\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\r\n    vTextureCoord = aTextureCoord;\r\n    vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\r\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vMaskCoord;\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float alpha;\r\nuniform sampler2D mask;\r\n\r\nvoid main(void)\r\n{\r\n    // check clip! this will stop the mask bleeding out from the edges\r\n    vec2 text = abs( vMaskCoord - 0.5 );\r\n    text = step(0.5, text);\r\n    float clip = 1.0 - max(text.y, text.x);\r\n    vec4 original = texture2D(uSampler, vTextureCoord);\r\n    vec4 masky = texture2D(mask, vMaskCoord);\r\n    original *= (masky.r * masky.a * alpha * clip);\r\n    gl_FragColor = original;\r\n}\r\n",
         {
             mask:           { type: 'sampler2D', value: sprite._texture },
             alpha:          { type: 'f', value: 1},
@@ -14165,7 +13070,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":32,"./AbstractFilter":49}],52:[function(require,module,exports){
+},{"../../../math":29,"./AbstractFilter":46}],49:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -14208,7 +13113,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":57}],53:[function(require,module,exports){
+},{"./WebGLManager":54}],50:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -14644,7 +13549,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":22,"../../../math":32,"../utils/Quad":63,"../utils/RenderTarget":64,"./WebGLManager":57}],54:[function(require,module,exports){
+},{"../../../const":19,"../../../math":29,"../utils/Quad":60,"../utils/RenderTarget":61,"./WebGLManager":54}],51:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -14758,7 +13663,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":51,"./WebGLManager":57}],55:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":48,"./WebGLManager":54}],52:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -14925,7 +13830,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":76,"../shaders/ComplexPrimitiveShader":58,"../shaders/PrimitiveShader":59,"../shaders/TextureShader":61,"./WebGLManager":57}],56:[function(require,module,exports){
+},{"../../../utils":73,"../shaders/ComplexPrimitiveShader":55,"../shaders/PrimitiveShader":56,"../shaders/TextureShader":58,"./WebGLManager":54}],53:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -15269,7 +14174,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":76,"./WebGLManager":57}],57:[function(require,module,exports){
+},{"../../../utils":73,"./WebGLManager":54}],54:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -15310,7 +14215,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],58:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15370,7 +14275,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":60}],59:[function(require,module,exports){
+},{"./Shader":57}],56:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15431,7 +14336,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":60}],60:[function(require,module,exports){
+},{"./Shader":57}],57:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -15989,7 +14894,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":76}],61:[function(require,module,exports){
+},{"../../../utils":73}],58:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -16086,7 +14991,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":60}],62:[function(require,module,exports){
+},{"./Shader":57}],59:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -16143,7 +15048,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":57}],63:[function(require,module,exports){
+},{"../managers/WebGLManager":54}],60:[function(require,module,exports){
 /**
  * Helper class to create a quad
  * @class
@@ -16289,7 +15194,7 @@ module.exports = Quad;
 
 
 
-},{}],64:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -16595,7 +15500,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":22,"../../../math":32,"../../../utils":76,"./StencilMaskStack":65}],65:[function(require,module,exports){
+},{"../../../const":19,"../../../math":29,"../../../utils":73,"./StencilMaskStack":62}],62:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -16629,7 +15534,7 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],66:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -17193,7 +16098,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasTinter":47,"../textures/Texture":71,"../utils":76}],67:[function(require,module,exports){
+},{"../const":19,"../display/Container":20,"../math":29,"../renderers/canvas/utils/CanvasTinter":44,"../textures/Texture":68,"../utils":73}],64:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -17661,7 +16566,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":22,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62}],68:[function(require,module,exports){
+},{"../../const":19,"../../renderers/webgl/WebGLRenderer":45,"../../renderers/webgl/utils/ObjectRenderer":59}],65:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -18274,7 +17179,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":22,"../math":32,"../sprites/Sprite":66,"../textures/Texture":71,"../utils":76}],69:[function(require,module,exports){
+},{"../const":19,"../math":29,"../sprites/Sprite":63,"../textures/Texture":68,"../utils":73}],66:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -18590,10 +17495,16 @@ BaseTexture.prototype._sourceLoaded = function ()
  */
 BaseTexture.prototype.destroy = function ()
 {
+    var id;
     if (this.imageUrl)
     {
-        delete utils.BaseTextureCache[this.imageUrl];
-        delete utils.TextureCache[this.imageUrl];
+        id = this.imageUrl;
+        if(utils.useFilenamesForTextures)
+        {
+            id = utils.getFilenameFromUrl(this.imageUrl);
+        }
+        delete utils.BaseTextureCache[id];
+        delete utils.TextureCache[id];
 
         this.imageUrl = null;
 
@@ -18610,6 +17521,27 @@ BaseTexture.prototype.destroy = function ()
     this.source = null;
 
     this.dispose();
+    
+    //go through and destroy any textures that use this as the base texture
+    //that way a destroyed spritesheet cleans up all the sprite frames
+    var TextureCache = utils.TextureCache;
+    for(id in TextureCache)
+    {
+        var texture = TextureCache[id];
+        if(!texture)
+        {
+            delete TextureCache[id];
+            continue;
+        }
+        if(texture.baseTexture === this)
+        {
+            texture.destroy();
+            delete TextureCache[id];
+        }
+    }
+    
+    //remove any remaining listeners
+    this.removeAllListeners();
 };
 
 /**
@@ -18650,7 +17582,12 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
-    var baseTexture = utils.BaseTextureCache[imageUrl];
+    var id = imageUrl;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(imageUrl);
+    }
+    var baseTexture = utils.BaseTextureCache[id];
 
     if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
     {
@@ -18672,7 +17609,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 
         image.src = imageUrl;
 
-        utils.BaseTextureCache[imageUrl] = baseTexture;
+        utils.BaseTextureCache[id] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
         baseTexture.resolution = utils.getResolutionOfUrl(imageUrl);
@@ -18707,7 +17644,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":22,"../utils":76,"eventemitter3":11}],70:[function(require,module,exports){
+},{"../const":19,"../utils":73,"eventemitter3":10}],67:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -19198,7 +18135,7 @@ RenderTexture.prototype.getPixel = function (x, y)
     }
 };
 
-},{"../const":22,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/webgl/managers/FilterManager":53,"../renderers/webgl/utils/RenderTarget":64,"./BaseTexture":69,"./Texture":71}],71:[function(require,module,exports){
+},{"../const":19,"../math":29,"../renderers/canvas/utils/CanvasBuffer":41,"../renderers/webgl/managers/FilterManager":50,"../renderers/webgl/utils/RenderTarget":61,"./BaseTexture":66,"./Texture":68}],68:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -19496,12 +18433,17 @@ Texture.prototype._updateUvs = function ()
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
-    var texture = utils.TextureCache[imageUrl];
+    var id = imageUrl;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(imageUrl);
+    }
+    var texture = utils.TextureCache[id];
 
     if (!texture)
     {
         texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
-        utils.TextureCache[imageUrl] = texture;
+        utils.TextureCache[id] = texture;
     }
 
     return texture;
@@ -19513,13 +18455,19 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
  *
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
+ * @param [suppressErrors=false] {boolean} If the error from a non-existant texture should be thrown
  * @return {Texture} The newly created texture
  */
-Texture.fromFrame = function (frameId)
+Texture.fromFrame = function (frameId, suppressErrors)
 {
-    var texture = utils.TextureCache[frameId];
+    var id = frameId;
+    if(utils.useFilenamesForTextures)
+    {
+        id = utils.getFilenameFromUrl(frameId);
+    }
+    var texture = utils.TextureCache[id];
 
-    if (!texture)
+    if (!texture && !suppressErrors)
     {
         throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
@@ -19604,7 +18552,7 @@ Texture.removeTextureFromCache = function (id)
 
 Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":32,"../utils":76,"./BaseTexture":69,"./TextureUvs":72,"./VideoBaseTexture":73,"eventemitter3":11}],72:[function(require,module,exports){
+},{"../math":29,"../utils":73,"./BaseTexture":66,"./TextureUvs":69,"./VideoBaseTexture":70,"eventemitter3":10}],69:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -19672,7 +18620,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],73:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -19905,7 +18853,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":76,"./BaseTexture":69}],74:[function(require,module,exports){
+},{"../utils":73,"./BaseTexture":66}],71:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -20256,7 +19204,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":22,"eventemitter3":11}],75:[function(require,module,exports){
+},{"../const":19,"eventemitter3":10}],72:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -20318,7 +19266,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":74}],76:[function(require,module,exports){
+},{"./Ticker":71}],73:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -20554,10 +19502,33 @@ var utils = module.exports = {
      * @todo Describe property usage
      * @private
      */
-    BaseTextureCache: {}
+    BaseTextureCache: {},
+    
+    useFilenamesForTextures: false,
+    
+    /**
+     * Gets a file name from a url, so that textures and such can be referenced by filename alone.
+     *
+     * @param {String} url The url to pull the filename from.
+     * @return {String} The filename (excluding extension).
+     */
+    getFilenameFromUrl: function(url)
+    {
+        if(url.indexOf('data:') === 0)
+        {
+            return url;
+        }
+    	var name = url.substring(url.lastIndexOf('/') + 1);
+    	var i = name.lastIndexOf('.');
+    	if(i !== -1)
+        {
+    		name = name.substring(0, i);
+        }
+    	return name;
+    }
 };
 
-},{"../const":22,"./pluginTarget":77,"async":2}],77:[function(require,module,exports){
+},{"../const":19,"./pluginTarget":74,"async":1}],74:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -20627,7 +19598,7 @@ module.exports = {
     }
 };
 
-},{}],78:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -20962,7 +19933,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":29,"./extras":85,"./filters":102,"./mesh":126}],79:[function(require,module,exports){
+},{"./core":26,"./extras":82,"./filters":99,"./mesh":124}],76:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21341,7 +20312,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":29}],80:[function(require,module,exports){
+},{"../core":26}],77:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21617,7 +20588,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":29}],81:[function(require,module,exports){
+},{"../core":26}],78:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point();
@@ -22054,7 +21025,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":29}],82:[function(require,module,exports){
+},{"../core":26}],79:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -22326,7 +21297,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":29}],83:[function(require,module,exports){
+},{"../core":26}],80:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22354,7 +21325,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":29}],84:[function(require,module,exports){
+},{"../core":26}],81:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22383,7 +21354,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":29}],85:[function(require,module,exports){
+},{"../core":26}],82:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22404,7 +21375,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":79,"./MovieClip":80,"./TilingSprite":81,"./cacheAsBitmap":82,"./getChildByName":83,"./getGlobalPosition":84}],86:[function(require,module,exports){
+},{"./BitmapText":76,"./MovieClip":77,"./TilingSprite":78,"./cacheAsBitmap":79,"./getChildByName":80,"./getGlobalPosition":81}],83:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22429,7 +21400,7 @@ function AsciiFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nuniform vec4 dimensions;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 uv = gl_FragCoord.xy;\n\n    vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;\n\n    float gray = (col.r + col.g + col.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    vec2 p = mod( uv / ( pixelSize * 0.5 ), 2.0) - vec2(1.0);\n    col = col * character(n, p);\n\n    gl_FragColor = vec4(col, 1.0);\n}\n",
+        "precision mediump float;\r\n\r\nuniform vec4 dimensions;\r\nuniform float pixelSize;\r\nuniform sampler2D uSampler;\r\n\r\nfloat character(float n, vec2 p)\r\n{\r\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\r\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\r\n    {\r\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\r\n    }\r\n    return 0.0;\r\n}\r\n\r\nvoid main()\r\n{\r\n    vec2 uv = gl_FragCoord.xy;\r\n\r\n    vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;\r\n\r\n    float gray = (col.r + col.g + col.b) / 3.0;\r\n\r\n    float n =  65536.0;             // .\r\n    if (gray > 0.2) n = 65600.0;    // :\r\n    if (gray > 0.3) n = 332772.0;   // *\r\n    if (gray > 0.4) n = 15255086.0; // o\r\n    if (gray > 0.5) n = 23385164.0; // &\r\n    if (gray > 0.6) n = 15252014.0; // 8\r\n    if (gray > 0.7) n = 13199452.0; // @\r\n    if (gray > 0.8) n = 11512810.0; // #\r\n\r\n    vec2 p = mod( uv / ( pixelSize * 0.5 ), 2.0) - vec2(1.0);\r\n    col = col * character(n, p);\r\n\r\n    gl_FragColor = vec4(col, 1.0);\r\n}\r\n",
         // custom uniforms
         {
             dimensions: { type: '4fv', value: new Float32Array([0, 0, 0, 0]) },
@@ -22461,7 +21432,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":29}],87:[function(require,module,exports){
+},{"../../core":26}],84:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -22562,7 +21533,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":29,"../blur/BlurXFilter":90,"../blur/BlurYFilter":91}],88:[function(require,module,exports){
+},{"../../core":26,"../blur/BlurXFilter":87,"../blur/BlurYFilter":88}],85:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -22579,9 +21550,9 @@ function BlurDirFilter(dirX, dirY)
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform float dirX;\nuniform float dirY;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[3];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[0] = aTextureCoord + vec2( (0.004 * strength) * dirX, (0.004 * strength) * dirY );\n    vBlurTexCoords[1] = aTextureCoord + vec2( (0.008 * strength) * dirX, (0.008 * strength) * dirY );\n    vBlurTexCoords[2] = aTextureCoord + vec2( (0.012 * strength) * dirX, (0.012 * strength) * dirY );\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform float strength;\r\nuniform float dirX;\r\nuniform float dirY;\r\nuniform mat3 projectionMatrix;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vBlurTexCoords[3];\r\n\r\nvoid main(void)\r\n{\r\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\r\n    vTextureCoord = aTextureCoord;\r\n\r\n    vBlurTexCoords[0] = aTextureCoord + vec2( (0.004 * strength) * dirX, (0.004 * strength) * dirY );\r\n    vBlurTexCoords[1] = aTextureCoord + vec2( (0.008 * strength) * dirX, (0.008 * strength) * dirY );\r\n    vBlurTexCoords[2] = aTextureCoord + vec2( (0.012 * strength) * dirX, (0.012 * strength) * dirY );\r\n\r\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[3];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vTextureCoord     ) * 0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0]) * 0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1]) * 0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2]) * 0.004431848411938341;\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec2 vBlurTexCoords[3];\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    gl_FragColor = vec4(0.0);\r\n\r\n    gl_FragColor += texture2D(uSampler, vTextureCoord     ) * 0.3989422804014327;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0]) * 0.2419707245191454;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1]) * 0.05399096651318985;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2]) * 0.004431848411938341;\r\n}\r\n",
         // set the uniforms
         {
             strength: { type: '1f', value: 1 },
@@ -22707,7 +21678,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
     }
 });
 
-},{"../../core":29}],89:[function(require,module,exports){
+},{"../../core":26}],86:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -22817,7 +21788,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":29,"./BlurXFilter":90,"./BlurYFilter":91}],90:[function(require,module,exports){
+},{"../../core":26,"./BlurXFilter":87,"./BlurYFilter":88}],87:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22833,9 +21804,9 @@ function BlurXFilter()
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(-0.012 * strength, 0.0);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(-0.008 * strength, 0.0);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(-0.004 * strength, 0.0);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2( 0.004 * strength, 0.0);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2( 0.008 * strength, 0.0);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2( 0.012 * strength, 0.0);\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform float strength;\r\nuniform mat3 projectionMatrix;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vBlurTexCoords[6];\r\n\r\nvoid main(void)\r\n{\r\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\r\n    vTextureCoord = aTextureCoord;\r\n\r\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(-0.012 * strength, 0.0);\r\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(-0.008 * strength, 0.0);\r\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(-0.004 * strength, 0.0);\r\n    vBlurTexCoords[ 3] = aTextureCoord + vec2( 0.004 * strength, 0.0);\r\n    vBlurTexCoords[ 4] = aTextureCoord + vec2( 0.008 * strength, 0.0);\r\n    vBlurTexCoords[ 5] = aTextureCoord + vec2( 0.012 * strength, 0.0);\r\n\r\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec2 vBlurTexCoords[6];\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    gl_FragColor = vec4(0.0);\r\n\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\r\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\r\n}\r\n",
         // set the uniforms
         {
             strength: { type: '1f', value: 1 }
@@ -22911,7 +21882,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":29}],91:[function(require,module,exports){
+},{"../../core":26}],88:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22927,9 +21898,9 @@ function BlurYFilter()
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform float strength;\r\nuniform mat3 projectionMatrix;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vBlurTexCoords[6];\r\n\r\nvoid main(void)\r\n{\r\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\r\n    vTextureCoord = aTextureCoord;\r\n\r\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\r\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\r\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\r\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\r\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\r\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\r\n\r\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec2 vBlurTexCoords[6];\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    gl_FragColor = vec4(0.0);\r\n\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\r\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\r\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\r\n}\r\n",
         // set the uniforms
         {
             strength: { type: '1f', value: 1 }
@@ -22997,7 +21968,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":29}],92:[function(require,module,exports){
+},{"../../core":26}],89:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23015,7 +21986,7 @@ function SmartBlurFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 delta;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta * percent);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform vec2 delta;\r\n\r\nfloat random(vec3 scale, float seed)\r\n{\r\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\r\n}\r\n\r\nvoid main(void)\r\n{\r\n    vec4 color = vec4(0.0);\r\n    float total = 0.0;\r\n\r\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\r\n\r\n    for (float t = -30.0; t <= 30.0; t++)\r\n    {\r\n        float percent = (t + offset - 0.5) / 30.0;\r\n        float weight = 1.0 - abs(percent);\r\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta * percent);\r\n        sample.rgb *= sample.a;\r\n        color += sample * weight;\r\n        total += weight;\r\n    }\r\n\r\n    gl_FragColor = color / total;\r\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\r\n}\r\n",
         // uniforms
         {
           delta: { type: 'v2', value: { x: 0.1, y: 0.0 } }
@@ -23027,7 +21998,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":29}],93:[function(require,module,exports){
+},{"../../core":26}],90:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23053,7 +22024,7 @@ function ColorMatrixFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[25];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4];\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9];\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14];\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19];\n\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\nuniform sampler2D uSampler;\r\nuniform float m[25];\r\n\r\nvoid main(void)\r\n{\r\n\r\n    vec4 c = texture2D(uSampler, vTextureCoord);\r\n\r\n    gl_FragColor.r = (m[0] * c.r);\r\n        gl_FragColor.r += (m[1] * c.g);\r\n        gl_FragColor.r += (m[2] * c.b);\r\n        gl_FragColor.r += (m[3] * c.a);\r\n        gl_FragColor.r += m[4];\r\n\r\n    gl_FragColor.g = (m[5] * c.r);\r\n        gl_FragColor.g += (m[6] * c.g);\r\n        gl_FragColor.g += (m[7] * c.b);\r\n        gl_FragColor.g += (m[8] * c.a);\r\n        gl_FragColor.g += m[9];\r\n\r\n     gl_FragColor.b = (m[10] * c.r);\r\n        gl_FragColor.b += (m[11] * c.g);\r\n        gl_FragColor.b += (m[12] * c.b);\r\n        gl_FragColor.b += (m[13] * c.a);\r\n        gl_FragColor.b += m[14];\r\n\r\n     gl_FragColor.a = (m[15] * c.r);\r\n        gl_FragColor.a += (m[16] * c.g);\r\n        gl_FragColor.a += (m[17] * c.b);\r\n        gl_FragColor.a += (m[18] * c.a);\r\n        gl_FragColor.a += m[19];\r\n\r\n}\r\n",
         // custom uniforms
         {
             m: {
@@ -23567,7 +22538,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":29}],94:[function(require,module,exports){
+},{"../../core":26}],91:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23585,7 +22556,7 @@ function ColorStepFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float step;\n\nvoid main(void)\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    color = floor(color * step) / step;\n\n    gl_FragColor = color;\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float step;\r\n\r\nvoid main(void)\r\n{\r\n    vec4 color = texture2D(uSampler, vTextureCoord);\r\n\r\n    color = floor(color * step) / step;\r\n\r\n    gl_FragColor = color;\r\n}\r\n",
         // custom uniforms
         {
             step: { type: '1f', value: 5 }
@@ -23616,7 +22587,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":29}],95:[function(require,module,exports){
+},{"../../core":26}],92:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23641,7 +22612,7 @@ function ConvolutionFilter(matrix, width, height)
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n",
+        "precision mediump float;\r\n\r\nvarying mediump vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform vec2 texelSize;\r\nuniform float matrix[9];\r\n\r\nvoid main(void)\r\n{\r\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\r\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\r\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\r\n\r\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\r\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\r\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\r\n\r\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\r\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\r\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\r\n\r\n   gl_FragColor =\r\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\r\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\r\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\r\n\r\n   gl_FragColor.a = c22.a;\r\n}\r\n",
         // custom uniforms
         {
             matrix:     { type: '1fv', value: new Float32Array(matrix) },
@@ -23707,7 +22678,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":29}],96:[function(require,module,exports){
+},{"../../core":26}],93:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23725,7 +22696,7 @@ function CrossHatchFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n"
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\r\n\r\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\r\n\r\n    if (lum < 1.00)\r\n    {\r\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\r\n        {\r\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\r\n        }\r\n    }\r\n\r\n    if (lum < 0.75)\r\n    {\r\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\r\n        {\r\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\r\n        }\r\n    }\r\n\r\n    if (lum < 0.50)\r\n    {\r\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\r\n        {\r\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\r\n        }\r\n    }\r\n\r\n    if (lum < 0.3)\r\n    {\r\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\r\n        {\r\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\r\n        }\r\n    }\r\n}\r\n"
     );
 }
 
@@ -23733,7 +22704,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":29}],97:[function(require,module,exports){
+},{"../../core":26}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23755,9 +22726,9 @@ function DisplacementFilter(sprite)
 
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform mat3 projectionMatrix;\r\nuniform mat3 otherMatrix;\r\n\r\nvarying vec2 vMapCoord;\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nvoid main(void)\r\n{\r\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\r\n   vTextureCoord = aTextureCoord;\r\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\r\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 original =  texture2D(uSampler, vTextureCoord);\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vMapCoord;\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform vec2 scale;\r\n\r\nuniform sampler2D uSampler;\r\nuniform sampler2D mapSampler;\r\n\r\nvoid main(void)\r\n{\r\n   vec4 original =  texture2D(uSampler, vTextureCoord);\r\n   vec4 map =  texture2D(mapSampler, vMapCoord);\r\n\r\n   map -= 0.5;\r\n   map.xy *= scale;\r\n\r\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\r\n}\r\n",
         // uniforms
         {
             mapSampler:     { type: 'sampler2D', value: sprite.texture },
@@ -23814,7 +22785,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":29}],98:[function(require,module,exports){
+},{"../../core":26}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23838,7 +22809,7 @@ function DotScreenFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 dimensions;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * dimensions.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform vec4 dimensions;\r\nuniform sampler2D uSampler;\r\n\r\nuniform float angle;\r\nuniform float scale;\r\n\r\nfloat pattern()\r\n{\r\n   float s = sin(angle), c = cos(angle);\r\n   vec2 tex = vTextureCoord * dimensions.xy;\r\n   vec2 point = vec2(\r\n       c * tex.x - s * tex.y,\r\n       s * tex.x + c * tex.y\r\n   ) * scale;\r\n   return (sin(point.x) * sin(point.y)) * 4.0;\r\n}\r\n\r\nvoid main()\r\n{\r\n   vec4 color = texture2D(uSampler, vTextureCoord);\r\n   float average = (color.r + color.g + color.b) / 3.0;\r\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\r\n}\r\n",
         // custom uniforms
         {
             scale:      { type: '1f', value: 1 },
@@ -23886,7 +22857,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":29}],99:[function(require,module,exports){
+},{"../../core":26}],96:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -23903,9 +22874,9 @@ function BlurYTintFilter()
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform vec2 offset;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition+offset), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform float strength;\r\nuniform vec2 offset;\r\n\r\nuniform mat3 projectionMatrix;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vBlurTexCoords[6];\r\n\r\nvoid main(void)\r\n{\r\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition+offset), 1.0)).xy, 0.0, 1.0);\r\n    vTextureCoord = aTextureCoord;\r\n\r\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\r\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\r\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\r\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\r\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\r\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\r\n\r\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n}\r\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform vec3 color;\nuniform float alpha;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    sum += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    sum += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    sum += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    sum += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n\n    gl_FragColor = vec4( color.rgb * sum.a * alpha, sum.a * alpha );\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec2 vBlurTexCoords[6];\r\nvarying vec4 vColor;\r\n\r\nuniform vec3 color;\r\nuniform float alpha;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    vec4 sum = vec4(0.0);\r\n\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\r\n    sum += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\r\n    sum += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\r\n\r\n    gl_FragColor = vec4( color.rgb * sum.a * alpha, sum.a * alpha );\r\n}\r\n",
         // set the uniforms
         {
             blur: { type: '1f', value: 1 / 512 },
@@ -23977,7 +22948,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     }
 });
 
-},{"../../core":29}],100:[function(require,module,exports){
+},{"../../core":26}],97:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -24146,7 +23117,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":29,"../blur/BlurXFilter":90,"./BlurYTintFilter":99}],101:[function(require,module,exports){
+},{"../../core":26,"../blur/BlurXFilter":87,"./BlurYTintFilter":96}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24164,7 +23135,7 @@ function GrayFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform float gray;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float gray;\r\n\r\nvoid main(void)\r\n{\r\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\r\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\r\n}\r\n",
         // set the uniforms
         {
             gray: { type: '1f', value: 1 }
@@ -24195,7 +23166,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":29}],102:[function(require,module,exports){
+},{"../../core":26}],99:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24235,7 +23206,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"./ascii/AsciiFilter":86,"./bloom/BloomFilter":87,"./blur/BlurDirFilter":88,"./blur/BlurFilter":89,"./blur/BlurXFilter":90,"./blur/BlurYFilter":91,"./blur/SmartBlurFilter":92,"./color/ColorMatrixFilter":93,"./color/ColorStepFilter":94,"./convolution/ConvolutionFilter":95,"./crosshatch/CrossHatchFilter":96,"./displacement/DisplacementFilter":97,"./dot/DotScreenFilter":98,"./dropshadow/DropShadowFilter":100,"./gray/GrayFilter":101,"./invert/InvertFilter":103,"./noise/NoiseFilter":104,"./normal/NormalMapFilter":105,"./pixelate/PixelateFilter":106,"./rgb/RGBSplitFilter":107,"./sepia/SepiaFilter":108,"./shockwave/ShockwaveFilter":109,"./tiltshift/TiltShiftFilter":111,"./tiltshift/TiltShiftXFilter":112,"./tiltshift/TiltShiftYFilter":113,"./twist/TwistFilter":114}],103:[function(require,module,exports){
+},{"./ascii/AsciiFilter":83,"./bloom/BloomFilter":84,"./blur/BlurDirFilter":85,"./blur/BlurFilter":86,"./blur/BlurXFilter":87,"./blur/BlurYFilter":88,"./blur/SmartBlurFilter":89,"./color/ColorMatrixFilter":90,"./color/ColorStepFilter":91,"./convolution/ConvolutionFilter":92,"./crosshatch/CrossHatchFilter":93,"./displacement/DisplacementFilter":94,"./dot/DotScreenFilter":95,"./dropshadow/DropShadowFilter":97,"./gray/GrayFilter":98,"./invert/InvertFilter":100,"./noise/NoiseFilter":101,"./normal/NormalMapFilter":102,"./pixelate/PixelateFilter":103,"./rgb/RGBSplitFilter":104,"./sepia/SepiaFilter":105,"./shockwave/ShockwaveFilter":106,"./tiltshift/TiltShiftFilter":108,"./tiltshift/TiltShiftXFilter":109,"./tiltshift/TiltShiftYFilter":110,"./twist/TwistFilter":111}],100:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24253,7 +23224,7 @@ function InvertFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform float invert;\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform float invert;\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    gl_FragColor = texture2D(uSampler, vTextureCoord);\r\n\r\n    gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);\r\n}\r\n",
         // custom uniforms
         {
             invert: { type: '1f', value: 1 }
@@ -24285,7 +23256,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":29}],104:[function(require,module,exports){
+},{"../../core":26}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24308,7 +23279,7 @@ function NoiseFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform float noise;\nuniform sampler2D uSampler;\n\nfloat rand(vec2 co)\n{\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    float diff = (rand(vTextureCoord) - 0.5) * noise;\n\n    color.r += diff;\n    color.g += diff;\n    color.b += diff;\n\n    gl_FragColor = color;\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform float noise;\r\nuniform sampler2D uSampler;\r\n\r\nfloat rand(vec2 co)\r\n{\r\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\r\n}\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture2D(uSampler, vTextureCoord);\r\n\r\n    float diff = (rand(vTextureCoord) - 0.5) * noise;\r\n\r\n    color.r += diff;\r\n    color.g += diff;\r\n    color.b += diff;\r\n\r\n    gl_FragColor = color;\r\n}\r\n",
         // custom uniforms
         {
             noise: { type: '1f', value: 0.5 }
@@ -24340,7 +23311,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":29}],105:[function(require,module,exports){
+},{"../../core":26}],102:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24360,7 +23331,7 @@ function NormalMapFilter(texture)
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D displacementMap;\nuniform sampler2D uSampler;\n\nuniform vec4 dimensions;\n\nconst vec2 Resolution = vec2(1.0,1.0);      //resolution of screen\nuniform vec3 LightPos;    //light position, normalized\nconst vec4 LightColor = vec4(1.0, 1.0, 1.0, 1.0);      //light RGBA -- alpha is intensity\nconst vec4 AmbientColor = vec4(1.0, 1.0, 1.0, 0.5);    //ambient RGBA -- alpha is intensity\nconst vec3 Falloff = vec3(0.0, 1.0, 0.2);         //attenuation coefficients\n\nuniform vec3 LightDir; // = vec3(1.0, 0.0, 1.0);\n\nuniform vec2 mapDimensions; // = vec2(256.0, 256.0);\n\n\nvoid main(void)\n{\n    vec2 mapCords = vTextureCoord.xy;\n\n    vec4 color = texture2D(uSampler, vTextureCoord.st);\n    vec3 nColor = texture2D(displacementMap, vTextureCoord.st).rgb;\n\n\n    mapCords *= vec2(dimensions.x/512.0, dimensions.y/512.0);\n\n    mapCords.y *= -1.0;\n    mapCords.y += 1.0;\n\n    // RGBA of our diffuse color\n    vec4 DiffuseColor = texture2D(uSampler, vTextureCoord);\n\n    // RGB of our normal map\n    vec3 NormalMap = texture2D(displacementMap, mapCords).rgb;\n\n    // The delta position of light\n    // vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);\n    vec3 LightDir = vec3(LightPos.xy - (mapCords.xy), LightPos.z);\n\n    // Correct for aspect ratio\n    // LightDir.x *= Resolution.x / Resolution.y;\n\n    // Determine distance (used for attenuation) BEFORE we normalize our LightDir\n    float D = length(LightDir);\n\n    // normalize our vectors\n    vec3 N = normalize(NormalMap * 2.0 - 1.0);\n    vec3 L = normalize(LightDir);\n\n    // Pre-multiply light color with intensity\n    // Then perform 'N dot L' to determine our diffuse term\n    vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);\n\n    // pre-multiply ambient color with intensity\n    vec3 Ambient = AmbientColor.rgb * AmbientColor.a;\n\n    // calculate attenuation\n    float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );\n\n    // the calculation which brings it all together\n    vec3 Intensity = Ambient + Diffuse * Attenuation;\n    vec3 FinalColor = DiffuseColor.rgb * Intensity;\n    gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);\n\n    // gl_FragColor = vec4(1.0, 0.0, 0.0, Attenuation); // vColor * vec4(FinalColor, DiffuseColor.a);\n\n/*\n    // normalise color\n    vec3 normal = normalize(nColor * 2.0 - 1.0);\n\n    vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );\n\n    float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);\n\n    float d = sqrt(dot(deltaPos, deltaPos));\n    float att = 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) );\n\n    vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;\n    result *= color.rgb;\n\n    gl_FragColor = vec4(result, 1.0);\n*/\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nuniform sampler2D displacementMap;\r\nuniform sampler2D uSampler;\r\n\r\nuniform vec4 dimensions;\r\n\r\nconst vec2 Resolution = vec2(1.0,1.0);      //resolution of screen\r\nuniform vec3 LightPos;    //light position, normalized\r\nconst vec4 LightColor = vec4(1.0, 1.0, 1.0, 1.0);      //light RGBA -- alpha is intensity\r\nconst vec4 AmbientColor = vec4(1.0, 1.0, 1.0, 0.5);    //ambient RGBA -- alpha is intensity\r\nconst vec3 Falloff = vec3(0.0, 1.0, 0.2);         //attenuation coefficients\r\n\r\nuniform vec3 LightDir; // = vec3(1.0, 0.0, 1.0);\r\n\r\nuniform vec2 mapDimensions; // = vec2(256.0, 256.0);\r\n\r\n\r\nvoid main(void)\r\n{\r\n    vec2 mapCords = vTextureCoord.xy;\r\n\r\n    vec4 color = texture2D(uSampler, vTextureCoord.st);\r\n    vec3 nColor = texture2D(displacementMap, vTextureCoord.st).rgb;\r\n\r\n\r\n    mapCords *= vec2(dimensions.x/512.0, dimensions.y/512.0);\r\n\r\n    mapCords.y *= -1.0;\r\n    mapCords.y += 1.0;\r\n\r\n    // RGBA of our diffuse color\r\n    vec4 DiffuseColor = texture2D(uSampler, vTextureCoord);\r\n\r\n    // RGB of our normal map\r\n    vec3 NormalMap = texture2D(displacementMap, mapCords).rgb;\r\n\r\n    // The delta position of light\r\n    // vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);\r\n    vec3 LightDir = vec3(LightPos.xy - (mapCords.xy), LightPos.z);\r\n\r\n    // Correct for aspect ratio\r\n    // LightDir.x *= Resolution.x / Resolution.y;\r\n\r\n    // Determine distance (used for attenuation) BEFORE we normalize our LightDir\r\n    float D = length(LightDir);\r\n\r\n    // normalize our vectors\r\n    vec3 N = normalize(NormalMap * 2.0 - 1.0);\r\n    vec3 L = normalize(LightDir);\r\n\r\n    // Pre-multiply light color with intensity\r\n    // Then perform 'N dot L' to determine our diffuse term\r\n    vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);\r\n\r\n    // pre-multiply ambient color with intensity\r\n    vec3 Ambient = AmbientColor.rgb * AmbientColor.a;\r\n\r\n    // calculate attenuation\r\n    float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );\r\n\r\n    // the calculation which brings it all together\r\n    vec3 Intensity = Ambient + Diffuse * Attenuation;\r\n    vec3 FinalColor = DiffuseColor.rgb * Intensity;\r\n    gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);\r\n\r\n    // gl_FragColor = vec4(1.0, 0.0, 0.0, Attenuation); // vColor * vec4(FinalColor, DiffuseColor.a);\r\n\r\n/*\r\n    // normalise color\r\n    vec3 normal = normalize(nColor * 2.0 - 1.0);\r\n\r\n    vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );\r\n\r\n    float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);\r\n\r\n    float d = sqrt(dot(deltaPos, deltaPos));\r\n    float att = 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) );\r\n\r\n    vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;\r\n    result *= color.rgb;\r\n\r\n    gl_FragColor = vec4(result, 1.0);\r\n*/\r\n}\r\n",
         // custom uniforms
         {
             displacementMap:  { type: 'sampler2D', value: texture },
@@ -24453,7 +23424,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":29}],106:[function(require,module,exports){
+},{"../../core":26}],103:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24471,7 +23442,7 @@ function PixelateFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 dimensions;\nuniform vec2 pixelSize;\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec2 coord = vTextureCoord;\n\n    vec2 size = dimensions.xy / pixelSize;\n\n    vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;\n\n    gl_FragColor = texture2D(uSampler, color);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform vec4 dimensions;\r\nuniform vec2 pixelSize;\r\nuniform sampler2D uSampler;\r\n\r\nvoid main(void)\r\n{\r\n    vec2 coord = vTextureCoord;\r\n\r\n    vec2 size = dimensions.xy / pixelSize;\r\n\r\n    vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;\r\n\r\n    gl_FragColor = texture2D(uSampler, color);\r\n}\r\n",
         // custom uniforms
         {
             dimensions: { type: '4fv',  value: new Float32Array([0, 0, 0, 0]) },
@@ -24504,7 +23475,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":29}],107:[function(require,module,exports){
+},{"../../core":26}],104:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24522,7 +23493,7 @@ function RGBSplitFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 dimensions;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/dimensions.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/dimensions.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/dimensions.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform vec4 dimensions;\r\nuniform vec2 red;\r\nuniform vec2 green;\r\nuniform vec2 blue;\r\n\r\nvoid main(void)\r\n{\r\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/dimensions.xy).r;\r\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/dimensions.xy).g;\r\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/dimensions.xy).b;\r\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\r\n}\r\n",
         // custom uniforms
         {
             red:        { type: 'v2', value: { x: 20, y: 20 } },
@@ -24590,7 +23561,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":29}],108:[function(require,module,exports){
+},{"../../core":26}],105:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24608,7 +23579,7 @@ function SepiaFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float sepia;\n\nconst mat3 sepiaMatrix = mat3(0.3588, 0.7044, 0.1368, 0.2990, 0.5870, 0.1140, 0.2392, 0.4696, 0.0912);\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float sepia;\r\n\r\nconst mat3 sepiaMatrix = mat3(0.3588, 0.7044, 0.1368, 0.2990, 0.5870, 0.1140, 0.2392, 0.4696, 0.0912);\r\n\r\nvoid main(void)\r\n{\r\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\r\n   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);\r\n}\r\n",
         // custom uniforms
         {
             sepia: { type: '1f', value: 1 }
@@ -24640,7 +23611,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":29}],109:[function(require,module,exports){
+},{"../../core":26}],106:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24660,7 +23631,7 @@ function ShockwaveFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",
+        "precision lowp float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\n\r\nuniform vec2 center;\r\nuniform vec3 params; // 10.0, 0.8, 0.1\r\nuniform float time;\r\n\r\nvoid main()\r\n{\r\n    vec2 uv = vTextureCoord;\r\n    vec2 texCoord = uv;\r\n\r\n    float dist = distance(uv, center);\r\n\r\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\r\n    {\r\n        float diff = (dist - time);\r\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\r\n\r\n        float diffTime = diff  * powDiff;\r\n        vec2 diffUV = normalize(uv - center);\r\n        texCoord = uv + (diffUV * diffTime);\r\n    }\r\n\r\n    gl_FragColor = texture2D(uSampler, texCoord);\r\n}\r\n",
         // custom uniforms
         {
             center: { type: 'v2', value: { x: 0.5, y: 0.5 } },
@@ -24728,7 +23699,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":29}],110:[function(require,module,exports){
+},{"../../core":26}],107:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24751,7 +23722,7 @@ function TiltShiftAxisFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float blur;\r\nuniform float gradientBlur;\r\nuniform vec2 start;\r\nuniform vec2 end;\r\nuniform vec2 delta;\r\nuniform vec2 texSize;\r\n\r\nfloat random(vec3 scale, float seed)\r\n{\r\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\r\n}\r\n\r\nvoid main(void)\r\n{\r\n    vec4 color = vec4(0.0);\r\n    float total = 0.0;\r\n\r\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\r\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\r\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\r\n\r\n    for (float t = -30.0; t <= 30.0; t++)\r\n    {\r\n        float percent = (t + offset - 0.5) / 30.0;\r\n        float weight = 1.0 - abs(percent);\r\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\r\n        sample.rgb *= sample.a;\r\n        color += sample * weight;\r\n        total += weight;\r\n    }\r\n\r\n    gl_FragColor = color / total;\r\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\r\n}\r\n",
         // custom uniforms
         {
             blur:           { type: '1f', value: 100 },
@@ -24853,7 +23824,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":29}],111:[function(require,module,exports){
+},{"../../core":26}],108:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -24963,7 +23934,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":29,"./TiltShiftXFilter":112,"./TiltShiftYFilter":113}],112:[function(require,module,exports){
+},{"../../core":26,"./TiltShiftXFilter":109,"./TiltShiftYFilter":110}],109:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -25001,7 +23972,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":110}],113:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":107}],110:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -25039,7 +24010,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":110}],114:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":107}],111:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25057,7 +24028,7 @@ function TwistFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\n\nvoid main(void)\n{\n   vec2 coord = vTextureCoord - offset;\n   float dist = length(coord);\n\n   if (dist < radius)\n   {\n       float ratio = (radius - dist) / radius;\n       float angleMod = ratio * ratio * angle;\n       float s = sin(angleMod);\n       float c = cos(angleMod);\n       coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n   }\n\n   gl_FragColor = texture2D(uSampler, coord+offset);\n}\n",
+        "precision mediump float;\r\n\r\nvarying vec2 vTextureCoord;\r\n\r\nuniform sampler2D uSampler;\r\nuniform float radius;\r\nuniform float angle;\r\nuniform vec2 offset;\r\n\r\nvoid main(void)\r\n{\r\n   vec2 coord = vTextureCoord - offset;\r\n   float dist = length(coord);\r\n\r\n   if (dist < radius)\r\n   {\r\n       float ratio = (radius - dist) / radius;\r\n       float angleMod = ratio * ratio * angle;\r\n       float s = sin(angleMod);\r\n       float c = cos(angleMod);\r\n       coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\r\n   }\r\n\r\n   gl_FragColor = texture2D(uSampler, coord+offset);\r\n}\r\n",
         // custom uniforms
         {
             radius:     { type: '1f', value: 0.5 },
@@ -25124,7 +24095,39 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":29}],115:[function(require,module,exports){
+},{"../../core":26}],112:[function(require,module,exports){
+(function (global){
+// run the polyfills
+require('./polyfill');
+
+var core = module.exports = require('./core');
+
+// add core plugins.
+core.extras         = require('./extras');
+core.filters        = require('./filters');
+core.interaction    = require('./interaction');
+core.loaders        = require('./loaders');
+core.mesh           = require('./mesh');
+
+// export a premade loader instance
+/**
+ * A premade instance of the loader that can be used to loader resources.
+ *
+ * @name loader
+ * @memberof PIXI
+ * @property {PIXI.loaders.Loader}
+ */
+core.loader = new core.loaders.Loader();
+
+// mixin the deprecation features.
+Object.assign(core, require('./deprecation'));
+
+// Always export pixi globally.
+global.PIXI = core;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./core":26,"./deprecation":75,"./extras":82,"./filters":99,"./interaction":115,"./loaders":118,"./mesh":124,"./polyfill":128}],113:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25155,6 +24158,14 @@ function InteractionData()
      * @member {Event}
      */
     this.originalEvent = null;
+
+    /**
+     * The touch identifier from the browser, or -1 if it is a mouse event.
+     *
+     * @property id
+     * @type int
+     */
+    this.identifier = -1;
 }
 
 InteractionData.prototype.constructor = InteractionData;
@@ -25187,9 +24198,10 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":29}],116:[function(require,module,exports){
+},{"../core":26}],114:[function(require,module,exports){
 var core = require('../core'),
-    InteractionData = require('./InteractionData');
+    InteractionData = require('./InteractionData'),
+    EventEmitter = require('eventemitter3');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -25212,6 +24224,8 @@ Object.assign(
 function InteractionManager(renderer, options)
 {
     options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * The renderer this interaction manager works for.
@@ -25303,6 +24317,11 @@ function InteractionManager(renderer, options)
     this.processMouseMove = this.processMouseMove.bind( this );
 
     /**
+	 * @member {Function}
+	 */
+	this.onMouseOver = this.onMouseOver.bind(this);
+
+    /**
      * @member {Function}
      */
     this.onMouseOut = this.onMouseOut.bind(this);
@@ -25339,6 +24358,13 @@ function InteractionManager(renderer, options)
     this.currentCursorStyle = 'inherit';
 
     /**
+     * A function to be called when the cursor changes. If this is set, then the css cursor
+     * style on the canvas will not be set.
+     * @member {Function}
+     */
+    this.handleCursorChange = null;
+
+    /**
      * Internal cached var
      * @member {Point}
      * @private
@@ -25354,6 +24380,7 @@ function InteractionManager(renderer, options)
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 }
 
+InteractionManager.prototype = Object.create(EventEmitter.prototype);
 InteractionManager.prototype.constructor = InteractionManager;
 module.exports = InteractionManager;
 
@@ -25399,6 +24426,7 @@ InteractionManager.prototype.addEvents = function ()
     window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mouseover',    this.onMouseOver, true);
 
     this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
     this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
@@ -25431,6 +24459,7 @@ InteractionManager.prototype.removeEvents = function ()
     window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mouseover', this.onMouseOver, true);
 
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
     this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
@@ -25480,7 +24509,14 @@ InteractionManager.prototype.update = function (deltaTime)
     if (this.currentCursorStyle !== this.cursor)
     {
         this.currentCursorStyle = this.cursor;
-        this.interactionDOMElement.style.cursor = this.cursor;
+        if(this.handleCursorChange)
+        {
+            this.handleCursorChange(this.cursor);
+        }
+        else
+        {
+            this.interactionDOMElement.style.cursor = this.cursor;
+        }
     }
 
     //TODO
@@ -25613,6 +24649,8 @@ InteractionManager.prototype.onMouseDown = function (event)
     {
         this.mouse.originalEvent.preventDefault();
     }
+    
+    this.emit('stagedown', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 };
@@ -25653,6 +24691,8 @@ InteractionManager.prototype.onMouseUp = function (event)
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
+    
+    this.emit('stageup', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 };
@@ -25709,13 +24749,22 @@ InteractionManager.prototype.onMouseMove = function (event)
     this.didMove = true;
 
     this.cursor = 'inherit';
+    
+    this.emit('stagemove', this.eventData);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
         this.currentCursorStyle = this.cursor;
-        this.interactionDOMElement.style.cursor = this.cursor;
+        if(this.handleCursorChange)
+        {
+            this.handleCursorChange(this.cursor);
+        }
+        else
+        {
+            this.interactionDOMElement.style.cursor = this.cursor;
+        }
     }
 
     //TODO BUG for parents ineractive object (border order issue)
@@ -25749,12 +24798,17 @@ InteractionManager.prototype.onMouseOut = function (event)
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    if(!this.handleCursorChange)
+    {
+        this.interactionDOMElement.style.cursor = 'inherit';
+    }
 
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY );
 
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
+    
+    this.emit('stageout');
 };
 
 /**
@@ -25789,6 +24843,11 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
     }
 };
 
+InteractionManager.prototype.onMouseOver = function(/*event*/)
+{
+	this.emit('stagein');
+};
+
 
 /**
  * Is called when a touch is started on the renderer element
@@ -25816,6 +24875,8 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.eventData.data = touchData;
         this.eventData.stopped = false;
+        
+        this.emit('stagedown', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
@@ -25868,6 +24929,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
+        this.emit('stageup', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
@@ -25930,6 +24992,8 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         this.eventData.data = touchData;
         this.eventData.stopped = false;
+        
+        this.emit('stagemove', this.eventData);
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, false );
 
@@ -26022,6 +25086,7 @@ InteractionManager.prototype.destroy = function () {
     this.onMouseOut = null;
     this.processMouseOverOut = null;
 
+    this.onMouseOver = null;
 
     this.onTouchStart = null;
     this.processTouchStart = null;
@@ -26033,12 +25098,14 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
+
+    this.handleCursorChange = null;
 };
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":29,"./InteractionData":115,"./interactiveTarget":118}],117:[function(require,module,exports){
+},{"../core":26,"./InteractionData":113,"./interactiveTarget":116,"eventemitter3":10}],115:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26055,7 +25122,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":115,"./InteractionManager":116,"./interactiveTarget":118}],118:[function(require,module,exports){
+},{"./InteractionData":113,"./InteractionManager":114,"./interactiveTarget":116}],116:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -26104,7 +25171,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],119:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -26205,9 +25272,14 @@ module.exports = function ()
             xmlUrl += '/';
         }
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (core.utils.TextureCache[textureUrl]) {
+        var id = textureUrl;
+        if(core.utils.useFilenamesForTextures)
+        {
+            id = core.utils.getFilenameFromUrl(id);
+        }
+        if (core.utils.TextureCache[id]) {
             //reuse existing texture
-            parse(resource, core.utils.TextureCache[textureUrl]);
+            parse(resource, core.utils.TextureCache[id]);
             next();
         }
         else {
@@ -26224,7 +25296,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":29,"../extras":85,"path":3,"resource-loader":18}],120:[function(require,module,exports){
+},{"../core":26,"../extras":82,"path":2,"resource-loader":15}],118:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26245,7 +25317,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":119,"./loader":121,"./spritesheetParser":122,"./textureParser":123,"resource-loader":18}],121:[function(require,module,exports){
+},{"./bitmapFontParser":117,"./loader":119,"./spritesheetParser":120,"./textureParser":121,"resource-loader":15}],119:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -26307,7 +25379,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":119,"./spritesheetParser":122,"./textureParser":123,"resource-loader":18}],122:[function(require,module,exports){
+},{"./bitmapFontParser":117,"./spritesheetParser":120,"./textureParser":121,"resource-loader":15}],120:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -26378,10 +25450,15 @@ module.exports = function ()
                     size.width /= resolution;
                     size.height /= resolution;
 
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
+                    var id = i;
+                    if(core.utils.useFilenamesForTextures)
+                    {
+                        id = core.utils.getFilenameFromUrl(i);
+                    }
+                    resource.textures[id] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
 
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    core.utils.TextureCache[i] = resource.textures[i];
+                    core.utils.TextureCache[id] = resource.textures[id];
                 }
             }
 
@@ -26390,7 +25467,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":29,"path":3,"resource-loader":18}],123:[function(require,module,exports){
+},{"../core":26,"path":2,"resource-loader":15}],121:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -26402,14 +25479,19 @@ module.exports = function ()
         {
             resource.texture = new core.Texture(new core.BaseTexture(resource.data, null, core.utils.getResolutionOfUrl(resource.url)));
             // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-            core.utils.TextureCache[resource.url] = resource.texture;
+            var id = resource.url;
+            if(core.utils.useFilenamesForTextures)
+            {
+                id = core.utils.getFilenameFromUrl(id);
+            }
+            core.utils.TextureCache[id] = resource.texture;
         }
 
         next();
     };
 };
 
-},{"../core":29}],124:[function(require,module,exports){
+},{"../core":26}],122:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -26890,7 +25972,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":29}],125:[function(require,module,exports){
+},{"../core":26}],123:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -27103,7 +26185,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":29,"./Mesh":124}],126:[function(require,module,exports){
+},{"../core":26,"./Mesh":122}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27121,7 +26203,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":124,"./Rope":125,"./webgl/MeshRenderer":127,"./webgl/MeshShader":128}],127:[function(require,module,exports){
+},{"./Mesh":122,"./Rope":123,"./webgl/MeshRenderer":125,"./webgl/MeshShader":126}],125:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -27335,7 +26417,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core":29,"../Mesh":124}],128:[function(require,module,exports){
+},{"../../core":26,"../Mesh":122}],126:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -27396,7 +26478,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":29}],129:[function(require,module,exports){
+},{"../../core":26}],127:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -27406,11 +26488,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":12}],130:[function(require,module,exports){
+},{"object-assign":11}],128:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":129,"./requestAnimationFrame":131}],131:[function(require,module,exports){
+},{"./Object.assign":127,"./requestAnimationFrame":129}],129:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -27481,7 +26563,7 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[1])(1)
+},{}]},{},[112])(112)
 });
 
 
