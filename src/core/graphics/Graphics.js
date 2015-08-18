@@ -656,7 +656,7 @@ Graphics.prototype.drawPolygon = function (path)
 
     var closed = true;
     
-    if (points instanceof math.Polygon)
+    if (points instanceof PIXI.Polygon)
     {
         closed = points.closed;
         points = points.points;
