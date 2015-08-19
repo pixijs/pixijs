@@ -433,6 +433,8 @@ FilterManager.prototype.resize = function ( width, height )
  */
 FilterManager.prototype.destroy = function ()
 {
+    WebGLManager.prototype.destroy.call(this);
+    
     this.filterStack = null;
     this.offsetY = 0;
 

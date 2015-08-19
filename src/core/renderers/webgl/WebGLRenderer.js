@@ -485,11 +485,13 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.stencilManager.destroy();
     this.filterManager.destroy();
+    this.blendModeManager.destroy();
 
     this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
     this.blendModeManager = null;
+    this.currentRenderer = null;
 
     this.handleContextLost = null;
     this.handleContextRestored = null;
