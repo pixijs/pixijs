@@ -27,7 +27,6 @@ as any breakthroughs will be posted up there too!
 - [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
-- [Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
 - [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
 - [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
