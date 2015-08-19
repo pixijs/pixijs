@@ -310,7 +310,6 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
     }
 
     this.currentRenderer.stop();
-    this.currentRenderer.destroy();
     this.currentRenderer = objectRenderer;
     this.currentRenderer.start();
 };
