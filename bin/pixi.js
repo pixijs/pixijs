@@ -30,7 +30,7 @@ global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./core":28,"./deprecation":77,"./extras":84,"./filters":101,"./interaction":116,"./loaders":119,"./mesh":125,"./polyfill":129}],2:[function(require,module,exports){
+},{"./core":29,"./deprecation":78,"./extras":85,"./filters":102,"./interaction":117,"./loaders":120,"./mesh":126,"./polyfill":130}],2:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -76,6 +76,9 @@ global.PIXI = core;
     };
 
     var _each = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
         for (var i = 0; i < arr.length; i += 1) {
             iterator(arr[i], i, arr);
         }
@@ -852,26 +855,23 @@ global.PIXI = core;
             pause: function () {
                 if (q.paused === true) { return; }
                 q.paused = true;
+                q.process();
             },
             resume: function () {
                 if (q.paused === false) { return; }
                 q.paused = false;
-                // Need to call q.process once per concurrent
-                // worker to preserve full concurrency after pause
-                for (var w = 1; w <= q.concurrency; w++) {
-                    async.setImmediate(q.process);
-                }
+                q.process();
             }
         };
         return q;
     };
-
+    
     async.priorityQueue = function (worker, concurrency) {
-
+        
         function _compareTasks(a, b){
           return a.priority - b.priority;
         };
-
+        
         function _binarySearch(sequence, item, compare) {
           var beg = -1,
               end = sequence.length - 1;
@@ -885,7 +885,7 @@ global.PIXI = core;
           }
           return beg;
         }
-
+        
         function _insert(q, data, priority, callback) {
           if (!q.started){
             q.started = true;
@@ -907,7 +907,7 @@ global.PIXI = core;
                   priority: priority,
                   callback: typeof callback === 'function' ? callback : null
               };
-
+              
               q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
 
               if (q.saturated && q.tasks.length === q.concurrency) {
@@ -916,15 +916,15 @@ global.PIXI = core;
               async.setImmediate(q.process);
           });
         }
-
+        
         // Start with a normal queue
         var q = async.queue(worker, concurrency);
-
+        
         // Override push to accept second parameter representing priority
         q.push = function (data, priority, callback) {
           _insert(q, data, priority, callback);
         };
-
+        
         // Remove unshift function
         delete q.unshift;
 
@@ -1393,64 +1393,32 @@ var substr = 'ab'.substr(-1) === 'b'
 var process = module.exports = {};
 var queue = [];
 var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
 
 function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = setTimeout(cleanUpNextTick);
     draining = true;
-
+    var currentQueue;
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
+        var i = -1;
+        while (++i < len) {
+            currentQueue[i]();
         }
-        queueIndex = -1;
         len = queue.length;
     }
-    currentQueue = null;
     draining = false;
-    clearTimeout(timeout);
 }
-
 process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
+    queue.push(fun);
+    if (!draining) {
         setTimeout(drainQueue, 0);
     }
 };
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -1481,20 +1449,15 @@ process.umask = function() { return 0; };
 
 },{}],5:[function(require,module,exports){
 (function (global){
-/*! https://mths.be/punycode v1.3.2 by @mathias */
+/*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
-		!exports.nodeType && exports;
+	var freeExports = typeof exports == 'object' && exports;
 	var freeModule = typeof module == 'object' && module &&
-		!module.nodeType && module;
+		module.exports == freeExports && module;
 	var freeGlobal = typeof global == 'object' && global;
-	if (
-		freeGlobal.global === freeGlobal ||
-		freeGlobal.window === freeGlobal ||
-		freeGlobal.self === freeGlobal
-	) {
+	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {
 		root = freeGlobal;
 	}
 
@@ -1520,8 +1483,8 @@ process.umask = function() { return 0; };
 
 	/** Regular expressions */
 	regexPunycode = /^xn--/,
-	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
+	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /\x2E|\u3002|\uFF0E|\uFF61/g, // RFC 3490 separators
 
 	/** Error messages */
 	errors = {
@@ -1560,37 +1523,23 @@ process.umask = function() { return 0; };
 	 */
 	function map(array, fn) {
 		var length = array.length;
-		var result = [];
 		while (length--) {
-			result[length] = fn(array[length]);
+			array[length] = fn(array[length]);
 		}
-		return result;
+		return array;
 	}
 
 	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings or email
-	 * addresses.
+	 * A simple `Array#map`-like wrapper to work with domain name strings.
 	 * @private
-	 * @param {String} domain The domain name or email address.
+	 * @param {String} domain The domain name.
 	 * @param {Function} callback The function that gets called for every
 	 * character.
 	 * @returns {Array} A new string of characters returned by the callback
 	 * function.
 	 */
 	function mapDomain(string, fn) {
-		var parts = string.split('@');
-		var result = '';
-		if (parts.length > 1) {
-			// In email addresses, only the domain name should be punycoded. Leave
-			// the local part (i.e. everything up to `@`) intact.
-			result = parts[0] + '@';
-			string = parts[1];
-		}
-		// Avoid `split(regex)` for IE8 compatibility. See #17.
-		string = string.replace(regexSeparators, '\x2E');
-		var labels = string.split('.');
-		var encoded = map(labels, fn).join('.');
-		return result + encoded;
+		return map(string.split(regexSeparators), fn).join('.');
 	}
 
 	/**
@@ -1600,7 +1549,7 @@ process.umask = function() { return 0; };
 	 * UCS-2 exposes as separate characters) into a single code point,
 	 * matching UTF-16.
 	 * @see `punycode.ucs2.encode`
-	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
 	 * @memberOf punycode.ucs2
 	 * @name decode
 	 * @param {String} string The Unicode input string (UCS-2).
@@ -1809,8 +1758,8 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
-	 * Punycode string of ASCII-only symbols.
+	 * Converts a string of Unicode symbols to a Punycode string of ASCII-only
+	 * symbols.
 	 * @memberOf punycode
 	 * @param {String} input The string of Unicode symbols.
 	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
@@ -1923,18 +1872,17 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a Punycode string representing a domain name or an email address
-	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	 * it doesn't matter if you call it on a string that has already been
-	 * converted to Unicode.
+	 * Converts a Punycode string representing a domain name to Unicode. Only the
+	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it on a string that has already been converted to
+	 * Unicode.
 	 * @memberOf punycode
-	 * @param {String} input The Punycoded domain name or email address to
-	 * convert to Unicode.
+	 * @param {String} domain The Punycode domain name to convert to Unicode.
 	 * @returns {String} The Unicode representation of the given Punycode
 	 * string.
 	 */
-	function toUnicode(input) {
-		return mapDomain(input, function(string) {
+	function toUnicode(domain) {
+		return mapDomain(domain, function(string) {
 			return regexPunycode.test(string)
 				? decode(string.slice(4).toLowerCase())
 				: string;
@@ -1942,18 +1890,15 @@ process.umask = function() { return 0; };
 	}
 
 	/**
-	 * Converts a Unicode string representing a domain name or an email address to
-	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
-	 * i.e. it doesn't matter if you call it with a domain that's already in
-	 * ASCII.
+	 * Converts a Unicode string representing a domain name to Punycode. Only the
+	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it with a domain that's already in ASCII.
 	 * @memberOf punycode
-	 * @param {String} input The domain name or email address to convert, as a
-	 * Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name or
-	 * email address.
+	 * @param {String} domain The domain name to convert, as a Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name.
 	 */
-	function toASCII(input) {
-		return mapDomain(input, function(string) {
+	function toASCII(domain) {
+		return mapDomain(domain, function(string) {
 			return regexNonASCII.test(string)
 				? 'xn--' + encode(string)
 				: string;
@@ -1969,11 +1914,11 @@ process.umask = function() { return 0; };
 		 * @memberOf punycode
 		 * @type String
 		 */
-		'version': '1.3.2',
+		'version': '1.2.4',
 		/**
 		 * An object of methods to convert from JavaScript's internal character
 		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
 		 * @memberOf punycode
 		 * @type Object
 		 */
@@ -1998,8 +1943,8 @@ process.umask = function() { return 0; };
 		define('punycode', function() {
 			return punycode;
 		});
-	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
+	} else if (freeExports && !freeExports.nodeType) {
+		if (freeModule) { // in Node.js or RingoJS v0.8.0+
 			freeModule.exports = punycode;
 		} else { // in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
@@ -2975,7 +2920,7 @@ function filterPoints(data, start, end) {
     do {
         again = false;
 
-        if (!node.steiner && (equals(data, node.i, node.next.i) || orient(data, node.prev.i, node.i, node.next.i) === 0)) {
+        if (equals(data, node.i, node.next.i) || orient(data, node.prev.i, node.i, node.next.i) === 0) {
 
             // remove node
             node.prev.next = node.next;
@@ -3229,9 +3174,7 @@ function eliminateHoles(data, holeIndices, outerNode, dim) {
     for (i = 0, len = holeIndices.length; i < len; i++) {
         start = holeIndices[i] * dim;
         end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
-        list = linkedList(data, start, end, dim, false);
-        if (list === list.next) list.steiner = true;
-        list = filterPoints(data, list);
+        list = filterPoints(data, linkedList(data, start, end, dim, false));
         if (list) queue.push(getLeftmost(data, list));
     }
 
@@ -3561,9 +3504,6 @@ function Node(i) {
     // previous and next nodes in z-order
     this.prevZ = null;
     this.nextZ = null;
-
-    // indicates whether this is a steiner point
-    this.steiner = false;
 }
 
 },{}],11:[function(require,module,exports){
@@ -3857,8 +3797,1136 @@ module.exports = Object.assign || function (target, source) {
 };
 
 },{}],13:[function(require,module,exports){
+(function (process){
+/*!
+ * async
+ * https://github.com/caolan/async
+ *
+ * Copyright 2010-2014 Caolan McMahon
+ * Released under the MIT license
+ */
+/*jshint onevar: false, indent:4 */
+/*global setImmediate: false, setTimeout: false, console: false */
+(function () {
+
+    var async = {};
+
+    // global on the server, window in the browser
+    var root, previous_async;
+
+    root = this;
+    if (root != null) {
+      previous_async = root.async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    function only_once(fn) {
+        var called = false;
+        return function() {
+            if (called) throw new Error("Callback was already called.");
+            called = true;
+            fn.apply(root, arguments);
+        }
+    }
+
+    //// cross-browser compatiblity functions ////
+
+    var _toString = Object.prototype.toString;
+
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
+
+    var _each = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _each(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _each(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        if (typeof setImmediate === 'function') {
+            async.nextTick = function (fn) {
+                // not a direct alias for IE10 compatibility
+                setImmediate(fn);
+            };
+            async.setImmediate = async.nextTick;
+        }
+        else {
+            async.nextTick = function (fn) {
+                setTimeout(fn, 0);
+            };
+            async.setImmediate = async.nextTick;
+        }
+    }
+    else {
+        async.nextTick = process.nextTick;
+        if (typeof setImmediate !== 'undefined') {
+            async.setImmediate = function (fn) {
+              // not a direct alias for IE10 compatibility
+              setImmediate(fn);
+            };
+        }
+        else {
+            async.setImmediate = async.nextTick;
+        }
+    }
+
+    async.each = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        _each(arr, function (x) {
+            iterator(x, only_once(done) );
+        });
+        function done(err) {
+          if (err) {
+              callback(err);
+              callback = function () {};
+          }
+          else {
+              completed += 1;
+              if (completed >= arr.length) {
+                  callback();
+              }
+          }
+        }
+    };
+    async.forEach = async.each;
+
+    async.eachSeries = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed >= arr.length) {
+                        callback();
+                    }
+                    else {
+                        iterate();
+                    }
+                }
+            });
+        };
+        iterate();
+    };
+    async.forEachSeries = async.eachSeries;
+
+    async.eachLimit = function (arr, limit, iterator, callback) {
+        var fn = _eachLimit(limit);
+        fn.apply(null, [arr, iterator, callback]);
+    };
+    async.forEachLimit = async.eachLimit;
+
+    var _eachLimit = function (limit) {
+
+        return function (arr, iterator, callback) {
+            callback = callback || function () {};
+            if (!arr.length || limit <= 0) {
+                return callback();
+            }
+            var completed = 0;
+            var started = 0;
+            var running = 0;
+
+            (function replenish () {
+                if (completed >= arr.length) {
+                    return callback();
+                }
+
+                while (running < limit && started < arr.length) {
+                    started += 1;
+                    running += 1;
+                    iterator(arr[started - 1], function (err) {
+                        if (err) {
+                            callback(err);
+                            callback = function () {};
+                        }
+                        else {
+                            completed += 1;
+                            running -= 1;
+                            if (completed >= arr.length) {
+                                callback();
+                            }
+                            else {
+                                replenish();
+                            }
+                        }
+                    });
+                }
+            })();
+        };
+    };
+
+
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.each].concat(args));
+        };
+    };
+    var doParallelLimit = function(limit, fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [_eachLimit(limit)].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.eachSeries].concat(args));
+        };
+    };
+
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        if (!callback) {
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err) {
+                    callback(err);
+                });
+            });
+        } else {
+            var results = [];
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err, v) {
+                    results[x.index] = v;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+    async.mapLimit = function (arr, limit, iterator, callback) {
+        return _mapLimit(limit)(arr, iterator, callback);
+    };
+
+    var _mapLimit = function(limit) {
+        return doParallelLimit(limit, _asyncMap);
+    };
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.eachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
+
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
+
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
+
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
+            }
+        });
+    };
+
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        var remainingTasks = keys.length
+        if (!remainingTasks) {
+            return callback();
+        }
+
+        var results = {};
+
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
+                }
+            }
+        };
+        var taskComplete = function () {
+            remainingTasks--
+            _each(listeners.slice(0), function (fn) {
+                fn();
+            });
+        };
+
+        addListener(function () {
+            if (!remainingTasks) {
+                var theCallback = callback;
+                // prevent final callback from calling itself if it errors
+                callback = function () {};
+
+                theCallback(null, results);
+            }
+        });
+
+        _each(keys, function (k) {
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+            var taskCallback = function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                if (err) {
+                    var safeResults = {};
+                    _each(_keys(results), function(rkey) {
+                        safeResults[rkey] = results[rkey];
+                    });
+                    safeResults[k] = args;
+                    callback(err, safeResults);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    results[k] = args;
+                    async.setImmediate(taskComplete);
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true) && !results.hasOwnProperty(k);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
+
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var attempts = [];
+        // Use defaults if times not passed
+        if (typeof times === 'function') {
+            callback = task;
+            task = times;
+            times = DEFAULT_TIMES;
+        }
+        // Make sure times is a number
+        times = parseInt(times, 10) || DEFAULT_TIMES;
+        var wrappedTask = function(wrappedCallback, wrappedResults) {
+            var retryAttempt = function(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            };
+            while (times) {
+                attempts.push(retryAttempt(task, !(times-=1)));
+            }
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || callback)(data.err, data.result);
+            });
+        }
+        // If a callback is passed, run this as a controll flow
+        return callback ? wrappedTask() : wrappedTask
+    };
+
+    async.waterfall = function (tasks, callback) {
+        callback = callback || function () {};
+        if (!_isArray(tasks)) {
+          var err = new Error('First argument to waterfall must be an array of functions');
+          return callback(err);
+        }
+        if (!tasks.length) {
+            return callback();
+        }
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback.apply(null, arguments);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.setImmediate(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    var _parallel = function(eachfn, tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            eachfn.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            eachfn.each(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.parallel = function (tasks, callback) {
+        _parallel({ map: async.map, each: async.each }, tasks, callback);
+    };
+
+    async.parallelLimit = function(tasks, limit, callback) {
+        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.eachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doWhilst = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (test.apply(null, args)) {
+                async.doWhilst(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doUntil = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (!test.apply(null, args)) {
+                async.doUntil(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.queue = function (worker, concurrency) {
+        if (concurrency === undefined) {
+            concurrency = 1;
+        }
+        function _insert(q, data, pos, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+
+              if (pos) {
+                q.tasks.unshift(item);
+              } else {
+                q.tasks.push(item);
+              }
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            started: false,
+            paused: false,
+            push: function (data, callback) {
+              _insert(q, data, false, callback);
+            },
+            kill: function () {
+              q.drain = null;
+              q.tasks = [];
+            },
+            unshift: function (data, callback) {
+              _insert(q, data, true, callback);
+            },
+            process: function () {
+                if (!q.paused && workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if (q.empty && q.tasks.length === 0) {
+                        q.empty();
+                    }
+                    workers += 1;
+                    var next = function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if (q.drain && q.tasks.length + workers === 0) {
+                            q.drain();
+                        }
+                        q.process();
+                    };
+                    var cb = only_once(next);
+                    worker(task.data, cb);
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                if (q.paused === true) { return; }
+                q.paused = true;
+                q.process();
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                q.process();
+            }
+        };
+        return q;
+    };
+    
+    async.priorityQueue = function (worker, concurrency) {
+        
+        function _compareTasks(a, b){
+          return a.priority - b.priority;
+        };
+        
+        function _binarySearch(sequence, item, compare) {
+          var beg = -1,
+              end = sequence.length - 1;
+          while (beg < end) {
+            var mid = beg + ((end - beg + 1) >>> 1);
+            if (compare(item, sequence[mid]) >= 0) {
+              beg = mid;
+            } else {
+              end = mid - 1;
+            }
+          }
+          return beg;
+        }
+        
+        function _insert(q, data, priority, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  priority: priority,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+              
+              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+        
+        // Start with a normal queue
+        var q = async.queue(worker, concurrency);
+        
+        // Override push to accept second parameter representing priority
+        q.push = function (data, priority, callback) {
+          _insert(q, data, priority, callback);
+        };
+        
+        // Remove unshift function
+        delete q.unshift;
+
+        return q;
+    };
+
+    async.cargo = function (worker, payload) {
+        var working     = false,
+            tasks       = [];
+
+        var cargo = {
+            tasks: tasks,
+            payload: payload,
+            saturated: null,
+            empty: null,
+            drain: null,
+            drained: true,
+            push: function (data, callback) {
+                if (!_isArray(data)) {
+                    data = [data];
+                }
+                _each(data, function(task) {
+                    tasks.push({
+                        data: task,
+                        callback: typeof callback === 'function' ? callback : null
+                    });
+                    cargo.drained = false;
+                    if (cargo.saturated && tasks.length === payload) {
+                        cargo.saturated();
+                    }
+                });
+                async.setImmediate(cargo.process);
+            },
+            process: function process() {
+                if (working) return;
+                if (tasks.length === 0) {
+                    if(cargo.drain && !cargo.drained) cargo.drain();
+                    cargo.drained = true;
+                    return;
+                }
+
+                var ts = typeof payload === 'number'
+                            ? tasks.splice(0, payload)
+                            : tasks.splice(0, tasks.length);
+
+                var ds = _map(ts, function (task) {
+                    return task.data;
+                });
+
+                if(cargo.empty) cargo.empty();
+                working = true;
+                worker(ds, function () {
+                    working = false;
+
+                    var args = arguments;
+                    _each(ts, function (data) {
+                        if (data.callback) {
+                            data.callback.apply(null, args);
+                        }
+                    });
+
+                    process();
+                });
+            },
+            length: function () {
+                return tasks.length;
+            },
+            running: function () {
+                return working;
+            }
+        };
+        return cargo;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _each(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                async.nextTick(function () {
+                    callback.apply(null, memo[key]);
+                });
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.memo = memo;
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      };
+    };
+
+    async.times = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.map(counter, iterator, callback);
+    };
+
+    async.timesSeries = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.mapSeries(counter, iterator, callback);
+    };
+
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
+        return function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            async.reduce(fns, args, function (newargs, fn, cb) {
+                fn.apply(that, newargs.concat([function () {
+                    var err = arguments[0];
+                    var nextargs = Array.prototype.slice.call(arguments, 1);
+                    cb(err, nextargs);
+                }]))
+            },
+            function (err, results) {
+                callback.apply(that, [err].concat(results));
+            });
+        };
+    };
+
+    async.compose = function (/* functions... */) {
+      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+    };
+
+    var _applyEach = function (eachfn, fns /*args...*/) {
+        var go = function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            return eachfn(fns, function (fn, cb) {
+                fn.apply(that, args.concat([cb]));
+            },
+            callback);
+        };
+        if (arguments.length > 2) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            return go.apply(this, args);
+        }
+        else {
+            return go;
+        }
+    };
+    async.applyEach = doParallel(_applyEach);
+    async.applyEachSeries = doSeries(_applyEach);
+
+    async.forever = function (fn, callback) {
+        function next(err) {
+            if (err) {
+                if (callback) {
+                    return callback(err);
+                }
+                throw err;
+            }
+            fn(next);
+        }
+        next();
+    };
+
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
+    // AMD / RequireJS
+    else if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return async;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.async = async;
+    }
+
+}());
+
+}).call(this,require('_process'))
+
+},{"_process":4}],14:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],14:[function(require,module,exports){
+},{"dup":11}],15:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
     Resource    = require('./Resource'),
@@ -4313,7 +5381,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":15,"async":2,"eventemitter3":13,"url":9}],15:[function(require,module,exports){
+},{"./Resource":16,"async":13,"eventemitter3":14,"url":9}],16:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     _url = require('url'),
     // tests is CORS is supported in XHR, if not we need to use XDR
@@ -4914,6 +5982,11 @@ Resource.prototype._getExtension = function () {
         ext = url.substring(slashIndex + 1, url.indexOf(';', slashIndex));
     }
     else {
+        var queryStart = url.indexOf('?');
+        if (queryStart !== -1) {
+            url = url.substring(0, queryStart);
+        }
+
         ext = url.substring(url.lastIndexOf('.') + 1);
     }
 
@@ -5085,7 +6158,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":13,"url":9}],16:[function(require,module,exports){
+},{"eventemitter3":14,"url":9}],17:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -5151,7 +6224,7 @@ module.exports = {
     }
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -5165,7 +6238,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":14,"./Resource":15,"./middlewares/caching/memory":18,"./middlewares/parsing/blob":19}],18:[function(require,module,exports){
+},{"./Loader":15,"./Resource":16,"./middlewares/caching/memory":19,"./middlewares/parsing/blob":20}],19:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -5187,7 +6260,7 @@ module.exports = function () {
     };
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -5247,10 +6320,10 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":15,"../../b64":16}],20:[function(require,module,exports){
+},{"../../Resource":16,"../../b64":17}],21:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -5278,28 +6351,28 @@ module.exports={
   "dependencies": {
     "async": "^0.9.0",
     "brfs": "^1.4.0",
-    "earcut": "^2.0.0",
+    "earcut": "^2.0.1",
     "eventemitter3": "^1.1.0",
     "object-assign": "^2.0.0",
-    "resource-loader": "^1.6.0"
+    "resource-loader": "^1.6.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.1",
-    "chai": "^2.3.0",
+    "browserify": "^10.2.3",
+    "chai": "^3.0.0",
     "del": "^1.2.0",
-    "gulp": "^3.8.11",
+    "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.5.2",
     "gulp-debug": "^2.0.1",
-    "gulp-jshint": "^1.10.0",
+    "gulp-jshint": "^1.11.0",
     "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
-    "gulp-util": "^3.0.4",
+    "gulp-util": "^3.0.5",
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
-    "jsdoc": "^3.3.0-beta3",
+    "jsdoc": "^3.3.0",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.1.1",
     "mocha": "^2.2.5",
@@ -5317,7 +6390,7 @@ module.exports={
   }
 }
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -5539,7 +6612,7 @@ var CONST = {
 
 module.exports = CONST;
 
-},{"../../package.json":20}],22:[function(require,module,exports){
+},{"../../package.json":21}],23:[function(require,module,exports){
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
@@ -6115,7 +7188,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":31,"../textures/RenderTexture":69,"./DisplayObject":23}],23:[function(require,module,exports){
+},{"../math":32,"../textures/RenderTexture":70,"./DisplayObject":24}],24:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
@@ -6581,7 +7654,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":21,"../math":31,"../textures/RenderTexture":69,"eventemitter3":11}],24:[function(require,module,exports){
+},{"../const":22,"../math":32,"../textures/RenderTexture":70,"eventemitter3":11}],25:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
@@ -7763,7 +8836,7 @@ Graphics.prototype.destroy = function () {
     this._localBounds = null;
 };
 
-},{"../const":21,"../display/Container":22,"../math":31,"../renderers/canvas/utils/CanvasBuffer":43,"../renderers/canvas/utils/CanvasGraphics":44,"../textures/Texture":70,"./GraphicsData":25}],25:[function(require,module,exports){
+},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/canvas/utils/CanvasGraphics":45,"../textures/Texture":71,"./GraphicsData":26}],26:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -7853,7 +8926,7 @@ GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -8060,17 +9133,14 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             {
                 if (data.points.length >= 6)
                 {
-                    window.console.log(data.points.length);
                     if (data.points.length < this.maximumSimplePolySize * 2)
                     {
                         webGLData = this.switchMode(webGL, 0);
 
                         var canDrawUsingSimple = this.buildPoly(data, webGLData);
-                      //  console.log(canDrawUsingSimple);
 
                         if (!canDrawUsingSimple)
                         {
-                        //    console.log("<>>>")
                             webGLData = this.switchMode(webGL, 1);
                             this.buildComplexPoly(data, webGLData);
                         }
@@ -8760,7 +9830,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":21,"../../math":31,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61,"../../utils":75,"./WebGLGraphicsData":27,"earcut":10}],27:[function(require,module,exports){
+},{"../../const":22,"../../math":32,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62,"../../utils":76,"./WebGLGraphicsData":28,"earcut":10}],28:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -8878,7 +9948,7 @@ WebGLGraphicsData.prototype.destroy = function () {
     this.glIndices = null;
 };
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -8970,7 +10040,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":21,"./display/Container":22,"./display/DisplayObject":23,"./graphics/Graphics":24,"./graphics/GraphicsData":25,"./graphics/webgl/GraphicsRenderer":26,"./math":31,"./particles/ParticleContainer":37,"./particles/webgl/ParticleRenderer":39,"./renderers/canvas/CanvasRenderer":42,"./renderers/canvas/utils/CanvasBuffer":43,"./renderers/canvas/utils/CanvasGraphics":44,"./renderers/webgl/WebGLRenderer":47,"./renderers/webgl/filters/AbstractFilter":48,"./renderers/webgl/filters/FXAAFilter":49,"./renderers/webgl/filters/SpriteMaskFilter":50,"./renderers/webgl/managers/ShaderManager":54,"./renderers/webgl/shaders/Shader":59,"./renderers/webgl/utils/ObjectRenderer":61,"./renderers/webgl/utils/RenderTarget":63,"./sprites/Sprite":65,"./sprites/webgl/SpriteRenderer":66,"./text/Text":67,"./textures/BaseTexture":68,"./textures/RenderTexture":69,"./textures/Texture":70,"./textures/TextureUvs":71,"./textures/VideoBaseTexture":72,"./ticker":74,"./utils":75}],29:[function(require,module,exports){
+},{"./const":22,"./display/Container":23,"./display/DisplayObject":24,"./graphics/Graphics":25,"./graphics/GraphicsData":26,"./graphics/webgl/GraphicsRenderer":27,"./math":32,"./particles/ParticleContainer":38,"./particles/webgl/ParticleRenderer":40,"./renderers/canvas/CanvasRenderer":43,"./renderers/canvas/utils/CanvasBuffer":44,"./renderers/canvas/utils/CanvasGraphics":45,"./renderers/webgl/WebGLRenderer":48,"./renderers/webgl/filters/AbstractFilter":49,"./renderers/webgl/filters/FXAAFilter":50,"./renderers/webgl/filters/SpriteMaskFilter":51,"./renderers/webgl/managers/ShaderManager":55,"./renderers/webgl/shaders/Shader":60,"./renderers/webgl/utils/ObjectRenderer":62,"./renderers/webgl/utils/RenderTarget":64,"./sprites/Sprite":66,"./sprites/webgl/SpriteRenderer":67,"./text/Text":68,"./textures/BaseTexture":69,"./textures/RenderTexture":70,"./textures/Texture":71,"./textures/TextureUvs":72,"./textures/VideoBaseTexture":73,"./ticker":75,"./utils":76}],30:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -9330,7 +10400,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":30}],30:[function(require,module,exports){
+},{"./Point":31}],31:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -9400,7 +10470,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -9422,7 +10492,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":29,"./Point":30,"./shapes/Circle":32,"./shapes/Ellipse":33,"./shapes/Polygon":34,"./shapes/Rectangle":35,"./shapes/RoundedRectangle":36}],32:[function(require,module,exports){
+},{"./Matrix":30,"./Point":31,"./shapes/Circle":33,"./shapes/Ellipse":34,"./shapes/Polygon":35,"./shapes/Rectangle":36,"./shapes/RoundedRectangle":37}],33:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -9510,7 +10580,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":21,"./Rectangle":35}],33:[function(require,module,exports){
+},{"../../const":22,"./Rectangle":36}],34:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -9605,7 +10675,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":21,"./Rectangle":35}],34:[function(require,module,exports){
+},{"../../const":22,"./Rectangle":36}],35:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -9708,7 +10778,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":21,"../Point":30}],35:[function(require,module,exports){
+},{"../../const":22,"../Point":31}],36:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -9802,7 +10872,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":21}],36:[function(require,module,exports){
+},{"../../const":22}],37:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -9894,7 +10964,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":21}],37:[function(require,module,exports){
+},{"../../const":22}],38:[function(require,module,exports){
 var Container = require('../display/Container'),
     CONST = require('../const');
 
@@ -10217,7 +11287,7 @@ ParticleContainer.prototype.destroy = function () {
 
     if (this._buffers) {
         for (var i = 0; i < this._buffers.length; ++i) {
-            this._buffers.destroy();
+            this._buffers[i].destroy();
         }
     }
 
@@ -10225,7 +11295,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../const":21,"../display/Container":22}],38:[function(require,module,exports){
+},{"../const":22,"../display/Container":23}],39:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -10438,7 +11508,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.gl.deleteBuffer(this.staticBuffer);
 };
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -10933,7 +12003,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../math":31,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61,"./ParticleBuffer":38,"./ParticleShader":40}],40:[function(require,module,exports){
+},{"../../math":32,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62,"./ParticleBuffer":39,"./ParticleShader":41}],41:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -11011,7 +12081,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":60}],41:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":61}],42:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -11253,7 +12323,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":21,"../math":31,"../utils":75,"eventemitter3":11}],42:[function(require,module,exports){
+},{"../const":22,"../math":32,"../utils":76,"eventemitter3":11}],43:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -11468,6 +12538,21 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
     this.context = tempContext;
 };
 
+CanvasRenderer.prototype.resize = function (w, h)
+{
+    SystemRenderer.prototype.resize.call(this, w, h);
+
+    //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
+    //surely a browser bug?? Let pixi fix that for you..
+    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
+    
+    if(this.smoothProperty)
+    {
+        this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+    }
+
+};
+
 /**
  * Maps Pixi blend modes to canvas blend modes.
  *
@@ -11523,7 +12608,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":21,"../../math":31,"../../utils":75,"../SystemRenderer":41,"./utils/CanvasMaskManager":45}],43:[function(require,module,exports){
+},{"../../const":22,"../../math":32,"../../utils":76,"../SystemRenderer":42,"./utils/CanvasMaskManager":46}],44:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -11623,7 +12708,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -11976,7 +13061,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":21}],45:[function(require,module,exports){
+},{"../../../const":22}],46:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -12038,7 +13123,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"./CanvasGraphics":44}],46:[function(require,module,exports){
+},{"./CanvasGraphics":45}],47:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -12272,7 +13357,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":75}],47:[function(require,module,exports){
+},{"../../../utils":76}],48:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -12817,7 +13902,7 @@ WebGLRenderer.prototype._mapGlModes = function ()
     }
 };
 
-},{"../../const":21,"../../utils":75,"../SystemRenderer":41,"./filters/FXAAFilter":49,"./managers/BlendModeManager":51,"./managers/FilterManager":52,"./managers/MaskManager":53,"./managers/ShaderManager":54,"./managers/StencilManager":55,"./utils/ObjectRenderer":61,"./utils/RenderTarget":63}],48:[function(require,module,exports){
+},{"../../const":22,"../../utils":76,"../SystemRenderer":42,"./filters/FXAAFilter":50,"./managers/BlendModeManager":52,"./managers/FilterManager":53,"./managers/MaskManager":54,"./managers/ShaderManager":55,"./managers/StencilManager":56,"./utils/ObjectRenderer":62,"./utils/RenderTarget":64}],49:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -12935,7 +14020,7 @@ AbstractFilter.prototype.apply = function (frameBuffer)
 };
 */
 
-},{"../shaders/TextureShader":60}],49:[function(require,module,exports){
+},{"../shaders/TextureShader":61}],50:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -12983,7 +14068,7 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":48}],50:[function(require,module,exports){
+},{"./AbstractFilter":49}],51:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
@@ -13080,7 +14165,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":31,"./AbstractFilter":48}],51:[function(require,module,exports){
+},{"../../../math":32,"./AbstractFilter":49}],52:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -13123,7 +14208,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":56}],52:[function(require,module,exports){
+},{"./WebGLManager":57}],53:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -13559,7 +14644,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":21,"../../../math":31,"../utils/Quad":62,"../utils/RenderTarget":63,"./WebGLManager":56}],53:[function(require,module,exports){
+},{"../../../const":22,"../../../math":32,"../utils/Quad":63,"../utils/RenderTarget":64,"./WebGLManager":57}],54:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -13673,7 +14758,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":50,"./WebGLManager":56}],54:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":51,"./WebGLManager":57}],55:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -13840,7 +14925,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":75,"../shaders/ComplexPrimitiveShader":57,"../shaders/PrimitiveShader":58,"../shaders/TextureShader":60,"./WebGLManager":56}],55:[function(require,module,exports){
+},{"../../../utils":76,"../shaders/ComplexPrimitiveShader":58,"../shaders/PrimitiveShader":59,"../shaders/TextureShader":61,"./WebGLManager":57}],56:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -14184,7 +15269,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":75,"./WebGLManager":56}],56:[function(require,module,exports){
+},{"../../../utils":76,"./WebGLManager":57}],57:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -14225,7 +15310,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -14285,7 +15370,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":59}],58:[function(require,module,exports){
+},{"./Shader":60}],59:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -14346,7 +15431,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":59}],59:[function(require,module,exports){
+},{"./Shader":60}],60:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -14904,7 +15989,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":75}],60:[function(require,module,exports){
+},{"../../../utils":76}],61:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15001,7 +16086,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":59}],61:[function(require,module,exports){
+},{"./Shader":60}],62:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -15058,7 +16143,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":56}],62:[function(require,module,exports){
+},{"../managers/WebGLManager":57}],63:[function(require,module,exports){
 /**
  * Helper class to create a quad
  * @class
@@ -15204,7 +16289,7 @@ module.exports = Quad;
 
 
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -15510,7 +16595,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":21,"../../../math":31,"../../../utils":75,"./StencilMaskStack":64}],64:[function(require,module,exports){
+},{"../../../const":22,"../../../math":32,"../../../utils":76,"./StencilMaskStack":65}],65:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -15544,7 +16629,7 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -16108,7 +17193,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":21,"../display/Container":22,"../math":31,"../renderers/canvas/utils/CanvasTinter":46,"../textures/Texture":70,"../utils":75}],66:[function(require,module,exports){
+},{"../const":22,"../display/Container":23,"../math":32,"../renderers/canvas/utils/CanvasTinter":47,"../textures/Texture":71,"../utils":76}],67:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -16576,7 +17661,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":21,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61}],67:[function(require,module,exports){
+},{"../../const":22,"../../renderers/webgl/WebGLRenderer":48,"../../renderers/webgl/utils/ObjectRenderer":62}],68:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -17189,7 +18274,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":21,"../math":31,"../sprites/Sprite":65,"../textures/Texture":70,"../utils":75}],68:[function(require,module,exports){
+},{"../const":22,"../math":32,"../sprites/Sprite":66,"../textures/Texture":71,"../utils":76}],69:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -17622,7 +18707,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":21,"../utils":75,"eventemitter3":11}],69:[function(require,module,exports){
+},{"../const":22,"../utils":76,"eventemitter3":11}],70:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -18113,7 +19198,7 @@ RenderTexture.prototype.getPixel = function (x, y)
     }
 };
 
-},{"../const":21,"../math":31,"../renderers/canvas/utils/CanvasBuffer":43,"../renderers/webgl/managers/FilterManager":52,"../renderers/webgl/utils/RenderTarget":63,"./BaseTexture":68,"./Texture":70}],70:[function(require,module,exports){
+},{"../const":22,"../math":32,"../renderers/canvas/utils/CanvasBuffer":44,"../renderers/webgl/managers/FilterManager":53,"../renderers/webgl/utils/RenderTarget":64,"./BaseTexture":69,"./Texture":71}],71:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -18519,7 +19604,7 @@ Texture.removeTextureFromCache = function (id)
 
 Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":31,"../utils":75,"./BaseTexture":68,"./TextureUvs":71,"./VideoBaseTexture":72,"eventemitter3":11}],71:[function(require,module,exports){
+},{"../math":32,"../utils":76,"./BaseTexture":69,"./TextureUvs":72,"./VideoBaseTexture":73,"eventemitter3":11}],72:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -18587,7 +19672,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -18820,7 +19905,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":75,"./BaseTexture":68}],73:[function(require,module,exports){
+},{"../utils":76,"./BaseTexture":69}],74:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -19171,7 +20256,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":21,"eventemitter3":11}],74:[function(require,module,exports){
+},{"../const":22,"eventemitter3":11}],75:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -19233,7 +20318,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":73}],75:[function(require,module,exports){
+},{"./Ticker":74}],76:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -19472,7 +20557,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":21,"./pluginTarget":76,"async":2}],76:[function(require,module,exports){
+},{"../const":22,"./pluginTarget":77,"async":2}],77:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -19542,7 +20627,7 @@ module.exports = {
     }
 };
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -19877,7 +20962,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":28,"./extras":84,"./filters":101,"./mesh":125}],78:[function(require,module,exports){
+},{"./core":29,"./extras":85,"./filters":102,"./mesh":126}],79:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20256,7 +21341,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":28}],79:[function(require,module,exports){
+},{"../core":29}],80:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20532,7 +21617,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":28}],80:[function(require,module,exports){
+},{"../core":29}],81:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point();
@@ -20617,7 +21702,6 @@ function TilingSprite(texture, width, height)
         '   vec2 coord = aTextureCoord;',
         '   coord -= uTransform.xy;',
         '   coord /= uTransform.zw;',
-        '   coord /= uFrame.zw;',
         '   vTextureCoord = coord;',
 
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
@@ -20631,11 +21715,12 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
+        'uniform vec2 uPixelSize;',
 
         'void main(void){',
 
-        '   vec2 coord = fract(vTextureCoord);',
-        '   coord *= uFrame.zw;',
+        '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
+        '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
         '   coord += uFrame.xy;',
 
         '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
@@ -20645,8 +21730,8 @@ function TilingSprite(texture, width, height)
             // set the uniforms
             {
                 uFrame: { type: '4fv', value: [0,0,1,1] },
-
-                uTransform: { type: '4fv', value: [0,0,1,1] }
+                uTransform: { type: '4fv', value: [0,0,1,1] },
+                uPixelSize : { type : '2fv', value: [1, 1]}
             }
       );
 }
@@ -20724,9 +21809,9 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.width = this.width;
     texture._frame.height = this.height;
 
-    //PADDING
+    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
+    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
 
-    // apply padding to stop gaps in the tile when numbers are not rounded
     this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
     this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
     this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
@@ -20969,7 +22054,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":28}],81:[function(require,module,exports){
+},{"../core":29}],82:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -21241,7 +22326,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":28}],82:[function(require,module,exports){
+},{"../core":29}],83:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21269,7 +22354,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":28}],83:[function(require,module,exports){
+},{"../core":29}],84:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21298,7 +22383,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":28}],84:[function(require,module,exports){
+},{"../core":29}],85:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21319,7 +22404,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":78,"./MovieClip":79,"./TilingSprite":80,"./cacheAsBitmap":81,"./getChildByName":82,"./getGlobalPosition":83}],85:[function(require,module,exports){
+},{"./BitmapText":79,"./MovieClip":80,"./TilingSprite":81,"./cacheAsBitmap":82,"./getChildByName":83,"./getGlobalPosition":84}],86:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21376,7 +22461,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":28}],86:[function(require,module,exports){
+},{"../../core":29}],87:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -21477,7 +22562,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":28,"../blur/BlurXFilter":89,"../blur/BlurYFilter":90}],87:[function(require,module,exports){
+},{"../../core":29,"../blur/BlurXFilter":90,"../blur/BlurYFilter":91}],88:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -21622,7 +22707,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
     }
 });
 
-},{"../../core":28}],88:[function(require,module,exports){
+},{"../../core":29}],89:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -21732,7 +22817,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":28,"./BlurXFilter":89,"./BlurYFilter":90}],89:[function(require,module,exports){
+},{"../../core":29,"./BlurXFilter":90,"./BlurYFilter":91}],90:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21826,7 +22911,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":28}],90:[function(require,module,exports){
+},{"../../core":29}],91:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21912,7 +22997,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":28}],91:[function(require,module,exports){
+},{"../../core":29}],92:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21942,7 +23027,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":28}],92:[function(require,module,exports){
+},{"../../core":29}],93:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22482,7 +23567,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":28}],93:[function(require,module,exports){
+},{"../../core":29}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22531,7 +23616,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":28}],94:[function(require,module,exports){
+},{"../../core":29}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22622,7 +23707,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":28}],95:[function(require,module,exports){
+},{"../../core":29}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22648,7 +23733,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":28}],96:[function(require,module,exports){
+},{"../../core":29}],97:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22729,7 +23814,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":28}],97:[function(require,module,exports){
+},{"../../core":29}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22801,7 +23886,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":28}],98:[function(require,module,exports){
+},{"../../core":29}],99:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -22892,7 +23977,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     }
 });
 
-},{"../../core":28}],99:[function(require,module,exports){
+},{"../../core":29}],100:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -23061,7 +24146,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":28,"../blur/BlurXFilter":89,"./BlurYTintFilter":98}],100:[function(require,module,exports){
+},{"../../core":29,"../blur/BlurXFilter":90,"./BlurYTintFilter":99}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23110,7 +24195,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":28}],101:[function(require,module,exports){
+},{"../../core":29}],102:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -23150,7 +24235,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"./ascii/AsciiFilter":85,"./bloom/BloomFilter":86,"./blur/BlurDirFilter":87,"./blur/BlurFilter":88,"./blur/BlurXFilter":89,"./blur/BlurYFilter":90,"./blur/SmartBlurFilter":91,"./color/ColorMatrixFilter":92,"./color/ColorStepFilter":93,"./convolution/ConvolutionFilter":94,"./crosshatch/CrossHatchFilter":95,"./displacement/DisplacementFilter":96,"./dot/DotScreenFilter":97,"./dropshadow/DropShadowFilter":99,"./gray/GrayFilter":100,"./invert/InvertFilter":102,"./noise/NoiseFilter":103,"./normal/NormalMapFilter":104,"./pixelate/PixelateFilter":105,"./rgb/RGBSplitFilter":106,"./sepia/SepiaFilter":107,"./shockwave/ShockwaveFilter":108,"./tiltshift/TiltShiftFilter":110,"./tiltshift/TiltShiftXFilter":111,"./tiltshift/TiltShiftYFilter":112,"./twist/TwistFilter":113}],102:[function(require,module,exports){
+},{"./ascii/AsciiFilter":86,"./bloom/BloomFilter":87,"./blur/BlurDirFilter":88,"./blur/BlurFilter":89,"./blur/BlurXFilter":90,"./blur/BlurYFilter":91,"./blur/SmartBlurFilter":92,"./color/ColorMatrixFilter":93,"./color/ColorStepFilter":94,"./convolution/ConvolutionFilter":95,"./crosshatch/CrossHatchFilter":96,"./displacement/DisplacementFilter":97,"./dot/DotScreenFilter":98,"./dropshadow/DropShadowFilter":100,"./gray/GrayFilter":101,"./invert/InvertFilter":103,"./noise/NoiseFilter":104,"./normal/NormalMapFilter":105,"./pixelate/PixelateFilter":106,"./rgb/RGBSplitFilter":107,"./sepia/SepiaFilter":108,"./shockwave/ShockwaveFilter":109,"./tiltshift/TiltShiftFilter":111,"./tiltshift/TiltShiftXFilter":112,"./tiltshift/TiltShiftYFilter":113,"./twist/TwistFilter":114}],103:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23200,7 +24285,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":28}],103:[function(require,module,exports){
+},{"../../core":29}],104:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23255,7 +24340,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":28}],104:[function(require,module,exports){
+},{"../../core":29}],105:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23368,7 +24453,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":28}],105:[function(require,module,exports){
+},{"../../core":29}],106:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23419,7 +24504,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":28}],106:[function(require,module,exports){
+},{"../../core":29}],107:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23505,7 +24590,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":28}],107:[function(require,module,exports){
+},{"../../core":29}],108:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23555,7 +24640,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":28}],108:[function(require,module,exports){
+},{"../../core":29}],109:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23643,7 +24728,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":28}],109:[function(require,module,exports){
+},{"../../core":29}],110:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23768,7 +24853,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":28}],110:[function(require,module,exports){
+},{"../../core":29}],111:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -23878,7 +24963,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":28,"./TiltShiftXFilter":111,"./TiltShiftYFilter":112}],111:[function(require,module,exports){
+},{"../../core":29,"./TiltShiftXFilter":112,"./TiltShiftYFilter":113}],112:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -23916,7 +25001,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":109}],112:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":110}],113:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -23954,7 +25039,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":109}],113:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":110}],114:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24039,7 +25124,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":28}],114:[function(require,module,exports){
+},{"../../core":29}],115:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24102,7 +25187,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":28}],115:[function(require,module,exports){
+},{"../core":29}],116:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -24953,7 +26038,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":28,"./InteractionData":114,"./interactiveTarget":117}],116:[function(require,module,exports){
+},{"../core":29,"./InteractionData":115,"./interactiveTarget":118}],117:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24970,7 +26055,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":114,"./InteractionManager":115,"./interactiveTarget":117}],117:[function(require,module,exports){
+},{"./InteractionData":115,"./InteractionManager":116,"./interactiveTarget":118}],118:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -25019,7 +26104,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -25139,7 +26224,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":28,"../extras":84,"path":3,"resource-loader":17}],119:[function(require,module,exports){
+},{"../core":29,"../extras":85,"path":3,"resource-loader":18}],120:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25160,7 +26245,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":118,"./loader":120,"./spritesheetParser":121,"./textureParser":122,"resource-loader":17}],120:[function(require,module,exports){
+},{"./bitmapFontParser":119,"./loader":121,"./spritesheetParser":122,"./textureParser":123,"resource-loader":18}],121:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -25222,7 +26307,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":118,"./spritesheetParser":121,"./textureParser":122,"resource-loader":17}],121:[function(require,module,exports){
+},{"./bitmapFontParser":119,"./spritesheetParser":122,"./textureParser":123,"resource-loader":18}],122:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -25305,7 +26390,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":28,"path":3,"resource-loader":17}],122:[function(require,module,exports){
+},{"../core":29,"path":3,"resource-loader":18}],123:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -25324,8 +26409,10 @@ module.exports = function ()
     };
 };
 
-},{"../core":28}],123:[function(require,module,exports){
-var core = require('../core');
+},{"../core":29}],124:[function(require,module,exports){
+var core = require('../core'),
+    tempPoint = new core.Point(),
+    tempPolygon = new core.Polygon();
 
 /**
  * Base mesh class
@@ -25356,9 +26443,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Float32Array}
      */
     this.uvs = uvs || new Float32Array([0, 1,
-                                 1, 1,
-                                 1, 0,
-                                 0, 1]);
+        1, 1,
+        1, 0,
+        0, 1]);
 
     /**
      * An array of vertices
@@ -25366,9 +26453,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Float32Array}
      */
     this.vertices = vertices || new Float32Array([0, 0,
-                                      100, 0,
-                                      100, 100,
-                                      0, 100]);
+        100, 0,
+        100, 100,
+        0, 100]);
 
     /*
      * @member {Uint16Array} An array containing the indices of the vertices
@@ -25660,18 +26747,18 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 };
 
 /*
-Mesh.prototype.setTexture = function (texture)
-{
-    //TODO SET THE TEXTURES
-    //TODO VISIBILITY
-    //TODO SETTER
+ Mesh.prototype.setTexture = function (texture)
+ {
+ //TODO SET THE TEXTURES
+ //TODO VISIBILITY
+ //TODO SETTER
 
-    // stop current texture
-    this.texture = texture;
-    this.width   = texture.frame.width;
-    this.height  = texture.frame.height;
-    this.updateFrame = true;
-};
+ // stop current texture
+ this.texture = texture;
+ this.width   = texture.frame.width;
+ this.height  = texture.frame.height;
+ this.updateFrame = true;
+ };
  */
 
 /**
@@ -25693,54 +26780,102 @@ Mesh.prototype._onTextureUpdate = function ()
  */
 Mesh.prototype.getBounds = function (matrix)
 {
-    var worldTransform = matrix || this.worldTransform;
+    if (!this._currentBounds) {
+        var worldTransform = matrix || this.worldTransform;
 
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
+        var a = worldTransform.a;
+        var b = worldTransform.b;
+        var c = worldTransform.c;
+        var d = worldTransform.d;
+        var tx = worldTransform.tx;
+        var ty = worldTransform.ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
 
-    var minX = Infinity;
-    var minY = Infinity;
+        var minX = Infinity;
+        var minY = Infinity;
 
-    var vertices = this.vertices;
-    for (var i = 0, n = vertices.length; i < n; i += 2)
-    {
-        var rawX = vertices[i], rawY = vertices[i + 1];
-        var x = (a * rawX) + (c * rawY) + tx;
-        var y = (d * rawY) + (b * rawX) + ty;
+        var vertices = this.vertices;
+        for (var i = 0, n = vertices.length; i < n; i += 2) {
+            var rawX = vertices[i], rawY = vertices[i + 1];
+            var x = (a * rawX) + (c * rawY) + tx;
+            var y = (d * rawY) + (b * rawX) + ty;
 
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
+            minX = x < minX ? x : minX;
+            minY = y < minY ? y : minY;
 
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+            maxX = x > maxX ? x : maxX;
+            maxY = y > maxY ? y : maxY;
+        }
+
+        if (minX === -Infinity || maxY === Infinity) {
+            return core.Rectangle.EMPTY;
+        }
+
+        var bounds = this._bounds;
+
+        bounds.x = minX;
+        bounds.width = maxX - minX;
+
+        bounds.y = minY;
+        bounds.height = maxY - minY;
+
+        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
+        this._currentBounds = bounds;
     }
 
-    if (minX === -Infinity || maxY === Infinity)
-    {
-        return core.Rectangle.EMPTY;
-    }
-
-    var bounds = this._bounds;
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    this._currentBounds = bounds;
-
-    return bounds;
+    return this._currentBounds;
 };
 
+/**
+ * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+ *
+ * @param point {Point} the point to test
+ * @return {boolean} the result of the test
+ */
+Mesh.prototype.containsPoint = function( point ) {
+    if (!this.getBounds().contains(point.x, point.y)) {
+        return false;
+    }
+    this.worldTransform.applyInverse(point,  tempPoint);
+
+    var vertices = this.vertices;
+    var points = tempPolygon.points;
+    var i, len;
+
+    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
+        var indices = this.indices;
+        len = this.indices.length;
+        //TODO: inline this.
+        for (i=0;i<len;i+=3) {
+            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+            points[0] = vertices[ind0];
+            points[1] = vertices[ind0+1];
+            points[2] = vertices[ind1];
+            points[3] = vertices[ind1+1];
+            points[4] = vertices[ind2];
+            points[5] = vertices[ind2+1];
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+                return true;
+            }
+        }
+    } else {
+        len = vertices.length;
+        for (i=0;i<len;i+=6) {
+            points[0] = vertices[i];
+            points[1] = vertices[i+1];
+            points[2] = vertices[i+2];
+            points[3] = vertices[i+3];
+            points[4] = vertices[i+4];
+            points[5] = vertices[i+5];
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
 /**
  * Different drawing buffer modes supported
  *
@@ -25755,7 +26890,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":28}],124:[function(require,module,exports){
+},{"../core":29}],125:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -25968,7 +27103,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":28,"./Mesh":123}],125:[function(require,module,exports){
+},{"../core":29,"./Mesh":124}],126:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25986,7 +27121,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":123,"./Rope":124,"./webgl/MeshRenderer":126,"./webgl/MeshShader":127}],126:[function(require,module,exports){
+},{"./Mesh":124,"./Rope":125,"./webgl/MeshRenderer":127,"./webgl/MeshShader":128}],127:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -26200,7 +27335,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core":28,"../Mesh":123}],127:[function(require,module,exports){
+},{"../../core":29,"../Mesh":124}],128:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -26261,7 +27396,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":28}],128:[function(require,module,exports){
+},{"../../core":29}],129:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -26271,11 +27406,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":12}],129:[function(require,module,exports){
+},{"object-assign":12}],130:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":128,"./requestAnimationFrame":130}],130:[function(require,module,exports){
+},{"./Object.assign":129,"./requestAnimationFrame":131}],131:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
