@@ -69,15 +69,13 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
     var resolution = texture.baseTexture.resolution;
 
     var crop = texture.crop;
-    crop.width *= resolution;
-    crop.height *= resolution;
 
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    canvas.width = crop.width * resolution;
+    canvas.height = crop.height * resolution;
 
     context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
-    context.fillRect(0, 0, crop.width, crop.height);
+    context.fillRect(0, 0, crop.width * resolution, crop.height * resolution);
 
     context.globalCompositeOperation = 'multiply';
 
@@ -85,12 +83,12 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
         texture.baseTexture.source,
         crop.x,
         crop.y,
-        crop.width,
-        crop.height,
+        crop.width * resolution,
+        crop.height * resolution,
         0,
         0,
-        crop.width,
-        crop.height
+        crop.width * resolution,
+        crop.height * resolution
     );
 
     context.globalCompositeOperation = 'destination-atop';
@@ -99,12 +97,12 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
         texture.baseTexture.source,
         crop.x,
         crop.y,
-        crop.width,
-        crop.height,
+        crop.width * resolution,
+        crop.height * resolution,
         0,
         0,
-        crop.width,
-        crop.height
+        crop.width * resolution,
+        crop.height * resolution
     );
 };
 
@@ -122,27 +120,25 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
     var resolution = texture.baseTexture.resolution;
 
     var crop = texture.crop;
-    crop.width *= resolution;
-    crop.height *= resolution;
 
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    canvas.width = crop.width * resolution;
+    canvas.height = crop.height * resolution;
 
     context.globalCompositeOperation = 'copy';
     context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
-    context.fillRect(0, 0, crop.width, crop.height);
+    context.fillRect(0, 0, crop.width * resolution, crop.height * resolution);
 
     context.globalCompositeOperation = 'destination-atop';
     context.drawImage(
         texture.baseTexture.source,
         crop.x,
         crop.y,
-        crop.width,
-        crop.height,
+        crop.width * resolution,
+        crop.height * resolution,
         0,
         0,
-        crop.width,
-        crop.height
+        crop.width * resolution,
+        crop.height * resolution
     );
 
     // context.globalCompositeOperation = 'copy';
@@ -162,29 +158,27 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
     var resolution = texture.baseTexture.resolution;
 
     var crop = texture.crop;
-    crop.width *= resolution;
-    crop.height *= resolution;
 
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    canvas.width = crop.width * resolution;
+    canvas.height = crop.height * resolution;
 
     context.globalCompositeOperation = 'copy';
     context.drawImage(
         texture.baseTexture.source,
         crop.x,
         crop.y,
-        crop.width,
-        crop.height,
+        crop.width * resolution,
+        crop.height * resolution,
         0,
         0,
-        crop.width,
-        crop.height
+        crop.width * resolution,
+        crop.height * resolution
     );
 
     var rgbValues = utils.hex2rgb(color);
     var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-    var pixelData = context.getImageData(0, 0, crop.width, crop.height);
+    var pixelData = context.getImageData(0, 0, crop.width * resolution, crop.height * resolution);
 
     var pixels = pixelData.data;
 
