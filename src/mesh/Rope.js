@@ -2,7 +2,7 @@ var Mesh = require('./Mesh');
 var core = require('../core');
 
 /**
- * The rope allows you to draw a texture across several points and them manipulate these points
+ * The rope allows you to draw a texture across several points and then manipulate these points
  *
  *```js
  * for (var i = 0; i < 20; i++) {
