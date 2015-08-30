@@ -321,8 +321,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-    displayObject.worldTransform = cachedWt;
-
+   
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 
@@ -333,6 +332,9 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
+
+     displayObject.worldTransform = cachedWt;
+
  //   context.setTransform(1, 0, 0, 1, 0, 0);
    // context.fillStyle ="#FF0000"
 //    context.fillRect(0, 0, 800, 600);
