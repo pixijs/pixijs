@@ -7,8 +7,9 @@ var core = require('./core'),
 /**
  * @class
  * @private
- * @name PIXI.SpriteBatch
- * @see {@link PIXI.ParticleContainer}
+ * @name SpriteBatch
+ * @memberof PIXI
+ * @see PIXI.ParticleContainer
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
  * @deprecated since version 3.0.0
  */
@@ -20,8 +21,9 @@ core.SpriteBatch = function()
 /**
  * @class
  * @private
- * @name PIXI.AssetLoader
- * @see {@link PIXI.loaders.Loader}
+ * @name AssetLoader
+ * @memberof PIXI
+ * @see PIXI.loaders.Loader
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
  * @deprecated since version 3.0.0
  */
@@ -35,7 +37,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Stage
+     * @name Stage
+     * @memberof PIXI
      * @see PIXI.Container
      * @deprecated since version 3.0.0
      */
@@ -50,7 +53,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.DisplayObjectContainer
+     * @name DisplayObjectContainer
+     * @memberof PIXI
      * @see PIXI.Container
      * @deprecated since version 3.0.0
      */
@@ -65,7 +69,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Strip
+     * @name Strip
+     * @memberof PIXI
      * @see PIXI.mesh.Mesh
      * @deprecated since version 3.0.0
      */
@@ -80,7 +85,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Rope
+     * @name Rope
+     * @memberof PIXI
      * @see PIXI.mesh.Rope
      * @deprecated since version 3.0.0
      */
@@ -95,8 +101,9 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.MovieClip
-     * @see PIXI.MovieClip
+     * @name MovieClip
+     * @memberof PIXI
+     * @see PIXI.extras.MovieClip
      * @deprecated since version 3.0.0
      */
     MovieClip: {
@@ -110,8 +117,9 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.TilingSprite
-     * @see PIXI.TilingSprite
+     * @name TilingSprite
+     * @memberof PIXI
+     * @see PIXI.extras.TilingSprite
      * @deprecated since version 3.0.0
      */
     TilingSprite: {
@@ -125,7 +133,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.BitmapText
+     * @name BitmapText
+     * @memberof PIXI
      * @see PIXI.extras.BitmapText
      * @deprecated since version 3.0.0
      */
@@ -140,7 +149,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.blendModes
+     * @name blendModes
+     * @memberof PIXI
      * @see PIXI.BLEND_MODES
      * @deprecated since version 3.0.0
      */
@@ -155,7 +165,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.scaleModes
+     * @name scaleModes
+     * @memberof PIXI
      * @see PIXI.SCALE_MODES
      * @deprecated since version 3.0.0
      */
@@ -170,7 +181,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.BaseTextureCache
+     * @name BaseTextureCache
+     * @memberof PIXI
      * @see PIXI.utils.BaseTextureCache
      * @deprecated since version 3.0.0
      */
@@ -185,7 +197,8 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.TextureCache
+     * @name TextureCache
+     * @memberof PIXI
      * @see PIXI.utils.TextureCache
      * @deprecated since version 3.0.0
      */
@@ -200,7 +213,8 @@ Object.defineProperties(core, {
     /**
      * @namespace
      * @private
-     * @name PIXI.math
+     * @name math
+     * @memberof PIXI
      * @see PIXI
      * @deprecated since version 3.0.6
      */
@@ -229,7 +243,7 @@ core.Sprite.prototype.setTexture = function(texture)
 /**
  * @method
  * @name PIXI.extras.BitmapText#setText
- * @see PIXI.BitmapText#text
+ * @see PIXI.extras.BitmapText#text
  * @deprecated since version 3.0.0
  */
 extras.BitmapText.prototype.setText = function(text)
