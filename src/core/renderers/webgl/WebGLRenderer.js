@@ -29,7 +29,7 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always lok as great
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
- *      not before the new render pass.
+ *      not before the new render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
  * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if
  *      you need to call toDataUrl on the webgl context.
  */
