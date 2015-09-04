@@ -11,7 +11,6 @@
 module.exports = {
     Mesh:           require('./Mesh'),
     Rope:           require('./Rope'),
-    ExtSprite:           require('./ExtSprite'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
     MeshShader:     require('./webgl/MeshShader')
 };

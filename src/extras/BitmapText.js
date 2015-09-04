@@ -27,7 +27,7 @@ var core = require('../core');
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
  *      single line text
  * @param [style.tint=0xFFFFFF] {number} The tint color
-*/
+ */
 function BitmapText(text, style)
 {
     core.Container.call(this);
@@ -70,7 +70,7 @@ function BitmapText(text, style)
         tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
         align: style.align || 'left',
         name: null,
-        size: 16
+        size: 0
     };
 
     /**
@@ -115,6 +115,7 @@ module.exports = BitmapText;
 Object.defineProperties(BitmapText.prototype, {
     /**
      * The tint of the BitmapText object
+     *
      * @member {number}
      * @memberof BitmapText#
      */

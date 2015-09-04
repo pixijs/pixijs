@@ -1,31 +1,11 @@
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
-
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
     core.DisplayObject.prototype,
     require('./interactiveTarget')
 );
-
-
-core.Container.prototype.processInteractive = function( point , eventData){
-    if( !this.enabled || !this.interactive || eventData.stopped ) return;
-
-    if( this.containsPoint(point) ) this.emit( eventData.type , eventData );
-
-    if(this.interactiveChildren){
-
-        for (var i = this.children.length-1; i >= 0; i--)
-        {
-            if(eventData.stopped) return;
-            children[i].processInteractive( point, eventData );
-        }
-    }
-}
-
-
-
 
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
@@ -39,11 +19,11 @@ core.Container.prototype.processInteractive = function( point , eventData){
  * @param [options.autoPreventDefault=true] {boolean} Should the manager automatically prevent default browser actions.
  * @param [options.interactionFrequency=10] {number} Frequency increases the interaction events will be checked.
  */
-function InteractionManager( renderer, options )
+function InteractionManager(renderer, options)
 {
     options = options || {};
 
-    /**fv
+    /**
      * The renderer this interaction manager works for.
      *
      * @member {SystemRenderer}
@@ -181,9 +161,6 @@ function InteractionManager( renderer, options )
      */
     this.resolution = 1;
 
-    this.isMobile = options.isMobile!==undefined ? options.isMobile : true;
-
-
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 }
 
@@ -210,10 +187,6 @@ InteractionManager.prototype.setTargetElement = function (element, resolution)
     this.addEvents();
 };
 
-
-
-
-
 /**
  * Registers all the DOM events
  * @private
@@ -233,25 +206,15 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    if(this.useTouch){
+    window.document.addEventListener('mousemove',    this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
-        this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
-        this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
-        this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
+    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
+    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
+    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
 
-    }
-
-    if(useMouse){
-
-        window.document.addEventListener('mousemove',    this.onMouseMove, true);
-        this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
-        this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
-        window.addEventListener('mouseup',  this.onMouseUp, true);
-
-    }
-
-
-    
+    window.addEventListener('mouseup',  this.onMouseUp, true);
 
     this.eventsAdded = true;
 };
@@ -322,7 +285,7 @@ InteractionManager.prototype.update = function (deltaTime)
 
     this.cursor = 'inherit';
 
-    // this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -346,6 +309,7 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
     {
         eventData.target = displayObject;
         eventData.type = eventString;
+
         displayObject.emit( eventString, eventData );
 
         if( displayObject[eventString] )
@@ -358,6 +322,7 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
 /**
  * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The resulting value is stored in the point.
  * This takes into account the fact that the DOM element could be scaled and positioned anywhere on the screen.
+ *
  * @param  {Point} point the point that the result will be stored in
  * @param  {number} x     the x coord of the position to map
  * @param  {number} y     the y coord of the position to map
@@ -661,16 +626,15 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.eventData.data = touchData;
         this.eventData.stopped = false;
-        this.eventData.type = 'touchstart';
 
-        this.renderer._lastObjectRendered.processInteractive( this.eventData );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
         this.returnTouchData( touchData );
     }
 };
 
 /**
- * Processes the result of a touch ch1eck and dispatches the event if need be
+ * Processes the result of a touch check and dispatches the event if need be
  *
  * @param displayObject {Container|Sprite|TilingSprite} The display object that was tested
  * @param hit {boolean} the result of the hit test on the display object
@@ -777,8 +741,6 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
-
-
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, false );
 
         this.returnTouchData( touchData );
@@ -793,7 +755,7 @@ InteractionManager.prototype.onTouchMove = function (event)
  * @private
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
-{ 
+{
     hit = hit;
     this.dispatchEvent( displayObject, 'touchmove', this.eventData);
 };
