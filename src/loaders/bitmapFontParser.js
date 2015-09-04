@@ -34,7 +34,6 @@ function parse(resource, texture) {
             xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
             kerning: {},
             texture: new core.Texture(texture.baseTexture, textureRect)
-
         };
     }
 

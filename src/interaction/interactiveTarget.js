@@ -41,7 +41,13 @@ var interactiveTarget = {
      * @todo Needs docs.
      * @private
      */
-    _touchDown: false
+    _touchDown: false,
+
+    processInteractive:function( eventData ){
+        if( !this.enabled || !this.interactive || eventData.stopped ) return;
+        if( this.containsPoint( eventData.data.global ) ) this.emit( eventData.type , eventData );
+    },
+    containsPoint:function(){}
 };
 
 module.exports = interactiveTarget;
