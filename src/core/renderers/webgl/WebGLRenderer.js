@@ -475,6 +475,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
+    for (var key in utils.BaseTextureCache) {
+        var texture = utils.BaseTextureCache[key];
+        texture.off('update', this.updateTexture, this);
+        texture.off('dispose', this.destroyTexture, this);
+    }
+
     // call base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
 
