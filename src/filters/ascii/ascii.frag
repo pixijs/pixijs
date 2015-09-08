@@ -18,7 +18,9 @@ void main()
 {
     vec2 uv = gl_FragCoord.xy;
 
-    vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;
+    vec2 newDimensions = vec2(dimensions.x * 1.0, dimensions.y * -1.0);
+
+    vec3 col = texture2D(uSampler, floor( vec2(uv.x, uv.y + newDimensions.y) / pixelSize ) * pixelSize / newDimensions.xy).rgb;
 
     float gray = (col.r + col.g + col.b) / 3.0;
 
