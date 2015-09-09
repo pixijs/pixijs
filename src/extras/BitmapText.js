@@ -8,7 +8,7 @@ var core = require('../core');
  *
  * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * var bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
  *
@@ -124,7 +124,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The tint of the BitmapText object
      *
      * @member {number}
-     * @memberof PIXI.BitmapText#
+     * @memberof PIXI.extras.BitmapText#
      */
     tint: {
         get: function ()
@@ -144,7 +144,7 @@ Object.defineProperties(BitmapText.prototype, {
      *
      * @member {string}
      * @default 'left'
-     * @memberof PIXI.BitmapText#
+     * @memberof PIXI.extras.BitmapText#
      */
     align: {
         get: function ()
@@ -163,7 +163,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The font descriptor of the BitmapText object
      *
      * @member {Font}
-     * @memberof PIXI.BitmapText#
+     * @memberof PIXI.extras.BitmapText#
      */
     font: {
         get: function ()
@@ -195,7 +195,7 @@ Object.defineProperties(BitmapText.prototype, {
      * The text of the BitmapText object
      *
      * @member {string}
-     * @memberof PIXI.BitmapText#
+     * @memberof PIXI.extras.BitmapText#
      */
     text: {
         get: function ()
