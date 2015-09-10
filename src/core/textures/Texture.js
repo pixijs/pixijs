@@ -125,10 +125,8 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         if (this.noFrame)
         {
-            frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+            frame = new math.Rectangle(0, 0, baseTexture.realWidth, baseTexture.realHeight);
 
-            // if there is no frame we should monitor for any base texture changes..
-            baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
         this.frame = frame;
     }
@@ -136,6 +134,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
+    
+    //we should monitor for any base texture changes in case the resolution is changed, etc.
+    baseTexture.on('update', this.onBaseTextureUpdated, this);
 
     /**
      * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
@@ -167,11 +168,13 @@ Object.defineProperties(Texture.prototype, {
             this._frame = frame;
 
             this.noFrame = false;
+            
+            var resolution = this.baseTexture.resolution;
 
-            this.width = frame.width;
-            this.height = frame.height;
+            this.width = frame.width / resolution;
+            this.height = frame.height / resolution;
 
-            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.realWidth || frame.y + frame.height > this.baseTexture.realHeight))
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
@@ -181,8 +184,8 @@ Object.defineProperties(Texture.prototype, {
 
             if (this.trim)
             {
-                this.width = this.trim.width;
-                this.height = this.trim.height;
+                this.width = this.trim.width / resolution;
+                this.height = this.trim.height / resolution;
                 this._frame.width = this.trim.width;
                 this._frame.height = this.trim.height;
             }
@@ -218,7 +221,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
-        this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+        this.frame = new math.Rectangle(0, 0, baseTexture.realWidth, baseTexture.realHeight);
     }
     else
     {
@@ -235,8 +238,15 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 {
-    this._frame.width = baseTexture.width;
-    this._frame.height = baseTexture.height;
+    if(this.noFrame)
+    {
+        this._frame.width = baseTexture.realWidth;
+        this._frame.height = baseTexture.realHeight;
+    }
+    else
+    {
+        this.frame = this._frame;
+    }
 
     this.emit('update', this);
 };
