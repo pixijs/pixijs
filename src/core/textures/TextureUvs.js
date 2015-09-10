@@ -31,8 +31,8 @@ module.exports = TextureUvs;
  */
 TextureUvs.prototype.set = function (frame, baseFrame, rotate)
 {
-    var tw = baseFrame.width;
-    var th = baseFrame.height;
+    var tw = baseFrame.realWidth;
+    var th = baseFrame.realHeight;
 
     if(rotate)
     {

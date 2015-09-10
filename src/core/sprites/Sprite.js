@@ -108,11 +108,11 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return this.scale.x * this.texture._frame.width;
+            return this.scale.x * this.texture.width;
         },
         set: function (value)
         {
-            this.scale.x = value / this.texture._frame.width;
+            this.scale.x = value / this.texture.width;
             this._width = value;
         }
     },
@@ -126,11 +126,11 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  this.scale.y * this.texture._frame.height;
+            return  this.scale.y * this.texture.height;
         },
         set: function (value)
         {
-            this.scale.y = value / this.texture._frame.height;
+            this.scale.y = value / this.texture.height;
             this._height = value;
         }
     },
@@ -182,12 +182,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = this._width / this.texture.frame.width;
+        this.scale.x = this._width / this.texture.width;
     }
 
     if (this._height)
     {
-        this.scale.y = this._height / this.texture.frame.height;
+        this.scale.y = this._height / this.texture.height;
     }
 };
 
@@ -215,8 +215,8 @@ Sprite.prototype.getBounds = function (matrix)
     if(!this._currentBounds)
     {
 
-        var width = this._texture._frame.width;
-        var height = this._texture._frame.height;
+        var width = this._texture.width;
+        var height = this._texture.height;
 
         var w0 = width * (1-this.anchor.x);
         var w1 = width * -this.anchor.x;
@@ -430,16 +430,16 @@ Sprite.prototype._renderCanvas = function (renderer)
             dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
         }
 
-
+        var resolution = texture.baseTexture.resolution;
 
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
             renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
+                wt.a / resolution,
+                wt.b / resolution,
+                wt.c / resolution,
+                wt.d / resolution,
                 (wt.tx * renderer.resolution) | 0,
                 (wt.ty * renderer.resolution) | 0
             );
@@ -451,18 +451,16 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
 
             renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
+                wt.a / resolution,
+                wt.b / resolution,
+                wt.c / resolution,
+                wt.d / resolution,
                 wt.tx * renderer.resolution,
                 wt.ty * renderer.resolution
             );
 
 
         }
-
-        var resolution = texture.baseTexture.resolution;
 
         if (this.tint !== 0xFFFFFF)
         {
@@ -478,8 +476,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width * resolution,
-                height * resolution,
+                width,
+                height,
                 dx * renderer.resolution,
                 dy * renderer.resolution,
                 width * renderer.resolution,
@@ -490,10 +488,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x * resolution,
-                texture.crop.y * resolution,
-                width * resolution,
-                height * resolution,
+                texture.crop.x,
+                texture.crop.y,
+                width,
+                height,
                 dx  * renderer.resolution,
                 dy  * renderer.resolution,
                 width * renderer.resolution,
