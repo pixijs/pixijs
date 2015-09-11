@@ -67,6 +67,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     var baseTexture = new BaseTexture();
     baseTexture.width = width;
     baseTexture.height = height;
+    baseTexture.realWidth = width * resolution;
+    baseTexture.realHeight = height * resolution;
     baseTexture.resolution = resolution;
     baseTexture.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     baseTexture.hasLoaded = true;
@@ -74,7 +76,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
 
     Texture.call(this,
         baseTexture,
-        new math.Rectangle(0, 0, width, height)
+        new math.Rectangle(0, 0, baseTexture.realWidth, baseTexture.realHeight)
     );
 
 
@@ -146,7 +148,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
 
         this.render = this.renderCanvas;
-        this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
+        this.textureBuffer = new CanvasBuffer(this.baseTexture.realWidth, this.baseTexture.realHeight);
         this.baseTexture.source = this.textureBuffer.canvas;
     }
 
@@ -178,11 +180,15 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
 
     this.valid = (width > 0 && height > 0);
 
-    this.width = this._frame.width = this.crop.width = width;
-    this.height =  this._frame.height = this.crop.height = height;
+    this.width = width;
+    this.height = height;
+    this._frame.width = this.crop.width = width * this.resolution;
+    this._frame.height = this.crop.height = height * this.resolution;
 
     if (updateBase)
     {
+        this.baseTexture.realWidth = width * this.resolution;
+        this.baseTexture.realHeight = height * this.resolution;
         this.baseTexture.width = this.width;
         this.baseTexture.height = this.height;
     }
@@ -192,7 +198,14 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
         return;
     }
 
-    this.textureBuffer.resize(this.width, this.height);
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        this.textureBuffer.resize(this.width, this.height);
+    }
+    else
+    {
+        this.textureBuffer.resize(this.baseTexture.realWidth, this.baseTexture.realHeight);
+    }
 
     if(this.filterManager)
     {
