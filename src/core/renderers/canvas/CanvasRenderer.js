@@ -197,6 +197,12 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
     this.context = tempContext;
 };
 
+/**
+ * @extends PIXI.SystemRenderer#resize
+ *
+ * @param {number} w
+ * @param {number} h
+ */
 CanvasRenderer.prototype.resize = function (w, h)
 {
     SystemRenderer.prototype.resize.call(this, w, h);

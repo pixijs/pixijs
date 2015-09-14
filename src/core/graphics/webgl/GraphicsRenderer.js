@@ -77,7 +77,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
     if (graphics.dirty)
     {
-        this.updateGraphics(graphics, gl);
+        this.updateGraphics(graphics);
     }
 
     var webGL = graphics._webGL[gl.id];
@@ -90,24 +90,24 @@ GraphicsRenderer.prototype.render = function(graphics)
 //    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
 //    matrix.append(graphics.worldTransform);
 
-    for (var i = 0; i < webGL.data.length; i++)
+    for (var i = 0, n = webGL.data.length; i < n; i++)
     {
+        webGLData = webGL.data[i];
+
         if (webGL.data[i].mode === 1)
         {
-            webGLData = webGL.data[i];
 
-            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.pushStencil(graphics, webGLData);
 
             gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.popStencil(graphics, webGLData);
         }
         else
         {
-            webGLData = webGL.data[i];
 
             shader = renderer.shaderManager.primitiveShader;
 
