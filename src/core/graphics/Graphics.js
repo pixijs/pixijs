@@ -760,7 +760,6 @@ Graphics.prototype._renderCanvas = function (renderer)
     // if the tint has changed, set the graphics object to dirty.
     if (this._prevTint !== this.tint) {
         this.dirty = true;
-        this._prevTint = this.tint;
     }
 
     // this code may still be needed so leaving for now..

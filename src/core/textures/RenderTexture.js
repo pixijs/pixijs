@@ -291,7 +291,6 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     }
 
     updateTransform = !!updateTransform;
-    var cachedWt = displayObject.worldTransform;
 
     var wt = tempMatrix;
 
@@ -303,6 +302,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     }
 
     displayObject.worldTransform = wt;
+    var cachedWt = displayObject.worldTransform;
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
