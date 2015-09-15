@@ -66,3 +66,16 @@ Point.prototype.set = function (x, y)
     this.x = x || 0;
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
+
+/**
+ * Returns the distance between the given and this point
+ *
+ * @param p {Point}
+ * @returns {boolean}
+ */
+Point.prototype.distance = function (p) {
+    var dx = p.x - this.x,
+        dy = p.y - this.y;
+    
+    return Math.sqrt((dx * dx) + (dy * dy));
+};
