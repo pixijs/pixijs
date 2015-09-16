@@ -640,13 +640,13 @@ Graphics.prototype.drawPolygon = function (path)
     var points = path;
 
     var closed = true;
-    
-    if (points instanceof PIXI.Polygon)
+
+    if (points instanceof math.Polygon)
     {
         closed = points.closed;
         points = points.points;
     }
-    
+
     if (!Array.isArray(points))
     {
         // prevents an argument leak deopt
@@ -661,7 +661,7 @@ Graphics.prototype.drawPolygon = function (path)
 
     var shape = new math.Polygon(points);
     shape.closed = closed;
-    
+
     this.drawShape(shape);
 
     return this;
