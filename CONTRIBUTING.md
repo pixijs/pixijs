@@ -55,7 +55,7 @@ changing only whitespace or trash files will likely get your PR closed.
 
 - Follow conventions already in the code, and listen to jshint.
 
-[0]: https://github.com/GoodBoyDigital/pixi.js/issues
+[0]: https://github.com/pixijs/pixi.js/issues
 [1]: http://jsfiddle.net
 [2]: http://jsbin.com/
 [3]: http://nodejs.org
