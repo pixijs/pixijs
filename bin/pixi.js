@@ -3802,6 +3802,7 @@ if ('undefined' !== typeof module) {
 
 },{}],11:[function(require,module,exports){
 'use strict';
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 function ToObject(val) {
 	if (val == null) {
@@ -3811,6 +3812,18 @@ function ToObject(val) {
 	return Object(val);
 }
 
+function ownEnumerableKeys(obj) {
+	var keys = Object.getOwnPropertyNames(obj);
+
+	if (Object.getOwnPropertySymbols) {
+		keys = keys.concat(Object.getOwnPropertySymbols(obj));
+	}
+
+	return keys.filter(function (key) {
+		return propIsEnumerable.call(obj, key);
+	});
+}
+
 module.exports = Object.assign || function (target, source) {
 	var from;
 	var keys;
@@ -3818,7 +3831,7 @@ module.exports = Object.assign || function (target, source) {
 
 	for (var s = 1; s < arguments.length; s++) {
 		from = arguments[s];
-		keys = Object.keys(Object(from));
+		keys = ownEnumerableKeys(Object(from));
 
 		for (var i = 0; i < keys.length; i++) {
 			to[keys[i]] = from[keys[i]];
@@ -24925,7 +24938,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
     //console.log("hit" + hit)
     if(hit)
     {
-        displayObject._touchDown = true;
+        displayObject._touchDown = this.eventData.data.identifier;
         this.dispatchEvent( displayObject, 'touchstart', this.eventData );
     }
 };
@@ -24979,7 +24992,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
     {
         this.dispatchEvent( displayObject, 'touchend', this.eventData );
 
-        if( displayObject._touchDown )
+        if( displayObject._touchDown === this.eventData.data.identifier)
         {
             displayObject._touchDown = false;
             this.dispatchEvent( displayObject, 'tap', this.eventData );
@@ -24987,7 +25000,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
     }
     else
     {
-        if( displayObject._touchDown )
+        if( displayObject._touchDown === this.eventData.data.identifier)
         {
             displayObject._touchDown = false;
             this.dispatchEvent( displayObject, 'touchendoutside', this.eventData );
