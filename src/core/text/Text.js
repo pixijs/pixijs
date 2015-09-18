@@ -189,7 +189,7 @@ Object.defineProperties(Text.prototype, {
             style.font = style.font || 'bold 20pt Arial';
             style.fill = style.fill || 'black';
             style.align = style.align || 'left';
-            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
+            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/pixijs/pixi.js/issues/136
             style.strokeThickness = style.strokeThickness || 0;
             style.wordWrap = style.wordWrap || false;
             style.wordWrapWidth = style.wordWrapWidth || 100;
