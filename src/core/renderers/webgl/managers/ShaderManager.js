@@ -155,6 +155,8 @@ ShaderManager.prototype.setShader = function (shader)
  */
 ShaderManager.prototype.destroy = function ()
 {
+    this.primitiveShader.destroy();
+    this.complexPrimitiveShader.destroy();
     WebGLManager.prototype.destroy.call(this);
 
     this.destroyPlugins();

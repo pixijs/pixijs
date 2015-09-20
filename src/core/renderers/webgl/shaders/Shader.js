@@ -85,7 +85,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
 
-/*
+/**
  * Creates the shader and uses it
  *
  */
@@ -99,9 +99,9 @@ Shader.prototype.init = function ()
     this.cacheAttributeLocations(Object.keys(this.attributes));
 };
 
-/*
+/**
  * Caches the locations of the uniform for reuse.
-
+ *
  * @param keys {string} the uniforms to cache
  */
 Shader.prototype.cacheUniformLocations = function (keys)
@@ -112,9 +112,9 @@ Shader.prototype.cacheUniformLocations = function (keys)
     }
 };
 
-/*
+/**
  * Caches the locations of the attribute for reuse.
-
+ *
  * @param keys {string} the attributes to cache
  */
 Shader.prototype.cacheAttributeLocations = function (keys)
@@ -139,9 +139,9 @@ Shader.prototype.cacheAttributeLocations = function (keys)
     // End worst hack eva //
 };
 
-/*
+/**
  * Attaches the shaders and creates the program.
-
+ *
  * @return {WebGLProgram}
  */
 Shader.prototype.compile = function ()

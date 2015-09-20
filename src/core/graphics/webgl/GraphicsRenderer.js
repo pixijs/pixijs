@@ -77,7 +77,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
     if (graphics.dirty)
     {
-        this.updateGraphics(graphics, gl);
+        this.updateGraphics(graphics);
     }
 
     var webGL = graphics._webGL[gl.id];
@@ -90,24 +90,24 @@ GraphicsRenderer.prototype.render = function(graphics)
 //    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
 //    matrix.append(graphics.worldTransform);
 
-    for (var i = 0; i < webGL.data.length; i++)
+    for (var i = 0, n = webGL.data.length; i < n; i++)
     {
+        webGLData = webGL.data[i];
+
         if (webGL.data[i].mode === 1)
         {
-            webGLData = webGL.data[i];
 
-            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.pushStencil(graphics, webGLData);
 
             gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.popStencil(graphics, webGLData);
         }
         else
         {
-            webGLData = webGL.data[i];
 
             shader = renderer.shaderManager.primitiveShader;
 
@@ -140,7 +140,7 @@ GraphicsRenderer.prototype.render = function(graphics)
  * Updates the graphics object
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object to update
+ * @param graphics {PIXI.Graphics} The graphics object to update
  */
 GraphicsRenderer.prototype.updateGraphics = function(graphics)
 {
@@ -585,15 +585,15 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
     {
         return;
     }
-
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if (graphicsData.lineWidth%2)
-    {
-        for (i = 0; i < points.length; i++)
-        {
-            points[i] += 0.5;
-        }
-    }
+    // commenting this out fixes #711 and #1620
+    // if (graphicsData.lineWidth%2)
+    // {
+    //     for (i = 0; i < points.length; i++)
+    //     {
+    //         points[i] += 0.5;
+    //     }
+    // }
 
     // get first and last point.. figure out the middle!
     var firstPoint = new math.Point(points[0], points[1]);

@@ -25,6 +25,7 @@ var utils = module.exports = {
      * Converts a hex color number to an [R, G, B] array
      *
      * @param hex {number}
+     * @param  {number[]} [out=[]]
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
     hex2rgb: function (hex, out)
@@ -142,7 +143,7 @@ var utils = module.exports = {
      * used by spritesheets and image urls
      *
      * @param url {string} the image path
-     * @return {boolean}
+     * @return {number}
      */
     getResolutionOfUrl: function (url)
     {
@@ -185,7 +186,7 @@ var utils = module.exports = {
                 'background: #ff66a5; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
-                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;'
             ];
 
             window.console.log.apply(console, args); //jshint ignore:line
@@ -225,7 +226,7 @@ var utils = module.exports = {
     },
 
     /**
-     * Retunrs sign of number
+     * Returns sign of number
      *
      * @param n {number}
      * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
