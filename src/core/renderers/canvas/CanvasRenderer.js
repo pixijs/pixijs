@@ -169,8 +169,6 @@ CanvasRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.maskManager = null;
 
-    this.roundPixels = false;
-
     this.smoothProperty = null;
 };
 

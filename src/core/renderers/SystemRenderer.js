@@ -251,6 +251,8 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this.preserveDrawingBuffer = false;
     this.clearBeforeRender = false;
 
+    this.roundPixels = false;
+
     this._backgroundColor = 0;
     this._backgroundColorRgb = null;
     this._backgroundColorString = null;
