@@ -32,6 +32,7 @@ var SystemRenderer = require('../SystemRenderer'),
  *      not before the new render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
  * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if
  *      you need to call toDataUrl on the webgl context.
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function WebGLRenderer(width, height, options)
 {
