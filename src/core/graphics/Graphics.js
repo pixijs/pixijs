@@ -609,6 +609,21 @@ Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius )
 };
 
 /**
+ *
+ * @param x {number} The X coord of the top-left of the rectangle
+ * @param y {number} The Y coord of the top-left of the rectangle
+ * @param width {number} The width of the rectangle
+ * @param height {number} The height of the rectangle
+ * @param radius {number} Radius of the rectangle corners
+ */
+Graphics.prototype.drawOneSideRoundedRect = function ( x, y, width, height, radius, side )
+{
+    this.drawShape(new math.OneSideRoundedRectangle(x, y, width, height, radius, side));
+
+    return this;
+};
+
+/**
  * Draws a circle.
  *
  * @param x {number} The X coordinate of the center of the circle
