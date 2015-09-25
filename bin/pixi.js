@@ -7583,7 +7583,7 @@ Graphics.prototype.updateLocalBounds = function ()
             var lineWidth = data.lineWidth;
             shape = data.shape;
 
-            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
+            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC || type === CONST.SHAPES.OSRREC)
             {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
