@@ -247,6 +247,10 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             {
                 this.buildRoundedRectangle(data, webGLData);
             }
+            else if (data.type === CONST.SHAPES.OSRREC)
+            {
+                this.buildOneSideRoundedRectangle(data, webGLData);
+            }
         }
 
         webGL.lastIndex++;
@@ -390,6 +394,95 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
 
     // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
     // TODO - fix this properly, this is not very elegant.. but it works for now.
+
+    if (graphicsData.fill)
+    {
+        var color = utils.hex2rgb(graphicsData.fillColor);
+        var alpha = graphicsData.fillAlpha;
+
+        var r = color[0] * alpha;
+        var g = color[1] * alpha;
+        var b = color[2] * alpha;
+
+        var verts = webGLData.points;
+        var indices = webGLData.indices;
+
+        var vecPos = verts.length/6;
+
+        var triangles = earcut(recPoints, null, 2);
+
+        var i = 0;
+        for (i = 0; i < triangles.length; i+=3)
+        {
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i+1] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+        }
+
+        for (i = 0; i < recPoints.length; i++)
+        {
+            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
+        }
+    }
+
+    if (graphicsData.lineWidth)
+    {
+        var tempPoints = graphicsData.points;
+
+        graphicsData.points = recPoints;
+
+        this.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
+    }
+};
+
+/**
+ * Builds a one side rounded rectangle to draw
+ *
+ * @private
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ */
+GraphicsRenderer.prototype.buildOneSideRoundedRectangle = function (graphicsData, webGLData)
+{
+    var rrectData = graphicsData.shape;
+    var x = rrectData.x;
+    var y = rrectData.y;
+    var width = rrectData.width;
+    var height = rrectData.height;
+    var side = rrectData.side;
+
+    var radius = rrectData.radius;
+
+    var recPoints = [];
+    recPoints.push(x, y + radius);
+    if(side === CONST.POSITION.TOP) {
+        recPoints.push(x , y + height);
+        recPoints.push(x + width , y + height);
+        this.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
+        this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+    }
+    else if(side === CONST.POSITION.BOTTOM) {
+        this.quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
+        this.quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
+        recPoints.push(x + width, y);
+        recPoints.push(x , y);
+    }
+    else if(side === CONST.POSITION.RIGHT){
+        recPoints.push(x , y + height);
+        this.quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
+        this.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
+        recPoints.push(x, y);
+    }
+    else if(side === CONST.POSITION.LEFT){
+        this.quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
+        recPoints.push(x + width, y + height);
+        recPoints.push(x + width, y);
+        this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+    }
 
     if (graphicsData.fill)
     {

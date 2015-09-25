@@ -203,13 +203,33 @@ var CONST = {
      * @property {object} SHAPES.CIRC=2
      * @property {object} SHAPES.ELIP=3
      * @property {object} SHAPES.RREC=4
+     * @property {object} SHAPES.OSRREC=5
      */
     SHAPES: {
         POLY: 0,
         RECT: 1,
         CIRC: 2,
         ELIP: 3,
-        RREC: 4
+        RREC: 4,
+        OSRREC: 5
+    },
+
+    /**
+     * Constants that identify position of something.
+     *
+     * @static
+     * @constant
+     * @property {object} SIDES
+     * @property {object} SIDES.TOP=0
+     * @property {object} SIDES.BOTTOM=1
+     * @property {object} SIDES.RIGHT=2
+     * @property {object} SIDES.LEFT=3
+     */
+    POSITION: {
+        TOP: 0,
+        BOTTOM: 1,
+        RIGHT: 2,
+        LEFT: 3
     },
 
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
