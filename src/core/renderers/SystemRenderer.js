@@ -219,9 +219,9 @@ SystemRenderer.prototype.resize = function (width, height) {
  * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
 SystemRenderer.prototype.destroy = function (removeView) {
-    if (removeView && this.view.parent)
+    if (removeView && this.view.parentNode)
     {
-        this.view.parent.removeChild(this.view);
+        this.view.parentNode.removeChild(this.view);
     }
 
     this.type = CONST.RENDERER_TYPE.UNKNOWN;
