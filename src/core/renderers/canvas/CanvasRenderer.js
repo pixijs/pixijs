@@ -53,14 +53,6 @@ function CanvasRenderer(width, height, options)
     this.maskManager = new CanvasMaskManager();
 
     /**
-     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
-     * Handy for crisp pixel art and speed on legacy devices.
-     *
-     * @member {boolean}
-     */
-    this.roundPixels = options.roundPixels;
-
-    /**
      * The canvas property used to set the canvas smoothing property.
      *
      * @member {string}
@@ -176,8 +168,6 @@ CanvasRenderer.prototype.destroy = function (removeView)
 
     this.maskManager.destroy();
     this.maskManager = null;
-
-    this.roundPixels = false;
 
     this.smoothProperty = null;
 };

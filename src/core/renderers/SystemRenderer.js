@@ -21,6 +21,7 @@ var utils = require('../utils'),
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
  * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function SystemRenderer(system, width, height, options)
 {
@@ -122,6 +123,14 @@ function SystemRenderer(system, width, height, options)
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
+
+    /**
+     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Handy for crisp pixel art and speed on legacy devices.
+     *
+     * @member {boolean}
+     */
+    this.roundPixels = options.roundPixels;
 
     /**
      * The background color as a number.
@@ -241,6 +250,8 @@ SystemRenderer.prototype.destroy = function (removeView) {
 
     this.preserveDrawingBuffer = false;
     this.clearBeforeRender = false;
+
+    this.roundPixels = false;
 
     this._backgroundColor = 0;
     this._backgroundColorRgb = null;
