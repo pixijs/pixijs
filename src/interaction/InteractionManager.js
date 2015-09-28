@@ -747,7 +747,7 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
-        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, false );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, true );
 
         this.returnTouchData( touchData );
     }

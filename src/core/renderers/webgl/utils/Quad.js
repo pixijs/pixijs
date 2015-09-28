@@ -140,6 +140,14 @@ Quad.prototype.upload = function()
     gl.bufferSubData(gl.ARRAY_BUFFER, (8 + 8) * 4, this.colors);
 };
 
+Quad.prototype.destroy = function()
+{
+    var gl = this.gl;
+    
+     gl.deleteBuffer(this.vertexBuffer);
+     gl.deleteBuffer(this.indexBuffer);
+};
+
 module.exports = Quad;
 
 

@@ -26,12 +26,13 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias. If not available natively then FXAA antialiasing is used
- * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always lok as great
+ * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
- *      not before the new render pass.
+ *      not before the new render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
  * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if
  *      you need to call toDataUrl on the webgl context.
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function WebGLRenderer(width, height, options)
 {
@@ -475,6 +476,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
+    for (var key in utils.BaseTextureCache) {
+        var texture = utils.BaseTextureCache[key];
+        texture.off('update', this.updateTexture, this);
+        texture.off('dispose', this.destroyTexture, this);
+    }
+
     // call base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
 
@@ -485,11 +492,13 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.stencilManager.destroy();
     this.filterManager.destroy();
+    this.blendModeManager.destroy();
 
     this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
     this.blendModeManager = null;
+    this.currentRenderer = null;
 
     this.handleContextLost = null;
     this.handleContextRestored = null;

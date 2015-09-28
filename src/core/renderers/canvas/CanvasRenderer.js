@@ -53,32 +53,6 @@ function CanvasRenderer(width, height, options)
     this.maskManager = new CanvasMaskManager();
 
     /**
-     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
-     * Handy for crisp pixel art and speed on legacy devices.
-     *
-     * @member {boolean}
-     */
-    this.roundPixels = options.roundPixels;
-
-    /**
-     * Tracks the active scale mode for this renderer.
-     *
-     * @member {number}
-     * @default PIXI.SCALE_MODES.DEFAULT
-     * @see PIXI.SCALE_MODES
-     */
-    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-
-    /**
-     * Tracks the active blend mode for this renderer.
-     *
-     * @member {number}
-     * @default PIXI.BLEND_MODES.NORMAL
-     * @see PIXI.BLEND_MODES
-     */
-    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
-
-    /**
      * The canvas property used to set the canvas smoothing property.
      *
      * @member {string}
@@ -152,7 +126,6 @@ CanvasRenderer.prototype.render = function (object)
 
     this.context.globalAlpha = 1;
 
-    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
     this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas)
@@ -196,11 +169,6 @@ CanvasRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.maskManager = null;
 
-    this.roundPixels = false;
-
-    this.currentScaleMode = 0;
-    this.currentBlendMode = 0;
-
     this.smoothProperty = null;
 };
 
@@ -219,17 +187,21 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
     this.context = tempContext;
 };
 
+/**
+ * @extends PIXI.SystemRenderer#resize
+ *
+ * @param {number} w
+ * @param {number} h
+ */
 CanvasRenderer.prototype.resize = function (w, h)
 {
     SystemRenderer.prototype.resize.call(this, w, h);
 
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..
-    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-
     if(this.smoothProperty)
     {
-        this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+        this.context[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
     }
 
 };

@@ -282,9 +282,15 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
-    var i,
-        data,
-        tint = graphics.tint;
+    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
+    {
+        return;
+    }
+    graphics._prevTint = graphics.tint;
+
+    var tintR = (graphics.tint >> 16 & 0xFF) / 255;
+    var tintG = (graphics.tint >> 8 & 0xFF) / 255;
+    var tintB = (graphics.tint & 0xFF)/ 255;
 
     for (i = 0; i < graphics.graphicsData.length; i++)
     {

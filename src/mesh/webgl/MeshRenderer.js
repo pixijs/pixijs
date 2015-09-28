@@ -209,4 +209,5 @@ MeshRenderer.prototype.start = function ()
  */
 MeshRenderer.prototype.destroy = function ()
 {
+    core.ObjectRenderer.prototype.destroy.call(this);
 };

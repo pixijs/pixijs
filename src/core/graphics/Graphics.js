@@ -180,8 +180,8 @@ Graphics.prototype.clone = function ()
     clone.blendMode     = this.blendMode;
     clone.isMask        = this.isMask;
     clone.boundsPadding = this.boundsPadding;
-    clone.dirty         = this.dirty;
-    clone.glDirty       = this.glDirty;
+    clone.dirty         = true;
+    clone.glDirty       = true;
     clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
     // copy graphics data
@@ -215,7 +215,9 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
         if (this.currentPath.shape.points.length)
         {
             // halfway through a line? start a new one!
-            this.drawShape( new math.Polygon( this.currentPath.shape.points.slice(-2) ));
+            var shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
+            shape.closed = false;
+            this.drawShape(shape);
         }
         else
         {
@@ -237,7 +239,9 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
   */
 Graphics.prototype.moveTo = function (x, y)
 {
-    this.drawShape(new math.Polygon([x,y]));
+    var shape = new math.Polygon([x,y]);
+    shape.closed = false;
+    this.drawShape(shape);
 
     return this;
 };
@@ -480,26 +484,11 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
 
     if (this.currentPath)
     {
-        if (anticlockwise && this.filling)
-        {
-            this.currentPath.shape.points.push(cx, cy);
-        }
-        else
-        {
-            this.currentPath.shape.points.push(startX, startY);
-        }
+        this.currentPath.shape.points.push(startX, startY);
     }
     else
     {
-        if (anticlockwise && this.filling)
-        {
-
-            this.moveTo(cx, cy);
-        }
-        else
-        {
-            this.moveTo(startX, startY);
-        }
+        this.moveTo(startX, startY);
     }
 
     var points = this.currentPath.shape.points;
@@ -644,6 +633,14 @@ Graphics.prototype.drawPolygon = function (path)
     // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
     var points = path;
 
+    var closed = true;
+
+    if (points instanceof math.Polygon)
+    {
+        closed = points.closed;
+        points = points.points;
+    }
+
     if (!Array.isArray(points))
     {
         // prevents an argument leak deopt
@@ -656,7 +653,10 @@ Graphics.prototype.drawPolygon = function (path)
         }
     }
 
-    this.drawShape(new math.Polygon(points));
+    var shape = new math.Polygon(points);
+    shape.closed = closed;
+
+    this.drawShape(shape);
 
     return this;
 };
@@ -769,7 +769,6 @@ Graphics.prototype._renderCanvas = function (renderer)
     // if the tint has changed, set the graphics object to dirty.
     if (this._prevTint !== this.tint) {
         this.dirty = true;
-        this._prevTint = this.tint;
     }
 
     // this code may still be needed so leaving for now..
@@ -798,10 +797,10 @@ Graphics.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
     var transform = this.worldTransform;
 
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        context.globalCompositeOperation = compositeOperation;
     }
 
     var resolution = renderer.resolution;

@@ -137,7 +137,7 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
-        this.onChildrenChange();
+        this.onChildrenChange(index);
 
         child.emit('added', this);
 
@@ -172,7 +172,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
-    this.onChildrenChange();
+    this.onChildrenChange(index1 < index2 ? index1 : index2);
 };
 
 /**
@@ -210,7 +210,7 @@ Container.prototype.setChildIndex = function (child, index)
 
     this.children.splice(currentIndex, 1); //remove from old position
     this.children.splice(index, 0, child); //add at new position
-    this.onChildrenChange();
+    this.onChildrenChange(index);
 };
 
 /**
@@ -259,7 +259,7 @@ Container.prototype.removeChildAt = function (index)
 
     child.parent = null;
     this.children.splice(index, 1);
-    this.onChildrenChange();
+    this.onChildrenChange(index);
 
     child.emit('removed', this);
 
@@ -277,19 +277,20 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     var begin = beginIndex || 0;
     var end = typeof endIndex === 'number' ? endIndex : this.children.length;
     var range = end - begin;
+    var removed, i;
 
     if (range > 0 && range <= end)
     {
-        var removed = this.children.splice(begin, range);
+        removed = this.children.splice(begin, range);
 
-        for (var i = 0; i < removed.length; ++i)
+        for (i = 0; i < removed.length; ++i)
         {
             removed[i].parent = null;
         }
 
-        this.onChildrenChange();
+        this.onChildrenChange(beginIndex);
 
-        for (var i = 0; i < removed.length; ++i)
+        for (i = 0; i < removed.length; ++i)
         {
             removed[i].emit('removed', this);
         }
@@ -470,7 +471,7 @@ Container.prototype.renderWebGL = function (renderer)
         renderer.currentRenderer.flush();
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters)
+        if (this._filters && this._filters.length)
         {
             renderer.filterManager.pushFilter(this, this._filters);
         }

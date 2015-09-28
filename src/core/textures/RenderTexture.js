@@ -17,6 +17,7 @@ var BaseTexture = require('./BaseTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
+ * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
  * var renderTexture = new PIXI.RenderTexture(renderer, 800, 600);
  * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
@@ -291,7 +292,6 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     }
 
     updateTransform = !!updateTransform;
-    var cachedWt = displayObject.worldTransform;
 
     var wt = tempMatrix;
 
@@ -303,6 +303,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     }
 
     displayObject.worldTransform = wt;
+    var cachedWt = displayObject.worldTransform;
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
@@ -321,8 +322,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-    displayObject.worldTransform = cachedWt;
-
+   
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 
@@ -333,6 +333,9 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
+
+     displayObject.worldTransform = cachedWt;
+
  //   context.setTransform(1, 0, 0, 1, 0, 0);
    // context.fillStyle ="#FF0000"
 //    context.fillRect(0, 0, 800, 600);

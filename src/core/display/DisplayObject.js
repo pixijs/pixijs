@@ -431,6 +431,23 @@ DisplayObject.prototype.generateTexture = function (renderer, scaleMode, resolut
 };
 
 /**
+ * Set the parent Container of this DisplayObject
+ *
+ * @param container {Container} The Container to add this DisplayObject to
+ * @return {Container} The Container that this DisplayObject was added to
+ */
+DisplayObject.prototype.setParent = function (container)
+{
+    if (!container || !container.addChild)
+    {
+        throw new Error('setParent: Argument must be a Container');
+    }
+
+    container.addChild(this);
+    return container;
+};
+
+/**
  * Base destroy method for generic display objects
  *
  */
