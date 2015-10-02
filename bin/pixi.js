@@ -3802,7 +3802,6 @@ if ('undefined' !== typeof module) {
 
 },{}],11:[function(require,module,exports){
 'use strict';
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 function ToObject(val) {
 	if (val == null) {
@@ -3812,18 +3811,6 @@ function ToObject(val) {
 	return Object(val);
 }
 
-function ownEnumerableKeys(obj) {
-	var keys = Object.getOwnPropertyNames(obj);
-
-	if (Object.getOwnPropertySymbols) {
-		keys = keys.concat(Object.getOwnPropertySymbols(obj));
-	}
-
-	return keys.filter(function (key) {
-		return propIsEnumerable.call(obj, key);
-	});
-}
-
 module.exports = Object.assign || function (target, source) {
 	var from;
 	var keys;
@@ -3831,7 +3818,7 @@ module.exports = Object.assign || function (target, source) {
 
 	for (var s = 1; s < arguments.length; s++) {
 		from = arguments[s];
-		keys = ownEnumerableKeys(Object(from));
+		keys = Object.keys(Object(from));
 
 		for (var i = 0; i < keys.length; i++) {
 			to[keys[i]] = from[keys[i]];
@@ -15916,8 +15903,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
+    var width = this._texture.width;
+    var height = this._texture.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -17748,6 +17735,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     var baseTexture = new BaseTexture();
     baseTexture.width = width;
     baseTexture.height = height;
+    baseTexture.realWidth = width * resolution;
+    baseTexture.realHeight = height * resolution;
     baseTexture.resolution = resolution;
     baseTexture.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     baseTexture.hasLoaded = true;
@@ -17755,7 +17744,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
 
     Texture.call(this,
         baseTexture,
-        new math.Rectangle(0, 0, width, height)
+        new math.Rectangle(0, 0, baseTexture.realWidth, baseTexture.realHeight)
     );
 
 
@@ -17874,11 +17863,15 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
 
     this.valid = (width > 0 && height > 0);
 
-    this.width = this._frame.width = this.crop.width = width;
-    this.height =  this._frame.height = this.crop.height = height;
+    this.width = width;
+    this.height = height;
+    this._frame.width = this.crop.width = width * this.resolution;
+    this._frame.height = this.crop.height = height * this.resolution;
 
     if (updateBase)
     {
+        this.baseTexture.realWidth = width * this.resolution;
+        this.baseTexture.realHeight = height * this.resolution;
         this.baseTexture.width = this.width;
         this.baseTexture.height = this.height;
     }
@@ -17888,7 +17881,14 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
         return;
     }
 
-    this.textureBuffer.resize(this.width, this.height);
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        this.textureBuffer.resize(this.width, this.height);
+    }
+    else
+    {
+        this.textureBuffer.resize(this.baseTexture.realWidth, this.baseTexture.realHeight);
+    }
 
     if(this.filterManager)
     {

@@ -345,8 +345,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
+    var width = this._texture.width;
+    var height = this._texture.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
