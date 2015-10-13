@@ -2,7 +2,9 @@ var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
-    _tempMatrix = new math.Matrix();
+    _tempMatrix = new math.Matrix(),
+    _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
+
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -362,8 +364,21 @@ DisplayObject.prototype.getLocalBounds = function ()
  */
 DisplayObject.prototype.toGlobal = function (position)
 {
+    // this parent check is for just in case the item is a root object.
+    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+    if(!this.parent)
+    {
+        this.parent = _tempDisplayObjectParent;
+        this.displayObjectUpdateTransform();
+        this.parent = null;
+    }
+    else
+    {
+        this.displayObjectUpdateTransform();
+    }
+
     // don't need to update the lot
-    this.displayObjectUpdateTransform();
     return this.worldTransform.apply(position);
 };
 
@@ -381,8 +396,21 @@ DisplayObject.prototype.toLocal = function (position, from)
         position = from.toGlobal(position);
     }
 
-    // don't need to update the lot
-    this.displayObjectUpdateTransform();
+    // this parent check is for just in case the item is a root object.
+    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+    if(!this.parent)
+    {
+        this.parent = _tempDisplayObjectParent;
+        this.displayObjectUpdateTransform();
+        this.parent = null;
+    }
+    else
+    {
+        this.displayObjectUpdateTransform();
+    }
+
+    // simply apply the matrix..
     return this.worldTransform.applyInverse(position);
 };
 
