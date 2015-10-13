@@ -245,7 +245,7 @@ Graphics.prototype.moveTo = function (x, y)
     var shape = new math.Polygon([x,y]);
     shape.closed = false;
     this.drawShape(shape);
-
+    
     return this;
 };
 
@@ -275,7 +275,7 @@ Graphics.prototype.lineTo = function (x, y)
  * @param toY {number} Destination point y
  * @return {PIXI.Graphics}
  */
-Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
+Graphics.prototype.curveTo = Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
 {
     if (this.currentPath)
     {
@@ -723,31 +723,6 @@ Graphics.prototype._renderWebGL = function (renderer)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
 
-    // this code may still be needed so leaving for now..
-    //
-    /*
-    if (this._cacheAsBitmap)
-    {
-        if (this.dirty || this.cachedSpriteDirty)
-        {
-            this._generateCachedSprite();
-
-            // we will also need to update the texture on the gpu too!
-            this.updateCachedSpriteTexture();
-
-            this.cachedSpriteDirty = false;
-            this.dirty = false;
-        }
-
-        this._cachedSprite.worldAlpha = this.worldAlpha;
-
-        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
-
-        return;
-    }
-
-    */
-
     if (this.glDirty)
     {
         this.dirty = true;
@@ -777,29 +752,6 @@ Graphics.prototype._renderCanvas = function (renderer)
         this.dirty = true;
     }
 
-    // this code may still be needed so leaving for now..
-    //
-    /*
-    if (this._cacheAsBitmap)
-    {
-        if (this.dirty || this.cachedSpriteDirty)
-        {
-            this._generateCachedSprite();
-
-            // we will also need to update the texture
-            this.updateCachedSpriteTexture();
-
-            this.cachedSpriteDirty = false;
-            this.dirty = false;
-        }
-
-        this._cachedSprite.alpha = this.alpha;
-
-        Sprite.prototype._renderCanvas.call(this._cachedSprite, renderer);
-
-        return;
-    }
-    */
     var context = renderer.context;
     var transform = this.worldTransform;
 
@@ -1131,6 +1083,7 @@ Graphics.prototype.destroyCachedSprite = function ()
  */
 Graphics.prototype.drawShape = function (shape)
 {
+
     if (this.currentPath)
     {
         // check current path!
@@ -1148,14 +1101,40 @@ Graphics.prototype.drawShape = function (shape)
 
     if (data.type === CONST.SHAPES.POLY)
     {
-        data.shape.closed = data.shape.closed || this.filling;
+        if(data.shape.closed || this.filling)data.shape.close()
         this.currentPath = data;
     }
 
     this.dirty = this.boundsDirty = true;
 
     return data;
+
 };
+
+Graphics.prototype.closePath = function ()
+{
+    // ok so close path assumes next one is a hole!
+    var currentPath = this.currentPath;
+    if (currentPath && currentPath.shape)
+    {
+        currentPath.shape.close();
+    }
+
+    //TODO - this will check to see if the next path is a hole..
+    //This is handy for rendering flash outputs, but feels like this should be in a better place
+    if(!currentPath.shape.isClockwise())
+    {
+        // this is a hole!
+        var hole = this.graphicsData.pop();
+        
+        this.currentPath = this.graphicsData[this.graphicsData.length-1];
+
+        this.currentPath.addHole(hole.shape);
+        this.currentPath = null;
+    }
+
+    return this;
+}
 
 /**
  * Destroys the Graphics object.

@@ -190,22 +190,18 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
         if (data.type === CONST.SHAPES.POLY)
         {
             // need to add the points the the graphics object..
-            data.points = data.shape.points.slice();
-            if (data.shape.closed)
+            webGLData = this.switchMode(webGL, 0);
+            if(data.fill)
             {
-                // close the poly if the value is true!
-                if (data.points[0] !== data.points[data.points.length-2] || data.points[1] !== data.points[data.points.length-1])
-                {
-                    data.points.push(data.points[0], data.points[1]);
-                }
+                this.buildPoly(data, webGLData);
             }
 
             // MAKE SURE WE HAVE THE CORRECT TYPE..
             if (data.fill)
             {
-                if (data.points.length >= 6)
+               /* if (data.points.length >= 6)
                 {
-                    if (data.points.length < this.maximumSimplePolySize * 2)
+                    if (true)///data.points.length < this.maximumSimplePolySize * 2)
                     {
                         webGLData = this.switchMode(webGL, 0);
 
@@ -223,7 +219,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
                         webGLData = this.switchMode(webGL, 1);
                         this.buildComplexPoly(data, webGLData);
                     }
-                }
+                }*/
             }
 
             if (data.lineWidth > 0)
@@ -854,12 +850,29 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
  */
 GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
 {
-    var points = graphicsData.points;
+    var points = graphicsData.shape.points.slice();//graphicsData.points;
+    var holeArray = [];
 
     if (points.length < 6)
     {
         return;
     }
+
+    // Process holes..
+    var holes = graphicsData.holes;
+
+    for (var i = 0; i < holes.length; i++) {
+        var hole = holes[i];
+
+        holeArray.push(points.length/2)
+        
+        points = points.concat(hole.points);
+    };
+
+    console.log(holeArray)
+    var triangles = earcut(points, holeArray, 2);
+    
+
 
     // get first and last point.. figure out the middle!
     var verts = webGLData.points;
@@ -874,7 +887,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     var g = color[1] * alpha;
     var b = color[2] * alpha;
 
-    var triangles = earcut(points, null, 2);
+  
 
     if (!triangles) {
         return false;

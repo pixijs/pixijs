@@ -70,6 +70,39 @@ Polygon.prototype.clone = function ()
     return new Polygon(this.points.slice());
 };
 
+Polygon.prototype.close = function ()
+{
+    var points = this.points;
+
+    // close the poly if the value is true!
+    if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
+    {
+        points.push(points[0], points[1]);
+    }
+}
+
+Polygon.prototype.isClockwise = function()
+{
+    var points = this.points;
+
+    var j, area = 0;
+
+    console.log(points.length)
+    for (var i = 0; i < points.length/2; i++) 
+    {
+        j = (i + 1) % (points.length/2);
+        
+      //  console.log( points[i * 2] + " : " + points[(i * 2) + 1])
+      //  console.log( points[j * 2] + " : " + points[(j * 2) + 1])
+
+        area += points[i * 2] * points[(j * 2) + 1];
+        area -= points[j * 2] * points[(i * 2) + 1];
+    }
+    
+//    console.log('---')
+    return (area > 0);
+}
+
 /**
  * Checks whether the x and y coordinates passed to this function are contained within this polygon
  *

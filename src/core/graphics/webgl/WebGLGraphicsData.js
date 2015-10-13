@@ -32,7 +32,7 @@ function WebGLGraphicsData(gl) {
      * The indices of the vertices
      * @member {number[]}
      */
-    this.indices = [];
+    this.indices = []; //TODO - change to int or float array?
     /**
      * The main buffer
      * @member {WebGLBuffer}

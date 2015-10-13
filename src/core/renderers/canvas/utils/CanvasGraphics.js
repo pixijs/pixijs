@@ -40,37 +40,44 @@ CanvasGraphics.renderGraphics = function (graphics, context)
             context.beginPath();
 
             var points = shape.points;
+            
+
+            CanvasGraphics.renderPolygon(points, shape.closed, context);
 
             context.moveTo(points[0], points[1]);
 
-            for (var j=1; j < points.length/2; j++)
-            {
-                context.lineTo(points[j * 2], points[j * 2 + 1]);
-            }
+          
+           
+        
 
-            if (shape.closed)
+            var cachedOp = context.globalCompositeOperation;
+            for (var j = 0; j < data.holes.length; j++) 
             {
-                context.lineTo(points[0], points[1]);
-            }
+                var hole = data.holes[j];
+         //       context.globalCompositeOperation = "destination-out";
+                CanvasGraphics.renderPolygon(hole.points, true, context);
 
-            // if the first and last point are the same close the path - much neater :)
-            if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
-            {
-                context.closePath();
-            }
+            //    context.globalAlpha = 1//data.fillAlpha * worldAlpha;
+              //  context.fillStyle = '#FF0000'// + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+               // context.fill();
+            };
 
-            if (data.fill)
+             if (data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
                 context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
+            context.globalCompositeOperation = cachedOp;
+//            if(data.holes)
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
                 context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
                 context.stroke();
             }
+
+
         }
         else if (data.type === CONST.SHAPES.RECT)
         {
@@ -189,6 +196,28 @@ CanvasGraphics.renderGraphics = function (graphics, context)
         }
     }
 };
+
+
+CanvasGraphics.renderPolygon = function (points, close, context)
+{
+    for (var j=1; j < points.length/2; j++)
+    {
+        context.lineTo(points[j * 2], points[j * 2 + 1]);
+    }
+
+    if (close)
+    {
+        context.closePath();
+      //  context.lineTo(points[0], points[1]);
+    }
+
+    // if the first and last point are the same close the path - much neater :)
+    if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
+    {
+        
+    }
+
+}
 
 /*
  * Renders a graphics mask
