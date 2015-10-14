@@ -19,6 +19,8 @@ If you want to keep up to date with the latest pixi.js news then feel free to fo
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
 
+**Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
+
 ### Demos ###
 
 - [WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
