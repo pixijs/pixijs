@@ -1,3 +1,7 @@
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 var Point = require('./Point');
 
 /**
@@ -84,7 +88,7 @@ Matrix.prototype.fromArray = function (array)
  * @param {number} d
  * @param {number} tx
  * @param {number} ty
- * 
+ *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.set = function (a, b, c, d, tx, ty)
@@ -96,7 +100,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
     this.tx = tx;
     this.ty = ty;
 
-    return this
+    return this;
 };
 
 
@@ -104,6 +108,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
+ * @param [out] {Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -283,12 +288,12 @@ Matrix.prototype.append = function (matrix)
  * @param {number} rotation
  * @param {number} skewX
  * @param {number} skewY
- * 
+ *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
 {
-    var a, b, c, d, tx, ty, sr, cr;
+    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
 
     sr  = Math.sin(rotation);
     cr  = Math.cos(rotation);
