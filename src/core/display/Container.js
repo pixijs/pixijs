@@ -137,7 +137,7 @@ Container.prototype.addChild = function (child)
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(this.children.length-1);
         child.emit('added', this);
-    };
+    }
 
     return child;
 };
@@ -291,7 +291,7 @@ Container.prototype.removeChild = function (child)
         child.emit('removed', this);
     }
 
-    return child
+    return child;
 };
 
 /**
