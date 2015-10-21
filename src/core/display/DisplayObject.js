@@ -284,15 +284,17 @@ DisplayObject.prototype.updateTransform = function ()
     {
         // I'm assuming that skewing is not going to be very common
         // With that in mind, we can do a full setTransform using the temp matrix
-        _tempMatrix.setTransform(this.position.x
-                                ,this.position.y
-                                ,this.pivot.x
-                                ,this.pivot.y
-                                ,this.scale.x
-                                ,this.scale.y
-                                ,this.rotation
-                                ,this.skew.x
-                                ,this.skew.y );
+        _tempMatrix.setTransform(
+            this.position.x,
+            this.position.y,
+            this.pivot.x,
+            this.pivot.y,
+            this.scale.x,
+            this.scale.y,
+            this.rotation,
+            this.skew.x,
+            this.skew.y
+        );
 
         // now concat the matrix (inlined so that we can avoid using copy)
         wt.a  = _tempMatrix.a  * pt.a + _tempMatrix.b  * pt.c;
