@@ -518,7 +518,8 @@ DisplayObject.prototype.destroy = function ()
     this.position = null;
     this.scale = null;
     this.pivot = null;
-
+    this.skew = null;
+    
     this.parent = null;
 
     this._bounds = null;
