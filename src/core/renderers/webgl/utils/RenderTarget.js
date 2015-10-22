@@ -311,7 +311,7 @@ RenderTarget.prototype.resize = function (width, height)
 RenderTarget.prototype.destroy = function ()
 {
     var gl = this.gl;
-    gl.deleteRenderBuffer( this.stencilBuffer );
+    gl.deleteRenderbuffer( this.stencilBuffer );
     gl.deleteFramebuffer( this.frameBuffer );
     gl.deleteTexture( this.texture );
 
