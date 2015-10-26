@@ -113,7 +113,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.x = utils.sign(this.scale.x) * value / this.texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -131,7 +132,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.y = utils.sign(this.scale.y) * value / this.texture._frame.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture._frame.height;
             this._height = value;
         }
     },
