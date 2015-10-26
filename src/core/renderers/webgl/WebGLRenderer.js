@@ -159,7 +159,8 @@ function WebGLRenderer(width, height, options)
     this._renderTargetStack = [];
 }
 
-module.exports = SystemRenderer.extend(WebGLRenderer, true);
+module.exports = SystemRenderer.extend(WebGLRenderer);
+utils.pluginTarget.mixin(WebGLRenderer);
 
 WebGLRenderer.glContextId = 0;
 

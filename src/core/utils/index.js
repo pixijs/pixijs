@@ -16,11 +16,10 @@ var utils = module.exports = {
      * have other classes extend it, e.g., `Container.extend(MyContainer)`
      *
      * @param child {function} child The child class
-     * @param parent {function} parent The parent class to extend
-     * @param isPluginTarget=false {Boolean} If the child can have plugins
-     * @return {function} The child class
+     * @param [parent=null] {function} parent The parent class to extend
+     * @return {function} The reference to the child class
      */
-    extend: function(child, parent, isPluginTarget)
+    extend: function(child, parent)
     {
         if (parent)
         {
@@ -29,18 +28,14 @@ var utils = module.exports = {
             child.prototype.__parent = p;
         }
         // Add extend to each class to easily extend
-        child.extend = function(subchild, pluginable)
+        child.extend = function(subchild)
         {
-            return utils.extend(subchild, child, pluginable);
+            return utils.extend(subchild, child);
         };
 
         // Add the constructor
         child.prototype.constructor = child;
-
-        if (isPluginTarget)
-        {
-            utils.pluginTarget.mixin(child);
-        }
+        
         return child;
     },
 

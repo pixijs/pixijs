@@ -98,8 +98,8 @@ function CanvasRenderer(width, height, options)
     this.resize(width, height);
 }
 
-module.exports = SystemRenderer.extend(CanvasRenderer, true);
-
+module.exports = SystemRenderer.extend(CanvasRenderer);
+utils.pluginTarget.mixin(CanvasRenderer);
 
 /**
  * Renders the object to this canvas view
