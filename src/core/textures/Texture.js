@@ -146,9 +146,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      */
 }
 
-Texture.prototype = Object.create(EventEmitter.prototype);
-Texture.prototype.constructor = Texture;
-module.exports = Texture;
+module.exports = utils.extend(Texture, EventEmitter);
 
 Object.defineProperties(Texture.prototype, {
     /**

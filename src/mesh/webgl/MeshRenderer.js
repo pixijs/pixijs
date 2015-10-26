@@ -44,9 +44,7 @@ function MeshRenderer(renderer)
     }
 }
 
-MeshRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
-MeshRenderer.prototype.constructor = MeshRenderer;
-module.exports = MeshRenderer;
+module.exports = core.ObjectRenderer.extend(MeshRenderer);
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 

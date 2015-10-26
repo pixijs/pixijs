@@ -12,6 +12,39 @@ var utils = module.exports = {
     async:          require('async'),
 
     /**
+     * Extend from one class to another and give child class ability to
+     * have other classes extend it, e.g., `Container.extend(MyContainer)`
+     *
+     * @param child {function} child The child class
+     * @param parent {function} parent The parent class to extend
+     * @param isPluginTarget=false {Boolean} If the child can have plugins
+     * @return {function} The child class
+     */
+    extend: function(child, parent, isPluginTarget)
+    {
+        if (parent)
+        {
+            var p = parent.prototype;
+            child.prototype = Object.create(p);
+            child.prototype.__parent = p;
+        }
+        // Add extend to each class to easily extend
+        child.extend = function(subchild, pluginable)
+        {
+            return utils.extend(subchild, child, pluginable);
+        };
+
+        // Add the constructor
+        child.prototype.constructor = child;
+
+        if (isPluginTarget)
+        {
+            utils.pluginTarget.mixin(child);
+        }
+        return child;
+    },
+
+    /**
      * Gets the next unique identifier
      *
      * @return {number} The next unique identifier to use.

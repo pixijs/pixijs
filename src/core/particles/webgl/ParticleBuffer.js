@@ -1,3 +1,4 @@
+var utils = require('../../utils');
 
 /**
  * @author Mat Groves
@@ -87,8 +88,7 @@ function ParticleBuffer(gl, properties, dynamicPropertyFlags, size)
 
 }
 
-ParticleBuffer.prototype.constructor = ParticleBuffer;
-module.exports = ParticleBuffer;
+module.exports = utils.extend(ParticleBuffer);
 
 /**
  * Sets up the renderer context and necessary buffers.

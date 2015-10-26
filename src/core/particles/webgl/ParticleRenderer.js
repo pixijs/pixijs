@@ -63,9 +63,7 @@ function ParticleRenderer(renderer)
     this.tempMatrix = new math.Matrix();
 }
 
-ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
-ParticleRenderer.prototype.constructor = ParticleRenderer;
-module.exports = ParticleRenderer;
+module.exports = ObjectRenderer.extend(ParticleRenderer);
 
 WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 

@@ -30,9 +30,7 @@ function SpriteMaskFilter(sprite)
     this.maskMatrix = maskMatrix;
 }
 
-SpriteMaskFilter.prototype = Object.create(AbstractFilter.prototype);
-SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
-module.exports = SpriteMaskFilter;
+module.exports = AbstractFilter.extend(SpriteMaskFilter);
 
 /**
  * Applies the filter

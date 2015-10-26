@@ -17,9 +17,7 @@ function MaskManager(renderer)
     this.alphaMaskPool = [];
 }
 
-MaskManager.prototype = Object.create(WebGLManager.prototype);
-MaskManager.prototype.constructor = MaskManager;
-module.exports = MaskManager;
+module.exports = WebGLManager.extend(MaskManager);
 
 /**
  * Applies the Mask and adds it to the current filter stack.

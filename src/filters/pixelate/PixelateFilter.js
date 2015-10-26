@@ -24,9 +24,7 @@ function PixelateFilter()
     );
 }
 
-PixelateFilter.prototype = Object.create(core.AbstractFilter.prototype);
-PixelateFilter.prototype.constructor = PixelateFilter;
-module.exports = PixelateFilter;
+module.exports = core.AbstractFilter.extend(PixelateFilter);
 
 Object.defineProperties(PixelateFilter.prototype, {
     /**

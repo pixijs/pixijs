@@ -1,7 +1,8 @@
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
-    bitmapFontParser = require('./bitmapFontParser');
+    bitmapFontParser = require('./bitmapFontParser'),
+    utils = require('../core/utils');
 
 /**
  *
@@ -34,10 +35,7 @@ function Loader(baseUrl, concurrency)
     }
 }
 
-Loader.prototype = Object.create(ResourceLoader.prototype);
-Loader.prototype.constructor = Loader;
-
-module.exports = Loader;
+module.exports = utils.extend(Loader, ResourceLoader);
 
 Loader._pixiMiddleware = [
     // parse any blob into more usable objects (e.g. Image)

@@ -117,10 +117,7 @@ function TilingSprite(texture, width, height)
       );
 }
 
-TilingSprite.prototype = Object.create(core.Sprite.prototype);
-TilingSprite.prototype.constructor = TilingSprite;
-module.exports = TilingSprite;
-
+module.exports = core.Sprite.extend(TilingSprite);
 
 Object.defineProperties(TilingSprite.prototype, {
     /**

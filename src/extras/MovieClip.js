@@ -80,10 +80,7 @@ function MovieClip(textures)
     this.playing = false;
 }
 
-// constructor
-MovieClip.prototype = Object.create(core.Sprite.prototype);
-MovieClip.prototype.constructor = MovieClip;
-module.exports = MovieClip;
+module.exports = core.Sprite.extend(MovieClip);
 
 Object.defineProperties(MovieClip.prototype, {
     /**

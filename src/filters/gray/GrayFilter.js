@@ -23,9 +23,7 @@ function GrayFilter()
     );
 }
 
-GrayFilter.prototype = Object.create(core.AbstractFilter.prototype);
-GrayFilter.prototype.constructor = GrayFilter;
-module.exports = GrayFilter;
+module.exports = core.AbstractFilter.extend(GrayFilter);
 
 Object.defineProperties(GrayFilter.prototype, {
     /**

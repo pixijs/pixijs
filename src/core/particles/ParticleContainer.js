@@ -110,9 +110,7 @@ function ParticleContainer(maxSize, properties, batchSize)
     this.setProperties(properties);
 }
 
-ParticleContainer.prototype = Object.create(Container.prototype);
-ParticleContainer.prototype.constructor = ParticleContainer;
-module.exports = ParticleContainer;
+module.exports = Container.extend(ParticleContainer);
 
 /**
  * Sets the private properties array to dynamic / static based on the passed properties object

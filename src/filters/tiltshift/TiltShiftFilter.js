@@ -22,9 +22,7 @@ function TiltShiftFilter()
     this.tiltShiftYFilter = new TiltShiftYFilter();
 }
 
-TiltShiftFilter.prototype = Object.create(core.AbstractFilter.prototype);
-TiltShiftFilter.prototype.constructor = TiltShiftFilter;
-module.exports = TiltShiftFilter;
+module.exports = core.AbstractFilter.extend(TiltShiftFilter);
 
 TiltShiftFilter.prototype.applyFilter = function (renderer, input, output)
 {

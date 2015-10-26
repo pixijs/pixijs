@@ -1,4 +1,5 @@
-var CONST = require('../../const');
+var CONST = require('../../const'),
+    utils = require('../../utils');
 
 /**
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
@@ -44,8 +45,7 @@ function Rectangle(x, y, width, height)
     this.type = CONST.SHAPES.RECT;
 }
 
-Rectangle.prototype.constructor = Rectangle;
-module.exports = Rectangle;
+module.exports = utils.extend(Rectangle);
 
 /**
  * A constant empty rectangle.

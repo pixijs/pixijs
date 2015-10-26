@@ -1,3 +1,5 @@
+var utils = require('../utils');
+
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -22,8 +24,7 @@ function Point(x, y)
     this.y = y || 0;
 }
 
-Point.prototype.constructor = Point;
-module.exports = Point;
+module.exports = utils.extend(Point);
 
 /**
  * Creates a clone of this point

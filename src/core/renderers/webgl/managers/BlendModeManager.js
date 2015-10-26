@@ -16,9 +16,7 @@ function BlendModeManager(renderer)
     this.currentBlendMode = 99999;
 }
 
-BlendModeManager.prototype = Object.create(WebGLManager.prototype);
-BlendModeManager.prototype.constructor = BlendModeManager;
-module.exports = BlendModeManager;
+module.exports = WebGLManager.extend(BlendModeManager);
 
 /**
  * Sets-up the given blendMode from WebGL's point of view.

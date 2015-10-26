@@ -60,10 +60,7 @@ function Rope(texture, points)
 }
 
 
-// constructor
-Rope.prototype = Object.create(Mesh.prototype);
-Rope.prototype.constructor = Rope;
-module.exports = Rope;
+module.exports = Mesh.extend(Rope);
 
 /**
  * Refreshes

@@ -70,7 +70,4 @@ function ParticleShader(shaderManager)
 
 }
 
-ParticleShader.prototype = Object.create(TextureShader.prototype);
-ParticleShader.prototype.constructor = ParticleShader;
-
-module.exports = ParticleShader;
+module.exports = TextureShader.extend(ParticleShader);

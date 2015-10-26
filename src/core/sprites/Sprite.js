@@ -94,10 +94,7 @@ function Sprite(texture)
     this.texture = texture || Texture.EMPTY;
 }
 
-// constructor
-Sprite.prototype = Object.create(Container.prototype);
-Sprite.prototype.constructor = Sprite;
-module.exports = Sprite;
+module.exports = Container.extend(Sprite);
 
 Object.defineProperties(Sprite.prototype, {
     /**

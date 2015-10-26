@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 /**
  * Creates a Canvas element of the given size.
  *
@@ -26,8 +28,7 @@ function CanvasBuffer(width, height)
     this.canvas.height = height;
 }
 
-CanvasBuffer.prototype.constructor = CanvasBuffer;
-module.exports = CanvasBuffer;
+module.exports = utils.extend(CanvasBuffer);
 
 Object.defineProperties(CanvasBuffer.prototype, {
     /**

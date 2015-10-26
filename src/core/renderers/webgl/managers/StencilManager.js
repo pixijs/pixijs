@@ -12,9 +12,7 @@ function WebGLMaskManager(renderer)
     this.stencilMaskStack = null;
 }
 
-WebGLMaskManager.prototype = Object.create(WebGLManager.prototype);
-WebGLMaskManager.prototype.constructor = WebGLMaskManager;
-module.exports = WebGLMaskManager;
+module.exports = WebGLManager.extend(WebGLMaskManager);
 
 /**
  * Changes the mask stack that is used by this manager.

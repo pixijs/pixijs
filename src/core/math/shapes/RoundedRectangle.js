@@ -1,4 +1,5 @@
-var CONST = require('../../const');
+var CONST = require('../../const'),
+    utils = require('../../utils');
 
 /**
  * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height and its radius.
@@ -51,8 +52,7 @@ function RoundedRectangle(x, y, width, height, radius)
     this.type = CONST.SHAPES.RREC;
 }
 
-RoundedRectangle.prototype.constructor = RoundedRectangle;
-module.exports = RoundedRectangle;
+module.exports = utils.extend(RoundedRectangle);
 
 /**
  * Creates a clone of this Rounded Rectangle

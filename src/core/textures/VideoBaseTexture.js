@@ -70,9 +70,7 @@ function VideoBaseTexture(source, scaleMode)
     this.__loaded = false;
 }
 
-VideoBaseTexture.prototype = Object.create(BaseTexture.prototype);
-VideoBaseTexture.prototype.constructor = VideoBaseTexture;
-module.exports = VideoBaseTexture;
+module.exports = BaseTexture.extend(VideoBaseTexture);
 
 /**
  * The internal update loop of the video base texture, only runs when autoUpdate is set to true

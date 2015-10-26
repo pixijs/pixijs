@@ -28,10 +28,7 @@ function Container()
     this.children = [];
 }
 
-// constructor
-Container.prototype = Object.create(DisplayObject.prototype);
-Container.prototype.constructor = Container;
-module.exports = Container;
+module.exports = DisplayObject.extend(Container);
 
 Object.defineProperties(Container.prototype, {
     /**
