@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 /**
  * Helper class to create a quad
  *
@@ -148,6 +150,4 @@ Quad.prototype.destroy = function()
      gl.deleteBuffer(this.indexBuffer);
 };
 
-module.exports = Quad;
-
-
+module.exports = utils.extend(Quad);

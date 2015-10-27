@@ -55,6 +55,4 @@ function ComplexPrimitiveShader(shaderManager)
     );
 }
 
-ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
-ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
-module.exports = ComplexPrimitiveShader;
+module.exports = Shader.extend(ComplexPrimitiveShader);

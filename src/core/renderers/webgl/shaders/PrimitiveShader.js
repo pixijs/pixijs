@@ -56,6 +56,4 @@ function PrimitiveShader(shaderManager)
     );
 }
 
-PrimitiveShader.prototype = Object.create(Shader.prototype);
-PrimitiveShader.prototype.constructor = PrimitiveShader;
-module.exports = PrimitiveShader;
+module.exports = Shader.extend(PrimitiveShader);

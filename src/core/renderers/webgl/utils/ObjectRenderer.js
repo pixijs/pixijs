@@ -13,10 +13,7 @@ function ObjectRenderer(renderer)
     WebGLManager.call(this, renderer);
 }
 
-
-ObjectRenderer.prototype = Object.create(WebGLManager.prototype);
-ObjectRenderer.prototype.constructor = ObjectRenderer;
-module.exports = ObjectRenderer;
+module.exports = WebGLManager.extend(ObjectRenderer);
 
 /**
  * Starts the renderer and sets the shader

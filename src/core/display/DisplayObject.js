@@ -1,4 +1,5 @@
 var math = require('../math'),
+    utils = require('../utils'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
@@ -150,10 +151,7 @@ function DisplayObject()
     this._mask = null;
 }
 
-// constructor
-DisplayObject.prototype = Object.create(EventEmitter.prototype);
-DisplayObject.prototype.constructor = DisplayObject;
-module.exports = DisplayObject;
+module.exports = utils.extend(DisplayObject, EventEmitter);
 
 Object.defineProperties(DisplayObject.prototype, {
     /**

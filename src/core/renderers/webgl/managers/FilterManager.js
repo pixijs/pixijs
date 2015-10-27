@@ -48,10 +48,7 @@ function FilterManager(renderer)
     this.currentFrame = null;
 }
 
-FilterManager.prototype = Object.create(WebGLManager.prototype);
-FilterManager.prototype.constructor = FilterManager;
-module.exports = FilterManager;
-
+module.exports = WebGLManager.extend(FilterManager);
 
 /**
  * Called when there is a WebGL context change.

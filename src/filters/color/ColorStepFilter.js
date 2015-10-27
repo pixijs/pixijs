@@ -23,9 +23,7 @@ function ColorStepFilter()
     );
 }
 
-ColorStepFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ColorStepFilter.prototype.constructor = ColorStepFilter;
-module.exports = ColorStepFilter;
+module.exports = core.AbstractFilter.extend(ColorStepFilter);
 
 Object.defineProperties(ColorStepFilter.prototype, {
     /**

@@ -25,9 +25,7 @@ function TwistFilter()
     );
 }
 
-TwistFilter.prototype = Object.create(core.AbstractFilter.prototype);
-TwistFilter.prototype.constructor = TwistFilter;
-module.exports = TwistFilter;
+module.exports = core.AbstractFilter.extend(TwistFilter);
 
 Object.defineProperties(TwistFilter.prototype, {
     /**

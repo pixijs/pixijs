@@ -158,10 +158,7 @@ function Graphics()
      */
 }
 
-// constructor
-Graphics.prototype = Object.create(Container.prototype);
-Graphics.prototype.constructor = Graphics;
-module.exports = Graphics;
+module.exports = Container.extend(Graphics);
 
 /**
  * Creates a new Graphics object with the same values as this one.

@@ -164,8 +164,8 @@ function InteractionManager(renderer, options)
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 }
 
-InteractionManager.prototype.constructor = InteractionManager;
-module.exports = InteractionManager;
+module.exports = core.utils.extend(InteractionManager);
+
 
 /**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have

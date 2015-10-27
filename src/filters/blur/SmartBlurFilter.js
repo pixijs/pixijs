@@ -23,6 +23,4 @@ function SmartBlurFilter()
     );
 }
 
-SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
-SmartBlurFilter.prototype.constructor = SmartBlurFilter;
-module.exports = SmartBlurFilter;
+module.exports = core.AbstractFilter.extend(SmartBlurFilter);

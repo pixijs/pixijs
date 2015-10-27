@@ -159,9 +159,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     this._updateUvs();
 }
 
-RenderTexture.prototype = Object.create(Texture.prototype);
-RenderTexture.prototype.constructor = RenderTexture;
-module.exports = RenderTexture;
+module.exports = Texture.extend(RenderTexture);
 
 /**
  * Resizes the RenderTexture.

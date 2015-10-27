@@ -33,9 +33,7 @@ function BlurXFilter()
     this.strength = 4;
 }
 
-BlurXFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurXFilter.prototype.constructor = BlurXFilter;
-module.exports = BlurXFilter;
+module.exports = core.AbstractFilter.extend(BlurXFilter);
 
 BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {

@@ -31,9 +31,7 @@ function DotScreenFilter()
     );
 }
 
-DotScreenFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DotScreenFilter.prototype.constructor = DotScreenFilter;
-module.exports = DotScreenFilter;
+module.exports = core.AbstractFilter.extend(DotScreenFilter);
 
 Object.defineProperties(DotScreenFilter.prototype, {
     /**

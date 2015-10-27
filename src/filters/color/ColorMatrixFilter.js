@@ -38,9 +38,7 @@ function ColorMatrixFilter()
     );
 }
 
-ColorMatrixFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ColorMatrixFilter.prototype.constructor = ColorMatrixFilter;
-module.exports = ColorMatrixFilter;
+module.exports = core.AbstractFilter.extend(ColorMatrixFilter);
 
 
 /**

@@ -29,9 +29,7 @@ function DropShadowFilter()
     this.blendMode = core.BLEND_MODES.MULTIPLY;
 }
 
-DropShadowFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DropShadowFilter.prototype.constructor = DropShadowFilter;
-module.exports = DropShadowFilter;
+module.exports = core.AbstractFilter.extend(DropShadowFilter);
 
 DropShadowFilter.prototype.applyFilter = function (renderer, input, output)
 {

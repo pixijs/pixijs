@@ -32,9 +32,7 @@ function FXAAFilter()
 
 }
 
-FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
-FXAAFilter.prototype.constructor = FXAAFilter;
-module.exports = FXAAFilter;
+module.exports = AbstractFilter.extend(FXAAFilter);
 
 /**
  * Applies the filter

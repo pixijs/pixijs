@@ -115,9 +115,7 @@ function SpriteRenderer(renderer)
     this.shader = null;
 }
 
-SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
-SpriteRenderer.prototype.constructor = SpriteRenderer;
-module.exports = SpriteRenderer;
+module.exports = ObjectRenderer.extend(SpriteRenderer);
 
 WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
 

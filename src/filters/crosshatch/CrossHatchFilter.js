@@ -19,6 +19,4 @@ function CrossHatchFilter()
     );
 }
 
-CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
-CrossHatchFilter.prototype.constructor = CrossHatchFilter;
-module.exports = CrossHatchFilter;
+module.exports = core.AbstractFilter.extend(CrossHatchFilter);

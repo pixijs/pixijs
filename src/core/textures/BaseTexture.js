@@ -160,9 +160,7 @@ function BaseTexture(source, scaleMode, resolution)
      */
 }
 
-BaseTexture.prototype = Object.create(EventEmitter.prototype);
-BaseTexture.prototype.constructor = BaseTexture;
-module.exports = BaseTexture;
+module.exports = utils.extend(BaseTexture, EventEmitter);
 
 /**
  * Updates the texture on all the webgl renderers, this also assumes the src has changed.

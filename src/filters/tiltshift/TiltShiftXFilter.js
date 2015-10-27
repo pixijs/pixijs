@@ -17,9 +17,7 @@ function TiltShiftXFilter()
     TiltShiftAxisFilter.call(this);
 }
 
-TiltShiftXFilter.prototype = Object.create(TiltShiftAxisFilter.prototype);
-TiltShiftXFilter.prototype.constructor = TiltShiftXFilter;
-module.exports = TiltShiftXFilter;
+module.exports = TiltShiftAxisFilter.extend(TiltShiftXFilter);
 
 /**
  * Updates the filter delta values.

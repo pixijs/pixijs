@@ -175,10 +175,7 @@ function SystemRenderer(system, width, height, options)
     this._lastObjectRendered = this._tempDisplayObjectParent;
 }
 
-// constructor
-SystemRenderer.prototype = Object.create(EventEmitter.prototype);
-SystemRenderer.prototype.constructor = SystemRenderer;
-module.exports = SystemRenderer;
+module.exports = utils.extend(SystemRenderer, EventEmitter);
 
 Object.defineProperties(SystemRenderer.prototype, {
     /**

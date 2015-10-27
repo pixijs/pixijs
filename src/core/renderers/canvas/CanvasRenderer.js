@@ -98,10 +98,7 @@ function CanvasRenderer(width, height, options)
     this.resize(width, height);
 }
 
-// constructor
-CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
-CanvasRenderer.prototype.constructor = CanvasRenderer;
-module.exports = CanvasRenderer;
+module.exports = SystemRenderer.extend(CanvasRenderer);
 utils.pluginTarget.mixin(CanvasRenderer);
 
 /**

@@ -60,10 +60,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
     Shader.call(this, shaderManager, vertexSrc, fragmentSrc, uniforms, attributes);
 }
 
-// constructor
-TextureShader.prototype = Object.create(Shader.prototype);
-TextureShader.prototype.constructor = TextureShader;
-module.exports = TextureShader;
+module.exports = Shader.extend(TextureShader);
 
 /**
  * The default vertex shader source
