@@ -108,11 +108,11 @@ Object.defineProperties(Text.prototype, {
                 this.updateText();
             }
 
-            return this.scale.x * this._texture._frame.width;
+            return this.scale.x * this._texture.width;
         },
         set: function (value)
         {
-            this.scale.x = value / this._texture._frame.width;
+            this.scale.x = value / this._texture.width;
             this._width = value;
         }
     },
@@ -131,11 +131,11 @@ Object.defineProperties(Text.prototype, {
                 this.updateText();
             }
 
-            return  this.scale.y * this._texture._frame.height;
+            return  this.scale.y * this._texture.height;
         },
         set: function (value)
         {
-            this.scale.y = value / this._texture._frame.height;
+            this.scale.y = value / this._texture.height;
             this._height = value;
         }
     },
@@ -373,9 +373,12 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.hasLoaded = true;
     texture.baseTexture.resolution = this.resolution;
+    
+    texture.baseTexture.realWidth = this.canvas.width;
+    texture.baseTexture.realHeight = this.canvas.height;
 
-    texture.baseTexture.width = this.canvas.width / this.resolution;
-    texture.baseTexture.height = this.canvas.height / this.resolution;
+    texture.width = texture.baseTexture.width = this.canvas.width / this.resolution;
+    texture.height = texture.baseTexture.height = this.canvas.height / this.resolution;
     texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
     texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
 
