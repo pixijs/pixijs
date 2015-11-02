@@ -84,6 +84,13 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
 
     // run texture setter;
     this.texture = texture;
+
+     /**
+     * The default shader that is used if a mesh doesn't have a more specific one.
+     *
+     * @member {PIXI.Shader}
+     */
+    this.shader = null;
 }
 
 // constructor
