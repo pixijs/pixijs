@@ -1,5 +1,6 @@
 var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/SpriteMaskFilter');
+    AlphaMaskFilter = require('../filters/SpriteMaskFilter'),
+    math =  require('../../../math');
 
 /**
  * @class
@@ -33,6 +34,9 @@ MaskManager.prototype.pushMask = function (target, maskData)
     {
         this.pushSpriteMask(target, maskData);
     }
+    else if (maskData instanceof math.Rectangle) {
+        this.pushScissorMask(target, maskData);
+    }
     else
     {
         this.pushStencilMask(target, maskData);
@@ -51,6 +55,9 @@ MaskManager.prototype.popMask = function (target, maskData)
     if (maskData.texture)
     {
         this.popSpriteMask(target, maskData);
+    }
+    else if (maskData instanceof math.Rectangle) {
+        this.popScissorMask(target, maskData);
     }
     else
     {
@@ -109,5 +116,27 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
 MaskManager.prototype.popStencilMask = function (target, maskData)
 {
     this.renderer.stencilManager.popMask(maskData);
+};
+
+/**
+ * Applies the Mask and adds it to the current filter stack.
+ *
+ * @param target {PIXI.RenderTarget}
+ * @param maskData {PIXI.Rectangle}
+ */
+MaskManager.prototype.pushScissorMask = function (target, maskData)
+{
+    this.renderer.scissorManager.pushMask(maskData);
+};
+
+/**
+ * Removes the last filter from the filter stack and doesn't return it.
+ *
+ * @param target {PIXI.RenderTarget}
+ * @param maskData {PIXI.Rectangle}
+ */
+MaskManager.prototype.popScissorMask = function (target, maskData)
+{
+    this.renderer.scissorManager.popMask(maskData);
 };
 
