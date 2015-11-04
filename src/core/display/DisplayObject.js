@@ -220,7 +220,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
      * To remove a mask, set this property to null.
      *
-     * @member {PIXI.Graphics|PIXI.Sprite}
+     * @member {PIXI.Graphics|PIXI.Sprite|PIXI.Rectangle}
      * @memberof PIXI.DisplayObject#
      */
     mask: {
