@@ -2,7 +2,8 @@ var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
     //StencilManager = require('../managers/StencilManager'),
-    StencilMaskStack = require('./StencilMaskStack');
+    StencilMaskStack = require('./StencilMaskStack'),
+    ScissorMaskStack = require('./ScissorMaskStack');
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -93,6 +94,13 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      * @member {PIXI.StencilMaskStack}
      */
     this.stencilMaskStack = new StencilMaskStack();
+
+    /**
+     * The data structure for the stencil masks
+     *
+     * @member {PIXI.ScissorMaskStack}
+     */
+    this.scissorMaskStack = new ScissorMaskStack();
 
     /**
      * Stores filter data for the render target
