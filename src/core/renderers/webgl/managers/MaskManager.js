@@ -37,6 +37,19 @@ MaskManager.prototype.pushMask = function (target, maskData)
     else if (maskData.type === CONST.SHAPES.RECT) {
         this.pushScissorMask(target, maskData);
     }
+    else if (maskData.graphicsData && maskData.graphicsData.length === 1) {
+        var graphicsData = maskData.graphicsData[0];
+        if (graphicsData.type === CONST.SHAPES.RECT && maskData.rotation === 0 &&
+            maskData.skew.x === 0 && maskData.skew.y === 0)
+        {
+            // The graphics object has no rotation or skew and only a single rectangle in it
+            this.pushScissorMask(target, graphicsData.shape);
+        }
+        else
+        {
+            this.pushStencilMask(target, maskData);
+        }
+    }
     else
     {
         this.pushStencilMask(target, maskData);
@@ -58,6 +71,19 @@ MaskManager.prototype.popMask = function (target, maskData)
     }
     else if (maskData.type === CONST.SHAPES.RECT) {
         this.popScissorMask(target, maskData);
+    }
+    else if (maskData.graphicsData && maskData.graphicsData.length === 1) {
+        var graphicsData = maskData.graphicsData[0];
+        if (graphicsData.type === CONST.SHAPES.RECT && maskData.rotation === 0 &&
+            maskData.skew.x === 0 && maskData.skew.y === 0)
+        {
+            // The graphics object has no rotation or skew and only a single rectangle in it
+            this.popScissorMask(target, graphicsData.shape);
+        }
+        else
+        {
+            this.popStencilMask(target, maskData);
+        }
     }
     else
     {
