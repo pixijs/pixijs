@@ -1,6 +1,6 @@
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter'),
-    math =  require('../../../math');
+    CONST = require('../../../const');
 
 /**
  * @class
@@ -34,7 +34,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
     {
         this.pushSpriteMask(target, maskData);
     }
-    else if (maskData instanceof math.Rectangle) {
+    else if (maskData.type === CONST.SHAPES.RECT) {
         this.pushScissorMask(target, maskData);
     }
     else
@@ -56,7 +56,7 @@ MaskManager.prototype.popMask = function (target, maskData)
     {
         this.popSpriteMask(target, maskData);
     }
-    else if (maskData instanceof math.Rectangle) {
+    else if (maskData.type === CONST.SHAPES.RECT) {
         this.popScissorMask(target, maskData);
     }
     else
