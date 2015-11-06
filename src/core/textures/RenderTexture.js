@@ -131,7 +131,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
-        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+        this.baseTexture._glTextures[gl.id] = this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
         this.filterManager = new FilterManager(this.renderer);
@@ -322,7 +322,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-    
+
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 
