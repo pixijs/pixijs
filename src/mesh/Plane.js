@@ -1,5 +1,4 @@
 var Mesh = require('./Mesh');
-var core = require('../core');
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -64,33 +63,34 @@ Plane.prototype.refresh = function()
 
     var segmentsXSub = this.segmentsX - 1;
     var segmentsYSub = this.segmentsY - 1;
+    var i = 0;
 
     // TODO MAP UVS..
     var sizeX = texture.width / segmentsXSub;
     var sizeY = texture.height / segmentsYSub;
 
-    for (var i = 0; i < total; i++) {
-    
-        var x = (i % this.segmentsX);
-        var y = ( (i / this.segmentsX ) | 0 )
+    for (i = 0; i < total; i++) {
 
-       
-        verts.push((x * sizeX), 
-                   (y * sizeY))
+        var x = (i % this.segmentsX);
+        var y = ( (i / this.segmentsX ) | 0 );
+
+
+        verts.push((x * sizeX),
+                   (y * sizeY));
 
         uvs.push(x / (this.segmentsX-1), y/ (this.segmentsY-1));
-    };
+    }
 
     //  cons
-    
+
     var totalSub = segmentsXSub * segmentsYSub;
 
-    for (var i = 0; i < totalSub; i++) {
-        
+    for (i = 0; i < totalSub; i++) {
+
         var xpos = i % segmentsXSub;
         var ypos = (i / segmentsXSub ) | 0;
 
-        
+
         var  value = (ypos * this.segmentsX) + xpos;
         var  value2 = (ypos * this.segmentsX) + xpos + 1;
         var  value3 = ((ypos+1) * this.segmentsX) + xpos;
@@ -106,7 +106,8 @@ Plane.prototype.refresh = function()
     this.uvs = new Float32Array(uvs);
     this.colors = new Float32Array(colors);
     this.indices = new Uint16Array(indices);
-}
+};
+
 /**
  * Clear texture UVs when new texture is set
  *
