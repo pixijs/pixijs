@@ -1,19 +1,31 @@
 var core = require('../core');
 //var InteractiveData = require('../interaction/InteractiveData');
 
+
+// add some extra variables to the container..
+Object.assign(
+    core.DisplayObject.prototype,
+    {
+    	accessible:false,
+    	accessibleTitle:null,
+    	tabIndex:0,
+    	_accessibleActive:false
+    }
+);
+
+
 /**
  * Holds all information related to an Interaction event
  *
  * @class
  * @memberof PIXI.interaction
  */
-function AccessibilityLayer(renderer)
+function AccessibilityManager(renderer)
 {
     var div = document.createElement('div');
     
     div.style.width = 100 + 'px';
     div.style.height = 100 + 'px';
-   // div.style.backgroundColor = '#FF0000'
     div.style.position = 'absolute';
     div.style.top = 0;
     div.style.left = 0;
@@ -40,10 +52,10 @@ function AccessibilityLayer(renderer)
 }
 
 
-AccessibilityLayer.prototype.constructor = AccessibilityLayer;
-module.exports = AccessibilityLayer;
+AccessibilityManager.prototype.constructor = AccessibilityManager;
+module.exports = AccessibilityManager;
 
-AccessibilityLayer.prototype.activate = function()
+AccessibilityManager.prototype.activate = function()
 {
 	if(this.isActive)return;
 	this.isActive = true;
@@ -56,11 +68,10 @@ AccessibilityLayer.prototype.activate = function()
 	document.body.appendChild(this.div);	
 }
 
-AccessibilityLayer.prototype.deactivate = function()
+AccessibilityManager.prototype.deactivate = function()
 {
 	if(!this.isActive)return;
 	this.isActive = false;
-
 
 	window.document.removeEventListener('mousemove', this._onMouseMove);
 	window.addEventListener('keydown', this._onKeyDown, false);
@@ -70,13 +81,13 @@ AccessibilityLayer.prototype.deactivate = function()
 	document.body.removeChild(this.div);
 }
 
-AccessibilityLayer.prototype.updateAccessibleObjects = function(item)
+AccessibilityManager.prototype.updateAccessibleObjects = function(item)
 {
 	if(!item.visible)return;
 
 	if(item.accessible)
 	{
-		if(!item.active)
+		if(!item._accessibleActive)
 		{
 			this.addChild(item);
 		}
@@ -92,7 +103,7 @@ AccessibilityLayer.prototype.updateAccessibleObjects = function(item)
 	};
 }
 
-AccessibilityLayer.prototype.update = function()
+AccessibilityManager.prototype.update = function()
 {
 
 	// update children...
@@ -114,7 +125,7 @@ AccessibilityLayer.prototype.update = function()
 
 		if(child.renderId != this.renderId)
 		{
-			child.active = false;
+			child._accessibleActive = false;
 
 			this.children.splice(i, 1);
 			this.div.removeChild( child.div );
@@ -160,7 +171,7 @@ AccessibilityLayer.prototype.update = function()
 	this.renderId++;
 }
 
-AccessibilityLayer.prototype.addChild = function(item)
+AccessibilityManager.prototype.addChild = function(item)
 {
 //	this.activate();
 	
@@ -177,54 +188,59 @@ AccessibilityLayer.prototype.addChild = function(item)
 	    div.style.zIndex = 2;
 	    div.style.borderStyle = 'none';
 
-	   	div.title = 'title' || 'item ' + this.tabIndex
 	    
 	    div.addEventListener('click', this._onClick.bind(this))
 	    div.addEventListener('focus', this._onFocus.bind(this))
 	    div.addEventListener('focusout', this._onFocusOut.bind(this))
 	}
+	   	
+
+
+
+	div.title = item.accessibleTitle || 'item ' + this.tabIndex
 
 	//
-	item.active = true;
-
+	
+	item._accessibleActive = true;
 	item.div = div;
 	div.item = item;
+
 
 	this.children.push(item);
 	this.div.appendChild( item.div );
 	item.div.tabIndex = item.tabIndex;
 }
 
-AccessibilityLayer.prototype._onClick = function(e)
+AccessibilityManager.prototype._onClick = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'click', interactionManager.eventData);
 }
 
-AccessibilityLayer.prototype._onFocus = function(e)
+AccessibilityManager.prototype._onFocus = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'mousedown', interactionManager.eventData);
 }
 
-AccessibilityLayer.prototype._onFocusOut = function(e)
+AccessibilityManager.prototype._onFocusOut = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'mouseup', interactionManager.eventData);
 }
 
-AccessibilityLayer.prototype._onKeyDown = function(e)
+AccessibilityManager.prototype._onKeyDown = function(e)
 {
 	if(e.keyCode !== 9)return;
 	this.activate();
 }
 
-AccessibilityLayer.prototype._onMouseMove = function()
+AccessibilityManager.prototype._onMouseMove = function()
 {
 	this.deactivate();
 }
 
 
-core.WebGLRenderer.registerPlugin('accessibility', AccessibilityLayer);
-core.CanvasRenderer.registerPlugin('accessibility', AccessibilityLayer);
+core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
+core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
