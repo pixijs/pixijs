@@ -1,6 +1,4 @@
 var core = require('../core');
-//var InteractiveData = require('../interaction/InteractiveData');
-
 
 // add some extra variables to the container..
 Object.assign(
@@ -9,19 +7,23 @@ Object.assign(
     	accessible:false,
     	accessibleTitle:null,
     	tabIndex:0,
-    	_accessibleActive:false
+    	_accessibleActive:false,
+    	_accessibleDiv:false
     }
 );
 
 
 /**
- * Holds all information related to an Interaction event
+ * The Accessibility manager reacreates the ability to tab and and have content read by screen readers. This is very important as it can possibly help people with disabilities access pixi content.
+ * Much like interaction any DisplayObject can be made accessible. This manager will map the events as if the mouse was being used, minimizing the efferot required to implement.
  *
  * @class
- * @memberof PIXI.interaction
+ * @memberof PIXI
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
  */
 function AccessibilityManager(renderer)
 {
+	// first we create a div that will sit over the pixi element. This is where the div overlays will go.
     var div = document.createElement('div');
     
     div.style.width = 100 + 'px';
@@ -30,24 +32,69 @@ function AccessibilityManager(renderer)
     div.style.top = 0;
     div.style.left = 0;
     div.style.zIndex = 2;
-
    	
- 	this.pool = [];
-
-   	this.renderId = 0;
+   	/**
+   	 * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
+   	 * 
+   	 * @type {HTMLElement}
+   	 * @private
+   	 */
    	this.div = div;
 
+   	/**
+   	 * A simple pool for storing divs.
+   	 * 
+   	 * @type {Array}
+   	 * @private
+   	 */
+ 	this.pool = [];
+
+ 	/**
+ 	 * This is a tick used to check if an object is no longer being rendered.
+ 	 * 
+ 	 * @type {Number}
+ 	 * @private
+ 	 */
+   	this.renderId = 0;
+
+   	/**
+   	 * Setting this to true will visually show the divs
+   	 * 
+   	 * @type {Boolean}
+   	 */
    	this.debug = false;
 
+  	/**
+     * The renderer this accessibility manager works for.
+     *
+     * @member {PIXI.SystemRenderer}
+     */
    	this.renderer = renderer;
 
+   	/**
+     * The array of currently active accessible items.
+     *
+     * @member {Array}
+     * @private
+     */
    	this.children = [];
    	
+   	/**
+     * pre bind the functions..
+     */
    	this._onKeyDown = this._onKeyDown.bind(this);
    	this._onMouseMove = this._onMouseMove.bind(this)
    	
+   	/**
+     * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
+     *
+     * @member {Array}
+     * @private
+     */
    	this.isActive = false;
 
+
+   	// let listen for tab.. once pressed we can fire up and show the accessibility layer
    	window.addEventListener('keydown', this._onKeyDown, false);
 }
 
@@ -55,6 +102,10 @@ function AccessibilityManager(renderer)
 AccessibilityManager.prototype.constructor = AccessibilityManager;
 module.exports = AccessibilityManager;
 
+/**
+ * Activating will cause the Accessibility layer to be shown. This is called when a user preses the tab key
+ * @private
+ */
 AccessibilityManager.prototype.activate = function()
 {
 	if(this.isActive)return;
@@ -68,6 +119,10 @@ AccessibilityManager.prototype.activate = function()
 	document.body.appendChild(this.div);	
 }
 
+/**
+ * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves the mouse
+ * @private
+ */
 AccessibilityManager.prototype.deactivate = function()
 {
 	if(!this.isActive)return;
@@ -81,21 +136,28 @@ AccessibilityManager.prototype.deactivate = function()
 	document.body.removeChild(this.div);
 }
 
-AccessibilityManager.prototype.updateAccessibleObjects = function(item)
-{
-	if(!item.visible)return;
+}
 
-	if(item.accessible)
+/**
+ * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
+ * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @private
+ */
+AccessibilityManager.prototype.updateAccessibleObjects = function(DisplayObject)
+{
+	if(!DisplayObject.visible)return;
+
+	if(DisplayObject.accessible)
 	{
-		if(!item._accessibleActive)
+		if(!DisplayObject._accessibleActive)
 		{
-			this.addChild(item);
+			this.addChild(DisplayObject);
 		}
 	   	
-	   	item.renderId = this.renderId;
+	   	DisplayObject.renderId = this.renderId;
 	}
 
-	var children = item.children;
+	var children = DisplayObject.children;
 
 	for (var i = children.length - 1; i >= 0; i--) {
 		
@@ -103,6 +165,11 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(item)
 	};
 }
 
+
+/**
+ * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects
+ * @private
+ */
 AccessibilityManager.prototype.update = function()
 {
 
@@ -128,9 +195,9 @@ AccessibilityManager.prototype.update = function()
 			child._accessibleActive = false;
 
 			this.children.splice(i, 1);
-			this.div.removeChild( child.div );
-			this.pool.push(child.div);
-			child.div = null;
+			this.div.removeChild( child._accessibleDiv );
+			this.pool.push(child._accessibleDiv);
+			child._accessibleDiv = null;
 
 			i--;
 
@@ -142,7 +209,7 @@ AccessibilityManager.prototype.update = function()
 		else
 		{
 			// map div to display..
-			var div = child.div;
+			var div = child._accessibleDiv;
 			var hitArea = child.hitArea
 			var wt = child.worldTransform;
 
@@ -168,10 +235,15 @@ AccessibilityManager.prototype.update = function()
 		}
 	};
 
+	// increment the render id..
 	this.renderId++;
 }
 
-AccessibilityManager.prototype.addChild = function(item)
+/**
+ * Adds a DisplayObject to the accessibility manager
+ * @private
+ */
+AccessibilityManager.prototype.addChild = function(displayObject)
 {
 //	this.activate();
 	
@@ -197,49 +269,95 @@ AccessibilityManager.prototype.addChild = function(item)
 
 
 
-	div.title = item.accessibleTitle || 'item ' + this.tabIndex
+	div.title = displayObject.accessibleTitle || 'displayObject ' + this.tabIndex
 
 	//
 	
-	item._accessibleActive = true;
-	item.div = div;
-	div.item = item;
+	displayObject._accessibleActive = true;
+	displayObject._accessibleDiv = div;
+	div.displayObject = displayObject;
 
 
-	this.children.push(item);
-	this.div.appendChild( item.div );
-	item.div.tabIndex = item.tabIndex;
+	this.children.push(displayObject);
+	this.div.appendChild( displayObject._accessibleDiv );
+	displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
 }
 
+
+/**
+ * Maps the div button press to pixi's InteractionManager (click)
+ * @private
+ */
 AccessibilityManager.prototype._onClick = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'click', interactionManager.eventData);
 }
 
+/**
+ * Maps the div focus events to pixis InteractionManager (mouseover)
+ * @private
+ */
 AccessibilityManager.prototype._onFocus = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'mouseover', interactionManager.eventData);
 }
 
+/**
+ * Maps the div focus events to pixis InteractionManager (mouseout)
+ * @private
+ */
 AccessibilityManager.prototype._onFocusOut = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
 	interactionManager.dispatchEvent(e.target.item, 'mouseout', interactionManager.eventData);
 }
 
+/**
+ * Is called when a key is pressed
+ *
+ * @private
+ */
 AccessibilityManager.prototype._onKeyDown = function(e)
 {
 	if(e.keyCode !== 9)return;
 	this.activate();
 }
 
+/**
+ * Is called when the mouse moves across the renderer element
+ *
+ * @private
+ */
 AccessibilityManager.prototype._onMouseMove = function()
 {
 	this.deactivate();
 }
 
+
+/**
+ * Destroys the accessibility manager
+ *
+ */
+AccessibilityManager.prototype.destroy = function () 
+{
+	this.div = null;
+
+	for (var i = 0; i < this.children.length; i++)
+	{
+		this.children[i].div = null;
+	}
+
+	
+	window.document.removeEventListener('mousemove', this._onMouseMove);
+	window.removeEventListener('keydown', this._onKeyDown);
+		
+	this.pool = null;
+	this.children = null;
+	this.renderer = null;
+
+}
 
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
