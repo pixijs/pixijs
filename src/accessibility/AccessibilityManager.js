@@ -220,13 +220,13 @@ AccessibilityManager.prototype._onClick = function(e)
 AccessibilityManager.prototype._onFocus = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
-	interactionManager.dispatchEvent(e.target.item, 'mousedown', interactionManager.eventData);
+	interactionManager.dispatchEvent(e.target.item, 'mouseover', interactionManager.eventData);
 }
 
 AccessibilityManager.prototype._onFocusOut = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
-	interactionManager.dispatchEvent(e.target.item, 'mouseup', interactionManager.eventData);
+	interactionManager.dispatchEvent(e.target.item, 'mouseout', interactionManager.eventData);
 }
 
 AccessibilityManager.prototype._onKeyDown = function(e)
