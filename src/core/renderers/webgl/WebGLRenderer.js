@@ -233,6 +233,9 @@ WebGLRenderer.prototype._initContext = function ()
  */
 WebGLRenderer.prototype.render = function (object)
 {
+
+    this.emit('prerender');
+
     // no point rendering if our context has been blown up!
     if (this.gl.isContextLost())
     {
@@ -279,6 +282,8 @@ WebGLRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.renderTarget);//this.projection);
+
+    this.emit('postrender');
 };
 
 /**
