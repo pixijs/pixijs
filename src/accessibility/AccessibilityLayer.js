@@ -195,9 +195,6 @@ AccessibilityLayer.prototype.addChild = function(item)
 	item.div.tabIndex = item.tabIndex;
 }
 
-core.WebGLRenderer.registerPlugin('accessibility', AccessibilityLayer);
-core.CanvasRenderer.registerPlugin('accessibility', AccessibilityLayer);
-
 AccessibilityLayer.prototype._onClick = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
@@ -226,3 +223,8 @@ AccessibilityLayer.prototype._onMouseMove = function()
 {
 	this.deactivate();
 }
+
+
+core.WebGLRenderer.registerPlugin('accessibility', AccessibilityLayer);
+core.CanvasRenderer.registerPlugin('accessibility', AccessibilityLayer);
+
