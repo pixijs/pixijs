@@ -31,6 +31,7 @@ function AccessibilityManager(renderer)
     div.style.position = 'absolute';
     div.style.top = 0;
     div.style.left = 0;
+   //
     div.style.zIndex = 2;
    	
    	/**
@@ -134,7 +135,6 @@ AccessibilityManager.prototype.deactivate = function()
 	this.renderer.off('postrender', this.update);
 
 	document.body.removeChild(this.div);
-}
 
 }
 
@@ -184,6 +184,8 @@ AccessibilityManager.prototype.update = function()
 
 	div.style.left = rect.left + 'px';
 	div.style.top = rect.top + 'px';
+	div.style.width = this.renderer.width + 'px';
+	div.style.height = this.renderer.height + 'px';
 
 	for (var i = 0; i < this.children.length; i++)
 	{
@@ -226,6 +228,8 @@ AccessibilityManager.prototype.update = function()
 			{
 				hitArea = child.getBounds();
 
+				this.capHitArea(hitArea);
+
 				div.style.left = (hitArea.x * sx) + 'px';
 				div.style.top =  (hitArea.y * sy) +  'px';
 
@@ -238,6 +242,32 @@ AccessibilityManager.prototype.update = function()
 	// increment the render id..
 	this.renderId++;
 }
+
+AccessibilityManager.prototype.capHitArea = function (hitArea)
+{
+    if (hitArea.x < 0)
+    {
+        hitArea.width += hitArea.x;
+        hitArea.x = 0;
+    }
+
+    if (hitArea.y < 0)
+    {
+        hitArea.height += hitArea.y;
+        hitArea.y = 0;
+    }
+
+    if ( hitArea.x + hitArea.width > this.renderer.width )
+    {
+        hitArea.width = this.renderer.width - hitArea.x;
+    }
+
+    if ( hitArea.y + hitArea.height > this.renderer.height )
+    {
+        hitArea.height = this.renderer.height - hitArea.y;
+    }
+};
+
 
 /**
  * Adds a DisplayObject to the accessibility manager
@@ -291,7 +321,7 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 AccessibilityManager.prototype._onClick = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
-	interactionManager.dispatchEvent(e.target.item, 'click', interactionManager.eventData);
+	interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
 }
 
 /**
@@ -301,7 +331,7 @@ AccessibilityManager.prototype._onClick = function(e)
 AccessibilityManager.prototype._onFocus = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
-	interactionManager.dispatchEvent(e.target.item, 'mouseover', interactionManager.eventData);
+	interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
 }
 
 /**
@@ -311,7 +341,7 @@ AccessibilityManager.prototype._onFocus = function(e)
 AccessibilityManager.prototype._onFocusOut = function(e)
 {
 	var interactionManager = this.renderer.plugins.interaction;
-	interactionManager.dispatchEvent(e.target.item, 'mouseout', interactionManager.eventData);
+	interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
 }
 
 /**
