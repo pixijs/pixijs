@@ -117,7 +117,7 @@ AccessibilityManager.prototype.activate = function()
 
 	this.renderer.on('postrender', this.update, this);
 
-	document.body.appendChild(this.div);	
+	this.renderer.view.parentNode.appendChild(this.div);	
 }
 
 /**
@@ -134,7 +134,7 @@ AccessibilityManager.prototype.deactivate = function()
 
 	this.renderer.off('postrender', this.update);
 
-	document.body.removeChild(this.div);
+	this.div.parentNode.removeChild(this.div);
 
 }
 
