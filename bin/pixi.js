@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.9-dev
- * Compiled 2015-10-21T22:04:26.470Z
+ * Compiled 2015-11-16T23:27:03.200Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6615,15 +6615,17 @@ DisplayObject.prototype.updateTransform = function ()
     {
         // I'm assuming that skewing is not going to be very common
         // With that in mind, we can do a full setTransform using the temp matrix
-        _tempMatrix.setTransform(this.position.x
-                                ,this.position.y
-                                ,this.pivot.x
-                                ,this.pivot.y
-                                ,this.scale.x
-                                ,this.scale.y
-                                ,this.rotation
-                                ,this.skew.x
-                                ,this.skew.y );
+        _tempMatrix.setTransform(
+            this.position.x,
+            this.position.y,
+            this.pivot.x,
+            this.pivot.y,
+            this.scale.x,
+            this.scale.y,
+            this.rotation,
+            this.skew.x,
+            this.skew.y
+        );
 
         // now concat the matrix (inlined so that we can avoid using copy)
         wt.a  = _tempMatrix.a  * pt.a + _tempMatrix.b  * pt.c;
@@ -6837,6 +6839,33 @@ DisplayObject.prototype.setParent = function (container)
 
     container.addChild(this);
     return container;
+};
+
+/**
+ * Convenience function to set the postion, scale, skew and pivot at once.
+ *
+ * @param [x=0] {number} The X position
+ * @param [y=0] {number} The Y position
+ * @param [scaleX=1] {number} The X scale value
+ * @param [scaleY=1] {number} The Y scale value
+ * @param [skewX=0] {number} The X skew value
+ * @param [skewY=0] {number} The Y skew value
+ * @param [pivotX=0] {number} The X pivot value
+ * @param [pivotY=0] {number} The Y pivot value
+ * @return {PIXI.DisplayObject}
+ */
+DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
+{
+    this.position.x = x || 0;
+    this.position.y = y || 0;
+    this.scale.x = !scaleX ? 1 : scaleX;
+    this.scale.y = !scaleY ? 1 : scaleY;
+    this.rotation = rotation || 0; 
+    this.skew.x = skewX || 0;
+    this.skew.y = skewY || 0;
+    this.pivot.x = pivotX || 0;
+    this.pivot.y = pivotY || 0;
+    return this;
 };
 
 /**
@@ -9255,6 +9284,10 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 });
 
 },{"./const":19,"./display/Container":20,"./display/DisplayObject":21,"./graphics/Graphics":22,"./graphics/GraphicsData":23,"./graphics/webgl/GraphicsRenderer":24,"./math":29,"./particles/ParticleContainer":35,"./particles/webgl/ParticleRenderer":37,"./renderers/canvas/CanvasRenderer":40,"./renderers/canvas/utils/CanvasBuffer":41,"./renderers/canvas/utils/CanvasGraphics":42,"./renderers/webgl/WebGLRenderer":45,"./renderers/webgl/filters/AbstractFilter":46,"./renderers/webgl/filters/FXAAFilter":47,"./renderers/webgl/filters/SpriteMaskFilter":48,"./renderers/webgl/managers/ShaderManager":52,"./renderers/webgl/shaders/Shader":57,"./renderers/webgl/utils/ObjectRenderer":59,"./renderers/webgl/utils/RenderTarget":61,"./sprites/Sprite":63,"./sprites/webgl/SpriteRenderer":64,"./text/Text":65,"./textures/BaseTexture":66,"./textures/RenderTexture":67,"./textures/Texture":68,"./textures/TextureUvs":69,"./textures/VideoBaseTexture":70,"./ticker":72,"./utils":73}],27:[function(require,module,exports){
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 var Point = require('./Point');
 
 /**
@@ -9341,7 +9374,7 @@ Matrix.prototype.fromArray = function (array)
  * @param {number} d
  * @param {number} tx
  * @param {number} ty
- * 
+ *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.set = function (a, b, c, d, tx, ty)
@@ -9353,7 +9386,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
     this.tx = tx;
     this.ty = ty;
 
-    return this
+    return this;
 };
 
 
@@ -9361,6 +9394,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
+ * @param [out] {Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -9540,12 +9574,12 @@ Matrix.prototype.append = function (matrix)
  * @param {number} rotation
  * @param {number} skewX
  * @param {number} skewY
- * 
+ *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
 {
-    var a, b, c, d, tx, ty, sr, cr;
+    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
 
     sr  = Math.sin(rotation);
     cr  = Math.cos(rotation);
@@ -11715,6 +11749,8 @@ utils.pluginTarget.mixin(CanvasRenderer);
  */
 CanvasRenderer.prototype.render = function (object)
 {
+    this.emit('prerender');
+
     var cacheParent = object.parent;
 
     this._lastObjectRendered = object;
@@ -11752,6 +11788,8 @@ CanvasRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.context);
+
+    this.emit('postrender');
 };
 
 /**
@@ -12787,6 +12825,9 @@ function WebGLRenderer(width, height, options)
     // map some webGL blend modes..
     this._mapGlModes();
 
+    // track textures in the renderer so we can no longer listen to them on destruction.
+    this._managedTextures = [];
+
     /**
      * An array of render targets
      * @member {PIXI.RenderTarget[]}
@@ -12866,6 +12907,9 @@ WebGLRenderer.prototype._initContext = function ()
  */
 WebGLRenderer.prototype.render = function (object)
 {
+
+    this.emit('prerender');
+
     // no point rendering if our context has been blown up!
     if (this.gl.isContextLost())
     {
@@ -12912,6 +12956,8 @@ WebGLRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.renderTarget);//this.projection);
+
+    this.emit('postrender');
 };
 
 /**
@@ -13018,6 +13064,7 @@ WebGLRenderer.prototype.updateTexture = function (texture)
         texture._glTextures[gl.id] = gl.createTexture();
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
+        this._managedTextures.push(texture);
     }
 
 
@@ -13058,7 +13105,7 @@ WebGLRenderer.prototype.updateTexture = function (texture)
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
  */
-WebGLRenderer.prototype.destroyTexture = function (texture)
+WebGLRenderer.prototype.destroyTexture = function (texture, _skipRemove)
 {
     texture = texture.baseTexture || texture;
 
@@ -13070,6 +13117,15 @@ WebGLRenderer.prototype.destroyTexture = function (texture)
     if (texture._glTextures[this.gl.id])
     {
         this.gl.deleteTexture(texture._glTextures[this.gl.id]);
+        delete texture._glTextures[this.gl.id];
+
+        if (!_skipRemove)
+        {
+            var i = this._managedTextures.indexOf(texture);
+            if (i !== -1) {
+                this._managedTextures.splice(i, 1);
+            }
+        }
     }
 };
 
@@ -13093,9 +13149,13 @@ WebGLRenderer.prototype.handleContextRestored = function ()
     this._initContext();
 
     // empty all the old gl textures as they are useless now
-    for (var key in utils.BaseTextureCache)
+    for (var i = 0; i < this._managedTextures.length; ++i)
     {
-        utils.BaseTextureCache[key]._glTextures.length = 0;
+        var texture = this._managedTextures[i];
+        if (texture._glTextures[this.gl.id])
+        {
+            delete texture._glTextures[this.gl.id];
+        }
     }
 };
 
@@ -13112,8 +13172,11 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
-    for (var key in utils.BaseTextureCache) {
-        var texture = utils.BaseTextureCache[key];
+    // destroy managed textures
+    for (var i = 0; i < this._managedTextures.length; ++i)
+    {
+        var texture = this._managedTextures[i];
+        this.destroyTexture(texture, true);
         texture.off('update', this.updateTexture, this);
         texture.off('dispose', this.destroyTexture, this);
     }
@@ -13140,6 +13203,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.handleContextRestored = null;
 
     this._contextOptions = null;
+
+    this._managedTextures = null;
 
     this.drawCount = 0;
 
@@ -16109,7 +16174,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.x = utils.sign(this.scale.x) * value / this.texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -16127,7 +16193,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.y = utils.sign(this.scale.y) * value / this.texture._frame.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture._frame.height;
             this._height = value;
         }
     },
@@ -17787,7 +17854,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = [];
+    this._glTextures = {};
 
     // if no source passed don't try to load
     if (source)
@@ -17998,7 +18065,8 @@ BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
 
-    this._glTextures.length = 0;
+    // this should no longer be needed, the renderers should cleanup all the gl textures.
+    // this._glTextures = {};
 };
 
 /**
@@ -18217,7 +18285,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
-        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+        this.baseTexture._glTextures[gl.id] = this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
         this.filterManager = new FilterManager(this.renderer);
@@ -18408,7 +18476,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-   
+
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 
@@ -18420,11 +18488,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
     this.renderer.resolution = realResolution;
 
-     displayObject.worldTransform = cachedWt;
-
- //   context.setTransform(1, 0, 0, 1, 0, 0);
-   // context.fillStyle ="#FF0000"
-//    context.fillRect(0, 0, 800, 600);
+    if(displayObject.worldTransform === wt)
+    {
+        // fixes cacheAsBitmap Happening during the above..
+        displayObject.worldTransform = cachedWt;
+    }
 
 };
 
@@ -20377,7 +20445,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":26,"./extras":82,"./filters":99,"./mesh":123}],76:[function(require,module,exports){
+},{"./core":26,"./extras":82,"./filters":99,"./mesh":124}],76:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24547,7 +24615,7 @@ global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./core":26,"./deprecation":75,"./extras":82,"./filters":99,"./interaction":114,"./loaders":117,"./mesh":123,"./polyfill":128}],112:[function(require,module,exports){
+},{"./core":26,"./deprecation":75,"./extras":82,"./filters":99,"./interaction":114,"./loaders":117,"./mesh":124,"./polyfill":129}],112:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25912,6 +25980,13 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
 
     // run texture setter;
     this.texture = texture;
+
+     /**
+     * The default shader that is used if a mesh doesn't have a more specific one.
+     *
+     * @member {PIXI.Shader}
+     */
+    this.shader = null;
 }
 
 // constructor
@@ -26296,6 +26371,132 @@ Mesh.DRAW_MODES = {
 
 },{"../core":26}],122:[function(require,module,exports){
 var Mesh = require('./Mesh');
+
+/**
+ * The Plane allows you to draw a texture across several points and them manipulate these points
+ *
+ *```js
+ * for (var i = 0; i < 20; i++) {
+ *     points.push(new PIXI.Point(i * 50, 0));
+ * };
+ * var Plane = new PIXI.Plane(PIXI.Texture.fromImage("snake.png"), points);
+ *  ```
+ *
+ * @class
+ * @extends PIXI.mesh.Mesh
+ * @memberof PIXI.mesh
+ * @param {PIXI.Texture} texture - The texture to use on the Plane.
+ * @param {int} segmentsX - The number ox x segments
+ * @param {int} segmentsY - The number of y segments
+ *
+ */
+function Plane(texture, segmentsX, segmentsY)
+{
+    Mesh.call(this, texture);
+
+    /**
+     * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can
+     * call _onTextureUpdated which could call refresh too early.
+     *
+     * @member {boolean}
+     * @private
+     */
+    this._ready = true;
+
+    this.segmentsX =  segmentsX || 10;
+    this.segmentsY = segmentsY || 10;
+
+    this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
+    this.refresh();
+
+}
+
+
+// constructor
+Plane.prototype = Object.create( Mesh.prototype );
+Plane.prototype.constructor = Plane;
+module.exports = Plane;
+
+/**
+ * Refreshes
+ *
+ */
+Plane.prototype.refresh = function()
+{
+    var total = this.segmentsX * this.segmentsY;
+    var verts = [];
+    var colors = [];
+    var uvs = [];
+    var indices = [];
+    var texture = this.texture;
+
+  //  texture.width = 800 texture.width || 800;
+ //   texture.height = 800//texture.height || 800;
+
+    var segmentsXSub = this.segmentsX - 1;
+    var segmentsYSub = this.segmentsY - 1;
+    var i = 0;
+
+    // TODO MAP UVS..
+    var sizeX = texture.width / segmentsXSub;
+    var sizeY = texture.height / segmentsYSub;
+
+    for (i = 0; i < total; i++) {
+
+        var x = (i % this.segmentsX);
+        var y = ( (i / this.segmentsX ) | 0 );
+
+
+        verts.push((x * sizeX),
+                   (y * sizeY));
+
+        uvs.push(x / (this.segmentsX-1), y/ (this.segmentsY-1));
+    }
+
+    //  cons
+
+    var totalSub = segmentsXSub * segmentsYSub;
+
+    for (i = 0; i < totalSub; i++) {
+
+        var xpos = i % segmentsXSub;
+        var ypos = (i / segmentsXSub ) | 0;
+
+
+        var  value = (ypos * this.segmentsX) + xpos;
+        var  value2 = (ypos * this.segmentsX) + xpos + 1;
+        var  value3 = ((ypos+1) * this.segmentsX) + xpos;
+        var  value4 = ((ypos+1) * this.segmentsX) + xpos + 1;
+
+        indices.push(value, value2, value3);
+        indices.push(value2, value4, value3);
+    }
+
+
+    //console.log(indices)
+    this.vertices = new Float32Array(verts);
+    this.uvs = new Float32Array(uvs);
+    this.colors = new Float32Array(colors);
+    this.indices = new Uint16Array(indices);
+};
+
+/**
+ * Clear texture UVs when new texture is set
+ *
+ * @private
+ */
+Plane.prototype._onTextureUpdate = function ()
+{
+    Mesh.prototype._onTextureUpdate.call(this);
+
+    // wait for the Plane ctor to finish before calling refresh
+    if (this._ready) {
+        this.refresh();
+    }
+};
+
+},{"./Mesh":121}],123:[function(require,module,exports){
+var Mesh = require('./Mesh');
 var core = require('../core');
 
 /**
@@ -26507,7 +26708,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":26,"./Mesh":121}],123:[function(require,module,exports){
+},{"../core":26,"./Mesh":121}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26520,12 +26721,13 @@ Rope.prototype.updateTransform = function ()
  */
 module.exports = {
     Mesh:           require('./Mesh'),
+    Plane:           require('./Plane'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":121,"./Rope":122,"./webgl/MeshRenderer":124,"./webgl/MeshShader":125}],124:[function(require,module,exports){
+},{"./Mesh":121,"./Plane":122,"./Rope":123,"./webgl/MeshRenderer":125,"./webgl/MeshShader":126}],125:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -26558,6 +26760,7 @@ function MeshRenderer(renderer)
      *
      * @member {Uint16Array}
      */
+    
     this.indices = new Uint16Array(15000);
 
     //TODO this could be a single buffer shared amongst all renderers as we reuse this set up in most renderers
@@ -26570,6 +26773,8 @@ function MeshRenderer(renderer)
         this.indices[i + 4] = j + 2;
         this.indices[i + 5] = j + 3;
     }
+
+    this.currentShader = null;
 }
 
 MeshRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
@@ -26604,18 +26809,29 @@ MeshRenderer.prototype.render = function (mesh)
     var renderer = this.renderer,
         gl = renderer.gl,
         texture = mesh._texture.baseTexture,
-        shader = renderer.shaderManager.plugins.meshShader;
+        shader = mesh.shader;// || renderer.shaderManager.plugins.meshShader;
 
     var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     renderer.blendModeManager.setBlendMode(mesh.blendMode);
 
+    //TODO cache custom state..
+    if (!shader)
+    {
+        shader = renderer.shaderManager.plugins.meshShader;
+    }
+    else
+    {
+        shader = shader.shaders[gl.id] || shader.getShader(renderer);// : shader;
+    }
 
-    // set uniforms
-    gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, mesh.worldTransform.toArray(true));
+    this.renderer.shaderManager.setShader(shader);
 
-    gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
-    gl.uniform1f(shader.uniforms.alpha._location, mesh.worldAlpha);
+    shader.uniforms.translationMatrix.value = mesh.worldTransform.toArray(true);
+    shader.uniforms.projectionMatrix.value = renderer.currentRenderTarget.projectionMatrix.toArray(true);
+    shader.uniforms.alpha.value = mesh.worldAlpha;
+
+    shader.syncUniforms();
 
     if (!mesh.dirty)
     {
@@ -26726,9 +26942,9 @@ MeshRenderer.prototype.flush = function ()
  */
 MeshRenderer.prototype.start = function ()
 {
-    var shader = this.renderer.shaderManager.plugins.meshShader;
+    
 
-    this.renderer.shaderManager.setShader(shader);
+    this.currentShader = null;
 };
 
 /**
@@ -26740,7 +26956,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":26,"../Mesh":121}],125:[function(require,module,exports){
+},{"../../core":26,"../Mesh":121}],126:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -26801,7 +27017,7 @@ module.exports = MeshShader;
 
 core.ShaderManager.registerPlugin('meshShader', MeshShader);
 
-},{"../../core":26}],126:[function(require,module,exports){
+},{"../../core":26}],127:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -26817,7 +27033,7 @@ if (!Math.sign)
     };
 }
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -26827,12 +27043,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":11}],128:[function(require,module,exports){
+},{"object-assign":11}],129:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":126,"./Object.assign":127,"./requestAnimationFrame":129}],129:[function(require,module,exports){
+},{"./Math.sign":127,"./Object.assign":128,"./requestAnimationFrame":130}],130:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
