@@ -517,6 +517,7 @@ DisplayObject.prototype.setParent = function (container)
  * @param [y=0] {number} The Y position
  * @param [scaleX=1] {number} The X scale value
  * @param [scaleY=1] {number} The Y scale value
+ * @param [rotation=0] {number} The rotation
  * @param [skewX=0] {number} The X skew value
  * @param [skewY=0] {number} The Y skew value
  * @param [pivotX=0] {number} The X pivot value
