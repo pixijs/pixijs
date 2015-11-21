@@ -21,6 +21,29 @@ var utils = module.exports = {
         return ++utils._uid;
     },
 
+
+    /**
+     * Remove one item from an array.
+     * Javascript's native array splice method is slow, and generates garbage.
+     *
+     * @param arr {Array} The array to remove the item from
+     * @param index {number} The index at which the item is removed
+     */
+    spliceOne: function (arr, index)
+    {
+        if (index >= arr.length)
+        {
+            return;
+        }
+
+        for (var i = index, len = arr.length - 1; i < len; i++)
+        {
+            arr[i] = arr[i + 1];
+        }
+
+        arr.length = len;
+    },
+
     /**
      * Converts a hex color number to an [R, G, B] array
      *
