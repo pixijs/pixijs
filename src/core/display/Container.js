@@ -1,4 +1,5 @@
 var math = require('../math'),
+    utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
     _tempMatrix = new math.Matrix();
@@ -233,8 +234,8 @@ Container.prototype.setChildIndex = function (child, index)
 
     var currentIndex = this.getChildIndex(child);
 
-    this.children.splice(currentIndex, 1); //remove from old position
-    this.children.splice(index, 0, child); //add at new position
+    utils.spliceOne(this.children, currentIndex); // remove from old position
+    this.children.splice(index, 0, child); // add at new position
     this.onChildrenChange(index);
 };
 
@@ -284,7 +285,7 @@ Container.prototype.removeChild = function (child)
         }
 
         child.parent = null;
-        this.children.splice(index, 1);
+        utils.spliceOne(this.children, index);
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
@@ -305,7 +306,7 @@ Container.prototype.removeChildAt = function (index)
     var child = this.getChildAt(index);
 
     child.parent = null;
-    this.children.splice(index, 1);
+    utils.spliceOne(this.children, index);
 
     // TODO - lets either do all callbacks or all events.. not both!
     this.onChildrenChange(index);
