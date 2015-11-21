@@ -201,7 +201,7 @@ AccessibilityManager.prototype.update = function()
 		{
 			child._accessibleActive = false;
 
-			this.children.splice(i, 1);
+			core.utils.spliceOne(this.children, i);
 			this.div.removeChild( child._accessibleDiv );
 			this.pool.push(child._accessibleDiv);
 			child._accessibleDiv = null;
