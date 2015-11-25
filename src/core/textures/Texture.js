@@ -250,6 +250,11 @@ Texture.prototype.destroy = function (destroyBase)
 {
     if (this.baseTexture)
     {
+        if (this.baseTexture.imageUrl)
+        {
+            delete utils.TextureCache[this.baseTexture.imageUrl];
+        }
+
         if (destroyBase)
         {
             this.baseTexture.destroy();
