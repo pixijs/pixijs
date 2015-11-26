@@ -317,7 +317,6 @@ BaseTexture.prototype.destroy = function ()
     if (this.imageUrl)
     {
         delete utils.BaseTextureCache[this.imageUrl];
-        delete utils.TextureCache[this.imageUrl];
 
         this.imageUrl = null;
 
