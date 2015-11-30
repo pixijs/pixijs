@@ -422,9 +422,10 @@ DisplayObject.prototype.toGlobal = function (position)
  *
  * @param position {PIXI.Point} The world origin to calculate from
  * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from)
+DisplayObject.prototype.toLocal = function (position, from, point)
 {
     if (from)
     {
@@ -446,7 +447,7 @@ DisplayObject.prototype.toLocal = function (position, from)
     }
 
     // simply apply the matrix..
-    return this.worldTransform.applyInverse(position);
+    return this.worldTransform.applyInverse(position, point);
 };
 
 /**
@@ -530,7 +531,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
     this.position.y = y || 0;
     this.scale.x = !scaleX ? 1 : scaleX;
     this.scale.y = !scaleY ? 1 : scaleY;
-    this.rotation = rotation || 0; 
+    this.rotation = rotation || 0;
     this.skew.x = skewX || 0;
     this.skew.y = skewY || 0;
     this.pivot.x = pivotX || 0;
@@ -549,7 +550,7 @@ DisplayObject.prototype.destroy = function ()
     this.scale = null;
     this.pivot = null;
     this.skew = null;
-    
+
     this.parent = null;
 
     this._bounds = null;
