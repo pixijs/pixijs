@@ -449,7 +449,7 @@ WebGLRenderer.prototype.destroyTexture = function (texture, _skipRemove)
         {
             var i = this._managedTextures.indexOf(texture);
             if (i !== -1) {
-                this._managedTextures.splice(i, 1);
+                utils.removeItems(this._managedTextures, i, 1);
             }
         }
     }
