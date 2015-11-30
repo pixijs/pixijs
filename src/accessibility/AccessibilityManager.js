@@ -145,24 +145,24 @@ AccessibilityManager.prototype.deactivate = function()
  * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
  * @private
  */
-AccessibilityManager.prototype.updateAccessibleObjects = function(DisplayObject)
+AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 {
-	if(!DisplayObject.visible)
+	if(!displayObject.visible)
 	{
 		return;
 	}
 
-	if(DisplayObject.accessible)
+	if(displayObject.accessible && displayObject.interactive)
 	{
-		if(!DisplayObject._accessibleActive)
+		if(!displayObject._accessibleActive)
 		{
-			this.addChild(DisplayObject);
+			this.addChild(displayObject);
 		}
 	   	
-	   	DisplayObject.renderId = this.renderId;
+	   	displayObject.renderId = this.renderId;
 	}
 
-	var children = DisplayObject.children;
+	var children = displayObject.children;
 
 	for (var i = children.length - 1; i >= 0; i--) {
 		
