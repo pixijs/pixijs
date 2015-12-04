@@ -261,8 +261,25 @@ Object.defineProperties(DisplayObject.prototype, {
         {
             this._filters = value && value.slice();
         }
-    }
+    },
 
+    /**
+     * Sets the filterBlendMode for displayObject
+     * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+     *
+     * @member {boolean}
+     * @memberof PIXI.DisplayObject#
+     */
+    filterBlendMode: {
+        get: function ()
+        {
+            return this._filterBlendMode || false;
+        },
+        set: function (value)
+        {
+            this._filterBlendMode = value;
+        }
+    }
 });
 
 /*

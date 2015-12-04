@@ -78,9 +78,10 @@ FilterManager.prototype.setFilterStack = function ( filterStack )
  * Applies the filter and adds it to the current filter stack.
  *
  * @param target {PIXI.DisplayObject}
- * @param filters {PIXI.AbstractFiler[]} the filters that will be pushed to the current filter stack
+ * @param filters {PIXI.AbstractFilter[]} the filters that will be pushed to the current filter stack
+ * @param blendMode {number} if specified, last filter will be applied with different blendMode
  */
-FilterManager.prototype.pushFilter = function (target, filters)
+FilterManager.prototype.pushFilter = function (target, filters, blendMode)
 {
     // get the bounds of the object..
     // TODO replace clone with a copy to save object creation
@@ -136,7 +137,8 @@ FilterManager.prototype.pushFilter = function (target, filters)
         // TODO get rid of object creation!
         this.filterStack.push({
             renderTarget: texture,
-            filter: filters
+            filter: filters,
+            blendMode: blendMode
         });
 
     }
@@ -145,7 +147,8 @@ FilterManager.prototype.pushFilter = function (target, filters)
         // push somthing on to the stack that is empty
         this.filterStack.push({
             renderTarget: null,
-            filter: filters
+            filter: filters,
+            blendMode: blendMode
         });
     }
 };
@@ -192,6 +195,14 @@ FilterManager.prototype.popFilter = function ()
 
     // restore the normal blendmode!
     this.renderer.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
+    // hack the blendMode
+    if (typeof filterData.blendMode == "number") {
+        this._hackBlendMode = filterData.blendMode;
+        this._hackBlendModeOutput = output;
+    } else {
+        this._hackBlendMode = false;
+        this._hackBlendModeOutput = null;
+    }
 
     if (filters.length === 1)
     {
@@ -301,6 +312,9 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
 */
+    if (outputTarget === this._hackBlendModeOutput) {
+        this.renderer.blendModeManager.setBlendMode(this._hackBlendMode);
+    }
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
@@ -434,9 +448,9 @@ FilterManager.prototype.resize = function ( width, height )
 FilterManager.prototype.destroy = function ()
 {
     this.quad.destroy();
-    
+
     WebGLManager.prototype.destroy.call(this);
-    
+
     this.filterStack = null;
     this.offsetY = 0;
 
