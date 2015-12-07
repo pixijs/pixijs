@@ -332,6 +332,17 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
  */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
+    if (this.interactionDOMElement.parentElement === null) {
+        // Fix for IE throwing an error on getBoundingClientRect of an off screen DOM element,
+        //  instead of returning a ClientRect object with default values, see:
+        //  https://connect.microsoft.com/IE/feedback/details/829392/calling-getboundingclientrect-on-an-html-element-that-has-not-been-added-to-the-dom-causes-unspecified-error
+        //  https://github.com/pixijs/pixi.js/issues/1963
+        //  https://github.com/pixijs/pixi.js/issues/1930
+        point.x = window.Infinity;
+        point.y = window.Infinity;
+        return;
+    }
+
     var rect = this.interactionDOMElement.getBoundingClientRect();
     point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
