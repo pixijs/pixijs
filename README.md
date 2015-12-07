@@ -183,7 +183,7 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 * Added optional outPoint parameters to toLocal() and toGlobal() on DisplayObject.
 * Added 'stageout', 'stagein', 'stagedown', 'stagemove', and 'stageup' events to InteractionManager.
 * Added 'handleCursorChange' property to InteractionManager as a callback to handle cursor changes instead of modifying the canvas's CSS.
-* Added PIXI.utils.useFilenamesForTextures, a boolean to globally use filenames for texture ids instead of the full url.
+* Added PIXI.utils.useFilenamesForTextures, a boolean to globally use filenames for texture ids instead of the full url. All Texture fetching respects this.
 * Destruction of a BaseTexture destroys all Textures in the texture dictionary that reference that BaseTexture.
 * Made 'width' and 'height' properties on Container overrideable.
 
