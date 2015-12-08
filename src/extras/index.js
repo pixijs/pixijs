@@ -8,6 +8,7 @@
 require('./cacheAsBitmap');
 require('./getChildByName');
 require('./getGlobalPosition');
+require('./optimizeUpdateTransform');
 
 /**
  * @namespace PIXI.extras

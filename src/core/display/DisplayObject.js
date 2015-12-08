@@ -140,6 +140,8 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    this._transformDirty = true;
 }
 
 // constructor
@@ -148,6 +150,16 @@ DisplayObject.prototype.constructor = DisplayObject;
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {
+    transformDirty: {
+        get: function()
+        {
+            return this._transformDirty;
+        },
+        set: function(value)
+        {
+            this._transformDirty = value;
+        }
+    },
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
@@ -161,6 +173,8 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
+            if(value === this.position.x) return;
+            this.transformDirty = true;
             this.position.x = value;
         }
     },
@@ -178,6 +192,8 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
+            if(value === this.position.y) return;
+            this.transformDirty = true;
             this.position.y = value;
         }
     },
