@@ -216,24 +216,27 @@ SpriteRenderer.prototype.render = function (sprite)
 
     if (this.renderer.roundPixels)
     {
-        // xy
-        positions[index] = a * w1 + c * h1 + tx | 0;
-        positions[index+1] = d * h1 + b * w1 + ty | 0;
+        var resolution = this.renderer.resolution;
 
         // xy
-        positions[index+5] = a * w0 + c * h1 + tx | 0;
-        positions[index+6] = d * h1 + b * w0 + ty | 0;
+        positions[index] = (((a * w1 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+1] = (((d * h1 + b * w1 + ty) * resolution) | 0) / resolution;
+
+        // xy
+        positions[index+5] = (((a * w0 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+6] = (((d * h1 + b * w0 + ty) * resolution) | 0) / resolution;
 
          // xy
-        positions[index+10] = a * w0 + c * h0 + tx | 0;
-        positions[index+11] = d * h0 + b * w0 + ty | 0;
+        positions[index+10] = (((a * w0 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+11] = (((d * h0 + b * w0 + ty) * resolution) | 0) / resolution;
 
         // xy
-        positions[index+15] = a * w1 + c * h0 + tx | 0;
-        positions[index+16] = d * h0 + b * w1 + ty | 0;
+        positions[index+15] = (((a * w1 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+16] = (((d * h0 + b * w1 + ty) * resolution) | 0) / resolution;
     }
     else
     {
+
         // xy
         positions[index] = a * w1 + c * h1 + tx;
         positions[index+1] = d * h1 + b * w1 + ty;
