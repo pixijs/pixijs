@@ -1,3 +1,5 @@
+// Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
+
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
 var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
 var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
@@ -66,7 +68,7 @@ var GroupD8 = {
     N: 6,
     NE: 7,
     MIRROR_VERTICAL: 8,
-    MIRROR_HORIZONTAL: 10,
+    MIRROR_HORIZONTAL: 12,
     uX: function (ind) {
         return ux[ind];
     },
@@ -91,9 +93,19 @@ var GroupD8 = {
     sub: function (rotationSecond, rotationFirst) {
         return mul[rotationSecond][GroupD8.inv(rotationFirst)];
     },
+    /**
+     * Adds 180 degrees to rotation. Commutative operation
+     * @param rotation
+     * @returns {number}
+     */
     rotate180: function (rotation) {
-        return rotation ^ 8;
+        return rotation ^ 4;
     },
+    /**
+     * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
+     * @param rotation
+     * @returns {boolean}
+     */
     isSwapWidthHeight: function(rotation) {
         return (rotation & 3) === 2;
     },

@@ -29,7 +29,7 @@ var GroupD8 = require('../math/GroupD8');
  * Sets the texture Uvs based on the given frame information
  * @param frame {PIXI.Rectangle}
  * @param baseFrame {PIXI.Rectangle}
- * @param rotate {int} Rotation of frame, see {@link PIXI.GroupD8}
+ * @param rotate {number} Rotation of frame, see {@link PIXI.GroupD8}
  * @private
  */
 TextureUvs.prototype.set = function (frame, baseFrame, rotate)
