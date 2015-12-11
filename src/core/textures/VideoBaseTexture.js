@@ -54,6 +54,14 @@ function VideoBaseTexture(source, scaleMode)
      */
     this.autoUpdate = false;
 
+    /**
+     * Should video automatically played on "onCanPlay" event
+     *
+     * @member {boolean}
+     * @default true
+     */
+    this.autoPlay = true;
+
     this._onUpdate = this._onUpdate.bind(this);
     this._onCanPlay = this._onCanPlay.bind(this);
 
@@ -129,7 +137,10 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
 
-        this.source.play();
+        if (this.autoPlay) 
+        {
+            this.source.play();
+        }
 
         // prevent multiple loaded dispatches..
         if (!this.__loaded)
