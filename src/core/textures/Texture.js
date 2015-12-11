@@ -116,10 +116,8 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this._rotate = +(rotate || 0);
 
     if (rotate === true) {
-        // this is old texturepacker legacy, some games/libraries are passing "true" or 1 for rotated textures
+        // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
         this._rotate = 2;
-    } else if (this.rotate % 2 !== 0) {
-        throw 'Texture rotation must be divisible by 2';
     }
 
     if (baseTexture.hasLoaded)
