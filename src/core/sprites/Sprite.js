@@ -4,7 +4,9 @@ var math = require('../math'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    GroupD8 = math.GroupD8,
+    canvasRenderWorldTransform = new math.Matrix();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -266,7 +268,7 @@ Sprite.prototype.getBounds = function (matrix)
         else
         {
         */
-       
+
         var x1 = a * w1 + c * h1 + tx;
         var y1 = d * h1 + b * w1 + ty;
 
@@ -412,45 +414,25 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
+        //texture can be rotated, that's serious!
+        var swapWidthHeight = GroupD8.isSwapWidthHeight(texture.rotate);
+        width = swapWidthHeight ? texture.crop.height : texture.crop.width;
+        height = swapWidthHeight ? texture.crop.width : texture.crop.height;
+
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
+        dx = (texture.trim) ? texture.trim.x - (this.anchor.x - 0.5) * texture.trim.width : (this.anchor.x - 0.5) * -texture._frame.width;
+        dy = (texture.trim) ? texture.trim.y - (this.anchor.y - 0.5) * texture.trim.height : (this.anchor.y - 0.5) * -texture._frame.height;
 
-        if(texture.rotate)
-        {
-            width = texture.crop.height;
-            height = texture.crop.width;
-
-            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-       
-            dx += width;
-
-            wt.tx = dy * wt.a + dx * wt.c + wt.tx;
-            wt.ty = dy * wt.b + dx * wt.d + wt.ty;
-
-            var temp = wt.a;
-            wt.a  = -wt.c;
-            wt.c  =  temp;
-
-            temp = wt.b;
-            wt.b  = -wt.d;
-            wt.d  =  temp;
-
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.appendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
-
         }
-        else
-        {
-            width = texture.crop.width;
-            height = texture.crop.height;
-
-            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-        }
-
-
-
+        dx -= width/2;
+        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
