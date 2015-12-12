@@ -118,6 +118,10 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     if (rotate === true) {
         // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
         this._rotate = 2;
+    } else {
+        if (this._rotate % 2 != 0) {
+            throw "attempt to use diamond-shaped UVs. If you are sure, set rotation manually";
+        }
     }
 
     if (baseTexture.hasLoaded)
