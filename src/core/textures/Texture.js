@@ -359,17 +359,18 @@ Texture.fromCanvas = function (canvas, scaleMode)
  * @static
  * @param video {HTMLVideoElement}
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
  * @return {PIXI.Texture} A Texture
  */
-Texture.fromVideo = function (video, scaleMode)
+Texture.fromVideo = function (video, scaleMode, autoPlay)
 {
     if (typeof video === 'string')
     {
-        return Texture.fromVideoUrl(video, scaleMode);
+        return Texture.fromVideoUrl(video, scaleMode, autoPlay);
     }
     else
     {
-        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode, autoPlay));
     }
 };
 
@@ -379,11 +380,12 @@ Texture.fromVideo = function (video, scaleMode)
  * @static
  * @param videoUrl {string}
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
  * @return {PIXI.Texture} A Texture
  */
-Texture.fromVideoUrl = function (videoUrl, scaleMode)
+Texture.fromVideoUrl = function (videoUrl, scaleMode, autoPlay)
 {
-    return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
+    return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode, autoPlay));
 };
 
 /**
