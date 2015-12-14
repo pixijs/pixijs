@@ -36,7 +36,7 @@
     "eventemitter3": "^1.1.1",
     "gulp-header": "^1.7.1",
     "object-assign": "^4.0.1",
-    "resource-loader": "^1.6.2"
+    "resource-loader": "^1.6.3"
   },
   "devDependencies": {
     "browserify": "^11.1.0",
