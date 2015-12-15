@@ -368,6 +368,12 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     var hit = false,
         interactiveParent = interactive = displayObject.interactive || interactive;
 
+    // if the displayobject has a hitArea, then it does not need to hitTest children.
+    if(displayObject.hitArea)
+    {
+        interactiveParent = false;
+    }
+
     // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
     // This will allow pixi to completly ignore and bypass checking the displayObjects children.
     if(displayObject.interactiveChildren)
