@@ -1,7 +1,7 @@
 /**
  * @license
- * pixi.js - v3.0.9
- * Compiled 2015-12-22T18:28:46.266Z
+ * pixi.js - v3.0.10-dev
+ * Compiled 2015-12-22T18:30:00.648Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3933,7 +3933,7 @@ module.exports = Object.assign || function (target, source) {
 },{}],12:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.9",
+  "version": "3.0.10-dev",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
