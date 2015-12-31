@@ -46,6 +46,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
+    WebGLManager:          require('./renderers/webgl/managers/WebGLManager'),
     ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),

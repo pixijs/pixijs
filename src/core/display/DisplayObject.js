@@ -542,7 +542,7 @@ DisplayObject.prototype.setParent = function (container)
  * @param [pivotY=0] {number} The Y pivot value
  * @return {PIXI.DisplayObject}
  */
-DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
+DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
 {
     this.position.x = x || 0;
     this.position.y = y || 0;

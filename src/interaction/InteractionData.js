@@ -43,5 +43,5 @@ module.exports = InteractionData;
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
-    return displayObject.toLocal(globalPos || this.global, null, point);
+    return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
