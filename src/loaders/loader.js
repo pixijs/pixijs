@@ -28,7 +28,9 @@ var ResourceLoader = require('resource-loader'),
 function Loader(baseUrl, concurrency)
 {
     ResourceLoader.call(this, baseUrl, concurrency);
-
+    // create textures before they are loaded, special for dynamic images
+    this.before(textureParser());
+    // pixi middlewares, defined below
     for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
         this.use(Loader._pixiMiddleware[i]());
     }
@@ -42,7 +44,6 @@ module.exports = Loader;
 Loader._pixiMiddleware = [
     // parse any blob into more usable objects (e.g. Image)
     ResourceLoader.middleware.parsing.blob,
-    // parse any Image objects into textures
     textureParser,
     // parse any spritesheet data into multiple textures
     spritesheetParser,
