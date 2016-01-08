@@ -385,6 +385,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             //Tests if the child is in the hitArea
             if(children[i].parent.hitArea)
             {
+                displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                 if(!displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y)) continue;
             }
             
