@@ -19,6 +19,13 @@ function TextureUvs()
 
     this.x3 = 0;
     this.y3 = 1;
+
+    this.xy0_uint32 = 0;
+    this.xy1_uint32 = 0;
+    this.xy2_uint32 = 0;
+    this.xy3_uint32 = 0;
+
+    this.uvs_uint32 = new Uint32Array(4)
 }
 
 module.exports = TextureUvs;
@@ -64,4 +71,9 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
         this.x3 = frame.x / tw;
         this.y3 = (frame.y + frame.height) / th;
     }
+
+    this.uvs_uint32[0] = (((this.y0 * 65535) & 0xFFFF) << 16) | ((this.x0 * 65535) & 0xFFFF);
+    this.uvs_uint32[1] = (((this.y1 * 65535) & 0xFFFF) << 16) | ((this.x1 * 65535) & 0xFFFF);
+    this.uvs_uint32[2] = (((this.y2 * 65535) & 0xFFFF) << 16) | ((this.x2 * 65535) & 0xFFFF);
+    this.uvs_uint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
