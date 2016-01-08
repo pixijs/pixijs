@@ -305,12 +305,12 @@ SpriteRenderer.prototype.flush = function ()
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
       //  gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
-        this.vertexBuffer.upload(this.vertices);
+        this.vertexBuffer.upload(this.vertices, 0, true);
     }
     else
     {
         var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
-        this.vertexBuffer.upload(view);
+        this.vertexBuffer.upload(view, 0, true);
     }
 
     var nextTexture, nextBlendMode, nextShader;
@@ -368,10 +368,10 @@ SpriteRenderer.prototype.flush = function ()
                 // set shader function???
  //               this.renderer.shaderManager.setShader(shader);
 
-                this._shader.bind();
+                this.renderer.bindShader(this._shader);
               
                 //gl.enableVertexAttribArray(1);
-                this._shader.uniforms.projectionMatrix = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
+                //this._shader.uniforms.projectionMatrix = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
               
                 //TODO - i KNOW this can be optimised! Once v3 is stable il look at this next...
         //        shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
@@ -380,7 +380,7 @@ SpriteRenderer.prototype.flush = function ()
 
                 //TODO investigate some kind of texture state managment??
                 // need to make sure this texture is the active one for all the batch swaps..
-                gl.activeTexture(gl.TEXTURE0);
+         //       gl.activeTexture(gl.TEXTURE0);
 
             }
         }

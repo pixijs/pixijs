@@ -162,7 +162,9 @@ function WebGLRenderer(width, height, options)
      */
     this._renderTargetStack = [];
 
-
+    this._activShader = null;
+    this._activeTextureLocation = null;
+    this._activeTexture = null;
 }
 
 // constructor
@@ -373,6 +375,21 @@ WebGLRenderer.prototype.resize = function (width, height)
         this.gl.viewport(0, 0, this.width, this.height);
     }
 };
+
+WebGLRenderer.prototype.bindShader = function (shader)//projection, buffer)
+{
+    //TODO cache
+    if(this._activShader !== shader)
+    {
+        this._activShader = shader;
+
+        shader.bind();
+
+        // automatically set the projection matrix
+        shader.uniforms.projectionMatrix = this.currentRenderTarget.projectionMatrix.toArray(true);
+    }
+}
+
 
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
