@@ -7,6 +7,7 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     FXAAFilter = require('./filters/FXAAFilter'),
+    TextureManager = require('./TextureManager'),
     utils = require('../../utils'),
     CONST = require('../../const');
 
@@ -160,6 +161,8 @@ function WebGLRenderer(width, height, options)
      * @private
      */
     this._renderTargetStack = [];
+
+
 }
 
 // constructor
@@ -224,6 +227,8 @@ WebGLRenderer.prototype._initContext = function ()
         window.console.warn('FXAA antialiasing being used instead of native antialiasing');
         this._FXAAFilter = [new FXAAFilter()];
     }
+
+    this.textureManager = new TextureManager(gl);
 };
 
 /**
@@ -368,6 +373,37 @@ WebGLRenderer.prototype.resize = function (width, height)
         this.gl.viewport(0, 0, this.width, this.height);
     }
 };
+
+WebGLRenderer.prototype.bindTexture = function (texture, location)
+{
+    var gl = this.gl;
+
+    //TODO test perf of cache?
+    location = location || gl.TEXTURE0;
+
+    if(this._activeTextureLocation !== location)//
+    {
+        this._activeTextureLocation = location
+        gl.activeTexture(location || gl.TEXTURE0);
+    }
+
+    //TODO - can we cache this texture too?
+    if (!texture._glTextures[gl.id])
+    {
+        this.textureManager.updateTexture(texture);
+    }
+    else
+    {
+        if(this._activeTexture !== texture)
+        {
+            this._activeTexture = texture;
+            
+            // bind the current texture
+            texture._glTextures[gl.id].bind();
+        }
+    }
+}
+
 
 /**
  * Updates and/or Creates a WebGL texture for the renderer's context.

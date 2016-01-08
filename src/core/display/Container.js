@@ -397,6 +397,8 @@ Container.prototype.updateTransform = function ()
     {
         this.children[i].updateTransform();
     }
+
+    this.dirty = false;
 };
 
 // performance increase to avoid using call.. (10x faster)

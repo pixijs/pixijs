@@ -52,7 +52,7 @@ function DisplayObject()
      *
      * @member {number}
      */
-    this.rotation = 0;
+    this._rotation = 0;
 
     /**
      * The opacity of the object.
@@ -100,6 +100,8 @@ function DisplayObject()
      * @readOnly
      */
     this.worldTransform = new math.Matrix();
+    this.localTransform = new math.Matrix();
+
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation
@@ -148,6 +150,8 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    this.dirty = true;
 }
 
 // constructor
@@ -170,6 +174,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.position.x = value;
+            this.dirty = true;
         }
     },
 
@@ -187,6 +192,69 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.position.y = value;
+            this.dirty = true;
+        }
+    },
+
+    scaleX: {
+        get: function ()
+        {
+            return this.scale.x;
+        },
+        set: function (value)
+        {
+            this.scale.x = value;
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.DisplayObject#
+     */
+    scaleY: {
+        get: function ()
+        {
+            return this.scale.y;
+        },
+        set: function (value)
+        {
+            this.scale.y = value;
+            this.dirty = true;
+        }
+    },
+
+    rotation: {
+        get: function ()
+        {
+            return this._rotation;
+        },
+        set: function (value)
+        {
+            this._rotation = value;
+            this.dirty = true;
+            this._sr = Math.sin(value);
+            this._cr = Math.cos(value);
+        }
+    },
+
+    /**
+     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.DisplayObject#
+     */
+    scaleY: {
+        get: function ()
+        {
+            return this.scale.y;
+        },
+        set: function (value)
+        {
+            this.scale.y = value;
+            this.dirty = true;
         }
     },
 
@@ -272,90 +340,30 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
+    var lt = this.localTransform;
 
-    // temporary matrix variables
-    var a, b, c, d, tx, ty;
-
-    // looks like we are skewing
-    if(this.skew.x || this.skew.y)
+    if(this.dirty)
     {
-        // I'm assuming that skewing is not going to be very common
-        // With that in mind, we can do a full setTransform using the temp matrix
-        _tempMatrix.setTransform(
-            this.position.x,
-            this.position.y,
-            this.pivot.x,
-            this.pivot.y,
-            this.scale.x,
-            this.scale.y,
-            this.rotation,
-            this.skew.x,
-            this.skew.y
-        );
-
-        // now concat the matrix (inlined so that we can avoid using copy)
-        wt.a  = _tempMatrix.a  * pt.a + _tempMatrix.b  * pt.c;
-        wt.b  = _tempMatrix.a  * pt.b + _tempMatrix.b  * pt.d;
-        wt.c  = _tempMatrix.c  * pt.a + _tempMatrix.d  * pt.c;
-        wt.d  = _tempMatrix.c  * pt.b + _tempMatrix.d  * pt.d;
-        wt.tx = _tempMatrix.tx * pt.a + _tempMatrix.ty * pt.c + pt.tx;
-        wt.ty = _tempMatrix.tx * pt.b + _tempMatrix.ty * pt.d + pt.ty;
+        // get the matrix values of the displayobject based on its transform properties..
+        lt.a  =  this._cr * this.scale.x;
+        lt.b  =  this._sr * this.scale.x;
+        lt.c  = -this._sr * this.scale.y;
+        lt.d  =  this._cr * this.scale.y;
+        lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
+        lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
     }
-    else
-    {
-        // so if rotation is between 0 then we can simplify the multiplication process...
-        if (this.rotation % CONST.PI_2)
-        {
-            // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-            if (this.rotation !== this.rotationCache)
-            {
-                this.rotationCache = this.rotation;
-                this._sr = Math.sin(this.rotation);
-                this._cr = Math.cos(this.rotation);
-            }
 
-            // get the matrix values of the displayobject based on its transform properties..
-            a  =  this._cr * this.scale.x;
-            b  =  this._sr * this.scale.x;
-            c  = -this._sr * this.scale.y;
-            d  =  this._cr * this.scale.y;
-            tx =  this.position.x;
-            ty =  this.position.y;
-
-            // check for pivot.. not often used so geared towards that fact!
-            if (this.pivot.x || this.pivot.y)
-            {
-                tx -= this.pivot.x * a + this.pivot.y * c;
-                ty -= this.pivot.x * b + this.pivot.y * d;
-            }
-
-            // concat the parent matrix with the objects transform.
-            wt.a  = a  * pt.a + b  * pt.c;
-            wt.b  = a  * pt.b + b  * pt.d;
-            wt.c  = c  * pt.a + d  * pt.c;
-            wt.d  = c  * pt.b + d  * pt.d;
-            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
-        }
-        else
-        {
-            // lets do the fast version as we know there is no rotation..
-            a  = this.scale.x;
-            d  = this.scale.y;
-
-            tx = this.position.x - this.pivot.x * a;
-            ty = this.position.y - this.pivot.y * d;
-
-            wt.a  = a  * pt.a;
-            wt.b  = a  * pt.b;
-            wt.c  = d  * pt.c;
-            wt.d  = d  * pt.d;
-            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
-        }
+    if(this.dirty || this.parent.dirty)
+    {      
+        // concat the parent matrix with the objects transform.
+        wt.a  = lt.a  * pt.a + lt.b  * pt.c;
+        wt.b  = lt.a  * pt.b + lt.b  * pt.d;
+        wt.c  = lt.c  * pt.a + lt.d  * pt.c;
+        wt.d  = lt.c  * pt.b + lt.d  * pt.d;
+        wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
+        wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;       
     }
 
     // multiply the alphas..

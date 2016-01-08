@@ -35,6 +35,7 @@
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
     "object-assign": "^4.0.1",
+    "pixi-gl-core": "git+https://github.com/GoodBoyDigital/pixi-gl-core.git",
     "resource-loader": "^1.6.4"
   },
   "devDependencies": {
