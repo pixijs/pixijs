@@ -364,13 +364,15 @@ DisplayObject.prototype.updateTransform = function ()
         wt.d  = lt.c  * pt.b + lt.d  * pt.d;
         wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
         wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;       
+    
+        this._currentBounds = null;
     }
 
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     // reset the bounds each time this is called!
-    this._currentBounds = null;
+    
 };
 
 // performance increase to avoid using call.. (10x faster)

@@ -187,9 +187,8 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
-
     this.textureDirty = true;
-    
+
     // so if _width is 0 then width was not set..
     if (this._width)
     {
@@ -209,28 +208,26 @@ Sprite.prototype.caclulateVertices = function ()
         wt = this.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
-        aX = this.anchor.x,
-        aY = this.anchor.y,
         w0, w1, h0, h1,
         trim = texture.trim;
     
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - aX * trim.width;
+        w1 = trim.x - this.anchor.x * trim.width;
         w0 = w1 + texture.crop.width;
 
-        h1 = trim.y - aY * trim.height;
+        h1 = trim.y - this.anchor.y * trim.height;
         h0 = h1 + texture.crop.height;
 
     }
     else
     {
-        w0 = (texture._frame.width ) * (1-aX);
-        w1 = (texture._frame.width ) * -aX;
+        w0 = (texture._frame.width ) * (1-this.anchor.x);
+        w1 = (texture._frame.width ) * -this.anchor.x;
 
-        h0 = texture._frame.height * (1-aY);
-        h1 = texture._frame.height * -aY;
+        h0 = texture._frame.height * (1-this.anchor.y);
+        h1 = texture._frame.height * -this.anchor.y;
     }
 
     // xy
@@ -293,67 +290,32 @@ Sprite.prototype.getBounds = function (matrix)
 {
     if(!this._currentBounds)
     {
+        if(this.vertexDirty)
+        {
+            this.vertexDirty = false;
 
-        var width = this._texture._frame.width;
-        var height = this._texture._frame.height;
+            // set the vertex data
+            this.caclulateVertices();
 
-        var w0 = width * (1-this.anchor.x);
-        var w1 = width * -this.anchor.x;
-
-        var h0 = height * (1-this.anchor.y);
-        var h1 = height * -this.anchor.y;
-
-        var worldTransform = matrix || this.worldTransform ;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
+        }
 
         var minX,
             maxX,
             minY,
-            maxY;
+            maxY,
+            vertexData = this.vertexData;
 
-        //TODO - I am SURE this can be optimised, but the below is not accurate enough..
-        /*
-        if (b === 0 && c === 0)
-        {
-            // scale may be negative!
-            if (a < 0)
-            {
-                a *= -1;
-            }
+        var x1 = vertexData[0]
+        var y1 = vertexData[1]
 
-            if (d < 0)
-            {
-                d *= -1;
-            }
+        var x2 = vertexData[2]
+        var y2 = vertexData[3]
 
-            // this means there is no rotation going on right? RIGHT?
-            // if thats the case then we can avoid checking the bound values! yay
-            minX = a * w1 + tx;
-            maxX = a * w0 + tx;
-            minY = d * h1 + ty;
-            maxY = d * h0 + ty;
-        }
-        else
-        {
-        */
-       
-        var x1 = a * w1 + c * h1 + tx;
-        var y1 = d * h1 + b * w1 + ty;
+        var x3 = vertexData[4]
+        var y3 = vertexData[5]
 
-        var x2 = a * w0 + c * h1 + tx;
-        var y2 = d * h1 + b * w0 + ty;
-
-        var x3 = a * w0 + c * h0 + tx;
-        var y3 = d * h0 + b * w0 + ty;
-
-        var x4 =  a * w1 + c * h0 + tx;
-        var y4 =  d * h0 + b * w1 + ty;
+        var x4 = vertexData[6]
+        var y4 = vertexData[7]
 
         minX = x1;
         minX = x2 < minX ? x2 : minX;
@@ -374,8 +336,6 @@ Sprite.prototype.getBounds = function (matrix)
         maxY = y2 > maxY ? y2 : maxY;
         maxY = y3 > maxY ? y3 : maxY;
         maxY = y4 > maxY ? y4 : maxY;
-
-        //}
 
         // check for children
         if(this.children.length)
