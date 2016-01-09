@@ -92,7 +92,7 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-
+    this.textureDirty = true
     this.vertexDirty = true;
     this.vertexData = new Float32Array(8);
 }
@@ -187,6 +187,9 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
+
+    this.textureDirty = true;
+    
     // so if _width is 0 then width was not set..
     if (this._width)
     {
@@ -258,7 +261,7 @@ Sprite.prototype.caclulateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-   // if(this.textureDirty)
+    if(this.textureDirty)
     {
         this.textureDirty = false;
 
@@ -267,7 +270,7 @@ Sprite.prototype._renderWebGL = function (renderer)
         this.vertexDirty = true;
     }
 
-    //if(this.vertexDirty)
+    if(this.vertexDirty)
     {
         this.vertexDirty = false;
 
