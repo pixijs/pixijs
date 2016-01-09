@@ -92,6 +92,9 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
+
+    this.vertexDirty = true;
+    this.vertexData = new Float32Array(8);
 }
 
 // constructor
@@ -159,6 +162,8 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
+            this.textureDirty = true;
+
             if (value)
             {
                 // wait for the texture to load
@@ -194,6 +199,56 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
+Sprite.prototype.caclulateVertices = function ()
+{
+
+    var texture = this._texture,
+        wt = this.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        vertexData = this.vertexData,
+        aX = this.anchor.x,
+        aY = this.anchor.y,
+        w0, w1, h0, h1,
+        trim = texture.trim;
+    
+    if (trim)
+    {
+        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+        w1 = trim.x - aX * trim.width;
+        w0 = w1 + texture.crop.width;
+
+        h1 = trim.y - aY * trim.height;
+        h0 = h1 + texture.crop.height;
+
+    }
+    else
+    {
+        w0 = (texture._frame.width ) * (1-aX);
+        w1 = (texture._frame.width ) * -aX;
+
+        h0 = texture._frame.height * (1-aY);
+        h1 = texture._frame.height * -aY;
+    }
+
+    // xy
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
+
+     // xy
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
+
+
+}
+
 /**
 *
 * Renders the object using the WebGL renderer
@@ -203,6 +258,24 @@ Sprite.prototype._onTextureUpdate = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
+   // if(this.textureDirty)
+    {
+        this.textureDirty = false;
+
+        this._onTextureUpdate();
+        
+        this.vertexDirty = true;
+    }
+
+    //if(this.vertexDirty)
+    {
+        this.vertexDirty = false;
+
+        // set the vertex data
+        this.caclulateVertices();
+
+    }
+    
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };

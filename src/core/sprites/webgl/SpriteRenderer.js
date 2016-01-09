@@ -1,6 +1,7 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     TextureShader = require('../../renderers/webgl/shaders/_TextureShader'),
+    createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     CONST = require('../../const'),
     glCore = require('pixi-gl-core');
 
@@ -71,6 +72,11 @@ function SpriteRenderer(renderer)
      */
     this.positions = new Float32Array(this.vertices);
     
+    /**
+     * View on the vertices as a Uint32Array for uvs
+     *
+     * @member {Float32Array}
+     */
     this.uvs = new Uint32Array(this.vertices);
 
     /**
@@ -85,18 +91,7 @@ function SpriteRenderer(renderer)
      *
      * @member {Uint16Array}
      */
-    this.indices = new Uint16Array(numIndices);
-
-    // fill the indices with the quads to draw
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
-    {
-        this.indices[i + 0] = j + 0;
-        this.indices[i + 1] = j + 1;
-        this.indices[i + 2] = j + 2;
-        this.indices[i + 3] = j + 0;
-        this.indices[i + 4] = j + 2;
-        this.indices[i + 5] = j + 3;
-    }
+    this.indices = createIndicesForQuads(this.size)
 
     /**
      * The current size of the batch, each render() call adds to this number.
@@ -153,8 +148,6 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4);
     this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
-    
-
     this.currentBlendMode = 99999;
 };
 
@@ -165,8 +158,6 @@ SpriteRenderer.prototype.onContextChange = function ()
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
-    var texture = sprite._texture;
-
     //TODO set blend modes..
     // check texture..
     if (this.currentBatchSize >= this.size)
@@ -175,7 +166,7 @@ SpriteRenderer.prototype.render = function (sprite)
     }
 
     // get the uvs for the texture
-    var uvs = texture._uvs;
+    var uvs = sprite.texture._uvs;
 
     // if the uvs have not updated then no point rendering just yet!
     if (!uvs)
@@ -184,93 +175,28 @@ SpriteRenderer.prototype.render = function (sprite)
     }
 
     // TODO trim??
-    var aX = sprite.anchor.x;
-    var aY = sprite.anchor.y;
-
-    var w0, w1, h0, h1;
-
-    if (texture.trim && sprite.tileScale === undefined)
-    {
-        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        var trim = texture.trim;
-
-        w1 = trim.x - aX * trim.width;
-        w0 = w1 + texture.crop.width;
-
-        h1 = trim.y - aY * trim.height;
-        h0 = h1 + texture.crop.height;
-
-    }
-    else
-    {
-        w0 = (texture._frame.width ) * (1-aX);
-        w1 = (texture._frame.width ) * -aX;
-
-        h0 = texture._frame.height * (1-aY);
-        h1 = texture._frame.height * -aY;
-    }
-
     var index = this.currentBatchSize * this.vertByteSize;
-
-    var worldTransform = sprite.worldTransform;
-
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
-
- /*   var a = worldTransform[0];
-    var b = worldTransform[];
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;*/
 
     var colors = this.colors;
     var positions = this.positions;
 
-    if (this.renderer.roundPixels)
-    {
-        
-        var resolution = this.renderer.resolution;
-      // console.log("<>")
-        // xy
-        positions[index] = (((a * w1 + c * h1 + tx) * resolution) | 0) / resolution;
-        positions[index+1] = (((d * h1 + b * w1 + ty) * resolution) | 0) / resolution;
+    var vertexData = sprite.vertexData
 
-        // xy
-        positions[index+5] = (((a * w0 + c * h1 + tx) * resolution) | 0) / resolution;
-        positions[index+6] = (((d * h1 + b * w0 + ty) * resolution) | 0) / resolution;
+    positions[index] = vertexData[0];
+    positions[index+1] = vertexData[1];
 
-         // xy
-        positions[index+10] = (((a * w0 + c * h0 + tx) * resolution) | 0) / resolution;
-        positions[index+11] = (((d * h0 + b * w0 + ty) * resolution) | 0) / resolution;
+    // xy
+    positions[index+4] = vertexData[2];
+    positions[index+5] = vertexData[3];
 
-        // xy
-        positions[index+15] = (((a * w1 + c * h0 + tx) * resolution) | 0) / resolution;
-        positions[index+16] = (((d * h0 + b * w1 + ty) * resolution) | 0) / resolution;
-        
-    }
-    else
-    {
-        // xy
-        positions[index] = a * w1 + c * h1 + tx;
-        positions[index+1] = d * h1 + b * w1 + ty;
+     // xy
+    positions[index+8] = vertexData[4];
+    positions[index+9] = vertexData[5];
 
-        // xy
-        positions[index+4] = a * w0 + c * h1 + tx;
-        positions[index+5] = d * h1 + b * w0 + ty;
-
-         // xy
-        positions[index+8] = a * w0 + c * h0 + tx;
-        positions[index+9] = d * h0 + b * w0 + ty;
-
-        // xy
-        positions[index+12] = a * w1 + c * h0 + tx;
-        positions[index+13] = d * h0 + b * w1 + ty;
-    }
+    // xy
+    positions[index+12] = vertexData[6];
+    positions[index+13] = vertexData[7];
+    
 
     // upload som uvs!
     this.uvs[index + 2] = uvs.uvs_uint32[0];
@@ -285,6 +211,14 @@ SpriteRenderer.prototype.render = function (sprite)
     // increment the batchsize
     this.sprites[this.currentBatchSize++] = sprite;
 };
+
+SpriteRenderer.prototype.renderSprites = function (sprites)
+{
+    for (var i = 0; i < sprites.length; i++) 
+    {
+        sprites[i]
+    };
+}
 
 /**
  * Renders the content and empties the current batch.
@@ -355,8 +289,6 @@ SpriteRenderer.prototype.flush = function ()
             {
                 currentShader = nextShader;
 
-
-
                 shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
 
                 if (!shader)
@@ -365,23 +297,7 @@ SpriteRenderer.prototype.flush = function ()
 
                 }
 
-                // set shader function???
- //               this.renderer.shaderManager.setShader(shader);
-
                 this.renderer.bindShader(this._shader);
-              
-                //gl.enableVertexAttribArray(1);
-                //this._shader.uniforms.projectionMatrix = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
-              
-                //TODO - i KNOW this can be optimised! Once v3 is stable il look at this next...
-        //        shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
-                //Make this a little more dynamic / intelligent!
-          //      shader.syncUniforms();
-
-                //TODO investigate some kind of texture state managment??
-                // need to make sure this texture is the active one for all the batch swaps..
-         //       gl.activeTexture(gl.TEXTURE0);
-
             }
         }
 
@@ -411,7 +327,9 @@ SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
 
     var gl = this.renderer.gl;
 
-    this.renderer.bindTexture(texture);
+    // bind the texture..
+    this.renderer.bindTexture(texture, gl.TEXTURE0);
+    
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
 };

@@ -372,7 +372,7 @@ WebGLRenderer.prototype.resize = function (width, height)
     if(this.currentRenderTarget === this.renderTarget)
     {
         this.renderTarget.activate();
-        this.gl.viewport(0, 0, this.width, this.height);
+        //this.gl.viewport(0, 0, this.width, this.height);
     }
 };
 

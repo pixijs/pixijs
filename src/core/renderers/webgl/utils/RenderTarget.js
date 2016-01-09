@@ -1,7 +1,10 @@
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
-    //StencilManager = require('../managers/StencilManager'),
+        
+    GLTexture = require('pixi-gl-core').GLTexture,
+    GLFramebuffer = require('pixi-gl-core').GLFramebuffer,
+    
     StencilMaskStack = require('./StencilMaskStack');
 
 /**
@@ -124,42 +127,31 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
+    this.frameBuffer = new GLFramebuffer(gl);
+
     if (!this.root)
     {
-       // this.flipY = true;
-        this.frameBuffer = gl.createFramebuffer();
-
         /*
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
          */
+        
+        // create a texture to bind attach to the frameBuffer..
+        var texture = new GLTexture(gl);
 
-        this.texture = gl.createTexture();
+        texture.enableLinearScaling()
+        texture.enableWrapClamp()
 
-        gl.bindTexture(gl.TEXTURE_2D,  this.texture);
+        this.frameBuffer.enableTexture(texture);
 
-        // set the scale properties of the texture..
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        // check to see if the texture is a power of two!
-        var isPowerOfTwo = utils.isPowerOfTwo(width, height);
-
-        //TODO for 99% of use cases if a texture is power of two we should tile the texture...
-         if (!isPowerOfTwo)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+        // TODO change!
+        // this is used by the base texture
+        this.texture = texture.texture;
+    }
+    else
+    {
+        // make it a null framebuffer..
+        this.frameBuffer.framebuffer = null;
     }
 
     this.resize(width, height);
@@ -173,16 +165,9 @@ module.exports = RenderTarget;
  *
  * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
  */
-RenderTarget.prototype.clear = function(bind)
+RenderTarget.prototype.clear = function(r,g,b,a)
 {
-    var gl = this.gl;
-    if(bind)
-    {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-    }
-
-    gl.clearColor(0,0,0,0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    this.frameBuffer.clear(1,1,1,1)//r,g,b,a);
 };
 
 /**
@@ -191,24 +176,14 @@ RenderTarget.prototype.clear = function(bind)
  */
 RenderTarget.prototype.attachStencilBuffer = function()
 {
-
-    if (this.stencilBuffer)
-    {
-        return;
-    }
-
+    //TODO check if stencil is done?
     /**
      * The stencil buffer is used for masking in pixi
      * lets create one and then add attach it to the framebuffer..
      */
     if (!this.root)
     {
-        var gl = this.gl;
-
-        this.stencilBuffer = gl.createRenderbuffer();
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.size.width * this.resolution  , this.size.height * this.resolution );
+        this.frameBuffer.enableStencil();
     }
 };
 
@@ -221,7 +196,8 @@ RenderTarget.prototype.activate = function()
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+    this.frameBuffer.bind();
+
 
     var projectionFrame = this.frame || this.size;
 
@@ -264,7 +240,6 @@ RenderTarget.prototype.calculateProjection = function (projectionFrame)
     }
 };
 
-
 /**
  * Resizes the texture to the specified width and height
  *
@@ -276,29 +251,16 @@ RenderTarget.prototype.resize = function (width, height)
     width = width | 0;
     height = height | 0;
 
-    if (this.size.width === width && this.size.height === height) {
+    if (this.size.width === width && this.size.height === height) 
+    {
         return;
     }
 
     this.size.width = width;
     this.size.height = height;
 
-    if (!this.root)
-    {
-        var gl = this.gl;
-
-        gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width * this.resolution, height * this.resolution , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-        if (this.stencilBuffer )
-        {
-            // update the stencil buffer width and height
-            gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width * this.resolution, height * this.resolution );
-        }
-    }
-
+    this.frameBuffer.resize(width * this.resolution, height * this.resolution);
+    
     var projectionFrame = this.frame || this.size;
 
     this.calculateProjection( projectionFrame );
@@ -311,9 +273,8 @@ RenderTarget.prototype.resize = function (width, height)
 RenderTarget.prototype.destroy = function ()
 {
     var gl = this.gl;
-    gl.deleteRenderbuffer( this.stencilBuffer );
-    gl.deleteFramebuffer( this.frameBuffer );
-    gl.deleteTexture( this.texture );
+    
+    this.frameBuffer.destroy();
 
     this.frameBuffer = null;
     this.texture = null;
