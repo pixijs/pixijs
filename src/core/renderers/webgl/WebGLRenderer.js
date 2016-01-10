@@ -2,6 +2,7 @@ var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
+    ScissorManager = require('./managers/ScissorManager'),
     FilterManager = require('./managers/FilterManager'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
@@ -112,6 +113,13 @@ function WebGLRenderer(width, height, options)
      * @member {PIXI.StencilManager}
      */
     this.stencilManager = new StencilManager(this);
+
+    /**
+     * Manages the scissor state.
+     *
+     * @member {PIXI.ScissorManager}
+     */
+    this.scissorManager = new ScissorManager(this);
 
     /**
      * Manages the filters.
@@ -346,6 +354,7 @@ WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
     this.currentRenderTarget = renderTarget;
     this.currentRenderTarget.activate();
     this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
+    this.scissorManager.setMaskStack( renderTarget.scissorMaskStack );
 };
 
 
@@ -516,11 +525,13 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.shaderManager.destroy();
     this.maskManager.destroy();
     this.stencilManager.destroy();
+    this.scissorManager.destroy();
     this.filterManager.destroy();
     this.blendModeManager.destroy();
 
     this.shaderManager = null;
     this.maskManager = null;
+    this.scissorManager = null;
     this.filterManager = null;
     this.blendModeManager = null;
     this.currentRenderer = null;

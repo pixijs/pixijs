@@ -1,5 +1,6 @@
 var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/SpriteMaskFilter');
+    AlphaMaskFilter = require('../filters/SpriteMaskFilter'),
+    CONST = require('../../../const');
 
 /**
  * @class
@@ -33,6 +34,22 @@ MaskManager.prototype.pushMask = function (target, maskData)
     {
         this.pushSpriteMask(target, maskData);
     }
+    else if (maskData.type === CONST.SHAPES.RECT) {
+        this.pushScissorMask(target, maskData);
+    }
+    else if (maskData.graphicsData && maskData.graphicsData.length === 1) {
+        var graphicsData = maskData.graphicsData[0];
+        if (graphicsData.type === CONST.SHAPES.RECT && maskData.rotation === 0 &&
+            maskData.skew.x === 0 && maskData.skew.y === 0)
+        {
+            // The graphics object has no rotation or skew and only a single rectangle in it
+            this.pushScissorMask(target, graphicsData.shape);
+        }
+        else
+        {
+            this.pushStencilMask(target, maskData);
+        }
+    }
     else
     {
         this.pushStencilMask(target, maskData);
@@ -51,6 +68,22 @@ MaskManager.prototype.popMask = function (target, maskData)
     if (maskData.texture)
     {
         this.popSpriteMask(target, maskData);
+    }
+    else if (maskData.type === CONST.SHAPES.RECT) {
+        this.popScissorMask(target, maskData);
+    }
+    else if (maskData.graphicsData && maskData.graphicsData.length === 1) {
+        var graphicsData = maskData.graphicsData[0];
+        if (graphicsData.type === CONST.SHAPES.RECT && maskData.rotation === 0 &&
+            maskData.skew.x === 0 && maskData.skew.y === 0)
+        {
+            // The graphics object has no rotation or skew and only a single rectangle in it
+            this.popScissorMask(target, graphicsData.shape);
+        }
+        else
+        {
+            this.popStencilMask(target, maskData);
+        }
     }
     else
     {
@@ -109,5 +142,27 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
 MaskManager.prototype.popStencilMask = function (target, maskData)
 {
     this.renderer.stencilManager.popMask(maskData);
+};
+
+/**
+ * Applies the Mask and adds it to the current filter stack.
+ *
+ * @param target {PIXI.RenderTarget}
+ * @param maskData {PIXI.Rectangle}
+ */
+MaskManager.prototype.pushScissorMask = function (target, maskData)
+{
+    this.renderer.scissorManager.pushMask(maskData);
+};
+
+/**
+ * Removes the last filter from the filter stack and doesn't return it.
+ *
+ * @param target {PIXI.RenderTarget}
+ * @param maskData {PIXI.Rectangle}
+ */
+MaskManager.prototype.popScissorMask = function (target, maskData)
+{
+    this.renderer.scissorManager.popMask(maskData);
 };
 
