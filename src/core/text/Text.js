@@ -271,7 +271,7 @@ Text.prototype.updateText = function ()
         width += style.dropShadowDistance;
     }
 
-    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
+    this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
 
     // calculate text height
     var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
@@ -282,7 +282,7 @@ Text.prototype.updateText = function ()
         height += style.dropShadowDistance;
     }
 
-    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
+    this.canvas.height = Math.ceil( ( height + this._style.padding * 2 ) * this.resolution );
 
     this.context.scale( this.resolution, this.resolution);
 
