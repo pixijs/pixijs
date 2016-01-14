@@ -51,7 +51,7 @@ TextureManager.prototype.updateTexture = function(texture)
     if (!glTexture)
     {
         glTexture = new GLTexture(gl);
-        
+        glTexture.premultiplyAlpha = true
         texture._glTextures[gl.id] = glTexture;
 
        // this.glTextures[texture.uid] = glTexture;
@@ -63,7 +63,10 @@ TextureManager.prototype.updateTexture = function(texture)
     }
 
     glTexture.upload(texture.source);
+    
+    //TODO check is power of two..
     glTexture.enableWrapClamp();
+
 
     // TODO check for scaling type
     glTexture.enableLinearScaling();
@@ -104,7 +107,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
     }
 }
 
-TextureManager.prototype.destroyAll = function()
+TextureManager.prototype.removeAll = function()
 {
 	// empty all the old gl textures as they are useless now
     for (var i = 0; i < this._managedTextures.length; ++i)
@@ -115,6 +118,20 @@ TextureManager.prototype.destroyAll = function()
             delete texture._glTextures[this.gl.id];
         }
     }
+}
+
+TextureManager.prototype.destroy = function()
+{
+    // destroy managed textures
+    for (var i = 0; i < this._managedTextures.length; ++i)
+    {
+        var texture = this._managedTextures[i];
+        this.destroyTexture(texture, true);
+        texture.off('update', this.updateTexture, this);
+        texture.off('dispose', this.destroyTexture, this);
+    }
+
+    this._managedTextures = null;
 }
 
 module.exports = TextureManager;

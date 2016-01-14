@@ -48,6 +48,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.texture = null;
 
+    this.clearColor = [0, 0, 0, 0];
+
     /**
      * The size of the object as a rectangle
      *
@@ -127,7 +129,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
-    this.frameBuffer = new GLFramebuffer(gl);
+    this.frameBuffer = new GLFramebuffer.createRGBA(gl, 100, 100);
 
     if (!this.root)
     {
@@ -165,9 +167,10 @@ module.exports = RenderTarget;
  *
  * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
  */
-RenderTarget.prototype.clear = function(r,g,b,a)
+RenderTarget.prototype.clear = function(clearColor)
 {
-    this.frameBuffer.clear(1,1,1,1)//r,g,b,a);
+    var cc = clearColor || this.clearColor
+    this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3])//r,g,b,a);
 };
 
 /**

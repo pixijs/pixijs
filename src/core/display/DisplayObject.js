@@ -546,6 +546,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
     this.skew.y = skewY || 0;
     this.pivot.x = pivotX || 0;
     this.pivot.y = pivotY || 0;
+    this.dirty = true;
     return this;
 };
 

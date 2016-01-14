@@ -146,7 +146,7 @@ function SystemRenderer(system, width, height, options)
      * @member {number[]}
      * @private
      */
-    this._backgroundColorRgb = [0, 0, 0];
+    this._backgroundColorRgba = [0, 0, 0, 0];
 
     /**
      * The background color as a string.
@@ -197,7 +197,7 @@ Object.defineProperties(SystemRenderer.prototype, {
         {
             this._backgroundColor = val;
             this._backgroundColorString = utils.hex2string(val);
-            utils.hex2rgb(val, this._backgroundColorRgb);
+            utils.hex2rgb(val, this._backgroundColorRgba);
         }
     }
 });
@@ -254,6 +254,6 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this.roundPixels = false;
 
     this._backgroundColor = 0;
-    this._backgroundColorRgb = null;
+    this._backgroundColorRgba = null;
     this._backgroundColorString = null;
 };

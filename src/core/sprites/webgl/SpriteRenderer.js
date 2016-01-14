@@ -137,10 +137,10 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.shader = this.renderer.shaderManager.defaultShader;
 
     // create a couple of buffers
-    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, gl.DYNAMIC_DRAW);//// gl.createBuffer();
-    this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, gl.STATIC_DRAW);
-    this.indexBuffer.upload(this.indices);
+    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+    this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
+    // build the vao object that will render..
     this.vao = new glCore.VertexArrayObject(gl);
 
     this.vao.addIndex(this.indexBuffer);
@@ -212,11 +212,12 @@ SpriteRenderer.prototype.render = function (sprite)
     this.sprites[this.currentBatchSize++] = sprite;
 };
 
+// TODO - render a chunk of sprites!
 SpriteRenderer.prototype.renderSprites = function (sprites)
 {
     for (var i = 0; i < sprites.length; i++) 
     {
-        sprites[i]
+      //  sprites[i]
     };
 }
 
@@ -235,14 +236,16 @@ SpriteRenderer.prototype.flush = function ()
     var gl = this.renderer.gl;
     var shader;
 
+    // do some smart array stuff..
+    // double size so we dont alway subarray the elements..
     // upload the verts to the buffer
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
-      //  gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
         this.vertexBuffer.upload(this.vertices, 0, true);
     }
     else
     {
+        // o k .. sub array is SLOW>?
         var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
         this.vertexBuffer.upload(view, 0, true);
     }
@@ -294,9 +297,9 @@ SpriteRenderer.prototype.flush = function ()
                 if (!shader)
                 {
                     shader = currentShader.getShader(this.renderer);
-
                 }
 
+                //TODO custom shaders?
                 this.renderer.bindShader(this._shader);
             }
         }
@@ -328,7 +331,7 @@ SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
     var gl = this.renderer.gl;
 
     // bind the texture..
-    this.renderer.bindTexture(texture, gl.TEXTURE0);
+    this.renderer.bindTexture(texture, 0);
     
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);

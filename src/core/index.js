@@ -57,6 +57,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     FXAAFilter:             require('./renderers/webgl/filters/FXAAFilter'),
     SpriteMaskFilter:       require('./renderers/webgl/filters/SpriteMaskFilter'),
 
+    glCore:                   require('pixi-gl-core'),
+
     /**
      * This helper function will automatically detect which renderer you should be using.
      * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
