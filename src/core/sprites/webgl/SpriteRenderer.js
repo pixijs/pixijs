@@ -17,8 +17,6 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteRenderer.java
  */
 
-var MAX_TEXTUES = 2;
-
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -104,13 +102,6 @@ function SpriteRenderer(renderer)
     this.currentBatchSize = 0;
 
     /**
-     * The current sprites in the batch.
-     *
-     * @member {PIXI.Sprite[]}
-     */
-    this.sprites = [];
-
-    /**
      * The default shader that is used if a sprite doesn't have a more specific one.
      *
      * @member {PIXI.Shader}
@@ -131,6 +122,8 @@ function SpriteRenderer(renderer)
     this.currentGroup = this.groups[this.groupCount++];
 
     this.currentTexture = null;
+
+    
 }
 
 
@@ -150,7 +143,9 @@ SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
-    this._shader = generateMultiTextureShader(gl, MAX_TEXTUES)//new TextureShader(gl);
+    this.MAX_TEXTUES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+
+    this._shader = generateMultiTextureShader(gl, this.MAX_TEXTUES)//new TextureShader(gl);
 
     // setup default shader
     this.shader = this.renderer.shaderManager.defaultShader;
@@ -205,7 +200,7 @@ SpriteRenderer.prototype.render = function (sprite)
     var groups = this.groups;
     var nextTexture =  sprite.texture.baseTexture;
     var currentGroup = this.currentGroup;
-    
+    var i;
 
     if(this.currentTexture !== nextTexture)
     {
@@ -216,9 +211,9 @@ SpriteRenderer.prototype.render = function (sprite)
             nextTexture._enabled = true;
             nextTexture._id = this.textureCount;
             
-            if(this.textureCount === MAX_TEXTUES)
+            if(this.textureCount === this.MAX_TEXTUES)
             {
-                for (var i = 0; i < currentGroup.textureCount; i++) 
+                for ( i = 0; i < currentGroup.textureCount; i++) 
                 {     
                     currentGroup.textures[i]._enabled = false;
                 };
@@ -288,9 +283,6 @@ SpriteRenderer.prototype.render = function (sprite)
     //console.log(this.textureCount);
 
     
-
-    this.sprites[this.currentBatchSize++] = sprite;
-
 };
 
 SpriteRenderer.prototype.nextGroup = function (sprites)
