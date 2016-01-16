@@ -2,6 +2,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     TextureShader = require('../../renderers/webgl/shaders/_TextureShader'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
+    generateMultiTextureShader = require('./generateMultiTextureShader'),
     CONST = require('../../const'),
     glCore = require('pixi-gl-core');
 
@@ -113,6 +114,10 @@ function SpriteRenderer(renderer)
      * @member {PIXI.Shader}
      */
     this.shader = null;
+
+    this.group = [];
+    this.currentGroup = null
+    this.currentTexture = null
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -131,7 +136,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
-    this._shader = new TextureShader(gl);
+    this._shader = generateMultiTextureShader(gl, 16)//new TextureShader(gl);
 
     // setup default shader
     this.shader = this.renderer.shaderManager.defaultShader;
@@ -165,6 +170,7 @@ SpriteRenderer.prototype.render = function (sprite)
         this.flush();
     }
 
+  
     // get the uvs for the texture
     var uvs = sprite.texture._uvs;
 
@@ -181,36 +187,64 @@ SpriteRenderer.prototype.render = function (sprite)
     var positions = this.positions;
 
     var vertexData = sprite.vertexData
-
-    positions[index] = vertexData[0];
-    positions[index+1] = vertexData[1];
-
+    var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+   
+    //xy
+    positions[index++] = vertexData[0];
+    positions[index++] = vertexData[1];
+    this.uvs[index++] = uvs.uvs_uint32[0];
+    colors[index++] = tint;
+    
     // xy
-    positions[index+4] = vertexData[2];
-    positions[index+5] = vertexData[3];
+    positions[index++] = vertexData[2];
+    positions[index++] = vertexData[3];
+    this.uvs[index++] = uvs.uvs_uint32[1];
+    colors[index++] = tint;
 
      // xy
-    positions[index+8] = vertexData[4];
-    positions[index+9] = vertexData[5];
+    positions[index++] = vertexData[4];
+    positions[index++] = vertexData[5];
+    this.uvs[index++] = uvs.uvs_uint32[2];
+    colors[index++] = tint;
 
     // xy
-    positions[index+12] = vertexData[6];
-    positions[index+13] = vertexData[7];
-    
-
-    // upload som uvs!
-    this.uvs[index + 2] = uvs.uvs_uint32[0];
-    this.uvs[index + 6] = uvs.uvs_uint32[1];
-    this.uvs[index + 10] = uvs.uvs_uint32[2];
-    this.uvs[index + 14] = uvs.uvs_uint32[3];
-
-    var tint = sprite.tint;
-    colors[index+3] = colors[index+7] = colors[index+11] = colors[index+15] = (tint >> 16) + (tint & 0xff00) + ((tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+    positions[index++] = vertexData[6];
+    positions[index++] = vertexData[7];
+    this.uvs[index++] = uvs.uvs_uint32[3];
+    colors[index++] = tint;
 
 
+    // push a texture.
     // increment the batchsize
+    var nextTexture =  sprite.texture.baseTexture;
+    var currentTexture = this.currentTexture;
+
+    if(currentTexture != nextTexture)
+    {
+        this.textureCount++;
+        //if(!nextTexture._enbled)
+        {
+        //    nextTexture
+        }
+        
+        var group = getGroup();
+
+        // TODO stop push can be optimised..
+        this.groups.push(group);
+    }
+
     this.sprites[this.currentBatchSize++] = sprite;
+
+//    textureGroup +=
+//    var texture =
 };
+
+SpriteRenderer.prototype.getGroup = function ()
+{
+    // TODO add shader
+    return {textures:[], ids:[], size:0, blend:0};
+}
+
 
 // TODO - render a chunk of sprites!
 SpriteRenderer.prototype.renderSprites = function (sprites)
@@ -227,6 +261,11 @@ SpriteRenderer.prototype.renderSprites = function (sprites)
  */
 SpriteRenderer.prototype.flush = function ()
 {
+    //this.textureCount = 0;
+    console.log(this.groups);
+    this.groups = [];
+
+
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize === 0)
     {
@@ -249,6 +288,7 @@ SpriteRenderer.prototype.flush = function ()
         var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
         this.vertexBuffer.upload(view, 0, true);
     }
+
 
     var nextTexture, nextBlendMode, nextShader;
     var batchSize = 0;
