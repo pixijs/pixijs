@@ -114,6 +114,7 @@ function SpriteRenderer(renderer)
     this.groupCount = 0;
     this.groups = [];
     
+    //TODO - 300 is a bit magic, figure out a nicer amount!
     for (var i = 0; i < 300; i++) 
     {
         this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0}; 
@@ -187,10 +188,10 @@ SpriteRenderer.prototype.render = function (sprite)
 
   
     // get the uvs for the texture
-    var uvs = sprite.texture._uvs;
+   
 
     // if the uvs have not updated then no point rendering just yet!
-    if (!uvs)
+    if (!sprite.texture._uvs)
     {
         return;
     }
@@ -229,13 +230,9 @@ SpriteRenderer.prototype.render = function (sprite)
             }
 
             currentGroup.textures[currentGroup.textureCount++] = nextTexture;
-            
-           // this.textureCount++;
         }
-        else
-        {
 
-        }
+        this.textureCount++;
     }
 
     
@@ -247,42 +244,36 @@ SpriteRenderer.prototype.render = function (sprite)
 
     var colors = this.colors;
     var positions = this.positions;
-
     var vertexData = sprite.vertexData
     var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-    
+    var uvs = sprite.texture._uvs.uvs_uint32;
     //xy
     positions[index++] = vertexData[0];
     positions[index++] = vertexData[1];
-    this.uvs[index++] = uvs.uvs_uint32[0];
+    this.uvs[index++] = uvs[0];
     colors[index++] = tint;
-    positions[index++] = nextTexture._id; //TODO -1 is lame
+    positions[index++] = nextTexture._id; 
     
     // xy
     positions[index++] = vertexData[2];
     positions[index++] = vertexData[3];
-    this.uvs[index++] = uvs.uvs_uint32[1];
+    this.uvs[index++] = uvs[1];
     colors[index++] = tint;
     positions[index++] = nextTexture._id;
 
      // xy
     positions[index++] = vertexData[4];
     positions[index++] = vertexData[5];
-    this.uvs[index++] = uvs.uvs_uint32[2];
+    this.uvs[index++] = uvs[2];
     colors[index++] = tint;
     positions[index++] = nextTexture._id;
 
     // xy
     positions[index++] = vertexData[6];
     positions[index++] = vertexData[7];
-    this.uvs[index++] = uvs.uvs_uint32[3];
+    this.uvs[index++] = uvs[3];
     colors[index++] = tint;
     positions[index++] = nextTexture._id;
-
-
-    //console.log(this.textureCount);
-
-    
 };
 
 SpriteRenderer.prototype.nextGroup = function (sprites)
@@ -304,12 +295,10 @@ SpriteRenderer.prototype.renderSprites = function (sprites)
  */
 SpriteRenderer.prototype.flush = function ()
 {
+    if (this.currentIndex === 0)return;
+
     var gl = this.renderer.gl;
 
-    if (this.currentIndex === 0)
-    {
-        return;
-    }
 
     this.currentGroup.size = this.currentIndex - this.currentGroup.start;
     for (var i = 0; i < this.currentGroup.textureCount; i++) 
@@ -317,14 +306,12 @@ SpriteRenderer.prototype.flush = function ()
         this.currentGroup.textures[i]._enabled = false;
     };
    
-    
     // do some smart array stuff..
     // double size so we dont alway subarray the elements..
     // upload the verts to the buffer
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
         this.vertexBuffer.upload(this.vertices, 0, true);
-
     }
     else
     {
@@ -333,6 +320,7 @@ SpriteRenderer.prototype.flush = function ()
         this.vertexBuffer.upload(view, 0, true);
     }
 
+    // bind shader..
     this.renderer.bindShader(this._shader);
     this.renderer.blendModeManager.setBlendMode( 0 );
 
@@ -348,14 +336,14 @@ SpriteRenderer.prototype.flush = function ()
         gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
     };
 
-
+    // reset elements for the next flush
     this.currentTexture = null;
     this.currentIndex = 0;
     this.textureCount = 0;
     this.groupCount = 0;
     
     this.currentGroup = this.groups[this.groupCount++];
-    this.currentGroup.textureCount = 0;;
+    this.currentGroup.textureCount = 0;
 };
 
 /**
