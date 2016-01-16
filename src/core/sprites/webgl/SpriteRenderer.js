@@ -65,7 +65,6 @@ function SpriteRenderer(renderer)
      */
     this.vertices = new ArrayBuffer(numVerts);
 
-
     /**
      * View on the vertices as a Float32Array for positions
      *
@@ -93,13 +92,6 @@ function SpriteRenderer(renderer)
      * @member {Uint16Array}
      */
     this.indices = createIndicesForQuads(this.size)
-
-    /**
-     * The current size of the batch, each render() call adds to this number.
-     *
-     * @member {number}
-     */
-    this.currentBatchSize = 0;
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
@@ -174,11 +166,6 @@ SpriteRenderer.prototype.onContextChange = function ()
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
-
-
-   // console.log("RENDER")
-    
-
     //TODO set blend modes..
     // check texture..
     if (this.currentIndex >= this.size)
@@ -235,13 +222,13 @@ SpriteRenderer.prototype.render = function (sprite)
         this.textureCount++;
     }
 
-    
-
     // TODO trim??
     var index = this.currentIndex * this.vertByteSize;
 
     this.currentIndex++;
 
+    // upload the sprite elemetns...
+    // they have all ready been calculated so we just need to push them into the buffer.
     var colors = this.colors;
     var positions = this.positions;
     var vertexData = sprite.vertexData
@@ -275,19 +262,6 @@ SpriteRenderer.prototype.render = function (sprite)
     colors[index++] = tint;
     positions[index++] = nextTexture._id;
 };
-
-SpriteRenderer.prototype.nextGroup = function (sprites)
-{
-}
-
-// TODO - render a chunk of sprites!
-SpriteRenderer.prototype.renderSprites = function (sprites)
-{
-    for (var i = 0; i < sprites.length; i++) 
-    {
-      //  sprites[i]
-    };
-}
 
 /**
  * Renders the content and empties the current batch.
