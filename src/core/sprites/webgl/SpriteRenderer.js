@@ -17,6 +17,8 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteRenderer.java
  */
 
+var MAX_TEXTUES = 2;
+
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -36,7 +38,7 @@ function SpriteRenderer(renderer)
      *
      * @member {number}
      */
-    this.vertSize = 4;
+    this.vertSize = 5;
 
     /**
      * The size of the vertex information in bytes.
@@ -115,10 +117,22 @@ function SpriteRenderer(renderer)
      */
     this.shader = null;
 
-    this.group = [];
-    this.currentGroup = null
-    this.currentTexture = null
+    this.textureCount = 0;
+    this.currentIndex = 0;
+  
+    this.groupCount = 0;
+    this.groups = [];
+    
+    for (var i = 0; i < 300; i++) 
+    {
+        this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0}; 
+    };
+    
+    this.currentGroup = this.groups[this.groupCount++];
+
+    this.currentTexture = null;
 }
+
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
@@ -136,7 +150,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
-    this._shader = generateMultiTextureShader(gl, 16)//new TextureShader(gl);
+    this._shader = generateMultiTextureShader(gl, MAX_TEXTUES)//new TextureShader(gl);
 
     // setup default shader
     this.shader = this.renderer.shaderManager.defaultShader;
@@ -152,6 +166,7 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0);
     this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4);
     this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+    this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
 
     this.currentBlendMode = 99999;
 };
@@ -163,9 +178,14 @@ SpriteRenderer.prototype.onContextChange = function ()
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
+
+
+   // console.log("RENDER")
+    
+
     //TODO set blend modes..
     // check texture..
-    if (this.currentBatchSize >= this.size)
+    if (this.currentIndex >= this.size)
     {
         this.flush();
     }
@@ -180,71 +200,102 @@ SpriteRenderer.prototype.render = function (sprite)
         return;
     }
 
+     // push a texture.
+    // increment the batchsize
+    var groups = this.groups;
+    var nextTexture =  sprite.texture.baseTexture;
+    var currentGroup = this.currentGroup;
+    
+
+    if(this.currentTexture !== nextTexture)
+    {
+        this.currentTexture = nextTexture;
+        
+        if(!nextTexture._enabled)
+        {
+            nextTexture._enabled = true;
+            nextTexture._id = this.textureCount;
+            
+            if(this.textureCount === MAX_TEXTUES)
+            {
+                for (var i = 0; i < currentGroup.textureCount; i++) 
+                {     
+                    currentGroup.textures[i]._enabled = false;
+                };
+
+                this.textureCount = 0;
+
+                currentGroup.size = this.currentIndex - currentGroup.start;
+               
+                currentGroup = this.currentGroup = this.groups[this.groupCount++];
+                currentGroup.textureCount = 0;
+                currentGroup.start = this.currentIndex;
+                
+            }
+
+            currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+            
+           // this.textureCount++;
+        }
+        else
+        {
+
+        }
+    }
+
+    
+
     // TODO trim??
-    var index = this.currentBatchSize * this.vertByteSize;
+    var index = this.currentIndex * this.vertByteSize;
+
+    this.currentIndex++;
 
     var colors = this.colors;
     var positions = this.positions;
 
     var vertexData = sprite.vertexData
     var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-   
+    
     //xy
     positions[index++] = vertexData[0];
     positions[index++] = vertexData[1];
     this.uvs[index++] = uvs.uvs_uint32[0];
     colors[index++] = tint;
+    positions[index++] = nextTexture._id; //TODO -1 is lame
     
     // xy
     positions[index++] = vertexData[2];
     positions[index++] = vertexData[3];
     this.uvs[index++] = uvs.uvs_uint32[1];
     colors[index++] = tint;
+    positions[index++] = nextTexture._id;
 
      // xy
     positions[index++] = vertexData[4];
     positions[index++] = vertexData[5];
     this.uvs[index++] = uvs.uvs_uint32[2];
     colors[index++] = tint;
+    positions[index++] = nextTexture._id;
 
     // xy
     positions[index++] = vertexData[6];
     positions[index++] = vertexData[7];
     this.uvs[index++] = uvs.uvs_uint32[3];
     colors[index++] = tint;
+    positions[index++] = nextTexture._id;
 
 
-    // push a texture.
-    // increment the batchsize
-    var nextTexture =  sprite.texture.baseTexture;
-    var currentTexture = this.currentTexture;
+    //console.log(this.textureCount);
 
-    if(currentTexture != nextTexture)
-    {
-        this.textureCount++;
-        //if(!nextTexture._enbled)
-        {
-        //    nextTexture
-        }
-        
-        var group = getGroup();
-
-        // TODO stop push can be optimised..
-        this.groups.push(group);
-    }
+    
 
     this.sprites[this.currentBatchSize++] = sprite;
 
-//    textureGroup +=
-//    var texture =
 };
 
-SpriteRenderer.prototype.getGroup = function ()
+SpriteRenderer.prototype.nextGroup = function (sprites)
 {
-    // TODO add shader
-    return {textures:[], ids:[], size:0, blend:0};
 }
-
 
 // TODO - render a chunk of sprites!
 SpriteRenderer.prototype.renderSprites = function (sprites)
@@ -261,120 +312,58 @@ SpriteRenderer.prototype.renderSprites = function (sprites)
  */
 SpriteRenderer.prototype.flush = function ()
 {
-    //this.textureCount = 0;
-    console.log(this.groups);
-    this.groups = [];
+    var gl = this.renderer.gl;
 
-
-    // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize === 0)
+    if (this.currentIndex === 0)
     {
         return;
     }
 
-    var gl = this.renderer.gl;
-    var shader;
-
+    this.currentGroup.size = this.currentIndex - this.currentGroup.start;
+    for (var i = 0; i < this.currentGroup.textureCount; i++) 
+    {     
+        this.currentGroup.textures[i]._enabled = false;
+    };
+   
+    
     // do some smart array stuff..
     // double size so we dont alway subarray the elements..
     // upload the verts to the buffer
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
         this.vertexBuffer.upload(this.vertices, 0, true);
+
     }
     else
     {
         // o k .. sub array is SLOW>?
-        var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
+        var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
         this.vertexBuffer.upload(view, 0, true);
     }
 
+    this.renderer.bindShader(this._shader);
+    this.renderer.blendModeManager.setBlendMode( 0 );
 
-    var nextTexture, nextBlendMode, nextShader;
-    var batchSize = 0;
-    var start = 0;
+    /// render the groups..
+    for (i = 0; i < this.groupCount; i++) {
+        
+        var group = this.groups[i];
 
-    var currentBaseTexture = null;
-    var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
-    var currentShader = null;
+        for (var j = 0; j < group.textureCount; j++) {
+            this.renderer.bindTexture(group.textures[j], j);
+        };
 
-    var blendSwap = false;
-    var shaderSwap = false;
-    var sprite;
+        gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
+    };
 
-    for (var i = 0, j = this.currentBatchSize; i < j; i++)
-    {
 
-        sprite = this.sprites[i];
-
-        nextTexture = sprite._texture.baseTexture;
-        nextBlendMode = sprite.blendMode;
-        nextShader = sprite.shader || this.shader;
-
-        blendSwap = currentBlendMode !== nextBlendMode;
-        shaderSwap = currentShader !== nextShader; // should I use uidS???
-
-        if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap)
-        {
-            this.renderBatch(currentBaseTexture, batchSize, start);
-
-            start = i;
-            batchSize = 0;
-            currentBaseTexture = nextTexture;
-
-            if (blendSwap)
-            {
-                currentBlendMode = nextBlendMode;
-                this.renderer.blendModeManager.setBlendMode( currentBlendMode );
-            }
-
-            if (shaderSwap)
-            {
-                currentShader = nextShader;
-
-                shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
-
-                if (!shader)
-                {
-                    shader = currentShader.getShader(this.renderer);
-                }
-
-                //TODO custom shaders?
-                this.renderer.bindShader(this._shader);
-            }
-        }
-
-        batchSize++;
-    }
-
-    this.renderBatch(currentBaseTexture, batchSize, start);
-
-    // then reset the batch!
-    this.currentBatchSize = 0;
-};
-
-/**
- * Draws the currently batches sprites.
- *
- * @private
- * @param texture {PIXI.Texture}
- * @param size {number}
- * @param startIndex {number}
- */
-SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
-{
-    if (size === 0)
-    {
-        return;
-    }
-
-    var gl = this.renderer.gl;
-
-    // bind the texture..
-    this.renderer.bindTexture(texture, 0);
+    this.currentTexture = null;
+    this.currentIndex = 0;
+    this.textureCount = 0;
+    this.groupCount = 0;
     
-    // now draw those suckas!
-    gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
+    this.currentGroup = this.groups[this.groupCount++];
+    this.currentGroup.textureCount = 0;;
 };
 
 /**
