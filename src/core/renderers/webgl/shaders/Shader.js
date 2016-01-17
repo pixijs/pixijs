@@ -181,42 +181,6 @@ Shader.prototype.compile = function ()
     return (this.program = program);
 };
 
-/*
-Shader.prototype.buildSync = function ()
-{
-   // var str = ""
-
-   // str =  "Shader.prototype.syncUniforms = function()";
-   // str += "{\n";
-
-    for (var key in this.uniforms)
-    {
-        var uniform = this.uniforms[key];
-
-        Object.defineProperty(this, key, {
-
-            get: function ()
-            {
-                return uniform.value
-            },
-            set: function (value)
-            {
-                this.setUniform(uniform, value);
-            }
-        });
-
-        console.log( makePropSetter( key, " bloop", uniform.type )  )
-  //      Object.def
-        //    location = uniform._location,
-          //  value = uniform.value,
-            //i, il;
-
-    //    str += "gl.uniform1i(this.uniforms."+ key +"._location, this.uniforms." + key + ".value );\n"
-
-    }
-
-}*/
-
 /**
 * Adds a new uniform
 *

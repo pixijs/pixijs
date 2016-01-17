@@ -152,7 +152,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this.dirty = true;
+    this.dirtyTransform = true;
 }
 
 // constructor
@@ -183,7 +183,7 @@ Object.defineProperties(CachePoint.prototype, {
         set: function (value)
         {
             this.doc.position.x = value;
-            this.doc.dirty = true;
+            this.doc.dirtyTransform = true;
         }
     },
 
@@ -195,7 +195,7 @@ Object.defineProperties(CachePoint.prototype, {
         set: function (value)
         {
             this.doc.position.y = value;
-            this.doc.dirty = true;
+            this.doc.dirtyTransform = true;
         }
     }
 });
@@ -216,7 +216,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.position.x = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
         }
     },
 
@@ -234,7 +234,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.position.y = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
         }
     },
 
@@ -246,7 +246,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.scale.x = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
         }
     },
 
@@ -264,7 +264,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.scale.y = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
         }
     },
 
@@ -276,7 +276,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this._rotation = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
             this._sr = Math.sin(value);
             this._cr = Math.cos(value);
         }
@@ -296,7 +296,7 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this.scale.y = value;
-            this.dirty = true;
+            this.dirtyTransform = true;
         }
     },
 
@@ -386,7 +386,7 @@ DisplayObject.prototype.updateTransform = function ()
     var wt = this.worldTransform;
     var lt = this.localTransform;
 
-    if(this.dirty)
+    if(this.dirtyTransform)
     {
         // get the matrix values of the displayobject based on its transform properties..
         lt.a  =  this._cr * this.scale.x;
@@ -397,7 +397,7 @@ DisplayObject.prototype.updateTransform = function ()
         lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
     }
 
-    if(this.dirty || this.parent.dirty)
+    if(this.dirtyTransform || this.parent.dirtyTransform)
     {      
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;
@@ -588,7 +588,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
     this.skew.y = skewY || 0;
     this.pivot.x = pivotX || 0;
     this.pivot.y = pivotY || 0;
-    this.dirty = true;
+    this.dirtyTransform = true;
     return this;
 };
 

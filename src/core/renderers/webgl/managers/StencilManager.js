@@ -194,7 +194,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
 
         // set the index buffer!
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-        gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+//        gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
 
 
       /*  this.renderer.shaderManager.setShader(shader);
@@ -338,16 +338,10 @@ WebGLMaskManager.prototype.pushMask = function (maskData)
     this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
     
     //TODO FIX
-    //
-   // console.log(maskData.dirty);
-
-    maskData.dirty = true;
     if (maskData.dirty)
     {
         this.renderer.plugins.graphics.updateGraphics(maskData, this.renderer.gl);
     }
-
-   // console.log(maskData._webGL[this.renderer.gl.id].data)
 
     if (!maskData._webGL[this.renderer.gl.id].data.length)
     {

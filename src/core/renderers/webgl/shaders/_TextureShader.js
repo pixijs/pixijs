@@ -26,9 +26,6 @@ function TextureShader(gl)
      */
     fragmentSrc = TextureShader.defaultFragmentSrc;
 
-   // console.log(vertexSrc);
-    console.log(fragmentSrc);
-
     Shader.call(this, gl, vertexSrc, fragmentSrc);//, uniforms, attributes);
 
 }
