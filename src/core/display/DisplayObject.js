@@ -24,6 +24,7 @@ function DisplayObject()
      * @member {PIXI.Point}
      */
     this.position = new math.Point();
+    this._position = new CachePoint(this);
 
     /**
      * The scale factor of the object.
@@ -158,6 +159,47 @@ function DisplayObject()
 DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
 module.exports = DisplayObject;
+
+var CachePoint = function(doc){
+    
+    this.doc = doc;
+
+    this.x = 0;
+    this.y = 0;
+}
+
+Object.defineProperties(CachePoint.prototype, {
+    /**
+     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.DisplayObject#
+     */
+    x: {
+        get: function ()
+        {
+            return this.doc.position.x;
+        },
+        set: function (value)
+        {
+            this.doc.position.x = value;
+            this.doc.dirty = true;
+        }
+    },
+
+    y: {
+        get: function ()
+        {
+            return this.doc.posiiton.y;
+        },
+        set: function (value)
+        {
+            this.doc.position.y = value;
+            this.doc.dirty = true;
+        }
+    }
+});
+
 
 Object.defineProperties(DisplayObject.prototype, {
     /**

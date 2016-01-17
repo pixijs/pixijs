@@ -129,7 +129,12 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
-    this.frameBuffer = new GLFramebuffer.createRGBA(gl, 100, 100);
+    this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
+    if(this.frameBuffer)this.frameBuffer.unbind();
+
+   // this.frameBuffer = {framebuffer:null, bind:function(){}, clear:function(){}, resize:function(){}}//new GLFramebuffer.createRGBA(gl, 100, 100);
+
+
 
     if (!this.root)
     {

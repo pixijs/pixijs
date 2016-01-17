@@ -107,16 +107,14 @@ function SpriteRenderer(renderer)
     this.groups = [];
     
     //TODO - 300 is a bit magic, figure out a nicer amount!
-    for (var i = 0; i < 300; i++) 
+    for (var i = 0; i < this.size; i++) 
     {
         this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0}; 
     };
     
     this.currentGroup = this.groups[this.groupCount++];
 
-    this.currentTexture = null;
-
-    
+    this.currentTexture = null;    
 }
 
 
@@ -185,7 +183,6 @@ SpriteRenderer.prototype.render = function (sprite)
 
      // push a texture.
     // increment the batchsize
-    var groups = this.groups;
     var nextTexture =  sprite.texture.baseTexture;
     var currentGroup = this.currentGroup;
     var i;
