@@ -1,4 +1,4 @@
-var math = require('../../math'),
+var math = require('../../../math'),
     utils = require('../../../utils');
 
 /**

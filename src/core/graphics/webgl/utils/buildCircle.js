@@ -76,7 +76,7 @@ var buildCircle = function (graphicsData, webGLData)
                                      y + Math.cos(seg * i) * height);
         }
 
-        this.buildLine(graphicsData, webGLData);
+        buildLine(graphicsData, webGLData);
 
         graphicsData.points = tempPoints;
     }

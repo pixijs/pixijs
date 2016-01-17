@@ -4,15 +4,15 @@ var utils = require('../../utils'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     WebGLGraphicsData = require('./WebGLGraphicsData'),
-    PrimitiveShader = require('./PrimitiveShader'),
+    PrimitiveShader = require('./shaders/PrimitiveShader'),
 
     // some drawing functions..
-    buildLine = require('../buildLine');
-    buildPoly = require('../buildPoly');
-    buildComplexPoly = require('../buildComplexPoly');
-    buildRectangle = require('../buildRectangle');
-    buildRoundedRectangle = require('../buildRoundedRectangle');
-    buildCircle = require('../buildCircle');
+    buildLine = require('./utils/buildLine');
+    buildPoly = require('./utils/buildPoly');
+    buildComplexPoly = require('./utils/buildComplexPoly');
+    buildRectangle = require('./utils/buildRectangle');
+    buildRoundedRectangle = require('./utils/buildRoundedRectangle');
+    buildCircle = require('./utils/buildCircle');
 
     earcut = require('earcut');
 

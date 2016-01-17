@@ -1,5 +1,5 @@
 var buildLine = require('./buildLine'),
-    utils = require('../../utils');
+    utils = require('../../../utils');
     
 /**
  * Builds a rounded rectangle to draw
