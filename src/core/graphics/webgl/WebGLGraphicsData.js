@@ -110,6 +110,7 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.points = null;
     this.indices = null;
 
+    this.vao.destroy();
     this.buffer.destroy();
     this.indexBuffer.destroy();
     

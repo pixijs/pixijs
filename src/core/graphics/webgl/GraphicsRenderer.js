@@ -95,64 +95,22 @@ GraphicsRenderer.prototype.render = function(graphics)
     var webGL = graphics._webGL[gl.id];
 
     // This  could be speeded up for sure!
-
+    var shader = this.primitiveShader;
+    renderer.bindShader(shader)
     renderer.blendModeManager.setBlendMode( graphics.blendMode );
-
-//    var matrix =  graphics.worldTransform.clone();
-//    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
-//    matrix.append(graphics.worldTransform);
 
     for (var i = 0, n = webGL.data.length; i < n; i++)
     {
         webGLData = webGL.data[i];
 
-        if (webGL.data[i].mode === 1)
-        {
-            //TODO fix this one!
-            
-            /*
-            renderer.stencilManager.pushStencil(graphics, webGLData);
+        shader.uniforms.translationMatrix = graphics.worldTransform.toArray(true);
+        shader.uniforms.tint = utils.hex2rgb(graphics.tint);
+        shader.uniforms.alpha = graphics.worldAlpha;
 
-            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
-
-            // render quad..
-            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
-
-            renderer.stencilManager.popStencil(graphics, webGLData);
-            */
-        }
-        else
-        {
-
-            shader = this.primitiveShader;
-
-            renderer.bindShader(shader)
-
-            shader.uniforms.translationMatrix = graphics.worldTransform.toArray(true);
-            shader.uniforms.tint = utils.hex2rgb(graphics.tint);
-            shader.uniforms.alpha = graphics.worldAlpha;
-
-            webGLData.vao.bind()
-            .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
-            .unbind();
-            /*
-            webGLData.buffer.bind();
-
-            shader = this.primitiveShader;
-
-            shader.attributes.aVertexPosition.pointer(gl.FLOAT, false, 4 * 6, 0);
-            shader.attributes.aColor.pointer(gl.FLOAT, false, 4 * 6, 2 * 4);
-
-            gl.enableVertexAttribArray(shader.attributes.aVertexPosition.location);
-            gl.enableVertexAttribArray(shader.attributes.aColor.location);
-
-            // set the index buffer!
-            webGLData.indexBuffer.bind();
-
-            gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
-            */
-        }
-
+        webGLData.vao.bind()
+        .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
+        .unbind();
+        
         renderer.drawCount++;
     }
 };
