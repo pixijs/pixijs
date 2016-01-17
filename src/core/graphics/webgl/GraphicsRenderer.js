@@ -132,8 +132,11 @@ GraphicsRenderer.prototype.render = function(graphics)
             shader.uniforms.tint = utils.hex2rgb(graphics.tint);
             shader.uniforms.alpha = graphics.worldAlpha;
 
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
+            webGLData.vao.bind()
+            .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
+            .unbind();
+            /*
+            webGLData.buffer.bind();
 
             shader = this.primitiveShader;
 
@@ -144,8 +147,10 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.enableVertexAttribArray(shader.attributes.aColor.location);
 
             // set the index buffer!
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
+            webGLData.indexBuffer.bind();
+
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
+            */
         }
 
         renderer.drawCount++;
@@ -295,7 +300,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
 
     if (!webGL.data.length)
     {
-        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl);
+        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
         webGLData.mode = type;
         webGL.data.push(webGLData);
     }
@@ -305,7 +310,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
 
         if ((webGLData.points.length > 320000) || webGLData.mode !== type || type === 1)
         {
-            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl);
+            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
             webGLData.mode = type;
             webGL.data.push(webGLData);
         }

@@ -1,3 +1,6 @@
+var glCore = require('pixi-gl-core');
+
+
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -6,7 +9,8 @@
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
-function WebGLGraphicsData(gl) {
+function WebGLGraphicsData(gl, shader) 
+{
 
     /**
      * The current WebGL drawing context
@@ -37,13 +41,13 @@ function WebGLGraphicsData(gl) {
      * The main buffer
      * @member {WebGLBuffer}
      */
-    this.buffer = gl.createBuffer();
+    this.buffer = glCore.GLBuffer.createVertexBuffer(gl);
 
     /**
      * The index buffer
      * @member {WebGLBuffer}
      */
-    this.indexBuffer = gl.createBuffer();
+    this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl);
 
     /**
      * todo @alvin
@@ -65,6 +69,11 @@ function WebGLGraphicsData(gl) {
 
     this.glPoints = null;
     this.glIndices = null;
+
+    this.vao = new glCore.VertexArrayObject(gl)
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
+    .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
 }
 
 WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;
@@ -73,7 +82,8 @@ module.exports = WebGLGraphicsData;
 /**
  * Resets the vertices and the indices
  */
-WebGLGraphicsData.prototype.reset = function () {
+WebGLGraphicsData.prototype.reset = function () 
+{
     this.points.length = 0;
     this.indices.length = 0;
 };
@@ -81,30 +91,27 @@ WebGLGraphicsData.prototype.reset = function () {
 /**
  * Binds the buffers and uploads the data
  */
-WebGLGraphicsData.prototype.upload = function () {
+WebGLGraphicsData.prototype.upload = function () 
+{
     var gl = this.gl;
 
-//    this.lastIndex = graphics.graphicsData.length;
     this.glPoints = new Float32Array(this.points);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.glPoints, gl.STATIC_DRAW);
+    this.buffer.upload( this.glPoints );
 
     this.glIndices = new Uint16Array(this.indices);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndices, gl.STATIC_DRAW);
+    this.indexBuffer.upload( this.glIndices );
 
     this.dirty = false;
 };
 
-WebGLGraphicsData.prototype.destroy = function () {
+WebGLGraphicsData.prototype.destroy = function () 
+{
     this.color = null;
     this.points = null;
     this.indices = null;
 
-    this.gl.deleteBuffer(this.buffer);
-    this.gl.deleteBuffer(this.indexBuffer);
+    this.buffer.destroy();
+    this.indexBuffer.destroy();
     
     this.gl = null;
 
