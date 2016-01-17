@@ -36,6 +36,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Texture:                require('./textures/Texture'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
+    BaseRenderTexture:            require('./textures/BaseRenderTexture'),
     VideoBaseTexture:       require('./textures/VideoBaseTexture'),
     TextureUvs:             require('./textures/TextureUvs'),
 

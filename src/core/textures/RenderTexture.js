@@ -1,8 +1,5 @@
-var BaseTexture = require('./BaseTexture'),
+var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture'),
-    RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
-    FilterManager = require('../renderers/webgl/managers/FilterManager'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const'),
     tempMatrix = new math.Matrix();
@@ -49,107 +46,22 @@ var BaseTexture = require('./BaseTexture'),
  * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution of the texture being generated
  */
-function RenderTexture(renderer, width, height, scaleMode, resolution)
+function RenderTexture(baseRenderTexture, frame)
 {
     if (!renderer)
     {
         throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
     }
 
-    width = width || 100;
-    height = height || 100;
-    resolution = resolution || CONST.RESOLUTION;
-
     /**
      * The base texture object that this texture uses
      *
      * @member {BaseTexture}
      */
-    var baseTexture = new BaseTexture();
-    baseTexture.width = width;
-    baseTexture.height = height;
-    baseTexture.resolution = resolution;
-    baseTexture.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
-    baseTexture.hasLoaded = true;
-
-
     Texture.call(this,
-        baseTexture,
-        new math.Rectangle(0, 0, width, height)
+        baseRenderTexture,
+        frame 
     );
-
-
-    /**
-     * The with of the render texture
-     *
-     * @member {number}
-     */
-    this.width = width;
-
-    /**
-     * The height of the render texture
-     *
-     * @member {number}
-     */
-    this.height = height;
-
-    /**
-     * The Resolution of the texture.
-     *
-     * @member {number}
-     */
-    this.resolution = resolution;
-
-    /**
-     * Draw/render the given DisplayObject onto the texture.
-     *
-     * The displayObject and descendents are transformed during this operation.
-     * If `updateTransform` is true then the transformations will be restored before the
-     * method returns. Otherwise it is up to the calling code to correctly use or reset
-     * the transformed display objects.
-     *
-     * The display object is always rendered with a worldAlpha value of 1.
-     *
-     * @method
-     * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
-     * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
-     * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
-     * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
-     *  transformations will be restored. Not restoring this information will be a little faster.
-     */
-    this.render = null;
-
-    /**
-     * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
-     *
-     * @member {PIXI.CanvasRenderer|PIXI.WebGLRenderer}
-     */
-    this.renderer = renderer;
-
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        var gl = this.renderer.gl;
-
-        this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
-        this.baseTexture._glTextures[gl.id] = this.textureBuffer.texture;
-
-        //TODO refactor filter manager.. as really its no longer a manager if we use it here..
-        this.filterManager = new FilterManager(this.renderer);
-        this.filterManager.onContextChange();
-        this.filterManager.resize(width, height);
-        this.render = this.renderWebGL;
-
-        // the creation of a filter manager unbinds the buffers..
-        this.renderer.currentRenderer.start();
-        this.renderer.currentRenderTarget.activate();
-    }
-    else
-    {
-
-        this.render = this.renderCanvas;
-        this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
-        this.baseTexture.source = this.textureBuffer.canvas;
-    }
 
     /**
      * @member {boolean}
@@ -172,33 +84,19 @@ module.exports = RenderTexture;
  */
 RenderTexture.prototype.resize = function (width, height, updateBase)
 {
-    if (width === this.width && height === this.height)
-    {
-        return;
-    }
-
+   
+    //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
-    this.width = this._frame.width = this.crop.width = width;
-    this.height =  this._frame.height = this.crop.height = height;
+    this._frame.width = this.crop.width = width;
+    this._frame.height = this.crop.height = height;
 
     if (updateBase)
     {
-        this.baseTexture.width = this.width;
-        this.baseTexture.height = this.height;
+        this.baseTexture.resize(width, height)
     }
 
-    if (!this.valid)
-    {
-        return;
-    }
-
-    this.textureBuffer.resize(this.width, this.height);
-
-    if(this.filterManager)
-    {
-        this.filterManager.resize(this.width, this.height);
-    }
+    this._updateUvs();
 };
 
 /**
@@ -212,12 +110,8 @@ RenderTexture.prototype.clear = function ()
         return;
     }
 
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
-    }
-
-    this.textureBuffer.clear();
+    this.baseTexture.clear(this.frame)
+    
 };
 
 /**
@@ -230,136 +124,14 @@ RenderTexture.prototype.clear = function ()
  * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
  *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, updateTransform)
+RenderTexture.prototype.render = function (displayObject, matrix, clear, updateTransform)
 {
     if (!this.valid)
     {
         return;
     }
 
-
-    updateTransform = (updateTransform !== undefined) ? updateTransform : true;//!updateTransform;
-
-    this.textureBuffer.transform = matrix;
-
-    //TODO not a fan that this is here... it will move!
-    this.textureBuffer.activate();
-
-    // setWorld Alpha to ensure that the object is renderer at full opacity
-    displayObject.worldAlpha = 1;
-
-    if (updateTransform)
-    {
-
-        // reset the matrix of the displatyObject..
-        displayObject.worldTransform.identity();
-
-        displayObject.currentBounds = null;
-
-        // Time to update all the children of the displayObject with the new matrix..
-        var children = displayObject.children;
-        var i, j;
-
-        for (i = 0, j = children.length; i < j; ++i)
-        {
-            children[i].updateTransform();
-        }
-    }
-
-    //TODO rename textureBuffer to renderTarget..
-    var temp =  this.renderer.filterManager;
-
-    this.renderer.filterManager = this.filterManager;
-    this.renderer.renderDisplayObject(displayObject, this.textureBuffer, clear);
-
-    this.renderer.filterManager = temp;
-};
-
-
-/**
- * Internal method assigned to the `render` property if using a CanvasRenderer.
- *
- * @private
- * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
- * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
- * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
- */
-RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, updateTransform)
-{
-    if (!this.valid)
-    {
-        return;
-    }
-
-    updateTransform = !!updateTransform;
-
-    var wt = tempMatrix;
-
-    wt.identity();
-
-    if (matrix)
-    {
-        wt.append(matrix);
-    }
-
-    var cachedWt = displayObject.worldTransform;
-    displayObject.worldTransform = wt;
-
-    // setWorld Alpha to ensure that the object is renderer at full opacity
-    displayObject.worldAlpha = 1;
-
-    // Time to update all the children of the displayObject with the new matrix..
-    var children = displayObject.children;
-    var i, j;
-
-    for (i = 0, j = children.length; i < j; ++i)
-    {
-        children[i].updateTransform();
-    }
-
-    if (clear)
-    {
-        this.textureBuffer.clear();
-    }
-
-
-//    this.textureBuffer.
-    var context = this.textureBuffer.context;
-
-    var realResolution = this.renderer.resolution;
-
-    this.renderer.resolution = this.resolution;
-
-    this.renderer.renderDisplayObject(displayObject, context);
-
-    this.renderer.resolution = realResolution;
-
-    if(displayObject.worldTransform === wt)
-    {
-        // fixes cacheAsBitmap Happening during the above..
-        displayObject.worldTransform = cachedWt;
-    }
-
-};
-
-/**
- * Destroys this texture
- *
- * @param destroyBase {boolean} Whether to destroy the base texture as well
- */
-RenderTexture.prototype.destroy = function ()
-{
-    Texture.prototype.destroy.call(this, true);
-
-    this.textureBuffer.destroy();
-
-    // destroy the filtermanager..
-    if(this.filterManager)
-    {
-        this.filterManager.destroy();
-    }
-
-    this.renderer = null;
+    this.baseTexture.render(this.frame, displayObject, matrix, clear, updateTransform)
 };
 
 /**
@@ -369,9 +141,7 @@ RenderTexture.prototype.destroy = function ()
  */
 RenderTexture.prototype.getImage = function ()
 {
-    var image = new Image();
-    image.src = this.getBase64();
-    return image;
+    return this.baseTexture.getImage(this.frame);
 };
 
 /**
@@ -381,7 +151,7 @@ RenderTexture.prototype.getImage = function ()
  */
 RenderTexture.prototype.getBase64 = function ()
 {
-    return this.getCanvas().toDataURL();
+    return this.getBase64.getImage(this.frame);
 };
 
 /**
@@ -391,30 +161,7 @@ RenderTexture.prototype.getBase64 = function ()
  */
 RenderTexture.prototype.getCanvas = function ()
 {
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        var gl = this.renderer.gl;
-        var width = this.textureBuffer.size.width;
-        var height = this.textureBuffer.size.height;
-
-        var webGLPixels = new Uint8Array(4 * width * height);
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
-        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        var tempCanvas = new CanvasBuffer(width, height);
-        var canvasData = tempCanvas.context.getImageData(0, 0, width, height);
-        canvasData.data.set(webGLPixels);
-
-        tempCanvas.context.putImageData(canvasData, 0, 0);
-
-        return tempCanvas.canvas;
-    }
-    else
-    {
-        return this.textureBuffer.canvas;
-    }
+    return this.baseTexture.getCanvas(this.frame);
 };
 
 /**
@@ -424,29 +171,7 @@ RenderTexture.prototype.getCanvas = function ()
  */
 RenderTexture.prototype.getPixels = function ()
 {
-    var width, height;
-
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        var gl = this.renderer.gl;
-        width = this.textureBuffer.size.width;
-        height = this.textureBuffer.size.height;
-
-        var webGLPixels = new Uint8Array(4 * width * height);
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
-        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        return webGLPixels;
-    }
-    else
-    {
-        width = this.textureBuffer.canvas.width;
-        height = this.textureBuffer.canvas.height;
-
-        return this.textureBuffer.canvas.getContext('2d').getImageData(0, 0, width, height).data;
-    }
+    return this.baseTexture.getPixels(this.frame);
 };
 
 /**
@@ -458,20 +183,11 @@ RenderTexture.prototype.getPixels = function ()
  */
 RenderTexture.prototype.getPixel = function (x, y)
 {
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        var gl = this.renderer.gl;
-
-        var webGLPixels = new Uint8Array(4);
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
-        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        return webGLPixels;
-    }
-    else
-    {
-        return this.textureBuffer.canvas.getContext('2d').getImageData(x, y, 1, 1).data;
-    }
+    return this.baseTexture.getPixel(this.frame, x, y);
 };
+
+RenderTexture.create = function(renderer, width, height, scaleMode, resolution)
+{
+    return new RenderTexture(new BaseRenderTexture(renderer, width, height, scaleMode, resolution));
+}
+

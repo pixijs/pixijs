@@ -84,6 +84,10 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      * @member {PIXI.Rectangle}
      */
     this.frame = null;
+    
+    this.defaultFrame = new PIXI.Rectangle();
+    this.destinationFrame = null;
+    this.sourceFrame = null;
 
     /**
      * The stencil buffer stores masking data for the render target
@@ -130,11 +134,6 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.root = root;
 
     this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
-    if(this.frameBuffer)this.frameBuffer.unbind();
-
-   // this.frameBuffer = {framebuffer:null, bind:function(){}, clear:function(){}, resize:function(){}}//new GLFramebuffer.createRGBA(gl, 100, 100);
-
-
 
     if (!this.root)
     {
@@ -143,17 +142,10 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
             create a texture and bind it attach it to the framebuffer..
          */
         
-        // create a texture to bind attach to the frameBuffer..
-        var texture = new GLTexture(gl);
 
-        texture.enableLinearScaling()
-        texture.enableWrapClamp()
-
-        this.frameBuffer.enableTexture(texture);
-
-        // TODO change!
+       // TODO change!
         // this is used by the base texture
-        this.texture = texture.texture;
+        this.texture = this.frameBuffer.texture;
     }
     else
     {
@@ -195,58 +187,77 @@ RenderTarget.prototype.attachStencilBuffer = function()
     }
 };
 
+
 /**
  * Binds the buffers and initialises the viewport.
  *
  */
-RenderTarget.prototype.activate = function()
+RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
     this.frameBuffer.bind();
 
+    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
+    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
-    var projectionFrame = this.frame || this.size;
-
-    // TODO add a dirty flag to this of a setter for the frame?
-    this.calculateProjection( projectionFrame );
+    this.calculateProjection( this.destinationFrame, this.sourceFrame );
 
     if(this.transform)
     {
         this.projectionMatrix.append(this.transform);
     }
 
-    gl.viewport(0,0, projectionFrame.width * this.resolution, projectionFrame.height * this.resolution);
+    if(this.destinationFrame !== this.sourceFrame)
+    {
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(this.destinationFrame.x, this.destinationFrame.y, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
+    }
+    else
+    {
+        gl.disable(gl.SCISSOR_TEST);
+    }
+
+
+    // TODO - does not need to be updated all the time??
+    gl.viewport(this.destinationFrame.x,this.destinationFrame.y, this.destinationFrame.width * this.resolution, this.destinationFrame.height * this.resolution);
+
+
 };
+
 
 /**
  * Updates the projection matrix based on a projection frame (which is a rectangle)
  *
  */
-RenderTarget.prototype.calculateProjection = function (projectionFrame)
+RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceFrame)
 {
     var pm = this.projectionMatrix;
 
+    sourceFrame = sourceFrame || destinationFrame;
+
     pm.identity();
 
+    // TODO: make dest scale source
     if (!this.root)
     {
-        pm.a = 1 / projectionFrame.width*2;
-        pm.d = 1 / projectionFrame.height*2;
+        pm.a = 1 / destinationFrame.width*2;
+        pm.d = 1 / destinationFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a;
-        pm.ty = -1 - projectionFrame.y * pm.d;
+        pm.tx = -1 - sourceFrame.x * pm.a;
+        pm.ty = -1 - sourceFrame.y * pm.d;
     }
     else
     {
-        pm.a = 1 / projectionFrame.width*2;
-        pm.d = -1 / projectionFrame.height*2;
+        pm.a = 1 / destinationFrame.width*2;
+        pm.d = -1 / destinationFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a;
-        pm.ty = 1 - projectionFrame.y * pm.d;
+        pm.tx = -1 - sourceFrame.x * pm.a;
+        pm.ty = 1 - sourceFrame.y * pm.d;
     }
 };
+
 
 /**
  * Resizes the texture to the specified width and height
@@ -266,6 +277,9 @@ RenderTarget.prototype.resize = function (width, height)
 
     this.size.width = width;
     this.size.height = height;
+
+    this.defaultFrame.width = width;
+    this.defaultFrame.height = height;
 
     this.frameBuffer.resize(width * this.resolution, height * this.resolution);
     
