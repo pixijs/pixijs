@@ -4,6 +4,7 @@ var utils = require('../../utils'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     WebGLGraphicsData = require('./WebGLGraphicsData'),
+    PrimitiveShader = require('./PrimitiveShader'),
     earcut = require('earcut');
 
 /**
@@ -23,6 +24,8 @@ function GraphicsRenderer(renderer)
 
     this.primitiveShader = null;
     this.complexPrimitiveShader = null;
+
+    this.gl = renderer.gl;
 
     /**
      * This is the maximum number of points a poly can contain before it is rendered as a complex polygon (using the stencil buffer)
@@ -45,7 +48,8 @@ WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
  */
 GraphicsRenderer.prototype.onContextChange = function()
 {
-
+    this.gl = this.renderer.gl;
+    this.primitiveShader = new PrimitiveShader(this.gl)
 };
 
 /**
@@ -72,8 +76,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var renderer = this.renderer;
     var gl = renderer.gl;
 
-    var shader = renderer.shaderManager.plugins.primitiveShader,
-        webGLData;
+    var webGLData;
 
     if (graphics.dirty || !graphics._webGL[gl.id])
     {
@@ -96,7 +99,9 @@ GraphicsRenderer.prototype.render = function(graphics)
 
         if (webGL.data[i].mode === 1)
         {
-
+            //TODO fix this one!
+            
+            /*
             renderer.stencilManager.pushStencil(graphics, webGLData);
 
             gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
@@ -105,27 +110,29 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
             renderer.stencilManager.popStencil(graphics, webGLData);
+            */
         }
         else
         {
 
-            shader = renderer.shaderManager.primitiveShader;
+            shader = this.primitiveShader;
 
-            renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
+            renderer.bindShader(shader)
 
-            gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
-
-            gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
-
-            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
-
-            gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
+            shader.uniforms.translationMatrix = graphics.worldTransform.toArray(true);
+            shader.uniforms.tint = utils.hex2rgb(graphics.tint);
+            shader.uniforms.alpha = graphics.worldAlpha;
 
 
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
-            gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-            gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+            shader = this.primitiveShader;
+
+            shader.attributes.aVertexPosition.pointer(gl.FLOAT, false, 4 * 6, 0);
+            shader.attributes.aColor.pointer(gl.FLOAT, false, 4 * 6, 2 * 4);
+
+            gl.enableVertexAttribArray(shader.attributes.aVertexPosition.location);
+            gl.enableVertexAttribArray(shader.attributes.aColor.location);
 
             // set the index buffer!
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);

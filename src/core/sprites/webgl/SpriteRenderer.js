@@ -326,6 +326,11 @@ SpriteRenderer.prototype.start = function ()
     this.vao.bind();
 };
 
+SpriteRenderer.prototype.stop = function ()
+{
+    this.flush();
+    this.vao.unbind();
+};
 /**
  * Destroys the SpriteBatch.
  *
