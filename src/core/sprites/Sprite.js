@@ -93,7 +93,6 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true
-    this.vertexDirty = true;
     this.vertexData = new Float32Array(8);
 }
 
@@ -203,14 +202,13 @@ Sprite.prototype._onTextureUpdate = function ()
 
 Sprite.prototype.caclulateVertices = function ()
 {
-
     var texture = this._texture,
-        wt = this.worldTransform,
+        wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim;
-    
+        
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
@@ -258,22 +256,11 @@ Sprite.prototype.caclulateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.textureDirty)
+    if(this.transform.updated || this.textureDirty)
     {
         this.textureDirty = false;
-
-        this._onTextureUpdate();
-        
-        this.vertexDirty = true;
-    }
-
-    if(this.vertexDirty)
-    {
-        this.vertexDirty = false;
-
         // set the vertex data
         this.caclulateVertices();
-
     }
     
     renderer.setObjectRenderer(renderer.plugins.sprite);
