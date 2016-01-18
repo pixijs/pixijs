@@ -103,8 +103,8 @@ function DisplayObject()
      * @member {PIXI.Matrix}
      * @readOnly
      */
-    //this.worldTransform = this.transform.worldTransform;
-  //  this.localTransform = this.transform.localTransform;
+    this.worldTransform = this.transform.worldTransform;
+    this.localTransform = this.transform.localTransform;
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation
@@ -114,7 +114,7 @@ function DisplayObject()
      */
     this.filterArea = null;
 
-    /**
+    /**xww
      * cached sin rotation
      *
      * @member {number}
@@ -161,46 +161,6 @@ function DisplayObject()
 DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
 module.exports = DisplayObject;
-
-var CachePoint = function(doc){
-    
-    this.doc = doc;
-
-    this.x = 0;
-    this.y = 0;
-}
-
-Object.defineProperties(CachePoint.prototype, {
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.DisplayObject#
-     */
-    x: {
-        get: function ()
-        {
-            return this.doc.position.x;
-        },
-        set: function (value)
-        {
-            this.doc.position.x = value;
-            this.doc.dirtyTransform = true;
-        }
-    },
-
-    y: {
-        get: function ()
-        {
-            return this.doc.posiiton.y;
-        },
-        set: function (value)
-        {
-            this.doc.position.y = value;
-            this.doc.dirtyTransform = true;
-        }
-    }
-});
 
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -384,41 +344,9 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    /*
-    var pt = this.parent.worldTransform;
-    var wt = this.worldTransform;
-    var lt = this.localTransform;
-
-    if(this.dirtyTransform)
-    {
-        // get the matrix values of the displayobject based on its transform properties..
-        lt.a  =  this._cr * this.scale.x;
-        lt.b  =  this._sr * this.scale.x;
-        lt.c  = -this._sr * this.scale.y;
-        lt.d  =  this._cr * this.scale.y;
-        lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
-        lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
-    }
-
-    if(this.dirtyTransform || this.parent.dirtyTransform)
-    {      
-        // concat the parent matrix with the objects transform.
-        wt.a  = lt.a  * pt.a + lt.b  * pt.c;
-        wt.b  = lt.a  * pt.b + lt.b  * pt.d;
-        wt.c  = lt.c  * pt.a + lt.d  * pt.c;
-        wt.d  = lt.c  * pt.b + lt.d  * pt.d;
-        wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-        wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;       
-    
-        this._currentBounds = null;
-    }
-*/
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    // reset the bounds each time this is called!
-    
 };
 
 // performance increase to avoid using call.. (10x faster)

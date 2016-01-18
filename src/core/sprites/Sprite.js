@@ -206,12 +206,11 @@ Sprite.prototype.caclulateVertices = function ()
 
     var texture = this._texture,
         wt = this.transform.worldTransform,
-       // a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
-        a = wt[0], b = wt[1], c = wt[2], d = wt[3], tx = wt[4], ty = wt[5],
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim;
-    
+        
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..

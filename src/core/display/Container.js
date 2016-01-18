@@ -391,7 +391,8 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.displayObjectUpdateTransform();
+    this.transform.updateTransform(this.parent.transform);
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
