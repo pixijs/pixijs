@@ -1,7 +1,7 @@
 /**
  * @license
- * pixi.js - v3.0.10-dev
- * Compiled 2016-01-17T23:00:37.643Z
+ * pixi.js - v3.0.9
+ * Compiled 2016-01-18T19:02:26.483Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
