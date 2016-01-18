@@ -2,7 +2,7 @@ var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
-    Transform = require('./Transform'),
+    Transform = require('./TransformStatic'),
     _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
@@ -114,22 +114,6 @@ function DisplayObject()
      */
     this.filterArea = null;
 
-    /**xww
-     * cached sin rotation
-     *
-     * @member {number}
-     * @private
-     */
-    this._sr = 0;
-
-    /**
-     * cached cos rotation
-     *
-     * @member {number}
-     * @private
-     */
-    this._cr = 1;
-
     /**
      * The original, cached bounds of the object
      *
@@ -154,7 +138,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this.dirtyTransform = true;
+  //  this.dirtyTransform = true;
 }
 
 // constructor
@@ -238,9 +222,9 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this._rotation = value;
-            this.dirtyTransform = true;
-            this._sr = Math.sin(value);
-            this._cr = Math.cos(value);
+            this.transform.dirty = true;
+            this.transform._sr = Math.sin(value);
+            this.transform._cr = Math.cos(value);
         }
     },
 
@@ -344,6 +328,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
+    //if(this.transform.dirty || parent.transform.dirty)
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
