@@ -26,7 +26,7 @@ function Transform()
     
     this.dirty = true;
 
-
+    
     this.updated = true;
 }
 
@@ -49,10 +49,10 @@ Transform.prototype.updateTransform = function (parentTransform)
         lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
     }
 
-    this.updated = this.dirty || parentTransform.dirty;
+    this.updated = this.dirty || parentTransform.updated;
 
     if(this.updated)
-    {      
+    {    
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;
         wt.b  = lt.a  * pt.b + lt.b  * pt.d;
@@ -61,7 +61,8 @@ Transform.prototype.updateTransform = function (parentTransform)
         wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
         wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
     }
-  
+    
+    this.dirty = false;
 }
 
 module.exports = Transform;

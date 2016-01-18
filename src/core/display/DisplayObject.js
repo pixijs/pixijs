@@ -103,8 +103,8 @@ function DisplayObject()
      * @member {PIXI.Matrix}
      * @readOnly
      */
-    this.worldTransform = this.transform.worldTransform;
-    this.localTransform = this.transform.localTransform;
+//    this.worldTransform = this.transform.worldTransform;
+ //   this.localTransform = this.transform.localTransform;
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation
@@ -184,36 +184,6 @@ Object.defineProperties(DisplayObject.prototype, {
         }
     },
 
-    scaleX: {
-        get: function ()
-        {
-            return this.scale.x;
-        },
-        set: function (value)
-        {
-            this.scale.x = value;
-            this.dirtyTransform = true;
-        }
-    },
-
-    /**
-     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.DisplayObject#
-     */
-    scaleY: {
-        get: function ()
-        {
-            return this.scale.y;
-        },
-        set: function (value)
-        {
-            this.scale.y = value;
-            this.dirtyTransform = true;
-        }
-    },
-
     rotation: {
         get: function ()
         {
@@ -225,24 +195,6 @@ Object.defineProperties(DisplayObject.prototype, {
             this.transform.dirty = true;
             this.transform._sr = Math.sin(value);
             this.transform._cr = Math.cos(value);
-        }
-    },
-
-    /**
-     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.DisplayObject#
-     */
-    scaleY: {
-        get: function ()
-        {
-            return this.scale.y;
-        },
-        set: function (value)
-        {
-            this.scale.y = value;
-            this.dirtyTransform = true;
         }
     },
 
