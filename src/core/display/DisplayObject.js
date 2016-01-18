@@ -2,6 +2,7 @@ var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
+    Transform = require('./Transform'),
     _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
@@ -18,27 +19,29 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    this.transform = new Transform();
+
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
      * @member {PIXI.Point}
      */
-    this.position = new math.Point();
-    this._position = new CachePoint(this);
+    this.position = this.transform.position;
+   // this._position = new CachePoint(this);
 
     /**
      * The scale factor of the object.
      *
      * @member {PIXI.Point}
      */
-    this.scale = new math.Point(1, 1);
+    this.scale = this.transform.scale
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point}
      */
-    this.pivot = new math.Point(0, 0);
+    this.pivot = this.transform.pivot
 
 
     /**
@@ -46,7 +49,7 @@ function DisplayObject()
      *
      * @member {PIXI.Point}
      */
-    this.skew = new math.Point(0, 0);
+    this.skew = this.transform.skew
 
     /**
      * The rotation of the object in radians.
@@ -100,9 +103,8 @@ function DisplayObject()
      * @member {PIXI.Matrix}
      * @readOnly
      */
-    this.worldTransform = new math.Matrix();
-    this.localTransform = new math.Matrix();
-
+    //this.worldTransform = this.transform.worldTransform;
+  //  this.localTransform = this.transform.localTransform;
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation
@@ -382,6 +384,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
+    /*
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
     var lt = this.localTransform;
@@ -409,7 +412,8 @@ DisplayObject.prototype.updateTransform = function ()
     
         this._currentBounds = null;
     }
-
+*/
+    this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 

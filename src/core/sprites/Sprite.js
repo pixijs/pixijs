@@ -205,8 +205,9 @@ Sprite.prototype.caclulateVertices = function ()
 {
 
     var texture = this._texture,
-        wt = this.worldTransform,
-        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        wt = this.transform.worldTransform,
+       // a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        a = wt[0], b = wt[1], c = wt[2], d = wt[3], tx = wt[4], ty = wt[5],
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim;
