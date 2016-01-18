@@ -34,14 +34,14 @@ function DisplayObject()
      *
      * @member {PIXI.Point}
      */
-    this.scale = this.transform.scale
+    this.scale = this.transform.scale;
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point}
      */
-    this.pivot = this.transform.pivot
+    this.pivot = this.transform.pivot;
 
 
     /**
@@ -49,7 +49,7 @@ function DisplayObject()
      *
      * @member {PIXI.Point}
      */
-    this.skew = this.transform.skew
+    this.skew = this.transform.skew;
 
     /**
      * The rotation of the object in radians.
