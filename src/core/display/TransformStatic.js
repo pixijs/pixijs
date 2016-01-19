@@ -10,7 +10,7 @@ var ObservablePoint = require('./ObservablePoint');
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function Transform()
+function TransformStatic()
 {
     this.worldTransform = new math.Matrix();
     this.localTransform = new math.Matrix();
@@ -24,15 +24,13 @@ function Transform()
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     
-    this.dirty = true;
-
-    
+    this.dirty = true;  
     this.updated = true;
 }
 
-Transform.prototype.constructor = Transform;
+TransformStatic.prototype.constructor = TransformStatic;
 
-Transform.prototype.updateTransform = function (parentTransform)
+TransformStatic.prototype.updateTransform = function (parentTransform)
 {
     var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
@@ -65,6 +63,6 @@ Transform.prototype.updateTransform = function (parentTransform)
     this.dirty = false;
 }
 
-module.exports = Transform;
+module.exports = TransformStatic;
 
 
