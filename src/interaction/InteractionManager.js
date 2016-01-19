@@ -392,7 +392,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(children[i].interactive)
+                if(children[i] && children[i].interactive)
                 {
                     hitTest = false;
                 }
