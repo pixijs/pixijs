@@ -9,7 +9,7 @@ var glCore = require('pixi-gl-core');
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
-function WebGLGraphicsData(gl, shader) 
+function PrimitiveObject(gl) 
 {
 
     /**
@@ -50,6 +50,18 @@ function WebGLGraphicsData(gl, shader)
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl);
 
     /**
+     * todo @alvin
+     * @member {number}
+     */
+    this.mode = 1;
+
+    /**
+     * The alpha of the graphics
+     * @member {number}
+     */
+    this.alpha = 1;
+
+    /**
      * Whether this graphics is dirty or not
      * @member {boolean}
      */
@@ -58,22 +70,20 @@ function WebGLGraphicsData(gl, shader)
     this.glPoints = null;
     this.glIndices = null;
 
-
+    // 
     this.shader = shader;
+    this.vao = vao;
+
     
-    this.vao =  new glCore.VertexArrayObject(gl)
-    .addIndex(this.indexBuffer)
-    .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
-    .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
 }
 
-WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;
-module.exports = WebGLGraphicsData;
+PrimitiveObject.prototype.constructor = PrimitiveObject;
+module.exports = PrimitiveObject;
 
 /**
  * Resets the vertices and the indices
  */
-WebGLGraphicsData.prototype.reset = function () 
+PrimitiveObject.prototype.reset = function () 
 {
     this.points.length = 0;
     this.indices.length = 0;
@@ -82,7 +92,7 @@ WebGLGraphicsData.prototype.reset = function ()
 /**
  * Binds the buffers and uploads the data
  */
-WebGLGraphicsData.prototype.upload = function () 
+PrimitiveObject.prototype.upload = function () 
 {
     var gl = this.gl;
 
@@ -95,9 +105,7 @@ WebGLGraphicsData.prototype.upload = function ()
     this.dirty = false;
 };
 
-
-
-WebGLGraphicsData.prototype.destroy = function () 
+PrimitiveObject.prototype.destroy = function () 
 {
     this.color = null;
     this.points = null;
@@ -115,3 +123,24 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.glPoints = null;
     this.glIndices = null;
 };
+
+PrimitiveObject.createComplexPrimitive = function(gl, shader)
+{
+    var vao = new glCore.VertexArrayObject(gl)
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
+    .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
+
+    return new PrimitiveObject(gl, shader, vao);
+}
+
+PrimitiveObject.createPrimitive = function(gl, shader)
+{
+    var vao = new glCore.VertexArrayObject(gl)
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
+    .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
+
+    return new PrimitiveObject(gl, shader, vao)
+}
+

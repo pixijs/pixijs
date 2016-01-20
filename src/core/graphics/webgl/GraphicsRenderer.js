@@ -14,7 +14,7 @@ var utils = require('../../utils'),
     buildRoundedRectangle = require('./utils/buildRoundedRectangle');
     buildCircle = require('./utils/buildCircle');
 
-    earcut = require('earcut');
+    
 
 /**
  * Renders the graphics object.
@@ -30,17 +30,12 @@ function GraphicsRenderer(renderer)
     ObjectRenderer.call(this, renderer);
 
     this.graphicsDataPool = [];
+    this.complexVaoPool = [];
+    this.primitiveVaoPool = [];
 
     this.primitiveShader = null;
-    this.complexPrimitiveShader = null;
 
     this.gl = renderer.gl;
-
-    /**
-     * This is the maximum number of points a poly can contain before it is rendered as a complex polygon (using the stencil buffer)
-     * @type {Number}
-     */
-    this.maximumSimplePolySize = 200;
 }
 
 GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -65,7 +60,8 @@ GraphicsRenderer.prototype.onContextChange = function()
  * Destroys this renderer.
  *
  */
-GraphicsRenderer.prototype.destroy = function () {
+GraphicsRenderer.prototype.destroy = function () 
+{
     ObjectRenderer.prototype.destroy.call(this);
 
     for (var i = 0; i < this.graphicsDataPool.length; ++i) {
@@ -86,7 +82,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var gl = renderer.gl;
 
     var webGLData;
-  //  console.log(graphics)
+
     if (graphics.dirty || !graphics._webGL[gl.id])
     {
         this.updateGraphics(graphics);
@@ -102,6 +98,9 @@ GraphicsRenderer.prototype.render = function(graphics)
     for (var i = 0, n = webGL.data.length; i < n; i++)
     {
         webGLData = webGL.data[i];
+        var shader = webGLData.shader;
+       
+        renderer.bindShader(shader)
 
         shader.uniforms.translationMatrix = graphics.worldTransform.toArray(true);
         shader.uniforms.tint = utils.hex2rgb(graphics.tint);
@@ -110,8 +109,6 @@ GraphicsRenderer.prototype.render = function(graphics)
         webGLData.vao.bind()
         .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
         .unbind();
-        
-        renderer.drawCount++;
     }
 };
 
@@ -149,7 +146,6 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
         for (i = 0; i < webGL.data.length; i++)
         {
             var graphicsData = webGL.data[i];
-            graphicsData.reset();
             this.graphicsDataPool.push( graphicsData );
         }
 
@@ -167,67 +163,24 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     {
         var data = graphics.graphicsData[i];
 
+        //TODO - this can be simplified
+        webGLData = this.getWebGLData(webGL, 0);
+
         if (data.type === CONST.SHAPES.POLY)
         {
-            // need to add the points the the graphics object..
-            data.points = data.shape.points.slice();
-            if (data.shape.closed)
-            {
-                // close the poly if the value is true!
-                if (data.points[0] !== data.points[data.points.length-2] || data.points[1] !== data.points[data.points.length-1])
-                {
-                    data.points.push(data.points[0], data.points[1]);
-                }
-            }
-
-            // MAKE SURE WE HAVE THE CORRECT TYPE..
-            if (data.fill)
-            {
-                if (data.points.length >= 6)
-                {
-                    if (data.points.length < this.maximumSimplePolySize * 2)
-                    {
-                        webGLData = this.switchMode(webGL, 0);
-
-                        var canDrawUsingSimple = buildPoly(data, webGLData);
-
-                        if (!canDrawUsingSimple)
-                        {
-                            webGLData = this.switchMode(webGL, 1);
-                            buildComplexPoly(data, webGLData);
-                        }
-
-                    }
-                    else
-                    {
-                        webGLData = this.switchMode(webGL, 1);
-                        buildComplexPoly(data, webGLData);
-                    }
-                }
-            }
-
-            if (data.lineWidth > 0)
-            {
-                webGLData = this.switchMode(webGL, 0);
-                buildLine(data, webGLData);
-            }
+            buildPoly(data, webGLData);
         }
-        else
+        if (data.type === CONST.SHAPES.RECT)
         {
-            webGLData = this.switchMode(webGL, 0);
-
-            if (data.type === CONST.SHAPES.RECT)
-            {
-                buildRectangle(data, webGLData);
-            }
-            else if (data.type === CONST.SHAPES.CIRC || data.type === CONST.SHAPES.ELIP)
-            {
-                buildCircle(data, webGLData);
-            }
-            else if (data.type === CONST.SHAPES.RREC)
-            {
-                buildRoundedRectangle(data, webGLData);
-            }
+            buildRectangle(data, webGLData);
+        }
+        else if (data.type === CONST.SHAPES.CIRC || data.type === CONST.SHAPES.ELIP)
+        {
+            buildCircle(data, webGLData);
+        }
+        else if (data.type === CONST.SHAPES.RREC)
+        {
+            buildRoundedRectangle(data, webGLData);
         }
 
         webGL.lastIndex++;
@@ -247,29 +200,28 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
 
 /**
  *
- *
  * @private
  * @param webGL {WebGLRenderingContext} the current WebGL drawing context
  * @param type {number} TODO @Alvin
  */
-GraphicsRenderer.prototype.switchMode = function (webGL, type)
+GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 {
     var webGLData;
 
     if (!webGL.data.length)
     {
-        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
-        webGLData.mode = type;
+        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);  
+        webGLData.reset(type);
         webGL.data.push(webGLData);
     }
     else
     {
         webGLData = webGL.data[webGL.data.length-1];
 
-        if ((webGLData.points.length > 320000) || webGLData.mode !== type || type === 1)
+        if (webGLData.points.length > 320000)
         {
             webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
-            webGLData.mode = type;
+            webGLData.reset(type);
             webGL.data.push(webGLData);
         }
     }
