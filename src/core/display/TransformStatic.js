@@ -1,6 +1,7 @@
 var math = require('../math');
 var ObservablePoint = require('./ObservablePoint');
 
+var generatorId = 0;
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -19,15 +20,17 @@ function Transform()
     this.scale = new ObservablePoint(this,1, 1);
     this.pivot = new ObservablePoint(this, 0, 0);
     this.skew = new ObservablePoint(this, 0,0);
-    
+
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-    
-    this.dirty = true;
 
-    
-    this.updated = true;
+    this._versionLocal = 0;
+    this._versionGlobal = 0;
+    this._dirtyLocal = 0;
+    this._dirtyParentVersion = -1;
+    this._dirtyParentId = -1;
+    this._transformId = ++generatorId;
 }
 
 Transform.prototype.constructor = Transform;
@@ -38,21 +41,21 @@ Transform.prototype.updateTransform = function (parentTransform)
     var wt = this.worldTransform;
     var lt = this.localTransform;
 
-    if(this.dirty)
+    if(this._dirtyLocal !== this._versionLocal ||
+        parentTransform._dirtyParentId !== parentTransform._transformId ||
+        parentTransform._dirtyParentVersion !== parentTransform._versionGlobal )
     {
-        // get the matrix values of the displayobject based on its transform properties..
-        lt.a  =  this._cr * this.scale._x;
-        lt.b  =  this._sr * this.scale._x;
-        lt.c  = -this._sr * this.scale._y;
-        lt.d  =  this._cr * this.scale._y;
-        lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
-        lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
-    }
-
-    this.updated = this.dirty || parentTransform.updated;
-
-    if(this.updated)
-    {    
+        if(this._dirtyLocal !== this._versionLocal)
+        {
+            // get the matrix values of the displayobject based on its transform properties..
+            lt.a  =  this._cr * this.scale._x;
+            lt.b  =  this._sr * this.scale._x;
+            lt.c  = -this._sr * this.scale._y;
+            lt.d  =  this._cr * this.scale._y;
+            lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
+            lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
+            this._dirtyLocal = this._versionLocal;
+        }
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;
         wt.b  = lt.a  * pt.b + lt.b  * pt.d;
@@ -60,10 +63,12 @@ Transform.prototype.updateTransform = function (parentTransform)
         wt.d  = lt.c  * pt.b + lt.d  * pt.d;
         wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
         wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+        this._dirtyParentId = parentTransform._transformId;
+        this._dirtyParentVersion = parentTransform._versionGlobal;
+        this._versionGlobal++;
     }
-    
-    this.dirty = false;
-}
+};
 
 module.exports = Transform;
 
