@@ -129,6 +129,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     if (!webGL)
     {
         webGL = graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+
     }
 
    
@@ -208,26 +209,13 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 {
     var webGLData;
 
-    if (!webGL.data.length)
+    if (!webGL.data.length || webGLData.points.length > 320000)
     {
         webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);  
         webGLData.reset(type);
         webGL.data.push(webGLData);
     }
-    else
-    {
-        webGLData = webGL.data[webGL.data.length-1];
-
-        if (webGLData.points.length > 320000)
-        {
-            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
-            webGLData.reset(type);
-            webGL.data.push(webGLData);
-        }
-    }
 
     webGLData.dirty = true;
-
-    return webGLData;
 };
 
