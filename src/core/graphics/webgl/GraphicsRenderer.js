@@ -30,8 +30,6 @@ function GraphicsRenderer(renderer)
     ObjectRenderer.call(this, renderer);
 
     this.graphicsDataPool = [];
-    this.complexVaoPool = [];
-    this.primitiveVaoPool = [];
 
     this.primitiveShader = null;
 
