@@ -33,8 +33,8 @@ Object.defineProperties(PixelateFilter.prototype, {
      * This a point that describes the size of the blocks.
      * x is the width of the block and y is the height.
      *
-     * @member {Point}
-     * @memberof PixelateFilter#
+     * @member {PIXI.Point}
+     * @memberof PIXI.filters.PixelateFilter#
      */
     size: {
         get: function ()

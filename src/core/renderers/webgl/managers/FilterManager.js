@@ -8,14 +8,14 @@ var WebGLManager = require('./WebGLManager'),
  * @class
  * @memberof PIXI
  * @extends PIXI.WebGLManager
- * @param renderer {WebGLRenderer} The renderer this manager works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
     /**
-     * @member {any[]}
+     * @member {object[]}
      */
     this.filterStack = [];
 
@@ -26,15 +26,25 @@ function FilterManager(renderer)
     });
 
     /**
-     * @member {any[]}
+     * @member {PIXI.RenderTarget[]}
      */
     this.texturePool = [];
 
+    /**
+     * The size of the texture
+     *
+     * @member {PIXI.Rectangle}
+     */
     // listen for context and update necessary buffers
     //TODO make this dynamic!
     //TODO test this out by forces power of two?
-    this.textureSize = new math.Rectangle( 0, 0, renderer.width, renderer.height );
+    this.textureSize = new math.Rectangle(0, 0, renderer.width, renderer.height);
 
+    /**
+     * The current frame
+     *
+     * @member {PIXI.Rectangle}
+     */
     this.currentFrame = null;
 }
 
@@ -56,7 +66,7 @@ FilterManager.prototype.onContextChange = function ()
 };
 
 /**
- * @param renderer {WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
 FilterManager.prototype.setFilterStack = function ( filterStack )
@@ -67,14 +77,15 @@ FilterManager.prototype.setFilterStack = function ( filterStack )
 /**
  * Applies the filter and adds it to the current filter stack.
  *
- * @param filterBlock {object} the filter that will be pushed to the current filter stack
+ * @param target {PIXI.DisplayObject}
+ * @param filters {PIXI.AbstractFiler[]} the filters that will be pushed to the current filter stack
  */
 FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
     // TODO replace clone with a copy to save object creation
     var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
-    
+
     //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
@@ -295,6 +306,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+    this.renderer.drawCount++;
 };
 
 /*
@@ -421,6 +433,10 @@ FilterManager.prototype.resize = function ( width, height )
  */
 FilterManager.prototype.destroy = function ()
 {
+    this.quad.destroy();
+    
+    WebGLManager.prototype.destroy.call(this);
+    
     this.filterStack = null;
     this.offsetY = 0;
 

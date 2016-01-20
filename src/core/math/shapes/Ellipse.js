@@ -51,7 +51,7 @@ module.exports = Ellipse;
 /**
  * Creates a clone of this Ellipse instance
  *
- * @return {Ellipse} a copy of the ellipse
+ * @return {PIXI.Ellipse} a copy of the ellipse
  */
 Ellipse.prototype.clone = function ()
 {
@@ -85,7 +85,7 @@ Ellipse.prototype.contains = function (x, y)
 /**
  * Returns the framing rectangle of the ellipse as a Rectangle object
  *
- * @return {Rectangle} the framing rectangle
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 Ellipse.prototype.getBounds = function ()
 {

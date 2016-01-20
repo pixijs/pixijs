@@ -20,6 +20,8 @@ var utils = require('../utils'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
+ * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function SystemRenderer(system, width, height, options)
 {
@@ -46,8 +48,9 @@ function SystemRenderer(system, width, height, options)
     /**
      * The type of the renderer.
      *
-     * @member {RENDERER_TYPE}
-     * @default CONT.RENDERER_TYPE.UNKNOWN
+     * @member {number}
+     * @default PIXI.RENDERER_TYPE.UNKNOWN
+     * @see PIXI.RENDERER_TYPE
      */
     this.type = CONST.RENDERER_TYPE.UNKNOWN;
 
@@ -122,6 +125,14 @@ function SystemRenderer(system, width, height, options)
     this.clearBeforeRender = options.clearBeforeRender;
 
     /**
+     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Handy for crisp pixel art and speed on legacy devices.
+     *
+     * @member {boolean}
+     */
+    this.roundPixels = options.roundPixels;
+
+    /**
      * The background color as a number.
      *
      * @member {number}
@@ -149,12 +160,18 @@ function SystemRenderer(system, width, height, options)
 
     /**
      * This temporary display object used as the parent of the currently being rendered item
-     * @member {DisplayObject}
+     *
+     * @member {PIXI.DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
-    //
+    /**
+     * The last root object that the renderer tried to render.
+     *
+     * @member {PIXI.DisplayObject}
+     * @private
+     */
     this._lastObjectRendered = this._tempDisplayObjectParent;
 }
 
@@ -168,7 +185,7 @@ Object.defineProperties(SystemRenderer.prototype, {
      * The background color to fill if not transparent
      *
      * @member {number}
-     * @memberof SystemRenderer#
+     * @memberof PIXI.SystemRenderer#
      */
     backgroundColor:
     {
@@ -211,9 +228,9 @@ SystemRenderer.prototype.resize = function (width, height) {
  * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
 SystemRenderer.prototype.destroy = function (removeView) {
-    if (removeView && this.view.parent)
+    if (removeView && this.view.parentNode)
     {
-        this.view.parent.removeChild(this.view);
+        this.view.parentNode.removeChild(this.view);
     }
 
     this.type = CONST.RENDERER_TYPE.UNKNOWN;
@@ -233,6 +250,8 @@ SystemRenderer.prototype.destroy = function (removeView) {
 
     this.preserveDrawingBuffer = false;
     this.clearBeforeRender = false;
+
+    this.roundPixels = false;
 
     this._backgroundColor = 0;
     this._backgroundColorRgb = null;

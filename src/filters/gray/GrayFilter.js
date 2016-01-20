@@ -32,7 +32,7 @@ Object.defineProperties(GrayFilter.prototype, {
      * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
      *
      * @member {number}
-     * @memberof GrayFilter#
+     * @memberof PIXI.filters.GrayFilter#
      */
     gray: {
         get: function ()

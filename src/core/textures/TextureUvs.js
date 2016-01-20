@@ -4,6 +4,7 @@
  *
  * @class
  * @private
+ * @memberof PIXI
  */
 function TextureUvs()
 {
@@ -24,8 +25,8 @@ module.exports = TextureUvs;
 
 /**
  * Sets the texture Uvs based on the given frame information
- * @param frame {Rectangle}
- * @param baseFrame {Rectangle}
+ * @param frame {PIXI.Rectangle}
+ * @param baseFrame {PIXI.Rectangle}
  * @param rotate {boolean} Whether or not the frame is rotated
  * @private
  */

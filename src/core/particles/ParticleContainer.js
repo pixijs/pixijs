@@ -24,23 +24,38 @@ var Container = require('../display/Container'),
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
- *
- * @param [size=15000] {number} The number of images in the SpriteBatch before it flushes.
+ * @param [maxSize=15000] {number} The maximum number of particles that can be renderer by the container.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
  * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
  * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
  * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
  * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
+ * @param [batchSize=15000] {number} Number of particles per batch.
  */
-function ParticleContainer(size, properties)
+function ParticleContainer(maxSize, properties, batchSize)
 {
     Container.call(this);
+
+    batchSize = batchSize || 15000; //CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+    maxSize = maxSize || 15000;
+
+    // Making sure the batch size is valid
+    // 65535 is max vertex index in the index buffer (see ParticleRenderer)
+    // so max number of particles is 65536 / 4 = 16384
+    var maxBatchSize = 16384;
+    if (batchSize > maxBatchSize) {
+        batchSize = maxBatchSize;
+    }
+
+    if (batchSize > maxSize) {
+        batchSize = maxSize;
+    }
 
     /**
      * Set properties to be dynamic (true) / static (false)
      *
-     * @member {array}
+     * @member {boolean[]}
      * @private
      */
     this._properties = [false, true, false, false, false];
@@ -49,7 +64,13 @@ function ParticleContainer(size, properties)
      * @member {number}
      * @private
      */
-    this._size = size || 15000;
+    this._maxSize = maxSize;
+
+    /**
+     * @member {number}
+     * @private
+     */
+    this._batchSize = batchSize;
 
     /**
      * @member {WebGLBuffer}
@@ -58,10 +79,10 @@ function ParticleContainer(size, properties)
     this._buffers = null;
 
     /**
-     * @member {boolean}
+     * @member {number}
      * @private
      */
-    this._updateStatic = false;
+    this._bufferToUpdate = 0;
 
     /**
      * @member {boolean}
@@ -70,10 +91,11 @@ function ParticleContainer(size, properties)
     this.interactiveChildren = false;
 
     /**
-     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
      * @member {number}
-     * @default CONST.BLEND_MODES.NORMAL;
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
      */
     this.blendMode = CONST.BLEND_MODES.NORMAL;
 
@@ -124,7 +146,7 @@ ParticleContainer.prototype.updateTransform = function ()
 /**
  * Renders the container using the WebGL renderer
  *
- * @param renderer {WebGLRenderer} The webgl renderer
+ * @param renderer {PIXI.WebGLRenderer} The webgl renderer
  * @private
  */
 ParticleContainer.prototype.renderWebGL = function (renderer)
@@ -139,62 +161,22 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
 };
 
 /**
- * Adds a child to this particle container at a specified index. If the index is out of bounds an error will be thrown
+ * Set the flag that static data should be updated to true
  *
- * @param child {DisplayObject} The child to add
- * @param index {Number} The index to place the child in
- * @return {DisplayObject} The child that was added.
+ * @private
  */
-ParticleContainer.prototype.addChildAt = function (child, index)
+ParticleContainer.prototype.onChildrenChange = function (smallestChildIndex)
 {
-    // prevent adding self as child
-    if (child === this)
-    {
-        return child;
+    var bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
+    if (bufferIndex < this._bufferToUpdate) {
+        this._bufferToUpdate = bufferIndex;
     }
-
-    if (index >= 0 && index <= this.children.length)
-    {
-        if (child.parent)
-        {
-            child.parent.removeChild(child);
-        }
-
-        child.parent = this;
-
-        this.children.splice(index, 0, child);
-
-        this._updateStatic = true;
-
-        return child;
-    }
-    else
-    {
-        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
-    }
-};
-
-/**
- * Removes a child from the specified index position.
- *
- * @param index {Number} The index to get the child from
- * @return {DisplayObject} The child that was removed.
- */
-ParticleContainer.prototype.removeChildAt = function (index)
-{
-    var child = this.getChildAt(index);
-
-    child.parent = null;
-    this.children.splice(index, 1);
-    this._updateStatic = true;
-
-    return child;
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer} The canvas renderer
+ * @param renderer {PIXI.CanvasRenderer} The canvas renderer
  * @private
  */
 ParticleContainer.prototype.renderCanvas = function (renderer)
@@ -213,6 +195,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 
     var finalWidth = 0;
     var finalHeight = 0;
+
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
+    {
+        context.globalCompositeOperation = compositeOperation;
+    }
 
     context.globalAlpha = this.worldAlpha;
 

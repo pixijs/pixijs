@@ -4,9 +4,9 @@ var core = require('../../core');
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {ShaderManager} The WebGL shader manager this shader works for.
+ * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
  */
-function StripShader(shaderManager)
+function MeshShader(shaderManager)
 {
     core.Shader.call(this,
         shaderManager,
@@ -52,8 +52,8 @@ function StripShader(shaderManager)
     );
 }
 
-StripShader.prototype = Object.create(core.Shader.prototype);
-StripShader.prototype.constructor = StripShader;
-module.exports = StripShader;
+MeshShader.prototype = Object.create(core.Shader.prototype);
+MeshShader.prototype.constructor = MeshShader;
+module.exports = MeshShader;
 
-core.ShaderManager.registerPlugin('meshShader', StripShader);
+core.ShaderManager.registerPlugin('meshShader', MeshShader);

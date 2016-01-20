@@ -7,9 +7,11 @@ var core = require('./core'),
 /**
  * @class
  * @private
- * @name PIXI.SpriteBatch
- * @see {@link PIXI.ParticleContainer}
+ * @name SpriteBatch
+ * @memberof PIXI
+ * @see PIXI.ParticleContainer
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
+ * @deprecated since version 3.0.0
  */
 core.SpriteBatch = function()
 {
@@ -19,9 +21,11 @@ core.SpriteBatch = function()
 /**
  * @class
  * @private
- * @name PIXI.AssetLoader
- * @see {@link PIXI.loaders.Loader}
+ * @name AssetLoader
+ * @memberof PIXI
+ * @see PIXI.loaders.Loader
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
+ * @deprecated since version 3.0.0
  */
 core.AssetLoader = function()
 {
@@ -33,9 +37,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Stage
-     * @see {@link PIXI.Container}
-     * @deprecated since version 3.0
+     * @name Stage
+     * @memberof PIXI
+     * @see PIXI.Container
+     * @deprecated since version 3.0.0
      */
     Stage: {
         get: function()
@@ -48,9 +53,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.DisplayObjectContainer
-     * @see {@link PIXI.Container}
-     * @deprecated since version 3.0
+     * @name DisplayObjectContainer
+     * @memberof PIXI
+     * @see PIXI.Container
+     * @deprecated since version 3.0.0
      */
     DisplayObjectContainer: {
         get: function()
@@ -63,9 +69,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Strip
-     * @see {@link PIXI.mesh.Mesh}
-     * @deprecated since version 3.0
+     * @name Strip
+     * @memberof PIXI
+     * @see PIXI.mesh.Mesh
+     * @deprecated since version 3.0.0
      */
     Strip: {
         get: function()
@@ -78,9 +85,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.Rope
-     * @see {@link PIXI.mesh.Rope}
-     * @deprecated since version 3.0
+     * @name Rope
+     * @memberof PIXI
+     * @see PIXI.mesh.Rope
+     * @deprecated since version 3.0.0
      */
     Rope: {
         get: function()
@@ -93,9 +101,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.MovieClip
-     * @see {@link PIXI.MovieClip}
-     * @deprecated since version 3.0
+     * @name MovieClip
+     * @memberof PIXI
+     * @see PIXI.extras.MovieClip
+     * @deprecated since version 3.0.0
      */
     MovieClip: {
         get: function()
@@ -108,9 +117,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.TilingSprite
-     * @see {@link PIXI.TilingSprite}
-     * @deprecated since version 3.0
+     * @name TilingSprite
+     * @memberof PIXI
+     * @see PIXI.extras.TilingSprite
+     * @deprecated since version 3.0.0
      */
     TilingSprite: {
         get: function()
@@ -123,9 +133,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.BitmapText
-     * @see {@link PIXI.extras.BitmapText}
-     * @deprecated since version 3.0
+     * @name BitmapText
+     * @memberof PIXI
+     * @see PIXI.extras.BitmapText
+     * @deprecated since version 3.0.0
      */
     BitmapText: {
         get: function()
@@ -138,9 +149,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.blendModes
-     * @see {@link PIXI.BLEND_MODES}
-     * @deprecated since version 3.0
+     * @name blendModes
+     * @memberof PIXI
+     * @see PIXI.BLEND_MODES
+     * @deprecated since version 3.0.0
      */
     blendModes: {
         get: function()
@@ -153,9 +165,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.scaleModes
-     * @see {@link PIXI.SCALE_MODES}
-     * @deprecated since version 3.0
+     * @name scaleModes
+     * @memberof PIXI
+     * @see PIXI.SCALE_MODES
+     * @deprecated since version 3.0.0
      */
     scaleModes: {
         get: function()
@@ -168,9 +181,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.BaseTextureCache
-     * @see {@link PIXI.utils.BaseTextureCache}
-     * @deprecated since version 3.0
+     * @name BaseTextureCache
+     * @memberof PIXI
+     * @see PIXI.utils.BaseTextureCache
+     * @deprecated since version 3.0.0
      */
     BaseTextureCache: {
         get: function ()
@@ -183,9 +197,10 @@ Object.defineProperties(core, {
     /**
      * @class
      * @private
-     * @name PIXI.TextureCache
-     * @see {@link PIXI.utils.TextureCache}
-     * @deprecated since version 3.0
+     * @name TextureCache
+     * @memberof PIXI
+     * @see PIXI.utils.TextureCache
+     * @deprecated since version 3.0.0
      */
     TextureCache: {
         get: function ()
@@ -198,8 +213,9 @@ Object.defineProperties(core, {
     /**
      * @namespace
      * @private
-     * @name PIXI.math
-     * @see {@link PIXI}
+     * @name math
+     * @memberof PIXI
+     * @see PIXI
      * @deprecated since version 3.0.6
      */
     math: {
@@ -215,8 +231,8 @@ Object.defineProperties(core, {
  * @method
  * @private
  * @name PIXI.Sprite#setTexture
- * @see {@link PIXI.Sprite#texture}
- * @deprecated since version 3.0
+ * @see PIXI.Sprite#texture
+ * @deprecated since version 3.0.0
  */
 core.Sprite.prototype.setTexture = function(texture)
 {
@@ -227,8 +243,8 @@ core.Sprite.prototype.setTexture = function(texture)
 /**
  * @method
  * @name PIXI.extras.BitmapText#setText
- * @see {@link PIXI.BitmapText#text}
- * @deprecated since version 3.0
+ * @see PIXI.extras.BitmapText#text
+ * @deprecated since version 3.0.0
  */
 extras.BitmapText.prototype.setText = function(text)
 {
@@ -239,8 +255,8 @@ extras.BitmapText.prototype.setText = function(text)
 /**
  * @method
  * @name PIXI.Text#setText
- * @see {@link PIXI.Text#text}
- * @deprecated since version 3.0
+ * @see PIXI.Text#text
+ * @deprecated since version 3.0.0
  */
 core.Text.prototype.setText = function(text)
 {
@@ -251,8 +267,8 @@ core.Text.prototype.setText = function(text)
 /**
  * @method
  * @name PIXI.Text#setStyle
- * @see {@link PIXI.Text#style}
- * @deprecated since version 3.0
+ * @see PIXI.Text#style
+ * @deprecated since version 3.0.0
  */
 core.Text.prototype.setStyle = function(style)
 {
@@ -263,8 +279,8 @@ core.Text.prototype.setStyle = function(style)
 /**
  * @method
  * @name PIXI.Texture#setFrame
- * @see {@link PIXI.Texture#setFrame}
- * @deprecated since version 3.0
+ * @see PIXI.Texture#setFrame
+ * @deprecated since version 3.0.0
  */
 core.Texture.prototype.setFrame = function(frame)
 {
@@ -278,7 +294,7 @@ Object.defineProperties(filters, {
      * @class
      * @private
      * @name PIXI.filters.AbstractFilter
-     * @see {@link PIXI.AbstractFilter}
+     * @see PIXI.AbstractFilter
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
@@ -293,7 +309,7 @@ Object.defineProperties(filters, {
      * @class
      * @private
      * @name PIXI.filters.FXAAFilter
-     * @see {@link PIXI.FXAAFilter}
+     * @see PIXI.FXAAFilter
      * @deprecated since version 3.0.6
      */
     FXAAFilter: {
@@ -308,7 +324,7 @@ Object.defineProperties(filters, {
      * @class
      * @private
      * @name PIXI.filters.SpriteMaskFilter
-     * @see {@link PIXI.SpriteMaskFilter}
+     * @see PIXI.SpriteMaskFilter
      * @deprecated since version 3.0.6
      */
     SpriteMaskFilter: {
@@ -323,7 +339,7 @@ Object.defineProperties(filters, {
 /**
  * @method
  * @name PIXI.utils.uuid
- * @see {@link PIXI.utils.uid}
+ * @see PIXI.utils.uid
  * @deprecated since version 3.0.6
  */
 core.utils.uuid = function ()

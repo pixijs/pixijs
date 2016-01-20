@@ -42,7 +42,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * The strength of the blur.
      *
      * @member {number}
-     * @memberof TiltShiftFilter#
+     * @memberof PIXI.filters.TiltShiftFilter#
      */
     blur: {
         get: function ()
@@ -59,7 +59,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * The strength of the gradient blur.
      *
      * @member {number}
-     * @memberof TiltShiftFilter#
+     * @memberof PIXI.filters.TiltShiftFilter#
      */
     gradientBlur: {
         get: function ()
@@ -76,7 +76,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * The Y value to start the effect at.
      *
      * @member {number}
-     * @memberof TiltShiftFilter#
+     * @memberof PIXI.filters.TiltShiftFilter#
      */
     start: {
         get: function ()
@@ -93,7 +93,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * The Y value to end the effect at.
      *
      * @member {number}
-     * @memberof TiltShiftFilter#
+     * @memberof PIXI.filters.TiltShiftFilter#
      */
     end: {
         get: function ()

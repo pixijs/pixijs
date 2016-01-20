@@ -17,7 +17,8 @@ var BaseTexture = require('./BaseTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * var renderTexture = new PIXI.RenderTexture(800, 600);
+ * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
+ * var renderTexture = new PIXI.RenderTexture(renderer, 800, 600);
  * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
@@ -32,7 +33,7 @@ var BaseTexture = require('./BaseTexture'),
  * position a Container should be used:
  *
  * ```js
- * var doc = new Container();
+ * var doc = new PIXI.Container();
  *
  * doc.addChild(sprite);
  *
@@ -42,10 +43,10 @@ var BaseTexture = require('./BaseTexture'),
  * @class
  * @extends PIXI.Texture
  * @memberof PIXI
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used for this RenderTexture
  * @param [width=100] {number} The width of the render texture
  * @param [height=100] {number} The height of the render texture
- * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution of the texture being generated
  */
 function RenderTexture(renderer, width, height, scaleMode, resolution)
@@ -102,21 +103,6 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     this.resolution = resolution;
 
     /**
-     * The framing rectangle of the render texture
-     *
-     * @member {Rectangle}
-     */
-    //this._frame = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
-
-    /**
-     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
-     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
-     *
-     * @member {Rectangle}
-     */
-    //this.crop = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
-
-    /**
      * Draw/render the given DisplayObject onto the texture.
      *
      * The displayObject and descendents are transformed during this operation.
@@ -127,8 +113,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      * The display object is always rendered with a worldAlpha value of 1.
      *
      * @method
-     * @param displayObject {DisplayObject} The display object to render this texture on
-     * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+     * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
+     * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
      * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
      * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
      *  transformations will be restored. Not restoring this information will be a little faster.
@@ -138,7 +124,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     /**
      * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
      *
-     * @member {CanvasRenderer|WebGLRenderer}
+     * @member {PIXI.CanvasRenderer|PIXI.WebGLRenderer}
      */
     this.renderer = renderer;
 
@@ -147,7 +133,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
-        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+        this.baseTexture._glTextures[gl.id] = this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
         this.filterManager = new FilterManager(this.renderer);
@@ -251,8 +237,8 @@ RenderTexture.prototype.clear = function ()
  * Internal method assigned to the `render` property if using a CanvasRenderer.
  *
  * @private
- * @param displayObject {DisplayObject} The display object to render this texture on
- * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+ * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
+ * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
  * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
  *  transformations will be restored. Not restoring this information will be a little faster.
@@ -271,7 +257,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
     //TODO not a fan that this is here... it will move!
     this.textureBuffer.activate();
-    
+
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
 
@@ -307,8 +293,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
  * Internal method assigned to the `render` property if using a CanvasRenderer.
  *
  * @private
- * @param displayObject {DisplayObject} The display object to render this texture on
- * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+ * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
+ * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
  */
 RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, updateTransform)
@@ -319,7 +305,6 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     }
 
     updateTransform = !!updateTransform;
-    var cachedWt = displayObject.worldTransform;
 
     var wt = tempMatrix;
 
@@ -330,6 +315,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         wt.append(matrix);
     }
 
+    var cachedWt = displayObject.worldTransform;
     displayObject.worldTransform = wt;
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
@@ -349,7 +335,6 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-    displayObject.worldTransform = cachedWt;
 
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
@@ -361,9 +346,12 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
- //   context.setTransform(1, 0, 0, 1, 0, 0);
-   // context.fillStyle ="#FF0000"
-//    context.fillRect(0, 0, 800, 600);
+
+    if(displayObject.worldTransform === wt)
+    {
+        // fixes cacheAsBitmap Happening during the above..
+        displayObject.worldTransform = cachedWt;
+    }
 
 };
 

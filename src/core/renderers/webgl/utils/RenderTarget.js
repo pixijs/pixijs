@@ -14,7 +14,7 @@ var math = require('../../../math'),
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @param width {number} the horizontal range of the filter
  * @param height {number} the vertical range of the filter
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param resolution {number} the current resolution
  * @param root {boolean} Whether this object is the root element or not
  */
@@ -23,7 +23,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     //TODO Resolution could go here ( eg low res blurs )
 
     /**
-     * The current WebGL drawing context
+     * The current WebGL drawing context.
+     *
      * @member {WebGLRenderingContext}
      */
     this.gl = gl;
@@ -32,60 +33,71 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 
     /**
      * A frame buffer
+     *
      * @member {WebGLFrameBuffer}
      */
     this.frameBuffer = null;
 
     /**
-     * @member {Texture}
+     * The texture
+     *
+     * @member {PIXI.Texture}
      */
     this.texture = null;
 
     /**
      * The size of the object as a rectangle
-     * @member {Rectangle}
+     *
+     * @member {PIXI.Rectangle}
      */
     this.size = new math.Rectangle(0, 0, 1, 1);
 
     /**
      * The current resolution
+     *
      * @member {number}
      */
     this.resolution = resolution || CONST.RESOLUTION;
 
     /**
      * The projection matrix
-     * @member {Matrix}
+     *
+     * @member {PIXI.Matrix}
      */
     this.projectionMatrix = new math.Matrix();
 
     /**
      * The object's transform
-     * @member {Matrix}
+     *
+     * @member {PIXI.Matrix}
      */
     this.transform = null;
 
     /**
+     * The frame.
      *
-     * @member {Rectangle}
+     * @member {PIXI.Rectangle}
      */
     this.frame = null;
 
     /**
      * The stencil buffer stores masking data for the render target
+     *
      * @member {WebGLRenderBuffer}
      */
     this.stencilBuffer = null;
 
     /**
      * The data structure for the stencil masks
-     * @member {StencilMaskStack}
+     *
+     * @member {PIXI.StencilMaskStack}
      */
     this.stencilMaskStack = new StencilMaskStack();
 
     /**
      * Stores filter data for the render target
-     * @member {Array}
+     *
+     * @member {object[]}
      */
     this.filterStack = [
         {
@@ -97,14 +109,17 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 
 
     /**
-     * The scale mode
+     * The scale mode.
+     *
      * @member {number}
-     * @default CONST.SCALE_MODES.DEFAULT
+     * @default PIXI.SCALE_MODES.DEFAULT
+     * @see PIXI.SCALE_MODES
      */
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
 
     /**
      * Whether this object is the root element or not
+     *
      * @member {boolean}
      */
     this.root = root;
@@ -147,7 +162,6 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
     }
 
-
     this.resize(width, height);
 };
 
@@ -155,9 +169,10 @@ RenderTarget.prototype.constructor = RenderTarget;
 module.exports = RenderTarget;
 
 /**
-* Clears the filter texture.
-*
-*/
+ * Clears the filter texture.
+ *
+ * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
+ */
 RenderTarget.prototype.clear = function(bind)
 {
     var gl = this.gl;
@@ -171,20 +186,20 @@ RenderTarget.prototype.clear = function(bind)
 };
 
 /**
-* Binds the stencil buffer.
-*
-*/
+ * Binds the stencil buffer.
+ *
+ */
 RenderTarget.prototype.attachStencilBuffer = function()
 {
 
-    if ( this.stencilBuffer )
+    if (this.stencilBuffer)
     {
         return;
     }
 
-    /*
-        The stencil buffer is used for masking in pixi
-        lets create one and then add attach it to the framebuffer..
+    /**
+     * The stencil buffer is used for masking in pixi
+     * lets create one and then add attach it to the framebuffer..
      */
     if (!this.root)
     {
@@ -198,9 +213,9 @@ RenderTarget.prototype.attachStencilBuffer = function()
 };
 
 /**
-* Binds the buffers and initialises the viewport.
-*
-*/
+ * Binds the buffers and initialises the viewport.
+ *
+ */
 RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
@@ -222,10 +237,10 @@ RenderTarget.prototype.activate = function()
 };
 
 /**
-* Updates the projection matrix based on a projection frame (which is a rectangle)
-*
-*/
-RenderTarget.prototype.calculateProjection = function( projectionFrame )
+ * Updates the projection matrix based on a projection frame (which is a rectangle)
+ *
+ */
+RenderTarget.prototype.calculateProjection = function (projectionFrame)
 {
     var pm = this.projectionMatrix;
 
@@ -256,7 +271,7 @@ RenderTarget.prototype.calculateProjection = function( projectionFrame )
  * @param width {Number} the new width of the texture
  * @param height {Number} the new height of the texture
  */
-RenderTarget.prototype.resize = function(width, height)
+RenderTarget.prototype.resize = function (width, height)
 {
     width = width | 0;
     height = height | 0;
@@ -293,9 +308,10 @@ RenderTarget.prototype.resize = function(width, height)
  * Destroys the render target.
  *
  */
-RenderTarget.prototype.destroy = function()
+RenderTarget.prototype.destroy = function ()
 {
     var gl = this.gl;
+    gl.deleteRenderbuffer( this.stencilBuffer );
     gl.deleteFramebuffer( this.frameBuffer );
     gl.deleteTexture( this.texture );
 

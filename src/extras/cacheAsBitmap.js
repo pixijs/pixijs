@@ -16,10 +16,10 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
      * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'null'
+     * To remove simply set this property to 'false'
      *
      * @member {boolean}
-     * @memberof DisplayObject#
+     * @memberof PIXI.DisplayObject#
      */
     cacheAsBitmap: {
         get: function ()
@@ -75,7 +75,7 @@ Object.defineProperties(DisplayObject.prototype, {
 /**
 * Renders a cached version of the sprite with WebGL
 *
-* @param renderer {WebGLRenderer} the WebGL renderer
+* @param renderer {PIXI.WebGLRenderer} the WebGL renderer
 * @private
 */
 DisplayObject.prototype._renderCachedWebGL = function (renderer)
@@ -96,7 +96,7 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
 /**
 * Prepares the WebGL renderer to cache the sprite
 *
-* @param renderer {WebGLRenderer} the WebGL renderer
+* @param renderer {PIXI.WebGLRenderer} the WebGL renderer
 * @private
 */
 DisplayObject.prototype._initCachedDisplayObject = function (renderer)
@@ -172,7 +172,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 /**
 * Renders a cached version of the sprite with canvas
 *
-* @param renderer {CanvasRenderer} the Canvas renderer
+* @param renderer {PIXI.CanvasRenderer} the Canvas renderer
 * @private
 */
 DisplayObject.prototype._renderCachedCanvas = function (renderer)
@@ -181,7 +181,7 @@ DisplayObject.prototype._renderCachedCanvas = function (renderer)
     {
         return;
     }
-    
+
     this._initCachedDisplayObjectCanvas( renderer );
 
     this._cachedSprite.worldAlpha = this.worldAlpha;
@@ -193,7 +193,7 @@ DisplayObject.prototype._renderCachedCanvas = function (renderer)
 /**
 * Prepares the Canvas renderer to cache the sprite
 *
-* @param renderer {CanvasRenderer} the Canvas renderer
+* @param renderer {PIXI.CanvasRenderer} the Canvas renderer
 * @private
 */
 DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)

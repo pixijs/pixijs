@@ -52,7 +52,7 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
     this.fill = fill;
 
     /*
-     * @member {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
+     * @member {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
      */
     this.shape = shape;
 
@@ -68,7 +68,7 @@ module.exports = GraphicsData;
 /**
  * Creates a new GraphicsData object with the same values as this one.
  *
- * @return {GraphicsData}
+ * @return {PIXI.GraphicsData}
  */
 GraphicsData.prototype.clone = function ()
 {
@@ -83,6 +83,9 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
+/**
+ * Destroys the Graphics data.
+ */
 GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };

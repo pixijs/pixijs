@@ -4,7 +4,7 @@ var WebGLManager = require('./WebGLManager'),
 /**
  * @class
  * @memberof PIXI
- * @param renderer {WebGLRenderer} The renderer this manager works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function MaskManager(renderer)
 {
@@ -24,7 +24,7 @@ module.exports = MaskManager;
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param graphics {Graphics}
+ * @param graphics {PIXI.Graphics}
  * @param webGLData {any[]}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
@@ -43,7 +43,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
 /**
  * Removes the last mask from the mask stack and doesn't return it.
  *
- * @param target {RenderTarget}
+ * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
 MaskManager.prototype.popMask = function (target, maskData)
@@ -61,7 +61,7 @@ MaskManager.prototype.popMask = function (target, maskData)
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {RenderTarget}
+ * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
@@ -92,7 +92,7 @@ MaskManager.prototype.popSpriteMask = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {RenderTarget}
+ * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
 MaskManager.prototype.pushStencilMask = function (target, maskData)
@@ -102,7 +102,8 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
 
 /**
  * Removes the last filter from the filter stack and doesn't return it.
- * @param target {RenderTarget}
+ *
+ * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
 MaskManager.prototype.popStencilMask = function (target, maskData)
