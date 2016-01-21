@@ -261,9 +261,15 @@ WebGLRenderer.prototype.resize = function (width, height)
     this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
+
     if(this._activeRenderTarget === this.rootRenderTarget)
     {
         this.rootRenderTarget.activate();
+
+        if(this._activeShader)
+        {
+            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
+        }
     }
 };
 
