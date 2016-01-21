@@ -109,7 +109,7 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
  */
 MaskManager.prototype.popStencilMask = function (target, maskData)
 {
-    this.renderer.currentRenderer.flush();
-    this.renderer.stencilManager.popStencil(maskData);
+    this.renderer.currentRenderer.stop();
+    this.renderer.stencilManager.popStencil();
 };
 

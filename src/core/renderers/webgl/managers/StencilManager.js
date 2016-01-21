@@ -6,22 +6,22 @@ var WebGLManager = require('./WebGLManager'),
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-function WebGLMaskManager(renderer)
+function StencilMaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
     this.stencilMaskStack = null;
 }
 
-WebGLMaskManager.prototype = Object.create(WebGLManager.prototype);
-WebGLMaskManager.prototype.constructor = WebGLMaskManager;
-module.exports = WebGLMaskManager;
+StencilMaskManager.prototype = Object.create(WebGLManager.prototype);
+StencilMaskManager.prototype.constructor = StencilMaskManager;
+module.exports = StencilMaskManager;
 
 /**
  * Changes the mask stack that is used by this manager.
  *
  * @param stencilMaskStack {PIXI.StencilMaskStack} The mask stack
  */
-WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
+StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 {
     this.stencilMaskStack = stencilMaskStack;
 
@@ -43,7 +43,7 @@ WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
  * @param graphics {PIXI.Graphics}
  * @param webGLData {any[]}
  */
-WebGLMaskManager.prototype.pushStencil = function (graphics)
+StencilMaskManager.prototype.pushStencil = function (graphics)
 {
     this.renderer._activeRenderTarget.attachStencilBuffer();
 
@@ -79,12 +79,12 @@ WebGLMaskManager.prototype.pushStencil = function (graphics)
  * @param graphics {PIXI.Graphics}
  * @param webGLData {any[]}
  */
-WebGLMaskManager.prototype.popStencil = function (graphics)
+StencilMaskManager.prototype.popStencil = function ()
 {
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
 
-    sms.pop();
+    var graphics = sms.pop();
 
     if (sms.length === 0)
     {
@@ -96,7 +96,6 @@ WebGLMaskManager.prototype.popStencil = function (graphics)
         var level = sms.count;
 
         gl.colorMask(false, false, false, false);
-
        
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
@@ -113,7 +112,7 @@ WebGLMaskManager.prototype.popStencil = function (graphics)
  * Destroys the mask stack.
  *
  */
-WebGLMaskManager.prototype.destroy = function ()
+StencilMaskManager.prototype.destroy = function ()
 {
     WebGLManager.prototype.destroy.call(this);
 
