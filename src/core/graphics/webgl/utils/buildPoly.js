@@ -12,9 +12,9 @@ var buildLine = require('./buildLine'),
 var buildPoly = function (graphicsData, webGLData)
 {
     graphicsData.points = graphicsData.shape.points.slice();
-    
-    var points = graphicsData.points;
 
+    var points = graphicsData.points;
+    
     // need to add the points the the graphics object..
     if (graphicsData.shape.closed)
     {
@@ -48,7 +48,7 @@ var buildPoly = function (graphicsData, webGLData)
         var triangles = earcut(points, null, 2);
 
         if (!triangles) {
-            return false;
+            return 
         }
 
         var vertPos = verts.length / 6;
@@ -75,8 +75,6 @@ var buildPoly = function (graphicsData, webGLData)
     {
         buildLine(graphicsData, webGLData);
     }
-
-    return true;
 };
 
 

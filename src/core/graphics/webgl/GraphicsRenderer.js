@@ -99,8 +99,7 @@ GraphicsRenderer.prototype.render = function(graphics)
         var shader = webGLData.shader;
        
         renderer.bindShader(shader)
-
-        shader.uniforms.translationMatrix = graphics.worldTransform.toArray(true);
+        shader.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
         shader.uniforms.tint = utils.hex2rgb(graphics.tint);
         shader.uniforms.alpha = graphics.worldAlpha;
 
@@ -130,7 +129,6 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
 
     }
 
-   
     // flag the graphics as not dirty as we are about to update it...
     graphics.dirty = false;
 
@@ -205,9 +203,9 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
  */
 GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 {
-    var webGLData;
+    var webGLData = webGL.data[webGL.data.length-1];
 
-    if (!webGL.data.length || webGLData.points.length > 320000)
+    if (!webGLData || webGLData.points.length > 320000)
     {
         webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);  
         webGLData.reset(type);
@@ -215,5 +213,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
     }
 
     webGLData.dirty = true;
+
+    return webGLData;
 };
 
