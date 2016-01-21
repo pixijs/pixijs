@@ -102,8 +102,8 @@ function DisplayObject()
      * @member {PIXI.Matrix}
      * @readOnly
      */
-//    this.worldTransform = this.transform.worldTransform;
- //   this.localTransform = this.transform.localTransform;
+    this.worldTransform = this.transform.worldTransform; // short hand!
+    this.localTransform = this.transform.localTransform;
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation
