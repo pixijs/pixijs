@@ -1,5 +1,4 @@
 var SystemRenderer = require('../SystemRenderer'),
-    ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
@@ -73,13 +72,6 @@ function WebGLRenderer(width, height, options)
     };
 
     this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
-
-    /**
-     * Deals with managing the shader programs and their attribs.
-     *
-     * @member {PIXI.ShaderManager}
-     */
-    this.shaderManager = new ShaderManager(this);
 
     /**
      * Manages the masks using the stencil buffer.
@@ -398,13 +390,11 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.uid = 0;
 
     // destroy the managers
-    this.shaderManager.destroy();
     this.maskManager.destroy();
     this.stencilManager.destroy();
     this.filterManager.destroy();
     this.blendModeManager.destroy();
 
-    this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
     this.blendModeManager = null;
