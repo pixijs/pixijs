@@ -124,7 +124,7 @@ function WebGLRenderer(width, height, options)
     this.gl = createContext(this.view, this._contextOptions);
 
     this.state = new WebGLState(this.gl);
-    
+
     this._initContext();
 
     // map some webGL blend and drawmodes..
@@ -268,12 +268,16 @@ WebGLRenderer.prototype.resize = function (width, height)
     }
 };
 
+WebGLRenderer.prototype.setBlendMode = function (mode)
+{
+}
+
 /**
  * Changes the current render target to the one given in parameter
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)//projection, buffer)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
@@ -290,7 +294,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)//projection, 
     }
 }
 
-WebGLRenderer.prototype.bindShader = function (shader)//projection, buffer)
+WebGLRenderer.prototype.bindShader = function (shader)
 {
     //TODO cache
     if(this._activeShader !== shader)
@@ -332,6 +336,20 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     }
 }
 
+/**
+ * resets WebGL state so you can render things however you fancy!
+ * @return {[type]} [description]
+ */
+WebGLRenderer.prototype.reset = function ()
+{
+    this._activeShader = null;
+    this._activeRenderTarget = null;
+
+    // bind the main frame buffer (the screen);
+    this.rootRenderTarget.activate();
+
+    this.state.reset();
+}
 
 /**
  * Handles a lost webgl context
