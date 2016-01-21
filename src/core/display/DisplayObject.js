@@ -2,7 +2,7 @@ var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
-    Transform = require('./TransformStatic'),
+    Transform = require('./Transform'),
     _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
@@ -27,7 +27,6 @@ function DisplayObject()
      * @member {PIXI.Point}
      */
     this.position = this.transform.position;
-   // this._position = new CachePoint(this);
 
     /**
      * The scale factor of the object.

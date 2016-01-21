@@ -8,6 +8,7 @@ var SystemRenderer = require('../SystemRenderer'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     FXAAFilter = require('./filters/FXAAFilter'),
     TextureManager = require('./TextureManager'),
+    WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi'),
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -122,12 +123,16 @@ function WebGLRenderer(width, height, options)
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
 
+    this.state = new WebGLState(this.gl);
+    
     this._initContext();
 
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
 
+    
+    //alert(this.state )
     this._activeShader = null;
 
     /**
@@ -155,14 +160,12 @@ WebGLRenderer.prototype._initContext = function ()
 {
     var gl = this.gl;
 
+    
+
     // create a texture manager...
     this.textureManager = new TextureManager(gl);
-
-    // set up the default pixi settings..
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
-    gl.enable(gl.BLEND);
-
+    
+    this.state.resetToDefault();
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
@@ -259,7 +262,7 @@ WebGLRenderer.prototype.resize = function (width, height)
     this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
-    if(this.currentRenderTarget === this.renderTarget)
+    if(this._activeRenderTarget === this.rootRenderTarget)
     {
         this.rootRenderTarget.activate();
     }
