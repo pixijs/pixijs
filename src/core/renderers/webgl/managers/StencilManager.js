@@ -27,7 +27,7 @@ WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 
     var gl = this.renderer.gl;
 
-    if (stencilMaskStack.stencilStack.length === 0)
+    if (stencilMaskStack.length === 0)
     {
         gl.disable(gl.STENCIL_TEST);
     }
@@ -50,7 +50,7 @@ WebGLMaskManager.prototype.pushStencil = function (graphics)
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
 
-    if (sms.stencilStack.length === 0)
+    if (sms.length === 0)
     {
         gl.enable(gl.STENCIL_TEST);
         gl.clear(gl.STENCIL_BUFFER_BIT);
@@ -58,7 +58,7 @@ WebGLMaskManager.prototype.pushStencil = function (graphics)
         sms.count = 0;
     }
 
-    sms.stencilStack.push(graphics);
+    sms.push(graphics);
 
     gl.colorMask(false, false, false, false);
 
@@ -68,12 +68,10 @@ WebGLMaskManager.prototype.pushStencil = function (graphics)
 
     this.renderer.plugins.graphics.render(graphics)
 
-    gl.stencilFunc(gl.NOTEQUAL,0, sms.stencilStack.length);
+    gl.stencilFunc(gl.NOTEQUAL,0, sms.length);
     
     gl.colorMask(true, true, true, true);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
-
-    sms.count++;
 };
 
 /**
@@ -86,11 +84,9 @@ WebGLMaskManager.prototype.popStencil = function (graphics)
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
 
-    sms.stencilStack.pop();
+    sms.pop();
 
-    sms.count--;
-
-    if (sms.stencilStack.length === 0)
+    if (sms.length === 0)
     {
         // the stack is empty!
         gl.disable(gl.STENCIL_TEST);
@@ -106,7 +102,7 @@ WebGLMaskManager.prototype.popStencil = function (graphics)
 
         this.renderer.plugins.graphics.render(graphics)
  
-        gl.stencilFunc(gl.NOTEQUAL,0,sms.stencilStack.length);
+        gl.stencilFunc(gl.NOTEQUAL,0,sms.length);
 
         gl.colorMask(true, true, true, true);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
