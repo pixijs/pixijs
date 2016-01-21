@@ -66,26 +66,14 @@ WebGLMaskManager.prototype.pushStencil = function (graphics)
     gl.stencilFunc(gl.ALWAYS,1,1);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
-    this.renderGraphics(graphics);
+    this.renderer.plugins.graphics.render(graphics)
 
     gl.stencilFunc(gl.NOTEQUAL,0, sms.stencilStack.length);
+    
     gl.colorMask(true, true, true, true);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 
     sms.count++;
-};
-
-/**
- * TODO this does not belong here!
- *
- * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
- */
-WebGLMaskManager.prototype.renderGraphics = function (graphics)
-{
-
-    this.renderer.plugins.graphics.render(graphics)
- 
 };
 
 /**
@@ -116,7 +104,7 @@ WebGLMaskManager.prototype.popStencil = function (graphics)
        
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
-        this.renderGraphics(graphics);
+        this.renderer.plugins.graphics.render(graphics)
  
         gl.stencilFunc(gl.NOTEQUAL,0,sms.stencilStack.length);
 
