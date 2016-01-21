@@ -124,24 +124,3 @@ WebGLMaskManager.prototype.destroy = function ()
     this.stencilMaskStack.stencilStack = null;
 };
 
-/**
- * Applies the Mask and adds it to the current filter stack.
- *
- * @param maskData {any[]} The mask data structure to use
- */
-WebGLMaskManager.prototype.pushMask = function (maskData)
-{
-    this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
-    this.pushStencil(maskData)
-};
-
-/**
- * Removes the last filter from the filter stack and doesn't return it.
- *
- * @param maskData {any[]}
- */
-WebGLMaskManager.prototype.popMask = function (maskData)
-{
-    this.popStencil(maskData)
-};
-
