@@ -1,13 +1,12 @@
 var SystemRenderer = require('../SystemRenderer'),
-    ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
-    FXAAFilter = require('./filters/FXAAFilter'),
     TextureManager = require('./TextureManager'),
+    WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi'),
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -75,13 +74,6 @@ function WebGLRenderer(width, height, options)
     this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
 
     /**
-     * Deals with managing the shader programs and their attribs.
-     *
-     * @member {PIXI.ShaderManager}
-     */
-    this.shaderManager = new ShaderManager(this);
-
-    /**
      * Manages the masks using the stencil buffer.
      *
      * @member {PIXI.MaskManager}
@@ -122,12 +114,16 @@ function WebGLRenderer(width, height, options)
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
 
+    this.state = new WebGLState(this.gl);
+
     this._initContext();
 
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
 
+    
+    //alert(this.state )
     this._activeShader = null;
 
     /**
@@ -155,14 +151,12 @@ WebGLRenderer.prototype._initContext = function ()
 {
     var gl = this.gl;
 
+    
+
     // create a texture manager...
     this.textureManager = new TextureManager(gl);
-
-    // set up the default pixi settings..
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
-    gl.enable(gl.BLEND);
-
+    
+    this.state.resetToDefault();
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
@@ -259,18 +253,28 @@ WebGLRenderer.prototype.resize = function (width, height)
     this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
-    if(this.currentRenderTarget === this.renderTarget)
+
+    if(this._activeRenderTarget === this.rootRenderTarget)
     {
         this.rootRenderTarget.activate();
+
+        if(this._activeShader)
+        {
+            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
+        }
     }
 };
+
+WebGLRenderer.prototype.setBlendMode = function (mode)
+{
+}
 
 /**
  * Changes the current render target to the one given in parameter
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)//projection, buffer)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
@@ -287,7 +291,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)//projection, 
     }
 }
 
-WebGLRenderer.prototype.bindShader = function (shader)//projection, buffer)
+WebGLRenderer.prototype.bindShader = function (shader)
 {
     //TODO cache
     if(this._activeShader !== shader)
@@ -329,6 +333,20 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     }
 }
 
+/**
+ * resets WebGL state so you can render things however you fancy!
+ * @return {[type]} [description]
+ */
+WebGLRenderer.prototype.reset = function ()
+{
+    this._activeShader = null;
+    this._activeRenderTarget = null;
+
+    // bind the main frame buffer (the screen);
+    this.rootRenderTarget.activate();
+
+    this.state.reset();
+}
 
 /**
  * Handles a lost webgl context
@@ -372,13 +390,11 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.uid = 0;
 
     // destroy the managers
-    this.shaderManager.destroy();
     this.maskManager.destroy();
     this.stencilManager.destroy();
     this.filterManager.destroy();
     this.blendModeManager.destroy();
 
-    this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
     this.blendModeManager = null;

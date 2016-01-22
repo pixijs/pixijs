@@ -3,9 +3,7 @@ var math = require('../../../math'),
     CONST = require('../../../const'),
         
     GLTexture = require('pixi-gl-core').GLTexture,
-    GLFramebuffer = require('pixi-gl-core').GLFramebuffer,
-    
-    StencilMaskStack = require('./StencilMaskStack');
+    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;    
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -101,7 +99,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {PIXI.StencilMaskStack}
      */
-    this.stencilMaskStack = new StencilMaskStack();
+    this.stencilMaskStack = [];
 
     /**
      * Stores filter data for the render target

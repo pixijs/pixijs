@@ -97,7 +97,8 @@ MaskManager.prototype.popSpriteMask = function ()
  */
 MaskManager.prototype.pushStencilMask = function (target, maskData)
 {
-    this.renderer.stencilManager.pushMask(maskData);
+    this.renderer.currentRenderer.stop();
+    this.renderer.stencilManager.pushStencil(maskData);
 };
 
 /**
@@ -108,6 +109,7 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
  */
 MaskManager.prototype.popStencilMask = function (target, maskData)
 {
-    this.renderer.stencilManager.popMask(maskData);
+    this.renderer.currentRenderer.stop();
+    this.renderer.stencilManager.popStencil();
 };
 

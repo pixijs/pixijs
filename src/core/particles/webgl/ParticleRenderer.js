@@ -76,6 +76,7 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
+    return;
     var gl = this.renderer.gl;
 
     // setup default shader

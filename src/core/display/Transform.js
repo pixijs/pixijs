@@ -15,17 +15,33 @@ function Transform()
     this.worldTransform = new math.Matrix();
     this.localTransform = new math.Matrix();
 
+     /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     *
+     * @member {PIXI.Point}
+     */
     this.position = new math.Point(0.0);
+
+    /**
+     * The scale factor of the object.
+     *
+     * @member {PIXI.Point}
+     */
     this.scale = new math.Point(1,1);
+
+    /**
+     * The pivot point of the displayObject that it rotates around
+     *
+     * @member {PIXI.Point}
+     */
     this.pivot = new math.Point(0.0);
-    this.skew = new math.Point(0.0);
     
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     
 
-    this.dirty = true;
+    this.updated = true;
 }
 
 Transform.prototype.constructor = Transform;

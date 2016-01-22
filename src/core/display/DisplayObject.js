@@ -2,7 +2,7 @@ var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
-    Transform = require('./TransformStatic'),
+    Transform = require('./Transform'),
     _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
@@ -27,21 +27,20 @@ function DisplayObject()
      * @member {PIXI.Point}
      */
     this.position = this.transform.position;
-   // this._position = new CachePoint(this);
 
     /**
      * The scale factor of the object.
      *
      * @member {PIXI.Point}
      */
-    this.scale = this.transform.scale
+    this.scale = this.transform.scale;
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point}
      */
-    this.pivot = this.transform.pivot
+    this.pivot = this.transform.pivot;
 
 
     /**
@@ -49,7 +48,7 @@ function DisplayObject()
      *
      * @member {PIXI.Point}
      */
-    this.skew = this.transform.skew
+    this.skew = this.transform.skew;
 
     /**
      * The rotation of the object in radians.
@@ -103,8 +102,8 @@ function DisplayObject()
      * @member {PIXI.Matrix}
      * @readOnly
      */
-//    this.worldTransform = this.transform.worldTransform;
- //   this.localTransform = this.transform.localTransform;
+    this.worldTransform = this.transform.worldTransform; // short hand!
+    this.localTransform = this.transform.localTransform;
 
     /**
      * The area the filter is applied to. This is used as more of an optimisation

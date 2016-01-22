@@ -1,6 +1,6 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     TextureShader = require('../../renderers/webgl/shaders/_TextureShader'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     generateMultiTextureShader = require('./generateMultiTextureShader'),
     CONST = require('../../const'),
@@ -136,23 +136,19 @@ SpriteRenderer.prototype.onContextChange = function ()
 
     this.MAX_TEXTUES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-    this._shader = generateMultiTextureShader(gl, this.MAX_TEXTUES)//new TextureShader(gl);
-
-    // setup default shader
-    this.shader = this.renderer.shaderManager.defaultShader;
+    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTUES);
 
     // create a couple of buffers
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
     // build the vao object that will render..
-    this.vao = new glCore.VertexArrayObject(gl);
-
-    this.vao.addIndex(this.indexBuffer);
-    this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0);
-    this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4);
-    this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
-    this.vao.addAttribute(this.vertexBuffer, this._shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    this.vao = new glCore.VertexArrayObject(gl)
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+    .addAttribute(this.vertexBuffer, this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
 
     this.currentBlendMode = 99999;
 };
@@ -292,7 +288,7 @@ SpriteRenderer.prototype.flush = function ()
     }
 
     // bind shader..
-    this.renderer.bindShader(this._shader);
+    this.renderer.bindShader(this.shader);
     this.renderer.blendModeManager.setBlendMode( 0 );
 
     /// render the groups..
