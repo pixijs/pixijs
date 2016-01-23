@@ -183,16 +183,16 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if(!doNotUpdateTransform)
     {       
+        // update the scene graph
         var cacheParent = displayObject.parent;
         displayObject.parent = this._tempDisplayObjectParent;
-        // update the scene graph
         displayObject.updateTransform();
         displayObject.parent = cacheParent;
     }
 
     //TODO - do we need renderDisplayObject?
     var renderTarget = this.rootRenderTarget;
-    var clear = this.clearBeforeRender;
+    var clear = clear || this.clearBeforeRender;
 
     // MOVE OUT?
     if(renderTexture)
@@ -205,9 +205,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         }
 
         renderTarget =  baseTexture._glRenderTargets[gl.id];
-
-        // TODO make this optional..
-        clear = true;
     }
 
     this.bindRenderTarget(renderTarget);
