@@ -135,7 +135,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = {};
+    this._glTextures = [];
     this._active = false;
     this._id = 0;
     

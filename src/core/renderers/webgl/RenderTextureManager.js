@@ -1,5 +1,6 @@
 var GLTexture = require('pixi-gl-core').GLTexture,
-	utils = require('../../utils');
+	utils = require('../../utils'),
+    RenderTarget = require('./utils/RenderTarget');
 
 /**
  * Helper class to create a webGL Texture
@@ -9,24 +10,12 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  * @param gl {WebGLRenderingContext}
  */
 
-var TextureManager = function(gl)
+var RenderTextureManager = function(gl)
 {
 	this.gl = gl;
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
 	this._managedTextures = [];
-
-}
-
-TextureManager.prototype.bindTexture = function(texture)
-{
-
-}
-
-
-TextureManager.prototype.getTexture = function(texture)
-{
-
 }
 
 /**
@@ -34,44 +23,31 @@ TextureManager.prototype.getTexture = function(texture)
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to update
  */
-TextureManager.prototype.updateTexture = function(texture)
+RenderTextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
-	if (!texture.hasLoaded)
-    {
-        return;
-    }
-
-    
     var gl = this.gl;
-    var glTexture = texture._glTextures[gl.id];//texture._glTextures[gl.id];
-
-    if (!glTexture)
+    var renderTarget = texture._glRenderTargets[gl.id];
+    
+    if (!renderTarget)
     {
-        glTexture = new GLTexture(gl);
-        glTexture.premultiplyAlpha = true;
-        texture._glTextures[gl.id] = glTexture;
 
-       // this.glTextures[texture.uid] = glTexture;
+        renderTarget = new RenderTarget(gl, texture.width, texture.height);
+
+        texture._glTextures[gl.id] = renderTarget.texture;
+        texture._glRenderTargets[gl.id] = renderTarget;
 
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
         
         this._managedTextures.push(texture);
-
-        //TODO check is power of two..
-        glTexture.enableWrapClamp();
-
-        // TODO check for scaling type
-        glTexture.enableLinearScaling();
     }
-
-    glTexture.upload(texture.source);
     
-    
+    console.log("HELO RESIZE")
+    renderTarget.resize(texture.width, texture.height);
 
-    return  glTexture;
+    return  renderTarget;
 }
 
 /**
@@ -79,18 +55,17 @@ TextureManager.prototype.updateTexture = function(texture)
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
  */
-TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
+RenderTextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 {
 	texture = texture.baseTexture || texture;
 
-    if (!texture.hasLoaded)
+    var gl = this.gl;
+    if (texture._glRenderTargets[gl.id])
     {
-        return;
-    }
+        texture._glTextures[this.gl.id] = null;
+        texture._glRenderTargets[gl.id].destroy();
 
-    if (texture._glTextures[this.gl.id])
-    {
-        texture._glTextures[this.gl.id].destroy();
+        //.destroy();
         texture.off('update', this.updateTexture, this);
         texture.off('dispose', this.destroyTexture, this);
 
@@ -107,7 +82,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
     }
 }
 
-TextureManager.prototype.removeAll = function()
+RenderTextureManager.prototype.removeAll = function()
 {
 	// empty all the old gl textures as they are useless now
     for (var i = 0; i < this._managedTextures.length; ++i)
@@ -120,7 +95,7 @@ TextureManager.prototype.removeAll = function()
     }
 }
 
-TextureManager.prototype.destroy = function()
+RenderTextureManager.prototype.destroy = function()
 {
     // destroy managed textures
     for (var i = 0; i < this._managedTextures.length; ++i)
@@ -134,5 +109,5 @@ TextureManager.prototype.destroy = function()
     this._managedTextures = null;
 }
 
-module.exports = TextureManager;
+module.exports = RenderTextureManager;
 

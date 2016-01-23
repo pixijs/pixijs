@@ -195,6 +195,9 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
+    // make sure the texture is unbound!
+    this.frameBuffer.texture.unbind();
+
     this.frameBuffer.bind();
 
     this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
@@ -273,11 +276,14 @@ RenderTarget.prototype.resize = function (width, height)
         return;
     }
 
+    console.log("ADASD")
+
     this.size.width = width;
     this.size.height = height;
 
     this.defaultFrame.width = width;
     this.defaultFrame.height = height;
+
 
     this.frameBuffer.resize(width * this.resolution, height * this.resolution);
     

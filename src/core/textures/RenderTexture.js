@@ -82,7 +82,7 @@ module.exports = RenderTexture;
  * @param height {number} The height to resize to.
  * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
  */
-RenderTexture.prototype.resize = function (width, height, updateBase)
+RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
 {
    
     //TODO - could be not required..
@@ -91,7 +91,7 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
     this._frame.width = this.crop.width = width;
     this._frame.height = this.crop.height = height;
 
-    if (updateBase)
+    if (!doNotResizeBaseTexture)
     {
         this.baseTexture.resize(width, height)
     }
@@ -186,8 +186,8 @@ RenderTexture.prototype.getPixel = function (x, y)
     return this.baseTexture.getPixel(this.frame, x, y);
 };
 
-RenderTexture.create = function(renderer, width, height, scaleMode, resolution)
+RenderTexture.create = function(width, height, scaleMode, resolution)
 {
-    return new RenderTexture(new BaseRenderTexture(renderer, width, height, scaleMode, resolution));
+    return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
 }
 
