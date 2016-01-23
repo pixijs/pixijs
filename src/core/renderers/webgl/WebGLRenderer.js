@@ -6,6 +6,7 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
+    RenderTextureManager = require('./RenderTextureManager'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi'),
@@ -93,15 +94,8 @@ function WebGLRenderer(width, height, options)
      * @member {PIXI.FilterManager}
      */
     this.filterManager = new FilterManager(this);
-
-    /**
-     * Manages the blendModes
-     *
-     * @member {PIXI.BlendModeManager}
-     */
     this.blendModeManager = new BlendModeManager(this);
 
-    
     /**
      * The currently active ObjectRenderer.
      *
@@ -155,6 +149,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(gl);
+    this.renderTextureManager = new RenderTextureManager(gl);
     
     this.state.resetToDefault();
 
@@ -174,7 +169,7 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (displayObject)
+WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, doNotUpdateTransform)
 {
     this.emit('prerender');
 
@@ -186,41 +181,45 @@ WebGLRenderer.prototype.render = function (displayObject)
 
     this._lastObjectRendered = displayObject;
 
-    var cacheParent = displayObject.parent;
-    displayObject.parent = this._tempDisplayObjectParent;
-    // update the scene graph
-    displayObject.updateTransform();
-    displayObject.parent = cacheParent;
+    if(!doNotUpdateTransform)
+    {       
+        // update the scene graph
+        var cacheParent = displayObject.parent;
+        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.updateTransform();
+        displayObject.parent = cacheParent;
+    }
 
-    this.renderDisplayObject(displayObject, this.rootRenderTarget, this.clearBeforeRender);//this.projection);
+    //TODO - do we need renderDisplayObject?
+    var renderTarget = this.rootRenderTarget;
+    var clear = clear || this.clearBeforeRender;
 
-    this.emit('postrender');
-};
+    // MOVE OUT?
+    if(renderTexture)
+    {
+        var baseTexture = renderTexture.baseTexture;
 
-/**
- * Renders a Display Object.
- *
- * @param displayObject {PIXI.DisplayObject} The DisplayObject to render
- * @param renderTarget {PIXI.RenderTarget} The render target to use to render this display object
- *
- */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
-{
+        if(!baseTexture._glRenderTargets[gl.id])
+        {
+            this.renderTextureManager.updateTexture(baseTexture);
+        }
+
+        renderTarget =  baseTexture._glRenderTargets[gl.id];
+    }
+
     this.bindRenderTarget(renderTarget);
-
+    
     if(clear)
     {
         renderTarget.clear();
     }
 
-    // start the filter manager
-    this.filterManager.setFilterStack( renderTarget.filterStack );
 
-    // render the scene!
     displayObject.renderWebGL(this);
 
-    // finish the current renderer..
     this.currentRenderer.flush();
+
+    this.emit('postrender');
 };
 
 /**
@@ -267,6 +266,12 @@ WebGLRenderer.prototype.resize = function (width, height)
 
 WebGLRenderer.prototype.setBlendMode = function (mode)
 {
+    // fill in here..
+}
+
+WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
+{
+    this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
 }
 
 /**
@@ -274,7 +279,7 @@ WebGLRenderer.prototype.setBlendMode = function (mode)
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, frame)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
@@ -285,7 +290,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
             this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
         }
 
-        renderTarget.activate();
+        renderTarget.activate(frame);
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }
@@ -393,11 +398,9 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.stencilManager.destroy();
     this.filterManager.destroy();
-    this.blendModeManager.destroy();
 
     this.maskManager = null;
     this.filterManager = null;
-    this.blendModeManager = null;
     this.currentRenderer = null;
 
     this.handleContextLost = null;
