@@ -169,7 +169,7 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear)
+WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, doNotUpdateTransform)
 {
     this.emit('prerender');
 
@@ -181,11 +181,14 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear)
 
     this._lastObjectRendered = displayObject;
 
-    var cacheParent = displayObject.parent;
-    displayObject.parent = this._tempDisplayObjectParent;
-    // update the scene graph
-    displayObject.updateTransform();
-    displayObject.parent = cacheParent;
+    if(!doNotUpdateTransform)
+    {       
+        var cacheParent = displayObject.parent;
+        displayObject.parent = this._tempDisplayObjectParent;
+        // update the scene graph
+        displayObject.updateTransform();
+        displayObject.parent = cacheParent;
+    }
 
     //TODO - do we need renderDisplayObject?
     var renderTarget = this.rootRenderTarget;
