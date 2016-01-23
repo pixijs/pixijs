@@ -187,56 +187,39 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear)
     displayObject.updateTransform();
     displayObject.parent = cacheParent;
 
+    //TODO - do we need renderDisplayObject?
+    var renderTarget = this.rootRenderTarget;
+    var clear = this.clearBeforeRender;
+
     // MOVE OUT?
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
-        
-        this.renderTextureManager.updateTexture(baseTexture);
-
-        /*   var gl = this.gl;
 
         if(!baseTexture._glRenderTargets[gl.id])
         {
-            baseTexture._glRenderTargets[gl.id] = new RenderTarget(this.gl, baseTexture.width, baseTexture.height);
-            baseTexture._glTextures[gl.id] = baseTexture._glRenderTargets[gl.id].texture;
+            this.renderTextureManager.updateTexture(baseTexture);
         }
-        
-        */
-        this.renderDisplayObject(displayObject, baseTexture._glRenderTargets[gl.id], this.clearBeforeRender);
-    }
-    else
-    {
-        this.renderDisplayObject(displayObject, this.rootRenderTarget, this.clearBeforeRender);
+
+        renderTarget =  baseTexture._glRenderTargets[gl.id];
+
+        // TODO make this optional..
+        clear = true;
     }
 
-    this.emit('postrender');
-};
-
-/**
- * Renders a Display Object.
- *
- * @param displayObject {PIXI.DisplayObject} The DisplayObject to render
- * @param renderTarget {PIXI.RenderTarget} The render target to use to render this display object
- *
- */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
-{
     this.bindRenderTarget(renderTarget);
-
+    
     if(clear)
     {
         renderTarget.clear();
     }
 
-    // start the filter manager
-    this.filterManager.setFilterStack( renderTarget.filterStack );
 
-    // render the scene!
     displayObject.renderWebGL(this);
 
-    // finish the current renderer..
     this.currentRenderer.flush();
+
+    this.emit('postrender');
 };
 
 /**
@@ -301,7 +284,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, frame)
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
-        
+
         if(this._activeShader)
         {
             this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
