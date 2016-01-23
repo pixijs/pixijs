@@ -220,6 +220,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
      * To remove a mask, set this property to null.
      *
+     * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     *
      * @member {PIXI.Graphics|PIXI.Sprite}
      * @memberof PIXI.DisplayObject#
      */
@@ -525,7 +527,7 @@ DisplayObject.prototype.setParent = function (container)
  * @param [pivotY=0] {number} The Y pivot value
  * @return {PIXI.DisplayObject}
  */
-DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
+DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
 {
     this.position.x = x || 0;
     this.position.y = y || 0;
