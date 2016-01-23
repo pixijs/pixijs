@@ -13,7 +13,7 @@ var utils = require('../../utils'),
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this object renderer works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
 function GraphicsRenderer(renderer)
 {
@@ -65,7 +65,7 @@ GraphicsRenderer.prototype.destroy = function () {
 /**
  * Renders a graphics object.
  *
- * @param graphics {Graphics} The graphics object to render.
+ * @param graphics {PIXI.Graphics} The graphics object to render.
  */
 GraphicsRenderer.prototype.render = function(graphics)
 {
@@ -75,9 +75,9 @@ GraphicsRenderer.prototype.render = function(graphics)
     var shader = renderer.shaderManager.plugins.primitiveShader,
         webGLData;
 
-    if (graphics.dirty)
+    if (graphics.dirty || !graphics._webGL[gl.id])
     {
-        this.updateGraphics(graphics, gl);
+        this.updateGraphics(graphics);
     }
 
     var webGL = graphics._webGL[gl.id];
@@ -90,25 +90,24 @@ GraphicsRenderer.prototype.render = function(graphics)
 //    var matrix =  renderer.currentRenderTarget.projectionMatrix.clone();
 //    matrix.append(graphics.worldTransform);
 
-    for (var i = 0; i < webGL.data.length; i++)
+    for (var i = 0, n = webGL.data.length; i < n; i++)
     {
+        webGLData = webGL.data[i];
+
         if (webGL.data[i].mode === 1)
         {
-            webGLData = webGL.data[i];
 
-            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.pushStencil(graphics, webGLData);
 
             gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+            renderer.stencilManager.popStencil(graphics, webGLData);
         }
         else
         {
-            webGLData = webGL.data[i];
-
 
             shader = renderer.shaderManager.primitiveShader;
 
@@ -132,6 +131,8 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
+
+        renderer.drawCount++;
     }
 };
 
@@ -139,7 +140,7 @@ GraphicsRenderer.prototype.render = function(graphics)
  * Updates the graphics object
  *
  * @private
- * @param graphicsData {Graphics} The graphics object to update
+ * @param graphics {PIXI.Graphics} The graphics object to update
  */
 GraphicsRenderer.prototype.updateGraphics = function(graphics)
 {
@@ -302,7 +303,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
  * Builds a rectangle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
@@ -368,7 +369,7 @@ GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
  * Builds a rounded rectangle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGLData)
@@ -490,7 +491,7 @@ GraphicsRenderer.prototype.quadraticBezierCurve = function (fromX, fromY, cpX, c
  * Builds a circle to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object to draw
+ * @param graphicsData {PIXI.Graphics} The graphics object to draw
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
@@ -514,7 +515,7 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
         height = circleData.height;
     }
 
-    var totalSegs = 40;
+    var totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
     var seg = (Math.PI * 2) / totalSegs ;
 
     var i = 0;
@@ -571,7 +572,7 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
  * Builds a line to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
@@ -584,15 +585,15 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
     {
         return;
     }
-
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if (graphicsData.lineWidth%2)
-    {
-        for (i = 0; i < points.length; i++)
-        {
-            points[i] += 0.5;
-        }
-    }
+    // commenting this out fixes #711 and #1620
+    // if (graphicsData.lineWidth%2)
+    // {
+    //     for (i = 0; i < points.length; i++)
+    //     {
+    //         points[i] += 0.5;
+    //     }
+    // }
 
     // get first and last point.. figure out the middle!
     var firstPoint = new math.Point(points[0], points[1]);
@@ -715,7 +716,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
         py = (a2*c1 - a1*c2)/denom;
 
 
-        pdist = (px -p2x) * (px -p2x) + (py -p2y) + (py -p2y);
+        pdist = (px -p2x) * (px -p2x) + (py -p2y) * (py -p2y);
 
 
         if (pdist > 140 * 140)
@@ -786,7 +787,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
  * Builds a complex polygon to draw
  *
  * @private
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
@@ -848,7 +849,7 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
  * Builds a polygon to draw
  *
  * @private
- * @param graphicsData {WebGLGraphicsData} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)

@@ -8,7 +8,7 @@ var WebGLManager = require('./WebGLManager'),
  * @class
  * @memberof PIXI
  * @extends PIXI.WebGLManager
- * @param renderer {WebGLRenderer} The renderer this manager works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function ShaderManager(renderer)
 {
@@ -46,7 +46,7 @@ function ShaderManager(renderer)
     this._currentId = -1;
 
     /**
-     * @member {Shader}
+     * @member {PIXI.Shader}
      * @private
      */
     this.currentShader = null;
@@ -89,7 +89,7 @@ ShaderManager.prototype.onContextChange = function ()
 /**
  * Takes the attributes given in parameters and uploads them.
  *
- * @param attribs {Array} attribs
+ * @param attribs {any[]} attribs
  */
 ShaderManager.prototype.setAttribs = function (attribs)
 {
@@ -130,7 +130,7 @@ ShaderManager.prototype.setAttribs = function (attribs)
 /**
  * Sets the current shader.
  *
- * @param shader {Shader} the shader to upload
+ * @param shader {PIXI.Shader} the shader to upload
  */
 ShaderManager.prototype.setShader = function (shader)
 {
@@ -155,6 +155,8 @@ ShaderManager.prototype.setShader = function (shader)
  */
 ShaderManager.prototype.destroy = function ()
 {
+    this.primitiveShader.destroy();
+    this.complexPrimitiveShader.destroy();
     WebGLManager.prototype.destroy.call(this);
 
     this.destroyPlugins();

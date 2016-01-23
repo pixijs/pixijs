@@ -67,10 +67,10 @@ ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
 /**
  * Multiplies two mat5's
  *
- * @param out {array} (mat 5x4) the receiving matrix
- * @param a {array} (mat 5x4) the first operand
- * @param b {array} (mat 5x4) the second operand
- * @returns out {array} (mat 5x4)
+ * @param out {number[]} (mat 5x4) the receiving matrix
+ * @param a {number[]} (mat 5x4) the first operand
+ * @param b {number[]} (mat 5x4) the second operand
+ * @returns out {number[]} (mat 5x4)
  */
 ColorMatrixFilter.prototype._multiply = function (out, a, b)
 {
@@ -127,7 +127,6 @@ ColorMatrixFilter.prototype._colorMatrix = function (matrix)
 /**
  * Adjusts brightness
  *
- * Multiply the current matrix
  * @param b {number} value of the brigthness (0 is black)
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
@@ -146,7 +145,6 @@ ColorMatrixFilter.prototype.brightness = function (b, multiply)
 /**
  * Set the matrices in grey scales
  *
- * Multiply the current matrix
  * @param scale {number} value of the grey (0 is black)
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
@@ -185,7 +183,6 @@ ColorMatrixFilter.prototype.blackAndWhite = function (multiply)
 /**
  * Set the hue property of the color
  *
- * Multiply the current matrix
  * @param rotation {number} in degrees
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
@@ -237,6 +234,7 @@ ColorMatrixFilter.prototype.contrast = function (amount, multiply)
 /**
  * Set the saturation matrix, increase the separation between colors
  * Increase saturation : increase contrast, brightness, and sharpness
+ *
  * @param amount {number}
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
@@ -499,8 +497,6 @@ ColorMatrixFilter.prototype.lsd = function (multiply)
 };
 
 /*
- * Reset function
- *
  * Erase the current matrix by setting the default one
  *
  */
@@ -522,7 +518,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
      * Sets the matrix of the color matrix filter
      *
      * @member {number[]}
-     * @memberof ColorMatrixFilter#
+     * @memberof PIXI.filters.ColorMatrixFilter#
      * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
      */
     matrix: {

@@ -10,7 +10,7 @@ var fs = require('fs');
  * @class
  * @extends PIXI.AbstractFilter
  * @memberof PIXI
- * @param sprite {Sprite} the target sprite
+ * @param sprite {PIXI.Sprite} the target sprite
  */
 function SpriteMaskFilter(sprite)
 {
@@ -35,11 +35,11 @@ SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
 module.exports = SpriteMaskFilter;
 
 /**
- * Applies the filter ? @alvin
+ * Applies the filter
  *
- * @param renderer {WebGLRenderer} A reference to the WebGL renderer
- * @param input {RenderTarget}
- * @param output {RenderTarget}
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {PIXI.RenderTarget}
+ * @param output {PIXI.RenderTarget}
  */
 SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
@@ -62,8 +62,8 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
-     * @member {Texture}
-     * @memberof SpriteMaskFilter#
+     * @member {PIXI.Texture}
+     * @memberof PIXI.SpriteMaskFilter#
      */
     map: {
         get: function ()
@@ -79,8 +79,8 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     /**
      * The offset used to move the displacement map.
      *
-     * @member {Point}
-     * @memberof SpriteMaskFilter#
+     * @member {PIXI.Point}
+     * @memberof PIXI.SpriteMaskFilter#
      */
     offset: {
         get: function()

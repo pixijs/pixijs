@@ -14,12 +14,13 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
+ * Renderer dedicated to drawing and batching sprites.
  *
  * @class
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
 function SpriteRenderer(renderer)
 {
@@ -102,17 +103,16 @@ function SpriteRenderer(renderer)
     /**
      * The current sprites in the batch.
      *
-     * @member {Array}
+     * @member {PIXI.Sprite[]}
      */
     this.sprites = [];
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
      *
-     * @member {Shader}
+     * @member {PIXI.Shader}
      */
     this.shader = null;
-
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -151,7 +151,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 /**
  * Renders the sprite object.
  *
- * @param sprite {Sprite} the sprite to render when using this spritebatch
+ * @param sprite {PIXI.Sprite} the sprite to render when using this spritebatch
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
@@ -179,9 +179,9 @@ SpriteRenderer.prototype.render = function (sprite)
 
     var w0, w1, h0, h1;
 
-    if (texture.trim)
+    if (texture.trim && sprite.tileScale === undefined)
     {
-        // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
+        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
         var trim = texture.trim;
 
         w1 = trim.x - aX * trim.width;
@@ -218,24 +218,27 @@ SpriteRenderer.prototype.render = function (sprite)
 
     if (this.renderer.roundPixels)
     {
-        // xy
-        positions[index] = a * w1 + c * h1 + tx | 0;
-        positions[index+1] = d * h1 + b * w1 + ty | 0;
+        var resolution = this.renderer.resolution;
 
         // xy
-        positions[index+5] = a * w0 + c * h1 + tx | 0;
-        positions[index+6] = d * h1 + b * w0 + ty | 0;
+        positions[index] = (((a * w1 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+1] = (((d * h1 + b * w1 + ty) * resolution) | 0) / resolution;
+
+        // xy
+        positions[index+5] = (((a * w0 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+6] = (((d * h1 + b * w0 + ty) * resolution) | 0) / resolution;
 
          // xy
-        positions[index+10] = a * w0 + c * h0 + tx | 0;
-        positions[index+11] = d * h0 + b * w0 + ty | 0;
+        positions[index+10] = (((a * w0 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+11] = (((d * h0 + b * w0 + ty) * resolution) | 0) / resolution;
 
         // xy
-        positions[index+15] = a * w1 + c * h0 + tx | 0;
-        positions[index+16] = d * h0 + b * w1 + ty | 0;
+        positions[index+15] = (((a * w1 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+16] = (((d * h0 + b * w1 + ty) * resolution) | 0) / resolution;
     }
     else
     {
+
         // xy
         positions[index] = a * w1 + c * h1 + tx;
         positions[index+1] = d * h1 + b * w1 + ty;
@@ -388,7 +391,7 @@ SpriteRenderer.prototype.flush = function ()
  * Draws the currently batches sprites.
  *
  * @private
- * @param texture {Texture}
+ * @param texture {PIXI.Texture}
  * @param size {number}
  * @param startIndex {number}
  */
@@ -450,6 +453,8 @@ SpriteRenderer.prototype.destroy = function ()
 {
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
+
+    ObjectRenderer.prototype.destroy.call(this);
 
     this.shader.destroy();
 

@@ -1,9 +1,3 @@
-/**
- * @file        Main export of the PIXI extras library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
- */
 var Ticker = require('./Ticker');
 
 /**
@@ -14,36 +8,36 @@ var Ticker = require('./Ticker');
  * how to opt-out of auto-starting the shared ticker.
  *
  * @example
- *     var ticker = PIXI.ticker.shared;
- *     // Set this to prevent starting this ticker when listeners are added.
- *     // By default this is true only for the PIXI.ticker.shared instance.
- *     ticker.autoStart = false;
- *     // FYI, call this to ensure the ticker is stopped. It should be stopped
- *     // if you have not attempted to render anything yet.
- *     ticker.stop();
- *     // Call this when you are ready for a running shared ticker.
- *     ticker.start();
+ * var ticker = PIXI.ticker.shared;
+ * // Set this to prevent starting this ticker when listeners are added.
+ * // By default this is true only for the PIXI.ticker.shared instance.
+ * ticker.autoStart = false;
+ * // FYI, call this to ensure the ticker is stopped. It should be stopped
+ * // if you have not attempted to render anything yet.
+ * ticker.stop();
+ * // Call this when you are ready for a running shared ticker.
+ * ticker.start();
  *
  * @example
- *     // You may use the shared ticker to render...
- *     var renderer = PIXI.autoDetectRenderer(800, 600);
- *     var stage = new PIXI.Container();
- *     var interactionManager = PIXI.interaction.InteractionManager(renderer);
- *     document.body.appendChild(renderer.view);
- *     ticker.add(function (time) {
- *         renderer.render(stage);
- *     });
+ * // You may use the shared ticker to render...
+ * var renderer = PIXI.autoDetectRenderer(800, 600);
+ * var stage = new PIXI.Container();
+ * var interactionManager = PIXI.interaction.InteractionManager(renderer);
+ * document.body.appendChild(renderer.view);
+ * ticker.add(function (time) {
+ *     renderer.render(stage);
+ * });
  *
  * @example
- *     // Or you can just update it manually.
- *     ticker.autoStart = false;
- *     ticker.stop();
- *     function animate(time) {
- *         ticker.update(time);
- *         renderer.render(stage);
- *         requestAnimationFrame(animate);
- *     }
- *     animate(performance.now());
+ * // Or you can just update it manually.
+ * ticker.autoStart = false;
+ * ticker.stop();
+ * function animate(time) {
+ *     ticker.update(time);
+ *     renderer.render(stage);
+ *     requestAnimationFrame(animate);
+ * }
+ * animate(performance.now());
  *
  * @type {PIXI.ticker.Ticker}
  * @memberof PIXI.ticker

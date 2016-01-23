@@ -18,7 +18,7 @@ var math = require('../math'),
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
- * @param texture {Texture} The texture for this sprite
+ * @param texture {PIXI.Texture} The texture for this sprite
  */
 function Sprite(texture)
 {
@@ -30,14 +30,14 @@ function Sprite(texture)
      * Setting the anchor to 0.5,0.5 means the texture's origin is centered
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
-     * @member {Point}
+     * @member {PIXI.Point}
      */
     this.anchor = new math.Point();
 
     /**
      * The texture that the sprite is using
      *
-     * @member {Texture}
+     * @member {PIXI.Texture}
      * @private
      */
     this._texture = null;
@@ -62,22 +62,23 @@ function Sprite(texture)
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
-     * @default [0xFFFFFF]
+     * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
 
     /**
-     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
      * @member {number}
-     * @default CONST.BLEND_MODES.NORMAL;
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
      */
     this.blendMode = CONST.BLEND_MODES.NORMAL;
 
     /**
      * The shader that will be used to render the sprite. Set to null to remove a current shader.
      *
-     * @member {AbstractFilter}
+     * @member {PIXI.AbstractFilter|PIXI.Shader}
      */
     this.shader = null;
 
@@ -85,7 +86,7 @@ function Sprite(texture)
      * An internal cached value of the tint.
      *
      * @member {number}
-     * @default [0xFFFFFF]
+     * @default 0xFFFFFF
      */
     this.cachedTint = 0xFFFFFF;
 
@@ -108,11 +109,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return this.scale.x * this.texture.width;
+            return Math.abs(this.scale.x) * this.texture.width;
         },
         set: function (value)
         {
-            this.scale.x = value / this.texture.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture.width;
             this._width = value;
         }
     },
@@ -126,11 +128,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  this.scale.y * this.texture.height;
+            return  Math.abs(this.scale.y) * this.texture.height;
         },
         set: function (value)
         {
-            this.scale.y = value / this.texture.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture.height;
             this._height = value;
         }
     },
@@ -182,12 +185,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = this._width / this.texture.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.width;
     }
 
     if (this._height)
     {
-        this.scale.y = this._height / this.texture.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.height;
     }
 };
 
@@ -195,7 +198,7 @@ Sprite.prototype._onTextureUpdate = function ()
 *
 * Renders the object using the WebGL renderer
 *
-* @param renderer {WebGLRenderer}
+* @param renderer {PIXI.WebGLRenderer}
 * @private
 */
 Sprite.prototype._renderWebGL = function (renderer)
@@ -207,8 +210,8 @@ Sprite.prototype._renderWebGL = function (renderer)
 /**
  * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {Matrix} the transformation matrix of the sprite
- * @return {Rectangle} the framing rectangle
+ * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @return {PIXI.Rectangle} the framing rectangle
  */
 Sprite.prototype.getBounds = function (matrix)
 {
@@ -238,7 +241,8 @@ Sprite.prototype.getBounds = function (matrix)
             minY,
             maxY;
 
-
+        //TODO - I am SURE this can be optimised, but the below is not accurate enough..
+        /*
         if (b === 0 && c === 0)
         {
             // scale may be negative!
@@ -261,38 +265,41 @@ Sprite.prototype.getBounds = function (matrix)
         }
         else
         {
-            var x1 = a * w1 + c * h1 + tx;
-            var y1 = d * h1 + b * w1 + ty;
+        */
+       
+        var x1 = a * w1 + c * h1 + tx;
+        var y1 = d * h1 + b * w1 + ty;
 
-            var x2 = a * w0 + c * h1 + tx;
-            var y2 = d * h1 + b * w0 + ty;
+        var x2 = a * w0 + c * h1 + tx;
+        var y2 = d * h1 + b * w0 + ty;
 
-            var x3 = a * w0 + c * h0 + tx;
-            var y3 = d * h0 + b * w0 + ty;
+        var x3 = a * w0 + c * h0 + tx;
+        var y3 = d * h0 + b * w0 + ty;
 
-            var x4 =  a * w1 + c * h0 + tx;
-            var y4 =  d * h0 + b * w1 + ty;
+        var x4 =  a * w1 + c * h0 + tx;
+        var y4 =  d * h0 + b * w1 + ty;
 
-            minX = x1;
-            minX = x2 < minX ? x2 : minX;
-            minX = x3 < minX ? x3 : minX;
-            minX = x4 < minX ? x4 : minX;
+        minX = x1;
+        minX = x2 < minX ? x2 : minX;
+        minX = x3 < minX ? x3 : minX;
+        minX = x4 < minX ? x4 : minX;
 
-            minY = y1;
-            minY = y2 < minY ? y2 : minY;
-            minY = y3 < minY ? y3 : minY;
-            minY = y4 < minY ? y4 : minY;
+        minY = y1;
+        minY = y2 < minY ? y2 : minY;
+        minY = y3 < minY ? y3 : minY;
+        minY = y4 < minY ? y4 : minY;
 
-            maxX = x1;
-            maxX = x2 > maxX ? x2 : maxX;
-            maxX = x3 > maxX ? x3 : maxX;
-            maxX = x4 > maxX ? x4 : maxX;
+        maxX = x1;
+        maxX = x2 > maxX ? x2 : maxX;
+        maxX = x3 > maxX ? x3 : maxX;
+        maxX = x4 > maxX ? x4 : maxX;
 
-            maxY = y1;
-            maxY = y2 > maxY ? y2 : maxY;
-            maxY = y3 > maxY ? y3 : maxY;
-            maxY = y4 > maxY ? y4 : maxY;
-        }
+        maxY = y1;
+        maxY = y2 > maxY ? y2 : maxY;
+        maxY = y3 > maxY ? y3 : maxY;
+        maxY = y4 > maxY ? y4 : maxY;
+
+        //}
 
         // check for children
         if(this.children.length)
@@ -326,6 +333,10 @@ Sprite.prototype.getBounds = function (matrix)
     return this._currentBounds;
 };
 
+/**
+ * Gets the local bounds of the sprite object.
+ *
+ */
 Sprite.prototype.getLocalBounds = function ()
 {
     this._bounds.x = -this._texture._frame.width * this.anchor.x;
@@ -338,7 +349,7 @@ Sprite.prototype.getLocalBounds = function ()
 /**
 * Tests if a point is inside this sprite
 *
-* @param point {Point} the point to test
+* @param point {PIXI.Point} the point to test
 * @return {boolean} the result of the test
 */
 Sprite.prototype.containsPoint = function( point )
@@ -366,7 +377,7 @@ Sprite.prototype.containsPoint = function( point )
 /**
 * Renders the object using the Canvas renderer
 *
-* @param renderer {CanvasRenderer} The renderer
+* @param renderer {PIXI.CanvasRenderer} The renderer
 * @private
 */
 Sprite.prototype._renderCanvas = function (renderer)
@@ -376,10 +387,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         return;
     }
 
-    if (this.blendMode !== renderer.currentBlendMode)
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== renderer.context.globalCompositeOperation)
     {
-        renderer.currentBlendMode = this.blendMode;
-        renderer.context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
+        renderer.context.globalCompositeOperation = compositeOperation;
     }
 
     //  Ignore null sources
@@ -395,31 +406,39 @@ Sprite.prototype._renderCanvas = function (renderer)
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderer.smoothProperty && renderer.currentScaleMode !== texture.baseTexture.scaleMode)
+        var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
+        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
         {
-            renderer.currentScaleMode = texture.baseTexture.scaleMode;
-            renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+            renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
 
         if(texture.rotate)
         {
-
-            // cheeky rotation!
-            var a = wt.a;
-            var b = wt.b;
-
-            wt.a  = -wt.c;
-            wt.b  = -wt.d;
-            wt.c  =  a;
-            wt.d  =  b;
-
             width = texture.crop.height;
             height = texture.crop.width;
 
             dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
             dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
+       
+            dx += width;
+
+            wt.tx = dy * wt.a + dx * wt.c + wt.tx;
+            wt.ty = dy * wt.b + dx * wt.d + wt.ty;
+
+            var temp = wt.a;
+            wt.a  = -wt.c;
+            wt.c  =  temp;
+
+            temp = wt.b;
+            wt.b  = -wt.d;
+            wt.d  =  temp;
+
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+
         }
         else
         {
@@ -529,10 +548,10 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
  * The frame ids are created when a Texture packer file has been loaded
  *
  * @static
- * @param frameId {String} The frame Id of the texture in the cache
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ * @param frameId {string} The frame Id of the texture in the cache
  * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=scaleModes.DEFAULT] {number} if you want to specify the scale mode, see {@link SCALE_MODES} for possible values
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 Sprite.fromFrame = function (frameId)
 {
@@ -551,8 +570,8 @@ Sprite.fromFrame = function (frameId)
  * If the image is not in the texture cache it will be loaded
  *
  * @static
- * @param imageId {String} The image url of the texture
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
+ * @param imageId {string} The image url of the texture
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 Sprite.fromImage = function (imageId, crossorigin, scaleMode)
 {

@@ -7,6 +7,7 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
+    EventEmitter:   require('eventemitter3'),
     pluginTarget:   require('./pluginTarget'),
     async:          require('async'),
 
@@ -24,6 +25,7 @@ var utils = module.exports = {
      * Converts a hex color number to an [R, G, B] array
      *
      * @param hex {number}
+     * @param  {number[]} [out=[]]
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
     hex2rgb: function (hex, out)
@@ -141,7 +143,7 @@ var utils = module.exports = {
      * used by spritesheets and image urls
      *
      * @param url {string} the image path
-     * @return {boolean}
+     * @return {number}
      */
     getResolutionOfUrl: function (url)
     {
@@ -184,7 +186,7 @@ var utils = module.exports = {
                 'background: #ff66a5; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
-                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;'
             ];
 
             window.console.log.apply(console, args); //jshint ignore:line
@@ -221,6 +223,42 @@ var utils = module.exports = {
         {
             return false;
         }
+    },
+
+    /**
+     * Returns sign of number
+     *
+     * @param n {number}
+     * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
+     */
+    sign: function (n)
+    {
+        return n ? (n < 0 ? -1 : 1) : 0;
+    },
+
+    /**
+     * removeItems
+     *
+     * @param {array} arr The target array
+     * @param {number} startIdx The index to begin removing from (inclusive)
+     * @param {number} removeCount How many items to remove
+     */
+    removeItems: function (arr, startIdx, removeCount)
+    {
+        var length = arr.length;
+
+        if (startIdx >= length || removeCount === 0)
+        {
+            return;
+        }
+
+        removeCount = (startIdx+removeCount > length ? length-startIdx : removeCount);
+        for (var i = startIdx, len = length-removeCount; i < len; ++i)
+        {
+            arr[i] = arr[i + removeCount];
+        }
+
+        arr.length = len;
     },
 
     /**

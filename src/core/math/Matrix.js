@@ -1,3 +1,7 @@
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 var Point = require('./Point');
 
 /**
@@ -74,10 +78,37 @@ Matrix.prototype.fromArray = function (array)
     this.ty = array[5];
 };
 
+
+/**
+ * sets the matrix properties
+ *
+ * @param {number} a
+ * @param {number} b
+ * @param {number} c
+ * @param {number} d
+ * @param {number} tx
+ * @param {number} ty
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.set = function (a, b, c, d, tx, ty)
+{
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
+    this.tx = tx;
+    this.ty = ty;
+
+    return this;
+};
+
+
 /**
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
+ * @param [out] {Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -121,9 +152,9 @@ Matrix.prototype.toArray = function (transpose, out)
  * Get a new position with the current transformation applied.
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
  *
- * @param pos {Point} The origin
- * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, transformed through this matrix
+ * @param pos {PIXI.Point} The origin
+ * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {PIXI.Point} The new point, transformed through this matrix
  */
 Matrix.prototype.apply = function (pos, newPos)
 {
@@ -142,9 +173,9 @@ Matrix.prototype.apply = function (pos, newPos)
  * Get a new position with the inverse of the current transformation applied.
  * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
  *
- * @param pos {Point} The origin
- * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, inverse-transformed through this matrix
+ * @param pos {PIXI.Point} The origin
+ * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {PIXI.Point} The new point, inverse-transformed through this matrix
  */
 Matrix.prototype.applyInverse = function (pos, newPos)
 {
@@ -166,7 +197,7 @@ Matrix.prototype.applyInverse = function (pos, newPos)
  *
  * @param {number} x
  * @param {number} y
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.translate = function (x, y)
 {
@@ -181,7 +212,7 @@ Matrix.prototype.translate = function (x, y)
  *
  * @param {number} x The amount to scale horizontally
  * @param {number} y The amount to scale vertically
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.scale = function (x, y)
 {
@@ -200,7 +231,7 @@ Matrix.prototype.scale = function (x, y)
  * Applies a rotation transformation to the matrix.
  *
  * @param {number} angle - The angle in radians.
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.rotate = function (angle)
 {
@@ -224,8 +255,8 @@ Matrix.prototype.rotate = function (angle)
 /**
  * Appends the given Matrix to this Matrix.
  *
- * @param {Matrix} matrix
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @param {PIXI.Matrix} matrix
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.append = function (matrix)
 {
@@ -246,10 +277,52 @@ Matrix.prototype.append = function (matrix)
 };
 
 /**
+ * Sets the matrix based on all the available properties
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} pivotX
+ * @param {number} pivotY
+ * @param {number} scaleX
+ * @param {number} scaleY
+ * @param {number} rotation
+ * @param {number} skewX
+ * @param {number} skewY
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+{
+    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
+
+    sr  = Math.sin(rotation);
+    cr  = Math.cos(rotation);
+    cy  = Math.cos(skewY);
+    sy  = Math.sin(skewY);
+    nsx = -Math.sin(skewX);
+    cx  =  Math.cos(skewX);
+
+    a  =  cr * scaleX;
+    b  =  sr * scaleX;
+    c  = -sr * scaleY;
+    d  =  cr * scaleY;
+
+    this.a  = cy * a + sy * c;
+    this.b  = cy * b + sy * d;
+    this.c  = nsx * a + cx * c;
+    this.d  = nsx * b + cx * d;
+
+    this.tx = x + ( pivotX * a + pivotY * c );
+    this.ty = y + ( pivotX * b + pivotY * d );
+
+    return this;
+};
+
+/**
  * Prepends the given Matrix to this Matrix.
  *
- * @param {Matrix} matrix
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @param {PIXI.Matrix} matrix
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.prepend = function(matrix)
 {
@@ -274,7 +347,7 @@ Matrix.prototype.prepend = function(matrix)
 /**
  * Inverts this matrix
  *
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.invert = function()
 {
@@ -299,7 +372,7 @@ Matrix.prototype.invert = function()
 /**
  * Resets this Matix to an identity (default) matrix.
  *
- * @return {Matrix} This matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.identity = function ()
 {
@@ -316,7 +389,7 @@ Matrix.prototype.identity = function ()
 /**
  * Creates a new Matrix object with the same values as this one.
  *
- * @return {Matrix} A copy of this matrix. Good for chaining method calls.
+ * @return {PIXI.Matrix} A copy of this matrix. Good for chaining method calls.
  */
 Matrix.prototype.clone = function ()
 {
@@ -334,7 +407,7 @@ Matrix.prototype.clone = function ()
 /**
  * Changes the values of the given matrix to be the same as the ones in this matrix
  *
- * @return {Matrix} The matrix given in parameter with its values updated.
+ * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
  */
 Matrix.prototype.copy = function (matrix)
 {
@@ -350,9 +423,16 @@ Matrix.prototype.copy = function (matrix)
 
 /**
  * A default (identity) matrix
+ *
+ * @static
+ * @const
  */
 Matrix.IDENTITY = new Matrix();
+
 /**
  * A temp matrix
+ *
+ * @static
+ * @const
  */
 Matrix.TEMP_MATRIX = new Matrix();

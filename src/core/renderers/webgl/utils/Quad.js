@@ -1,5 +1,6 @@
 /**
  * Helper class to create a quad
+ *
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
@@ -83,8 +84,8 @@ Quad.prototype.constructor = Quad;
 
 /**
  * Maps two Rectangle to the quad
- * @param rect {Rectangle} the first rectangle
- * @param rect2 {Rectangle} the second rectangle
+ * @param rect {PIXI.Rectangle} the first rectangle
+ * @param rect2 {PIXI.Rectangle} the second rectangle
  */
 Quad.prototype.map = function(rect, rect2)
 {
@@ -137,6 +138,14 @@ Quad.prototype.upload = function()
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * 4, this.uvs);
 
     gl.bufferSubData(gl.ARRAY_BUFFER, (8 + 8) * 4, this.colors);
+};
+
+Quad.prototype.destroy = function()
+{
+    var gl = this.gl;
+    
+     gl.deleteBuffer(this.vertexBuffer);
+     gl.deleteBuffer(this.indexBuffer);
 };
 
 module.exports = Quad;

@@ -1,4 +1,5 @@
 var math = require('../math'),
+    utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
     _tempMatrix = new math.Matrix();
@@ -22,7 +23,7 @@ function Container()
     /**
      * The array of children of this container.
      *
-     * @member {DisplayObject[]}
+     * @member {PIXI.DisplayObject[]}
      * @readonly
      */
     this.children = [];
@@ -97,31 +98,62 @@ Object.defineProperties(Container.prototype, {
 });
 
 /**
- * Adds a child to the container.
+ * Overridable method that can be used by Container subclasses whenever the children array is modified
  *
- * @param child {DisplayObject} The DisplayObject to add to the container
- * @return {DisplayObject} The child that was added.
+ * @private
+ */
+Container.prototype.onChildrenChange = function () {};
+
+/**
+ * Adds a child to the container.
+ * 
+ * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
+ * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
+ * @return {PIXI.DisplayObject} The child that was added.
  */
 Container.prototype.addChild = function (child)
-{
-    return this.addChildAt(child, this.children.length);
+{ 
+    var argumentsLength = arguments.length;
+
+    // if there is only one argument we can bypass looping through the them
+    if(argumentsLength > 1)
+    {
+        // loop through the arguments property and add all children
+        // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+        for (var i = 0; i < argumentsLength; i++)
+        {
+            this.addChild( arguments[i] );
+        }
+    }     
+    else
+    {
+        // if the child has a parent then lets remove it as Pixi objects can only exist in one place
+        if (child.parent)
+        {
+            child.parent.removeChild(child);
+        }
+
+        child.parent = this;
+        
+        this.children.push(child);
+
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(this.children.length-1);
+        child.emit('added', this);
+    }
+
+    return child;
 };
 
 /**
  * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
  *
- * @param child {DisplayObject} The child to add
- * @param index {Number} The index to place the child in
- * @return {DisplayObject} The child that was added.
+ * @param child {PIXI.DisplayObject} The child to add
+ * @param index {number} The index to place the child in
+ * @return {PIXI.DisplayObject} The child that was added.
  */
 Container.prototype.addChildAt = function (child, index)
 {
-    // prevent adding self as child
-    if (child === this)
-    {
-        return child;
-    }
-
     if (index >= 0 && index <= this.children.length)
     {
         if (child.parent)
@@ -133,6 +165,8 @@ Container.prototype.addChildAt = function (child, index)
 
         this.children.splice(index, 0, child);
 
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(index);
         child.emit('added', this);
 
         return child;
@@ -146,8 +180,8 @@ Container.prototype.addChildAt = function (child, index)
 /**
  * Swaps the position of 2 Display Objects within this container.
  *
- * @param child {DisplayObject}
- * @param child2 {DisplayObject}
+ * @param child {PIXI.DisplayObject}
+ * @param child2 {PIXI.DisplayObject}
  */
 Container.prototype.swapChildren = function (child, child2)
 {
@@ -166,13 +200,14 @@ Container.prototype.swapChildren = function (child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
+    this.onChildrenChange(index1 < index2 ? index1 : index2);
 };
 
 /**
  * Returns the index position of a child DisplayObject instance
  *
- * @param child {DisplayObject} The DisplayObject instance to identify
- * @return {Number} The index position of the child display object to identify
+ * @param child {PIXI.DisplayObject} The DisplayObject instance to identify
+ * @return {number} The index position of the child display object to identify
  */
 Container.prototype.getChildIndex = function (child)
 {
@@ -189,8 +224,8 @@ Container.prototype.getChildIndex = function (child)
 /**
  * Changes the position of an existing child in the display object container
  *
- * @param child {DisplayObject} The child DisplayObject instance for which you want to change the index number
- * @param index {Number} The resulting index number for the child display object
+ * @param child {PIXI.DisplayObject} The child DisplayObject instance for which you want to change the index number
+ * @param index {number} The resulting index number for the child display object
  */
 Container.prototype.setChildIndex = function (child, index)
 {
@@ -201,15 +236,16 @@ Container.prototype.setChildIndex = function (child, index)
 
     var currentIndex = this.getChildIndex(child);
 
-    this.children.splice(currentIndex, 1); //remove from old position
+    utils.removeItems(this.children, currentIndex, 1); // remove from old position
     this.children.splice(index, 0, child); //add at new position
+    this.onChildrenChange(index);
 };
 
 /**
  * Returns the child at the specified index
  *
- * @param index {Number} The index to get the child at
- * @return {DisplayObject} The child at the given index, if any.
+ * @param index {number} The index to get the child at
+ * @return {PIXI.DisplayObject} The child at the given index, if any.
  */
 Container.prototype.getChildAt = function (index)
 {
@@ -224,34 +260,58 @@ Container.prototype.getChildAt = function (index)
 /**
  * Removes a child from the container.
  *
- * @param child {DisplayObject} The DisplayObject to remove
- * @return {DisplayObject} The child that was removed.
+ * @param child {PIXI.DisplayObject} The DisplayObject to remove
+ * @return {PIXI.DisplayObject} The child that was removed.
  */
 Container.prototype.removeChild = function (child)
 {
-    var index = this.children.indexOf(child);
+    var argumentsLength = arguments.length;
 
-    if (index === -1)
+    // if there is only one argument we can bypass looping through the them
+    if(argumentsLength > 1)
     {
-        return;
+        // loop through the arguments property and add all children
+        // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+        for (var i = 0; i < argumentsLength; i++)
+        {
+            this.removeChild( arguments[i] );
+        }
+    }     
+    else
+    {   
+        var index = this.children.indexOf(child);
+
+        if (index === -1)
+        {
+            return;
+        }
+
+        child.parent = null;
+        utils.removeItems(this.children, index, 1);
+
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(index);
+        child.emit('removed', this);
     }
 
-    return this.removeChildAt(index);
+    return child;
 };
 
 /**
  * Removes a child from the specified index position.
  *
- * @param index {Number} The index to get the child from
- * @return {DisplayObject} The child that was removed.
+ * @param index {number} The index to get the child from
+ * @return {PIXI.DisplayObject} The child that was removed.
  */
 Container.prototype.removeChildAt = function (index)
 {
     var child = this.getChildAt(index);
 
     child.parent = null;
-    this.children.splice(index, 1);
+    utils.removeItems(this.children, index, 1);
 
+    // TODO - lets either do all callbacks or all events.. not both!
+    this.onChildrenChange(index);
     child.emit('removed', this);
 
     return child;
@@ -260,22 +320,30 @@ Container.prototype.removeChildAt = function (index)
 /**
  * Removes all children from this container that are within the begin and end indexes.
  *
- * @param beginIndex {Number} The beginning position. Default value is 0.
- * @param endIndex {Number} The ending position. Default value is size of the container.
+ * @param beginIndex {number} The beginning position. Default value is 0.
+ * @param endIndex {number} The ending position. Default value is size of the container.
  */
 Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
     var begin = beginIndex || 0;
     var end = typeof endIndex === 'number' ? endIndex : this.children.length;
     var range = end - begin;
+    var removed, i;
 
     if (range > 0 && range <= end)
     {
-        var removed = this.children.splice(begin, range);
+        removed = this.children.splice(begin, range);
 
-        for (var i = 0; i < removed.length; ++i)
+        for (i = 0; i < removed.length; ++i)
         {
             removed[i].parent = null;
+        }
+
+        this.onChildrenChange(beginIndex);
+
+        for (i = 0; i < removed.length; ++i)
+        {
+            removed[i].emit('removed', this);
         }
 
         return removed;
@@ -294,10 +362,10 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  * Useful function that returns a texture of the display object that can then be used to create sprites
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
- * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
- * @return {Texture} a texture of the display object
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used to generate the texture.
+ * @param resolution {number} The resolution of the texture being generated
+ * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} a texture of the display object
  */
 Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
@@ -339,7 +407,7 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
 /**
  * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
- * @return {Rectangle} The rectangular bounding area
+ * @return {PIXI.Rectangle} The rectangular bounding area
  */
 Container.prototype.getBounds = function ()
 {
@@ -412,7 +480,7 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  * Retrieves the non-global local bounds of the Container as a rectangle.
  * The calculation takes all visible children into consideration.
  *
- * @return {Rectangle} The rectangular bounding area
+ * @return {PIXI.Rectangle} The rectangular bounding area
  */
 Container.prototype.getLocalBounds = function ()
 {
@@ -435,7 +503,7 @@ Container.prototype.getLocalBounds = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer} The renderer
+ * @param renderer {PIXI.WebGLRenderer} The renderer
  */
 Container.prototype.renderWebGL = function (renderer)
 {
@@ -454,7 +522,7 @@ Container.prototype.renderWebGL = function (renderer)
         renderer.currentRenderer.flush();
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters)
+        if (this._filters && this._filters.length)
         {
             renderer.filterManager.pushFilter(this, this._filters);
         }
@@ -504,7 +572,7 @@ Container.prototype.renderWebGL = function (renderer)
 /**
  * To be overridden by the subclass
  *
- * @param renderer {WebGLRenderer} The renderer
+ * @param renderer {PIXI.WebGLRenderer} The renderer
  * @private
  */
 Container.prototype._renderWebGL = function (renderer) // jshint unused:false
@@ -515,7 +583,7 @@ Container.prototype._renderWebGL = function (renderer) // jshint unused:false
 /**
  * To be overridden by the subclass
  *
- * @param renderer {CanvasRenderer} The renderer
+ * @param renderer {PIXI.CanvasRenderer} The renderer
  * @private
  */
 Container.prototype._renderCanvas = function (renderer) // jshint unused:false
@@ -527,7 +595,7 @@ Container.prototype._renderCanvas = function (renderer) // jshint unused:false
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer} The renderer
+ * @param renderer {PIXI.CanvasRenderer} The renderer
  */
 Container.prototype.renderCanvas = function (renderer)
 {

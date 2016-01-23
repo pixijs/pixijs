@@ -6,7 +6,7 @@ var WebGLManager = require('../managers/WebGLManager');
  * @class
  * @extends PIXI.WebGLManager
  * @memberof PIXI
- * @param renderer {WebGLRenderer} The renderer this object renderer works for.
+ * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
 function ObjectRenderer(renderer)
 {
@@ -48,6 +48,7 @@ ObjectRenderer.prototype.flush = function ()
 /**
  * Renders an object
  *
+ * @param object {PIXI.DisplayObject} The object to render.
  */
 ObjectRenderer.prototype.render = function (object) // jshint unused:false
 {

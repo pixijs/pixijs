@@ -7,6 +7,7 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     //expect(obj).to.respondTo('addFilter');
     //expect(obj).to.respondTo('removeFilter');
     expect(obj).to.respondTo('updateTransform');
+    expect(obj).to.respondTo('setParent');
 
     expect(obj).to.contain.property('position');
     pixi_core_Point_confirm(obj.position, 0, 0);

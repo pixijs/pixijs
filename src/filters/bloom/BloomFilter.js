@@ -47,7 +47,7 @@ Object.defineProperties(BloomFilter.prototype, {
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberOf BloomFilter#
+     * @memberOf PIXI.filters.BloomFilter#
      * @default 2
      */
     blur: {
@@ -65,7 +65,7 @@ Object.defineProperties(BloomFilter.prototype, {
      * Sets the strength of the blurX property
      *
      * @member {number}
-     * @memberOf BloomFilter#
+     * @memberOf PIXI.filters.BloomFilter#
      * @default 2
      */
     blurX: {
@@ -83,7 +83,7 @@ Object.defineProperties(BloomFilter.prototype, {
      * Sets the strength of the blurY property
      *
      * @member {number}
-     * @memberOf BloomFilter#
+     * @memberOf PIXI.filters.BloomFilter#
      * @default 2
      */
     blurY: {

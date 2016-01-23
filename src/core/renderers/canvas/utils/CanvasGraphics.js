@@ -12,7 +12,7 @@ module.exports = CanvasGraphics;
 /*
  * Renders a Graphics object to a canvas.
  *
- * @param graphics {Graphics} the actual graphics object to render
+ * @param graphics {PIXI.Graphics} the actual graphics object to render
  * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
  */
 CanvasGraphics.renderGraphics = function (graphics, context)
@@ -194,7 +194,7 @@ CanvasGraphics.renderGraphics = function (graphics, context)
  * Renders a graphics mask
  *
  * @private
- * @param graphics {Graphics} the graphics which will be used as a mask
+ * @param graphics {PIXI.Graphics} the graphics which will be used as a mask
  * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  */
 CanvasGraphics.renderGraphicsMask = function (graphics, context)
@@ -299,15 +299,16 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  * Updates the tint of a graphics object
  *
  * @private
- * @param graphics {Graphics} the graphics that will have its tint updated
- * 
+ * @param graphics {PIXI.Graphics} the graphics that will have its tint updated
+ *
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
-    if (graphics.tint === 0xFFFFFF)
+    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
     {
         return;
     }
+    graphics._prevTint = graphics.tint;
 
     var tintR = (graphics.tint >> 16 & 0xFF) / 255;
     var tintG = (graphics.tint >> 8 & 0xFF) / 255;

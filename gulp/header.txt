@@ -1,0 +1,12 @@
+/**
+ * @license
+ * pixi.js - v<%= pkg.version %>
+ * Compiled <%= date %>
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ *
+ * <% licenseText.split('\n').forEach(function (line) { %><%= line %>
+ * <% }); %>
+ */

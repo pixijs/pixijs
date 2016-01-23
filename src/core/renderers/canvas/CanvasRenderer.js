@@ -21,9 +21,12 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
+ * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
 function CanvasRenderer(width, height, options)
 {
+    options = options || {};
+
     SystemRenderer.call(this, 'Canvas', width, height, options);
 
     this.type = CONST.RENDERER_TYPE.CANVAS;
@@ -45,31 +48,9 @@ function CanvasRenderer(width, height, options)
     /**
      * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
      *
-     * @member {CanvasMaskManager}
+     * @member {PIXI.CanvasMaskManager}
      */
     this.maskManager = new CanvasMaskManager();
-
-    /**
-     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
-     * Handy for crisp pixel art and speed on legacy devices.
-     *
-     * @member {boolean}
-     */
-    this.roundPixels = false;
-
-    /**
-     * Tracks the active scale mode for this renderer.
-     *
-     * @member {SCALE_MODE}
-     */
-    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-
-    /**
-     * Tracks the active blend mode for this renderer.
-     *
-     * @member {SCALE_MODE}
-     */
-    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
 
     /**
      * The canvas property used to set the canvas smoothing property.
@@ -105,7 +86,7 @@ function CanvasRenderer(width, height, options)
     /**
      * This temporary display object used as the parent of the currently being rendered item
      *
-     * @member {DisplayObject}
+     * @member {PIXI.DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {
@@ -126,10 +107,12 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {DisplayObject} the object to be rendered
+ * @param object {PIXI.DisplayObject} the object to be rendered
  */
 CanvasRenderer.prototype.render = function (object)
 {
+    this.emit('prerender');
+
     var cacheParent = object.parent;
 
     this._lastObjectRendered = object;
@@ -145,7 +128,6 @@ CanvasRenderer.prototype.render = function (object)
 
     this.context.globalAlpha = 1;
 
-    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
     this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas)
@@ -168,6 +150,8 @@ CanvasRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.context);
+
+    this.emit('postrender');
 };
 
 /**
@@ -189,18 +173,13 @@ CanvasRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.maskManager = null;
 
-    this.roundPixels = false;
-
-    this.currentScaleMode = 0;
-    this.currentBlendMode = 0;
-
     this.smoothProperty = null;
 };
 
 /**
  * Renders a display object
  *
- * @param displayObject {DisplayObject} The displayObject to render
+ * @param displayObject {PIXI.DisplayObject} The displayObject to render
  * @private
  */
 CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
@@ -212,17 +191,21 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
     this.context = tempContext;
 };
 
+/**
+ * @extends PIXI.SystemRenderer#resize
+ *
+ * @param {number} w
+ * @param {number} h
+ */
 CanvasRenderer.prototype.resize = function (w, h)
 {
     SystemRenderer.prototype.resize.call(this, w, h);
 
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..
-    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
-    
     if(this.smoothProperty)
     {
-        this.context[this.smoothProperty] = (this.currentScaleMode === CONST.SCALE_MODES.LINEAR);
+        this.context[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
     }
 
 };

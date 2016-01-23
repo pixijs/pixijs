@@ -1,6 +1,8 @@
 var Shader = require('./Shader');
 
 /**
+ * This shader is used to draw simple primitive shapes for {@link PIXI.Graphics}.
+ *
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader

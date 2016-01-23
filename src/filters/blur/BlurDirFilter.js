@@ -31,7 +31,6 @@ function BlurDirFilter(dirX, dirY)
      * Sets the number of passes for blur. More passes means higher quaility bluring.
      *
      * @member {number}
-     * @memberof BlurDirFilter#
      * @default 1
      */
     this.passes = 1;
@@ -40,7 +39,6 @@ function BlurDirFilter(dirX, dirY)
      * Sets the X direction of the blur
      *
      * @member {number}
-     * @memberof BlurDirFilter#
      * @default 0
      */
     this.dirX = dirX || 0;
@@ -49,7 +47,6 @@ function BlurDirFilter(dirX, dirY)
      * Sets the Y direction of the blur
      *
      * @member {number}
-     * @memberof BlurDirFilter#
      * @default 0
      */
     this.dirY = dirY || 0;
@@ -92,7 +89,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof BlurDirFilter#
+     * @memberof PIXI.filters.BlurDirFilter#
      * @default 2
      */
     blur: {
@@ -110,7 +107,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
      * Sets the X direction of the blur.
      *
      * @member {number}
-     * @memberof BlurYFilter#
+     * @memberof PIXI.filters.BlurYFilter#
      * @default 0
      */
     dirX: {
@@ -127,7 +124,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
      * Sets the Y direction of the blur.
      *
      * @member {number}
-     * @memberof BlurDirFilter#
+     * @memberof PIXI.filters.BlurDirFilter#
      * @default 0
      */
     dirY: {
