@@ -402,8 +402,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width,
-            height;
+            width = texture.crop.width,
+            height = texture.crop.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -414,19 +414,22 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        //texture can be rotated, that's serious!
-        var swapWidthHeight = GroupD8.isSwapWidthHeight(texture.rotate);
-        width = swapWidthHeight ? texture.crop.height : texture.crop.width;
-        height = swapWidthHeight ? texture.crop.width : texture.crop.height;
-
-        // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-        dx = (texture.trim) ? texture.trim.x - (this.anchor.x - 0.5) * texture.trim.width : (this.anchor.x - 0.5) * -texture._frame.width;
-        dy = (texture.trim) ? texture.trim.y - (this.anchor.y - 0.5) * texture.trim.height : (this.anchor.y - 0.5) * -texture._frame.height;
-
+        //inline GroupD8.isSwapWidthHeight
+        if ((texture.rotate & 3) === 2) {
+            width = texture.crop.height;
+            height = texture.crop.width;
+        }
+        if (texture.trim) {
+            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
+            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
+        } else {
+            dx = (0.5 - this.anchor.x) * texture._frame.width;
+            dy = (0.5 - this.anchor.y) * texture._frame.height;
+        }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
-            GroupD8.appendRotationInv(wt, texture.rotate, dx, dy);
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
