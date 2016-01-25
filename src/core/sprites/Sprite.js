@@ -423,8 +423,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width = texture._frame.width,
-            height = texture._frame.height;
+            width = texture._frame.width * texture.resolution,
+            height = texture._frame.height * texture.resolution;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
