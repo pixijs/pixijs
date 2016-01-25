@@ -40,10 +40,10 @@ module.exports = function ()
                     var crop = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
                     if (frames[i].rotated) {
-                        frame = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                     }
                     else {
-                        frame = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
                     }
 
                     //  Check to see if the sprite is trimmed
