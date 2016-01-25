@@ -111,12 +111,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture._frame.width;
+            return Math.abs(this.scale.x) * this.texture.crop.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture._frame.width;
+            this.scale.x = sign * value / this.texture.crop.width;
             this._width = value;
         }
     },
@@ -130,12 +130,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture._frame.height;
+            return  Math.abs(this.scale.y) * this.texture.crop.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture._frame.height;
+            this.scale.y = sign * value / this.texture.crop.height;
             this._height = value;
         }
     },
@@ -191,12 +191,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.frame.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.crop.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.frame.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.crop.height;
     }
 };
 
@@ -207,25 +207,26 @@ Sprite.prototype.caclulateVertices = function ()
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
         w0, w1, h0, h1,
-        trim = texture.trim;
-        
+        trim = texture.trim,
+        crop = texture.crop;
+
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * trim.width;
-        w0 = w1 + texture.crop.width;
+        w1 = trim.x - this.anchor.x * crop.width;
+        w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * trim.height;
-        h0 = h1 + texture.crop.height;
+        h1 = trim.y - this.anchor.y * crop.height;
+        h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (texture._frame.width ) * (1-this.anchor.x);
-        w1 = (texture._frame.width ) * -this.anchor.x;
+        w0 = (crop.width ) * (1-this.anchor.x);
+        w1 = (crop.width ) * -this.anchor.x;
 
-        h0 = texture._frame.height * (1-this.anchor.y);
-        h1 = texture._frame.height * -this.anchor.y;
+        h0 = crop.height * (1-this.anchor.y);
+        h1 = crop.height * -this.anchor.y;
     }
 
     // xy
@@ -244,7 +245,6 @@ Sprite.prototype.caclulateVertices = function ()
     vertexData[6] = a * w1 + c * h0 + tx;
     vertexData[7] = d * h0 + b * w1 + ty;
 
-
 }
 
 /**
@@ -262,7 +262,7 @@ Sprite.prototype._renderWebGL = function (renderer)
         // set the vertex data
         this.caclulateVertices();
     }
-    
+
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };
@@ -362,10 +362,10 @@ Sprite.prototype.getBounds = function (matrix)
  */
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture._frame.width * this.anchor.x;
-    this._bounds.y = -this._texture._frame.height * this.anchor.y;
-    this._bounds.width = this._texture._frame.width;
-    this._bounds.height = this._texture._frame.height;
+    this._bounds.x = -this._texture.crop.width * this.anchor.x;
+    this._bounds.y = -this._texture.crop.height * this.anchor.y;
+    this._bounds.width = this._texture.crop.width;
+    this._bounds.height = this._texture.crop.height;
     return this._bounds;
 };
 
@@ -379,8 +379,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
+    var width = this._texture.crop.width;
+    var height = this._texture.crop.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -423,8 +423,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width,
-            height;
+            width = texture._frame.width,
+            height = texture._frame.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -435,45 +435,23 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-
-        if(texture.rotate)
-        {
-            width = texture.crop.height;
-            height = texture.crop.width;
-
-            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-       
-            dx += width;
-
-            wt.tx = dy * wt.a + dx * wt.c + wt.tx;
-            wt.ty = dy * wt.b + dx * wt.d + wt.ty;
-
-            var temp = wt.a;
-            wt.a  = -wt.c;
-            wt.c  =  temp;
-
-            temp = wt.b;
-            wt.b  = -wt.d;
-            wt.d  =  temp;
-
+        if (texture.trim) {
+            dx = texture.trim.width/2 + texture.trim.x - this.anchor.x * texture.crop.width;
+            dy = texture.trim.height/2 + texture.trim.y - this.anchor.y * texture.crop.height;
+        } else {
+            dx = (0.5 - this.anchor.x) * texture.crop.width;
+            dy = (0.5 - this.anchor.y) * texture.crop.height;
+        }
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
-
         }
-        else
-        {
-            width = texture.crop.width;
-            height = texture.crop.height;
-
-            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-        }
-
-
-
+        dx -= width/2;
+        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
@@ -491,7 +469,6 @@ Sprite.prototype._renderCanvas = function (renderer)
         }
         else
         {
-
             renderer.context.setTransform(
                 wt.a,
                 wt.b,
@@ -500,8 +477,6 @@ Sprite.prototype._renderCanvas = function (renderer)
                 wt.tx * renderer.resolution,
                 wt.ty * renderer.resolution
             );
-
-
         }
 
         var resolution = texture.baseTexture.resolution;
@@ -520,8 +495,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width * resolution,
-                height * resolution,
+                width,
+                height,
                 dx * renderer.resolution,
                 dy * renderer.resolution,
                 width * renderer.resolution,
@@ -532,10 +507,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x * resolution,
-                texture.crop.y * resolution,
-                width * resolution,
-                height * resolution,
+                texture.frame.x,
+                texture.frame.y,
+                width,
+                height,
                 dx  * renderer.resolution,
                 dy  * renderer.resolution,
                 width * renderer.resolution,

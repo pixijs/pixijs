@@ -285,25 +285,25 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
+        var trim = texture.trim, crop = texture.crop;
 
-        if (texture.trim)
+        if (trim)
         {
-            // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-            trim = texture.trim;
+            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+            w1 = trim.x - sprite.anchor.x * crop.width;
+            w0 = w1 + trim.width;
 
-            w1 = trim.x - sprite.anchor.x * trim.width;
-            w0 = w1 + texture.crop.width;
+            h1 = trim.y - sprite.anchor.y * crop.height;
+            h0 = h1 + trim.height;
 
-            h1 = trim.y - sprite.anchor.y * trim.height;
-            h0 = h1 + texture.crop.height;
         }
         else
         {
-            w0 = (texture._frame.width ) * (1-sprite.anchor.x);
-            w1 = (texture._frame.width ) * -sprite.anchor.x;
+            w0 = (crop.width ) * (1-sprite.anchor.x);
+            w1 = (crop.width ) * -sprite.anchor.x;
 
-            h0 = texture._frame.height * (1-sprite.anchor.y);
-            h1 = texture._frame.height * -sprite.anchor.y;
+            h0 = crop.height * (1-sprite.anchor.y);
+            h1 = crop.height * -sprite.anchor.y;
         }
 
         array[offset] = w1 * sx;
