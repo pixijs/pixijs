@@ -423,8 +423,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width = texture._frame.width * texture.resolution,
-            height = texture._frame.height * texture.resolution;
+            width = texture._frame.width,
+            height = texture._frame.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -495,8 +495,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width,
-                height,
+                width * texture.resolution,
+                height * texture.resolution,
                 dx * renderer.resolution,
                 dy * renderer.resolution,
                 width * renderer.resolution,
@@ -507,10 +507,10 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.frame.x,
-                texture.frame.y,
-                width,
-                height,
+                texture.frame.x * texture.resolution,
+                texture.frame.y * texture.resolution,
+                width * texture.resolution,
+                height * texture.resolution,
                 dx  * renderer.resolution,
                 dy  * renderer.resolution,
                 width * renderer.resolution,
