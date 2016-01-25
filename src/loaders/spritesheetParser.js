@@ -35,14 +35,15 @@ module.exports = function ()
 
                 if (rect)
                 {
-                    var size = null;
+                    var frame = null;
                     var trim = null;
+                    var crop = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
                     if (frames[i].rotated) {
-                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        frame = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
                     }
                     else {
-                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        frame = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
                     }
 
                     //  Check to see if the sprite is trimmed
@@ -51,25 +52,12 @@ module.exports = function ()
                         trim = new core.Rectangle(
                             frames[i].spriteSourceSize.x / resolution,
                             frames[i].spriteSourceSize.y / resolution,
-                            frames[i].sourceSize.w / resolution,
-                            frames[i].sourceSize.h / resolution
+                            frames[i].spriteSourceSize.w / resolution,
+                            frames[i].spriteSourceSize.h / resolution
                          );
                     }
 
-                    // flip the width and height!
-                    if (frames[i].rotated)
-                    {
-                        var temp = size.width;
-                        size.width = size.height;
-                        size.height = temp;
-                    }
-
-                    size.x /= resolution;
-                    size.y /= resolution;
-                    size.width /= resolution;
-                    size.height /= resolution;
-
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
+                    resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, crop, trim, frames[i].rotated ? 2 : 0);
 
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                     core.utils.TextureCache[i] = resource.textures[i];
