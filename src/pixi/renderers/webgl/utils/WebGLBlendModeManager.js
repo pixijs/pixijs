@@ -31,25 +31,36 @@ PIXI.WebGLBlendModeManager.prototype.setContext = function(gl)
 
 /**
 * Sets-up the given blendMode from WebGL's point of view.
-* 
-* @method setBlendMode 
+*
+* @method setBlendMode
 * @param blendMode {Number} the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD
 */
-PIXI.WebGLBlendModeManager.prototype.setBlendMode = function(blendMode)
+PIXI.WebGLBlendModeManager.prototype.setBlendMode = function (blendMode, isSourcePremultiplied)
 {
-    if(this.currentBlendMode === blendMode)return false;
+    if (typeof isSourcePremultiplied === "undefined") {
+        isSourcePremultiplied = true;
+    }
+    if (this.currentBlendMode === blendMode &&
+        this.currentSourcePremultiplied == isSourcePremultiplied)
+    {
+        return false;
+    }
 
     this.currentBlendMode = blendMode;
-    
-    var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
-    this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-    
+    this.currentSourcePremultiplied = isSourcePremultiplied;
+
+    var mode = PIXI.blendModesWebGL[this.currentBlendMode];
+    var gl = this.gl;
+    if (isSourcePremultiplied && mode[0] == gl.SRC_ALPHA)
+        gl.blendFunc(gl.ONE, mode[1]);
+    else
+        gl.blendFunc(mode[0], mode[1]);
     return true;
 };
 
 /**
 * Destroys this object.
-* 
+*
 * @method destroy
 */
 PIXI.WebGLBlendModeManager.prototype.destroy = function()
