@@ -552,7 +552,7 @@ WebGLRenderer.prototype._mapGlModes = function ()
     {
         this.blendModes = {};
 
-        this.blendModes[CONST.BLEND_MODES.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.BLEND_MODES.NORMAL]        = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
         this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
