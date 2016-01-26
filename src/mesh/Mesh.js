@@ -8,7 +8,7 @@ var core = require('../core'),
  * @extends PIXI.Container
  * @memberof PIXI.mesh
  * @param texture {PIXI.Texture} The texture to use
- * @param [vertices] {Float32Arrif you want to specify the vertices
+ * @param [vertices] {Float32Array} if you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
  * @param [indices] {Uint16Array} if you want to specify the indices
  * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts

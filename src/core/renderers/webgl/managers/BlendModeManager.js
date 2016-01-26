@@ -14,6 +14,7 @@ function BlendModeManager(renderer)
      * @member {number}
      */
     this.currentBlendMode = 99999;
+    this.currentSourcePremultiplied = true;
 }
 
 BlendModeManager.prototype = Object.create(WebGLManager.prototype);
@@ -26,17 +27,25 @@ module.exports = BlendModeManager;
  * @param blendMode {number} the blendMode, should be a Pixi const, such as `PIXI.BLEND_MODES.ADD`. See
  *  {@link PIXI.BLEND_MODES} for possible values.
  */
-BlendModeManager.prototype.setBlendMode = function (blendMode)
+BlendModeManager.prototype.setBlendMode = function (blendMode, isSourcePremultiplied)
 {
-    if (this.currentBlendMode === blendMode)
+    if (typeof isSourcePremultiplied === "undefined") {
+        isSourcePremultiplied = true;
+    }
+    if (this.currentBlendMode === blendMode &&
+        this.currentSourcePremultiplied == isSourcePremultiplied)
     {
         return false;
     }
 
     this.currentBlendMode = blendMode;
+    this.currentSourcePremultiplied = isSourcePremultiplied;
 
     var mode = this.renderer.blendModes[this.currentBlendMode];
-    this.renderer.gl.blendFunc(mode[0], mode[1]);
-
+    var gl = this.renderer.gl;
+    if (isSourcePremultiplied && mode[0] == gl.SRC_ALPHA)
+        gl.blendFunc(gl.ONE, mode[1]);
+    else
+        gl.blendFunc(mode[0], mode[1]);
     return true;
 };

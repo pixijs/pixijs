@@ -11,6 +11,7 @@ module.exports = {
 
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
+    GroupD8:    require('./GroupD8'),
 
     Circle:     require('./shapes/Circle'),
     Ellipse:    require('./shapes/Ellipse'),

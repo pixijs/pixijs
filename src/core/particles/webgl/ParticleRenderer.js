@@ -176,7 +176,6 @@ ParticleRenderer.prototype.render = function (container)
     }
 
     // if the uvs have not updated then no point rendering just yet!
-    this.renderer.blendModeManager.setBlendMode(container.blendMode);
 
     var gl = this.renderer.gl;
 
@@ -206,6 +205,7 @@ ParticleRenderer.prototype.render = function (container)
     {
         gl.bindTexture(gl.TEXTURE_2D, baseTexture._glTextures[gl.id]);
     }
+    this.renderer.blendModeManager.setBlendMode(container.blendMode, baseTexture.premultipliedAlpha);
 
     // now lets upload and render the buffers..
     for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)

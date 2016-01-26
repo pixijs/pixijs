@@ -339,7 +339,7 @@ SpriteRenderer.prototype.flush = function ()
             if (blendSwap)
             {
                 currentBlendMode = nextBlendMode;
-                this.renderer.blendModeManager.setBlendMode( currentBlendMode );
+                this.renderer.blendModeManager.setBlendMode( currentBlendMode, currentBaseTexture.premultipliedAlpha );
             }
 
             if (shaderSwap)
