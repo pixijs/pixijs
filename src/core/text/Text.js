@@ -455,9 +455,9 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|MÉq').width);
-        var baseline = Math.ceil(context.measureText('M').width);
-        var height = 2 * baseline;
+        var width = Math.max(Math.ceil(context.measureText('|MÉq').width), 1);
+        var baseline = Math.max(Math.ceil(context.measureText('M').width), 1);
+        var height =  2 * baseline;
 
         baseline = baseline * 1.4 | 0;
 
