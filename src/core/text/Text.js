@@ -266,6 +266,7 @@ Text.prototype.updateText = function ()
     }
 
     var width = maxLineWidth + style.strokeThickness;
+    var isLinePositionY = typeof style.linePositionY !== 'undefined';
     if (style.dropShadow)
     {
         width += style.dropShadowDistance;
@@ -321,6 +322,9 @@ Text.prototype.updateText = function ()
         {
             linePositionX = style.strokeThickness / 2;
             linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+            if (isLinePositionY) {
+              linePositionY = style.linePositionY + i * lineHeight;
+            }
 
             if (style.align === 'right')
             {
@@ -346,6 +350,9 @@ Text.prototype.updateText = function ()
     {
         linePositionX = style.strokeThickness / 2;
         linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+        if (isLinePositionY) {
+          linePositionY = style.linePositionY + i * lineHeight;
+        }
 
         if (style.align === 'right')
         {
@@ -455,9 +462,9 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|MÉq').width);
-        var baseline = Math.ceil(context.measureText('M').width);
-        var height = 2 * baseline;
+        var width = Math.max(Math.ceil(context.measureText('|MÉq').width), 1);
+        var baseline = Math.max(Math.ceil(context.measureText('M').width), 1);
+        var height =  2 * baseline;
 
         baseline = baseline * 1.4 | 0;
 
