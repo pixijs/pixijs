@@ -266,6 +266,7 @@ Text.prototype.updateText = function ()
     }
 
     var width = maxLineWidth + style.strokeThickness;
+    var isLinePositionY = typeof style.linePositionY !== 'undefined';
     if (style.dropShadow)
     {
         width += style.dropShadowDistance;
@@ -321,6 +322,9 @@ Text.prototype.updateText = function ()
         {
             linePositionX = style.strokeThickness / 2;
             linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+            if (isLinePositionY) {
+              linePositionY = style.linePositionY + i * lineHeight;
+            }
 
             if (style.align === 'right')
             {
@@ -346,6 +350,9 @@ Text.prototype.updateText = function ()
     {
         linePositionX = style.strokeThickness / 2;
         linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+        if (isLinePositionY) {
+          linePositionY = style.linePositionY + i * lineHeight;
+        }
 
         if (style.align === 'right')
         {
