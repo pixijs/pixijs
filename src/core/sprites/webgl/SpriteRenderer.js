@@ -288,7 +288,7 @@ SpriteRenderer.prototype.flush = function ()
     }
 
     // bind shader..
-    this.renderer.bindShader(this.shader);
+    
     this.renderer.blendModeManager.setBlendMode( 0 );
 
     /// render the groups..
@@ -319,6 +319,7 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
+    this.renderer.bindShader(this.shader);
     this.vao.bind();
 };
 
