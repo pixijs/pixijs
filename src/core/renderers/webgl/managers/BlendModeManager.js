@@ -29,11 +29,11 @@ module.exports = BlendModeManager;
  */
 BlendModeManager.prototype.setBlendMode = function (blendMode, isSourcePremultiplied)
 {
-    if (typeof isSourcePremultiplied === "undefined") {
+    if (typeof isSourcePremultiplied === 'undefined') {
         isSourcePremultiplied = true;
     }
     if (this.currentBlendMode === blendMode &&
-        this.currentSourcePremultiplied == isSourcePremultiplied)
+        this.currentSourcePremultiplied === isSourcePremultiplied)
     {
         return false;
     }
@@ -43,9 +43,11 @@ BlendModeManager.prototype.setBlendMode = function (blendMode, isSourcePremultip
 
     var mode = this.renderer.blendModes[this.currentBlendMode];
     var gl = this.renderer.gl;
-    if (isSourcePremultiplied && mode[0] == gl.SRC_ALPHA)
+    if (isSourcePremultiplied && mode[0] === gl.SRC_ALPHA) {
         gl.blendFunc(gl.ONE, mode[1]);
-    else
+    }
+    else {
         gl.blendFunc(mode[0], mode[1]);
+    }
     return true;
 };
