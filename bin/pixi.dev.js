@@ -1,6 +1,6 @@
 /**
  * @license
- * pixi.js - v2.2.9
+ * pixi.js - v2.2.10
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
@@ -8329,7 +8329,7 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
-    
+
 
     if(texture.mipmap && PIXI.isPowerOfTwo(texture.width, texture.height))
     {
@@ -8424,7 +8424,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 };
 
 /**
- * Maps Pixi blend modes to WebGL blend modes.
+ * Maps Pixi blend modes to WebGL blend modes. It works only for pre-multiplied textures.
  *
  * @method mapBlendModes
  */
@@ -8437,9 +8437,9 @@ PIXI.WebGLRenderer.prototype.mapBlendModes = function()
         PIXI.blendModesWebGL = [];
 
         PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesWebGL[PIXI.blendModes.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.ADD]           = [gl.ONE,       gl.DST_ALPHA];
         PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
+        PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_COLOR];
         PIXI.blendModesWebGL[PIXI.blendModes.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         PIXI.blendModesWebGL[PIXI.blendModes.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         PIXI.blendModesWebGL[PIXI.blendModes.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
