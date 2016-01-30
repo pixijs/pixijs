@@ -1,10 +1,10 @@
 /**
  * @author Mat Groves
- *
+ * 
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
  * for creating the original pixi version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
- *
+ * 
  * Heavily inspired by LibGDX's WebGLSpriteBatch:
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
  */
@@ -66,7 +66,7 @@ PIXI.WebGLSpriteBatch = function()
      * @type Uint16Array
      */
     this.indices = new PIXI.Uint16Array(numIndices);
-
+    
     /**
      * @property lastIndexCount
      * @type Number
@@ -206,7 +206,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
     var texture = sprite.texture;
 
-   //TODO set blend modes..
+   //TODO set blend modes.. 
     // check texture..
     if(this.currentBatchSize >= this.size)
     {
@@ -224,7 +224,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var aY = sprite.anchor.y;
 
     var w0, w1, h0, h1;
-
+        
     if (texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
@@ -247,7 +247,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
-
+    
     var resolution = texture.baseTexture.resolution;
 
     var worldTransform = sprite.worldTransform;
@@ -298,7 +298,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         positions[index+15] = a * w1 + c * h0 + tx;
         positions[index+16] = d * h0 + b * w1 + ty;
     }
-
+    
     // uv
     positions[index+2] = uvs.x0;
     positions[index+3] = uvs.y0;
@@ -327,7 +327,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
 /**
 * Renders a TilingSprite using the spriteBatch.
-*
+* 
 * @method renderTilingSprite
 * @param sprite {TilingSprite} the tilingSprite to render
 */
@@ -420,7 +420,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     positions[index++] = uvs.y1;
     // color
     colors[index++] = color;
-
+    
     // xy
     positions[index++] = a * w0 + c * h0 + tx;
     positions[index++] = d * h0 + b * w0 + ty;
@@ -477,7 +477,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         gl.vertexAttribPointer(shader.colorAttribute, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
     }
 
-    // upload the verts to the buffer
+    // upload the verts to the buffer  
     if(this.currentBatchSize > ( this.size * 0.5 ) )
     {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -501,7 +501,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     var sprite;
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++) {
-
+        
         sprite = this.sprites[i];
 
         nextTexture = sprite.texture.baseTexture;
@@ -522,13 +522,13 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
             if( blendSwap )
             {
                 currentBlendMode = nextBlendMode;
-                this.renderSession.blendModeManager.setBlendMode( currentBlendMode, currentBaseTexture.premultipliedAlpha );
+                this.renderSession.blendModeManager.setBlendMode( currentBlendMode );
             }
 
             if( shaderSwap )
             {
                 currentShader = nextShader;
-
+                
                 shader = currentShader.shaders[gl.id];
 
                 if(!shader)
@@ -546,7 +546,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 this.renderSession.shaderManager.setShader(shader);
 
                 if(shader.dirty)shader.syncUniforms();
-
+                
                 // both thease only need to be set if they are changing..
                 // set the projection
                 var projection = this.renderSession.projection;
@@ -594,7 +594,7 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
 
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
-
+    
     // increment the draw count
     this.renderSession.drawCount++;
 };
@@ -618,18 +618,18 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 
 /**
 * Destroys the SpriteBatch.
-*
+* 
 * @method destroy
 */
 PIXI.WebGLSpriteBatch.prototype.destroy = function()
 {
     this.vertices = null;
     this.indices = null;
-
+    
     this.gl.deleteBuffer( this.vertexBuffer );
     this.gl.deleteBuffer( this.indexBuffer );
-
+    
     this.currentBaseTexture = null;
-
+    
     this.gl = null;
 };
