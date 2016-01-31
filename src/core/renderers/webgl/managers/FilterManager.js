@@ -2,6 +2,7 @@ var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
     Quad = require('../utils/Quad'),
+    FilterShader = require('../filters/FilterShader'),
     math =  require('../../../math');
 
 /**
@@ -20,7 +21,7 @@ function FilterManager(renderer)
     this.filterStack = [];
 
     this.filterStack.push({
-        renderTarget:renderer.currentRenderTarget,
+        renderTarget:renderer._activeRenderTarget,
         filter:[],
         bounds:null
     });
@@ -61,8 +62,10 @@ FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
 
+
     var gl = this.renderer.gl;
-    this.quad = new Quad(gl);
+    this.filterShader = new FilterShader(gl);
+    this.quad = new Quad(gl,this.filterShader);
 };
 
 /**
@@ -85,7 +88,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
     // get the bounds of the object..
     // TODO replace clone with a copy to save object creation
     var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
-
+    
     //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
@@ -103,11 +106,11 @@ FilterManager.prototype.pushFilter = function (target, filters)
     bounds.height += padding * 2;
 
 
-    if(this.renderer.currentRenderTarget.transform)
+    if(this.renderer._activeRenderTarget.transform)
     {
         //TODO this will break if the renderTexture transform is anything other than a translation.
         //Will need to take the full matrix transform into acount..
-        var transform = this.renderer.currentRenderTarget.transform;
+        var transform = this.renderer._activeRenderTarget.transform;
 
         bounds.x += transform.tx;
         bounds.y += transform.ty;
@@ -128,7 +131,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
         var texture = this.getRenderTarget();
 
-        this.renderer.setRenderTarget(texture);
+        this.renderer.bindRenderTarget(texture);
 
         // clear the texture..
         texture.clear();
@@ -160,6 +163,7 @@ FilterManager.prototype.popFilter = function ()
     var filterData = this.filterStack.pop();
     var previousFilterData = this.filterStack[this.filterStack.length-1];
 
+   // return;
     var input = filterData.renderTarget;
 
     // if the renderTarget is null then we don't apply the filter as its offscreen
@@ -178,6 +182,16 @@ FilterManager.prototype.popFilter = function ()
 
     this.quad.map(this.textureSize, input.frame);
 
+    this.renderer.bindShader(this.filterShader);
+
+    this.quad.vao.bind()
+    .draw(gl.TRIANGLES, 6, 0)
+    .unbind();
+
+    this.returnRenderTarget(output);
+
+    return;
+    
 
     // TODO.. this probably only needs to be done once!
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
@@ -292,7 +306,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     this.renderer.shaderManager.setShader(shader);
 
     // TODO (cengler) - Can this be cached and not `toArray`ed each frame?
-    shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
+    shader.uniforms.projectionMatrix.value = this.renderer._activeRenderTarget.projectionMatrix.toArray(true);
 
     //TODO can this be optimised?
     shader.syncUniforms();

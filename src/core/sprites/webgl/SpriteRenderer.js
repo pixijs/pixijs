@@ -135,7 +135,7 @@ SpriteRenderer.prototype.onContextChange = function ()
     var gl = this.renderer.gl;
 
     this.MAX_TEXTUES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
+   
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTUES);
 
     // create a couple of buffers

@@ -1,7 +1,7 @@
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
-    FilterManager = require('./managers/FilterManager'),
+    FilterManager = require('./managers/FilterManagerRoundTwo'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
@@ -88,13 +88,7 @@ function WebGLRenderer(width, height, options)
      */
     this.stencilManager = new StencilManager(this);
 
-    /**
-     * Manages the filters.
-     *
-     * @member {PIXI.FilterManager}
-     */
-    this.filterManager = new FilterManager(this);
-    this.blendModeManager = new BlendModeManager(this);
+      this.blendModeManager = new BlendModeManager(this);
 
     /**
      * The currently active ObjectRenderer.
@@ -110,7 +104,16 @@ function WebGLRenderer(width, height, options)
 
     this.state = new WebGLState(this.gl);
 
+
+    /**
+     * Manages the filters.
+     *
+     * @member {PIXI.FilterManager}
+     */
+    this.filterManager = new FilterManager(this);
+    
     this._initContext();
+  
 
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
@@ -269,6 +272,12 @@ WebGLRenderer.prototype.setBlendMode = function (mode)
     // fill in here..
 }
 
+WebGLRenderer.prototype.clear = function ()
+{
+    this._activeRenderTarget.clear();
+}
+
+//TOOD - required?
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
     this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
@@ -279,18 +288,18 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, frame)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFrame, sourceFrame)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
+        renderTarget.activate(destinationFrame, sourceFrame);
 
         if(this._activeShader)
         {
             this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
         }
 
-        renderTarget.activate(frame);
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }

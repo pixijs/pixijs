@@ -195,7 +195,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
-    // make sure the texture is unbound!
+    // make surethe texture is unbound!
     this.frameBuffer.texture.unbind();
 
     this.frameBuffer.bind();
@@ -213,7 +213,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     if(this.destinationFrame !== this.sourceFrame)
     {
         gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(this.destinationFrame.x, this.destinationFrame.y, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
+        gl.scissor(this.destinationFrame.x,0, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
     }
     else
     {
@@ -276,7 +276,7 @@ RenderTarget.prototype.resize = function (width, height)
         return;
     }
 
-    console.log("ADASD")
+    console.log(width + " : " + height)
 
     this.size.width = width;
     this.size.height = height;
