@@ -114,8 +114,17 @@ Quad.prototype.map = function(targetTextureFrame, destinationFrame)
     this.vertices[6] = x;
     this.vertices[7] = y + destinationFrame.height;
 
-    this.upload();
+    return this;
 };
+
+Quad.prototype.draw = function()
+{
+    this.vao.bind()
+    .draw(gl.TRIANGLES, 6, 0)
+    .unbind();
+
+    return this;
+}
 
 /**
  * Binds the buffer and uploads the data
@@ -132,6 +141,8 @@ Quad.prototype.upload = function()
     };
 
     this.vertexBuffer.upload(this.interleaved);
+
+    return this;
 };
 
 Quad.prototype.destroy = function()

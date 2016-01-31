@@ -85,7 +85,7 @@ FilterShader.defaultFragmentSrc = [
     '     color = vec4(0.0, 1.0, 0.0, 1.0) ;',
     '   }',
    // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
-    '   gl_FragColor = mix(sample, color, 0.5);',
+    '   gl_FragColor = mix(sample, masky, 0.5);',
     '   gl_FragColor *= sample.a;',
     '}'
 ].join('\n');

@@ -281,6 +281,8 @@ WebGLRenderer.prototype.clear = function ()
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
     this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
+
+    return this;
 }
 
 /**
@@ -303,6 +305,8 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFr
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }
+
+    return this;
 }
 
 WebGLRenderer.prototype.bindShader = function (shader)
@@ -316,6 +320,8 @@ WebGLRenderer.prototype.bindShader = function (shader)
         // automatically set the projection matrix
         shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
     }
+
+    return this;
 }
 
 
@@ -345,6 +351,8 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
         // bind the current texture
         texture._glTextures[gl.id].bind();
     }
+
+    return this;
 }
 
 /**
@@ -360,6 +368,8 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.reset();
+
+    return this;
 }
 
 /**

@@ -15821,6 +15821,8 @@ WebGLRenderer.prototype.clear = function ()
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
     this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
+
+    return this;
 }
 
 /**
@@ -15843,6 +15845,8 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFr
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }
+
+    return this;
 }
 
 WebGLRenderer.prototype.bindShader = function (shader)
@@ -15856,6 +15860,8 @@ WebGLRenderer.prototype.bindShader = function (shader)
         // automatically set the projection matrix
         shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
     }
+
+    return this;
 }
 
 
@@ -15885,6 +15891,8 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
         // bind the current texture
         texture._glTextures[gl.id].bind();
     }
+
+    return this;
 }
 
 /**
@@ -15900,6 +15908,8 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.reset();
+
+    return this;
 }
 
 /**
@@ -16394,7 +16404,7 @@ FilterShader.defaultFragmentSrc = [
     '     color = vec4(0.0, 1.0, 0.0, 1.0) ;',
     '   }',
    // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
-    '   gl_FragColor = mix(sample, color, 0.5);',
+    '   gl_FragColor = mix(sample, masky, 0.5);',
     '   gl_FragColor *= sample.a;',
     '}'
 ].join('\n');
@@ -17015,6 +17025,9 @@ var WebGLManager = require('./WebGLManager'),
     math =  require('../../../math'),
     utils =  require('../../../utils');
 
+var tempMatrix = new math.Matrix();
+var tempRect = new math.Rectangle();
+
 /**
  * @class
  * @memberof PIXI
@@ -17041,7 +17054,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
 {
     var bounds = target.getBounds();
 
-   var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
+    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
    
     this.stack.push({
         target:target,
@@ -17050,9 +17063,11 @@ FilterManager.prototype.pushFilter = function(target, filters)
     });
 
    // bind the render taget to draw the shape in the top corner..
-   // TODO - no new rects each frame please!
-    this.renderer.bindRenderTarget(renderTarget, new PIXI.Rectangle(0,0,bounds.width,bounds.height), new PIXI.Rectangle(bounds.x,bounds.y,bounds.width,bounds.height));
-    this.renderer.clear();
+   tempRect.width = bounds.width;
+   tempRect.height = bounds.height;
+
+    this.renderer.bindRenderTarget(renderTarget, tempRect, bounds)
+    .clear();
 }
 
 FilterManager.prototype.popFilter = function()
@@ -17062,38 +17077,30 @@ FilterManager.prototype.popFilter = function()
     var target = last.target;
     var bounds = last.bounds;
 
-    this.renderer.bindRenderTarget(this.renderer.rootRenderTarget);
 
     var panda = panda;
 
-    //this.renderer.rootRenderTarget.activate(this.destinationFrame, this.sourceFrame);
-    //gl.viewport(0,0, 800, 800);
+    this.renderer.bindRenderTarget(this.renderer.rootRenderTarget)
+    .bindShader(this.filterShader)
+    .bindTexture( window.panda.texture.baseTexture, 1);
+    
     renderTarget.texture.bind(0);
-    this.renderer.bindShader(this.filterShader);
 
     this.filterShader.uniforms.filterSampler = 1;
-    this.renderer.bindTexture( window.panda.texture.baseTexture, 1);
-    this.filterShader.uniforms.otherMatrix = this.calculateMappedMatrix(bounds, renderTarget.size, target, new math.Matrix()).toArray(true);
+    this.filterShader.uniforms.otherMatrix = this.calculateSpriteMatrix(tempMatrix, bounds, renderTarget.size, window.panda ).toArray(true);
+ //   this.filterShader.uniforms.otherMatrix = this.calculateScreenSpaceMatrix(tempMatrix, bounds, renderTarget.size).toArray(true);
+   // this.filterShader.uniforms.otherMatrix = this.calculateNormalisedScreenSpaceMatrix(tempMatrix, bounds, renderTarget.size).toArray(true);
 
 
     var gl = this.renderer.gl;
 
     // nice function that maps a quad coordinates and uvs so it can be correctly rendered
     this.quad.map(renderTarget.size, bounds)
+    .upload()
+    .draw();
 
-    this.quad.vao.bind()
-    .draw(gl.TRIANGLES, 6, 0)
-    .unbind();
-
+    // return the texture..
     FilterManager.freePotRenderTarget(renderTarget);
-//    gl.viewport(200,0, 300, 300);
-
-
-    // change render target and area..
-    // set frame to be position and size of area
-    // render
-    // then render texture back with spechal chader
-    // set viewport
 }
 
 /*
@@ -17103,11 +17110,40 @@ FilterManager.prototype.popFilter = function()
  * @param outputMatrix {Matrix} @alvin
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
-FilterManager.prototype.calculateMappedMatrix = function (filterArea, textureSize, sprite, outputMatrix)
+// thia returns a matrix that will normalise map filter cords in the filter to screen space
+FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+{
+    var mappedMatrix = outputMatrix;
+    mappedMatrix.a = textureSize.width;
+    mappedMatrix.b = 0;
+    mappedMatrix.c = 0;
+    mappedMatrix.d = textureSize.height;
+    mappedMatrix.tx = filterArea.x;
+    mappedMatrix.ty = filterArea.y;
+
+    return mappedMatrix;
+}
+
+FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+{
+    var mappedMatrix = outputMatrix;
+    mappedMatrix.a = textureSize.width / this.renderer.width;
+    mappedMatrix.b = 0;
+    mappedMatrix.c = 0;
+    mappedMatrix.d = textureSize.height / this.renderer.height;
+    mappedMatrix.tx = filterArea.x / this.renderer.width;
+    mappedMatrix.ty = filterArea.y / this.renderer.height;
+
+    return mappedMatrix;
+}
+
+// this will map the filter coord so that a texture can be used based on the transform of a sprite
+FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
     var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
 
+    // TODO unwrap?
     var mappedMatrix = outputMatrix.identity();
 
     // scale..
@@ -17121,10 +17157,12 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, textureSiz
     var translateScaleY = (textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.width * translateScaleX;
+ 
+    //this...?
+    //   worldTransform.ty /= texture.width * translateScaleX;
+    worldTransform.ty /= texture.height * translateScaleY;
 
     worldTransform.invert();
-
     mappedMatrix.prepend(worldTransform);
 
     // apply inverse scale..
@@ -17168,17 +17206,6 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, textureSiz
 
     // return transform;
 };
-
-FilterManager.prototype.getRenderTexture = function()
-{
-
-    //get nearest potTexture and store in pool..
-}
-
-FilterManager.prototype.returnRenderTexture = function()
-{
-
-}
 
 FilterManager.prototype.resize = function(width, height)
 {
@@ -18678,8 +18705,17 @@ Quad.prototype.map = function(targetTextureFrame, destinationFrame)
     this.vertices[6] = x;
     this.vertices[7] = y + destinationFrame.height;
 
-    this.upload();
+    return this;
 };
+
+Quad.prototype.draw = function()
+{
+    this.vao.bind()
+    .draw(gl.TRIANGLES, 6, 0)
+    .unbind();
+
+    return this;
+}
 
 /**
  * Binds the buffer and uploads the data
@@ -18696,6 +18732,8 @@ Quad.prototype.upload = function()
     };
 
     this.vertexBuffer.upload(this.interleaved);
+
+    return this;
 };
 
 Quad.prototype.destroy = function()
