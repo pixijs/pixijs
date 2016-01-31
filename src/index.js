@@ -9,6 +9,7 @@ core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
+core.accessibility  = require('./accessibility');
 
 core.flip         = require('./flip');
 

@@ -50,7 +50,7 @@ WebGLMaskManager.prototype.pushStencil = function (graphics, webGLData)
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
 
-    this.bindGraphics(graphics, webGLData, this.renderer);
+    this.bindGraphics(graphics, webGLData);
 
     if (sms.stencilStack.length === 0)
     {
@@ -140,8 +140,6 @@ WebGLMaskManager.prototype.pushStencil = function (graphics, webGLData)
 WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
 {
     //if (this._currentGraphics === graphics)return;
-    this._currentGraphics = graphics;
-
     var gl = this.renderer.gl;
 
      // bind the graphics object..
@@ -177,7 +175,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
         //this.renderer.shaderManager.activatePrimitiveShader();
         shader = this.renderer.shaderManager.primitiveShader;
 
-        this.renderer.shaderManager.setShader( shader );
+        this.renderer.shaderManager.setShader(shader);
 
         gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 
@@ -222,7 +220,7 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
 
         var level = sms.count;
 
-        this.bindGraphics(graphics, webGLData, this.renderer);
+        this.bindGraphics(graphics, webGLData);
 
         gl.colorMask(false, false, false, false);
 
@@ -329,7 +327,7 @@ WebGLMaskManager.prototype.pushMask = function (maskData)
         return;
     }
 
-    this.pushStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
+    this.pushStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0]);
 };
 
 /**
@@ -341,6 +339,6 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 {
     this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
-    this.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
+    this.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0]);
 };
 

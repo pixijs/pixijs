@@ -8,7 +8,7 @@ Pixi.js — A 2D JavaScript Renderer
 ## Pixi.js ##
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
-[![Build Status](https://travis-ci.org/GoodBoyDigital/pixi.js.svg?branch=dev)](https://travis-ci.org/GoodBoyDigital/pixi.js)
+[![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The Pixi renderer allows everyone to enjoy the power of
@@ -18,6 +18,8 @@ If you want to keep up to date with the latest pixi.js news then feel free to fo
 ([@doormat23](https://twitter.com/doormat23), and [@rolnaaba](https://twitter.com/rolnaaba))
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
+
+**Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
 ### Demos ###
 
@@ -43,7 +45,7 @@ those last 2 examples and allowing us to share the source code :)
 - API Documentation is [here](http://pixijs.github.io/docs).
 - Feature Examples are [here](https://pixijs.github.io/examples).
 - The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
-- Other misc tutorials and resources are [on the Wiki](https://github.com/GoodBoyDigital/pixi.js/wiki/Resources).
+- Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
 
 ### Contribute ###
 
@@ -51,7 +53,7 @@ Want to be part of the pixi.js project? Great! All are welcome! We will get ther
 together :) Whether you find a bug, have a great feature request or you fancy owning a task
 from the road map above feel free to get in touch.
 
-Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+Make sure to read the [Contributing Guide](https://github.com/pixijs/pixi.js/blob/master/CONTRIBUTING.md)
 before submitting changes.
 
 ### Current features ###
@@ -71,7 +73,7 @@ before submitting changes.
 - Primitive Drawing
 - Masking
 - Filters
-- [User Plugins](https://github.com/GoodBoyDigital/pixi.js/wiki/Pixi-v3-Plugins)
+- [User Plugins](https://github.com/pixijs/pixi.js/wiki/Pixi-v3-Plugins)
 
 ### Basic Usage Example ###
 
@@ -120,7 +122,7 @@ function animate() {
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use pixi, then
-just download one of our [prebuilt releases](https://github.com/GoodBoyDigital/pixi.js/releases). Really
+just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
 the only time you should need to build pixi.js is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Once you do, you can then install the gulp
@@ -172,7 +174,7 @@ $> gulp jsdoc
 ```
 
 The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration
-file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
+file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/pixijs/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
 
 ### License ###
 

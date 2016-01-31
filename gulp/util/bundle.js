@@ -39,14 +39,14 @@ function rebundle(devBundle) {
         .pipe(handleErrors())
         .pipe(source('pixi.js'))
         .pipe(buffer())
-        .pipe(header(
+        /*.pipe(header(
             headerText,
             {
                 licenseText: licenseText,
                 date: new Date().toISOString(),
                 pkg: require('../../package.json')
             }
-        ));
+        ));*/
 
     if (devBundle) {
         return stream.pipe(debug).once('end', function () {

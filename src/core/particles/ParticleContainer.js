@@ -171,7 +171,7 @@ ParticleContainer.prototype.onChildrenChange = function (smallestChildIndex)
     if (bufferIndex < this._bufferToUpdate) {
         this._bufferToUpdate = bufferIndex;
     }
-}
+};
 
 /**
  * Renders the object using the Canvas renderer
@@ -195,6 +195,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 
     var finalWidth = 0;
     var finalHeight = 0;
+
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
+    {
+        context.globalCompositeOperation = compositeOperation;
+    }
 
     context.globalAlpha = this.worldAlpha;
 

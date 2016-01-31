@@ -110,9 +110,9 @@ function Ticker()
     /**
      * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
      * @example
-     *     // Scales ticker.deltaTime to what would be
-     *     // the equivalent of approximately 120 FPS
-     *     ticker.speed = 2;
+     * // Scales ticker.deltaTime to what would be
+     * // the equivalent of approximately 120 FPS
+     * ticker.speed = 2;
      *
      * @member {number}
      * @default 1

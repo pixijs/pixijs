@@ -2,7 +2,6 @@
  * Generic Mask Stack data structure
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function StencilMaskStack()
 {
