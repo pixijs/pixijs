@@ -153,6 +153,23 @@ FilterManager.prototype.pushFilter = function (target, filters)
     }
 };
 
+FilterManager.prototype.syncUniforms = function (filter)
+{
+    var gl = this.renderer.gl;
+
+    var glShader = filter.glShaders[gl.id];
+
+    var glUniforms = glShader.uniforms;
+    var filterUniforms = filter.uniforms;
+    
+    //TODO - intorduce some checks?
+    //not all uniforms may need updating..
+    for (var i in filterUniforms) 
+    {
+        glUniforms[i] = filter.uniforms[i];
+    };
+}
+
 
 /**
  * Removes the last filter from the filter stack and returns it.

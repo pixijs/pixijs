@@ -4,7 +4,8 @@ var WebGLManager = require('./WebGLManager'),
     Quad = require('../utils/Quad'),
     FilterShader = require('../filters/FilterShader'),
     math =  require('../../../math'),
-    utils =  require('../../../utils');
+    utils =  require('../../../utils'),
+    Shader = require('pixi-gl-core').GLShader;
 
 var tempMatrix = new math.Matrix();
 var tempRect = new math.Rectangle();
@@ -19,6 +20,7 @@ function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
+    // TODO - not really required. but useful for setting the quad..
     this.filterShader = new FilterShader(renderer.gl);
     // know about sprites!
     this.quad = new Quad(gl, this.filterShader);
@@ -40,8 +42,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
     this.stack.push({
         target:target,
         bounds:bounds,
+        filters:filters,
         renderTarget:renderTarget
     });
+
 
    // bind the render taget to draw the shape in the top corner..
    tempRect.width = bounds.width;
@@ -53,35 +57,71 @@ FilterManager.prototype.pushFilter = function(target, filters)
 
 FilterManager.prototype.popFilter = function()
 {
+    //TOOD - add scissor to 'clip a large object?'
+    //
+    var gl = this.renderer.gl;
+
     var last = this.stack.pop();
     var renderTarget = last.renderTarget;
     var target = last.target;
     var bounds = last.bounds;
+    var filters = last.filters;
 
+    this.bounds = bounds;
 
     var panda = panda;
 
-    this.renderer.bindRenderTarget(this.renderer.rootRenderTarget)
-    .bindShader(this.filterShader)
-    .bindTexture( window.panda.texture.baseTexture, 1);
-    
-    renderTarget.texture.bind(0);
+    this.quad.map(renderTarget.size, bounds).upload();
 
-    this.filterShader.uniforms.filterSampler = 1;
-    this.filterShader.uniforms.otherMatrix = this.calculateSpriteMatrix(tempMatrix, bounds, renderTarget.size, window.panda ).toArray(true);
- //   this.filterShader.uniforms.otherMatrix = this.calculateScreenSpaceMatrix(tempMatrix, bounds, renderTarget.size).toArray(true);
-   // this.filterShader.uniforms.otherMatrix = this.calculateNormalisedScreenSpaceMatrix(tempMatrix, bounds, renderTarget.size).toArray(true);
+    var filter = filters[0];
 
+    filter.apply(this, renderTarget, this.renderer.rootRenderTarget, false);
 
-    var gl = this.renderer.gl;
-
-    // nice function that maps a quad coordinates and uvs so it can be correctly rendered
-    this.quad.map(renderTarget.size, bounds)
-    .upload()
-    .draw();
 
     // return the texture..
     FilterManager.freePotRenderTarget(renderTarget);
+}
+
+FilterManager.prototype.applyFilter = function (filter, input, output, clear)
+{
+    var shader = filter.glShaders[gl.id];
+    if(!shader)
+    {
+        shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+    }
+    
+    this.renderer.bindRenderTarget(output);
+    this.renderer.bindShader(shader);
+
+    this.syncUniforms(shader, filter);
+
+    // bind th einput texture..
+    input.texture.bind(0);
+        
+    shader.uniforms.filterMatrix = this.calculateSpriteMatrix(tempMatrix, this.bounds, input.size, window.panda ).toArray(true);
+
+    this.quad.draw();
+}
+
+// thia returns a matrix that will normalise map filter cords in the filter to screen space
+FilterManager.prototype.syncUniforms = function (shader, filter)
+{
+    var uniformData = filter.uniformData;
+    var uniforms = filter.uniforms;
+
+    // 0 is reserverd for the pixi texture so we start at 1!
+    var textureCount = 1;
+
+    for(var i in uniformData)
+    {
+        if(uniformData[i].type === 'sampler2D')
+        {
+            shader.uniforms[i] = textureCount;
+            this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+
+            textureCount++;
+        }      
+    }
 }
 
 /*
@@ -190,6 +230,12 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, filterAr
 
 FilterManager.prototype.resize = function(width, height)
 {
+    //TODO remove! no longer required :D
+}
+
+FilterManager.prototype.destroy = function()
+{
+
 }
 
 //TODO move to a seperate class

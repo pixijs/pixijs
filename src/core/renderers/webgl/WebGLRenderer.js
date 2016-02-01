@@ -14,6 +14,8 @@ var SystemRenderer = require('../SystemRenderer'),
     utils = require('../../utils'),
     CONST = require('../../const');
 
+var CONTEXT_UID = 0;
+
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
@@ -88,7 +90,7 @@ function WebGLRenderer(width, height, options)
      */
     this.stencilManager = new StencilManager(this);
 
-      this.blendModeManager = new BlendModeManager(this);
+    this.blendModeManager = new BlendModeManager(this);
 
     /**
      * The currently active ObjectRenderer.
@@ -101,6 +103,7 @@ function WebGLRenderer(width, height, options)
 
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
+    this.gl.id = CONTEXT_UID++; // could pool?
 
     this.state = new WebGLState(this.gl);
 
@@ -308,6 +311,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFr
 
     return this;
 }
+
 
 WebGLRenderer.prototype.bindShader = function (shader)
 {
