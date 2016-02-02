@@ -57,9 +57,9 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
 
     worldTransform.tx /= texture.width * translateScaleX;
  
-    //this...?
-    //   worldTransform.ty /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.height * translateScaleY;
+    //this...?  free beer for anyone who can explain why this makes sense!
+    worldTransform.ty /= texture.width * translateScaleX;
+    // worldTransform.ty /= texture.height * translateScaleY;
 
     worldTransform.invert();
     mappedMatrix.prepend(worldTransform);

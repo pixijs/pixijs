@@ -15,6 +15,7 @@ function MaskManager(renderer)
     this.count = 0;
 
     this.alphaMaskPool = [];
+    this.alphaMaskPool = [];
     this.alphaMaskIndex = 0;
 
 }
@@ -77,6 +78,10 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
     }
 
     alphaMaskFilter[0].maskSprite = maskData;
+
+    //TODO - may cause issues!
+    target.filterArea = maskData.getBounds();
+
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
 
     this.alphaMaskIndex++;

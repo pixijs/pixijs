@@ -23,13 +23,11 @@ function FilterManager(renderer)
     // know about sprites!
     this.quad = new Quad(gl);
 
-    this.stack = [{
-        target:null,
-        bounds:new PIXI.Rectangle(0,0,800,600),
-        destination:new PIXI.Rectangle(0,0,800,600),
-        filters:[],
-        renderTarget:renderer.rootRenderTarget
-    }];
+    var rootState = new FilterState();
+    rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;
+    rootState.renderTarget = renderer.rootRenderTarget;
+
+    this.stack = [rootState];
 
     this.stackIndex = 0;
     // todo add default!
@@ -64,7 +62,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.width = targetBounds.width | 0;
     sourceFrame.height = targetBounds.height | 0;
     sourceFrame.pad(4 / resolution);
-    sourceFrame.fit(new PIXI.Rectangle(0,0,800, 800));
+    sourceFrame.fit(this.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
@@ -196,7 +194,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.stack[this.stackIndex];
-    return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.bounds, currentState.renderTarget.size);   
+    return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);   
 }
 
 FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
@@ -205,14 +203,14 @@ FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputM
     tempRect.x = this.renderer.width;
     tempRect.y = this.renderer.height;
 
-    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, tempRect);   
+    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, tempRect);   
 }
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 {
     var currentState = this.stack[this.stackIndex];
-    return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, sprite);
+    return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, sprite);
 };
 
 FilterManager.prototype.destroy = function()
@@ -256,7 +254,6 @@ FilterManager.freePotRenderTarget = function(renderTarget)
 var FilterState = function()
 {
     this.renderTarget = null;
-    this.bounds = new math.Rectangle();
     this.sourceFrame = new math.Rectangle();
     this.destinationFrame = new math.Rectangle();
     this.filters = [];
