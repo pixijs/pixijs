@@ -113,11 +113,11 @@ function WebGLRenderer(width, height, options)
      *
      * @member {PIXI.FilterManager}
      */
-    this.filterManager = new FilterManager(this);
+   
     
     this._initContext();
   
-
+     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
@@ -255,7 +255,6 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
-    this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
 

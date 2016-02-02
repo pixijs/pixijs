@@ -42,10 +42,9 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     // this.uniforms = 
     // this is where we store shader references..
     // TODO we could cache this!
-    this.glShaders = [];   
-    this.resolution = 1;
+    this.glShaders = [];
 
-    //this.canBeUsedDirectl
+    this.resolution = 1;
 }
 
 // constructor

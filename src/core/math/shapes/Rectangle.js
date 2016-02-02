@@ -66,6 +66,16 @@ Rectangle.prototype.clone = function ()
     return new Rectangle(this.x, this.y, this.width, this.height);
 };
 
+Rectangle.prototype.copy = function (rectangle)
+{
+    this.x = rectangle.x;
+    this.x = rectangle.y;
+    this.width = rectangle.width;
+    this.height = rectangle.height;
+
+    return this;
+};
+
 /**
  * Checks whether the x and y coordinates given are contained within this Rectangle
  *
@@ -102,7 +112,6 @@ Rectangle.prototype.pad = function (paddingX, paddingY)
     this.width += paddingX * 2;
     this.height += paddingY * 2;
 }
-
 
 Rectangle.prototype.fit = function (rectangle)
 {
