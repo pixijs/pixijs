@@ -28,6 +28,7 @@ function FilterManager(renderer)
 
     this.stack = [];
     this.stackIndex = -1;
+    // todo add default!
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -36,7 +37,10 @@ module.exports = FilterManager;
 
 FilterManager.prototype.pushFilter = function(target, filters)
 {
+
     var bounds = target.getBounds();
+    bounds.pad(4);
+    bounds.fit(new PIXI.Rectangle(0,0,800, 800)) //TODO - output.size?
 
     var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
     

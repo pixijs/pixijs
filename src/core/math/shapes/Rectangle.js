@@ -90,3 +90,42 @@ Rectangle.prototype.contains = function (x, y)
 
     return false;
 };
+
+Rectangle.prototype.pad = function (paddingX, paddingY)
+{
+    paddingX = paddingX || 0;
+    paddingY = paddingY || ( (paddingY !== 0) ? paddingX : 0 );
+
+    this.x -= paddingX;
+    this.y -= paddingY;
+
+    this.width += paddingX * 2;
+    this.height += paddingY * 2;
+}
+
+
+Rectangle.prototype.fit = function (rectangle)
+{
+    if (this.x < rectangle.x)
+    {
+        this.width += this.x;
+        this.x = rectangle.x;
+    }
+
+    if (this.y < rectangle.y)
+    {
+        this.height += this.y;
+        this.y = rectangle.y;
+    }
+
+    if ( this.x + this.width > rectangle.width )
+    {
+        this.width = rectangle.width - this.x;
+    }
+
+    if ( this.y + this.height > rectangle.height )
+    {
+        this.height = rectangle.height - this.y;
+    }
+}
+
