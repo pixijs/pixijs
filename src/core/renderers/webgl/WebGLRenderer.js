@@ -331,6 +331,8 @@ WebGLRenderer.prototype.bindShader = function (shader)
 
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
+    texture = texture.baseTexture || texture;
+    
     var gl = this.gl;
 
     //TODO test perf of cache?

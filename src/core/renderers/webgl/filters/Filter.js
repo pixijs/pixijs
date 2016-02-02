@@ -1,6 +1,6 @@
 var Shader = require('pixi-gl-core').GLShader;
 var extractUniformsFromSrc = require('./extractUniformsFromSrc')
-
+var math = require('../../../math');
 /**
  * @class
  * @memberof PIXI
@@ -49,15 +49,18 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
 Filter.prototype.constructor = Filter;
 module.exports = Filter;
 
+var tempMatrix = new math.Matrix();
+
 Filter.prototype.apply = function(filterManager, input, output, clear)
 {
     // --- //
-    
+    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
+
     // do as you please!
 
     filterManager.applyFilter(this, input, output, clear);
 
-    /////////
+    // or just do a regular render..
 }
 
 /**

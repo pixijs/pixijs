@@ -5,7 +5,8 @@ var WebGLManager = require('./WebGLManager'),
     FilterShader = require('../filters/FilterShader'),
     math =  require('../../../math'),
     utils =  require('../../../utils'),
-    Shader = require('pixi-gl-core').GLShader;
+    Shader = require('pixi-gl-core').GLShader,
+    filterTransforms = require('../filters/filterTransforms');
 
 var tempMatrix = new math.Matrix();
 var tempRect = new math.Rectangle();
@@ -26,7 +27,7 @@ function FilterManager(renderer)
     this.quad = new Quad(gl, this.filterShader);
 
     this.stack = [];
-
+    this.stackIndex = -1;
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -38,48 +39,52 @@ FilterManager.prototype.pushFilter = function(target, filters)
     var bounds = target.getBounds();
 
     var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
-   
-    this.stack.push({
-        target:target,
-        bounds:bounds,
-        filters:filters,
-        renderTarget:renderTarget
-    });
+    
+    this.stackIndex++;
 
+    if(!this.stack[this.stackIndex])
+    {
+        this.stack[this.stackIndex] = {
+            target:target,
+            bounds:bounds,
+            filters:filters,
+            renderTarget:renderTarget
+        }
+    }
+    else
+    {
+        var currentState = this.stack[this.stackIndex];
+        currentState.target = target;
+        currentState.bounds = bounds;
+        currentState.filters = filters;
+        currentState.renderTarget = renderTarget;
+    }
 
-   // bind the render taget to draw the shape in the top corner..
-   tempRect.width = bounds.width;
-   tempRect.height = bounds.height;
+    // bind the render taget to draw the shape in the top corner..
+    tempRect.width = bounds.width;
+    tempRect.height = bounds.height;
 
     this.renderer.bindRenderTarget(renderTarget, tempRect, bounds)
-    .clear();
+    
+    this.renderer.clear();
 }
 
 FilterManager.prototype.popFilter = function()
 {
-    //TOOD - add scissor to 'clip a large object?'
-    //
     var gl = this.renderer.gl;
 
-    var last = this.stack.pop();
-    var renderTarget = last.renderTarget;
-    var target = last.target;
-    var bounds = last.bounds;
-    var filters = last.filters;
+    var currentState = this.stack[this.stackIndex];
+    
+    this.quad.map(currentState.renderTarget.size, currentState.bounds).upload();
 
-    this.bounds = bounds;
+    var filter = currentState.filters[0];
 
-    var panda = panda;
-
-    this.quad.map(renderTarget.size, bounds).upload();
-
-    var filter = filters[0];
-
-    filter.apply(this, renderTarget, this.renderer.rootRenderTarget, false);
-
+    filter.apply(this, currentState.renderTarget, this.renderer.rootRenderTarget, false);
 
     // return the texture..
-    FilterManager.freePotRenderTarget(renderTarget);
+    FilterManager.freePotRenderTarget(currentState.renderTarget);
+
+    this.stackIndex--;
 }
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
@@ -94,12 +99,14 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     this.renderer.bindShader(shader);
 
     this.syncUniforms(shader, filter);
-
+   // console.log(shader.uniforms.filterMatrix);
     // bind th einput texture..
     input.texture.bind(0);
         
-    shader.uniforms.filterMatrix = this.calculateSpriteMatrix(tempMatrix, this.bounds, input.size, window.panda ).toArray(true);
+    // stack shaders..
+    var currentState = this.stack[this.stackIndex];
 
+    
     this.quad.draw();
 }
 
@@ -120,7 +127,38 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
             this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
 
             textureCount++;
-        }      
+        }     
+        else if(uniformData[i].type === 'mat3')
+        {   
+            // check if its pixi matrix..
+            if(uniforms[i].a)
+            {
+                shader.uniforms[i] = uniforms[i].toArray(true);
+            }
+            else
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
+        else if(uniformData[i].type === 'vec2')
+        {
+            //check if its a point..
+           if(uniforms[i].x) 
+           {
+                val = shader.uniforms[i];
+                val[0] = uniforms[i].x;
+                val[1] = uniforms[i].y;
+                shader.uniforms[i] = val;
+           }
+           else
+           {
+                shader.uniforms[i] = uniforms[i];
+           }
+        }
+        else
+        {
+            shader.uniforms[i] = uniforms[i];
+        } 
     }
 }
 
@@ -134,98 +172,23 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-    var mappedMatrix = outputMatrix;
-    mappedMatrix.a = textureSize.width;
-    mappedMatrix.b = 0;
-    mappedMatrix.c = 0;
-    mappedMatrix.d = textureSize.height;
-    mappedMatrix.tx = filterArea.x;
-    mappedMatrix.ty = filterArea.y;
-
-    return mappedMatrix;
+    var currentState = this.stack[this.stackIndex];
+    return filterTransforms.calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize);   
 }
 
-FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
 {
-    var mappedMatrix = outputMatrix;
-    mappedMatrix.a = textureSize.width / this.renderer.width;
-    mappedMatrix.b = 0;
-    mappedMatrix.c = 0;
-    mappedMatrix.d = textureSize.height / this.renderer.height;
-    mappedMatrix.tx = filterArea.x / this.renderer.width;
-    mappedMatrix.ty = filterArea.y / this.renderer.height;
+    var currentState = this.stack[this.stackIndex];
+    var screenSize = new math.Rectangle(0,0, this.renderer.width, this.renderer.height);
 
-    return mappedMatrix;
+    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, screenSize);   
 }
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
-FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
+FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 {
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite._texture.baseTexture;
-
-    // TODO unwrap?
-    var mappedMatrix = outputMatrix.identity();
-
-    // scale..
-    var ratio = textureSize.height / textureSize.width;
-
-    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
-
-    mappedMatrix.scale(1 , ratio);
-
-    var translateScaleX = (textureSize.width / texture.width);
-    var translateScaleY = (textureSize.height / texture.height);
-
-    worldTransform.tx /= texture.width * translateScaleX;
- 
-    //this...?
-    //   worldTransform.ty /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.height * translateScaleY;
-
-    worldTransform.invert();
-    mappedMatrix.prepend(worldTransform);
-
-    // apply inverse scale..
-    mappedMatrix.scale(1 , 1/ratio);
-
-    mappedMatrix.scale( translateScaleX , translateScaleY );
-
-    mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
-
-    return mappedMatrix;
-
-    // Keeping the orginal as a reminder to me on how this works!
-    //
-    // var m = new math.Matrix();
-
-    // // scale..
-    // var ratio = this.textureSize.height / this.textureSize.width;
-
-    // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-
-
-    // m.scale(1 , ratio);
-
-
-    // var transform = wt.clone();
-
-    // var translateScaleX = (this.textureSize.width / 620);
-    // var translateScaleY = (this.textureSize.height / 380);
-
-    // transform.tx /= 620 * translateScaleX;
-    // transform.ty /= 620 * translateScaleX;
-
-    // transform.invert();
-
-    // transform.append(m);
-
-    // // apply inverse scale..
-    // transform.scale(1 , 1/ratio);
-
-    // transform.scale( translateScaleX , translateScaleY );
-
-    // return transform;
+    var currentState = this.stack[this.stackIndex];
+    return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, sprite);
 };
 
 FilterManager.prototype.resize = function(width, height)
@@ -238,7 +201,7 @@ FilterManager.prototype.destroy = function()
 
 }
 
-//TODO move to a seperate class
+//TODO move to a seperate class could be on renderer?
 FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
