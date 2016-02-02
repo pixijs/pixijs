@@ -54,7 +54,7 @@ var tempMatrix = new math.Matrix();
 Filter.prototype.apply = function(filterManager, input, output, clear)
 {
     // --- //
-    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
+  //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
 
     // do as you please!
 
@@ -76,6 +76,7 @@ Filter.defaultVertexSrc = [
 
     'uniform mat3 projectionMatrix;',
     'uniform mat3 filterMatrix;',
+  
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',
 

@@ -11,17 +11,19 @@ var fs = require('fs');
  */
 function GrayFilter()
 {
-    core.Filter.call(this,
+    core.AbstractFilter.call(this,
         // vertex shader
-        fs.readFileSync(__dirname + '/gray.vert', 'utf8'),
+        null,
         // fragment shader
-        fs.readFileSync(__dirname + '/gray.frag', 'utf8')
+        fs.readFileSync(__dirname + '/gray.frag', 'utf8'),
+        // set the uniforms
+        {
+            gray: { type: '1f', value: 1 }
+        }
     );
-
-    this.uniforms.gray = 1;
 }
 
-GrayFilter.prototype = Object.create(core.Filter.prototype);
+GrayFilter.prototype = Object.create(core.AbstractFilter.prototype);
 GrayFilter.prototype.constructor = GrayFilter;
 module.exports = GrayFilter;
 
@@ -35,11 +37,11 @@ Object.defineProperties(GrayFilter.prototype, {
     gray: {
         get: function ()
         {
-            return this.uniforms.gray;
+            return this.uniforms.gray.value;
         },
         set: function (value)
         {
-            this.uniforms.gray = value;
+            this.uniforms.gray.value = value;
         }
     }
 });

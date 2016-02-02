@@ -173,6 +173,8 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     var currentState = this.stack[this.stackIndex];
+    var screenSize = new math.Rectangle(0,0, this.renderer.width, this.renderer.height);
+
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize);   
 }
 

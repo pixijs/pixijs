@@ -11,6 +11,7 @@ var math = require('../../../math');
 var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     var mappedMatrix = outputMatrix;
+
     mappedMatrix.a = textureSize.width;
     mappedMatrix.b = 0;
     mappedMatrix.c = 0;
@@ -24,6 +25,7 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
     var mappedMatrix = outputMatrix;
+    
     mappedMatrix.a = textureSize.width / screenSize.width;
     mappedMatrix.b = 0;
     mappedMatrix.c = 0;

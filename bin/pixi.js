@@ -16375,7 +16375,7 @@ var tempMatrix = new math.Matrix();
 Filter.prototype.apply = function(filterManager, input, output, clear)
 {
     // --- //
-    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
+  //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
 
     // do as you please!
 
@@ -16397,6 +16397,7 @@ Filter.defaultVertexSrc = [
 
     'uniform mat3 projectionMatrix;',
     'uniform mat3 filterMatrix;',
+  
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',
 
@@ -16695,6 +16696,7 @@ var math = require('../../../math');
 var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     var mappedMatrix = outputMatrix;
+
     mappedMatrix.a = textureSize.width;
     mappedMatrix.b = 0;
     mappedMatrix.c = 0;
@@ -16708,6 +16710,7 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
     var mappedMatrix = outputMatrix;
+    
     mappedMatrix.a = textureSize.width / screenSize.width;
     mappedMatrix.b = 0;
     mappedMatrix.c = 0;
@@ -17496,6 +17499,8 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     var currentState = this.stack[this.stackIndex];
+    var screenSize = new math.Rectangle(0,0, this.renderer.width, this.renderer.height);
+
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize);   
 }
 
@@ -23886,7 +23891,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":54,"./extras":123,"./filters":140,"./mesh":165}],117:[function(require,module,exports){
+},{"./core":54,"./extras":123,"./filters":125,"./mesh":139}],117:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25404,1767 +25409,6 @@ var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
 
-// TODO (cengler) - The Y is flipped in this shader for some reason.
-
-/**
- * @author Vico @vicocotea
- * original shader : https://www.shadertoy.com/view/lssGDj by @movAX13h
- */
-
-/**
- * An ASCII filter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function AsciiFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nuniform vec4 dimensions;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 uv = gl_FragCoord.xy;\n\n    vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;\n\n    float gray = (col.r + col.g + col.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    vec2 p = mod( uv / ( pixelSize * 0.5 ), 2.0) - vec2(1.0);\n    col = col * character(n, p);\n\n    gl_FragColor = vec4(col, 1.0);\n}\n",
-        // custom uniforms
-        {
-            dimensions: { type: '4fv', value: new Float32Array([0, 0, 0, 0]) },
-            pixelSize:  { type: '1f', value: 8 }
-        }
-    );
-}
-
-AsciiFilter.prototype = Object.create(core.AbstractFilter.prototype);
-AsciiFilter.prototype.constructor = AsciiFilter;
-module.exports = AsciiFilter;
-
-Object.defineProperties(AsciiFilter.prototype, {
-    /**
-     * The pixel size used by the filter.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.AsciiFilter#
-     */
-    size: {
-        get: function ()
-        {
-            return this.uniforms.pixelSize.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.pixelSize.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],125:[function(require,module,exports){
-var core = require('../../core'),
-    BlurXFilter = require('../blur/BlurXFilter'),
-    BlurYFilter = require('../blur/BlurYFilter');
-
-/**
- * The BloomFilter applies a Gaussian blur to an object.
- * The strength of the blur can be set for x- and y-axis separately.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BloomFilter()
-{
-    core.AbstractFilter.call(this);
-
-    this.blurXFilter = new BlurXFilter();
-    this.blurYFilter = new BlurYFilter();
-
-    this.defaultFilter = new core.AbstractFilter();
-}
-
-BloomFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BloomFilter.prototype.constructor = BloomFilter;
-module.exports = BloomFilter;
-
-BloomFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
-
-    //TODO - copyTexSubImage2D could be used here?
-    this.defaultFilter.applyFilter(renderer, input, output);
-
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-
-    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.SCREEN);
-
-    this.blurYFilter.applyFilter(renderer, renderTarget, output);
-
-    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
-
-    renderer.filterManager.returnRenderTarget(renderTarget);
-};
-
-Object.defineProperties(BloomFilter.prototype, {
-    /**
-     * Sets the strength of both the blurX and blurY properties simultaneously
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BloomFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = this.blurYFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BloomFilter#
-     * @default 2
-     */
-    blurX: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BloomFilter#
-     * @default 2
-     */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
-        }
-    }
-});
-
-},{"../../core":54,"../blur/BlurXFilter":128,"../blur/BlurYFilter":129}],126:[function(require,module,exports){
-var core = require('../../core');
-
-
-/**
- * The BlurDirFilter applies a Gaussian blur toward a direction to an object.
- *
- * @class
- * @param {number} dirX
- * @param {number} dirY
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BlurDirFilter(dirX, dirY)
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform float dirX;\nuniform float dirY;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[3];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[0] = aTextureCoord + vec2( (0.004 * strength) * dirX, (0.004 * strength) * dirY );\n    vBlurTexCoords[1] = aTextureCoord + vec2( (0.008 * strength) * dirX, (0.008 * strength) * dirY );\n    vBlurTexCoords[2] = aTextureCoord + vec2( (0.012 * strength) * dirX, (0.012 * strength) * dirY );\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[3];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vTextureCoord     ) * 0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0]) * 0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1]) * 0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2]) * 0.004431848411938341;\n}\n",
-        // set the uniforms
-        {
-            strength: { type: '1f', value: 1 },
-            dirX: { type: '1f', value: dirX || 0 },
-            dirY: { type: '1f', value: dirY || 0 }
-        }
-    );
-
-    this.defaultFilter = new core.AbstractFilter();
-
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @default 1
-     */
-    this.passes = 1;
-
-    /**
-     * Sets the X direction of the blur
-     *
-     * @member {number}
-     * @default 0
-     */
-    this.dirX = dirX || 0;
-
-    /**
-     * Sets the Y direction of the blur
-     *
-     * @member {number}
-     * @default 0
-     */
-    this.dirY = dirY || 0;
-
-    this.strength = 4;
-}
-
-BlurDirFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurDirFilter.prototype.constructor = BlurDirFilter;
-module.exports = BlurDirFilter;
-
-BlurDirFilter.prototype.applyFilter = function (renderer, input, output, clear) {
-
-    var shader = this.getShader(renderer);
-
-    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.width / input.size.width);
-
-    if (this.passes === 1) {
-        renderer.filterManager.applyFilter(shader, input, output, clear);
-    } else {
-        var renderTarget = renderer.filterManager.getRenderTarget(true);
-
-        renderer.filterManager.applyFilter(shader, input, renderTarget, clear);
-
-        for(var i = 0; i < this.passes-2; i++)
-        {
-            //this.uniforms.strength.value = this.strength / 4 / (this.passes+(i*2)) * (input.frame.width / input.size.width);
-            renderer.filterManager.applyFilter(shader, renderTarget, renderTarget, clear);
-        }
-
-        renderer.filterManager.applyFilter(shader, renderTarget, output, clear);
-
-        renderer.filterManager.returnRenderTarget(renderTarget);
-    }
-};
-
-
-Object.defineProperties(BlurDirFilter.prototype, {
-    /**
-     * Sets the strength of both the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurDirFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return this.strength;
-        },
-        set: function (value)
-        {
-            this.padding = value * 0.5;
-            this.strength = value;
-        }
-    },
-    /**
-     * Sets the X direction of the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
-     * @default 0
-     */
-    dirX: {
-        get: function ()
-        {
-            return this.dirX;
-        },
-        set: function (value)
-        {
-            this.uniforms.dirX.value = value;
-        }
-    },
-    /**
-     * Sets the Y direction of the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurDirFilter#
-     * @default 0
-     */
-    dirY: {
-        get: function ()
-        {
-            return this.dirY;
-        },
-        set: function (value)
-        {
-            this.uniforms.dirY.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],127:[function(require,module,exports){
-var core = require('../../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
-
-/**
- * The BlurFilter applies a Gaussian blur to an object.
- * The strength of the blur can be set for x- and y-axis separately.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BlurFilter()
-{
-    core.AbstractFilter.call(this);
-
-    this.blurXFilter = new BlurXFilter();
-    this.blurYFilter = new BlurYFilter();
-}
-
-BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurFilter.prototype.constructor = BlurFilter;
-module.exports = BlurFilter;
-
-BlurFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
-
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-    this.blurYFilter.applyFilter(renderer, renderTarget, output);
-
-    renderer.filterManager.returnRenderTarget(renderTarget);
-};
-
-Object.defineProperties(BlurFilter.prototype, {
-    /**
-     * Sets the strength of both the blurX and blurY properties simultaneously
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.padding = Math.abs(value) * 0.5;
-            this.blurXFilter.blur = this.blurYFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
-     * @default 1
-     */
-    passes: {
-        get: function ()
-        {
-            return  this.blurXFilter.passes;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.passes = this.blurYFilter.passes = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
-     * @default 2
-     */
-    blurX: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
-     * @default 2
-     */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
-        }
-    }
-});
-
-},{"../../core":54,"./BlurXFilter":128,"./BlurYFilter":129}],128:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The BlurXFilter applies a horizontal Gaussian blur to an object.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BlurXFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(-0.012 * strength, 0.0);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(-0.008 * strength, 0.0);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(-0.004 * strength, 0.0);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2( 0.004 * strength, 0.0);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2( 0.008 * strength, 0.0);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2( 0.012 * strength, 0.0);\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n}\n",
-        // set the uniforms
-        {
-            strength: { type: '1f', value: 1 }
-        }
-    );
-
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @default 1
-     */
-    this.passes = 1;
-
-    this.strength = 4;
-}
-
-BlurXFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurXFilter.prototype.constructor = BlurXFilter;
-module.exports = BlurXFilter;
-
-BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
-{
-    var shader = this.getShader(renderer);
-
-    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.width / input.size.width);
-
-    if(this.passes === 1)
-    {
-        renderer.filterManager.applyFilter(shader, input, output, clear);
-    }
-    else
-    {
-        var renderTarget = renderer.filterManager.getRenderTarget(true);
-        var flip = input;
-        var flop = renderTarget;
-
-        for(var i = 0; i < this.passes-1; i++)
-        {
-            renderer.filterManager.applyFilter(shader, flip, flop, true);
-
-           var temp = flop;
-           flop = flip;
-           flip = temp;
-        }
-
-        renderer.filterManager.applyFilter(shader, flip, output, clear);
-
-        renderer.filterManager.returnRenderTarget(renderTarget);
-    }
-};
-
-
-Object.defineProperties(BlurXFilter.prototype, {
-    /**
-     * Sets the strength of both the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurXFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return  this.strength;
-        },
-        set: function (value)
-        {
-            this.padding =  Math.abs(value) * 0.5;
-            this.strength = value;
-        }
-    }
-});
-
-},{"../../core":54}],129:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The BlurYFilter applies a horizontal Gaussian blur to an object.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BlurYFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n}\n",
-        // set the uniforms
-        {
-            strength: { type: '1f', value: 1 }
-        }
-    );
-
-    this.passes = 1;
-    this.strength = 4;
-}
-
-BlurYFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurYFilter.prototype.constructor = BlurYFilter;
-module.exports = BlurYFilter;
-
-BlurYFilter.prototype.applyFilter = function (renderer, input, output, clear)
-{
-    var shader = this.getShader(renderer);
-
-    this.uniforms.strength.value = Math.abs(this.strength) / 4 / this.passes * (input.frame.height / input.size.height);
-
-    if(this.passes === 1)
-    {
-        renderer.filterManager.applyFilter(shader, input, output, clear);
-    }
-    else
-    {
-        var renderTarget = renderer.filterManager.getRenderTarget(true);
-        var flip = input;
-        var flop = renderTarget;
-
-        for(var i = 0; i < this.passes-1; i++)
-        {
-            renderer.filterManager.applyFilter(shader, flip, flop, true);
-
-           var temp = flop;
-           flop = flip;
-           flip = temp;
-        }
-
-        renderer.filterManager.applyFilter(shader, flip, output, clear);
-
-        renderer.filterManager.returnRenderTarget(renderTarget);
-    }
-};
-
-
-Object.defineProperties(BlurYFilter.prototype, {
-    /**
-     * Sets the strength of both the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return  this.strength;
-        },
-        set: function (value)
-        {
-            this.padding = Math.abs(value) * 0.5;
-            this.strength = value;
-        }
-    }
-});
-
-},{"../../core":54}],130:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * A Smart Blur Filter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function SmartBlurFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 delta;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta * percent);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n",
-        // uniforms
-        {
-          delta: { type: 'v2', value: { x: 0.1, y: 0.0 } }
-        }
-    );
-}
-
-SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
-SmartBlurFilter.prototype.constructor = SmartBlurFilter;
-module.exports = SmartBlurFilter;
-
-},{"../../core":54}],131:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
- * color and alpha values of every pixel on your displayObject to produce a result
- * with a new set of RGBA color and alpha values. It's pretty powerful!
- *
- * ```js
- *  var colorMatrix = new PIXI.ColorMatrixFilter();
- *  container.filters = [colorMatrix];
- *  colorMatrix.contrast(2);
- * ```
- * @author Clément Chenebault <clement@goodboydigital.com>
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function ColorMatrixFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[25];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4];\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9];\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14];\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19];\n\n}\n",
-        // custom uniforms
-        {
-            m: {
-                type: '1fv', value: [
-                    1, 0, 0, 0, 0,
-                    0, 1, 0, 0, 0,
-                    0, 0, 1, 0, 0,
-                    0, 0, 0, 1, 0
-                ]
-            }
-        }
-    );
-}
-
-ColorMatrixFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ColorMatrixFilter.prototype.constructor = ColorMatrixFilter;
-module.exports = ColorMatrixFilter;
-
-
-/**
- * Transforms current matrix and set the new one
- *
- * @param matrix {number[]} (mat 5x4)
- * @param multiply {boolean} if true, current matrix and matrix are multiplied. If false, just set the current matrix with @param matrix
- */
-ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
-{
-    multiply = !!multiply;
-
-    var newMatrix = matrix;
-
-    if (multiply) {
-        this._multiply(newMatrix, this.uniforms.m.value, matrix);
-        newMatrix = this._colorMatrix(newMatrix);
-    }
-
-    // set the new matrix
-    this.uniforms.m.value = newMatrix;
-};
-
-/**
- * Multiplies two mat5's
- *
- * @param out {number[]} (mat 5x4) the receiving matrix
- * @param a {number[]} (mat 5x4) the first operand
- * @param b {number[]} (mat 5x4) the second operand
- * @returns out {number[]} (mat 5x4)
- */
-ColorMatrixFilter.prototype._multiply = function (out, a, b)
-{
-
-    // Red Channel
-    out[0] = (a[0] * b[0]) + (a[1] * b[5]) + (a[2] * b[10]) + (a[3] * b[15]);
-    out[1] = (a[0] * b[1]) + (a[1] * b[6]) + (a[2] * b[11]) + (a[3] * b[16]);
-    out[2] = (a[0] * b[2]) + (a[1] * b[7]) + (a[2] * b[12]) + (a[3] * b[17]);
-    out[3] = (a[0] * b[3]) + (a[1] * b[8]) + (a[2] * b[13]) + (a[3] * b[18]);
-    out[4] = (a[0] * b[4]) + (a[1] * b[9]) + (a[2] * b[14]) + (a[3] * b[19]);
-
-    // Green Channel
-    out[5] = (a[5] * b[0]) + (a[6] * b[5]) + (a[7] * b[10]) + (a[8] * b[15]);
-    out[6] = (a[5] * b[1]) + (a[6] * b[6]) + (a[7] * b[11]) + (a[8] * b[16]);
-    out[7] = (a[5] * b[2]) + (a[6] * b[7]) + (a[7] * b[12]) + (a[8] * b[17]);
-    out[8] = (a[5] * b[3]) + (a[6] * b[8]) + (a[7] * b[13]) + (a[8] * b[18]);
-    out[9] = (a[5] * b[4]) + (a[6] * b[9]) + (a[7] * b[14]) + (a[8] * b[19]);
-
-    // Blue Channel
-    out[10] = (a[10] * b[0]) + (a[11] * b[5]) + (a[12] * b[10]) + (a[13] * b[15]);
-    out[11] = (a[10] * b[1]) + (a[11] * b[6]) + (a[12] * b[11]) + (a[13] * b[16]);
-    out[12] = (a[10] * b[2]) + (a[11] * b[7]) + (a[12] * b[12]) + (a[13] * b[17]);
-    out[13] = (a[10] * b[3]) + (a[11] * b[8]) + (a[12] * b[13]) + (a[13] * b[18]);
-    out[14] = (a[10] * b[4]) + (a[11] * b[9]) + (a[12] * b[14]) + (a[13] * b[19]);
-
-    // Alpha Channel
-    out[15] = (a[15] * b[0]) + (a[16] * b[5]) + (a[17] * b[10]) + (a[18] * b[15]);
-    out[16] = (a[15] * b[1]) + (a[16] * b[6]) + (a[17] * b[11]) + (a[18] * b[16]);
-    out[17] = (a[15] * b[2]) + (a[16] * b[7]) + (a[17] * b[12]) + (a[18] * b[17]);
-    out[18] = (a[15] * b[3]) + (a[16] * b[8]) + (a[17] * b[13]) + (a[18] * b[18]);
-    out[19] = (a[15] * b[4]) + (a[16] * b[9]) + (a[17] * b[14]) + (a[18] * b[19]);
-
-    return out;
-};
-
-/**
- * Create a Float32 Array and normalize the offset component to 0-1
- *
- * @param matrix {number[]} (mat 5x4)
- * @return m {number[]} (mat 5x4) with all values between 0-1
- */
-ColorMatrixFilter.prototype._colorMatrix = function (matrix)
-{
-    // Create a Float32 Array and normalize the offset component to 0-1
-    var m = new Float32Array(matrix);
-    m[4] /= 255;
-    m[9] /= 255;
-    m[14] /= 255;
-    m[19] /= 255;
-
-    return m;
-};
-
-/**
- * Adjusts brightness
- *
- * @param b {number} value of the brigthness (0 is black)
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.brightness = function (b, multiply)
-{
-    var matrix = [
-        b, 0, 0, 0, 0,
-        0, b, 0, 0, 0,
-        0, 0, b, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Set the matrices in grey scales
- *
- * @param scale {number} value of the grey (0 is black)
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.greyscale = function (scale, multiply)
-{
-    var matrix = [
-        scale, scale, scale, 0, 0,
-        scale, scale, scale, 0, 0,
-        scale, scale, scale, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-//Americanized alias
-ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
-
-/**
- * Set the black and white matrice
- * Multiply the current matrix
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.blackAndWhite = function (multiply)
-{
-    var matrix = [
-        0.3, 0.6, 0.1, 0, 0,
-        0.3, 0.6, 0.1, 0, 0,
-        0.3, 0.6, 0.1, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Set the hue property of the color
- *
- * @param rotation {number} in degrees
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.hue = function (rotation, multiply)
-{
-    rotation = (rotation || 0) / 180 * Math.PI;
-    var cos = Math.cos(rotation),
-        sin = Math.sin(rotation);
-
-    // luminanceRed, luminanceGreen, luminanceBlue
-    var lumR = 0.213, // or 0.3086
-        lumG = 0.715, // or 0.6094
-        lumB = 0.072; // or 0.0820
-
-    var matrix = [
-        lumR + cos * (1 - lumR) + sin * (-lumR), lumG + cos * (-lumG) + sin * (-lumG), lumB + cos * (-lumB) + sin * (1 - lumB), 0, 0,
-        lumR + cos * (-lumR) + sin * (0.143), lumG + cos * (1 - lumG) + sin * (0.140), lumB + cos * (-lumB) + sin * (-0.283), 0, 0,
-        lumR + cos * (-lumR) + sin * (-(1 - lumR)), lumG + cos * (-lumG) + sin * (lumG), lumB + cos * (1 - lumB) + sin * (lumB), 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-
-/**
- * Set the contrast matrix, increase the separation between dark and bright
- * Increase contrast : shadows darker and highlights brighter
- * Decrease contrast : bring the shadows up and the highlights down
- *
- * @param amount {number} value of the contrast
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.contrast = function (amount, multiply)
-{
-    var v = (amount || 0) + 1;
-    var o = -128 * (v - 1);
-
-    var matrix = [
-        v, 0, 0, 0, o,
-        0, v, 0, 0, o,
-        0, 0, v, 0, o,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Set the saturation matrix, increase the separation between colors
- * Increase saturation : increase contrast, brightness, and sharpness
- *
- * @param amount {number}
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.saturate = function (amount, multiply)
-{
-    var x = (amount || 0) * 2 / 3 + 1;
-    var y = ((x - 1) * -0.5);
-
-    var matrix = [
-        x, y, y, 0, 0,
-        y, x, y, 0, 0,
-        y, y, x, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Desaturate image (remove color)
- *
- * Call the saturate function
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.desaturate = function (multiply) // jshint unused:false
-{
-    this.saturate(-1);
-};
-
-/**
- * Negative image (inverse of classic rgb matrix)
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.negative = function (multiply)
-{
-    var matrix = [
-        0, 1, 1, 0, 0,
-        1, 0, 1, 0, 0,
-        1, 1, 0, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Sepia image
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.sepia = function (multiply)
-{
-    var matrix = [
-        0.393, 0.7689999, 0.18899999, 0, 0,
-        0.349, 0.6859999, 0.16799999, 0, 0,
-        0.272, 0.5339999, 0.13099999, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Color motion picture process invented in 1916 (thanks Dominic Szablewski)
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.technicolor = function (multiply)
-{
-    var matrix = [
-        1.9125277891456083, -0.8545344976951645, -0.09155508482755585, 0, 11.793603434377337,
-        -0.3087833385928097, 1.7658908555458428, -0.10601743074722245, 0, -70.35205161461398,
-        -0.231103377548616, -0.7501899197440212, 1.847597816108189, 0, 30.950940869491138,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Polaroid filter
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.polaroid = function (multiply)
-{
-    var matrix = [
-        1.438, -0.062, -0.062, 0, 0,
-        -0.122, 1.378, -0.122, 0, 0,
-        -0.016, -0.016, 1.483, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Filter who transforms : Red -> Blue and Blue -> Red
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.toBGR = function (multiply)
-{
-    var matrix = [
-        0, 0, 1, 0, 0,
-        0, 1, 0, 0, 0,
-        1, 0, 0, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Color reversal film introduced by Eastman Kodak in 1935. (thanks Dominic Szablewski)
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.kodachrome = function (multiply)
-{
-    var matrix = [
-        1.1285582396593525, -0.3967382283601348, -0.03992559172921793, 0, 63.72958762196502,
-        -0.16404339962244616, 1.0835251566291304, -0.05498805115633132, 0, 24.732407896706203,
-        -0.16786010706155763, -0.5603416277695248, 1.6014850761964943, 0, 35.62982807460946,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/**
- * Brown delicious browni filter (thanks Dominic Szablewski)
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.browni = function (multiply)
-{
-    var matrix = [
-        0.5997023498159715, 0.34553243048391263, -0.2708298674538042, 0, 47.43192855600873,
-        -0.037703249837783157, 0.8609577587992641, 0.15059552388459913, 0, -36.96841498319127,
-        0.24113635128153335, -0.07441037908422492, 0.44972182064877153, 0, -7.562075277591283,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/*
- * Vintage filter (thanks Dominic Szablewski)
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.vintage = function (multiply)
-{
-    var matrix = [
-        0.6279345635605994, 0.3202183420819367, -0.03965408211312453, 0, 9.651285835294123,
-        0.02578397704808868, 0.6441188644374771, 0.03259127616149294, 0, 7.462829176470591,
-        0.0466055556782719, -0.0851232987247891, 0.5241648018700465, 0, 5.159190588235296,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/*
- * We don't know exactly what it does, kind of gradient map, but funny to play with!
- *
- * @param desaturation {number}
- * @param toned {number}
- * @param lightColor {string} (example : "0xFFE580")
- * @param darkColor {string}  (example : "0xFFE580")
- *
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.colorTone = function (desaturation, toned, lightColor, darkColor, multiply)
-{
-    desaturation = desaturation || 0.2;
-    toned = toned || 0.15;
-    lightColor = lightColor || 0xFFE580;
-    darkColor = darkColor || 0x338000;
-
-    var lR = ((lightColor >> 16) & 0xFF) / 255;
-    var lG = ((lightColor >> 8) & 0xFF) / 255;
-    var lB = (lightColor & 0xFF) / 255;
-
-    var dR = ((darkColor >> 16) & 0xFF) / 255;
-    var dG = ((darkColor >> 8) & 0xFF) / 255;
-    var dB = (darkColor & 0xFF) / 255;
-
-    var matrix = [
-        0.3, 0.59, 0.11, 0, 0,
-        lR, lG, lB, desaturation, 0,
-        dR, dG, dB, toned, 0,
-        lR - dR, lG - dG, lB - dB, 0, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/*
- * Night effect
- *
- * @param intensity {number}
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.night = function (intensity, multiply)
-{
-    intensity = intensity || 0.1;
-    var matrix = [
-        intensity * ( -2.0), -intensity, 0, 0, 0,
-        -intensity, 0, intensity, 0, 0,
-        0, intensity, intensity * 2.0, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-
-/*
- * Predator effect
- *
- * Erase the current matrix by setting a new indepent one
- *
- * @param amount {number} how much the predator feels his future victim
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.predator = function (amount, multiply)
-{
-    var matrix = [
-        11.224130630493164 * amount, -4.794486999511719 * amount, -2.8746118545532227 * amount, 0 * amount, 0.40342438220977783 * amount,
-        -3.6330697536468506 * amount, 9.193157196044922 * amount, -2.951810836791992 * amount, 0 * amount, -1.316135048866272 * amount,
-        -3.2184197902679443 * amount, -4.2375030517578125 * amount, 7.476448059082031 * amount, 0 * amount, 0.8044459223747253 * amount,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/*
- * LSD effect
- *
- * Multiply the current matrix
- *
- * @param amount {number} How crazy is your effect
- * @param multiply {boolean} refer to ._loadMatrix() method
- */
-ColorMatrixFilter.prototype.lsd = function (multiply)
-{
-    var matrix = [
-        2, -0.4, 0.5, 0, 0,
-        -0.5, 2, -0.4, 0, 0,
-        -0.4, -0.5, 3, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, multiply);
-};
-
-/*
- * Erase the current matrix by setting the default one
- *
- */
-ColorMatrixFilter.prototype.reset = function ()
-{
-    var matrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0
-    ];
-
-    this._loadMatrix(matrix, false);
-};
-
-
-Object.defineProperties(ColorMatrixFilter.prototype, {
-    /**
-     * Sets the matrix of the color matrix filter
-     *
-     * @member {number[]}
-     * @memberof PIXI.filters.ColorMatrixFilter#
-     * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
-     */
-    matrix: {
-        get: function ()
-        {
-            return this.uniforms.m.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.m.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],132:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function ColorStepFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float step;\n\nvoid main(void)\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    color = floor(color * step) / step;\n\n    gl_FragColor = color;\n}\n",
-        // custom uniforms
-        {
-            step: { type: '1f', value: 5 }
-        }
-    );
-}
-
-ColorStepFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ColorStepFilter.prototype.constructor = ColorStepFilter;
-module.exports = ColorStepFilter;
-
-Object.defineProperties(ColorStepFilter.prototype, {
-    /**
-     * The number of steps to reduce the palette by.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.ColorStepFilter#
-     */
-    step: {
-        get: function ()
-        {
-            return this.uniforms.step.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.step.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],133:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The ConvolutionFilter class applies a matrix convolution filter effect.
- * A convolution combines pixels in the input image with neighboring pixels to produce a new image.
- * A wide variety of image effects can be achieved through convolutions, including blurring, edge
- * detection, sharpening, embossing, and beveling. The matrix should be specified as a 9 point Array.
- * See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- * @param matrix {number[]} An array of values used for matrix transformation. Specified as a 9 point Array.
- * @param width {number} Width of the object you are transforming
- * @param height {number} Height of the object you are transforming
- */
-function ConvolutionFilter(matrix, width, height)
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n",
-        // custom uniforms
-        {
-            matrix:     { type: '1fv', value: new Float32Array(matrix) },
-            texelSize:  { type: 'v2', value: { x: 1 / width, y: 1 / height } }
-        }
-    );
-}
-
-ConvolutionFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ConvolutionFilter.prototype.constructor = ConvolutionFilter;
-module.exports = ConvolutionFilter;
-
-Object.defineProperties(ConvolutionFilter.prototype, {
-    /**
-     * An array of values used for matrix transformation. Specified as a 9 point Array.
-     *
-     * @member {number[]}
-     * @memberof PIXI.filters.ConvolutionFilter#
-     */
-    matrix: {
-        get: function ()
-        {
-            return this.uniforms.matrix.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.matrix.value = new Float32Array(value);
-        }
-    },
-
-    /**
-     * Width of the object you are transforming
-     *
-     * @member {number}
-     * @memberof PIXI.filters.ConvolutionFilter#
-     */
-    width: {
-        get: function ()
-        {
-            return 1/this.uniforms.texelSize.value.x;
-        },
-        set: function (value)
-        {
-            this.uniforms.texelSize.value.x = 1/value;
-        }
-    },
-
-    /**
-     * Height of the object you are transforming
-     *
-     * @member {number}
-     * @memberof PIXI.filters.ConvolutionFilter#
-     */
-    height: {
-        get: function ()
-        {
-            return 1/this.uniforms.texelSize.value.y;
-        },
-        set: function (value)
-        {
-            this.uniforms.texelSize.value.y = 1/value;
-        }
-    }
-});
-
-},{"../../core":54}],134:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * A Cross Hatch effect filter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function CrossHatchFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n"
-    );
-}
-
-CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
-CrossHatchFilter.prototype.constructor = CrossHatchFilter;
-module.exports = CrossHatchFilter;
-
-},{"../../core":54}],135:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
- * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
- */
-function DisplacementFilter(sprite, scale)
-{
-    var maskMatrix = new core.Matrix();
-    sprite.renderable = false;
-
-    core.AbstractFilter.call(this,
-        // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n",
-        // uniforms
-        {
-            mapSampler:     { type: 'sampler2D', value: sprite.texture },
-            otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) },
-            scale:          { type: 'v2', value: { x: 1, y: 1 } }
-        }
-    );
-
-    this.maskSprite = sprite;
-    this.maskMatrix = maskMatrix;
-
-    if (scale === null || scale === undefined)
-    {
-        scale = 20;
-    }
-
-    this.scale = new core.Point(scale, scale);
-}
-
-DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DisplacementFilter.prototype.constructor = DisplacementFilter;
-module.exports = DisplacementFilter;
-
-DisplacementFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var filterManager = renderer.filterManager;
-
-    filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
-
-    this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
-    this.uniforms.scale.value.x = this.scale.x * (1/input.frame.width);
-    this.uniforms.scale.value.y = this.scale.y * (1/input.frame.height);
-
-    var shader = this.getShader(renderer);
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output);
-};
-
-
-Object.defineProperties(DisplacementFilter.prototype, {
-    /**
-     * The texture used for the displacement map. Must be power of 2 sized texture.
-     *
-     * @member {PIXI.Texture}
-     * @memberof PIXI.filters.DisplacementFilter#
-     */
-    map: {
-        get: function ()
-        {
-            return this.uniforms.mapSampler.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.mapSampler.value = value;
-
-        }
-    }
-});
-
-},{"../../core":54}],136:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/fun/dotscreen.js
- */
-
-/**
- * This filter applies a dotscreen effect making display objects appear to be made out of
- * black and white halftone dots like an old printer.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function DotScreenFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 dimensions;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * dimensions.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n",
-        // custom uniforms
-        {
-            scale:      { type: '1f', value: 1 },
-            angle:      { type: '1f', value: 5 },
-            dimensions: { type: '4fv', value: [0, 0, 0, 0] }
-        }
-    );
-}
-
-DotScreenFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DotScreenFilter.prototype.constructor = DotScreenFilter;
-module.exports = DotScreenFilter;
-
-Object.defineProperties(DotScreenFilter.prototype, {
-    /**
-     * The scale of the effect.
-     * @member {number}
-     * @memberof PIXI.filters.DotScreenFilter#
-     */
-    scale: {
-        get: function ()
-        {
-            return this.uniforms.scale.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.scale.value = value;
-        }
-    },
-
-    /**
-     * The radius of the effect.
-     * @member {number}
-     * @memberof PIXI.filters.DotScreenFilter#
-     */
-    angle: {
-        get: function ()
-        {
-            return this.uniforms.angle.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.angle.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],137:[function(require,module,exports){
-var core = require('../../core');
-
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The BlurYTintFilter applies a vertical Gaussian blur to an object.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function BlurYTintFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform vec2 offset;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition+offset), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform vec3 color;\nuniform float alpha;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    sum += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    sum += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    sum += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    sum += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n\n    gl_FragColor = vec4( color.rgb * sum.a * alpha, sum.a * alpha );\n}\n",
-        // set the uniforms
-        {
-            blur: { type: '1f', value: 1 / 512 },
-            color: { type: 'c', value: [0,0,0]},
-            alpha: { type: '1f', value: 0.7 },
-            offset: { type: '2f', value:[5, 5]},
-            strength: { type: '1f', value:1}
-        }
-    );
-
-    this.passes = 1;
-    this.strength = 4;
-}
-
-BlurYTintFilter.prototype = Object.create(core.AbstractFilter.prototype);
-BlurYTintFilter.prototype.constructor = BlurYTintFilter;
-module.exports = BlurYTintFilter;
-
-BlurYTintFilter.prototype.applyFilter = function (renderer, input, output, clear)
-{
-    var shader = this.getShader(renderer);
-
-    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.height / input.size.height);
-
-    if(this.passes === 1)
-    {
-        renderer.filterManager.applyFilter(shader, input, output, clear);
-    }
-    else
-    {
-        var renderTarget = renderer.filterManager.getRenderTarget(true);
-        var flip = input;
-        var flop = renderTarget;
-
-        for(var i = 0; i < this.passes-1; i++)
-        {
-            renderer.filterManager.applyFilter(shader, flip, flop, clear);
-
-           var temp = flop;
-           flop = flip;
-           flip = temp;
-        }
-
-        renderer.filterManager.applyFilter(shader, flip, output, clear);
-
-        renderer.filterManager.returnRenderTarget(renderTarget);
-    }
-};
-
-
-Object.defineProperties(BlurYTintFilter.prototype, {
-    /**
-     * Sets the strength of both the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.BlurYTintFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return  this.strength;
-        },
-        set: function (value)
-        {
-            this.padding = value * 0.5;
-            this.strength = value;
-        }
-    }
-});
-
-},{"../../core":54}],138:[function(require,module,exports){
-var core = require('../../core'),
-    BlurXFilter = require('../blur/BlurXFilter'),
-    BlurYTintFilter = require('./BlurYTintFilter');
-
-/**
- * The DropShadowFilter applies a Gaussian blur to an object.
- * The strength of the blur can be set for x- and y-axis separately.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function DropShadowFilter()
-{
-    core.AbstractFilter.call(this);
-
-    this.blurXFilter = new BlurXFilter();
-    this.blurYTintFilter = new BlurYTintFilter();
-
-    this.defaultFilter = new core.AbstractFilter();
-
-    this.padding = 30;
-
-    this._dirtyPosition = true;
-    this._angle = 45 * Math.PI / 180;
-    this._distance = 10;
-    this.alpha = 0.75;
-    this.hideObject = false;
-    this.blendMode = core.BLEND_MODES.MULTIPLY;
-}
-
-DropShadowFilter.prototype = Object.create(core.AbstractFilter.prototype);
-DropShadowFilter.prototype.constructor = DropShadowFilter;
-module.exports = DropShadowFilter;
-
-DropShadowFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
-
-    //TODO - copyTexSubImage2D could be used here?
-    if(this._dirtyPosition)
-    {
-        this._dirtyPosition = false;
-
-        this.blurYTintFilter.uniforms.offset.value[0] = Math.sin(this._angle) * this._distance;
-        this.blurYTintFilter.uniforms.offset.value[1] = Math.cos(this._angle) * this._distance;
-    }
-
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-
-    renderer.blendModeManager.setBlendMode(this.blendMode);
-
-    this.blurYTintFilter.applyFilter(renderer, renderTarget, output);
-
-    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
-
-    if(!this.hideObject)
-    {
-
-        this.defaultFilter.applyFilter(renderer, input, output);
-    }
-
-
-    renderer.filterManager.returnRenderTarget(renderTarget);
-};
-
-Object.defineProperties(DropShadowFilter.prototype, {
-    /**
-     * Sets the strength of both the blurX and blurY properties simultaneously
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     * @default 2
-     */
-    blur: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = this.blurYTintFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     * @default 2
-     */
-    blurX: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     * @default 2
-     */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYTintFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYTintFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the color of the shadow
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     */
-    color: {
-        get: function ()
-        {
-            return  core.utils.rgb2hex( this.blurYTintFilter.uniforms.color.value );
-        },
-        set: function (value)
-        {
-            this.blurYTintFilter.uniforms.color.value = core.utils.hex2rgb(value);
-        }
-    },
-
-    /**
-     * Sets the alpha of the shadow
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     */
-    alpha: {
-        get: function ()
-        {
-            return  this.blurYTintFilter.uniforms.alpha.value;
-        },
-        set: function (value)
-        {
-            this.blurYTintFilter.uniforms.alpha.value = value;
-        }
-    },
-
-    /**
-     * Sets the distance of the shadow
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     */
-    distance: {
-        get: function ()
-        {
-            return  this._distance;
-        },
-        set: function (value)
-        {
-            this._dirtyPosition = true;
-            this._distance = value;
-        }
-    },
-
-    /**
-     * Sets the angle of the shadow
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.DropShadowFilter#
-     */
-    angle: {
-        get: function ()
-        {
-            return  this._angle;
-        },
-        set: function (value)
-        {
-            this._dirtyPosition = true;
-            this._angle = value;
-        }
-    }
-});
-
-},{"../../core":54,"../blur/BlurXFilter":128,"./BlurYTintFilter":137}],139:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
 /**
  * This greyscales the palette of your Display Objects.
  *
@@ -27174,19 +25418,17 @@ var core = require('../../core');
  */
 function GrayFilter()
 {
-    core.AbstractFilter.call(this,
+    core.Filter.call(this,
         // vertex shader
-        null,
+        "precision lowp float;\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}",
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform float gray;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\n}\n",
-        // set the uniforms
-        {
-            gray: { type: '1f', value: 1 }
-        }
+        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float gray;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\n}\n"
     );
+
+    this.uniforms.gray = 1;
 }
 
-GrayFilter.prototype = Object.create(core.AbstractFilter.prototype);
+GrayFilter.prototype = Object.create(core.Filter.prototype);
 GrayFilter.prototype.constructor = GrayFilter;
 module.exports = GrayFilter;
 
@@ -27200,16 +25442,16 @@ Object.defineProperties(GrayFilter.prototype, {
     gray: {
         get: function ()
         {
-            return this.uniforms.gray.value;
+            return this.uniforms.gray;
         },
         set: function (value)
         {
-            this.uniforms.gray.value = value;
+            this.uniforms.gray = value;
         }
     }
 });
 
-},{"../../core":54}],140:[function(require,module,exports){
+},{"../../core":54}],125:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27221,810 +25463,34 @@ Object.defineProperties(GrayFilter.prototype, {
  * @namespace PIXI.filters
  */
 module.exports = {
-    AsciiFilter:        require('./ascii/AsciiFilter'),
-    BloomFilter:        require('./bloom/BloomFilter'),
-    BlurFilter:         require('./blur/BlurFilter'),
-    BlurXFilter:        require('./blur/BlurXFilter'),
-    BlurYFilter:        require('./blur/BlurYFilter'),
-    BlurDirFilter:      require('./blur/BlurDirFilter'),
-    ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
-    ColorStepFilter:    require('./color/ColorStepFilter'),
-    ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
-    CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
-    DisplacementFilter: require('./displacement/DisplacementFilter'),
-    DotScreenFilter:    require('./dot/DotScreenFilter'),
-    GrayFilter:         require('./gray/GrayFilter'),
-    DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
-    InvertFilter:       require('./invert/InvertFilter'),
-    NoiseFilter:        require('./noise/NoiseFilter'),
-    PixelateFilter:     require('./pixelate/PixelateFilter'),
-    RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
-    ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
-    SepiaFilter:        require('./sepia/SepiaFilter'),
-    SmartBlurFilter:    require('./blur/SmartBlurFilter'),
-    TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
-    TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
-    TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-    TwistFilter:        require('./twist/TwistFilter')
+    // AsciiFilter:        require('./ascii/AsciiFilter'),
+    // BloomFilter:        require('./bloom/BloomFilter'),
+    // BlurFilter:         require('./blur/BlurFilter'),
+    // BlurXFilter:        require('./blur/BlurXFilter'),
+    // BlurYFilter:        require('./blur/BlurYFilter'),
+    // BlurDirFilter:      require('./blur/BlurDirFilter'),
+    // ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
+    // ColorStepFilter:    require('./color/ColorStepFilter'),
+    // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
+    // CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
+    // DisplacementFilter: require('./displacement/DisplacementFilter'),
+    // DotScreenFilter:    require('./dot/DotScreenFilter'),
+    // DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
+    // InvertFilter:       require('./invert/InvertFilter'),
+    // NoiseFilter:        require('./noise/NoiseFilter'),
+    // PixelateFilter:     require('./pixelate/PixelateFilter'),
+    // RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
+    // ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
+    // SepiaFilter:        require('./sepia/SepiaFilter'),
+    // SmartBlurFilter:    require('./blur/SmartBlurFilter'),
+    // TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
+    // TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
+    //TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
+    //TwistFilter:        require('./twist/TwistFilter')
+     GrayFilter:         require('./gray/GrayFilter')
 };
 
-},{"./ascii/AsciiFilter":124,"./bloom/BloomFilter":125,"./blur/BlurDirFilter":126,"./blur/BlurFilter":127,"./blur/BlurXFilter":128,"./blur/BlurYFilter":129,"./blur/SmartBlurFilter":130,"./color/ColorMatrixFilter":131,"./color/ColorStepFilter":132,"./convolution/ConvolutionFilter":133,"./crosshatch/CrossHatchFilter":134,"./displacement/DisplacementFilter":135,"./dot/DotScreenFilter":136,"./dropshadow/DropShadowFilter":138,"./gray/GrayFilter":139,"./invert/InvertFilter":141,"./noise/NoiseFilter":142,"./pixelate/PixelateFilter":143,"./rgb/RGBSplitFilter":144,"./sepia/SepiaFilter":145,"./shockwave/ShockwaveFilter":146,"./tiltshift/TiltShiftFilter":148,"./tiltshift/TiltShiftXFilter":149,"./tiltshift/TiltShiftYFilter":150,"./twist/TwistFilter":151}],141:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * This inverts your Display Objects colors.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function InvertFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform float invert;\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);\n}\n",
-        // custom uniforms
-        {
-            invert: { type: '1f', value: 1 }
-        }
-    );
-}
-
-InvertFilter.prototype = Object.create(core.AbstractFilter.prototype);
-InvertFilter.prototype.constructor = InvertFilter;
-module.exports = InvertFilter;
-
-Object.defineProperties(InvertFilter.prototype, {
-    /**
-     * The strength of the invert. `1` will fully invert the colors, and
-     * `0` will make the object its normal color.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.InvertFilter#
-     */
-    invert: {
-        get: function ()
-        {
-            return this.uniforms.invert.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.invert.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],142:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * @author Vico @vicocotea
- * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- */
-
-/**
- * A Noise effect filter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function NoiseFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision highp float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform float noise;\nuniform sampler2D uSampler;\n\nfloat rand(vec2 co)\n{\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    float diff = (rand(vTextureCoord) - 0.5) * noise;\n\n    color.r += diff;\n    color.g += diff;\n    color.b += diff;\n\n    gl_FragColor = color;\n}\n",
-        // custom uniforms
-        {
-            noise: { type: '1f', value: 0.5 }
-        }
-    );
-}
-
-NoiseFilter.prototype = Object.create(core.AbstractFilter.prototype);
-NoiseFilter.prototype.constructor = NoiseFilter;
-module.exports = NoiseFilter;
-
-Object.defineProperties(NoiseFilter.prototype, {
-    /**
-     * The amount of noise to apply.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.NoiseFilter#
-     * @default 0.5
-     */
-    noise: {
-        get: function ()
-        {
-            return this.uniforms.noise.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.noise.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],143:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * This filter applies a pixelate effect making display objects appear 'blocky'.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function PixelateFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 dimensions;\nuniform vec2 pixelSize;\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec2 coord = vTextureCoord;\n\n    vec2 size = dimensions.xy / pixelSize;\n\n    vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;\n\n    gl_FragColor = texture2D(uSampler, color);\n}\n",
-        // custom uniforms
-        {
-            dimensions: { type: '4fv',  value: new Float32Array([0, 0, 0, 0]) },
-            pixelSize:  { type: 'v2',   value: { x: 10, y: 10 } }
-        }
-    );
-}
-
-PixelateFilter.prototype = Object.create(core.AbstractFilter.prototype);
-PixelateFilter.prototype.constructor = PixelateFilter;
-module.exports = PixelateFilter;
-
-Object.defineProperties(PixelateFilter.prototype, {
-    /**
-     * This a point that describes the size of the blocks.
-     * x is the width of the block and y is the height.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.PixelateFilter#
-     */
-    size: {
-        get: function ()
-        {
-            return this.uniforms.pixelSize.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.pixelSize.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],144:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * An RGB Split Filter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function RGBSplitFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 dimensions;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/dimensions.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/dimensions.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/dimensions.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n",
-        // custom uniforms
-        {
-            red:        { type: 'v2', value: { x: 20, y: 20 } },
-            green:      { type: 'v2', value: { x: -20, y: 20 } },
-            blue:       { type: 'v2', value: { x: 20, y: -20 } },
-            dimensions: { type: '4fv', value: [0, 0, 0, 0] }
-        }
-    );
-}
-
-RGBSplitFilter.prototype = Object.create(core.AbstractFilter.prototype);
-RGBSplitFilter.prototype.constructor = RGBSplitFilter;
-module.exports = RGBSplitFilter;
-
-Object.defineProperties(RGBSplitFilter.prototype, {
-    /**
-     * Red channel offset.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.RGBSplitFilter#
-     */
-    red: {
-        get: function ()
-        {
-            return this.uniforms.red.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.red.value = value;
-        }
-    },
-
-    /**
-     * Green channel offset.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.RGBSplitFilter#
-     */
-    green: {
-        get: function ()
-        {
-            return this.uniforms.green.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.green.value = value;
-        }
-    },
-
-    /**
-     * Blue offset.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.RGBSplitFilter#
-     */
-    blue: {
-        get: function ()
-        {
-            return this.uniforms.blue.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.blue.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],145:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * This applies a sepia effect to your Display Objects.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function SepiaFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float sepia;\n\nconst mat3 sepiaMatrix = mat3(0.3588, 0.7044, 0.1368, 0.2990, 0.5870, 0.1140, 0.2392, 0.4696, 0.0912);\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);\n}\n",
-        // custom uniforms
-        {
-            sepia: { type: '1f', value: 1 }
-        }
-    );
-}
-
-SepiaFilter.prototype = Object.create(core.AbstractFilter.prototype);
-SepiaFilter.prototype.constructor = SepiaFilter;
-module.exports = SepiaFilter;
-
-Object.defineProperties(SepiaFilter.prototype, {
-    /**
-     * The strength of the sepia. `1` will apply the full sepia effect, and
-     * `0` will make the object its normal color.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.SepiaFilter#
-     */
-    sepia: {
-        get: function ()
-        {
-            return this.uniforms.sepia.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.sepia.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],146:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
- * color and alpha values of every pixel on your displayObject to produce a result
- * with a new set of RGBA color and alpha values. It's pretty powerful!
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function ShockwaveFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",
-        // custom uniforms
-        {
-            center: { type: 'v2', value: { x: 0.5, y: 0.5 } },
-            params: { type: 'v3', value: { x: 10, y: 0.8, z: 0.1 } },
-            time: { type: '1f', value: 0 }
-        }
-    );
-}
-
-ShockwaveFilter.prototype = Object.create(core.AbstractFilter.prototype);
-ShockwaveFilter.prototype.constructor = ShockwaveFilter;
-module.exports = ShockwaveFilter;
-
-Object.defineProperties(ShockwaveFilter.prototype, {
-    /**
-     * Sets the center of the shockwave in normalized screen coords. That is
-     * (0,0) is the top-left and (1,1) is the bottom right.
-     *
-     * @member {object<string, number>}
-     * @memberof PIXI.filters.ShockwaveFilter#
-     */
-    center: {
-        get: function ()
-        {
-            return this.uniforms.center.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.center.value = value;
-        }
-    },
-    /**
-     * Sets the params of the shockwave. These modify the look and behavior of
-     * the shockwave as it ripples out.
-     *
-     * @member {object<string, number>}
-     * @memberof PIXI.filters.ShockwaveFilter#
-     */
-    params: {
-        get: function ()
-        {
-            return this.uniforms.params.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.params.value = value;
-        }
-    },
-    /**
-     * Sets the elapsed time of the shockwave. This controls the speed at which
-     * the shockwave ripples out.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.ShockwaveFilter#
-     */
-    time: {
-        get: function ()
-        {
-            return this.uniforms.time.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.time.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],147:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * @author Vico @vicocotea
- * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
- */
-
-/**
- * A TiltShiftAxisFilter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function TiltShiftAxisFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n",
-        // custom uniforms
-        {
-            blur:           { type: '1f', value: 100 },
-            gradientBlur:   { type: '1f', value: 600 },
-            start:          { type: 'v2', value: { x: 0,    y: window.innerHeight / 2 } },
-            end:            { type: 'v2', value: { x: 600,  y: window.innerHeight / 2 } },
-            delta:          { type: 'v2', value: { x: 30,   y: 30 } },
-            texSize:        { type: 'v2', value: { x: window.innerWidth, y: window.innerHeight } }
-        }
-    );
-
-    this.updateDelta();
-}
-
-TiltShiftAxisFilter.prototype = Object.create(core.AbstractFilter.prototype);
-TiltShiftAxisFilter.prototype.constructor = TiltShiftAxisFilter;
-module.exports = TiltShiftAxisFilter;
-
-/**
- * Updates the filter delta values.
- * This is overridden in the X and Y filters, does nothing for this class.
- *
- */
-TiltShiftAxisFilter.prototype.updateDelta = function ()
-{
-    this.uniforms.delta.value.x = 0;
-    this.uniforms.delta.value.y = 0;
-};
-
-Object.defineProperties(TiltShiftAxisFilter.prototype, {
-    /**
-     * The strength of the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftAxisFilter#
-     */
-    blur: {
-        get: function ()
-        {
-            return this.uniforms.blur.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.blur.value = value;
-        }
-    },
-
-    /**
-     * The strength of the gradient blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftAxisFilter#
-     */
-    gradientBlur: {
-        get: function ()
-        {
-            return this.uniforms.gradientBlur.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.gradientBlur.value = value;
-        }
-    },
-
-    /**
-     * The X value to start the effect at.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.TiltShiftAxisFilter#
-     */
-    start: {
-        get: function ()
-        {
-            return this.uniforms.start.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.start.value = value;
-            this.updateDelta();
-        }
-    },
-
-    /**
-     * The X value to end the effect at.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.TiltShiftAxisFilter#
-     */
-    end: {
-        get: function ()
-        {
-            return this.uniforms.end.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.end.value = value;
-            this.updateDelta();
-        }
-    }
-});
-
-},{"../../core":54}],148:[function(require,module,exports){
-var core = require('../../core'),
-    TiltShiftXFilter = require('./TiltShiftXFilter'),
-    TiltShiftYFilter = require('./TiltShiftYFilter');
-
-/**
- * @author Vico @vicocotea
- * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
- */
-
-/**
- * A TiltShift Filter. Manages the pass of both a TiltShiftXFilter and TiltShiftYFilter.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function TiltShiftFilter()
-{
-    core.AbstractFilter.call(this);
-
-    this.tiltShiftXFilter = new TiltShiftXFilter();
-    this.tiltShiftYFilter = new TiltShiftYFilter();
-}
-
-TiltShiftFilter.prototype = Object.create(core.AbstractFilter.prototype);
-TiltShiftFilter.prototype.constructor = TiltShiftFilter;
-module.exports = TiltShiftFilter;
-
-TiltShiftFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
-
-    this.tiltShiftXFilter.applyFilter(renderer, input, renderTarget);
-
-    this.tiltShiftYFilter.applyFilter(renderer, renderTarget, output);
-
-    renderer.filterManager.returnRenderTarget(renderTarget);
-};
-
-Object.defineProperties(TiltShiftFilter.prototype, {
-    /**
-     * The strength of the blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftFilter#
-     */
-    blur: {
-        get: function ()
-        {
-            return this.tiltShiftXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.tiltShiftXFilter.blur = this.tiltShiftYFilter.blur = value;
-        }
-    },
-
-    /**
-     * The strength of the gradient blur.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftFilter#
-     */
-    gradientBlur: {
-        get: function ()
-        {
-            return this.tiltShiftXFilter.gradientBlur;
-        },
-        set: function (value)
-        {
-            this.tiltShiftXFilter.gradientBlur = this.tiltShiftYFilter.gradientBlur = value;
-        }
-    },
-
-    /**
-     * The Y value to start the effect at.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftFilter#
-     */
-    start: {
-        get: function ()
-        {
-            return this.tiltShiftXFilter.start;
-        },
-        set: function (value)
-        {
-            this.tiltShiftXFilter.start = this.tiltShiftYFilter.start = value;
-        }
-    },
-
-    /**
-     * The Y value to end the effect at.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TiltShiftFilter#
-     */
-    end: {
-        get: function ()
-        {
-            return this.tiltShiftXFilter.end;
-        },
-        set: function (value)
-        {
-            this.tiltShiftXFilter.end = this.tiltShiftYFilter.end = value;
-        }
-    }
-});
-
-},{"../../core":54,"./TiltShiftXFilter":149,"./TiltShiftYFilter":150}],149:[function(require,module,exports){
-var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
-
-/**
- * @author Vico @vicocotea
- * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
- */
-
-/**
- * A TiltShiftXFilter.
- *
- * @class
- * @extends PIXI.TiltShiftAxisFilter
- * @memberof PIXI.filters
- */
-function TiltShiftXFilter()
-{
-    TiltShiftAxisFilter.call(this);
-}
-
-TiltShiftXFilter.prototype = Object.create(TiltShiftAxisFilter.prototype);
-TiltShiftXFilter.prototype.constructor = TiltShiftXFilter;
-module.exports = TiltShiftXFilter;
-
-/**
- * Updates the filter delta values.
- *
- */
-TiltShiftXFilter.prototype.updateDelta = function ()
-{
-    var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
-    var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;
-    var d = Math.sqrt(dx * dx + dy * dy);
-
-    this.uniforms.delta.value.x = dx / d;
-    this.uniforms.delta.value.y = dy / d;
-};
-
-},{"./TiltShiftAxisFilter":147}],150:[function(require,module,exports){
-var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
-
-/**
- * @author Vico @vicocotea
- * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
- */
-
-/**
- * A TiltShiftYFilter.
- *
- * @class
- * @extends PIXI.TiltShiftAxisFilter
- * @memberof PIXI.filters
- */
-function TiltShiftYFilter()
-{
-    TiltShiftAxisFilter.call(this);
-}
-
-TiltShiftYFilter.prototype = Object.create(TiltShiftAxisFilter.prototype);
-TiltShiftYFilter.prototype.constructor = TiltShiftYFilter;
-module.exports = TiltShiftYFilter;
-
-/**
- * Updates the filter delta values.
- *
- */
-TiltShiftYFilter.prototype.updateDelta = function ()
-{
-    var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
-    var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;
-    var d = Math.sqrt(dx * dx + dy * dy);
-
-    this.uniforms.delta.value.x = -dy / d;
-    this.uniforms.delta.value.y = dx / d;
-};
-
-},{"./TiltShiftAxisFilter":147}],151:[function(require,module,exports){
-var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * This filter applies a twist effect making display objects appear twisted in the given direction.
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI.filters
- */
-function TwistFilter()
-{
-    core.AbstractFilter.call(this,
-        // vertex shader
-        null,
-        // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\n\nvoid main(void)\n{\n   vec2 coord = vTextureCoord - offset;\n   float dist = length(coord);\n\n   if (dist < radius)\n   {\n       float ratio = (radius - dist) / radius;\n       float angleMod = ratio * ratio * angle;\n       float s = sin(angleMod);\n       float c = cos(angleMod);\n       coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n   }\n\n   gl_FragColor = texture2D(uSampler, coord+offset);\n}\n",
-        // custom uniforms
-        {
-            radius:     { type: '1f', value: 0.5 },
-            angle:      { type: '1f', value: 5 },
-            offset:     { type: 'v2', value: { x: 0.5, y: 0.5 } }
-        }
-    );
-}
-
-TwistFilter.prototype = Object.create(core.AbstractFilter.prototype);
-TwistFilter.prototype.constructor = TwistFilter;
-module.exports = TwistFilter;
-
-Object.defineProperties(TwistFilter.prototype, {
-    /**
-     * This point describes the the offset of the twist.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.filters.TwistFilter#
-     */
-    offset: {
-        get: function ()
-        {
-            return this.uniforms.offset.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.offset.value = value;
-        }
-    },
-
-    /**
-     * This radius of the twist.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TwistFilter#
-     */
-    radius: {
-        get: function ()
-        {
-            return this.uniforms.radius.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.radius.value = value;
-        }
-    },
-
-    /**
-     * This angle of the twist.
-     *
-     * @member {number}
-     * @memberof PIXI.filters.TwistFilter#
-     */
-    angle: {
-        get: function ()
-        {
-            return this.uniforms.angle.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.angle.value = value;
-        }
-    }
-});
-
-},{"../../core":54}],152:[function(require,module,exports){
+},{"./gray/GrayFilter":124}],126:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -28033,7 +25499,7 @@ var core = module.exports = require('./core');
 
 // add core plugins.
 //core.extras         = require('./extras');
-//core.filters        = require('./filters');
+core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 //core.mesh           = require('./mesh');
@@ -28057,7 +25523,7 @@ global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./accessibility":37,"./core":54,"./deprecation":116,"./interaction":155,"./loaders":158,"./polyfill":170}],153:[function(require,module,exports){
+},{"./accessibility":37,"./core":54,"./deprecation":116,"./filters":125,"./interaction":129,"./loaders":132,"./polyfill":144}],127:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -28106,7 +25572,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":54}],154:[function(require,module,exports){
+},{"../core":54}],128:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -28982,7 +26448,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":54,"./InteractionData":153,"./interactiveTarget":156}],155:[function(require,module,exports){
+},{"../core":54,"./InteractionData":127,"./interactiveTarget":130}],129:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28999,7 +26465,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":153,"./InteractionManager":154,"./interactiveTarget":156}],156:[function(require,module,exports){
+},{"./InteractionData":127,"./InteractionManager":128,"./interactiveTarget":130}],130:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -29048,7 +26514,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],157:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -29169,7 +26635,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54,"../extras":123,"path":17,"resource-loader":31}],158:[function(require,module,exports){
+},{"../core":54,"../extras":123,"path":17,"resource-loader":31}],132:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -29190,7 +26656,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":157,"./loader":159,"./spritesheetParser":160,"./textureParser":161,"resource-loader":31}],159:[function(require,module,exports){
+},{"./bitmapFontParser":131,"./loader":133,"./spritesheetParser":134,"./textureParser":135,"resource-loader":31}],133:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -29252,7 +26718,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":157,"./spritesheetParser":160,"./textureParser":161,"resource-loader":31}],160:[function(require,module,exports){
+},{"./bitmapFontParser":131,"./spritesheetParser":134,"./textureParser":135,"resource-loader":31}],134:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -29336,7 +26802,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54,"path":17,"resource-loader":31}],161:[function(require,module,exports){
+},{"../core":54,"path":17,"resource-loader":31}],135:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -29358,7 +26824,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54}],162:[function(require,module,exports){
+},{"../core":54}],136:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -29834,7 +27300,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":54}],163:[function(require,module,exports){
+},{"../core":54}],137:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -29960,7 +27426,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":162}],164:[function(require,module,exports){
+},{"./Mesh":136}],138:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -30173,7 +27639,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":54,"./Mesh":162}],165:[function(require,module,exports){
+},{"../core":54,"./Mesh":136}],139:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -30192,7 +27658,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":162,"./Plane":163,"./Rope":164,"./webgl/MeshRenderer":166,"./webgl/MeshShader":167}],166:[function(require,module,exports){
+},{"./Mesh":136,"./Plane":137,"./Rope":138,"./webgl/MeshRenderer":140,"./webgl/MeshShader":141}],140:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -30421,7 +27887,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":54,"../Mesh":162}],167:[function(require,module,exports){
+},{"../../core":54,"../Mesh":136}],141:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -30481,7 +27947,7 @@ MeshShader.prototype.constructor = MeshShader;
 module.exports = MeshShader;
 
 
-},{"../../core":54}],168:[function(require,module,exports){
+},{"../../core":54}],142:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -30497,7 +27963,7 @@ if (!Math.sign)
     };
 }
 
-},{}],169:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -30507,12 +27973,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":26}],170:[function(require,module,exports){
+},{"object-assign":26}],144:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":168,"./Object.assign":169,"./requestAnimationFrame":171}],171:[function(require,module,exports){
+},{"./Math.sign":142,"./Object.assign":143,"./requestAnimationFrame":145}],145:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -30583,7 +28049,7 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}]},{},[152])(152)
+},{}]},{},[126])(126)
 });
 
 
