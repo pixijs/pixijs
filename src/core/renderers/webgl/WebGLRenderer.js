@@ -1,7 +1,7 @@
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
-    FilterManager = require('./managers/FilterManagerRoundTwo'),
+    FilterManager = require('./managers/FilterManager'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
