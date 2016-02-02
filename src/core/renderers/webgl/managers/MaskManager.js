@@ -15,6 +15,8 @@ function MaskManager(renderer)
     this.count = 0;
 
     this.alphaMaskPool = [];
+    this.alphaMaskIndex = 0;
+
 }
 
 MaskManager.prototype = Object.create(WebGLManager.prototype);
@@ -66,15 +68,18 @@ MaskManager.prototype.popMask = function (target, maskData)
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
-    var alphaMaskFilter = this.alphaMaskPool.pop();
+
+    var alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
     if (!alphaMaskFilter)
     {
-        alphaMaskFilter = [new AlphaMaskFilter(maskData)];
+        alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
     }
 
     alphaMaskFilter[0].maskSprite = maskData;
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+
+    this.alphaMaskIndex++;
 };
 
 /**
@@ -83,9 +88,8 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
  */
 MaskManager.prototype.popSpriteMask = function ()
 {
-    var filters = this.renderer.filterManager.popFilter();
-
-    this.alphaMaskPool.push(filters);
+    this.renderer.filterManager.popFilter();
+    this.alphaMaskIndex--;
 };
 
 
