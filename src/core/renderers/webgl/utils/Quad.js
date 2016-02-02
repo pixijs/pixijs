@@ -8,7 +8,7 @@ var glCore = require('pixi-gl-core'),
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
-function Quad(gl, shader)
+function Quad(gl)
 {
     /*
      * the current WebGL drawing context
@@ -65,11 +65,10 @@ function Quad(gl, shader)
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-
     this.vao = new glCore.VertexArrayObject(gl)
     .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
-    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4)
+    .addAttribute(this.vertexBuffer, {type:'vec2', size:2, location:0}, gl.FLOAT, false, 4 * 4, 0)
+    .addAttribute(this.vertexBuffer, {type:'vec2', size:2, location:1}, gl.FLOAT, false, 4 * 4, 2 * 4)
 
    
 }

@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/SpriteMaskFilter');
+    AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
 
 /**
  * @class

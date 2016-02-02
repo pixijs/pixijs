@@ -2,7 +2,6 @@ var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
     Quad = require('../utils/Quad'),
-    FilterShader = require('../filters/FilterShader'),
     math =  require('../../../math'),
     utils =  require('../../../utils'),
     Shader = require('pixi-gl-core').GLShader,
@@ -21,10 +20,8 @@ function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    // TODO - not really required. but useful for setting the quad..
-    this.filterShader = new FilterShader(renderer.gl);
     // know about sprites!
-    this.quad = new Quad(gl, this.filterShader);
+    this.quad = new Quad(gl);
 
     this.stack = [{
         target:null,
@@ -90,7 +87,7 @@ FilterManager.prototype.popFilter = function()
 {
     var gl = this.renderer.gl;
 
-
+    var lastState = this.stack[this.stackIndex-1];
     var currentState = this.stack[this.stackIndex];
     
     this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
@@ -98,7 +95,6 @@ FilterManager.prototype.popFilter = function()
     var filter = currentState.filters[0];
 
     // lets get the last state as that contains the renderTarget we need to render too
-    var lastState = this.stack[this.stackIndex-1];
     filter.apply(this, currentState.renderTarget, lastState.renderTarget, false);
 
     // return the texture..
