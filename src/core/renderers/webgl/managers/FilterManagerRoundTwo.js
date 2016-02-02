@@ -37,13 +37,20 @@ module.exports = FilterManager;
 
 FilterManager.prototype.pushFilter = function(target, filters)
 {
+    var resolution = filters[0].resolution;
 
-    var bounds = target.getBounds();
-    bounds.pad(4);
+    var bounds = target.getBounds().clone();
+
+    //TODO - should this be rounded to reoultion? not 1?
+    bounds.x = bounds.x | 0;
+    bounds.y = bounds.y | 0;
+    bounds.width = bounds.width | 0;
+    bounds.height = bounds.height | 0;
+    bounds.pad(4 / resolution);
     bounds.fit(new PIXI.Rectangle(0,0,800, 800)) //TODO - output.size?
 
-    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
-    
+    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height, resolution);
+
     this.stackIndex++;
 
     if(!this.stack[this.stackIndex])
@@ -100,6 +107,12 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     }
     
     this.renderer.bindRenderTarget(output);
+    
+    if(clear)
+    {
+        this.renderer.clear();
+    }
+
     this.renderer.bindShader(shader);
 
     this.syncUniforms(shader, filter);
@@ -208,22 +221,34 @@ FilterManager.prototype.destroy = function()
 }
 
 //TODO move to a seperate class could be on renderer?
-FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight)
+FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
-    minWidth = utils.getNextPowerOfTwo(minWidth);
-    minHeight = utils.getNextPowerOfTwo(minHeight);
-
+    minWidth = utils.getNextPowerOfTwo(minWidth * resolution) | 0;
+    minHeight = utils.getNextPowerOfTwo(minHeight * resolution) | 0;
+    
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
     if(!FilterManager.pool[key])FilterManager.pool[key] = [];
 
-    return FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight);
+    var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+    
+    
+    //manually tweak the resolution...
+    //this will not modify the size of the frame buffer, just its resolution.
+    renderTarget.resolution = resolution;
+    renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
+    renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+
+    return renderTarget;
 }
 
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
-    var key = ((renderTarget.size.width & 0xFFFF) << 16) | ( renderTarget.size.height & 0xFFFF);
+    var minWidth = renderTarget.size.width * renderTarget.resolution;
+    var minHeight = renderTarget.size.height * renderTarget.resolution;
+
+    var key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
     FilterManager.pool[key].push(renderTarget)
 }
 

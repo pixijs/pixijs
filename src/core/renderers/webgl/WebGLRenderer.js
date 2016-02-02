@@ -275,9 +275,9 @@ WebGLRenderer.prototype.setBlendMode = function (mode)
     // fill in here..
 }
 
-WebGLRenderer.prototype.clear = function ()
+WebGLRenderer.prototype.clear = function (clearColor)
 {
-    this._activeRenderTarget.clear();
+    this._activeRenderTarget.clear(clearColor);
 }
 
 //TOOD - required?

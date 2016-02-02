@@ -276,7 +276,7 @@ Sprite.prototype._renderWebGL = function (renderer)
 Sprite.prototype.getBounds = function (matrix)
 {
     //TODO lookinto caching..
-    //if(!this._currentBounds)
+    if(!this._currentBounds)
     {
        // if(this.vertexDirty)
         {

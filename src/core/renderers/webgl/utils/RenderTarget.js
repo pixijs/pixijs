@@ -213,7 +213,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     if(this.destinationFrame !== this.sourceFrame)
     {
         gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(this.destinationFrame.x,0, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
+        gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
     }
     else
     {
@@ -222,7 +222,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
 
 
     // TODO - does not need to be updated all the time??
-    gl.viewport(this.destinationFrame.x,this.destinationFrame.y, this.destinationFrame.width * this.resolution, this.destinationFrame.height * this.resolution);
+    gl.viewport(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height * this.resolution)|0);
 
 
 };
