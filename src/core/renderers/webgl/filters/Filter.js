@@ -27,6 +27,9 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
      * @member {string}
      */
     this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
+    
+    var key = this.fragmentSrc + this.vertexSrc;
+
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
@@ -43,6 +46,9 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     // this is where we store shader references..
     // TODO we could cache this!
     this.glShaders = [];
+
+    // used for cacheing..
+    this.glShaderKey = null;
 
     this.resolution = 1;
 }

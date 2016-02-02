@@ -30,6 +30,8 @@ function FilterManager(renderer)
     this.stack = [rootState];
 
     this.stackIndex = 0;
+
+    this.shaderCache = {};
     // todo add default!
 }
 
@@ -106,11 +108,24 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 {
     var renderer = this.renderer;
     var lastState = this.stack[this.stackIndex-1];
-
     var shader = filter.glShaders[gl.id];
+    
+    // cacheing..
     if(!shader)
     {
-        shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+        if(filter.glShaderKey)
+        {
+            shader = this.shaderCache[filter.glShaderKey];
+
+            if(!shader)
+            {
+                shader = filter.glShaders[gl.id] = this.shaderCache[filter.glShaderKey] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+            }
+        }
+        else
+        {
+            shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+        }
     }
     
     renderer.bindRenderTarget(output, lastState.destinationFrame, lastState.sourceFrame);

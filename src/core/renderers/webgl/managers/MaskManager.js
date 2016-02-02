@@ -40,7 +40,6 @@ MaskManager.prototype.pushMask = function (target, maskData)
     {
         this.pushStencilMask(target, maskData);
     }
-
 };
 
 /**
@@ -69,7 +68,6 @@ MaskManager.prototype.popMask = function (target, maskData)
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
-
     var alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
     if (!alphaMaskFilter)

@@ -19,6 +19,8 @@ function GrayFilter()
     );
 
     this.uniforms.gray = 1;
+    
+    this.glShaderKey = 'gray';
 }
 
 GrayFilter.prototype = Object.create(core.Filter.prototype);
