@@ -22,8 +22,8 @@ var BaseTexture = require('./BaseTexture'),
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture
- * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
- * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
+ * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
+ * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
@@ -55,15 +55,15 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.baseTexture = baseTexture;
 
     /**
-     * The frame specifies the region of the base texture that this texture uses
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
      * @member {PIXI.Rectangle}
-     * @private
      */
     this._frame = frame;
 
     /**
-     * The texture trim data.
+     * This is the trimmed area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
@@ -106,20 +106,22 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.height = 0;
 
     /**
-     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
-     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     * This is the area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
-    /**
-     * Indicates whether the texture should be rotated by 90 degrees
-     *
-     * @private
-     * @member {boolean}
-     */
-    this.rotate = !!rotate;
+    this._rotate = +(rotate || 0);
+
+    if (rotate === true) {
+        // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
+        this._rotate = 2;
+    } else {
+        if (this._rotate % 2 !== 0) {
+            throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
+        }
+    }
 
     if (baseTexture.hasLoaded)
     {
@@ -168,10 +170,7 @@ Object.defineProperties(Texture.prototype, {
 
             this.noFrame = false;
 
-            this.width = frame.width;
-            this.height = frame.height;
-
-            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
@@ -179,18 +178,35 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (this.trim)
-            {
-                this.width = this.trim.width;
-                this.height = this.trim.height;
-                this._frame.width = this.trim.width;
-                this._frame.height = this.trim.height;
-            }
-            else
-            {
+            if (!this.trim) {
+                this.width = frame.width;
+                this.height = frame.height;
                 this.crop = frame;
             }
 
+            if (this.valid)
+            {
+                this._updateUvs();
+            }
+        }
+    },
+    /**
+     * Indicates whether the texture is rotated inside the atlas
+     * set to 2 to compensate for texture packer rotation
+     * set to 6 to compensate for spine packer rotation
+     * can be used to rotate or mirror sprites
+     * See {@link PIXI.GroupD8} for explanation
+     *
+     * @member {number}
+     */
+    rotate: {
+        get: function ()
+        {
+            return this._rotate;
+        },
+        set: function (rotate)
+        {
+            this._rotate = rotate;
             if (this.valid)
             {
                 this._updateUvs();
@@ -294,7 +310,7 @@ Texture.prototype._updateUvs = function ()
         this._uvs = new TextureUvs();
     }
 
-    this._uvs.set(this.crop, this.baseTexture, this.rotate);
+    this._uvs.set(this._frame, this.baseTexture, this.rotate);
 };
 
 /**

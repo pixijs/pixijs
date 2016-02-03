@@ -68,11 +68,7 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -123,11 +119,7 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -165,11 +157,7 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
