@@ -98,7 +98,6 @@ FilterManager.prototype.popFilter = function()
     if(filters.length === 1)
     {
         filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
-        
         FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
@@ -121,9 +120,6 @@ FilterManager.prototype.popFilter = function()
         FilterManager.freePotRenderTarget(flip);
         FilterManager.freePotRenderTarget(flop);
     }
-
-    // return the texture..
-    
 
     this.stackIndex--;
 }
@@ -156,7 +152,7 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     
     if(clear)
     {
-        renderer.clear();
+        renderer.clear()//[1, 1, 1, 1]);
     }
 
     renderer.bindShader(shader);
