@@ -4,7 +4,8 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     generateMultiTextureShader = require('./generateMultiTextureShader'),
     CONST = require('../../const'),
-    glCore = require('pixi-gl-core');
+    glCore = require('pixi-gl-core'),
+    bitTwiddle = require('bit-twiddle');
 
 /**
  * @author Mat Groves
@@ -53,38 +54,44 @@ function SpriteRenderer(renderer)
     this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     // the total number of bytes in our batch
-    var numVerts = (this.size * 4) * this.vertByteSize;
+    var numVerts = this.size * 4 * this.vertByteSize;
 
     // the total number of indices in our batch, there are 6 points per quad.
     var numIndices = this.size * 6;
+
+    this.buffers = [];
+    for (var i = 1; i <= 2048; i*=2) {
+        var numVerts = i * 4 * this.vertByteSize;
+        this.buffers.push(new Buffer(numVerts, i));
+    };
 
     /**
      * Holds the vertex data that will be sent to the vertex shader.
      *
      * @member {ArrayBuffer}
      */
-    this.vertices = new ArrayBuffer(numVerts);
+   // this.vertices = new ArrayBuffer(numVerts);
 
     /**
      * View on the vertices as a Float32Array for positions
      *
      * @member {Float32Array}
      */
-    this.positions = new Float32Array(this.vertices);
+   // this.positions = new Float32Array(this.vertices);
     
     /**
      * View on the vertices as a Uint32Array for uvs
      *
      * @member {Float32Array}
      */
-    this.uvs = new Uint32Array(this.vertices);
+    //this.uvs = new Uint32Array(this.vertices);
 
     /**
      * View on the vertices as a Uint32Array for colors
      *
      * @member {Uint32Array}
      */
-    this.colors = new Uint32Array(this.vertices);
+    //this.colors = new Uint32Array(this.vertices);
 
     /**
      * Holds the indices of the geometry (quads) to draw
@@ -115,6 +122,8 @@ function SpriteRenderer(renderer)
     this.currentGroup = this.groups[this.groupCount++];
 
     this.currentTexture = null;    
+
+    this.sprites = [];
 }
 
 
@@ -215,45 +224,14 @@ SpriteRenderer.prototype.render = function (sprite)
         this.textureCount++;
     }
 
-    // TODO trim??
-    var index = this.currentIndex * this.vertByteSize;
+    // TODO add this variable to sprite..
+    sprite._glBatchTextureId = nextTexture._id;
+
+    this.sprites[this.currentIndex] = sprite;
 
     this.currentIndex++;
 
-    // upload the sprite elemetns...
-    // they have all ready been calculated so we just need to push them into the buffer.
-    var colors = this.colors;
-    var positions = this.positions;
-    var vertexData = sprite.vertexData
-    var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-    var uvs = sprite.texture._uvs.uvs_uint32;
-    //xy
-    positions[index++] = vertexData[0];
-    positions[index++] = vertexData[1];
-    this.uvs[index++] = uvs[0];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id; 
     
-    // xy
-    positions[index++] = vertexData[2];
-    positions[index++] = vertexData[3];
-    this.uvs[index++] = uvs[1];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
-
-     // xy
-    positions[index++] = vertexData[4];
-    positions[index++] = vertexData[5];
-    this.uvs[index++] = uvs[2];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
-
-    // xy
-    positions[index++] = vertexData[6];
-    positions[index++] = vertexData[7];
-    this.uvs[index++] = uvs[3];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
 };
 
 /**
@@ -266,6 +244,59 @@ SpriteRenderer.prototype.flush = function ()
 
     var gl = this.renderer.gl;
 
+    var np2 = bitTwiddle.nextPow2(this.currentIndex);
+    var log2 = bitTwiddle.log2(np2);
+
+    var buffer = this.buffers[log2];
+
+    var colors = buffer.colors;
+    var positions = buffer.positions;
+    var uvsBuffer = buffer.uvs;
+    var index = 0;
+
+    //console.log(this.currentIndex);
+    //var array = 
+
+    for (var i = 0; i < this.currentIndex; i++) 
+    {
+        // upload the sprite elemetns...
+        // they have all ready been calculated so we just need to push them into the buffer.
+        var sprite = this.sprites[i];
+
+        var vertexData = sprite.vertexData
+        var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        var uvs = sprite.texture._uvs.uvs_uint32;
+        var textureId = sprite._glBatchTextureId;
+
+        //xy
+        positions[index++] = vertexData[0];
+        positions[index++] = vertexData[1];
+        uvsBuffer[index++] = uvs[0];
+        colors[index++] = tint;
+        positions[index++] = textureId; 
+        
+        // xy
+        positions[index++] = vertexData[2];
+        positions[index++] = vertexData[3];
+        uvsBuffer[index++] = uvs[1];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+         // xy
+        positions[index++] = vertexData[4];
+        positions[index++] = vertexData[5];
+        uvsBuffer[index++] = uvs[2];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+        // xy
+        positions[index++] = vertexData[6];
+        positions[index++] = vertexData[7];
+        uvsBuffer[index++] = uvs[3];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+    };
 
     this.currentGroup.size = this.currentIndex - this.currentGroup.start;
     for (var i = 0; i < this.currentGroup.textureCount; i++) 
@@ -276,16 +307,16 @@ SpriteRenderer.prototype.flush = function ()
     // do some smart array stuff..
     // double size so we dont alway subarray the elements..
     // upload the verts to the buffer
-    if (this.currentBatchSize > ( this.size * 0.5 ) )
-    {
-        this.vertexBuffer.upload(this.vertices, 0, true);
-    }
-    else
-    {
+    //if (this.currentBatchSize > ( this.size * 0.5 ) )
+    //{
+    //    this.vertexBuffer.upload(this.vertices, 0, true);
+   // }
+    //else
+    //{
         // o k .. sub array is SLOW>?
-        var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
-        this.vertexBuffer.upload(view, 0, true);
-    }
+     //   var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
+        this.vertexBuffer.upload(buffer.vertices, 0, true);
+    //}
 
     // bind shader..
     
@@ -354,3 +385,33 @@ SpriteRenderer.prototype.destroy = function ()
     this.sprites = null;
     this.shader = null;
 };
+
+var Buffer = function(size, realSize)
+{
+
+    this.realSize = realSize;
+    this.vertices = new ArrayBuffer(size);
+
+    /**
+     * View on the vertices as a Float32Array for positions
+     *
+     * @member {Float32Array}
+     */
+    this.positions = new Float32Array(this.vertices);
+    
+    /**
+     * View on the vertices as a Uint32Array for uvs
+     *
+     * @member {Float32Array}
+     */
+    this.uvs = new Uint32Array(this.vertices);
+
+    /**
+     * View on the vertices as a Uint32Array for colors
+     *
+     * @member {Uint32Array}
+     */
+    this.colors = new Uint32Array(this.vertices);
+
+    //this.buffer = 
+}
