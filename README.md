@@ -14,6 +14,28 @@ The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The Pixi renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
+
+Are you a dreamer, a designer, an artist or just an ordinary person? Would you like to build an amazing game? Are you confortable with Javascript? If your answer is *yes*, you are in the right place!
+
+###Unlock the power of your creativity with Pixi.js and focalize your attention to build richer content in HTML5 and plain Javascript 
+
+![Creativity](Pixi_mini.jpg)
+
+One of the key feature of Pixi.js is to ease the use of WebGL, masking its complexity and allowing you to spend much time creating amazing things with **less code** and without struggling with the OpenGL's shading language, Matrix computation and Vertex buffers. 
+
+####Pixi.js comes with a solid and ease to use [API](http://pixijs.github.io/docs)   
+
+Don't you still believe in that ? Look at the WebGL's [prerequisites](https://www.khronos.org/webgl/wiki/Getting_Started):
+
+> WebGL is a low-level API, so it's not for the faint of heart. OpenGL's shading language, GLSL, is itself an entire programming environment. As a result, even simple things in WebGL take quite a bit of code. You have to load, compile, and link shaders, set up the variables to be passed in to the shaders, and also perform matrix math to animate shapes. Basic areas you'll need to be familiar with include:
+
+> * GLSL, the shading language used by OpenGL and WebGL
+* Matrix computation to set up transformations
+* Vertex buffers to hold data about vertex positions, normals, colors, and textures (?)
+
+###Build the next must-have cross platform app with Pixi.js
+
+
 If you want to keep up to date with the latest pixi.js news then feel free to follow us on twitter
 ([@doormat23](https://twitter.com/doormat23), and [@rolnaaba](https://twitter.com/rolnaaba))
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
