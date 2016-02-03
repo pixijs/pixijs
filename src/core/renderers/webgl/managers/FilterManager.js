@@ -5,7 +5,8 @@ var WebGLManager = require('./WebGLManager'),
     math =  require('../../../math'),
     utils =  require('../../../utils'),
     Shader = require('pixi-gl-core').GLShader,
-    filterTransforms = require('../filters/filterTransforms');
+    filterTransforms = require('../filters/filterTransforms'),
+    bitTwiddle = require('bit-twiddle');
 
 var tempMatrix = new math.Matrix();
 var tempRect = new math.Rectangle();
@@ -258,15 +259,14 @@ FilterManager.prototype.destroy = function()
 FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
-    minWidth = utils.getNextPowerOfTwo(minWidth * resolution) | 0;
-    minHeight = utils.getNextPowerOfTwo(minHeight * resolution) | 0;
-    
+    minWidth = bitTwiddle.nextPow2(minWidth * resolution);
+    minHeight = bitTwiddle.nextPow2(minHeight * resolution);
+
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
     if(!FilterManager.pool[key])FilterManager.pool[key] = [];
 
     var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
-    
     
     //manually tweak the resolution...
     //this will not modify the size of the frame buffer, just its resolution.
