@@ -92,12 +92,48 @@ FilterManager.prototype.popFilter = function()
     var currentState = this.stack[this.stackIndex];
     
     this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
+    
+    var filters = currentState.filters;
+    
+    if(filters.length === 1)
+    {
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+    }
+    else
+    {
+        var flip = currentState.renderTarget;
+        var flop = FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
 
+        for (var i = 0; i < filters.length-1; i++) 
+        {
+
+            filters[i].apply(this, flip, flop, true);
+
+            var t = flip;
+            flip = flop;
+            flopTexture = t;
+        };
+
+        filters[i].apply(this, flip, lastState.renderTarget, true);
+
+    }
+/*
     var filter = currentState.filters[0];
 
-    // lets get the last state as that contains the renderTarget we need to render too
-    filter.apply(this, currentState.renderTarget, lastState.renderTarget, false);
+    var flip = lastState.renderTarget;
+    var flop =
+    for (var i = 0; i < currentState.filters.length; i++) 
+    {
+        filter = currentState.filters[i];
 
+        // lets get the last state as that contains the renderTarget we need to render too
+        filter.apply(this, currentState.renderTarget, flip, false);
+
+
+        //  currentState.filters[]
+    };
+*/
+    
     // return the texture..
     FilterManager.freePotRenderTarget(currentState.renderTarget);
 
@@ -215,10 +251,10 @@ FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
 FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.stack[this.stackIndex];
-    tempRect.x = this.renderer.width;
-    tempRect.y = this.renderer.height;
 
-    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, tempRect);   
+    
+
+    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);   
 }
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
