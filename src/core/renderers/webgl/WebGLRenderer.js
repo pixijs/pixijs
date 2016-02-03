@@ -126,7 +126,7 @@ function WebGLRenderer(width, height, options)
      * @member {PIXI.RenderTarget}
      */
     this._activeRenderTarget = null;
-    this._activeTextureLocation = null;
+    this._activeTextureLocation = 999;
     this._activeTexture = null;
 }
 

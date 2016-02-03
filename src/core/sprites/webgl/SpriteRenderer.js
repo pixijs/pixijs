@@ -60,9 +60,9 @@ function SpriteRenderer(renderer)
     var numIndices = this.size * 6;
 
     this.buffers = [];
-    for (var i = 1; i <= 2048; i*=2) {
+    for (var i = 1; i <= bitTwiddle.nextPow2(this.size); i*=2) {
         var numVerts = i * 4 * this.vertByteSize;
-        this.buffers.push(new Buffer(numVerts, i));
+        this.buffers.push(new Buffer(numVerts));
     };
 
     /**
@@ -110,7 +110,6 @@ function SpriteRenderer(renderer)
     this.textureCount = 0;
     this.currentIndex = 0;
   
-    this.groupCount = 0;
     this.groups = [];
     
     //TODO - 300 is a bit magic, figure out a nicer amount!
@@ -119,10 +118,6 @@ function SpriteRenderer(renderer)
         this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0}; 
     };
     
-    this.currentGroup = this.groups[this.groupCount++];
-
-    this.currentTexture = null;    
-
     this.sprites = [];
 }
 
@@ -143,9 +138,9 @@ SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
-    this.MAX_TEXTUES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+    this.MAX_TEXTURES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTUES);
+    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
     // create a couple of buffers
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
@@ -186,52 +181,9 @@ SpriteRenderer.prototype.render = function (sprite)
         return;
     }
 
-     // push a texture.
+    // push a texture.
     // increment the batchsize
-    var nextTexture =  sprite.texture.baseTexture;
-    var currentGroup = this.currentGroup;
-    var i;
-
-    if(this.currentTexture !== nextTexture)
-    {
-        this.currentTexture = nextTexture;
-        
-        if(!nextTexture._enabled)
-        {
-            nextTexture._enabled = true;
-            nextTexture._id = this.textureCount;
-            
-            if(this.textureCount === this.MAX_TEXTUES)
-            {
-                for ( i = 0; i < currentGroup.textureCount; i++) 
-                {     
-                    currentGroup.textures[i]._enabled = false;
-                };
-
-                this.textureCount = 0;
-
-                currentGroup.size = this.currentIndex - currentGroup.start;
-               
-                currentGroup = this.currentGroup = this.groups[this.groupCount++];
-                currentGroup.textureCount = 0;
-                currentGroup.start = this.currentIndex;
-                
-            }
-
-            currentGroup.textures[currentGroup.textureCount++] = nextTexture;
-        }
-
-        this.textureCount++;
-    }
-
-    // TODO add this variable to sprite..
-    sprite._glBatchTextureId = nextTexture._id;
-
-    this.sprites[this.currentIndex] = sprite;
-
-    this.currentIndex++;
-
-    
+    this.sprites[this.currentIndex++] = sprite;
 };
 
 /**
@@ -246,27 +198,73 @@ SpriteRenderer.prototype.flush = function ()
 
     var np2 = bitTwiddle.nextPow2(this.currentIndex);
     var log2 = bitTwiddle.log2(np2);
-
     var buffer = this.buffers[log2];
 
+    var sprites = this.sprites;
+    var groups = this.groups;
+    var currentIndex = this.currentIndex;
+    
     var colors = buffer.colors;
     var positions = buffer.positions;
     var uvsBuffer = buffer.uvs;
-    var index = 0;
 
-    //console.log(this.currentIndex);
+    var index = 0;
+    var nextTexture;
+    var currentTexture;
+    var groupCount = 1;
+    var textureCount = 0;
+    var currentGroup = groups[0];
+    var vertexData;
+    var tint;
+    var uvs;
+    var textureId;
+
+    currentGroup.textureCount = 0
     //var array = 
 
-    for (var i = 0; i < this.currentIndex; i++) 
+    for (var i = 0; i < currentIndex; i++) 
     {
         // upload the sprite elemetns...
         // they have all ready been calculated so we just need to push them into the buffer.
-        var sprite = this.sprites[i];
+        var sprite = sprites[i];
 
-        var vertexData = sprite.vertexData
+        nextTexture = sprite._texture.baseTexture;
+
+        if(currentTexture !== nextTexture)
+        {
+            currentTexture = nextTexture;
+            
+            if(!nextTexture._enabled)
+            {
+                nextTexture._enabled = true;
+                nextTexture._id = textureCount;
+                
+                if(textureCount === this.MAX_TEXTURES)
+                {
+                    for ( i = 0; i < currentGroup.textureCount; i++) 
+                    {     
+                        currentGroup.textures[i]._enabled = false;
+                    };
+
+                    textureCount = 0;
+
+                    currentGroup.size = currentIndex - currentGroup.start;
+                   
+                    currentGroup = groups[groupCount++];
+                    currentGroup.textureCount = 0;
+                    currentGroup.start = currentIndex;
+                }
+
+                currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+            }
+
+            textureCount++;
+        }
+
+        var vertexData = sprite.vertexData;
         var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-        var uvs = sprite.texture._uvs.uvs_uint32;
-        var textureId = sprite._glBatchTextureId;
+        var uvs = sprite._texture._uvs.uvs_uint32;
+        var textureId = nextTexture._id;
 
         //xy
         positions[index++] = vertexData[0];
@@ -298,34 +296,22 @@ SpriteRenderer.prototype.flush = function ()
 
     };
 
-    this.currentGroup.size = this.currentIndex - this.currentGroup.start;
-    for (var i = 0; i < this.currentGroup.textureCount; i++) 
+    currentGroup.size = currentIndex - currentGroup.start;
+
+    for (i = 0; i < currentGroup.textureCount; i++) 
     {     
-        this.currentGroup.textures[i]._enabled = false;
+        currentGroup.textures[i]._enabled = false;
     };
    
-    // do some smart array stuff..
-    // double size so we dont alway subarray the elements..
-    // upload the verts to the buffer
-    //if (this.currentBatchSize > ( this.size * 0.5 ) )
-    //{
-    //    this.vertexBuffer.upload(this.vertices, 0, true);
-   // }
-    //else
-    //{
-        // o k .. sub array is SLOW>?
-     //   var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
-        this.vertexBuffer.upload(buffer.vertices, 0, true);
-    //}
-
+    this.vertexBuffer.upload(buffer.vertices, 0, true);
+ 
     // bind shader..
-    
     this.renderer.blendModeManager.setBlendMode( 0 );
 
     /// render the groups..
-    for (i = 0; i < this.groupCount; i++) {
+    for (i = 0; i < groupCount; i++) {
         
-        var group = this.groups[i];
+        var group = groups[i];
 
         for (var j = 0; j < group.textureCount; j++) {
             this.renderer.bindTexture(group.textures[j], j);
@@ -335,14 +321,13 @@ SpriteRenderer.prototype.flush = function ()
     };
 
     // reset elements for the next flush
-    this.currentTexture = null;
     this.currentIndex = 0;
-    this.textureCount = 0;
-    this.groupCount = 0;
-    
-    this.currentGroup = this.groups[this.groupCount++];
-    this.currentGroup.textureCount = 0;
 };
+
+SpriteRenderer.prototype.start = function ()
+{
+ 
+}
 
 /**
  * Starts a new sprite batch.
@@ -386,10 +371,9 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-var Buffer = function(size, realSize)
+var Buffer = function(size)
 {
 
-    this.realSize = realSize;
     this.vertices = new ArrayBuffer(size);
 
     /**
