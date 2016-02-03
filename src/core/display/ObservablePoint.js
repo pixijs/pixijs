@@ -35,7 +35,7 @@ Object.defineProperties(ObservablePoint.prototype, {
         set: function (value)
         {
             this._x = value;
-            this.transform.dirty = true;
+            this.transform._versionLocal++;
         }
     },
 
@@ -47,7 +47,7 @@ Object.defineProperties(ObservablePoint.prototype, {
         set: function (value)
         {
             this._y = value;
-            this.transform.dirty = true;
+            this.transform._versionLocal++;
         }
     }
 });
@@ -63,6 +63,6 @@ ObservablePoint.prototype.set = function (x, y)
 {
     this._x = x || 0;
     this._y = y || ( (y !== 0) ? this._x : 0 );
-    
-    this.transform.dirty = true;
+
+    this.transform._versionLocal++;
 };
