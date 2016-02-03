@@ -21,6 +21,10 @@ as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
+### What to use Pixi.js for and When to Use It
+
+What is this and when should I use it?
+
 ### Demos ###
 
 - [WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
