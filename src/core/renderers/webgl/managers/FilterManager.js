@@ -97,7 +97,9 @@ FilterManager.prototype.popFilter = function()
     
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
+        
+        FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
     {
@@ -111,31 +113,17 @@ FilterManager.prototype.popFilter = function()
 
             var t = flip;
             flip = flop;
-            flopTexture = t;
+            flop = t;
         };
 
         filters[i].apply(this, flip, lastState.renderTarget, true);
 
+        FilterManager.freePotRenderTarget(flip);
+        FilterManager.freePotRenderTarget(flop);
     }
-/*
-    var filter = currentState.filters[0];
 
-    var flip = lastState.renderTarget;
-    var flop =
-    for (var i = 0; i < currentState.filters.length; i++) 
-    {
-        filter = currentState.filters[i];
-
-        // lets get the last state as that contains the renderTarget we need to render too
-        filter.apply(this, currentState.renderTarget, flip, false);
-
-
-        //  currentState.filters[]
-    };
-*/
-    
     // return the texture..
-    FilterManager.freePotRenderTarget(currentState.renderTarget);
+    
 
     this.stackIndex--;
 }
