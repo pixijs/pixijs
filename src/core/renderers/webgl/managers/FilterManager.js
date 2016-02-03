@@ -1,3 +1,4 @@
+
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -64,7 +65,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.y = targetBounds.y | 0;
     sourceFrame.width = targetBounds.width | 0;
     sourceFrame.height = targetBounds.height | 0;
-    sourceFrame.pad(4 / resolution);
+  //  sourceFrame.pad(4 / resolution);
     sourceFrame.fit(this.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
@@ -82,7 +83,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     renderer.bindRenderTarget(renderTarget, destinationFrame, sourceFrame);
 
     // clear the renderTarget
-    renderer.clear();
+    renderer.clear()//[0.5,0.5,0.5, 1.0]);
 }
 
 FilterManager.prototype.popFilter = function()
@@ -98,7 +99,7 @@ FilterManager.prototype.popFilter = function()
     
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
         FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
@@ -116,7 +117,7 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         };
 
-        filters[i].apply(this, flip, lastState.renderTarget, true);
+        filters[i].apply(this, flip, lastState.renderTarget, false);
 
         FilterManager.freePotRenderTarget(flip);
         FilterManager.freePotRenderTarget(flop);
@@ -147,6 +148,9 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
         {
             shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
         }
+
+        //TODO - this only needs to be done once?
+        this.quad.initVao(shader);
     }
     
     renderer.bindRenderTarget(output, lastState.destinationFrame, lastState.sourceFrame);
@@ -219,6 +223,13 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
     }
 }
 
+
+FilterManager.prototype.getPotRenderTarget = function()
+{
+    var currentState = this.stack[this.stackIndex];
+    return FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+}
+
 /*
  * Calculates the mapped matrix
  * @param filterArea {Rectangle} The filter area
@@ -237,7 +248,7 @@ FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputM
 {
     var currentState = this.stack[this.stackIndex];
 
-    
+
 
     return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);   
 }
@@ -264,6 +275,7 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
+ //   console.log(minWidth + "  " + minHeight)
     if(!FilterManager.pool[key])FilterManager.pool[key] = [];
 
     var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);

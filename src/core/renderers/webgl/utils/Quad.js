@@ -66,14 +66,19 @@ function Quad(gl)
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
     this.vao = new glCore.VertexArrayObject(gl)
-    .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, {type:'vec2', size:2, location:0}, gl.FLOAT, false, 4 * 4, 0)
-    .addAttribute(this.vertexBuffer, {type:'vec2', size:2, location:1}, gl.FLOAT, false, 4 * 4, 2 * 4)
-
+    
    
 }
 
 Quad.prototype.constructor = Quad;
+
+Quad.prototype.initVao = function(shader)
+{
+    this.vao.clear()
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
+    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4) 
+}
 
 /**
  * Maps two Rectangle to the quad
