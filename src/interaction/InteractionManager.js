@@ -382,9 +382,19 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         
         for (var i = children.length-1; i >= 0; i--)
         {
+
+            var child = children[i];
+
             // time to get recursive.. if this function will return if somthing is hit..
-            if( this.processInteractive(point, children[i], func, hitTest, interactiveParent) )
+            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
             {
+                // its a good idea to check if a child has lost its parent.
+                // this means it has been removed whilst looping so its best
+                if(!child.parent)
+                {
+                    continue;
+                }
+
                 hit = true;
 
                 // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
@@ -392,7 +402,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(children[i].interactive)
+                if(child.interactive)
                 {
                     hitTest = false;
                 }
