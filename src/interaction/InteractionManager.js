@@ -372,6 +372,9 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     if(displayObject.hitArea)
     {
         interactiveParent = false;
+        //Tests the hitArea
+        displayObject.worldTransform.applyInverse(point,  this._tempPoint);
+        if(!displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y)) return false;
     }
 
     // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
@@ -381,7 +384,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         var children = displayObject.children;
         
         for (var i = children.length-1; i >= 0; i--)
-        {
+        {            
             // time to get recursive.. if this function will return if somthing is hit..
             if( this.processInteractive(point, children[i], func, hitTest, interactiveParent) )
             {
