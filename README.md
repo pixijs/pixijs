@@ -21,9 +21,15 @@ as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
-### What to use Pixi.js for and When to Use It
+### What is Pixi.js for?
 
-What is this and when should I use it?
+Pixi.js is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
+
+Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, Pixi.js smooths over platform compatibility issues so you don't have to code for different browsers and different devices. Code once and you're done!
+
+### When would I use Pixi.js?
+
+Pixi.js is a fantastic tool for authoring interactive content, especially with the move away from Flash in recent years. Use it as a framework for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degredation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some Pixi.js magic!
 
 ### Demos ###
 
