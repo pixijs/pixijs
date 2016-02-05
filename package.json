@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "3.0.9",
+  "version": "3.0.10-dev",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -32,6 +32,7 @@
   "dependencies": {
     "async": "^1.5.0",
     "brfs": "^1.4.1",
+    "browserify-versionify": "^1.0.6",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
     "object-assign": "^4.0.1",
@@ -67,6 +68,7 @@
   },
   "browserify": {
     "transform": [
+      "browserify-versionify",
       "brfs"
     ]
   }
