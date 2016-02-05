@@ -54,18 +54,22 @@ FilterManager.prototype.pushFilter = function(target, filters)
 
     // for now we go off the filter of the first resolution..
     var resolution = filters[0].resolution;
+    var padding = filters[0].padding;
 
     var targetBounds = target.filterArea || target.getBounds();
    
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
+    
+
+
     //TODO - should this be rounded to reoultion? not 1?
     sourceFrame.x = targetBounds.x | 0;
     sourceFrame.y = targetBounds.y | 0;
     sourceFrame.width = targetBounds.width | 0;
     sourceFrame.height = targetBounds.height | 0;
-  //  sourceFrame.pad(4 / resolution);
+    sourceFrame.pad(padding * resolution);
     sourceFrame.fit(this.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
@@ -78,9 +82,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
     currentState.renderTarget = renderTarget;
 
     // bind the render taget to draw the shape in the top corner..
-    
+        
+    renderTarget.setFrame(destinationFrame, sourceFrame);
     // bind the render target
-    renderer.bindRenderTarget(renderTarget, destinationFrame, sourceFrame);
+    renderer.bindRenderTarget(renderTarget);
 
     // clear the renderTarget
     renderer.clear()//[0.5,0.5,0.5, 1.0]);
@@ -106,10 +111,10 @@ FilterManager.prototype.popFilter = function()
     {
         var flip = currentState.renderTarget;
         var flop = FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+        flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
         for (var i = 0; i < filters.length-1; i++) 
         {
-
             filters[i].apply(this, flip, flop, true);
 
             var t = flip;
@@ -152,8 +157,9 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
         //TODO - this only needs to be done once?
         this.quad.initVao(shader);
     }
-    
-    renderer.bindRenderTarget(output, lastState.destinationFrame, lastState.sourceFrame);
+        
+    //output.setFrame(lastState.destinationFrame, lastState.sourceFrame);
+    renderer.bindRenderTarget(output);
     
     if(clear)
     {
@@ -180,6 +186,20 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
     // 0 is reserverd for the pixi texture so we start at 1!
     var textureCount = 1;
 
+    if(shader.uniforms.data.filterArea)
+    {
+        var currentState = this.stack[this.stackIndex];
+        var filterArea = shader.uniforms.filterArea;
+
+        filterArea[0] = currentState.renderTarget.size.width;
+        filterArea[1] = currentState.renderTarget.size.height;
+        filterArea[2] = currentState.sourceFrame.x;
+        filterArea[3] = currentState.sourceFrame.y;
+
+        shader.uniforms.filterArea = filterArea;
+    }
+
+    //TODO Cacheing layer..
     for(var i in uniformData)
     {
         if(uniformData[i].type === 'sampler2D')

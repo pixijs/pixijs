@@ -292,12 +292,12 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFrame, sourceFrame)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
-        renderTarget.activate(destinationFrame, sourceFrame);
+        renderTarget.activate();
 
         if(this._activeShader)
         {

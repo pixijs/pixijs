@@ -15,7 +15,6 @@ module.exports = {
     // BlurXFilter:        require('./blur/BlurXFilter'),
     // BlurYFilter:        require('./blur/BlurYFilter'),
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
-    // ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
     // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
     // CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
@@ -32,6 +31,7 @@ module.exports = {
     // TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
     // TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
     //TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-    //TwistFilter:        require('./twist/TwistFilter')
+     ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
+     TwistFilter:        require('./twist/TwistFilter'),
      GrayFilter:         require('./gray/GrayFilter')
 };

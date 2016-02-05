@@ -254,6 +254,8 @@ var Shader = function(gl, vertexSrc, fragmentSrc)
     var uniformData = extractUniforms(gl, this.program);
 
     this.uniforms = generateUniformAccessObject( gl, uniformData );
+    console.log(this.uniforms, uniformData);
+    
 }
 
 Shader.prototype.bind = function()
@@ -550,7 +552,12 @@ VertexArrayObject.prototype.activate = function()
 		var attrib = this.attributes[i];
 		attrib.buffer.bind();	
 
-		attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start); 
+		//attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start); 
+		gl.vertexAttribPointer(attrib.attribute.location,
+							   attrib.attribute.size, attrib.type || gl.FLOAT, 
+							   attrib.normalized || false, 
+							   attrib.stride || 0, 
+							   attrib.start || 0);
 		
 		gl.enableVertexAttribArray(attrib.attribute.location);
 	};
@@ -767,6 +774,7 @@ module.exports = compileProgram;
 
 var defaultValue = function(type, size) 
 {
+    console.log(size)
     switch (type)
     {
         case 'float':
@@ -1635,7 +1643,7 @@ module.exports = mapSize;
     };
 
     async.auto = function (tasks, concurrency, callback) {
-        if (!callback) {
+        if (typeof arguments[1] === 'function') {
             // concurrency is optional, shift the args.
             callback = concurrency;
             concurrency = null;
@@ -1652,6 +1660,8 @@ module.exports = mapSize;
 
         var results = {};
         var runningTasks = 0;
+
+        var hasError = false;
 
         var listeners = [];
         function addListener(fn) {
@@ -1675,6 +1685,7 @@ module.exports = mapSize;
         });
 
         _arrayEach(keys, function (k) {
+            if (hasError) return;
             var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
             var taskCallback = _restParam(function(err, args) {
                 runningTasks--;
@@ -1687,6 +1698,8 @@ module.exports = mapSize;
                         safeResults[rkey] = val;
                     });
                     safeResults[k] = args;
+                    hasError = true;
+
                     callback(err, safeResults);
                 }
                 else {
@@ -1700,7 +1713,7 @@ module.exports = mapSize;
             var dep;
             while (len--) {
                 if (!(dep = tasks[requires[len]])) {
-                    throw new Error('Has inexistant dependency');
+                    throw new Error('Has nonexistent dependency in ' + requires.join(', '));
                 }
                 if (_isArray(dep) && _indexOf(dep, k) >= 0) {
                     throw new Error('Has cyclic dependencies');
@@ -1906,7 +1919,7 @@ module.exports = mapSize;
                 } else if (test.apply(this, args)) {
                     iterator(next);
                 } else {
-                    callback(null);
+                    callback.apply(null, [null].concat(args));
                 }
             });
             iterator(next);
@@ -2054,24 +2067,23 @@ module.exports = mapSize;
                 _insert(q, data, true, callback);
             },
             process: function () {
-                if (!q.paused && workers < q.concurrency && q.tasks.length) {
-                    while(workers < q.concurrency && q.tasks.length){
-                        var tasks = q.payload ?
-                            q.tasks.splice(0, q.payload) :
-                            q.tasks.splice(0, q.tasks.length);
+                while(!q.paused && workers < q.concurrency && q.tasks.length){
 
-                        var data = _map(tasks, function (task) {
-                            return task.data;
-                        });
+                    var tasks = q.payload ?
+                        q.tasks.splice(0, q.payload) :
+                        q.tasks.splice(0, q.tasks.length);
 
-                        if (q.tasks.length === 0) {
-                            q.empty();
-                        }
-                        workers += 1;
-                        workersList.push(tasks[0]);
-                        var cb = only_once(_next(q, tasks));
-                        worker(data, cb);
+                    var data = _map(tasks, function (task) {
+                        return task.data;
+                    });
+
+                    if (q.tasks.length === 0) {
+                        q.empty();
                     }
+                    workers += 1;
+                    workersList.push(tasks[0]);
+                    var cb = only_once(_next(q, tasks));
+                    worker(data, cb);
                 }
             },
             length: function () {
@@ -2206,16 +2218,17 @@ module.exports = mapSize;
     async.memoize = function (fn, hasher) {
         var memo = {};
         var queues = {};
+        var has = Object.prototype.hasOwnProperty;
         hasher = hasher || identity;
         var memoized = _restParam(function memoized(args) {
             var callback = args.pop();
             var key = hasher.apply(null, args);
-            if (key in memo) {
+            if (has.call(memo, key)) {   
                 async.setImmediate(function () {
                     callback.apply(null, memo[key]);
                 });
             }
-            else if (key in queues) {
+            else if (has.call(queues, key)) {
                 queues[key].push(callback);
             }
             else {
@@ -2386,7 +2399,213 @@ module.exports = mapSize;
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":18}],17:[function(require,module,exports){
+},{"_process":19}],17:[function(require,module,exports){
+/**
+ * Bit twiddling hacks for JavaScript.
+ *
+ * Author: Mikola Lysenko
+ *
+ * Ported from Stanford bit twiddling hack library:
+ *    http://graphics.stanford.edu/~seander/bithacks.html
+ */
+
+"use strict"; "use restrict";
+
+//Number of bits in an integer
+var INT_BITS = 32;
+
+//Constants
+exports.INT_BITS  = INT_BITS;
+exports.INT_MAX   =  0x7fffffff;
+exports.INT_MIN   = -1<<(INT_BITS-1);
+
+//Returns -1, 0, +1 depending on sign of x
+exports.sign = function(v) {
+  return (v > 0) - (v < 0);
+}
+
+//Computes absolute value of integer
+exports.abs = function(v) {
+  var mask = v >> (INT_BITS-1);
+  return (v ^ mask) - mask;
+}
+
+//Computes minimum of integers x and y
+exports.min = function(x, y) {
+  return y ^ ((x ^ y) & -(x < y));
+}
+
+//Computes maximum of integers x and y
+exports.max = function(x, y) {
+  return x ^ ((x ^ y) & -(x < y));
+}
+
+//Checks if a number is a power of two
+exports.isPow2 = function(v) {
+  return !(v & (v-1)) && (!!v);
+}
+
+//Computes log base 2 of v
+exports.log2 = function(v) {
+  var r, shift;
+  r =     (v > 0xFFFF) << 4; v >>>= r;
+  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
+  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
+  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
+  return r | (v >> 1);
+}
+
+//Computes log base 10 of v
+exports.log10 = function(v) {
+  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
+          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
+          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
+}
+
+//Counts number of bits
+exports.popCount = function(v) {
+  v = v - ((v >>> 1) & 0x55555555);
+  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
+}
+
+//Counts number of trailing zeros
+function countTrailingZeros(v) {
+  var c = 32;
+  v &= -v;
+  if (v) c--;
+  if (v & 0x0000FFFF) c -= 16;
+  if (v & 0x00FF00FF) c -= 8;
+  if (v & 0x0F0F0F0F) c -= 4;
+  if (v & 0x33333333) c -= 2;
+  if (v & 0x55555555) c -= 1;
+  return c;
+}
+exports.countTrailingZeros = countTrailingZeros;
+
+//Rounds to next power of 2
+exports.nextPow2 = function(v) {
+  v += v === 0;
+  --v;
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v + 1;
+}
+
+//Rounds down to previous power of 2
+exports.prevPow2 = function(v) {
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v - (v>>>1);
+}
+
+//Computes parity of word
+exports.parity = function(v) {
+  v ^= v >>> 16;
+  v ^= v >>> 8;
+  v ^= v >>> 4;
+  v &= 0xf;
+  return (0x6996 >>> v) & 1;
+}
+
+var REVERSE_TABLE = new Array(256);
+
+(function(tab) {
+  for(var i=0; i<256; ++i) {
+    var v = i, r = i, s = 7;
+    for (v >>>= 1; v; v >>>= 1) {
+      r <<= 1;
+      r |= v & 1;
+      --s;
+    }
+    tab[i] = (r << s) & 0xff;
+  }
+})(REVERSE_TABLE);
+
+//Reverse bits in a 32 bit word
+exports.reverse = function(v) {
+  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
+          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
+          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
+           REVERSE_TABLE[(v >>> 24) & 0xff];
+}
+
+//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
+exports.interleave2 = function(x, y) {
+  x &= 0xFFFF;
+  x = (x | (x << 8)) & 0x00FF00FF;
+  x = (x | (x << 4)) & 0x0F0F0F0F;
+  x = (x | (x << 2)) & 0x33333333;
+  x = (x | (x << 1)) & 0x55555555;
+
+  y &= 0xFFFF;
+  y = (y | (y << 8)) & 0x00FF00FF;
+  y = (y | (y << 4)) & 0x0F0F0F0F;
+  y = (y | (y << 2)) & 0x33333333;
+  y = (y | (y << 1)) & 0x55555555;
+
+  return x | (y << 1);
+}
+
+//Extracts the nth interleaved component
+exports.deinterleave2 = function(v, n) {
+  v = (v >>> n) & 0x55555555;
+  v = (v | (v >>> 1))  & 0x33333333;
+  v = (v | (v >>> 2))  & 0x0F0F0F0F;
+  v = (v | (v >>> 4))  & 0x00FF00FF;
+  v = (v | (v >>> 16)) & 0x000FFFF;
+  return (v << 16) >> 16;
+}
+
+
+//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
+exports.interleave3 = function(x, y, z) {
+  x &= 0x3FF;
+  x  = (x | (x<<16)) & 4278190335;
+  x  = (x | (x<<8))  & 251719695;
+  x  = (x | (x<<4))  & 3272356035;
+  x  = (x | (x<<2))  & 1227133513;
+
+  y &= 0x3FF;
+  y  = (y | (y<<16)) & 4278190335;
+  y  = (y | (y<<8))  & 251719695;
+  y  = (y | (y<<4))  & 3272356035;
+  y  = (y | (y<<2))  & 1227133513;
+  x |= (y << 1);
+  
+  z &= 0x3FF;
+  z  = (z | (z<<16)) & 4278190335;
+  z  = (z | (z<<8))  & 251719695;
+  z  = (z | (z<<4))  & 3272356035;
+  z  = (z | (z<<2))  & 1227133513;
+  
+  return x | (z << 2);
+}
+
+//Extracts nth interleaved component of a 3-tuple
+exports.deinterleave3 = function(v, n) {
+  v = (v >>> n)       & 1227133513;
+  v = (v | (v>>>2))   & 3272356035;
+  v = (v | (v>>>4))   & 251719695;
+  v = (v | (v>>>8))   & 4278190335;
+  v = (v | (v>>>16))  & 0x3FF;
+  return (v<<22)>>22;
+}
+
+//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
+exports.nextCombination = function(v) {
+  var t = v | (v - 1);
+  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
+}
+
+
+},{}],18:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2615,7 +2834,7 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this,require('_process'))
 
-},{"_process":18}],18:[function(require,module,exports){
+},{"_process":19}],19:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2708,7 +2927,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.0 by @mathias */
 ;(function(root) {
@@ -3246,7 +3465,7 @@ process.umask = function() { return 0; };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3332,7 +3551,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3419,13 +3638,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":20,"./encode":21}],23:[function(require,module,exports){
+},{"./decode":21,"./encode":22}],24:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4134,7 +4353,7 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":19,"querystring":22}],24:[function(require,module,exports){
+},{"punycode":20,"querystring":23}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -4447,6 +4666,8 @@ function findHoleBridge(hole, outerNode) {
 
     if (!m) return null;
 
+    if (hole.x === m.x) return m.prev; // hole touches outer segment; pick lower endpoint
+
     // look for points inside the triangle of hole point, segment intersection and endpoint;
     // if there are no points found, we have a valid connection;
     // otherwise choose the point of the minimum angle with the ray as connection point
@@ -4718,7 +4939,7 @@ function Node(i, x, y) {
     this.steiner = false;
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 //
@@ -4982,7 +5203,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 'use strict';
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -5023,7 +5244,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -6151,7 +6372,7 @@ module.exports = Object.assign || function (target, source) {
 
 }).call(this,require('_process'))
 
-},{"_process":18}],28:[function(require,module,exports){
+},{"_process":19}],29:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
     Resource    = require('./Resource'),
@@ -6609,7 +6830,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":29,"async":27,"eventemitter3":25,"url":23}],29:[function(require,module,exports){
+},{"./Resource":30,"async":28,"eventemitter3":26,"url":24}],30:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     _url = require('url'),
     // tests is CORS is supported in XHR, if not we need to use XDR
@@ -7411,7 +7632,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":25,"url":23}],30:[function(require,module,exports){
+},{"eventemitter3":26,"url":24}],31:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -7477,7 +7698,7 @@ module.exports = {
     }
 };
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -7491,7 +7712,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":28,"./Resource":29,"./middlewares/caching/memory":32,"./middlewares/parsing/blob":33}],32:[function(require,module,exports){
+},{"./Loader":29,"./Resource":30,"./middlewares/caching/memory":33,"./middlewares/parsing/blob":34}],33:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -7513,7 +7734,7 @@ module.exports = function () {
     };
 };
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -7573,7 +7794,7 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":29,"../../b64":30}],34:[function(require,module,exports){
+},{"../../Resource":30,"../../b64":31}],35:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
   "version": "3.0.10-dev",
@@ -7607,6 +7828,7 @@ module.exports={
   ],
   "dependencies": {
     "async": "^1.5.0",
+    "bit-twiddle": "^1.0.2",
     "brfs": "^1.4.1",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
@@ -7650,7 +7872,7 @@ module.exports={
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var core = require('../core');
 
 // add some extra variables to the container..
@@ -8055,7 +8277,7 @@ core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
 
-},{"../core":54,"./accessibleTarget":36}],36:[function(require,module,exports){
+},{"../core":55,"./accessibleTarget":37}],37:[function(require,module,exports){
 /**
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
@@ -8101,7 +8323,7 @@ var accessibleTarget = {
 
 module.exports = accessibleTarget;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI accessibility library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -8117,7 +8339,7 @@ module.exports = {
     AccessibilityManager: require('./AccessibilityManager')
 };
 
-},{"./AccessibilityManager":35,"./accessibleTarget":36}],38:[function(require,module,exports){
+},{"./AccessibilityManager":36,"./accessibleTarget":37}],39:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -8340,7 +8562,7 @@ var CONST = {
 
 module.exports = CONST;
 
-},{"../../package.json":34}],39:[function(require,module,exports){
+},{"../../package.json":35}],40:[function(require,module,exports){
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
@@ -8741,6 +8963,8 @@ Container.prototype.updateTransform = function ()
     {
         this.children[i].updateTransform();
     }
+
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -8986,7 +9210,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":57,"../textures/RenderTexture":107,"../utils":114,"./DisplayObject":40}],40:[function(require,module,exports){
+},{"../math":59,"../textures/RenderTexture":105,"../utils":112,"./DisplayObject":41}],41:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
@@ -9471,7 +9695,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":38,"../math":57,"../textures/RenderTexture":107,"./Transform":41,"eventemitter3":25}],41:[function(require,module,exports){
+},{"../const":39,"../math":59,"../textures/RenderTexture":105,"./Transform":42,"eventemitter3":26}],42:[function(require,module,exports){
 var math = require('../math');
 
 
@@ -9547,7 +9771,7 @@ module.exports = Transform;
 
 
 
-},{"../math":57}],42:[function(require,module,exports){
+},{"../math":59}],43:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
@@ -10594,7 +10818,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":38,"../display/Container":39,"../math":57,"../renderers/canvas/utils/CanvasBuffer":69,"../renderers/canvas/utils/CanvasGraphics":70,"../textures/Texture":108,"./GraphicsData":43,"./utils/bezierCurveTo":44}],43:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasBuffer":71,"../renderers/canvas/utils/CanvasGraphics":72,"../textures/Texture":106,"./GraphicsData":44,"./utils/bezierCurveTo":45}],44:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -10687,7 +10911,7 @@ GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 
 /**
  * Calculate the points for a bezier curve and then draws it.
@@ -10734,7 +10958,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
 };
 
 module.exports = bezierCurveTo;
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -10955,7 +11179,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 };
 
 
-},{"../../const":38,"../../math":57,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":96,"../../utils":114,"./WebGLGraphicsData":46,"./shaders/PrimitiveShader":47,"./utils/buildCircle":48,"./utils/buildComplexPoly":49,"./utils/buildLine":50,"./utils/buildPoly":51,"./utils/buildRectangle":52,"./utils/buildRoundedRectangle":53}],46:[function(require,module,exports){
+},{"../../const":39,"../../math":59,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":94,"../../utils":112,"./WebGLGraphicsData":47,"./shaders/PrimitiveShader":48,"./utils/buildCircle":49,"./utils/buildComplexPoly":50,"./utils/buildLine":51,"./utils/buildPoly":52,"./utils/buildRectangle":53,"./utils/buildRoundedRectangle":54}],47:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 
@@ -11074,7 +11298,7 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.glIndices = null;
 };
 
-},{"pixi-gl-core":1}],47:[function(require,module,exports){
+},{"pixi-gl-core":1}],48:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 /**
@@ -11126,7 +11350,7 @@ PrimitiveShader.prototype.constructor = PrimitiveShader;
 
 module.exports = PrimitiveShader;
 
-},{"pixi-gl-core":1}],48:[function(require,module,exports){
+},{"pixi-gl-core":1}],49:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -11213,7 +11437,7 @@ var buildCircle = function (graphicsData, webGLData)
 
 
 module.exports = buildCircle;
-},{"../../../utils":114,"./buildLine":50}],49:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":51}],50:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
     
@@ -11284,7 +11508,7 @@ var buildComplexPoly = function (graphicsData, webGLData)
 
 
 module.exports = buildComplexPoly;
-},{"../../../utils":114,"./buildLine":50}],50:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":51}],51:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils');
 
@@ -11504,7 +11728,7 @@ var buildLine = function (graphicsData, webGLData)
 };
 
 module.exports = buildLine;
-},{"../../../math":57,"../../../utils":114}],51:[function(require,module,exports){
+},{"../../../math":59,"../../../utils":112}],52:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
     earcut = require('earcut');
@@ -11587,7 +11811,7 @@ var buildPoly = function (graphicsData, webGLData)
 
 module.exports = buildPoly;
 
-},{"../../../utils":114,"./buildLine":50,"earcut":24}],52:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":51,"earcut":25}],53:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -11658,7 +11882,7 @@ var buildRectangle = function (graphicsData, webGLData)
 };
 
 module.exports = buildRectangle;
-},{"../../../utils":114,"./buildLine":50}],53:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":51}],54:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
     
@@ -11786,7 +12010,7 @@ quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
 
 
 module.exports = buildRoundedRectangle;
-},{"../../../utils":114,"./buildLine":50}],54:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":51}],55:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -11843,9 +12067,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
 
     // filters - webgl
-    AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
-    FXAAFilter:             require('./renderers/webgl/filters/FXAAFilter'),
-    SpriteMaskFilter:       require('./renderers/webgl/filters/SpriteMaskFilter'),
+    SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),
     Filter:                 require('./renderers/webgl/filters/Filter'),
 
     glCore:                   require('pixi-gl-core'),
@@ -11883,7 +12105,171 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":38,"./display/Container":39,"./display/DisplayObject":40,"./graphics/Graphics":42,"./graphics/GraphicsData":43,"./graphics/webgl/GraphicsRenderer":45,"./math":57,"./particles/ParticleContainer":63,"./particles/webgl/ParticleRenderer":65,"./renderers/canvas/CanvasRenderer":68,"./renderers/canvas/utils/CanvasBuffer":69,"./renderers/canvas/utils/CanvasGraphics":70,"./renderers/webgl/WebGLRenderer":75,"./renderers/webgl/filters/AbstractFilter":77,"./renderers/webgl/filters/FXAAFilter":78,"./renderers/webgl/filters/Filter":79,"./renderers/webgl/filters/SpriteMaskFilter":81,"./renderers/webgl/managers/ShaderManager":88,"./renderers/webgl/managers/WebGLManager":90,"./renderers/webgl/shaders/Shader":93,"./renderers/webgl/utils/ObjectRenderer":96,"./renderers/webgl/utils/RenderTarget":98,"./sprites/Sprite":101,"./sprites/webgl/SpriteRenderer":102,"./text/Text":104,"./textures/BaseRenderTexture":105,"./textures/BaseTexture":106,"./textures/RenderTexture":107,"./textures/Texture":108,"./textures/TextureUvs":109,"./textures/VideoBaseTexture":110,"./ticker":112,"./utils":114,"pixi-gl-core":1}],55:[function(require,module,exports){
+},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./graphics/Graphics":43,"./graphics/GraphicsData":44,"./graphics/webgl/GraphicsRenderer":46,"./math":59,"./particles/ParticleContainer":65,"./particles/webgl/ParticleRenderer":67,"./renderers/canvas/CanvasRenderer":70,"./renderers/canvas/utils/CanvasBuffer":71,"./renderers/canvas/utils/CanvasGraphics":72,"./renderers/webgl/WebGLRenderer":77,"./renderers/webgl/filters/Filter":79,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":82,"./renderers/webgl/managers/ShaderManager":86,"./renderers/webgl/managers/WebGLManager":88,"./renderers/webgl/shaders/Shader":91,"./renderers/webgl/utils/ObjectRenderer":94,"./renderers/webgl/utils/RenderTarget":96,"./sprites/Sprite":99,"./sprites/webgl/SpriteRenderer":100,"./text/Text":102,"./textures/BaseRenderTexture":103,"./textures/BaseTexture":104,"./textures/RenderTexture":105,"./textures/Texture":106,"./textures/TextureUvs":107,"./textures/VideoBaseTexture":108,"./ticker":110,"./utils":112,"pixi-gl-core":1}],56:[function(require,module,exports){
+// Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
+
+var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
+var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
+var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
+var vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
+var tempMatrices = [];
+var Matrix = require('./Matrix');
+
+var mul = [];
+
+function signum(x) {
+    if (x < 0) {
+        return -1;
+    }
+    if (x > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+function init() {
+    for (var i = 0; i < 16; i++) {
+        var row = [];
+        mul.push(row);
+        for (var j = 0; j < 16; j++) {
+            var _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
+            var _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
+            var _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
+            var _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
+            for (var k = 0; k < 16; k++) {
+                if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy) {
+                    row.push(k);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (i=0;i<16;i++) {
+        var mat = new Matrix();
+        mat.set(ux[i], uy[i], vx[i], vy[i], 0, 0);
+        tempMatrices.push(mat);
+    }
+}
+
+init();
+
+/**
+ * Implements Dihedral Group D_8, see [group D4]{@link http://mathworld.wolfram.com/DihedralGroupD4.html}, D8 is the same but with diagonals
+ * Used for texture rotations
+ * Vector xX(i), xY(i) is U-axis of sprite with rotation i
+ * Vector yY(i), yY(i) is V-axis of sprite with rotation i
+ * Rotations: 0 grad (0), 90 grad (2), 180 grad (4), 270 grad (6)
+ * Mirrors: vertical (8), main diagonal (10), horizontal (12), reverse diagonal (14)
+ * This is the small part of gameofbombs.com portal system. It works.
+ * @author Ivan @ivanpopelyshev
+ *
+ * @namespace PIXI.GroupD8
+ */
+var GroupD8 = {
+    E: 0,
+    SE: 1,
+    S: 2,
+    SW: 3,
+    W: 4,
+    NW: 5,
+    N: 6,
+    NE: 7,
+    MIRROR_VERTICAL: 8,
+    MIRROR_HORIZONTAL: 12,
+    uX: function (ind) {
+        return ux[ind];
+    },
+    uY: function (ind) {
+        return uy[ind];
+    },
+    vX: function (ind) {
+        return vx[ind];
+    },
+    vY: function (ind) {
+        return vy[ind];
+    },
+    inv: function (rotation) {
+        if (rotation & 8) {
+            return rotation & 15;
+        }
+        return (-rotation) & 7;
+    },
+    add: function (rotationSecond, rotationFirst) {
+        return mul[rotationSecond][rotationFirst];
+    },
+    sub: function (rotationSecond, rotationFirst) {
+        return mul[rotationSecond][GroupD8.inv(rotationFirst)];
+    },
+    /**
+     * Adds 180 degrees to rotation. Commutative operation
+     * @param rotation
+     * @returns {number}
+     */
+    rotate180: function (rotation) {
+        return rotation ^ 4;
+    },
+    /**
+     * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
+     * @param rotation
+     * @returns {boolean}
+     */
+    isSwapWidthHeight: function(rotation) {
+        return (rotation & 3) === 2;
+    },
+    byDirection: function (dx, dy) {
+        if (Math.abs(dx) * 2 <= Math.abs(dy)) {
+            if (dy >= 0) {
+                return GroupD8.S;
+            }
+            else {
+                return GroupD8.N;
+            }
+        } else if (Math.abs(dy) * 2 <= Math.abs(dx)) {
+            if (dx > 0) {
+                return GroupD8.E;
+            }
+            else {
+                return GroupD8.W;
+            }
+        } else {
+            if (dy > 0) {
+                if (dx > 0) {
+                    return GroupD8.SE;
+                }
+                else {
+                    return GroupD8.SW;
+                }
+            }
+            else if (dx > 0) {
+                return GroupD8.NE;
+            }
+            else {
+                return GroupD8.NW;
+            }
+        }
+    },
+    /**
+     * Helps sprite to compensate texture packer rotation.
+     * @param matrix {PIXI.Matrix} sprite world matrix
+     * @param rotation {number}
+     * @param tx {number|*} sprite anchoring
+     * @param ty {number|*} sprite anchoring
+     */
+    matrixAppendRotationInv: function (matrix, rotation, tx, ty) {
+        //Packer used "rotation", we use "inv(rotation)"
+        var mat = tempMatrices[GroupD8.inv(rotation)];
+        tx = tx || 0;
+        ty = ty || 0;
+        mat.tx = tx;
+        mat.ty = ty;
+        matrix.append(mat);
+    }
+};
+
+module.exports = GroupD8;
+
+},{"./Matrix":57}],57:[function(require,module,exports){
 // @todo - ignore the too many parameters warning for now
 // should either fix it or change the jshint config
 // jshint -W072
@@ -12323,7 +12709,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":56}],56:[function(require,module,exports){
+},{"./Point":58}],58:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -12393,7 +12779,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -12407,6 +12793,7 @@ module.exports = {
 
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
+    GroupD8:    require('./GroupD8'),
 
     Circle:     require('./shapes/Circle'),
     Ellipse:    require('./shapes/Ellipse'),
@@ -12415,7 +12802,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":55,"./Point":56,"./shapes/Circle":58,"./shapes/Ellipse":59,"./shapes/Polygon":60,"./shapes/Rectangle":61,"./shapes/RoundedRectangle":62}],58:[function(require,module,exports){
+},{"./GroupD8":56,"./Matrix":57,"./Point":58,"./shapes/Circle":60,"./shapes/Ellipse":61,"./shapes/Polygon":62,"./shapes/Rectangle":63,"./shapes/RoundedRectangle":64}],60:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -12503,7 +12890,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":38,"./Rectangle":61}],59:[function(require,module,exports){
+},{"../../const":39,"./Rectangle":63}],61:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -12598,7 +12985,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":38,"./Rectangle":61}],60:[function(require,module,exports){
+},{"../../const":39,"./Rectangle":63}],62:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -12701,7 +13088,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":38,"../Point":56}],61:[function(require,module,exports){
+},{"../../const":39,"../Point":58}],63:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -12770,6 +13157,16 @@ Rectangle.prototype.clone = function ()
     return new Rectangle(this.x, this.y, this.width, this.height);
 };
 
+Rectangle.prototype.copy = function (rectangle)
+{
+    this.x = rectangle.x;
+    this.x = rectangle.y;
+    this.width = rectangle.width;
+    this.height = rectangle.height;
+
+    return this;
+};
+
 /**
  * Checks whether the x and y coordinates given are contained within this Rectangle
  *
@@ -12795,7 +13192,45 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":38}],62:[function(require,module,exports){
+Rectangle.prototype.pad = function (paddingX, paddingY)
+{
+    paddingX = paddingX || 0;
+    paddingY = paddingY || ( (paddingY !== 0) ? paddingX : 0 );
+
+    this.x -= paddingX;
+    this.y -= paddingY;
+
+    this.width += paddingX * 2;
+    this.height += paddingY * 2;
+}
+
+Rectangle.prototype.fit = function (rectangle)
+{
+    if (this.x < rectangle.x)
+    {
+        this.width += this.x;
+        this.x = rectangle.x;
+    }
+
+    if (this.y < rectangle.y)
+    {
+        this.height += this.y;
+        this.y = rectangle.y;
+    }
+
+    if ( this.x + this.width > rectangle.width )
+    {
+        this.width = rectangle.width - this.x;
+    }
+
+    if ( this.y + this.height > rectangle.height )
+    {
+        this.height = rectangle.height - this.y;
+    }
+}
+
+
+},{"../../const":39}],64:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -12887,7 +13322,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":38}],63:[function(require,module,exports){
+},{"../../const":39}],65:[function(require,module,exports){
 var Container = require('../display/Container'),
     CONST = require('../const');
 
@@ -13206,7 +13641,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../const":38,"../display/Container":39}],64:[function(require,module,exports){
+},{"../const":39,"../display/Container":40}],66:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -13426,7 +13861,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.gl.deleteBuffer(this.staticBuffer);
 };
 
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -13714,25 +14149,25 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
+        var trim = texture.trim, crop = texture.crop;
 
-        if (texture.trim)
+        if (trim)
         {
-            // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-            trim = texture.trim;
+            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+            w1 = trim.x - sprite.anchor.x * crop.width;
+            w0 = w1 + trim.width;
 
-            w1 = trim.x - sprite.anchor.x * trim.width;
-            w0 = w1 + texture.crop.width;
+            h1 = trim.y - sprite.anchor.y * crop.height;
+            h0 = h1 + trim.height;
 
-            h1 = trim.y - sprite.anchor.y * trim.height;
-            h0 = h1 + texture.crop.height;
         }
         else
         {
-            w0 = (texture._frame.width ) * (1-sprite.anchor.x);
-            w1 = (texture._frame.width ) * -sprite.anchor.x;
+            w0 = (crop.width ) * (1-sprite.anchor.x);
+            w1 = (crop.width ) * -sprite.anchor.x;
 
-            h0 = texture._frame.height * (1-sprite.anchor.y);
-            h1 = texture._frame.height * -sprite.anchor.y;
+            h0 = crop.height * (1-sprite.anchor.y);
+            h1 = crop.height * -sprite.anchor.y;
         }
 
         array[offset] = w1 * sx;
@@ -13903,7 +14338,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../math":57,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":96,"./ParticleBuffer":64,"./ParticleShader":66}],66:[function(require,module,exports){
+},{"../../math":59,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":94,"./ParticleBuffer":66,"./ParticleShader":68}],68:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -13981,7 +14416,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":94}],67:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":92}],69:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -14242,7 +14677,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":38,"../math":57,"../utils":114,"eventemitter3":25}],68:[function(require,module,exports){
+},{"../const":39,"../math":59,"../utils":112,"eventemitter3":26}],70:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -14510,7 +14945,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":38,"../../math":57,"../../utils":114,"../SystemRenderer":67,"./utils/CanvasMaskManager":71}],69:[function(require,module,exports){
+},{"../../const":39,"../../math":59,"../../utils":112,"../SystemRenderer":69,"./utils/CanvasMaskManager":73}],71:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -14610,7 +15045,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -14964,7 +15399,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":38}],71:[function(require,module,exports){
+},{"../../../const":39}],73:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -15026,7 +15461,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"./CanvasGraphics":70}],72:[function(require,module,exports){
+},{"./CanvasGraphics":72}],74:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -15097,11 +15532,7 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -15152,11 +15583,7 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -15194,11 +15621,7 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
 
     var resolution = texture.baseTexture.resolution;
 
-    var crop = texture.crop.clone();
-    crop.x *= resolution;
-    crop.y *= resolution;
-    crop.width *= resolution;
-    crop.height *= resolution;
+    var crop = texture._frame;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -15278,7 +15701,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":114}],73:[function(require,module,exports){
+},{"../../../utils":112}],75:[function(require,module,exports){
 var GLTexture = require('pixi-gl-core').GLTexture,
 	utils = require('../../utils'),
     RenderTarget = require('./utils/RenderTarget');
@@ -15393,7 +15816,7 @@ RenderTextureManager.prototype.destroy = function()
 module.exports = RenderTextureManager;
 
 
-},{"../../utils":114,"./utils/RenderTarget":98,"pixi-gl-core":1}],74:[function(require,module,exports){
+},{"../../utils":112,"./utils/RenderTarget":96,"pixi-gl-core":1}],76:[function(require,module,exports){
 var GLTexture = require('pixi-gl-core').GLTexture,
 	utils = require('../../utils');
 
@@ -15533,11 +15956,11 @@ TextureManager.prototype.destroy = function()
 module.exports = TextureManager;
 
 
-},{"../../utils":114,"pixi-gl-core":1}],75:[function(require,module,exports){
+},{"../../utils":112,"pixi-gl-core":1}],77:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
-    FilterManager = require('./managers/FilterManagerRoundTwo'),
+    FilterManager = require('./managers/FilterManager'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
@@ -15649,11 +16072,11 @@ function WebGLRenderer(width, height, options)
      *
      * @member {PIXI.FilterManager}
      */
-    this.filterManager = new FilterManager(this);
+   
     
     this._initContext();
   
-
+     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
@@ -15791,7 +16214,6 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
-    this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
 
@@ -15811,9 +16233,9 @@ WebGLRenderer.prototype.setBlendMode = function (mode)
     // fill in here..
 }
 
-WebGLRenderer.prototype.clear = function ()
+WebGLRenderer.prototype.clear = function (clearColor)
 {
-    this._activeRenderTarget.clear();
+    this._activeRenderTarget.clear(clearColor);
 }
 
 //TOOD - required?
@@ -15829,12 +16251,12 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, destinationFrame, sourceFrame)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
-        renderTarget.activate(destinationFrame, sourceFrame);
+        renderTarget.activate();
 
         if(this._activeShader)
         {
@@ -15974,7 +16396,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
 };
 
 
-},{"../../const":38,"../../utils":114,"../SystemRenderer":67,"./RenderTextureManager":73,"./TextureManager":74,"./WebGLState":76,"./managers/BlendModeManager":84,"./managers/FilterManagerRoundTwo":86,"./managers/MaskManager":87,"./managers/StencilManager":89,"./utils/ObjectRenderer":96,"./utils/RenderTarget":98,"./utils/mapWebGLBlendModesToPixi":99,"./utils/mapWebGLDrawModesToPixi":100,"pixi-gl-core":1}],76:[function(require,module,exports){
+},{"../../const":39,"../../utils":112,"../SystemRenderer":69,"./RenderTextureManager":75,"./TextureManager":76,"./WebGLState":78,"./managers/BlendModeManager":83,"./managers/FilterManager":84,"./managers/MaskManager":85,"./managers/StencilManager":87,"./utils/ObjectRenderer":94,"./utils/RenderTarget":96,"./utils/mapWebGLBlendModesToPixi":97,"./utils/mapWebGLDrawModesToPixi":98,"pixi-gl-core":1}],78:[function(require,module,exports){
 
 
 
@@ -16151,174 +16573,7 @@ WebGLState.prototype.resetToDefault = function()
 
 module.exports = WebGLState;
 
-},{}],77:[function(require,module,exports){
-var DefaultShader = require('../shaders/TextureShader');
-
-/**
- * This is the base class for creating a PIXI filter. Currently only WebGL supports filters.
- * If you want to make a custom filter this should be your base class.
- *
- * @class
- * @memberof PIXI
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- * @param uniforms {object} An object containing the uniforms for this filter.
- */
-function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
-{
-
-    /**
-     * An array of shaders
-     * @member {PIXI.Shader[]}
-     * @private
-     */
-    this.shaders = [];
-
-    /**
-     * The extra padding that the filter might need
-     * @member {number}
-     */
-    this.padding = 0;
-
-    /**
-     * The uniforms as an object
-     * @member {object}
-     */
-    this.uniforms = uniforms || {};
-
-
-    /**
-     * The code of the vertex shader
-     * @member {string[]}
-     * @private
-     */
-    this.vertexSrc = vertexSrc || DefaultShader.defaultVertexSrc;
-
-    /**
-     * The code of the frament shader
-     * @member {string[]}
-     * @private
-     */
-    this.fragmentSrc = fragmentSrc || DefaultShader.defaultFragmentSrc;
-
-    //TODO a reminder - would be cool to have lower res filters as this would give better performance.
-
-    //typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
-
-}
-
-AbstractFilter.prototype.constructor = AbstractFilter;
-module.exports = AbstractFilter;
-
-/**
- * Grabs a shader from the current renderer
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the shader from
- */
-AbstractFilter.prototype.getShader = function (renderer)
-{
-    var gl = renderer.gl;
-
-    var shader = this.shaders[gl.id];
-
-    if (!shader)
-    {
-        shader = new DefaultShader(renderer.shaderManager,
-            this.vertexSrc,
-            this.fragmentSrc,
-            this.uniforms,
-            this.attributes
-        );
-
-        this.shaders[gl.id] = shader;
-    }
-
-    return shader;
-};
-
-/**
- * Applies the filter
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
- * @param clear {boolean} Whether or not we want to clear the outputTarget
- */
-AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
-{
-    var shader = this.getShader(renderer);
-
-    renderer.filterManager.applyFilter(shader, input, output, clear);
-};
-
-/**
- * Syncs a uniform between the class object and the shaders.
- *
- */
-AbstractFilter.prototype.syncUniform = function (uniform)
-{
-    for (var i = 0, j = this.shaders.length; i < j; ++i)
-    {
-        this.shaders[i].syncUniform(uniform);
-    }
-};
-
-},{"../shaders/TextureShader":94}],78:[function(require,module,exports){
-var AbstractFilter = require('./AbstractFilter');
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- *
- * Basic FXAA implementation based on the code on geeks3d.com with the
- * modification that the texture2DLod stuff was removed since it's
- * unsupported by WebGL.
- *
- * --
- * From:
- * https://github.com/mitsuhiko/webgl-meincraft
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI
- *
- */
-function FXAAFilter()
-{
-    AbstractFilter.call(this,
-        // vertex shader
-        "\nprecision mediump float;\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform vec2 resolution;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\n            out vec2 v_rgbM) {\n    vec2 inverseVP = 1.0 / resolution.xy;\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n    v_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n   vResolution = resolution;\n\n   //compute the texture coords and send them to varyings\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}\n",
-        // fragment shader
-        "precision lowp float;\n\n\n/**\nBasic FXAA implementation based on the code on geeks3d.com with the\nmodification that the texture2DLod stuff was removed since it's\nunsupported by WebGL.\n\n--\n\nFrom:\nhttps://github.com/mitsuhiko/webgl-meincraft\n\nCopyright (c) 2011 by Armin Ronacher.\n\nSome rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n    * Redistributions of source code must retain the above copyright\n      notice, this list of conditions and the following disclaimer.\n\n    * Redistributions in binary form must reproduce the above\n      copyright notice, this list of conditions and the following\n      disclaimer in the documentation and/or other materials provided\n      with the distribution.\n\n    * The names of the contributors may not be used to endorse or\n      promote products derived from this software without specific\n      prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n*/\n\n#ifndef FXAA_REDUCE_MIN\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\n#endif\n#ifndef FXAA_REDUCE_MUL\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\n#endif\n#ifndef FXAA_SPAN_MAX\n    #define FXAA_SPAN_MAX     8.0\n#endif\n\n//optimized version for mobile, where dependent\n//texture reads can be a bottleneck\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\n            vec2 v_rgbNW, vec2 v_rgbNE,\n            vec2 v_rgbSW, vec2 v_rgbSE,\n            vec2 v_rgbM) {\n    vec4 color;\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\n    vec4 texColor = texture2D(tex, v_rgbM);\n    vec3 rgbM  = texColor.xyz;\n    vec3 luma = vec3(0.299, 0.587, 0.114);\n    float lumaNW = dot(rgbNW, luma);\n    float lumaNE = dot(rgbNE, luma);\n    float lumaSW = dot(rgbSW, luma);\n    float lumaSE = dot(rgbSE, luma);\n    float lumaM  = dot(rgbM,  luma);\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\n\n    mediump vec2 dir;\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\n\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\n\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\n              dir * rcpDirMin)) * inverseVP;\n\n    vec3 rgbA = 0.5 * (\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\n\n    float lumaB = dot(rgbB, luma);\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\n        color = vec4(rgbA, texColor.a);\n    else\n        color = vec4(rgbB, texColor.a);\n    return color;\n}\n\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nuniform sampler2D uSampler;\n\n\nvoid main(void){\n\n    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n\n}\n",
-        // uniforms
-        {
-            resolution: { type: 'v2', value: { x: 1, y: 1 } }
-        }
-    );
-
-}
-
-FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
-FXAAFilter.prototype.constructor = FXAAFilter;
-module.exports = FXAAFilter;
-
-/**
- * Applies the filter
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
- */
-FXAAFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var filterManager = renderer.filterManager;
-
-    var shader = this.getShader( renderer );
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output);
-};
-
-},{"./AbstractFilter":77}],79:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 var extractUniformsFromSrc = require('./extractUniformsFromSrc')
 var math = require('../../../math');
@@ -16348,6 +16603,9 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
      * @member {string}
      */
     this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
+    
+    var key = this.fragmentSrc + this.vertexSrc;
+
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
@@ -16364,6 +16622,12 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     // this is where we store shader references..
     // TODO we could cache this!
     this.glShaders = [];
+
+    // used for cacheing..
+    this.glShaderKey = null;
+
+    this.padding = 4;
+    this.resolution = 1;
 }
 
 // constructor
@@ -16441,198 +16705,9 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../math":57,"./extractUniformsFromSrc":82,"pixi-gl-core":1}],80:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader;
-
-/**
- * @class
- * @memberof PIXI
- * @extends PIXI.Shader
- * @param shaderManager {PIXI.ShaderManager} The webgl shader manager this shader works for.
- * @param [vertexSrc] {string} The source of the vertex shader.
- * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
- * @param [fragmentSrc] {string} The source of the fragment shader.
- */
-function FilterShader(gl)
-{
-   
-    /**
-     * The vertex shader.
-     *
-     * @member {string}
-     */
-    vertexSrc = FilterShader.defaultVertexSrc;
-
-    /**
-     * The fragment shader.
-     *
-     * @member {string}
-     */
-    fragmentSrc = FilterShader.defaultFragmentSrc;
-
-    Shader.call(this, gl, vertexSrc, fragmentSrc);
-}
-
-// constructor
-FilterShader.prototype = Object.create(Shader.prototype);
-FilterShader.prototype.constructor = FilterShader;
-module.exports = FilterShader;
-
-/**
- * The default vertex shader source
- *
- * @static
- * @constant
- */
-FilterShader.defaultVertexSrc = [
-    'precision lowp float;',
-    'attribute vec2 aVertexPosition;',
-    'attribute vec2 aTextureCoord;',
-
-    'uniform mat3 projectionMatrix;',
-    'uniform mat3 otherMatrix;',
-    'varying vec2 vTextureCoord;',
-    'varying vec2 vFilterCoord;',
-
-    'void main(void){',
-    '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-    '   vFilterCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;',
-    '   vTextureCoord = aTextureCoord ;',
-    '}'
-].join('\n');
-
-/**
- * The default fragment shader source
- *
- * @static
- * @constant
- */
-FilterShader.defaultFragmentSrc = [
-    'precision lowp float;',
-
-    'varying vec2 vTextureCoord;',
-    'varying vec2 vFilterCoord;',
-    'uniform sampler2D uSampler;',
-    'uniform sampler2D filterSampler;',
-
-    'void main(void){',
-    '   vec4 masky = texture2D(filterSampler, vFilterCoord);',
-    '   vec4 sample = texture2D(uSampler, vTextureCoord);',
-    '   vec4 color;',
-    '   if(mod(vFilterCoord.x, 1.0) > 0.5){',
-    '   ',
-    '     color = vec4(1.0, 0.0, 0.0, 1.0);',
-    '   }',
-    '   else',
-    '   {',
-    '     color = vec4(0.0, 1.0, 0.0, 1.0) ;',
-    '   }',
-   // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
-    '   gl_FragColor = mix(sample, masky, 0.5);',
-    '   gl_FragColor *= sample.a;',
-    '}'
-].join('\n');
-
-},{"pixi-gl-core":1}],81:[function(require,module,exports){
-var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math');
-
-// @see https://github.com/substack/brfs/issues/25
-
-
-/**
- * The SpriteMaskFilter class
- *
- * @class
- * @extends PIXI.AbstractFilter
- * @memberof PIXI
- * @param sprite {PIXI.Sprite} the target sprite
- */
-function SpriteMaskFilter(sprite)
-{
-    var maskMatrix = new math.Matrix();
-
-    AbstractFilter.call(this,
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n    vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        "precision lowp float;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform float alpha;\nuniform sampler2D mask;\n\nvoid main(void)\n{\n    // check clip! this will stop the mask bleeding out from the edges\n    vec2 text = abs( vMaskCoord - 0.5 );\n    text = step(0.5, text);\n    float clip = 1.0 - max(text.y, text.x);\n    vec4 original = texture2D(uSampler, vTextureCoord);\n    vec4 masky = texture2D(mask, vMaskCoord);\n    original *= (masky.r * masky.a * alpha * clip);\n    gl_FragColor = original;\n}\n",
-        {
-            mask:           { type: 'sampler2D', value: sprite._texture },
-            alpha:          { type: 'f', value: 1},
-            otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) }
-        }
-    );
-
-    this.maskSprite = sprite;
-    this.maskMatrix = maskMatrix;
-}
-
-SpriteMaskFilter.prototype = Object.create(AbstractFilter.prototype);
-SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
-module.exports = SpriteMaskFilter;
-
-/**
- * Applies the filter
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
- */
-SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var filterManager = renderer.filterManager;
-
-    this.uniforms.mask.value = this.maskSprite._texture;
-
-    filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
-
-    this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
-    this.uniforms.alpha.value = this.maskSprite.worldAlpha;
-
-    var shader = this.getShader(renderer);
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output);
-};
-
-
-Object.defineProperties(SpriteMaskFilter.prototype, {
-    /**
-     * The texture used for the displacement map. Must be power of 2 sized texture.
-     *
-     * @member {PIXI.Texture}
-     * @memberof PIXI.SpriteMaskFilter#
-     */
-    map: {
-        get: function ()
-        {
-            return this.uniforms.mask.value;
-        },
-        set: function (value)
-        {
-            this.uniforms.mask.value = value;
-        }
-    },
-
-    /**
-     * The offset used to move the displacement map.
-     *
-     * @member {PIXI.Point}
-     * @memberof PIXI.SpriteMaskFilter#
-     */
-    offset: {
-        get: function()
-        {
-            return this.uniforms.offset.value;
-        },
-        set: function(value)
-        {
-            this.uniforms.offset.value = value;
-        }
-    }
-});
-
-},{"../../../math":57,"./AbstractFilter":77}],82:[function(require,module,exports){
+},{"../../../math":59,"./extractUniformsFromSrc":80,"pixi-gl-core":1}],80:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
+var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
@@ -16645,7 +16720,7 @@ function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 
 function extractUniformsFromString(string, mask)
 {
-    var maskRegex = new RegExp('^(projectionMatrix|uSampler)$');
+    var maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
 
     var uniforms = {};
 
@@ -16664,12 +16739,22 @@ function extractUniformsFromString(string, mask)
         {
             var splitLine = line.split(' ');
             var type = splitLine[1];
+            
             var name = splitLine[2];
+            var size = mapSize(type);
+
+            if(name.indexOf('[') > -1)
+            {
+                // array!
+                nameSplit = name.split(/\[|\]/)
+                name = nameSplit[0];
+                size *= Number(nameSplit[1]); 
+            }  
 
             if(!name.match(maskRegex))
             {     
                 uniforms[name] = {
-                    value:defaultValue(type),
+                    value:defaultValue(type, size),
                     name:name,
                     type:type
                 }
@@ -16682,7 +16767,7 @@ function extractUniformsFromString(string, mask)
 }
 
 module.exports = extractUniformsFromSrc;
-},{"pixi-gl-core/lib/shader/defaultValue":10}],83:[function(require,module,exports){
+},{"pixi-gl-core/lib/shader/defaultValue":10,"pixi-gl-core/lib/shader/mapSize":14}],81:[function(require,module,exports){
 var math = require('../../../math');
 
 /*
@@ -16693,32 +16778,58 @@ var math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
-    var mappedMatrix = outputMatrix;
+     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    texture = {width:1136, height:700}//sprite._texture.baseTexture;
 
-    mappedMatrix.a = textureSize.width;
-    mappedMatrix.b = 0;
-    mappedMatrix.c = 0;
-    mappedMatrix.d = textureSize.height;
-    mappedMatrix.tx = filterArea.x;
-    mappedMatrix.ty = filterArea.y;
+    // TODO unwrap?
+    var mappedMatrix = outputMatrix.identity();
+
+    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
+
+    mappedMatrix.scale( textureSize.width , textureSize.height );
 
     return mappedMatrix;
+
 }
 
 var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
-    var mappedMatrix = outputMatrix;
-    
-    mappedMatrix.a = textureSize.width / screenSize.width;
-    mappedMatrix.b = 0;
-    mappedMatrix.c = 0;
-    mappedMatrix.d = textureSize.height / screenSize.height;
-    mappedMatrix.tx = filterArea.x / screenSize.width;
-    mappedMatrix.ty = filterArea.y / screenSize.height;
+    //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    texture = {width:800, height:600}//sprite._texture.baseTexture;
+
+    // TODO unwrap?
+    var mappedMatrix = outputMatrix.identity();
+
+    // scale..
+    var ratio = textureSize.height / textureSize.width;
+
+    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
+
+    mappedMatrix.scale(1 , ratio);
+
+    var translateScaleX = (textureSize.width / texture.width);
+    var translateScaleY = (textureSize.height / texture.height);
+
+   // worldTransform.tx /= texture.width * translateScaleX;
+ 
+    //this...?  free beer for anyone who can explain why this makes sense!
+   // worldTransform.ty /= texture.width * translateScaleX;
+    // worldTransform.ty /= texture.height * translateScaleY;
+
+   // worldTransform.invert();
+   // mappedMatrix.prepend(worldTransform);
+
+    // apply inverse scale..
+    mappedMatrix.scale(1 , 1/ratio);
+
+    mappedMatrix.scale( translateScaleX , translateScaleY );
+
+   // mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
     return mappedMatrix;
+   
 }
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
@@ -16742,9 +16853,9 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
 
     worldTransform.tx /= texture.width * translateScaleX;
  
-    //this...?
-    //   worldTransform.ty /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.height * translateScaleY;
+    //this...?  free beer for anyone who can explain why this makes sense!
+    worldTransform.ty /= texture.width * translateScaleX;
+    // worldTransform.ty /= texture.height * translateScaleY;
 
     worldTransform.invert();
     mappedMatrix.prepend(worldTransform);
@@ -16757,38 +16868,6 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
     mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
     return mappedMatrix;
-
-    // Keeping the orginal as a reminder to me on how this works!
-    //
-    // var m = new math.Matrix();
-
-    // // scale..
-    // var ratio = this.textureSize.height / this.textureSize.width;
-
-    // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-
-
-    // m.scale(1 , ratio);
-
-
-    // var transform = wt.clone();
-
-    // var translateScaleX = (this.textureSize.width / 620);
-    // var translateScaleY = (this.textureSize.height / 380);
-
-    // transform.tx /= 620 * translateScaleX;
-    // transform.ty /= 620 * translateScaleX;
-
-    // transform.invert();
-
-    // transform.append(m);
-
-    // // apply inverse scale..
-    // transform.scale(1 , 1/ratio);
-
-    // transform.scale( translateScaleX , translateScaleY );
-
-    // return transform;
 };
 
 module.exports = {
@@ -16796,7 +16875,59 @@ module.exports = {
     calculateNormalisedScreenSpaceMatrix:calculateNormalisedScreenSpaceMatrix,
     calculateSpriteMatrix:calculateSpriteMatrix  
 };
-},{"../../../math":57}],84:[function(require,module,exports){
+},{"../../../math":59}],82:[function(require,module,exports){
+var Filter = require('../Filter'),
+    math =  require('../../../../math');
+
+// @see https://github.com/substack/brfs/issues/25
+
+
+/**
+ * The SpriteMaskFilter class
+ *
+ * @class
+ * @extends PIXI.AbstractFilter
+ * @memberof PIXI
+ * @param sprite {PIXI.Sprite} the target sprite
+ */
+function SpriteMaskFilter(sprite)
+{
+    var maskMatrix = new math.Matrix();
+
+    Filter.call(this,
+        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n    vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n}\n",
+        "precision lowp float;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float alpha;\nuniform sampler2D mask;\n\nvoid main(void)\n{\n    // check clip! this will stop the mask bleeding out from the edges\n    vec2 text = abs( vMaskCoord - 0.5 );\n    text = step(0.5, text);\n    float clip = 1.0 - max(text.y, text.x);\n    vec4 original = texture2D(uSampler, vTextureCoord);\n    vec4 masky = texture2D(mask, vMaskCoord);\n    original *= (masky.r * masky.a * alpha * clip);\n    gl_FragColor = original;\n}\n"
+    );
+
+    sprite.renderable = false;
+    
+    this.maskSprite = sprite;
+    this.maskMatrix = maskMatrix;
+}
+
+SpriteMaskFilter.prototype = Object.create(Filter.prototype);
+SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
+module.exports = SpriteMaskFilter;
+
+/**
+ * Applies the filter
+ *
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {PIXI.RenderTarget}
+ * @param output {PIXI.RenderTarget}
+ */
+SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
+{
+    var maskSprite = this.maskSprite;
+
+    this.uniforms.mask = maskSprite._texture;
+    this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
+    this.uniforms.alpha = maskSprite.worldAlpha;
+
+    filterManager.applyFilter(this, input, output);
+};
+
+},{"../../../../math":59,"../Filter":79}],83:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -16840,499 +16971,17 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":90}],85:[function(require,module,exports){
+},{"./WebGLManager":88}],84:[function(require,module,exports){
+
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
     Quad = require('../utils/Quad'),
-    FilterShader = require('../filters/FilterShader'),
-    math =  require('../../../math');
-
-/**
- * @class
- * @memberof PIXI
- * @extends PIXI.WebGLManager
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
- */
-function FilterManager(renderer)
-{
-    WebGLManager.call(this, renderer);
-
-    /**
-     * @member {object[]}
-     */
-    this.filterStack = [];
-
-    this.filterStack.push({
-        renderTarget:renderer._activeRenderTarget,
-        filter:[],
-        bounds:null
-    });
-
-    /**
-     * @member {PIXI.RenderTarget[]}
-     */
-    this.texturePool = [];
-
-    /**
-     * The size of the texture
-     *
-     * @member {PIXI.Rectangle}
-     */
-    // listen for context and update necessary buffers
-    //TODO make this dynamic!
-    //TODO test this out by forces power of two?
-    this.textureSize = new math.Rectangle(0, 0, renderer.width, renderer.height);
-
-    /**
-     * The current frame
-     *
-     * @member {PIXI.Rectangle}
-     */
-    this.currentFrame = null;
-}
-
-FilterManager.prototype = Object.create(WebGLManager.prototype);
-FilterManager.prototype.constructor = FilterManager;
-module.exports = FilterManager;
-
-
-/**
- * Called when there is a WebGL context change.
- *
- */
-FilterManager.prototype.onContextChange = function ()
-{
-    this.texturePool.length = 0;
-
-
-    var gl = this.renderer.gl;
-    this.filterShader = new FilterShader(gl);
-    this.quad = new Quad(gl,this.filterShader);
-};
-
-/**
- * @param renderer {PIXI.WebGLRenderer}
- * @param buffer {ArrayBuffer}
- */
-FilterManager.prototype.setFilterStack = function ( filterStack )
-{
-    this.filterStack = filterStack;
-};
-
-/**
- * Applies the filter and adds it to the current filter stack.
- *
- * @param target {PIXI.DisplayObject}
- * @param filters {PIXI.AbstractFiler[]} the filters that will be pushed to the current filter stack
- */
-FilterManager.prototype.pushFilter = function (target, filters)
-{
-    // get the bounds of the object..
-    // TODO replace clone with a copy to save object creation
-    var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
-    
-    //bounds = bounds.clone();
-
-    // round off the rectangle to get a nice smoooooooth filter :)
-    bounds.x = bounds.x | 0;
-    bounds.y = bounds.y | 0;
-    bounds.width = bounds.width | 0;
-    bounds.height = bounds.height | 0;
-
-
-    // padding!
-    var padding = filters[0].padding | 0;
-    bounds.x -= padding;
-    bounds.y -= padding;
-    bounds.width += padding * 2;
-    bounds.height += padding * 2;
-
-
-    if(this.renderer._activeRenderTarget.transform)
-    {
-        //TODO this will break if the renderTexture transform is anything other than a translation.
-        //Will need to take the full matrix transform into acount..
-        var transform = this.renderer._activeRenderTarget.transform;
-
-        bounds.x += transform.tx;
-        bounds.y += transform.ty;
-
-        this.capFilterArea( bounds );
-
-        bounds.x -= transform.tx;
-        bounds.y -= transform.ty;
-    }
-    else
-    {
-         this.capFilterArea( bounds );
-    }
-
-    if(bounds.width > 0 && bounds.height > 0)
-    {
-        this.currentFrame = bounds;
-
-        var texture = this.getRenderTarget();
-
-        this.renderer.bindRenderTarget(texture);
-
-        // clear the texture..
-        texture.clear();
-
-        // TODO get rid of object creation!
-        this.filterStack.push({
-            renderTarget: texture,
-            filter: filters
-        });
-
-    }
-    else
-    {
-        // push somthing on to the stack that is empty
-        this.filterStack.push({
-            renderTarget: null,
-            filter: filters
-        });
-    }
-};
-
-FilterManager.prototype.syncUniforms = function (filter)
-{
-    var gl = this.renderer.gl;
-
-    var glShader = filter.glShaders[gl.id];
-
-    var glUniforms = glShader.uniforms;
-    var filterUniforms = filter.uniforms;
-    
-    //TODO - intorduce some checks?
-    //not all uniforms may need updating..
-    for (var i in filterUniforms) 
-    {
-        glUniforms[i] = filter.uniforms[i];
-    };
-}
-
-
-/**
- * Removes the last filter from the filter stack and returns it.
- *
- */
-FilterManager.prototype.popFilter = function ()
-{
-    var filterData = this.filterStack.pop();
-    var previousFilterData = this.filterStack[this.filterStack.length-1];
-
-   // return;
-    var input = filterData.renderTarget;
-
-    // if the renderTarget is null then we don't apply the filter as its offscreen
-    if(!filterData.renderTarget)
-    {
-        return;
-    }
-
-    var output = previousFilterData.renderTarget;
-
-    // use program
-    var gl = this.renderer.gl;
-
-
-    this.currentFrame = input.frame;
-
-    this.quad.map(this.textureSize, input.frame);
-
-    this.renderer.bindShader(this.filterShader);
-
-    this.quad.vao.bind()
-    .draw(gl.TRIANGLES, 6, 0)
-    .unbind();
-
-    this.returnRenderTarget(output);
-
-    return;
-    
-
-    // TODO.. this probably only needs to be done once!
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
-
-    var filters = filterData.filter;
-
-    // assuming all filters follow the correct format??
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
-    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
-
-    // restore the normal blendmode!
-    this.renderer.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
-
-    if (filters.length === 1)
-    {
-        // TODO (cengler) - There has to be a better way then setting this each time?
-        if (filters[0].uniforms.dimensions)
-        {
-            filters[0].uniforms.dimensions.value[0] = this.renderer.width;
-            filters[0].uniforms.dimensions.value[1] = this.renderer.height;
-            filters[0].uniforms.dimensions.value[2] = this.quad.vertices[0];
-            filters[0].uniforms.dimensions.value[3] = this.quad.vertices[5];
-        }
-
-        filters[0].applyFilter( this.renderer, input, output );
-        this.returnRenderTarget( input );
-
-    }
-    else
-    {
-        var flipTexture = input;
-        var flopTexture = this.getRenderTarget(true);
-
-        for (var i = 0; i < filters.length-1; i++)
-        {
-            var filter = filters[i];
-
-            // TODO (cengler) - There has to be a better way then setting this each time?
-            if (filter.uniforms.dimensions)
-            {
-                filter.uniforms.dimensions.value[0] = this.renderer.width;
-                filter.uniforms.dimensions.value[1] = this.renderer.height;
-                filter.uniforms.dimensions.value[2] = this.quad.vertices[0];
-                filter.uniforms.dimensions.value[3] = this.quad.vertices[5];
-            }
-
-            filter.applyFilter( this.renderer, flipTexture, flopTexture );
-
-            var temp = flipTexture;
-            flipTexture = flopTexture;
-            flopTexture = temp;
-        }
-
-        filters[filters.length-1].applyFilter( this.renderer, flipTexture, output );
-
-        this.returnRenderTarget( flipTexture );
-        this.returnRenderTarget( flopTexture );
-    }
-
-    return filterData.filter;
-};
-
-/**
- * Grabs an render target from the internal pool
- *
- * @param clear {boolean} Whether or not we need to clear the RenderTarget
- * @return {RenderTarget}
- */
-FilterManager.prototype.getRenderTarget = function ( clear )
-{
-    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, CONST.SCALE_MODES.LINEAR, this.renderer.resolution * CONST.FILTER_RESOLUTION);
-    renderTarget.frame = this.currentFrame;
-
-    if (clear)
-    {
-        renderTarget.clear(true);
-    }
-
-    return renderTarget;
-};
-
-/*
- * Returns a RenderTarget to the internal pool
- * @param renderTarget {RenderTarget} The RenderTarget we want to return to the pool
- */
-FilterManager.prototype.returnRenderTarget = function (renderTarget)
-{
-    this.texturePool.push( renderTarget );
-};
-
-/*
- * Applies the filter
- * @param shader {Shader} The shader to upload
- * @param inputTarget {RenderTarget}
- * @param outputTarget {RenderTarget}
- * @param clear {boolean} Whether or not we want to clear the outputTarget
- */
-FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
-{
-    var gl = this.renderer.gl;
-
-    this.renderer.setRenderTarget(outputTarget);
-
-    if (clear)
-    {
-        outputTarget.clear();
-    }
-
-    // set the shader
-    this.renderer.shaderManager.setShader(shader);
-
-    // TODO (cengler) - Can this be cached and not `toArray`ed each frame?
-    shader.uniforms.projectionMatrix.value = this.renderer._activeRenderTarget.projectionMatrix.toArray(true);
-
-    //TODO can this be optimised?
-    shader.syncUniforms();
-/*
-    gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
-    gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
-*/
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
-
-    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
-    this.renderer.drawCount++;
-};
-
-/*
- * Calculates the mapped matrix
- * @param filterArea {Rectangle} The filter area
- * @param sprite {Sprite} the target sprite
- * @param outputMatrix {Matrix} @alvin
- */
-// TODO playing around here.. this is temporary - (will end up in the shader)
-FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
-{
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite._texture.baseTexture;
-
-    var mappedMatrix = outputMatrix.identity();
-
-    // scale..
-    var ratio = this.textureSize.height / this.textureSize.width;
-
-    mappedMatrix.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height );
-
-    mappedMatrix.scale(1 , ratio);
-
-    var translateScaleX = (this.textureSize.width / texture.width);
-    var translateScaleY = (this.textureSize.height / texture.height);
-
-    worldTransform.tx /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.width * translateScaleX;
-
-    worldTransform.invert();
-
-    mappedMatrix.prepend(worldTransform);
-
-    // apply inverse scale..
-    mappedMatrix.scale(1 , 1/ratio);
-
-    mappedMatrix.scale( translateScaleX , translateScaleY );
-
-    mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
-
-    return mappedMatrix;
-
-    // Keeping the orginal as a reminder to me on how this works!
-    //
-    // var m = new math.Matrix();
-
-    // // scale..
-    // var ratio = this.textureSize.height / this.textureSize.width;
-
-    // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-
-
-    // m.scale(1 , ratio);
-
-
-    // var transform = wt.clone();
-
-    // var translateScaleX = (this.textureSize.width / 620);
-    // var translateScaleY = (this.textureSize.height / 380);
-
-    // transform.tx /= 620 * translateScaleX;
-    // transform.ty /= 620 * translateScaleX;
-
-    // transform.invert();
-
-    // transform.append(m);
-
-    // // apply inverse scale..
-    // transform.scale(1 , 1/ratio);
-
-    // transform.scale( translateScaleX , translateScaleY );
-
-    // return transform;
-};
-
-/*
- * Constrains the filter area to the texture size
- * @param filterArea {Rectangle} The filter area we want to cap
- */
-FilterManager.prototype.capFilterArea = function (filterArea)
-{
-    if (filterArea.x < 0)
-    {
-        filterArea.width += filterArea.x;
-        filterArea.x = 0;
-    }
-
-    if (filterArea.y < 0)
-    {
-        filterArea.height += filterArea.y;
-        filterArea.y = 0;
-    }
-
-    if ( filterArea.x + filterArea.width > this.textureSize.width )
-    {
-        filterArea.width = this.textureSize.width - filterArea.x;
-    }
-
-    if ( filterArea.y + filterArea.height > this.textureSize.height )
-    {
-        filterArea.height = this.textureSize.height - filterArea.y;
-    }
-};
-
-/*
- * Resizes all the render targets in the pool
- * @param width {number} the new width
- * @param height {number} the new height
- */
-FilterManager.prototype.resize = function ( width, height )
-{
-    this.textureSize.width = width;
-    this.textureSize.height = height;
-
-    for (var i = 0; i < this.texturePool.length; i++)
-    {
-        this.texturePool[i].resize( width, height );
-    }
-};
-
-/**
- * Destroys the filter and removes it from the filter stack.
- *
- */
-FilterManager.prototype.destroy = function ()
-{
-    this.quad.destroy();
-    
-    WebGLManager.prototype.destroy.call(this);
-    
-    this.filterStack = null;
-    this.offsetY = 0;
-
-    // destroy textures
-    for (var i = 0; i < this.texturePool.length; i++)
-    {
-        this.texturePool[i].destroy();
-    }
-
-    this.texturePool = null;
-};
-
-},{"../../../const":38,"../../../math":57,"../filters/FilterShader":80,"../utils/Quad":97,"../utils/RenderTarget":98,"./WebGLManager":90}],86:[function(require,module,exports){
-var WebGLManager = require('./WebGLManager'),
-    RenderTarget = require('../utils/RenderTarget'),
-    CONST = require('../../../const'),
-    Quad = require('../utils/Quad'),
-    FilterShader = require('../filters/FilterShader'),
     math =  require('../../../math'),
     utils =  require('../../../utils'),
     Shader = require('pixi-gl-core').GLShader,
-    filterTransforms = require('../filters/filterTransforms');
+    filterTransforms = require('../filters/filterTransforms'),
+    bitTwiddle = require('bit-twiddle');
 
 var tempMatrix = new math.Matrix();
 var tempRect = new math.Rectangle();
@@ -17347,13 +16996,19 @@ function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    // TODO - not really required. but useful for setting the quad..
-    this.filterShader = new FilterShader(renderer.gl);
     // know about sprites!
-    this.quad = new Quad(gl, this.filterShader);
+    this.quad = new Quad(gl);
 
-    this.stack = [];
-    this.stackIndex = -1;
+    var rootState = new FilterState();
+    rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;
+    rootState.renderTarget = renderer.rootRenderTarget;
+
+    this.stack = [rootState];
+
+    this.stackIndex = 0;
+
+    this.shaderCache = {};
+    // todo add default!
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -17362,77 +17017,137 @@ module.exports = FilterManager;
 
 FilterManager.prototype.pushFilter = function(target, filters)
 {
-    var bounds = target.getBounds();
+    var renderer = this.renderer;
 
-    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, bounds.width, bounds.height);
+    // get the current filter state..
+    var currentState = this.stack[++this.stackIndex];
+    if(!currentState)
+    {
+        currentState = this.stack[this.stackIndex] = new FilterState();
+    }
+
+    // for now we go off the filter of the first resolution..
+    var resolution = filters[0].resolution;
+    var padding = filters[0].padding;
+
+    var targetBounds = target.filterArea || target.getBounds();
+   
+    var sourceFrame = currentState.sourceFrame;
+    var destinationFrame = currentState.destinationFrame;
+
     
-    this.stackIndex++;
 
-    if(!this.stack[this.stackIndex])
-    {
-        this.stack[this.stackIndex] = {
-            target:target,
-            bounds:bounds,
-            filters:filters,
-            renderTarget:renderTarget
-        }
-    }
-    else
-    {
-        var currentState = this.stack[this.stackIndex];
-        currentState.target = target;
-        currentState.bounds = bounds;
-        currentState.filters = filters;
-        currentState.renderTarget = renderTarget;
-    }
+
+    //TODO - should this be rounded to reoultion? not 1?
+    sourceFrame.x = targetBounds.x | 0;
+    sourceFrame.y = targetBounds.y | 0;
+    sourceFrame.width = targetBounds.width | 0;
+    sourceFrame.height = targetBounds.height | 0;
+    sourceFrame.pad(padding * resolution);
+    sourceFrame.fit(this.stack[0].destinationFrame);
+
+    destinationFrame.width = sourceFrame.width;
+    destinationFrame.height = sourceFrame.height;
+
+    var renderTarget = FilterManager.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+
+    currentState.target = target;
+    currentState.filters = filters;
+    currentState.renderTarget = renderTarget;
 
     // bind the render taget to draw the shape in the top corner..
-    tempRect.width = bounds.width;
-    tempRect.height = bounds.height;
+        
+    renderTarget.setFrame(destinationFrame, sourceFrame);
+    // bind the render target
+    renderer.bindRenderTarget(renderTarget);
 
-    this.renderer.bindRenderTarget(renderTarget, tempRect, bounds)
-    
-    this.renderer.clear();
+    // clear the renderTarget
+    renderer.clear()//[0.5,0.5,0.5, 1.0]);
 }
 
 FilterManager.prototype.popFilter = function()
 {
     var gl = this.renderer.gl;
 
+    var lastState = this.stack[this.stackIndex-1];
     var currentState = this.stack[this.stackIndex];
     
-    this.quad.map(currentState.renderTarget.size, currentState.bounds).upload();
+    this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
+    
+    var filters = currentState.filters;
+    
+    if(filters.length === 1)
+    {
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        FilterManager.freePotRenderTarget(currentState.renderTarget);
+    }
+    else
+    {
+        var flip = currentState.renderTarget;
+        var flop = FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+        flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
-    var filter = currentState.filters[0];
+        for (var i = 0; i < filters.length-1; i++) 
+        {
+            filters[i].apply(this, flip, flop, true);
 
-    filter.apply(this, currentState.renderTarget, this.renderer.rootRenderTarget, false);
+            var t = flip;
+            flip = flop;
+            flop = t;
+        };
 
-    // return the texture..
-    FilterManager.freePotRenderTarget(currentState.renderTarget);
+        filters[i].apply(this, flip, lastState.renderTarget, false);
+
+        FilterManager.freePotRenderTarget(flip);
+        FilterManager.freePotRenderTarget(flop);
+    }
 
     this.stackIndex--;
 }
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 {
+    var renderer = this.renderer;
+    var lastState = this.stack[this.stackIndex-1];
     var shader = filter.glShaders[gl.id];
+    
+    // cacheing..
     if(!shader)
     {
-        shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+        if(filter.glShaderKey)
+        {
+            shader = this.shaderCache[filter.glShaderKey];
+
+            if(!shader)
+            {
+                shader = filter.glShaders[gl.id] = this.shaderCache[filter.glShaderKey] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+            }
+        }
+        else
+        {
+            shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+        }
+
+        //TODO - this only needs to be done once?
+        this.quad.initVao(shader);
     }
-    
-    this.renderer.bindRenderTarget(output);
-    this.renderer.bindShader(shader);
-
-    this.syncUniforms(shader, filter);
-   // console.log(shader.uniforms.filterMatrix);
-    // bind th einput texture..
-    input.texture.bind(0);
         
-    // stack shaders..
-    var currentState = this.stack[this.stackIndex];
-
+    //output.setFrame(lastState.destinationFrame, lastState.sourceFrame);
+    renderer.bindRenderTarget(output);
     
+    if(clear)
+    {
+        renderer.clear()//[1, 1, 1, 1]);
+    }
+
+    renderer.bindShader(shader);
+
+    // this syncs the pixi filters  uniforms with glsl uniforms
+    this.syncUniforms(shader, filter);
+
+    // bind the input texture..
+    input.texture.bind(0);
+
     this.quad.draw();
 }
 
@@ -17445,6 +17160,20 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
     // 0 is reserverd for the pixi texture so we start at 1!
     var textureCount = 1;
 
+    if(shader.uniforms.data.filterArea)
+    {
+        var currentState = this.stack[this.stackIndex];
+        var filterArea = shader.uniforms.filterArea;
+
+        filterArea[0] = currentState.renderTarget.size.width;
+        filterArea[1] = currentState.renderTarget.size.height;
+        filterArea[2] = currentState.sourceFrame.x;
+        filterArea[3] = currentState.sourceFrame.y;
+
+        shader.uniforms.filterArea = filterArea;
+    }
+
+    //TODO Cacheing layer..
     for(var i in uniformData)
     {
         if(uniformData[i].type === 'sampler2D')
@@ -17488,6 +17217,13 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
     }
 }
 
+
+FilterManager.prototype.getPotRenderTarget = function()
+{
+    var currentState = this.stack[this.stackIndex];
+    return FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+}
+
 /*
  * Calculates the mapped matrix
  * @param filterArea {Rectangle} The filter area
@@ -17496,33 +17232,27 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.stack[this.stackIndex];
-    var screenSize = new math.Rectangle(0,0, this.renderer.width, this.renderer.height);
-
-    return filterTransforms.calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize);   
+    return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);   
 }
 
 FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.stack[this.stackIndex];
-    var screenSize = new math.Rectangle(0,0, this.renderer.width, this.renderer.height);
 
-    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, screenSize);   
+
+
+    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);   
 }
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 {
     var currentState = this.stack[this.stackIndex];
-    return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.bounds, currentState.renderTarget.size, sprite);
+    return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, sprite);
 };
-
-FilterManager.prototype.resize = function(width, height)
-{
-    //TODO remove! no longer required :D
-}
 
 FilterManager.prototype.destroy = function()
 {
@@ -17530,31 +17260,53 @@ FilterManager.prototype.destroy = function()
 }
 
 //TODO move to a seperate class could be on renderer?
-FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight)
+//also - could cause issue with multiple contexts?
+FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
-    minWidth = utils.getNextPowerOfTwo(minWidth);
-    minHeight = utils.getNextPowerOfTwo(minHeight);
+    minWidth = bitTwiddle.nextPow2(minWidth * resolution);
+    minHeight = bitTwiddle.nextPow2(minHeight * resolution);
 
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
+ //   console.log(minWidth + "  " + minHeight)
     if(!FilterManager.pool[key])FilterManager.pool[key] = [];
 
-    return FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight);
+    var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+    
+    //manually tweak the resolution...
+    //this will not modify the size of the frame buffer, just its resolution.
+    renderTarget.resolution = resolution;
+    renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
+    renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+
+    return renderTarget;
 }
 
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
-    var key = ((renderTarget.size.width & 0xFFFF) << 16) | ( renderTarget.size.height & 0xFFFF);
+    var minWidth = renderTarget.size.width * renderTarget.resolution;
+    var minHeight = renderTarget.size.height * renderTarget.resolution;
+
+    var key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
     FilterManager.pool[key].push(renderTarget)
+}
+
+var FilterState = function()
+{
+    this.renderTarget = null;
+    this.sourceFrame = new math.Rectangle();
+    this.destinationFrame = new math.Rectangle();
+    this.filters = [];
+    this.target = null;
 }
 
 FilterManager.pool = {}
 
 
-},{"../../../const":38,"../../../math":57,"../../../utils":114,"../filters/FilterShader":80,"../filters/filterTransforms":83,"../utils/Quad":97,"../utils/RenderTarget":98,"./WebGLManager":90,"pixi-gl-core":1}],87:[function(require,module,exports){
+},{"../../../const":39,"../../../math":59,"../../../utils":112,"../filters/filterTransforms":81,"../utils/Quad":95,"../utils/RenderTarget":96,"./WebGLManager":88,"bit-twiddle":17,"pixi-gl-core":1}],85:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/SpriteMaskFilter');
+    AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
 
 /**
  * @class
@@ -17570,6 +17322,9 @@ function MaskManager(renderer)
     this.count = 0;
 
     this.alphaMaskPool = [];
+    this.alphaMaskPool = [];
+    this.alphaMaskIndex = 0;
+
 }
 
 MaskManager.prototype = Object.create(WebGLManager.prototype);
@@ -17592,7 +17347,6 @@ MaskManager.prototype.pushMask = function (target, maskData)
     {
         this.pushStencilMask(target, maskData);
     }
-
 };
 
 /**
@@ -17621,15 +17375,21 @@ MaskManager.prototype.popMask = function (target, maskData)
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
-    var alphaMaskFilter = this.alphaMaskPool.pop();
+    var alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
     if (!alphaMaskFilter)
     {
-        alphaMaskFilter = [new AlphaMaskFilter(maskData)];
+        alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
     }
 
     alphaMaskFilter[0].maskSprite = maskData;
+
+    //TODO - may cause issues!
+    target.filterArea = maskData.getBounds();
+
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+
+    this.alphaMaskIndex++;
 };
 
 /**
@@ -17638,9 +17398,8 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
  */
 MaskManager.prototype.popSpriteMask = function ()
 {
-    var filters = this.renderer.filterManager.popFilter();
-
-    this.alphaMaskPool.push(filters);
+    this.renderer.filterManager.popFilter();
+    this.alphaMaskIndex--;
 };
 
 
@@ -17669,7 +17428,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":81,"./WebGLManager":90}],88:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":82,"./WebGLManager":88}],86:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -17839,7 +17598,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":114,"../shaders/ComplexPrimitiveShader":91,"../shaders/PrimitiveShader":92,"../shaders/TextureShader":94,"./WebGLManager":90}],89:[function(require,module,exports){
+},{"../../../utils":112,"../shaders/ComplexPrimitiveShader":89,"../shaders/PrimitiveShader":90,"../shaders/TextureShader":92,"./WebGLManager":88}],87:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -17962,7 +17721,7 @@ StencilMaskManager.prototype.destroy = function ()
 };
 
 
-},{"../../../utils":114,"./WebGLManager":90}],90:[function(require,module,exports){
+},{"../../../utils":112,"./WebGLManager":88}],88:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -18003,7 +17762,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],91:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -18065,7 +17824,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":93}],92:[function(require,module,exports){
+},{"./Shader":91}],90:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -18128,7 +17887,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":93}],93:[function(require,module,exports){
+},{"./Shader":91}],91:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -18656,7 +18415,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":114}],94:[function(require,module,exports){
+},{"../../../utils":112}],92:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -18767,7 +18526,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":93}],95:[function(require,module,exports){
+},{"./Shader":91}],93:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 /**
@@ -18848,7 +18607,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"pixi-gl-core":1}],96:[function(require,module,exports){
+},{"pixi-gl-core":1}],94:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -18906,7 +18665,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":90}],97:[function(require,module,exports){
+},{"../managers/WebGLManager":88}],95:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../../utils/createIndicesForQuads');
 
@@ -18917,7 +18676,7 @@ var glCore = require('pixi-gl-core'),
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
-function Quad(gl, shader)
+function Quad(gl)
 {
     /*
      * the current WebGL drawing context
@@ -18974,16 +18733,20 @@ function Quad(gl, shader)
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-
     this.vao = new glCore.VertexArrayObject(gl)
-    .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
-    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4)
-
+    
    
 }
 
 Quad.prototype.constructor = Quad;
+
+Quad.prototype.initVao = function(shader)
+{
+    this.vao.clear()
+    .addIndex(this.indexBuffer)
+    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
+    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4) 
+}
 
 /**
  * Maps two Rectangle to the quad
@@ -19066,7 +18829,7 @@ module.exports = Quad;
 
 
 
-},{"../../../utils/createIndicesForQuads":113,"pixi-gl-core":1}],98:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":111,"pixi-gl-core":1}],96:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -19220,6 +18983,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
         this.frameBuffer.framebuffer = null;
     }
 
+    this.setFrame();
+    
     this.resize(width, height);
 };
 
@@ -19254,12 +19019,17 @@ RenderTarget.prototype.attachStencilBuffer = function()
     }
 };
 
+RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
+{
+    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
+    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
+}
 
 /**
  * Binds the buffers and initialises the viewport.
  *
  */
-RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
+RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
@@ -19268,9 +19038,6 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     this.frameBuffer.texture.unbind();
 
     this.frameBuffer.bind();
-
-    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
-    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
     this.calculateProjection( this.destinationFrame, this.sourceFrame );
 
@@ -19282,7 +19049,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     if(this.destinationFrame !== this.sourceFrame)
     {
         gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(this.destinationFrame.x,0, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
+        gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
     }
     else
     {
@@ -19291,7 +19058,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
 
 
     // TODO - does not need to be updated all the time??
-    gl.viewport(this.destinationFrame.x,this.destinationFrame.y, this.destinationFrame.width * this.resolution, this.destinationFrame.height * this.resolution);
+    gl.viewport(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height * this.resolution)|0);
 
 
 };
@@ -19375,7 +19142,7 @@ RenderTarget.prototype.destroy = function ()
     this.texture = null;
 };
 
-},{"../../../const":38,"../../../math":57,"../../../utils":114,"pixi-gl-core":1}],99:[function(require,module,exports){
+},{"../../../const":39,"../../../math":59,"../../../utils":112,"pixi-gl-core":1}],97:[function(require,module,exports){
 CONST = require('../../../const');
 
 /**
@@ -19412,7 +19179,7 @@ function mapWebGLBlendModesToPixi(gl, object)
 
 module.exports = mapWebGLBlendModesToPixi;
 
-},{"../../../const":38}],100:[function(require,module,exports){
+},{"../../../const":39}],98:[function(require,module,exports){
 CONST = require('../../../const');
 
 /**
@@ -19436,7 +19203,7 @@ function mapWebGLDrawModesToPixi(gl, object)
 
 module.exports = mapWebGLDrawModesToPixi;
 
-},{"../../../const":38}],101:[function(require,module,exports){
+},{"../../../const":39}],99:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -19550,12 +19317,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture._frame.width;
+            return Math.abs(this.scale.x) * this.texture.crop.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture._frame.width;
+            this.scale.x = sign * value / this.texture.crop.width;
             this._width = value;
         }
     },
@@ -19569,12 +19336,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture._frame.height;
+            return  Math.abs(this.scale.y) * this.texture.crop.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture._frame.height;
+            this.scale.y = sign * value / this.texture.crop.height;
             this._height = value;
         }
     },
@@ -19630,12 +19397,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.frame.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.crop.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.frame.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.crop.height;
     }
 };
 
@@ -19646,25 +19413,26 @@ Sprite.prototype.caclulateVertices = function ()
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
         w0, w1, h0, h1,
-        trim = texture.trim;
-        
+        trim = texture.trim,
+        crop = texture.crop;
+
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * trim.width;
-        w0 = w1 + texture.crop.width;
+        w1 = trim.x - this.anchor.x * crop.width;
+        w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * trim.height;
-        h0 = h1 + texture.crop.height;
+        h1 = trim.y - this.anchor.y * crop.height;
+        h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (texture._frame.width ) * (1-this.anchor.x);
-        w1 = (texture._frame.width ) * -this.anchor.x;
+        w0 = (crop.width ) * (1-this.anchor.x);
+        w1 = (crop.width ) * -this.anchor.x;
 
-        h0 = texture._frame.height * (1-this.anchor.y);
-        h1 = texture._frame.height * -this.anchor.y;
+        h0 = crop.height * (1-this.anchor.y);
+        h1 = crop.height * -this.anchor.y;
     }
 
     // xy
@@ -19683,7 +19451,6 @@ Sprite.prototype.caclulateVertices = function ()
     vertexData[6] = a * w1 + c * h0 + tx;
     vertexData[7] = d * h0 + b * w1 + ty;
 
-
 }
 
 /**
@@ -19701,7 +19468,7 @@ Sprite.prototype._renderWebGL = function (renderer)
         // set the vertex data
         this.caclulateVertices();
     }
-    
+
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };
@@ -19715,7 +19482,7 @@ Sprite.prototype._renderWebGL = function (renderer)
 Sprite.prototype.getBounds = function (matrix)
 {
     //TODO lookinto caching..
-    //if(!this._currentBounds)
+    if(!this._currentBounds)
     {
        // if(this.vertexDirty)
         {
@@ -19802,10 +19569,10 @@ Sprite.prototype.getBounds = function (matrix)
  */
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture._frame.width * this.anchor.x;
-    this._bounds.y = -this._texture._frame.height * this.anchor.y;
-    this._bounds.width = this._texture._frame.width;
-    this._bounds.height = this._texture._frame.height;
+    this._bounds.x = -this._texture.crop.width * this.anchor.x;
+    this._bounds.y = -this._texture.crop.height * this.anchor.y;
+    this._bounds.width = this._texture.crop.width;
+    this._bounds.height = this._texture.crop.height;
     return this._bounds;
 };
 
@@ -19819,8 +19586,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
+    var width = this._texture.crop.width;
+    var height = this._texture.crop.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -19863,8 +19630,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width,
-            height;
+            width = texture._frame.width,
+            height = texture._frame.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -19875,45 +19642,23 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-
-        if(texture.rotate)
-        {
-            width = texture.crop.height;
-            height = texture.crop.width;
-
-            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-       
-            dx += width;
-
-            wt.tx = dy * wt.a + dx * wt.c + wt.tx;
-            wt.ty = dy * wt.b + dx * wt.d + wt.ty;
-
-            var temp = wt.a;
-            wt.a  = -wt.c;
-            wt.c  =  temp;
-
-            temp = wt.b;
-            wt.b  = -wt.d;
-            wt.d  =  temp;
-
+        if (texture.trim) {
+            dx = texture.trim.width/2 + texture.trim.x - this.anchor.x * texture.crop.width;
+            dy = texture.trim.height/2 + texture.trim.y - this.anchor.y * texture.crop.height;
+        } else {
+            dx = (0.5 - this.anchor.x) * texture.crop.width;
+            dy = (0.5 - this.anchor.y) * texture.crop.height;
+        }
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
-
         }
-        else
-        {
-            width = texture.crop.width;
-            height = texture.crop.height;
-
-            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-        }
-
-
-
+        dx -= width/2;
+        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
@@ -19931,7 +19676,6 @@ Sprite.prototype._renderCanvas = function (renderer)
         }
         else
         {
-
             renderer.context.setTransform(
                 wt.a,
                 wt.b,
@@ -19940,8 +19684,6 @@ Sprite.prototype._renderCanvas = function (renderer)
                 wt.tx * renderer.resolution,
                 wt.ty * renderer.resolution
             );
-
-
         }
 
         var resolution = texture.baseTexture.resolution;
@@ -19972,8 +19714,8 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x * resolution,
-                texture.crop.y * resolution,
+                texture.frame.x * resolution,
+                texture.frame.y * resolution,
                 width * resolution,
                 height * resolution,
                 dx  * renderer.resolution,
@@ -20043,14 +19785,15 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":38,"../display/Container":39,"../math":57,"../renderers/canvas/utils/CanvasTinter":72,"../textures/Texture":108,"../utils":114}],102:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasTinter":74,"../textures/Texture":106,"../utils":112}],100:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     TextureShader = require('../../renderers/webgl/shaders/_TextureShader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     generateMultiTextureShader = require('./generateMultiTextureShader'),
     CONST = require('../../const'),
-    glCore = require('pixi-gl-core');
+    glCore = require('pixi-gl-core'),
+    bitTwiddle = require('bit-twiddle');
 
 /**
  * @author Mat Groves
@@ -20099,38 +19842,44 @@ function SpriteRenderer(renderer)
     this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     // the total number of bytes in our batch
-    var numVerts = (this.size * 4) * this.vertByteSize;
+    var numVerts = this.size * 4 * this.vertByteSize;
 
     // the total number of indices in our batch, there are 6 points per quad.
     var numIndices = this.size * 6;
+
+    this.buffers = [];
+    for (var i = 1; i <= 2048; i*=2) {
+        var numVerts = i * 4 * this.vertByteSize;
+        this.buffers.push(new Buffer(numVerts, i));
+    };
 
     /**
      * Holds the vertex data that will be sent to the vertex shader.
      *
      * @member {ArrayBuffer}
      */
-    this.vertices = new ArrayBuffer(numVerts);
+   // this.vertices = new ArrayBuffer(numVerts);
 
     /**
      * View on the vertices as a Float32Array for positions
      *
      * @member {Float32Array}
      */
-    this.positions = new Float32Array(this.vertices);
+   // this.positions = new Float32Array(this.vertices);
     
     /**
      * View on the vertices as a Uint32Array for uvs
      *
      * @member {Float32Array}
      */
-    this.uvs = new Uint32Array(this.vertices);
+    //this.uvs = new Uint32Array(this.vertices);
 
     /**
      * View on the vertices as a Uint32Array for colors
      *
      * @member {Uint32Array}
      */
-    this.colors = new Uint32Array(this.vertices);
+    //this.colors = new Uint32Array(this.vertices);
 
     /**
      * Holds the indices of the geometry (quads) to draw
@@ -20161,6 +19910,8 @@ function SpriteRenderer(renderer)
     this.currentGroup = this.groups[this.groupCount++];
 
     this.currentTexture = null;    
+
+    this.sprites = [];
 }
 
 
@@ -20261,45 +20012,14 @@ SpriteRenderer.prototype.render = function (sprite)
         this.textureCount++;
     }
 
-    // TODO trim??
-    var index = this.currentIndex * this.vertByteSize;
+    // TODO add this variable to sprite..
+    sprite._glBatchTextureId = nextTexture._id;
+
+    this.sprites[this.currentIndex] = sprite;
 
     this.currentIndex++;
 
-    // upload the sprite elemetns...
-    // they have all ready been calculated so we just need to push them into the buffer.
-    var colors = this.colors;
-    var positions = this.positions;
-    var vertexData = sprite.vertexData
-    var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-    var uvs = sprite.texture._uvs.uvs_uint32;
-    //xy
-    positions[index++] = vertexData[0];
-    positions[index++] = vertexData[1];
-    this.uvs[index++] = uvs[0];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id; 
     
-    // xy
-    positions[index++] = vertexData[2];
-    positions[index++] = vertexData[3];
-    this.uvs[index++] = uvs[1];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
-
-     // xy
-    positions[index++] = vertexData[4];
-    positions[index++] = vertexData[5];
-    this.uvs[index++] = uvs[2];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
-
-    // xy
-    positions[index++] = vertexData[6];
-    positions[index++] = vertexData[7];
-    this.uvs[index++] = uvs[3];
-    colors[index++] = tint;
-    positions[index++] = nextTexture._id;
 };
 
 /**
@@ -20312,6 +20032,59 @@ SpriteRenderer.prototype.flush = function ()
 
     var gl = this.renderer.gl;
 
+    var np2 = bitTwiddle.nextPow2(this.currentIndex);
+    var log2 = bitTwiddle.log2(np2);
+
+    var buffer = this.buffers[log2];
+
+    var colors = buffer.colors;
+    var positions = buffer.positions;
+    var uvsBuffer = buffer.uvs;
+    var index = 0;
+
+    //console.log(this.currentIndex);
+    //var array = 
+
+    for (var i = 0; i < this.currentIndex; i++) 
+    {
+        // upload the sprite elemetns...
+        // they have all ready been calculated so we just need to push them into the buffer.
+        var sprite = this.sprites[i];
+
+        var vertexData = sprite.vertexData
+        var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        var uvs = sprite.texture._uvs.uvs_uint32;
+        var textureId = sprite._glBatchTextureId;
+
+        //xy
+        positions[index++] = vertexData[0];
+        positions[index++] = vertexData[1];
+        uvsBuffer[index++] = uvs[0];
+        colors[index++] = tint;
+        positions[index++] = textureId; 
+        
+        // xy
+        positions[index++] = vertexData[2];
+        positions[index++] = vertexData[3];
+        uvsBuffer[index++] = uvs[1];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+         // xy
+        positions[index++] = vertexData[4];
+        positions[index++] = vertexData[5];
+        uvsBuffer[index++] = uvs[2];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+        // xy
+        positions[index++] = vertexData[6];
+        positions[index++] = vertexData[7];
+        uvsBuffer[index++] = uvs[3];
+        colors[index++] = tint;
+        positions[index++] = textureId;
+
+    };
 
     this.currentGroup.size = this.currentIndex - this.currentGroup.start;
     for (var i = 0; i < this.currentGroup.textureCount; i++) 
@@ -20322,19 +20095,19 @@ SpriteRenderer.prototype.flush = function ()
     // do some smart array stuff..
     // double size so we dont alway subarray the elements..
     // upload the verts to the buffer
-    if (this.currentBatchSize > ( this.size * 0.5 ) )
-    {
-        this.vertexBuffer.upload(this.vertices, 0, true);
-    }
-    else
-    {
+    //if (this.currentBatchSize > ( this.size * 0.5 ) )
+    //{
+    //    this.vertexBuffer.upload(this.vertices, 0, true);
+   // }
+    //else
+    //{
         // o k .. sub array is SLOW>?
-        var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
-        this.vertexBuffer.upload(view, 0, true);
-    }
+     //   var view = this.positions.subarray(0, this.currentIndex * this.vertByteSize);
+        this.vertexBuffer.upload(buffer.vertices, 0, true);
+    //}
 
     // bind shader..
-    this.renderer.bindShader(this.shader);
+    
     this.renderer.blendModeManager.setBlendMode( 0 );
 
     /// render the groups..
@@ -20365,6 +20138,7 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
+    this.renderer.bindShader(this.shader);
     this.vao.bind();
 };
 
@@ -20400,19 +20174,48 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":38,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/shaders/_TextureShader":95,"../../renderers/webgl/utils/ObjectRenderer":96,"../../utils/createIndicesForQuads":113,"./generateMultiTextureShader":103,"pixi-gl-core":1}],103:[function(require,module,exports){
+var Buffer = function(size, realSize)
+{
+
+    this.realSize = realSize;
+    this.vertices = new ArrayBuffer(size);
+
+    /**
+     * View on the vertices as a Float32Array for positions
+     *
+     * @member {Float32Array}
+     */
+    this.positions = new Float32Array(this.vertices);
+    
+    /**
+     * View on the vertices as a Uint32Array for uvs
+     *
+     * @member {Float32Array}
+     */
+    this.uvs = new Uint32Array(this.vertices);
+
+    /**
+     * View on the vertices as a Uint32Array for colors
+     *
+     * @member {Uint32Array}
+     */
+    this.colors = new Uint32Array(this.vertices);
+
+    //this.buffer = 
+}
+},{"../../const":39,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/shaders/_TextureShader":93,"../../renderers/webgl/utils/ObjectRenderer":94,"../../utils/createIndicesForQuads":111,"./generateMultiTextureShader":101,"bit-twiddle":17,"pixi-gl-core":1}],101:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 
 function generateMultiTextureShader(gl, maxTextures)
 {
     var vertexSrc = "precision lowp float;\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vTextureId = aTextureId;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}";
-    var fragmentSrc = 'precision lowp float;\n\n' + generateSampleSrc(maxTextures) + "\n\n" + fragTemplate
+    var fragmentSrc = fragTemplate
 
-    fragmentSrc = fragmentSrc.replace(/\%\%/gi, '16');
+    fragmentSrc = fragmentSrc.replace(/\%count\%/gi, maxTextures);
+    fragmentSrc = fragmentSrc.replace(/\%forloop\%/gi, generateSampleSrc(maxTextures));
 
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
-
 
     var sampleValues = [];
     for (var i = 0; i < maxTextures; i++) {
@@ -20427,7 +20230,7 @@ function generateMultiTextureShader(gl, maxTextures)
 
 function generateSampleSrc(maxTextures)
 {
-    var src = 'vec4 getSampleFromArray(sampler2D textures[%%], int ndx, vec2 uv) {\n\nvec4 color;'
+    var src = '';
 
     src += '\n';
     src += '\n';
@@ -20437,33 +20240,35 @@ function generateSampleSrc(maxTextures)
         if(i > 0)src += '\nelse ';
         if(i < maxTextures-1)src += 'if(ndx == ' + i + ')';
         src += '\n{';
-        src += '\n\tcolor = texture2D(textures['+i+'], uv);';
+        src += '\n\tcolor = texture2D(uSamplers['+i+'], vTextureCoord);';
         src += '\n}';
     };
 
     src += '\n';
     src += '\n';
-    src += 'return color;';
-    src += '\n}';
 
     return src;
 }
 
 var fragTemplate = [
 
+    'precision lowp float;',
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
-    'uniform sampler2D uSamplers[%%];',
+    'uniform sampler2D uSamplers[%count%];',
 
     'void main(void){',
-        'gl_FragColor = getSampleFromArray(uSamplers, int(vTextureId), vTextureCoord) * vColor;',
+        'vec4 color;',
+        'int ndx = int(vTextureId);',
+        '%forloop%',
+        'gl_FragColor = color * vColor;',
     '}'
 ].join('\n');
 
 module.exports = generateMultiTextureShader;
 
-},{"pixi-gl-core":1}],104:[function(require,module,exports){
+},{"pixi-gl-core":1}],102:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -21084,7 +20889,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":38,"../math":57,"../sprites/Sprite":101,"../textures/Texture":108,"../utils":114}],105:[function(require,module,exports){
+},{"../const":39,"../math":59,"../sprites/Sprite":99,"../textures/Texture":106,"../utils":112}],103:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -21393,7 +21198,7 @@ BaseRenderTexture.prototype.getPixel = function (frame, x, y)
     return this.getPixels(tempRect);
 };
 
-},{"../const":38,"../math":57,"../renderers/canvas/utils/CanvasBuffer":69,"../renderers/webgl/managers/FilterManager":85,"../renderers/webgl/utils/RenderTarget":98,"./BaseTexture":106,"./Texture":108}],106:[function(require,module,exports){
+},{"../const":39,"../math":59,"../renderers/canvas/utils/CanvasBuffer":71,"../renderers/webgl/managers/FilterManager":84,"../renderers/webgl/utils/RenderTarget":96,"./BaseTexture":104,"./Texture":106}],104:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -21830,7 +21635,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":38,"../utils":114,"eventemitter3":25}],107:[function(require,module,exports){
+},{"../const":39,"../utils":112,"eventemitter3":26}],105:[function(require,module,exports){
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture'),
     math = require('../math'),
@@ -22005,7 +21810,7 @@ RenderTexture.create = function(width, height, scaleMode, resolution)
 }
 
 
-},{"../const":38,"../math":57,"./BaseRenderTexture":105,"./Texture":108}],108:[function(require,module,exports){
+},{"../const":39,"../math":59,"./BaseRenderTexture":103,"./Texture":106}],106:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -22030,8 +21835,8 @@ var BaseTexture = require('./BaseTexture'),
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture
- * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
- * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
+ * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
+ * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
@@ -22063,15 +21868,15 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.baseTexture = baseTexture;
 
     /**
-     * The frame specifies the region of the base texture that this texture uses
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
      * @member {PIXI.Rectangle}
-     * @private
      */
     this._frame = frame;
 
     /**
-     * The texture trim data.
+     * This is the trimmed area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
@@ -22114,20 +21919,22 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.height = 0;
 
     /**
-     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
-     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     * This is the area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
-    /**
-     * Indicates whether the texture should be rotated by 90 degrees
-     *
-     * @private
-     * @member {boolean}
-     */
-    this.rotate = !!rotate;
+    this._rotate = +(rotate || 0);
+
+    if (rotate === true) {
+        // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
+        this._rotate = 2;
+    } else {
+        if (this._rotate % 2 !== 0) {
+            throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
+        }
+    }
 
     if (baseTexture.hasLoaded)
     {
@@ -22176,10 +21983,7 @@ Object.defineProperties(Texture.prototype, {
 
             this.noFrame = false;
 
-            this.width = frame.width;
-            this.height = frame.height;
-
-            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
@@ -22187,18 +21991,35 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (this.trim)
-            {
-                this.width = this.trim.width;
-                this.height = this.trim.height;
-                this._frame.width = this.trim.width;
-                this._frame.height = this.trim.height;
-            }
-            else
-            {
+            if (!this.trim) {
+                this.width = frame.width;
+                this.height = frame.height;
                 this.crop = frame;
             }
 
+            if (this.valid)
+            {
+                this._updateUvs();
+            }
+        }
+    },
+    /**
+     * Indicates whether the texture is rotated inside the atlas
+     * set to 2 to compensate for texture packer rotation
+     * set to 6 to compensate for spine packer rotation
+     * can be used to rotate or mirror sprites
+     * See {@link PIXI.GroupD8} for explanation
+     *
+     * @member {number}
+     */
+    rotate: {
+        get: function ()
+        {
+            return this._rotate;
+        },
+        set: function (rotate)
+        {
+            this._rotate = rotate;
             if (this.valid)
             {
                 this._updateUvs();
@@ -22302,7 +22123,7 @@ Texture.prototype._updateUvs = function ()
         this._uvs = new TextureUvs();
     }
 
-    this._uvs.set(this.crop, this.baseTexture, this.rotate);
+    this._uvs.set(this._frame, this.baseTexture, this.rotate);
 };
 
 /**
@@ -22431,7 +22252,7 @@ Texture.removeTextureFromCache = function (id)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":57,"../utils":114,"./BaseTexture":106,"./TextureUvs":109,"./VideoBaseTexture":110,"eventemitter3":25}],109:[function(require,module,exports){
+},{"../math":59,"../utils":112,"./BaseTexture":104,"./TextureUvs":107,"./VideoBaseTexture":108,"eventemitter3":26}],107:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -22464,11 +22285,13 @@ function TextureUvs()
 
 module.exports = TextureUvs;
 
+var GroupD8 = require('../math/GroupD8');
+
 /**
  * Sets the texture Uvs based on the given frame information
  * @param frame {PIXI.Rectangle}
  * @param baseFrame {PIXI.Rectangle}
- * @param rotate {boolean} Whether or not the frame is rotated
+ * @param rotate {number} Rotation of frame, see {@link PIXI.GroupD8}
  * @private
  */
 TextureUvs.prototype.set = function (frame, baseFrame, rotate)
@@ -22478,17 +22301,24 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
 
     if(rotate)
     {
-        this.x0 = (frame.x + frame.height) / tw;
-        this.y0 = frame.y / th;
-
-        this.x1 = (frame.x + frame.height) / tw;
-        this.y1 = (frame.y + frame.width) / th;
-
-        this.x2 = frame.x / tw;
-        this.y2 = (frame.y + frame.width) / th;
-
-        this.x3 = frame.x / tw;
-        this.y3 = frame.y / th;
+        //width and height div 2 div baseFrame size
+        var w2 = frame.width / 2 / tw;
+        var h2 = frame.height / 2 / th;
+        //coordinates of center
+        var cX = frame.x / tw + w2;
+        var cY = frame.y / th + h2;
+        rotate = GroupD8.add(rotate, GroupD8.NW); //NW is top-left corner
+        this.x0 = cX + w2 * GroupD8.uX(rotate);
+        this.y0 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2); //rotate 90 degrees clockwise
+        this.x1 = cX + w2 * GroupD8.uX(rotate);
+        this.y1 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2);
+        this.x2 = cX + w2 * GroupD8.uX(rotate);
+        this.y2 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2);
+        this.x3 = cX + w2 * GroupD8.uX(rotate);
+        this.y3 = cY + h2 * GroupD8.uY(rotate);
     }
     else
     {
@@ -22512,7 +22342,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     this.uvs_uint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
 
-},{}],110:[function(require,module,exports){
+},{"../math/GroupD8":56}],108:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -22749,7 +22579,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":114,"./BaseTexture":106}],111:[function(require,module,exports){
+},{"../utils":112,"./BaseTexture":104}],109:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -23104,7 +22934,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":38,"eventemitter3":25}],112:[function(require,module,exports){
+},{"../const":39,"eventemitter3":26}],110:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -23160,7 +22990,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":111}],113:[function(require,module,exports){
+},{"./Ticker":109}],111:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -23193,7 +23023,7 @@ var createIndicesForQuads = function (size)
 };
 
 module.exports = createIndicesForQuads;
-},{}],114:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -23470,7 +23300,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":38,"./pluginTarget":115,"async":16,"eventemitter3":25}],115:[function(require,module,exports){
+},{"../const":39,"./pluginTarget":113,"async":16,"eventemitter3":26}],113:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -23540,7 +23370,7 @@ module.exports = {
     }
 };
 
-},{}],116:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -23891,7 +23721,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":54,"./extras":123,"./filters":125,"./mesh":139}],117:[function(require,module,exports){
+},{"./core":55,"./extras":121,"./filters":124,"./mesh":139}],115:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24279,7 +24109,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":54}],118:[function(require,module,exports){
+},{"../core":55}],116:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24599,7 +24429,7 @@ MovieClip.fromImages = function (images)
 
     return new MovieClip(textures);
 };
-},{"../core":54}],119:[function(require,module,exports){
+},{"../core":55}],117:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
@@ -25051,7 +24881,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":54,"../core/renderers/canvas/utils/CanvasTinter":72}],120:[function(require,module,exports){
+},{"../core":55,"../core/renderers/canvas/utils/CanvasTinter":74}],118:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -25323,7 +25153,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":54}],121:[function(require,module,exports){
+},{"../core":55}],119:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25353,7 +25183,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":54}],122:[function(require,module,exports){
+},{"../core":55}],120:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25383,7 +25213,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":54}],123:[function(require,module,exports){
+},{"../core":55}],121:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25404,7 +25234,541 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":117,"./MovieClip":118,"./TilingSprite":119,"./cacheAsBitmap":120,"./getChildByName":121,"./getGlobalPosition":122}],124:[function(require,module,exports){
+},{"./BitmapText":115,"./MovieClip":116,"./TilingSprite":117,"./cacheAsBitmap":118,"./getChildByName":119,"./getGlobalPosition":120}],122:[function(require,module,exports){
+var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+
+
+/**
+ * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
+ * color and alpha values of every pixel on your displayObject to produce a result
+ * with a new set of RGBA color and alpha values. It's pretty powerful!
+ *
+ * ```js
+ *  var colorMatrix = new PIXI.ColorMatrixFilter();
+ *  container.filters = [colorMatrix];
+ *  colorMatrix.contrast(2);
+ * ```
+ * @author Clément Chenebault <clement@goodboydigital.com>
+ * @class
+ * @extends PIXI.AbstractFilter
+ * @memberof PIXI.filters
+ */
+function ColorMatrixFilter()
+{
+    core.Filter.call(this,
+        // vertex shader
+        "precision mediump float;\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}",
+        // fragment shader
+        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[20];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4];\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9];\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14];\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19];\n\n//    gl_FragColor = vec4(m[0]);\n}\n"
+    );
+    
+    this.uniforms.m = [
+                    1, 0, 0, 0, 0,
+                    0, 1, 0, 0, 0,
+                    0, 0, 1, 0, 0,
+                    0, 0, 0, 1, 0]
+
+
+}
+
+ColorMatrixFilter.prototype = Object.create(core.Filter.prototype);
+ColorMatrixFilter.prototype.constructor = ColorMatrixFilter;
+module.exports = ColorMatrixFilter;
+
+
+/**
+ * Transforms current matrix and set the new one
+ *
+ * @param matrix {number[]} (mat 5x4)
+ * @param multiply {boolean} if true, current matrix and matrix are multiplied. If false, just set the current matrix with @param matrix
+ */
+ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
+{
+    multiply = !!multiply;
+
+    var newMatrix = matrix;
+
+    if (multiply) {
+        this._multiply(newMatrix, this.uniforms.m, matrix);
+        newMatrix = this._colorMatrix(newMatrix);
+    }
+
+    // set the new matrix
+    this.uniforms.m = newMatrix;
+};
+
+/**
+ * Multiplies two mat5's
+ *
+ * @param out {number[]} (mat 5x4) the receiving matrix
+ * @param a {number[]} (mat 5x4) the first operand
+ * @param b {number[]} (mat 5x4) the second operand
+ * @returns out {number[]} (mat 5x4)
+ */
+ColorMatrixFilter.prototype._multiply = function (out, a, b)
+{
+
+    // Red Channel
+    out[0] = (a[0] * b[0]) + (a[1] * b[5]) + (a[2] * b[10]) + (a[3] * b[15]);
+    out[1] = (a[0] * b[1]) + (a[1] * b[6]) + (a[2] * b[11]) + (a[3] * b[16]);
+    out[2] = (a[0] * b[2]) + (a[1] * b[7]) + (a[2] * b[12]) + (a[3] * b[17]);
+    out[3] = (a[0] * b[3]) + (a[1] * b[8]) + (a[2] * b[13]) + (a[3] * b[18]);
+    out[4] = (a[0] * b[4]) + (a[1] * b[9]) + (a[2] * b[14]) + (a[3] * b[19]);
+
+    // Green Channel
+    out[5] = (a[5] * b[0]) + (a[6] * b[5]) + (a[7] * b[10]) + (a[8] * b[15]);
+    out[6] = (a[5] * b[1]) + (a[6] * b[6]) + (a[7] * b[11]) + (a[8] * b[16]);
+    out[7] = (a[5] * b[2]) + (a[6] * b[7]) + (a[7] * b[12]) + (a[8] * b[17]);
+    out[8] = (a[5] * b[3]) + (a[6] * b[8]) + (a[7] * b[13]) + (a[8] * b[18]);
+    out[9] = (a[5] * b[4]) + (a[6] * b[9]) + (a[7] * b[14]) + (a[8] * b[19]);
+
+    // Blue Channel
+    out[10] = (a[10] * b[0]) + (a[11] * b[5]) + (a[12] * b[10]) + (a[13] * b[15]);
+    out[11] = (a[10] * b[1]) + (a[11] * b[6]) + (a[12] * b[11]) + (a[13] * b[16]);
+    out[12] = (a[10] * b[2]) + (a[11] * b[7]) + (a[12] * b[12]) + (a[13] * b[17]);
+    out[13] = (a[10] * b[3]) + (a[11] * b[8]) + (a[12] * b[13]) + (a[13] * b[18]);
+    out[14] = (a[10] * b[4]) + (a[11] * b[9]) + (a[12] * b[14]) + (a[13] * b[19]);
+
+    // Alpha Channel
+    out[15] = (a[15] * b[0]) + (a[16] * b[5]) + (a[17] * b[10]) + (a[18] * b[15]);
+    out[16] = (a[15] * b[1]) + (a[16] * b[6]) + (a[17] * b[11]) + (a[18] * b[16]);
+    out[17] = (a[15] * b[2]) + (a[16] * b[7]) + (a[17] * b[12]) + (a[18] * b[17]);
+    out[18] = (a[15] * b[3]) + (a[16] * b[8]) + (a[17] * b[13]) + (a[18] * b[18]);
+    out[19] = (a[15] * b[4]) + (a[16] * b[9]) + (a[17] * b[14]) + (a[18] * b[19]);
+
+    return out;
+};
+
+/**
+ * Create a Float32 Array and normalize the offset component to 0-1
+ *
+ * @param matrix {number[]} (mat 5x4)
+ * @return m {number[]} (mat 5x4) with all values between 0-1
+ */
+ColorMatrixFilter.prototype._colorMatrix = function (matrix)
+{
+    // Create a Float32 Array and normalize the offset component to 0-1
+    var m = new Float32Array(matrix);
+    m[4] /= 255;
+    m[9] /= 255;
+    m[14] /= 255;
+    m[19] /= 255;
+
+    return m;
+};
+
+/**
+ * Adjusts brightness
+ *
+ * @param b {number} value of the brigthness (0 is black)
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.brightness = function (b, multiply)
+{
+    var matrix = [
+        b, 0, 0, 0, 0,
+        0, b, 0, 0, 0,
+        0, 0, b, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Set the matrices in grey scales
+ *
+ * @param scale {number} value of the grey (0 is black)
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.greyscale = function (scale, multiply)
+{
+    var matrix = [
+        scale, scale, scale, 0, 0,
+        scale, scale, scale, 0, 0,
+        scale, scale, scale, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+//Americanized alias
+ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
+
+/**
+ * Set the black and white matrice
+ * Multiply the current matrix
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.blackAndWhite = function (multiply)
+{
+    var matrix = [
+        0.3, 0.6, 0.1, 0, 0,
+        0.3, 0.6, 0.1, 0, 0,
+        0.3, 0.6, 0.1, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Set the hue property of the color
+ *
+ * @param rotation {number} in degrees
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.hue = function (rotation, multiply)
+{
+    rotation = (rotation || 0) / 180 * Math.PI;
+    var cos = Math.cos(rotation),
+        sin = Math.sin(rotation);
+
+    // luminanceRed, luminanceGreen, luminanceBlue
+    var lumR = 0.213, // or 0.3086
+        lumG = 0.715, // or 0.6094
+        lumB = 0.072; // or 0.0820
+
+    var matrix = [
+        lumR + cos * (1 - lumR) + sin * (-lumR), lumG + cos * (-lumG) + sin * (-lumG), lumB + cos * (-lumB) + sin * (1 - lumB), 0, 0,
+        lumR + cos * (-lumR) + sin * (0.143), lumG + cos * (1 - lumG) + sin * (0.140), lumB + cos * (-lumB) + sin * (-0.283), 0, 0,
+        lumR + cos * (-lumR) + sin * (-(1 - lumR)), lumG + cos * (-lumG) + sin * (lumG), lumB + cos * (1 - lumB) + sin * (lumB), 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    
+    this._loadMatrix(matrix, multiply);
+};
+
+
+/**
+ * Set the contrast matrix, increase the separation between dark and bright
+ * Increase contrast : shadows darker and highlights brighter
+ * Decrease contrast : bring the shadows up and the highlights down
+ *
+ * @param amount {number} value of the contrast
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.contrast = function (amount, multiply)
+{
+    var v = (amount || 0) + 1;
+    var o = -128 * (v - 1);
+
+    var matrix = [
+        v, 0, 0, 0, o,
+        0, v, 0, 0, o,
+        0, 0, v, 0, o,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Set the saturation matrix, increase the separation between colors
+ * Increase saturation : increase contrast, brightness, and sharpness
+ *
+ * @param amount {number}
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.saturate = function (amount, multiply)
+{
+    var x = (amount || 0) * 2 / 3 + 1;
+    var y = ((x - 1) * -0.5);
+
+    var matrix = [
+        x, y, y, 0, 0,
+        y, x, y, 0, 0,
+        y, y, x, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Desaturate image (remove color)
+ *
+ * Call the saturate function
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.desaturate = function (multiply) // jshint unused:false
+{
+    this.saturate(-1);
+};
+
+/**
+ * Negative image (inverse of classic rgb matrix)
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.negative = function (multiply)
+{
+    var matrix = [
+        0, 1, 1, 0, 0,
+        1, 0, 1, 0, 0,
+        1, 1, 0, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Sepia image
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.sepia = function (multiply)
+{
+    var matrix = [
+        0.393, 0.7689999, 0.18899999, 0, 0,
+        0.349, 0.6859999, 0.16799999, 0, 0,
+        0.272, 0.5339999, 0.13099999, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Color motion picture process invented in 1916 (thanks Dominic Szablewski)
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.technicolor = function (multiply)
+{
+    var matrix = [
+        1.9125277891456083, -0.8545344976951645, -0.09155508482755585, 0, 11.793603434377337,
+        -0.3087833385928097, 1.7658908555458428, -0.10601743074722245, 0, -70.35205161461398,
+        -0.231103377548616, -0.7501899197440212, 1.847597816108189, 0, 30.950940869491138,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Polaroid filter
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.polaroid = function (multiply)
+{
+    var matrix = [
+        1.438, -0.062, -0.062, 0, 0,
+        -0.122, 1.378, -0.122, 0, 0,
+        -0.016, -0.016, 1.483, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Filter who transforms : Red -> Blue and Blue -> Red
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.toBGR = function (multiply)
+{
+    var matrix = [
+        0, 0, 1, 0, 0,
+        0, 1, 0, 0, 0,
+        1, 0, 0, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Color reversal film introduced by Eastman Kodak in 1935. (thanks Dominic Szablewski)
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.kodachrome = function (multiply)
+{
+    var matrix = [
+        1.1285582396593525, -0.3967382283601348, -0.03992559172921793, 0, 63.72958762196502,
+        -0.16404339962244616, 1.0835251566291304, -0.05498805115633132, 0, 24.732407896706203,
+        -0.16786010706155763, -0.5603416277695248, 1.6014850761964943, 0, 35.62982807460946,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/**
+ * Brown delicious browni filter (thanks Dominic Szablewski)
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.browni = function (multiply)
+{
+    var matrix = [
+        0.5997023498159715, 0.34553243048391263, -0.2708298674538042, 0, 47.43192855600873,
+        -0.037703249837783157, 0.8609577587992641, 0.15059552388459913, 0, -36.96841498319127,
+        0.24113635128153335, -0.07441037908422492, 0.44972182064877153, 0, -7.562075277591283,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/*
+ * Vintage filter (thanks Dominic Szablewski)
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.vintage = function (multiply)
+{
+    var matrix = [
+        0.6279345635605994, 0.3202183420819367, -0.03965408211312453, 0, 9.651285835294123,
+        0.02578397704808868, 0.6441188644374771, 0.03259127616149294, 0, 7.462829176470591,
+        0.0466055556782719, -0.0851232987247891, 0.5241648018700465, 0, 5.159190588235296,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/*
+ * We don't know exactly what it does, kind of gradient map, but funny to play with!
+ *
+ * @param desaturation {number}
+ * @param toned {number}
+ * @param lightColor {string} (example : "0xFFE580")
+ * @param darkColor {string}  (example : "0xFFE580")
+ *
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.colorTone = function (desaturation, toned, lightColor, darkColor, multiply)
+{
+    desaturation = desaturation || 0.2;
+    toned = toned || 0.15;
+    lightColor = lightColor || 0xFFE580;
+    darkColor = darkColor || 0x338000;
+
+    var lR = ((lightColor >> 16) & 0xFF) / 255;
+    var lG = ((lightColor >> 8) & 0xFF) / 255;
+    var lB = (lightColor & 0xFF) / 255;
+
+    var dR = ((darkColor >> 16) & 0xFF) / 255;
+    var dG = ((darkColor >> 8) & 0xFF) / 255;
+    var dB = (darkColor & 0xFF) / 255;
+
+    var matrix = [
+        0.3, 0.59, 0.11, 0, 0,
+        lR, lG, lB, desaturation, 0,
+        dR, dG, dB, toned, 0,
+        lR - dR, lG - dG, lB - dB, 0, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/*
+ * Night effect
+ *
+ * @param intensity {number}
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.night = function (intensity, multiply)
+{
+    intensity = intensity || 0.1;
+    var matrix = [
+        intensity * ( -2.0), -intensity, 0, 0, 0,
+        -intensity, 0, intensity, 0, 0,
+        0, intensity, intensity * 2.0, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+
+/*
+ * Predator effect
+ *
+ * Erase the current matrix by setting a new indepent one
+ *
+ * @param amount {number} how much the predator feels his future victim
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.predator = function (amount, multiply)
+{
+    var matrix = [
+        11.224130630493164 * amount, -4.794486999511719 * amount, -2.8746118545532227 * amount, 0 * amount, 0.40342438220977783 * amount,
+        -3.6330697536468506 * amount, 9.193157196044922 * amount, -2.951810836791992 * amount, 0 * amount, -1.316135048866272 * amount,
+        -3.2184197902679443 * amount, -4.2375030517578125 * amount, 7.476448059082031 * amount, 0 * amount, 0.8044459223747253 * amount,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/*
+ * LSD effect
+ *
+ * Multiply the current matrix
+ *
+ * @param amount {number} How crazy is your effect
+ * @param multiply {boolean} refer to ._loadMatrix() method
+ */
+ColorMatrixFilter.prototype.lsd = function (multiply)
+{
+    var matrix = [
+        2, -0.4, 0.5, 0, 0,
+        -0.5, 2, -0.4, 0, 0,
+        -0.4, -0.5, 3, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, multiply);
+};
+
+/*
+ * Erase the current matrix by setting the default one
+ *
+ */
+ColorMatrixFilter.prototype.reset = function ()
+{
+    var matrix = [
+        1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0
+    ];
+
+    this._loadMatrix(matrix, false);
+};
+
+
+Object.defineProperties(ColorMatrixFilter.prototype, {
+    /**
+     * Sets the matrix of the color matrix filter
+     *
+     * @member {number[]}
+     * @memberof PIXI.filters.ColorMatrixFilter#
+     * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
+     */
+    matrix: {
+        get: function ()
+        {
+            return this.uniforms.m;
+        },
+        set: function (value)
+        {
+            this.uniforms.m = value;
+        }
+    }
+});
+
+},{"../../core":55}],123:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25426,6 +25790,8 @@ function GrayFilter()
     );
 
     this.uniforms.gray = 1;
+    
+    this.glShaderKey = 'gray';
 }
 
 GrayFilter.prototype = Object.create(core.Filter.prototype);
@@ -25451,7 +25817,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":54}],125:[function(require,module,exports){
+},{"../../core":55}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25469,7 +25835,6 @@ module.exports = {
     // BlurXFilter:        require('./blur/BlurXFilter'),
     // BlurYFilter:        require('./blur/BlurYFilter'),
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
-    // ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
     // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
     // CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
@@ -25486,11 +25851,114 @@ module.exports = {
     // TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
     // TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
     //TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-    //TwistFilter:        require('./twist/TwistFilter')
+     ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
+     TwistFilter:        require('./twist/TwistFilter'),
      GrayFilter:         require('./gray/GrayFilter')
 };
 
-},{"./gray/GrayFilter":124}],126:[function(require,module,exports){
+},{"./colormatrix/ColorMatrixFilter":122,"./gray/GrayFilter":123,"./twist/TwistFilter":125}],125:[function(require,module,exports){
+var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+
+
+/**
+ * This filter applies a twist effect making display objects appear twisted in the given direction.
+ *
+ * @class
+ * @extends PIXI.Filter
+ * @memberof PIXI.filters
+ */
+function TwistFilter()
+{
+    core.Filter.call(this,
+        // vertex shader
+        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n\n",
+        // fragment shader
+        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"
+        // custom uniforms
+    );
+
+    this.uniforms.radius = 400; 
+    this.uniforms.angle = 3; 
+    this.uniforms.offset = [400,300]; 
+    //this.uniforms.dimensions = [100, 100, 100, 100];
+    this.transform = new core.math.Matrix();
+    this.padding = 200;
+}
+
+TwistFilter.prototype = Object.create(core.Filter.prototype);
+TwistFilter.prototype.constructor = TwistFilter;
+module.exports = TwistFilter;
+
+TwistFilter.prototype.apply = function (filterManager, input, output, clear)
+{
+    var maskSprite = this.maskSprite;
+
+    var currentState = filterManager.stack[filterManager.stackIndex];
+    /*
+    this.uniforms.filterArea[0] = input.size.width;
+    this.uniforms.filterArea[1] = input.size.height;
+    this.uniforms.filterArea[2] = currentState.sourceFrame.x;
+    this.uniforms.filterArea[3] = currentState.sourceFrame.y;
+    */
+
+    filterManager.applyFilter(this, input, output, clear);
+};
+
+Object.defineProperties(TwistFilter.prototype, {
+    /**
+     * This point describes the the offset of the twist.
+     *
+     * @member {PIXI.Point}
+     * @memberof PIXI.filters.TwistFilter#
+     */
+    offset: {
+        get: function ()
+        {
+            return this.uniforms.offset;
+        },
+        set: function (value)
+        {
+            this.uniforms.offset = value;
+        }
+    },
+
+    /**
+     * This radius of the twist.
+     *
+     * @member {number}
+     * @memberof PIXI.filters.TwistFilter#
+     */
+    radius: {
+        get: function ()
+        {
+            return this.uniforms.radius;
+        },
+        set: function (value)
+        {
+            this.uniforms.radius = value;
+        }
+    },
+
+    /**
+     * This angle of the twist.
+     *
+     * @member {number}
+     * @memberof PIXI.filters.TwistFilter#
+     */
+    angle: {
+        get: function ()
+        {
+            return this.uniforms.angle;
+        },
+        set: function (value)
+        {
+            this.uniforms.angle = value;
+        }
+    }
+});
+
+},{"../../core":55}],126:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -25523,7 +25991,7 @@ global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./accessibility":37,"./core":54,"./deprecation":116,"./filters":125,"./interaction":129,"./loaders":132,"./polyfill":144}],127:[function(require,module,exports){
+},{"./accessibility":38,"./core":55,"./deprecation":114,"./filters":124,"./interaction":129,"./loaders":132,"./polyfill":144}],127:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25572,7 +26040,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":54}],128:[function(require,module,exports){
+},{"../core":55}],128:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -26448,7 +26916,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":54,"./InteractionData":127,"./interactiveTarget":130}],129:[function(require,module,exports){
+},{"../core":55,"./InteractionData":127,"./interactiveTarget":130}],129:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26635,7 +27103,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54,"../extras":123,"path":17,"resource-loader":31}],132:[function(require,module,exports){
+},{"../core":55,"../extras":121,"path":18,"resource-loader":32}],132:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26656,7 +27124,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":131,"./loader":133,"./spritesheetParser":134,"./textureParser":135,"resource-loader":31}],133:[function(require,module,exports){
+},{"./bitmapFontParser":131,"./loader":133,"./spritesheetParser":134,"./textureParser":135,"resource-loader":32}],133:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -26718,7 +27186,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":131,"./spritesheetParser":134,"./textureParser":135,"resource-loader":31}],134:[function(require,module,exports){
+},{"./bitmapFontParser":131,"./spritesheetParser":134,"./textureParser":135,"resource-loader":32}],134:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -26756,14 +27224,15 @@ module.exports = function ()
 
                 if (rect)
                 {
-                    var size = null;
+                    var frame = null;
                     var trim = null;
+                    var crop = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
                     if (frames[i].rotated) {
-                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                     }
                     else {
-                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
                     }
 
                     //  Check to see if the sprite is trimmed
@@ -26772,25 +27241,12 @@ module.exports = function ()
                         trim = new core.Rectangle(
                             frames[i].spriteSourceSize.x / resolution,
                             frames[i].spriteSourceSize.y / resolution,
-                            frames[i].sourceSize.w / resolution,
-                            frames[i].sourceSize.h / resolution
+                            frames[i].spriteSourceSize.w / resolution,
+                            frames[i].spriteSourceSize.h / resolution
                          );
                     }
 
-                    // flip the width and height!
-                    if (frames[i].rotated)
-                    {
-                        var temp = size.width;
-                        size.width = size.height;
-                        size.height = temp;
-                    }
-
-                    size.x /= resolution;
-                    size.y /= resolution;
-                    size.width /= resolution;
-                    size.height /= resolution;
-
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
+                    resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, crop, trim, frames[i].rotated ? 2 : 0);
 
                     // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                     core.utils.TextureCache[i] = resource.textures[i];
@@ -26802,7 +27258,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54,"path":17,"resource-loader":31}],135:[function(require,module,exports){
+},{"../core":55,"path":18,"resource-loader":32}],135:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -26824,7 +27280,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":54}],136:[function(require,module,exports){
+},{"../core":55}],136:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -27300,7 +27756,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":54}],137:[function(require,module,exports){
+},{"../core":55}],137:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -27639,7 +28095,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":54,"./Mesh":136}],139:[function(require,module,exports){
+},{"../core":55,"./Mesh":136}],139:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27887,7 +28343,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":54,"../Mesh":136}],141:[function(require,module,exports){
+},{"../../core":55,"../Mesh":136}],141:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -27947,7 +28403,7 @@ MeshShader.prototype.constructor = MeshShader;
 module.exports = MeshShader;
 
 
-},{"../../core":54}],142:[function(require,module,exports){
+},{"../../core":55}],142:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -27973,7 +28429,7 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":26}],144:[function(require,module,exports){
+},{"object-assign":27}],144:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');

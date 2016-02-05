@@ -8,10 +8,10 @@ var math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
      //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = {width:800, height:600}//sprite._texture.baseTexture;
+    texture = {width:1136, height:700}//sprite._texture.baseTexture;
 
     // TODO unwrap?
     var mappedMatrix = outputMatrix.identity();
@@ -24,7 +24,7 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
 }
 
-var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
 {
     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = {width:800, height:600}//sprite._texture.baseTexture;

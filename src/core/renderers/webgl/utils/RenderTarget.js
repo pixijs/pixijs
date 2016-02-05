@@ -151,6 +151,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
         this.frameBuffer.framebuffer = null;
     }
 
+    this.setFrame();
+    
     this.resize(width, height);
 };
 
@@ -185,12 +187,17 @@ RenderTarget.prototype.attachStencilBuffer = function()
     }
 };
 
+RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
+{
+    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
+    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
+}
 
 /**
  * Binds the buffers and initialises the viewport.
  *
  */
-RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
+RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
@@ -199,9 +206,6 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     this.frameBuffer.texture.unbind();
 
     this.frameBuffer.bind();
-
-    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
-    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
     this.calculateProjection( this.destinationFrame, this.sourceFrame );
 

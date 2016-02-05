@@ -50,6 +50,7 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
     // used for cacheing..
     this.glShaderKey = null;
 
+    this.padding = 4;
     this.resolution = 1;
 }
 

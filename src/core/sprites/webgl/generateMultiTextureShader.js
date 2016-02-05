@@ -6,7 +6,7 @@ function generateMultiTextureShader(gl, maxTextures)
     var vertexSrc = fs.readFileSync(__dirname + '/texture.vert', 'utf8');
     var fragmentSrc = fragTemplate
 
-    fragmentSrc = fragmentSrc.replace(/\%\%/gi, maxTextures);
+    fragmentSrc = fragmentSrc.replace(/\%count\%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/\%forloop\%/gi, generateSampleSrc(maxTextures));
 
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
@@ -24,7 +24,7 @@ function generateMultiTextureShader(gl, maxTextures)
 
 function generateSampleSrc(maxTextures)
 {
-    var src = ''
+    var src = '';
 
     src += '\n';
     src += '\n';
@@ -50,7 +50,7 @@ var fragTemplate = [
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
-    'uniform sampler2D uSamplers[%%];',
+    'uniform sampler2D uSamplers[%count%];',
 
     'void main(void){',
         'vec4 color;',
