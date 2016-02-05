@@ -296,11 +296,30 @@ Text.prototype.updateText = function ()
     //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.font = style.font;
-    this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = style.textBaseline;
     this.context.lineJoin = style.lineJoin;
     this.context.miterLimit = style.miterLimit;
+
+
+    if(typeof style.stroke === "string")
+        this.context.strokeStyle = style.stroke;
+    else{
+        var lastIndex = style.stroke.direction.length - 1;
+        var gradient;
+        if(style.stroke.type == PIXI.GRADIENT_TYPE.RADIAL) {
+            gradient = this.context.createRadialGradient(
+                style.stroke.direction[0].x, style.stroke.direction[0].y,style.stroke.direction[0].r,
+                style.stroke.direction[lastIndex].x, style.stroke.direction[lastIndex].y,style.stroke.direction[lastIndex].r
+            );
+        }else{
+            gradient = this.context.createLinearGradient(style.stroke.direction[0].x, style.stroke.direction[0].y, style.stroke.direction[lastIndex].x, style.stroke.direction[lastIndex].y);
+        }
+        for (var i = 0; i < style.stroke.stops.length; i++) {
+            gradient.addColorStop(style.stroke.stops[i][0].toString(), style.stroke.stops[i][1]);
+        }
+        this.context.strokeStyle = gradient;
+    }
 
     var linePositionX;
     var linePositionY;
@@ -310,6 +329,7 @@ Text.prototype.updateText = function ()
         if (style.dropShadowBlur > 0) {
             this.context.shadowColor = style.dropShadowColor;
             this.context.shadowBlur = style.dropShadowBlur;
+            this.context.fillStyle = style.dropShadowColor;
         } else {
             this.context.fillStyle = style.dropShadowColor;
         }
@@ -339,7 +359,26 @@ Text.prototype.updateText = function ()
     }
 
     //set canvas text styles
-    this.context.fillStyle = style.fill;
+    if(typeof style.fill === "string")
+        this.context.fillStyle = style.fill;
+    else{
+        var lastIndex = style.fill.direction.length - 1;
+        var gradient;
+        if(style.fill.type == PIXI.GRADIENT_TYPE.RADIAL) {
+            gradient = this.context.createRadialGradient(
+                style.fill.direction[0].x, style.fill.direction[0].y,style.fill.direction[0].r,
+                style.fill.direction[lastIndex].x, style.fill.direction[lastIndex].y,style.fill.direction[lastIndex].r
+            );
+        }else{
+            gradient = this.context.createLinearGradient(style.fill.direction[0].x, style.fill.direction[0].y, style.fill.direction[lastIndex].x, style.fill.direction[lastIndex].y);
+        }
+        for (var i = 0; i < style.fill.stops.length; i++) {
+            gradient.addColorStop(style.fill.stops[i][0].toString(), style.fill.stops[i][1]);
+        }
+        this.context.fillStyle = gradient;
+    }
+
+
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)

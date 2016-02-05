@@ -215,7 +215,22 @@ var CONST = {
 
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-    SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
+    SPRITE_BATCH_SIZE: 2000, //nice balance between mobile and desktop machines
+
+
+    /**
+     * Constants that define the type of gradient color.
+     *
+     * @static
+     * @constant
+     * @property {object} GRADIENT_TYPE
+     * @property {object} GRADIENT_TYPE.LINEAR=0
+     * @property {object} GRADIENT_TYPE.RADIAL=1
+     */
+    GRADIENT_TYPE:{
+        LINEAR: 0,
+        RADIAL: 1
+    }
 };
 
 module.exports = CONST;
