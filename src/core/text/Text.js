@@ -258,7 +258,12 @@ Text.prototype.updateText = function ()
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
+
+    var i;
+    var lastIndex;
+    var gradient;
+
+    for (i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width;
         lineWidths[i] = lineWidth;
@@ -302,12 +307,12 @@ Text.prototype.updateText = function ()
     this.context.miterLimit = style.miterLimit;
 
 
-    if(typeof style.stroke === "string")
+    if(typeof style.stroke === 'string'){
         this.context.strokeStyle = style.stroke;
+    }
     else{
-        var lastIndex = style.stroke.direction.length - 1;
-        var gradient;
-        if(style.stroke.type == PIXI.GRADIENT_TYPE.RADIAL) {
+        lastIndex = style.stroke.direction.length - 1;
+        if(style.stroke.type === CONST.GRADIENT_TYPE.RADIAL) {
             gradient = this.context.createRadialGradient(
                 style.stroke.direction[0].x, style.stroke.direction[0].y,style.stroke.direction[0].r,
                 style.stroke.direction[lastIndex].x, style.stroke.direction[lastIndex].y,style.stroke.direction[lastIndex].r
@@ -315,7 +320,7 @@ Text.prototype.updateText = function ()
         }else{
             gradient = this.context.createLinearGradient(style.stroke.direction[0].x, style.stroke.direction[0].y, style.stroke.direction[lastIndex].x, style.stroke.direction[lastIndex].y);
         }
-        for (var i = 0; i < style.stroke.stops.length; i++) {
+        for (i = 0; i < style.stroke.stops.length; i++) {
             gradient.addColorStop(style.stroke.stops[i][0].toString(), style.stroke.stops[i][1]);
         }
         this.context.strokeStyle = gradient;
@@ -359,12 +364,12 @@ Text.prototype.updateText = function ()
     }
 
     //set canvas text styles
-    if(typeof style.fill === "string")
+    if(typeof style.fill === 'string'){
         this.context.fillStyle = style.fill;
+    }
     else{
-        var lastIndex = style.fill.direction.length - 1;
-        var gradient;
-        if(style.fill.type == PIXI.GRADIENT_TYPE.RADIAL) {
+        lastIndex = style.fill.direction.length - 1;
+        if(style.fill.type === CONST.GRADIENT_TYPE.RADIAL) {
             gradient = this.context.createRadialGradient(
                 style.fill.direction[0].x, style.fill.direction[0].y,style.fill.direction[0].r,
                 style.fill.direction[lastIndex].x, style.fill.direction[lastIndex].y,style.fill.direction[lastIndex].r
@@ -372,7 +377,7 @@ Text.prototype.updateText = function ()
         }else{
             gradient = this.context.createLinearGradient(style.fill.direction[0].x, style.fill.direction[0].y, style.fill.direction[lastIndex].x, style.fill.direction[lastIndex].y);
         }
-        for (var i = 0; i < style.fill.stops.length; i++) {
+        for (i = 0; i < style.fill.stops.length; i++) {
             gradient.addColorStop(style.fill.stops[i][0].toString(), style.fill.stops[i][1]);
         }
         this.context.fillStyle = gradient;
