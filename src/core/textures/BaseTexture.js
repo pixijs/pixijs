@@ -136,7 +136,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @private
      */
     this._glTextures = [];
-    this._active = false;
+    this._enabled = 0;
     this._id = 0;
     
     // if no source passed don't try to load

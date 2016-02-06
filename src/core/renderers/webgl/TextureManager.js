@@ -54,8 +54,6 @@ TextureManager.prototype.updateTexture = function(texture)
         glTexture.premultiplyAlpha = true;
         texture._glTextures[gl.id] = glTexture;
 
-       // this.glTextures[texture.uid] = glTexture;
-
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
         
@@ -64,7 +62,6 @@ TextureManager.prototype.updateTexture = function(texture)
         //TODO check is power of two..
         glTexture.enableWrapClamp();
 
-        // TODO check for scaling type
         if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
         {
             glTexture.enableNearestScaling();

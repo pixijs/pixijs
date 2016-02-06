@@ -109,7 +109,7 @@ function SpriteRenderer(renderer)
 
     this.textureCount = 0;
     this.currentIndex = 0;
-  
+    this.tick =0;
     this.groups = [];
     
     //TODO - 300 is a bit magic, figure out a nicer amount!
@@ -220,9 +220,10 @@ SpriteRenderer.prototype.flush = function ()
     var tint;
     var uvs;
     var textureId;
-
-    currentGroup.textureCount = 0
-    //var array = 
+    var blendMode = 0;
+    currentGroup.textureCount = 0;
+    
+    this.tick++;
 
     for (var i = 0; i < currentIndex; i++) 
     {
@@ -232,21 +233,25 @@ SpriteRenderer.prototype.flush = function ()
 
         nextTexture = sprite._texture.baseTexture;
 
+        if(blendMode !== sprite.blendMode)
+        {
+          //  blendMode = sprite.blendMode;
+          //  currentTexture = null;
+          //  textureCount = this.Max
+        }
+
         if(currentTexture !== nextTexture)
         {
             currentTexture = nextTexture;
             
-            if(!nextTexture._enabled)
+            if(nextTexture._enabled !== this.tick)
             {
-                nextTexture._enabled = true;
+                nextTexture._enabled = this.tick;
                 nextTexture._id = textureCount;
                 
                 if(textureCount === this.MAX_TEXTURES)
                 {
-                    for ( i = 0; i < currentGroup.textureCount; i++) 
-                    {     
-                        currentGroup.textures[i]._enabled = false;
-                    };
+                    this.tick++;
 
                     textureCount = 0;
 
@@ -254,6 +259,7 @@ SpriteRenderer.prototype.flush = function ()
                    
                     currentGroup = groups[groupCount++];
                     currentGroup.textureCount = 0;
+                    currentGroup.blend = blendMode;
                     currentGroup.start = currentIndex;
                 }
 
@@ -262,8 +268,10 @@ SpriteRenderer.prototype.flush = function ()
 
             textureCount++;
         }
-
+       
         var vertexData = sprite.vertexData;
+
+        //TODO this sum does not need to be set each frame..
         var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
         var uvs = sprite._texture._uvs.uvs_uint32;
         var textureId = nextTexture._id;
@@ -299,16 +307,9 @@ SpriteRenderer.prototype.flush = function ()
     };
 
     currentGroup.size = currentIndex - currentGroup.start;
-
-    for (i = 0; i < currentGroup.textureCount; i++) 
-    {     
-        currentGroup.textures[i]._enabled = false;
-    };
    
     this.vertexBuffer.upload(buffer.vertices, 0, true);
  
-    // bind shader..
-    this.renderer.setBlendMode( 1 );
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
@@ -319,17 +320,15 @@ SpriteRenderer.prototype.flush = function ()
             this.renderer.bindTexture(group.textures[j], j);
         };
 
+        // set the blend mode..
+        this.renderer.state.setBlendMode( group.blend );
+
         gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
     };
 
     // reset elements for the next flush
     this.currentIndex = 0;
 };
-
-SpriteRenderer.prototype.start = function ()
-{
- 
-}
 
 /**
  * Starts a new sprite batch.
@@ -339,6 +338,7 @@ SpriteRenderer.prototype.start = function ()
 {
     this.renderer.bindShader(this.shader);
     this.vao.bind();
+    this.tick %= 1000;
 };
 
 SpriteRenderer.prototype.stop = function ()
@@ -360,11 +360,6 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader.destroy();
 
     this.renderer = null;
-
-    this.vertices = null;
-    this.positions = null;
-    this.colors = null;
-    this.indices = null;
 
     this.vertexBuffer = null;
     this.indexBuffer = null;
