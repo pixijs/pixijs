@@ -138,15 +138,11 @@ SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
-<<<<<<< HEAD
+
     this.MAX_TEXTURES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
-=======
-    this.MAX_TEXTUES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-   
-    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTUES);
->>>>>>> dev-filter-refactor
+
 
     // create a couple of buffers
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
@@ -312,7 +308,7 @@ SpriteRenderer.prototype.flush = function ()
     this.vertexBuffer.upload(buffer.vertices, 0, true);
  
     // bind shader..
-    this.renderer.blendModeManager.setBlendMode( 0 );
+    this.renderer.setBlendMode( 1 );
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {

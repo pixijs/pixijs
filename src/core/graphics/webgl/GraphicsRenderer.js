@@ -91,7 +91,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     // This  could be speeded up for sure!
     var shader = this.primitiveShader;
     renderer.bindShader(shader)
-    renderer.blendModeManager.setBlendMode( graphics.blendMode );
+    renderer.state.setBlendMode( graphics.blendMode );
 
     for (var i = 0, n = webGL.data.length; i < n; i++)
     {

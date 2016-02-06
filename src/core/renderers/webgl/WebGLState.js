@@ -1,5 +1,6 @@
 
-
+var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
+    
 
 
 var WebGLState = function(gl)
@@ -17,6 +18,9 @@ var WebGLState = function(gl)
 	this.gl = gl;
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+
+	this.blendModes = mapWebGLBlendModesToPixi(gl);
+    
 
 	// check we have vao..
 	this.nativeVaoExtension = (
@@ -47,7 +51,8 @@ WebGLState.prototype.push = function()
 var BLEND = 0,
 	DEPTH_TEST = 1,
 	FRONT_FACE = 2,
-	CULL_FACE = 3;
+	CULL_FACE = 3,
+	BLEND_FUNC = 4;
 
 WebGLState.prototype.pop = function()
 {
@@ -61,6 +66,7 @@ WebGLState.prototype.setState = function(state)
 	this.setDepthTest(state[DEPTH_TEST]);
 	this.setDepthTest(state[FRONT_FACE]);
 	this.setDepthTest(state[CULL_FACE]);
+	this.setDepthTest(state[BLEND_FUNC]);
 }
 
 WebGLState.prototype.setBlendMode = function(blendMode)
@@ -84,6 +90,15 @@ WebGLState.prototype.setBlend = function(value)
 	{
 		gl.disable(gl.BLEND);		
 	}
+}
+
+WebGLState.prototype.setBlendMode = function(value)
+{
+	if(value === this.activeState[BLEND_FUNC])return;
+
+	this.activeState[BLEND_FUNC] = value;
+
+	this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
 }
 
 WebGLState.prototype.setDepthTest = function(value)

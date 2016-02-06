@@ -2,14 +2,12 @@ var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
-    BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
     RenderTextureManager = require('./RenderTextureManager'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
-    mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi'),
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
     utils = require('../../utils'),
     CONST = require('../../const');
@@ -90,8 +88,6 @@ function WebGLRenderer(width, height, options)
      */
     this.stencilManager = new StencilManager(this);
 
-    this.blendModeManager = new BlendModeManager(this);
-
     /**
      * The currently active ObjectRenderer.
      *
@@ -119,7 +115,6 @@ function WebGLRenderer(width, height, options)
   
      this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
-    this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
 
     
@@ -134,6 +129,8 @@ function WebGLRenderer(width, height, options)
     this._activeRenderTarget = null;
     this._activeTextureLocation = 999;
     this._activeTexture = null;
+
+    this.setBlendMode(0)
 }
 
 // constructor
@@ -269,9 +266,9 @@ WebGLRenderer.prototype.resize = function (width, height)
     }
 };
 
-WebGLRenderer.prototype.setBlendMode = function (mode)
+WebGLRenderer.prototype.setBlendMode = function (blendMode)
 {
-    // fill in here..
+    this.state.setBlendMode(blendMode);
 }
 
 WebGLRenderer.prototype.clear = function (clearColor)
