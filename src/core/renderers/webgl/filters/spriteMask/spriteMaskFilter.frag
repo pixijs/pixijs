@@ -2,7 +2,6 @@ precision lowp float;
 
 varying vec2 vMaskCoord;
 varying vec2 vTextureCoord;
-varying vec4 vColor;
 
 uniform sampler2D uSampler;
 uniform float alpha;

@@ -115,26 +115,6 @@ RenderTexture.prototype.clear = function ()
 };
 
 /**
- * Internal method assigned to the `render` property if using a CanvasRenderer.
- *
- * @private
- * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
- * @param [matrix] {PIXI.Matrix} Optional matrix to apply to the display object before rendering.
- * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
- * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
- *  transformations will be restored. Not restoring this information will be a little faster.
- */
-RenderTexture.prototype.render = function (displayObject, matrix, clear, updateTransform)
-{
-    if (!this.valid)
-    {
-        return;
-    }
-
-    this.baseTexture.render(this.frame, displayObject, matrix, clear, updateTransform)
-};
-
-/**
  * Will return a HTML Image of the texture
  *
  * @return {Image}

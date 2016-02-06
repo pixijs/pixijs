@@ -151,6 +151,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
         this.frameBuffer.framebuffer = null;
     }
 
+    this.setFrame();
+    
     this.resize(width, height);
 };
 
@@ -185,23 +187,25 @@ RenderTarget.prototype.attachStencilBuffer = function()
     }
 };
 
+RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
+{
+    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
+    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
+}
 
 /**
  * Binds the buffers and initialises the viewport.
  *
  */
-RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
+RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
-    // make sure the texture is unbound!
+    // make surethe texture is unbound!
     this.frameBuffer.texture.unbind();
 
     this.frameBuffer.bind();
-
-    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
-    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
     this.calculateProjection( this.destinationFrame, this.sourceFrame );
 
@@ -213,7 +217,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
     if(this.destinationFrame !== this.sourceFrame)
     {
         gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(this.destinationFrame.x, this.destinationFrame.y, this.destinationFrame.width* this.resolution, this.destinationFrame.height* this.resolution);
+        gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
     }
     else
     {
@@ -222,7 +226,7 @@ RenderTarget.prototype.activate = function(destinationFrame, sourceFrame)
 
 
     // TODO - does not need to be updated all the time??
-    gl.viewport(this.destinationFrame.x,this.destinationFrame.y, this.destinationFrame.width * this.resolution, this.destinationFrame.height * this.resolution);
+    gl.viewport(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height * this.resolution)|0);
 
 
 };
@@ -276,7 +280,7 @@ RenderTarget.prototype.resize = function (width, height)
         return;
     }
 
-    console.log("ADASD")
+    console.log(width + " : " + height)
 
     this.size.width = width;
     this.size.height = height;

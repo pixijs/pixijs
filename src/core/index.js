@@ -54,9 +54,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
 
     // filters - webgl
-    AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
-    FXAAFilter:             require('./renderers/webgl/filters/FXAAFilter'),
-    SpriteMaskFilter:       require('./renderers/webgl/filters/SpriteMaskFilter'),
+    SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),
+    Filter:                 require('./renderers/webgl/filters/Filter'),
 
     glCore:                   require('pixi-gl-core'),
 

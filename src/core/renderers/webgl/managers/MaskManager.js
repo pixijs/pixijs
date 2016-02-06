@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/SpriteMaskFilter');
+    AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
 
 /**
  * @class
@@ -10,11 +10,11 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    this.stencilStack = [];
-    this.reverse = true;
-    this.count = 0;
+    this.scissor = false;
 
     this.alphaMaskPool = [];
+    this.alphaMaskPool = [];
+    this.alphaMaskIndex = 0;
 }
 
 MaskManager.prototype = Object.create(WebGLManager.prototype);
@@ -35,9 +35,30 @@ MaskManager.prototype.pushMask = function (target, maskData)
     }
     else
     {
-        this.pushStencilMask(target, maskData);
-    }
+       // console.log( maskData.graphicsData[0].shape.type)
+        if(!this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
+        {
+            var matrix = maskData.worldTransform;
 
+            var rot = Math.atan2(matrix.b, matrix.a);
+
+            // use the nearest degree!
+            rot = Math.round(rot * (180/Math.PI));
+
+            if(rot % 90)
+            {
+                this.pushStencilMask(target, maskData);
+            }
+            else
+            {
+                this.pushScissorMask(target, maskData);
+            }
+        }
+        else
+        {
+            this.pushStencilMask(target, maskData);
+        }
+    }
 };
 
 /**
@@ -54,7 +75,15 @@ MaskManager.prototype.popMask = function (target, maskData)
     }
     else
     {
-        this.popStencilMask(target, maskData);
+        if(!this.renderer.stencilManager.stencilMaskStack.length)
+        {
+            this.popScissorMask(target, maskData);
+        }
+        else
+        {
+            this.popStencilMask(target, maskData);
+        }
+        
     }
 };
 
@@ -66,15 +95,21 @@ MaskManager.prototype.popMask = function (target, maskData)
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
-    var alphaMaskFilter = this.alphaMaskPool.pop();
+    var alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
 
     if (!alphaMaskFilter)
     {
-        alphaMaskFilter = [new AlphaMaskFilter(maskData)];
+        alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
     }
 
     alphaMaskFilter[0].maskSprite = maskData;
+
+    //TODO - may cause issues!
+    target.filterArea = maskData.getBounds();
+
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+
+    this.alphaMaskIndex++;
 };
 
 /**
@@ -83,9 +118,8 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
  */
 MaskManager.prototype.popSpriteMask = function ()
 {
-    var filters = this.renderer.filterManager.popFilter();
-
-    this.alphaMaskPool.push(filters);
+    this.renderer.filterManager.popFilter();
+    this.alphaMaskIndex--;
 };
 
 
@@ -111,5 +145,25 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 {
     this.renderer.currentRenderer.stop();
     this.renderer.stencilManager.popStencil();
+};
+
+MaskManager.prototype.pushScissorMask = function (target, maskData)
+{
+    maskData.renderable = true;
+    var bounds = maskData.getBounds();
+    maskData.renderable = false;
+
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(bounds.x, this.renderer._activeRenderTarget.size.height - bounds.y - bounds.height, bounds.width , bounds.height);
+
+    this.scissor = true;
+};
+
+MaskManager.prototype.popScissorMask = function (target, maskData)
+{
+    this.scissor = false;
+    // must be scissor!
+    var gl = this.renderer.gl;
+    gl.disable(gl.SCISSOR_TEST);
 };
 

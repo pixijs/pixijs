@@ -398,6 +398,8 @@ Container.prototype.updateTransform = function ()
     {
         this.children[i].updateTransform();
     }
+
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)

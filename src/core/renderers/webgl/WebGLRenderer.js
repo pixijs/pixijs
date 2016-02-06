@@ -14,6 +14,8 @@ var SystemRenderer = require('../SystemRenderer'),
     utils = require('../../utils'),
     CONST = require('../../const');
 
+var CONTEXT_UID = 0;
+
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
@@ -88,12 +90,6 @@ function WebGLRenderer(width, height, options)
      */
     this.stencilManager = new StencilManager(this);
 
-    /**
-     * Manages the filters.
-     *
-     * @member {PIXI.FilterManager}
-     */
-    this.filterManager = new FilterManager(this);
     this.blendModeManager = new BlendModeManager(this);
 
     /**
@@ -107,11 +103,21 @@ function WebGLRenderer(width, height, options)
 
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
+    this.gl.id = CONTEXT_UID++; // could pool?
 
     this.state = new WebGLState(this.gl);
 
-    this._initContext();
 
+    /**
+     * Manages the filters.
+     *
+     * @member {PIXI.FilterManager}
+     */
+   
+    
+    this._initContext();
+  
+     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.blendModes = mapWebGLBlendModesToPixi(gl);
     this.drawModes = mapWebGLDrawModesToPixi(gl)
@@ -249,7 +255,6 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
-    this.filterManager.resize(width, height);
     this.rootRenderTarget.resize(width, height);
 
 
@@ -269,9 +274,18 @@ WebGLRenderer.prototype.setBlendMode = function (mode)
     // fill in here..
 }
 
+WebGLRenderer.prototype.clear = function (clearColor)
+{
+    this._activeRenderTarget.clear(clearColor);
+}
+
+//TOOD - required?
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
+    //TODO fix this frame.. 
     this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
+
+    return this;
 }
 
 /**
@@ -279,22 +293,25 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
  */
-WebGLRenderer.prototype.bindRenderTarget = function (renderTarget, frame)
+WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
+        renderTarget.activate();
 
         if(this._activeShader)
         {
             this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
         }
 
-        renderTarget.activate(frame);
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }
+
+    return this;
 }
+
 
 WebGLRenderer.prototype.bindShader = function (shader)
 {
@@ -307,11 +324,15 @@ WebGLRenderer.prototype.bindShader = function (shader)
         // automatically set the projection matrix
         shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
     }
+
+    return this;
 }
 
 
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
+    texture = texture.baseTexture || texture;
+    
     var gl = this.gl;
 
     //TODO test perf of cache?
@@ -336,6 +357,8 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
         // bind the current texture
         texture._glTextures[gl.id].bind();
     }
+
+    return this;
 }
 
 /**
@@ -351,6 +374,8 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.reset();
+
+    return this;
 }
 
 /**
