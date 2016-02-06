@@ -338,6 +338,7 @@ SpriteRenderer.prototype.start = function ()
 {
     this.renderer.bindShader(this.shader);
     this.vao.bind();
+    this.vertexBuffer.bind();
     this.tick %= 1000;
 };
 
