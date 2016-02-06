@@ -575,7 +575,10 @@ InteractionManager.prototype.onMouseMove = function (event)
  */
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
-    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    }
     this.processMouseOverOut(displayObject, hit);
 };
 
@@ -790,8 +793,10 @@ InteractionManager.prototype.onTouchMove = function (event)
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
-    hit = hit;
-    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    }
 };
 
 /**
