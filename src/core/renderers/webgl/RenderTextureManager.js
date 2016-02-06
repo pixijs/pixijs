@@ -42,9 +42,9 @@ RenderTextureManager.prototype.updateTexture = function(texture)
         texture.on('dispose', this.destroyTexture, this);
         
         this._managedTextures.push(texture);
+
+
     }
-    
-    console.log("HELO RESIZE")
     renderTarget.resize(texture.width, texture.height);
 
     return  renderTarget;

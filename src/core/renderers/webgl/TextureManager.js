@@ -1,4 +1,5 @@
 var GLTexture = require('pixi-gl-core').GLTexture,
+    CONST = require('../../const'),
 	utils = require('../../utils');
 
 /**
@@ -64,7 +65,14 @@ TextureManager.prototype.updateTexture = function(texture)
         glTexture.enableWrapClamp();
 
         // TODO check for scaling type
-        glTexture.enableLinearScaling();
+        if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
+        {
+            glTexture.enableNearestScaling();
+        }
+        else
+        {
+            glTexture.enableLinearScaling();
+        }
     }
 
     glTexture.upload(texture.source);
