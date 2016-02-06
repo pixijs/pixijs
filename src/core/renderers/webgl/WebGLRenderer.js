@@ -282,6 +282,7 @@ WebGLRenderer.prototype.clear = function (clearColor)
 //TOOD - required?
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
+    //TODO fix this frame.. 
     this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
 
     return this;
