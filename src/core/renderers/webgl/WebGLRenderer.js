@@ -172,7 +172,7 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, skipUpdateTransform)
+WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
     this.emit('prerender');
 
@@ -193,7 +193,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         displayObject.parent = cacheParent;
     }
 
-    this.bindRenderTexture(renderTexture);
+    this.bindRenderTexture(renderTexture, transform);
 
     if( clear || this.clearBeforeRender)
     {
@@ -202,6 +202,8 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     displayObject.renderWebGL(this);
 
+    // apply transform..
+    
     this.currentRenderer.flush();
 
     this.emit('postrender');
@@ -257,8 +259,13 @@ WebGLRenderer.prototype.clear = function (clearColor)
     this._activeRenderTarget.clear(clearColor);
 }
 
+WebGLRenderer.prototype.setTransform = function (matrix)
+{
+    this._activeRenderTarget.transform = matrix;
+}
+
 //TOOD - required?
-WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
+WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
     if(renderTexture)
     {
@@ -278,6 +285,7 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
         renderTarget = this.rootRenderTarget;
     }
 
+    renderTarget.transform = transform;
     this.bindRenderTarget(renderTarget);
 
     return this;

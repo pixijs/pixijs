@@ -87,10 +87,10 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
 
     this._initCachedDisplayObject( renderer );
 
+    this._cachedSprite.transform.updated = true;
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render( this._cachedSprite );
+    this._cachedSprite._renderWebGL(renderer);
 };
 
 /**
@@ -127,12 +127,13 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..
-    var cachedRenderTarget = renderer.currentRenderTarget;
+    var cachedRenderTarget = renderer._activeRenderTarget;
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
     var stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    
+    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -140,15 +141,15 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     m.tx = -bounds.x;
     m.ty = -bounds.y;
 
-
-
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-    renderTexture.render(this, m, true, true);
-
+//    renderer.clear([0.5, 0.5, 0.5, 0.5])
+    renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
-    renderer.setRenderTarget(cachedRenderTarget);
+    
+    renderer.bindRenderTarget(cachedRenderTarget);
+    
     renderer.filterManager.filterStack = stack;
 
     this.renderWebGL     = this._renderCachedWebGL;
@@ -158,7 +159,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // create our cached sprite
     this._cachedSprite = new core.Sprite(renderTexture);
-    this._cachedSprite.worldTransform = this.worldTransform;
+    this._cachedSprite.transform.worldTransform = this.transform.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
@@ -231,7 +232,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     // create our cached sprite
     this._cachedSprite = new core.Sprite(renderTexture);
-    this._cachedSprite.worldTransform = this.worldTransform;
+    this._cachedSprite.transform.worldTransform = this.transform.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 

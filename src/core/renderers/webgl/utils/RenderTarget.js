@@ -131,24 +131,25 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
-    this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
-
+   
     if (!this.root)
     {
+        this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
+
         /*
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
          */
         
-
-       // TODO change!
         // this is used by the base texture
         this.texture = this.frameBuffer.texture;
     }
     else
     {
         // make it a null framebuffer..
+        this.frameBuffer = new GLFramebuffer(gl, 100, 100);
         this.frameBuffer.framebuffer = null;
+
     }
 
     this.setFrame();
@@ -203,8 +204,6 @@ RenderTarget.prototype.activate = function()
     var gl = this.gl;
 
     // make surethe texture is unbound!
-    this.frameBuffer.texture.unbind();
-
     this.frameBuffer.bind();
 
     this.calculateProjection( this.destinationFrame, this.sourceFrame );

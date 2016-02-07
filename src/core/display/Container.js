@@ -485,16 +485,16 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
-    var matrixCache = this.worldTransform;
+    var matrixCache = this.transform.worldTransform;
 
-    this.worldTransform = math.Matrix.IDENTITY;
+    this.transform.worldTransform = math.Matrix.IDENTITY;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform();
     }
 
-    this.worldTransform = matrixCache;
+    this.transform.worldTransform = matrixCache;
 
     this._currentBounds = null;
 
