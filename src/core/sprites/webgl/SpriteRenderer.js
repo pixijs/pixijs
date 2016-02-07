@@ -1,5 +1,4 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    TextureShader = require('../../renderers/webgl/shaders/_TextureShader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     generateMultiTextureShader = require('./generateMultiTextureShader'),
