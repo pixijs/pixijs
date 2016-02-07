@@ -189,7 +189,7 @@ SpriteRenderer.prototype.flush = function ()
     var tint;
     var uvs;
     var textureId;
-    var blendMode = 0;
+    var blendMode = sprites[0].blendMode;
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
 
@@ -205,9 +205,12 @@ SpriteRenderer.prototype.flush = function ()
 
         if(blendMode !== sprite.blendMode)
         {
-          //  blendMode = sprite.blendMode;
-          //  currentTexture = null;
-          //  textureCount = this.Max
+            blendMode = sprite.blendMode;
+            
+            // force the batch to break!
+            currentTexture = null;
+            textureCount = this.MAX_TEXTURES;
+            this.tick++;
         }
 
         if(currentTexture !== nextTexture)
@@ -216,9 +219,6 @@ SpriteRenderer.prototype.flush = function ()
             
             if(nextTexture._enabled !== this.tick)
             {   
-                nextTexture._enabled = this.tick;
-                nextTexture._id = textureCount;
-
                 if(textureCount === this.MAX_TEXTURES)
                 {
                     this.tick++;
@@ -232,10 +232,9 @@ SpriteRenderer.prototype.flush = function ()
                     currentGroup.blend = blendMode;
                     currentGroup.start = i;
                 }
-                else
-                {
-                    
-                }
+
+                nextTexture._enabled = this.tick;
+                nextTexture._id = textureCount;
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
             }
