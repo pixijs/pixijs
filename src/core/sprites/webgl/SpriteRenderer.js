@@ -111,10 +111,8 @@ SpriteRenderer.prototype.onContextChange = function ()
     var gl = this.renderer.gl;
 
 
-    this.MAX_TEXTURES = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
+    this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
-
 
     // create a couple of buffers
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
@@ -176,7 +174,6 @@ SpriteRenderer.prototype.flush = function ()
 
     var sprites = this.sprites;
     var groups = this.groups;
-    var currentIndex = this.currentIndex;
     
     var colors = buffer.colors;
     var positions = buffer.positions;
@@ -194,10 +191,11 @@ SpriteRenderer.prototype.flush = function ()
     var textureId;
     var blendMode = 0;
     currentGroup.textureCount = 0;
-    
+    currentGroup.start = 0;
+
     this.tick++;
 
-    for (var i = 0; i < currentIndex; i++) 
+    for (var i = 0; i < this.currentIndex; i++) 
     {
         // upload the sprite elemetns...
         // they have all ready been calculated so we just need to push them into the buffer.
@@ -217,22 +215,26 @@ SpriteRenderer.prototype.flush = function ()
             currentTexture = nextTexture;
             
             if(nextTexture._enabled !== this.tick)
-            {
+            {   
                 nextTexture._enabled = this.tick;
                 nextTexture._id = textureCount;
-                
+
                 if(textureCount === this.MAX_TEXTURES)
                 {
                     this.tick++;
 
                     textureCount = 0;
 
-                    currentGroup.size = currentIndex - currentGroup.start;
+                    currentGroup.size = i - currentGroup.start;
                    
                     currentGroup = groups[groupCount++];
                     currentGroup.textureCount = 0;
                     currentGroup.blend = blendMode;
-                    currentGroup.start = currentIndex;
+                    currentGroup.start = i;
+                }
+                else
+                {
+                    
                 }
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
@@ -278,10 +280,10 @@ SpriteRenderer.prototype.flush = function ()
 
     };
 
-    currentGroup.size = currentIndex - currentGroup.start;
+    currentGroup.size = i - currentGroup.start;
    
     this.vertexBuffer.upload(buffer.vertices, 0, true);
- 
+    
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {

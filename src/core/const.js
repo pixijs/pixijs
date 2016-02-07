@@ -11,7 +11,7 @@ var CONST = {
      * @constant
      * @property {string} VERSION
      */
-    VERSION: require('../../package.json').version,
+    VERSION: '__VERSION__',
 
     /**
      * @property {number} PI_2 - Two Pi
@@ -162,7 +162,7 @@ var CONST = {
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
-
+    
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.
@@ -215,7 +215,8 @@ var CONST = {
 
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-    SPRITE_BATCH_SIZE: 4000 //nice balance between mobile and desktop machines
+    SPRITE_BATCH_SIZE: 2000, //nice balance between mobile and desktop machines
+    SPRITE_MAX_TEXTURES: 32//this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
