@@ -260,7 +260,7 @@ DisplayObject.prototype._getCachedBounds = function ()
 */
 DisplayObject.prototype._destroyCachedDisplayObject = function ()
 {
-    this._cachedSprite._texture.destroy();
+    this._cachedSprite._texture.destroy(true);
     this._cachedSprite = null;
 };
 

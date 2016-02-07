@@ -58,7 +58,7 @@ RenderTextureManager.prototype.updateTexture = function(texture)
 RenderTextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 {
 	texture = texture.baseTexture || texture;
-
+   
     var gl = this.gl;
     if (texture._glRenderTargets[gl.id])
     {

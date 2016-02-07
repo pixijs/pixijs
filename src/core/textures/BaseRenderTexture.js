@@ -121,35 +121,13 @@ BaseRenderTexture.prototype.resize = function (width, height)
 };
 
 /**
- * Clears the BaseRenderTexture.
- *
- */
-BaseRenderTexture.prototype.clear = function (destinationFrame)
-{
-    if (!this.valid)
-    {
-        return;
-    }
-
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
-    }
-
-    this.textureBuffer.clear(false, destinationFrame);
-};
-
-
-/**
  * Destroys this texture
  *
  * @param destroyBase {boolean} Whether to destroy the base texture as well
  */
 BaseRenderTexture.prototype.destroy = function ()
 {
-    Texture.prototype.destroy.call(this, true);
-
-    this.textureBuffer.destroy();
+    BaseTexture.prototype.destroy.call(this, true);
 
     // destroy the filtermanager..
     if(this.filterManager)
