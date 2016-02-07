@@ -66,34 +66,6 @@ function SpriteRenderer(renderer)
     };
 
     /**
-     * Holds the vertex data that will be sent to the vertex shader.
-     *
-     * @member {ArrayBuffer}
-     */
-   // this.vertices = new ArrayBuffer(numVerts);
-
-    /**
-     * View on the vertices as a Float32Array for positions
-     *
-     * @member {Float32Array}
-     */
-   // this.positions = new Float32Array(this.vertices);
-    
-    /**
-     * View on the vertices as a Uint32Array for uvs
-     *
-     * @member {Float32Array}
-     */
-    //this.uvs = new Uint32Array(this.vertices);
-
-    /**
-     * View on the vertices as a Uint32Array for colors
-     *
-     * @member {Uint32Array}
-     */
-    //this.colors = new Uint32Array(this.vertices);
-
-    /**
      * Holds the indices of the geometry (quads) to draw
      *
      * @member {Uint16Array}
@@ -395,5 +367,5 @@ var Buffer = function(size)
      */
     this.colors = new Uint32Array(this.vertices);
 
-    //this.buffer = 
+    
 }
