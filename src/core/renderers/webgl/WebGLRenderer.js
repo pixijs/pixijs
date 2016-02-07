@@ -99,8 +99,8 @@ function WebGLRenderer(width, height, options)
 
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
-    this.gl.id = CONTEXT_UID++; // could pool?
-
+    
+    this.gl.id = this.CONTEXT_UID = CONTEXT_UID++;
     this.state = new WebGLState(this.gl);
 
 
@@ -172,7 +172,7 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, doNotUpdateTransform)
+WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, skipUpdateTransform)
 {
     this.emit('prerender');
 
@@ -184,7 +184,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this._lastObjectRendered = displayObject;
 
-    if(!doNotUpdateTransform)
+    if(!skipUpdateTransform)
     {       
         // update the scene graph
         var cacheParent = displayObject.parent;
@@ -193,30 +193,12 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         displayObject.parent = cacheParent;
     }
 
-    //TODO - do we need renderDisplayObject?
-    var renderTarget = this.rootRenderTarget;
-    var clear = clear || this.clearBeforeRender;
+    this.bindRenderTexture(renderTexture);
 
-    // MOVE OUT?
-    if(renderTexture)
-    {
-        var baseTexture = renderTexture.baseTexture;
-
-        if(!baseTexture._glRenderTargets[gl.id])
-        {
-            this.renderTextureManager.updateTexture(baseTexture);
-        }
-
-        renderTarget =  baseTexture._glRenderTargets[gl.id];
-    }
-
-    this.bindRenderTarget(renderTarget);
-    
-    if(clear)
+    if( clear || this.clearBeforeRender)
     {
         renderTarget.clear();
     }
-
 
     displayObject.renderWebGL(this);
 
@@ -254,7 +236,6 @@ WebGLRenderer.prototype.resize = function (width, height)
 
     this.rootRenderTarget.resize(width, height);
 
-
     if(this._activeRenderTarget === this.rootRenderTarget)
     {
         this.rootRenderTarget.activate();
@@ -279,8 +260,25 @@ WebGLRenderer.prototype.clear = function (clearColor)
 //TOOD - required?
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture)
 {
-    //TODO fix this frame.. 
-    this.bindRenderTarget( renderTexture.baseTexture.textureBuffer, renderTexture.frame );
+    if(renderTexture)
+    {
+        var baseTexture = renderTexture.baseTexture;
+
+        if(!baseTexture._glRenderTargets[gl.id])
+        {
+            this.renderTextureManager.updateTexture(baseTexture);
+        }
+
+        renderTarget =  baseTexture._glRenderTargets[gl.id];
+
+        renderTarget.setFrame(renderTexture.frame);
+    }
+    else
+    {
+        renderTarget = this.rootRenderTarget;
+    }
+
+    this.bindRenderTarget(renderTarget);
 
     return this;
 }

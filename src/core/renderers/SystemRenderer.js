@@ -1,6 +1,7 @@
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
+    Container = require('../display/Container'),
     EventEmitter = require('eventemitter3');
 
 /**
@@ -164,7 +165,7 @@ function SystemRenderer(system, width, height, options)
      * @member {PIXI.DisplayObject}
      * @private
      */
-    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), transform:{worldTransform:new math.Matrix(), updated:true}, worldAlpha:1, children:[]};
+    this._tempDisplayObjectParent = new Container();
 
     /**
      * The last root object that the renderer tried to render.
