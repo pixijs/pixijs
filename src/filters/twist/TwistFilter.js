@@ -1,6 +1,5 @@
 var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var glslify  = require('glslify');
 
 /**
  * This filter applies a twist effect making display objects appear twisted in the given direction.
@@ -13,9 +12,10 @@ function TwistFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        fs.readFileSync(__dirname + '/twist.vert', 'utf8'),
+        
+        glslify('./twist.vert', 'utf8'),
         // fragment shader
-        fs.readFileSync(__dirname + '/twist.frag', 'utf8')
+        glslify('./twist.frag', 'utf8')
         // custom uniforms
     );
 

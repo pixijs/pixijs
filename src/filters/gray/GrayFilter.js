@@ -1,6 +1,6 @@
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var glslify  = require('glslify');
 
 /**
  * This greyscales the palette of your Display Objects.
@@ -13,9 +13,9 @@ function GrayFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        fs.readFileSync(__dirname + '/gray.vert', 'utf8'),
+        glslify('./gray.vert', 'utf8'),
         // fragment shader
-        fs.readFileSync(__dirname + '/gray.frag', 'utf8')
+        glslify('./gray.frag', 'utf8')
     );
 
     this.uniforms.gray = 1;

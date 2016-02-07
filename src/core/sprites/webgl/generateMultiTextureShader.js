@@ -1,9 +1,9 @@
 var Shader = require('pixi-gl-core').GLShader;
-var fs = require('fs');
+var glslify  = require('glslify');
 
 function generateMultiTextureShader(gl, maxTextures)
 {
-    var vertexSrc = fs.readFileSync(__dirname + '/texture.vert', 'utf8');
+    var vertexSrc = glslify('./texture.vert');
     var fragmentSrc = fragTemplate
 
     fragmentSrc = fragmentSrc.replace(/\%count\%/gi, maxTextures);
