@@ -60,7 +60,7 @@ CanvasGraphics.renderGraphics = function (graphics, context)
             //    context.globalAlpha = 1//data.fillAlpha * worldAlpha;
               //  context.fillStyle = '#FF0000'// + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
                // context.fill();
-            };
+            }
 
              if (data.fill)
             {
@@ -212,12 +212,12 @@ CanvasGraphics.renderPolygon = function (points, close, context)
     }
 
     // if the first and last point are the same close the path - much neater :)
-    if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
-    {
+    // if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
+    // {
         
-    }
+    // }
 
-}
+};
 
 /*
  * Renders a graphics mask

@@ -197,9 +197,9 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             }
 
             // MAKE SURE WE HAVE THE CORRECT TYPE..
-            if (data.fill)
+            /* if (data.fill)
             {
-               /* if (data.points.length >= 6)
+               if (data.points.length >= 6)
                 {
                     if (true)///data.points.length < this.maximumSimplePolySize * 2)
                     {
@@ -219,8 +219,8 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
                         webGLData = this.switchMode(webGL, 1);
                         this.buildComplexPoly(data, webGLData);
                     }
-                }*/
-            }
+                }
+            }*/
 
             if (data.lineWidth > 0)
             {
@@ -864,15 +864,12 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     for (var i = 0; i < holes.length; i++) {
         var hole = holes[i];
 
-        holeArray.push(points.length/2)
+        holeArray.push(points.length/2);
         
         points = points.concat(hole.points);
-    };
+    }
 
-    console.log(holeArray)
     var triangles = earcut(points, holeArray, 2);
-    
-
 
     // get first and last point.. figure out the middle!
     var verts = webGLData.points;
@@ -894,8 +891,6 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     }
 
     var vertPos = verts.length / 6;
-
-    var i = 0;
 
     for (i = 0; i < triangles.length; i+=3)
     {

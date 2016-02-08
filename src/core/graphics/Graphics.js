@@ -1101,7 +1101,10 @@ Graphics.prototype.drawShape = function (shape)
 
     if (data.type === CONST.SHAPES.POLY)
     {
-        if(data.shape.closed || this.filling)data.shape.close()
+        if (data.shape.closed || this.filling)
+        {
+            data.shape.close();
+        }
         this.currentPath = data;
     }
 
@@ -1134,7 +1137,7 @@ Graphics.prototype.closePath = function ()
     }
 
     return this;
-}
+};
 
 /**
  * Destroys the Graphics object.

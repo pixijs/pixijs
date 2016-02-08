@@ -79,7 +79,7 @@ Polygon.prototype.close = function ()
     {
         points.push(points[0], points[1]);
     }
-}
+};
 
 Polygon.prototype.isClockwise = function()
 {
@@ -87,7 +87,6 @@ Polygon.prototype.isClockwise = function()
 
     var j, area = 0;
 
-    console.log(points.length)
     for (var i = 0; i < points.length/2; i++) 
     {
         j = (i + 1) % (points.length/2);
@@ -101,7 +100,7 @@ Polygon.prototype.isClockwise = function()
     
 //    console.log('---')
     return (area > 0);
-}
+};
 
 /**
  * Checks whether the x and y coordinates passed to this function are contained within this polygon

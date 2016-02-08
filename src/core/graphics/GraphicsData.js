@@ -54,7 +54,7 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
     /*
      * @member {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
      */
-    this.holes = []
+    this.holes = [];
     this.shape = shape;
 
     /*
@@ -87,7 +87,7 @@ GraphicsData.prototype.clone = function ()
 GraphicsData.prototype.addHole = function (shape)
 {
     this.holes.push(shape);
-}
+};
 
 /**
  * Destroys the Graphics data.
