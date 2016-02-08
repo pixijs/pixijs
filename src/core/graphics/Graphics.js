@@ -1122,19 +1122,18 @@ Graphics.prototype.closePath = function ()
     {
         currentPath.shape.close();
     }
+    return this;
+};
 
-    //TODO - this will check to see if the next path is a hole..
-    //This is handy for rendering flash outputs, but feels like this should be in a better place
-    if(!currentPath.shape.isClockwise())
-    {
-        // this is a hole!
-        var hole = this.graphicsData.pop();
-        
-        this.currentPath = this.graphicsData[this.graphicsData.length-1];
+Graphics.prototype.addHole = function()
+{
+    // this is a hole!
+    var hole = this.graphicsData.pop();
+    
+    this.currentPath = this.graphicsData[this.graphicsData.length-1];
 
-        this.currentPath.addHole(hole.shape);
-        this.currentPath = null;
-    }
+    this.currentPath.addHole(hole.shape);
+    this.currentPath = null;
 
     return this;
 };
