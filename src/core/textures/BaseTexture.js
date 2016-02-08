@@ -135,7 +135,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = [];
+    this._glTextures = {};
 
     // if no source passed don't try to load
     if (source)
@@ -346,7 +346,8 @@ BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
 
-    this._glTextures.length = 0;
+    // this should no longer be needed, the renderers should cleanup all the gl textures.
+    // this._glTextures = {};
 };
 
 /**

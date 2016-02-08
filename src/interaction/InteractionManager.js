@@ -347,45 +347,68 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
  * @return {boolean} returns true if the displayObject hit the point
  */
-InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive )
+InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
 {
     if(!displayObject || !displayObject.visible)
     {
         return false;
     }
 
-    var children = displayObject.children;
+    // Took a little while to rework this function correctly! But now it is done and nice and optimised. ^_^
+    // 
+    // This function will now loop through all objects and then only hit test the objects it HAS to, not all of them. MUCH faster..
+    // An object will be hit test if the following is true:
+    // 
+    // 1: It is interactive.
+    // 2: It belongs to a parent that is interactive AND one of the parents children have not already been hit.
+    // 
+    // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
+    // A final optimisation is that an object is not hit test directly if a child has already been hit.
+    
+    var hit = false,
+        interactiveParent = interactive = displayObject.interactive || interactive;
 
-    var hit = false;
-
-    // if the object is interactive we must hit test all its children..
-    interactive = interactive || displayObject.interactive;
-
-    if(displayObject.interactiveChildren)
+    // if the displayobject has a hitArea, then it does not need to hitTest children.
+    if(displayObject.hitArea)
     {
-
-        for (var i = children.length-1; i >= 0; i--)
-        {
-            if(! hit  && hitTest)
-            {
-                hit = this.processInteractive(point, children[i], func, true, interactive );
-            }
-            else
-            {
-                // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false, false );
-            }
-        }
-
+        interactiveParent = false;
     }
 
+    // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
+    // This will allow pixi to completly ignore and bypass checking the displayObjects children.
+    if(displayObject.interactiveChildren)
+    {       
+        var children = displayObject.children;
+        
+        for (var i = children.length-1; i >= 0; i--)
+        {
+            // time to get recursive.. if this function will return if somthing is hit..
+            if( this.processInteractive(point, children[i], func, hitTest, interactiveParent) )
+            {
+                hit = true;
+
+                // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
+                interactiveParent = false;
+                
+                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
+                // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
+                if(children[i].interactive)
+                {
+                    hitTest = false;
+                }
+            }
+        }
+    }
+
+    // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
     {
-        if(hitTest)
-        {
+        // if we are hit testing (as in we have no hit any objects yet)
+        // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
+        if(hitTest && !hit)
+        {  
             if(displayObject.hitArea)
             {
-                // lets use the hit object first!
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                 hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
             }
@@ -397,14 +420,13 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
         if(displayObject.interactive)
         {
-            func(displayObject, hit);
+            func(displayObject, hit); 
         }
     }
 
     return hit;
+  
 };
-
-
 
 
 /**
@@ -440,7 +462,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 {
     var e = this.mouse.originalEvent;
-
+    
     var isRightButton = e.button === 2 || e.which === 3;
 
     if(hit)
@@ -645,7 +667,6 @@ InteractionManager.prototype.onTouchStart = function (event)
  */
 InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 {
-    //console.log("hit" + hit)
     if(hit)
     {
         displayObject._touchDown = true;

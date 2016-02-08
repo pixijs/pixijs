@@ -30,9 +30,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      *
      * @member {Float32Array}
      */
-    this.uvs = uvs || new Float32Array([0, 1,
-        1, 1,
+    this.uvs = uvs || new Float32Array([0, 0,
         1, 0,
+        1, 1,
         0, 1]);
 
     /**
@@ -49,7 +49,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Uint16Array} An array containing the indices of the vertices
      */
     //  TODO auto generate this based on draw mode!
-    this.indices = indices || new Uint16Array([0, 1, 2, 3]);
+    this.indices = indices || new Uint16Array([0, 1, 3, 2]);
 
     /**
      * Whether the Mesh is dirty or not
@@ -84,6 +84,13 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
 
     // run texture setter;
     this.texture = texture;
+
+     /**
+     * The default shader that is used if a mesh doesn't have a more specific one.
+     *
+     * @member {PIXI.Shader}
+     */
+    this.shader = null;
 }
 
 // constructor

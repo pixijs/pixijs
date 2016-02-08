@@ -16,7 +16,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
      * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'null'
+     * To remove simply set this property to 'false'
      *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#

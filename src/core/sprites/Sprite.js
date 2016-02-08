@@ -113,7 +113,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.x = utils.sign(this.scale.x) * value / this.texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -131,7 +132,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.y = utils.sign(this.scale.y) * value / this.texture._frame.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture._frame.height;
             this._height = value;
         }
     },
@@ -414,21 +416,29 @@ Sprite.prototype._renderCanvas = function (renderer)
 
         if(texture.rotate)
         {
-
-            // cheeky rotation!
-            var a = wt.a;
-            var b = wt.b;
-
-            wt.a  = -wt.c;
-            wt.b  = -wt.d;
-            wt.c  =  a;
-            wt.d  =  b;
-
             width = texture.crop.height;
             height = texture.crop.width;
 
             dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
             dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
+       
+            dx += width;
+
+            wt.tx = dy * wt.a + dx * wt.c + wt.tx;
+            wt.ty = dy * wt.b + dx * wt.d + wt.ty;
+
+            var temp = wt.a;
+            wt.a  = -wt.c;
+            wt.c  =  temp;
+
+            temp = wt.b;
+            wt.b  = -wt.d;
+            wt.d  =  temp;
+
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+
         }
         else
         {

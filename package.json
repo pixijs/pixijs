@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "3.0.9-dev",
+  "version": "3.0.9",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -30,13 +30,12 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "^1.4.2",
+    "async": "^1.5.0",
     "brfs": "^1.4.1",
-    "earcut": "^2.0.2",
+    "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
-    "gulp-header": "^1.7.1",
     "object-assign": "^4.0.1",
-    "resource-loader": "^1.6.2"
+    "resource-loader": "^1.6.4"
   },
   "devDependencies": {
     "browserify": "^11.1.0",
@@ -46,6 +45,7 @@
     "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.1.0",
+    "gulp-header": "^1.7.1",
     "gulp-jshint": "^1.11.2",
     "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^1.0.1",

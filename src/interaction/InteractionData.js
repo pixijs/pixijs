@@ -38,10 +38,10 @@ module.exports = InteractionData;
  *
  * @param displayObject {PIXI.DisplayObject} The DisplayObject that you would like the local coords off
  * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new point)
- * param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
+ * @param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
  * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
-    return displayObject.toLocal(globalPos ? globalPos : this.global, point);
+    return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };

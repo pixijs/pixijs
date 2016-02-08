@@ -196,6 +196,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     var finalWidth = 0;
     var finalHeight = 0;
 
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
+    {
+        context.globalCompositeOperation = compositeOperation;
+    }
+
     context.globalAlpha = this.worldAlpha;
 
     this.displayObjectUpdateTransform();
