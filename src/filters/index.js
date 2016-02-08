@@ -11,9 +11,6 @@
 module.exports = {
     // AsciiFilter:        require('./ascii/AsciiFilter'),
     // BloomFilter:        require('./bloom/BloomFilter'),
-    // BlurFilter:         require('./blur/BlurFilter'),
-    // BlurXFilter:        require('./blur/BlurXFilter'),
-    // BlurYFilter:        require('./blur/BlurYFilter'),
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
     // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
@@ -31,7 +28,11 @@ module.exports = {
     // TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
     // TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
     //TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-     ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
-     TwistFilter:        require('./twist/TwistFilter'),
-     GrayFilter:         require('./gray/GrayFilter')
+    BlurFilter:         require('./blur/BlurFilter'),
+    BlurXFilter:        require('./blur/BlurXFilter'),
+    BlurYFilter:        require('./blur/BlurYFilter'),
+   
+    ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
+    TwistFilter:        require('./twist/TwistFilter'),
+    GrayFilter:         require('./gray/GrayFilter')
 };

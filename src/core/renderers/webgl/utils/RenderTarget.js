@@ -136,6 +136,15 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     {
         this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
 
+        if( this.scaleMode === CONST.SCALE_MODES.NEAREST)
+        {
+            this.frameBuffer.texture.enableNearestScaling()
+        }
+        else
+        {
+            this.frameBuffer.texture.enableLinearScaling()
+
+        }
         /*
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
@@ -213,8 +222,10 @@ RenderTarget.prototype.activate = function()
         this.projectionMatrix.append(this.transform);
     }
 
+    //TODO add a check as them may be the same!
     if(this.destinationFrame !== this.sourceFrame)
     {
+
         gl.enable(gl.SCISSOR_TEST);
         gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
     }
@@ -278,8 +289,6 @@ RenderTarget.prototype.resize = function (width, height)
     {
         return;
     }
-
-    console.log(width + " : " + height)
 
     this.size.width = width;
     this.size.height = height;

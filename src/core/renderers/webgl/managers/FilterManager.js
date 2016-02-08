@@ -64,11 +64,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
     
 
 
-    //TODO - should this be rounded to reoultion? not 1?
-    sourceFrame.x = targetBounds.x | 0;
-    sourceFrame.y = targetBounds.y | 0;
-    sourceFrame.width = targetBounds.width | 0;
-    sourceFrame.height = targetBounds.height | 0;
+    
+    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
+    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
+    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
+    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
+   
     sourceFrame.pad(padding * resolution);
     sourceFrame.fit(this.stack[0].destinationFrame);
 
@@ -79,6 +80,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
 
     currentState.target = target;
     currentState.filters = filters;
+    currentState.resolution = resolution;
     currentState.renderTarget = renderTarget;
 
     // bind the render taget to draw the shape in the top corner..
@@ -236,6 +238,13 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
                 shader.uniforms[i] = uniforms[i];
            }
         }
+        else if(uniformData[i].type === 'float')
+        {
+            if(shader.uniforms.data[i].value !== uniformData[i])
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
+        }
         else
         {
             shader.uniforms[i] = uniforms[i];
@@ -244,10 +253,18 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 }
 
 
-FilterManager.prototype.getPotRenderTarget = function()
+FilterManager.prototype.getRenderTarget = function()
 {
     var currentState = this.stack[this.stackIndex];
-    return FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+    var renderTarget = FilterManager.getPotRenderTarget(renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
+    renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
+
+    return renderTarget;
+}
+
+FilterManager.prototype.returnRenderTarget = function(renderTarget)
+{
+    return FilterManager.freePotRenderTarget(renderTarget);
 }
 
 /*
@@ -325,6 +342,7 @@ var FilterState = function()
     this.destinationFrame = new math.Rectangle();
     this.filters = [];
     this.target = null;
+    this.resolution = 1;
 }
 
 FilterManager.pool = {}

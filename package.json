@@ -32,10 +32,8 @@
   "dependencies": {
     "async": "^1.5.0",
     "bit-twiddle": "^1.0.2",
-    "brfs": "^1.4.1",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
-    "gl-matrix": "git+https://github.com/toji/gl-matrix.git",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "git+https://github.com/GoodBoyDigital/pixi-gl-core.git",
     "resource-loader": "^1.6.4"
@@ -73,6 +71,5 @@
     "transform": [
       "glslify"
     ]
-
   }
 }

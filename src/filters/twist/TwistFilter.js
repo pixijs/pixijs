@@ -16,7 +16,6 @@ function TwistFilter()
         glslify('./twist.vert', 'utf8'),
         // fragment shader
         glslify('./twist.frag', 'utf8')
-        // custom uniforms
     );
 
     this.uniforms.radius = 400; 
