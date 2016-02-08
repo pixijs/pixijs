@@ -1,7 +1,7 @@
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
-
+var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
 
 /**
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
@@ -12,8 +12,8 @@ var generateBlurFragSource  = require('./generateBlurFragSource');
  */
 function BlurYFilter()
 {
-    var vertSrc = generateBlurVertSource(11, false);
-    var fragSrc = generateBlurFragSource(11);
+    var vertSrc = generateBlurVertSource(5, false);
+    var fragSrc = generateBlurFragSource(5);
 
     core.Filter.call(this,
         // vertex shader
@@ -33,6 +33,17 @@ module.exports = BlurYFilter;
 
 BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
 {
+    if(this.firstRun)
+    {    
+        var gl = filterManager.renderer.gl;
+        var kernelSize = getMaxBlurKernelSize(gl);
+        
+        this.vertexSrc = generateBlurVertSource(kernelSize, false);
+        this.fragmentSrc = generateBlurFragSource(kernelSize);
+
+        this.firstRun = false;
+    }
+
     this.uniforms.strength = (1/output.destinationFrame.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.strength *= this.strength;

@@ -1,7 +1,7 @@
 var core = require('../../core');
-var glslify  = require('glslify');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
+var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
@@ -12,11 +12,8 @@ var generateBlurFragSource  = require('./generateBlurFragSource');
  */
 function BlurXFilter()
 {
-    var vertSrc = generateBlurVertSource(11, true);
-    var fragSrc = generateBlurFragSource(11);
-
-    console.log(vertSrc);
-    console.log(fragSrc);
+    var vertSrc = generateBlurVertSource(5, true);
+    var fragSrc = generateBlurFragSource(5);
 
     core.Filter.call(this,
         // vertex shader
@@ -34,6 +31,8 @@ function BlurXFilter()
     this.passes = 1;
     this.resolution = 1;//0.25;//0.5;//0.1//5;
     this.strength = 4;
+
+    this.firstRun = true;
 }
 
 BlurXFilter.prototype = Object.create(core.Filter.prototype);
@@ -42,6 +41,19 @@ module.exports = BlurXFilter;
 
 BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
 {   
+    if(this.firstRun)
+    {    
+        var gl = filterManager.renderer.gl;
+        var kernelSize = getMaxBlurKernelSize(gl);
+
+        this.vertexSrc = generateBlurVertSource(kernelSize, true);
+        this.fragmentSrc = generateBlurFragSource(kernelSize);
+
+        this.firstRun = false;
+    }
+
+   
+
     this.uniforms.strength = (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     // screen space!

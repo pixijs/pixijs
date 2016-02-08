@@ -17,10 +17,10 @@ function BlurFilter()
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
     this.resolution = 0.25;//0.25;//0.25//1//01.26;
-    this.blurYFilter.passes = this.blurXFilter.passes = 2;
+    this.blurYFilter.passes = this.blurXFilter.passes = 1;
     this.blurYFilter.strength = this.blurXFilter.strength = 4;//4// 4
 
-    this.padding = 100
+    this.padding = 20;
 
 }
 
