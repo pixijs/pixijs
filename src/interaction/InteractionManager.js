@@ -87,7 +87,7 @@ function InteractionManager(renderer, options)
      * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
-     * @member {HTMLElement}
+     * @member {boolean}
      * @private
      */
     this.moveWhenInside = true;
