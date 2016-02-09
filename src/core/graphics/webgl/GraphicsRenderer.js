@@ -575,8 +575,8 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
 {
     // TODO OPTIMISE!
     var i = 0;
-    var points = graphicsData.points;
-
+    var points = graphicsData.shape.points;
+    
     if (points.length === 0)
     {
         return;
