@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10-dev
- * Compiled 2016-02-04T08:39:20.863Z
+ * Compiled 2016-02-09T10:38:07.694Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26489,6 +26489,15 @@ function InteractionManager(renderer, options)
     this.interactionDOMElement = null;
 
     /**
+     * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
+     * Setting to true will make things work more in line with how the DOM verison works.
+     * Setting to false can make things easier for things like dragging
+     * @member {HTMLElement}
+     * @private
+     */
+    this.moveWhenInside = true;
+    
+    /**
      * Have events been attached to the dom element?
      *
      * @member {boolean}
@@ -26559,6 +26568,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this._tempPoint = new core.Point();
+    
 
     /**
      * The current resolution
@@ -26980,8 +26990,13 @@ InteractionManager.prototype.onMouseMove = function (event)
  */
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
-    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
     this.processMouseOverOut(displayObject, hit);
+    
+    // only display on mouse over
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    }
 };
 
 
@@ -27180,7 +27195,7 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
-        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, true );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
         this.returnTouchData( touchData );
     }
@@ -27195,8 +27210,10 @@ InteractionManager.prototype.onTouchMove = function (event)
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
-    hit = hit;
-    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    }
 };
 
 /**
