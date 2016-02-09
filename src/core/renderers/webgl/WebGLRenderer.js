@@ -114,7 +114,7 @@ function WebGLRenderer(width, height, options)
     
     this._initContext();
   
-     this.filterManager = new FilterManager(this);
+    this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.drawModes = mapWebGLDrawModesToPixi(gl)
 
@@ -193,6 +193,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         displayObject.parent = this._tempDisplayObjectParent;
         displayObject.updateTransform();
         displayObject.parent = cacheParent;
+       // displayObject.hitArea = //TODO add a temp hit area
     }
 
     this.bindRenderTexture(renderTexture, transform);

@@ -10,7 +10,7 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    this.scissor = false;
+    this.scissor = true;
 
     this.alphaMaskPool = [];
     this.alphaMaskPool = [];

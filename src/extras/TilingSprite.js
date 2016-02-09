@@ -61,7 +61,7 @@ function TilingSprite(texture, width, height)
     this._canvasPattern = null;
 
     //TODO move..
-    this.shader = new core.AbstractFilter(
+    this.shader = new core.Filter(
 
       [
         'precision lowp float;',

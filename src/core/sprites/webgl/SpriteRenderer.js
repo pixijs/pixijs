@@ -112,7 +112,6 @@ SpriteRenderer.prototype.onContextChange = function ()
 
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
-
     // create a couple of buffers
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
@@ -236,9 +235,9 @@ SpriteRenderer.prototype.flush = function ()
                 nextTexture._id = textureCount;
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+                textureCount++;
             }
 
-            textureCount++;
         }
        
         var vertexData = sprite.vertexData;
