@@ -92,7 +92,7 @@ MeshRenderer.prototype.render = function (mesh)
     }
     else
     {
-        shader = shader.shaders[gl.id] || shader.getShader(renderer);// : shader;
+        shader = shader.shaders[renderer.CONTEXT_UID] || shader.getShader(renderer);// : shader;
     }
 
     this.renderer.shaderManager.setShader(shader);
@@ -117,14 +117,14 @@ MeshRenderer.prototype.render = function (mesh)
 
         gl.activeTexture(gl.TEXTURE0);
 
-       if (!texture._glTextures[gl.id])
+       if (!texture._glTextures[renderer.CONTEXT_UID])
         {
             this.renderer.updateTexture(texture);
         }
         else
         {
             // bind the current texture
-            gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+            gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[renderer.CONTEXT_UID]);
         }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
@@ -145,14 +145,14 @@ MeshRenderer.prototype.render = function (mesh)
 
          gl.activeTexture(gl.TEXTURE0);
 
-        if (!texture._glTextures[gl.id])
+        if (!texture._glTextures[renderer.CONTEXT_UID])
         {
             this.renderer.updateTexture(texture);
         }
         else
         {
             // bind the current texture
-            gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+            gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[renderer.CONTEXT_UID]);
         }
 
         // dont need to upload!

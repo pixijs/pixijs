@@ -10,9 +10,10 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  * @param gl {WebGLRenderingContext}
  */
 
-var RenderTextureManager = function(gl)
+var RenderTextureManager = function(renderer)
 {
-	this.gl = gl;
+    this.renderer = renderer
+	this.gl = renderer.gl;
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
 	this._managedTextures = [];
@@ -27,16 +28,15 @@ RenderTextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
-    var gl = this.gl;
-    var renderTarget = texture._glRenderTargets[gl.id];
+    var renderTarget = texture._glRenderTargets[this.renderer.CONTEXT_UID];
     
     if (!renderTarget)
     {
 
-        renderTarget = new RenderTarget(gl, texture.width, texture.height);
+        renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
 
-        texture._glTextures[gl.id] = renderTarget.texture;
-        texture._glRenderTargets[gl.id] = renderTarget;
+        texture._glTextures[this.renderer.CONTEXT_UID] = renderTarget.texture;
+        texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
 
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
@@ -60,17 +60,17 @@ RenderTextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 	texture = texture.baseTexture || texture;
    
     var gl = this.gl;
-    if (texture._glRenderTargets[gl.id])
+    if (texture._glRenderTargets[this.renderer.CONTEXT_UID])
     {
-        texture._glTextures[this.gl.id] = null;
-        texture._glRenderTargets[gl.id].destroy();
+        texture._glTextures[this.renderer.CONTEXT_UID] = null;
+        texture._glRenderTargets[this.renderer.CONTEXT_UID].destroy();
 
         //.destroy();
         texture.off('update', this.updateTexture, this);
         texture.off('dispose', this.destroyTexture, this);
 
 
-        delete texture._glTextures[this.gl.id];
+        delete texture._glTextures[this.renderer.CONTEXT_UID];
 
         if (!_skipRemove)
         {
@@ -88,9 +88,9 @@ RenderTextureManager.prototype.removeAll = function()
     for (var i = 0; i < this._managedTextures.length; ++i)
     {
         var texture = this._managedTextures[i];
-        if (texture._glTextures[this.gl.id])
+        if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
-            delete texture._glTextures[this.gl.id];
+            delete texture._glTextures[this.renderer.CONTEXT_UID];
         }
     }
 }

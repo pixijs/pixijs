@@ -177,6 +177,7 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
  */
 AccessibilityManager.prototype.update = function()
 {
+	if(!this.renderer.renderingToScreen)return;
 
 	// update children...
 	this.updateAccessibleObjects(this.renderer._lastObjectRendered);

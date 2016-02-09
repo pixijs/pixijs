@@ -10,9 +10,10 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  * @param gl {WebGLRenderingContext}
  */
 
-var TextureManager = function(gl)
+var TextureManager = function(renderer)
 {
-	this.gl = gl;
+    this.renderer = renderer;
+	this.gl = renderer.gl;
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
 	this._managedTextures = [];
@@ -45,14 +46,13 @@ TextureManager.prototype.updateTexture = function(texture)
     }
 
     
-    var gl = this.gl;
-    var glTexture = texture._glTextures[gl.id];//texture._glTextures[gl.id];
+    var glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
     if (!glTexture)
     {
-        glTexture = new GLTexture(gl);
+        glTexture = new GLTexture(this.gl);
         glTexture.premultiplyAlpha = true;
-        texture._glTextures[gl.id] = glTexture;
+        texture._glTextures[this.renderer.CONTEXT_UID] = glTexture;
 
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
@@ -93,14 +93,14 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
         return;
     }
 
-    if (texture._glTextures[this.gl.id])
+    if (texture._glTextures[this.renderer.CONTEXT_UID])
     {
-        texture._glTextures[this.gl.id].destroy();
+        texture._glTextures[this.renderer.CONTEXT_UID].destroy();
         texture.off('update', this.updateTexture, this);
         texture.off('dispose', this.destroyTexture, this);
 
 
-        delete texture._glTextures[this.gl.id];
+        delete texture._glTextures[this.renderer.CONTEXT_UID];
 
         if (!_skipRemove)
         {
@@ -118,9 +118,9 @@ TextureManager.prototype.removeAll = function()
     for (var i = 0; i < this._managedTextures.length; ++i)
     {
         var texture = this._managedTextures[i];
-        if (texture._glTextures[this.gl.id])
+        if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
-            delete texture._glTextures[this.gl.id];
+            delete texture._glTextures[this.renderer.CONTEXT_UID];
         }
     }
 }

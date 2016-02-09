@@ -61,6 +61,8 @@ function ParticleRenderer(renderer)
     this.properties = null;
 
     this.tempMatrix = new math.Matrix();
+
+    this.CONTEXT_UID = 0;
 }
 
 ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -78,6 +80,8 @@ ParticleRenderer.prototype.onContextChange = function ()
 {
     return;
     var gl = this.renderer.gl;
+
+    this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
     // setup default shader
     this.shader = new ParticleShader(this.renderer.shaderManager);
@@ -190,7 +194,7 @@ ParticleRenderer.prototype.render = function (container)
     // make sure the texture is bound..
     var baseTexture = children[0]._texture.baseTexture;
 
-    if (!baseTexture._glTextures[gl.id])
+    if (!baseTexture._glTextures[this.CONTEXT_UID])
     {
         // if the texture has not updated then lets not upload any static properties
         if(!this.renderer.updateTexture(baseTexture))
@@ -205,7 +209,7 @@ ParticleRenderer.prototype.render = function (container)
     }
     else
     {
-        gl.bindTexture(gl.TEXTURE_2D, baseTexture._glTextures[gl.id]);
+        gl.bindTexture(gl.TEXTURE_2D, baseTexture._glTextures[this.CONTEXT_UID]);
     }
 
     // now lets upload and render the buffers..

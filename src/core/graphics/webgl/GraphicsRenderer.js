@@ -34,6 +34,9 @@ function GraphicsRenderer(renderer)
     this.primitiveShader = null;
 
     this.gl = renderer.gl;
+
+    // easy access!
+    this.CONTEXT_UID = 0;
 }
 
 GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -51,6 +54,7 @@ WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
 GraphicsRenderer.prototype.onContextChange = function()
 {
     this.gl = this.renderer.gl;
+    this.CONTEXT_UID = this.renderer.CONTEXT_UID;
     this.primitiveShader = new PrimitiveShader(this.gl)
 };
 
@@ -81,12 +85,12 @@ GraphicsRenderer.prototype.render = function(graphics)
 
     var webGLData;
 
-    if (graphics.dirty || !graphics._webGL[gl.id])
+    if (graphics.dirty || !graphics._webGL[this.CONTEXT_UID])
     {
         this.updateGraphics(graphics);
     }
 
-    var webGL = graphics._webGL[gl.id];
+    var webGL = graphics._webGL[this.CONTEXT_UID];
 
     // This  could be speeded up for sure!
     var shader = this.primitiveShader;
@@ -120,12 +124,12 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     var gl = this.renderer.gl;
 
      // get the contexts graphics object
-    var webGL = graphics._webGL[gl.id];
+    var webGL = graphics._webGL[this.CONTEXT_UID];
 
     // if the graphics object does not exist in the webGL context time to create it!
     if (!webGL)
     {
-        webGL = graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+        webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl:gl};
 
     }
 

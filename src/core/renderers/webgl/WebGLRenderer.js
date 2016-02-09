@@ -103,6 +103,7 @@ function WebGLRenderer(width, height, options)
     this.gl.id = this.CONTEXT_UID = CONTEXT_UID++;
     this.state = new WebGLState(this.gl);
 
+    this.renderingToScreen = true;
 
     /**
      * Manages the filters.
@@ -148,11 +149,9 @@ WebGLRenderer.prototype._initContext = function ()
 {
     var gl = this.gl;
 
-    
-
     // create a texture manager...
-    this.textureManager = new TextureManager(gl);
-    this.renderTextureManager = new RenderTextureManager(gl);
+    this.textureManager = new TextureManager(this);
+    this.renderTextureManager = new RenderTextureManager(this);
     
     this.state.resetToDefault();
 
@@ -174,6 +173,9 @@ WebGLRenderer.prototype._initContext = function ()
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
+    // can be handy to know!
+    this.renderingToScreen = !renderTexture;
+
     this.emit('prerender');
 
     // no point rendering if our context has been blown up!
@@ -271,12 +273,12 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     {
         var baseTexture = renderTexture.baseTexture;
 
-        if(!baseTexture._glRenderTargets[gl.id])
+        if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
         {
             this.renderTextureManager.updateTexture(baseTexture);
         }
 
-        renderTarget =  baseTexture._glRenderTargets[gl.id];
+        renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
 
         renderTarget.setFrame(renderTexture.frame);
     }
@@ -350,7 +352,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     //TODO - can we cache this texture too?
     this._activeTexture = texture;      
     
-    if (!texture._glTextures[gl.id])
+    if (!texture._glTextures[this.CONTEXT_UID])
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
@@ -358,7 +360,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     else
     {   
         // bind the current texture
-        texture._glTextures[gl.id].bind();
+        texture._glTextures[this.CONTEXT_UID].bind();
     }
 
     return this;

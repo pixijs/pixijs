@@ -137,7 +137,7 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 {
     var renderer = this.renderer;
     var lastState = this.stack[this.stackIndex-1];
-    var shader = filter.glShaders[gl.id];
+    var shader = filter.glShaders[renderer.CONTEXT_UID];
     
     // cacheing..
     if(!shader)
@@ -148,12 +148,12 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
             if(!shader)
             {
-                shader = filter.glShaders[gl.id] = this.shaderCache[filter.glShaderKey] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+                shader = filter.glShaders[renderer.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
             }
         }
         else
         {
-            shader = filter.glShaders[gl.id] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
+            shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(gl, filter.vertexSrc, filter.fragmentSrc);
         }
 
         //TODO - this only needs to be done once?
