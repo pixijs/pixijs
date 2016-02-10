@@ -78,7 +78,7 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
     /**
      * @member {boolean}
      */
-    this.valid = true;
+    this.valid = false;
 
 }
 
