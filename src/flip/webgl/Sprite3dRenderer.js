@@ -383,7 +383,7 @@ Sprite3dRenderer.prototype.flush = function ()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-    var nextTexture, nextBlendMode, nextShader;
+    var nextTexture, nextBlendMode, nextShader, nextProjection;
     var batchSize = 0;
     var start = 0;
 
@@ -420,8 +420,8 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-        nextProjection = sprite.projectionMatrix || this.projection3d;
-        
+        nextProjection = sprite.projectionMatrix || projection3d;
+
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
         projectionSwap = currentProjection !== nextProjection;
@@ -458,7 +458,7 @@ Sprite3dRenderer.prototype.flush = function ()
                 // both thease only need to be set if they are changing..
                 // set the projection
                 currentProjection = nextProjection;
-               
+
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
             }
         }

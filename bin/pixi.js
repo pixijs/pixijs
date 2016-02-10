@@ -30269,6 +30269,7 @@ module.exports = Sprite3d;
  * @namespace PIXI
  */
 module.exports = {
+    glMat: require('gl-matrix'),
     Container3d    :require('./Container3d'),
     Sprite3d            :require('./Sprite3d'),
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
@@ -30323,9 +30324,9 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
         temp3dTransform[2] = this.scale.z;
 
         glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
-    
+
         glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-    
+
     }
     else
     {
@@ -30354,7 +30355,7 @@ core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
     if(parentTransform)
     {
         this.displayObjectUpdateTransform()
-        
+
         var wt3d = glMat.mat4.identity( this.worldTransform3d );
 
         wt3d[0] = wt.a;
@@ -30371,7 +30372,7 @@ core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
 
     // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
-    
+
 
     // temporary matrix variables
     var a, b, c, d, tx, ty;
@@ -30419,14 +30420,14 @@ core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
         d  = this.scale.y;
         c  = 0;
         tx = this.position.x - this.pivot.x * a;
-        ty = this.position.y - this.pivot.y * d; 
+        ty = this.position.y - this.pivot.y * d;
 
         wt.a  = a  * pt.a;
         wt.b  = a  * pt.b;
         wt.c  = d  * pt.c;
         wt.d  = d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;    
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
     }
 
     // multiply the alphas..
@@ -30565,7 +30566,7 @@ core.Sprite.prototype.containsPoint3d = function( point, renderer )
 {
     //
     var ray = math3d.getRayFromScreen(point, renderer);
-    var contactPoint = math3d.get2DContactPoint(ray, this); 
+    var contactPoint = math3d.get2DContactPoint(ray, this);
 
     if(!contactPoint)
     {
@@ -30656,7 +30657,7 @@ core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
         0, 0, 0, 1
     ]
 
-    projection3d = this.projectionMatrix3d;
+    var projection3d = this.projectionMatrix3d;
     glMat.mat4.identity( projection3d );
 
     projection3d[0] = pm.a;
@@ -31450,7 +31451,7 @@ Sprite3dRenderer.prototype.flush = function ()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-    var nextTexture, nextBlendMode, nextShader;
+    var nextTexture, nextBlendMode, nextShader, nextProjection;
     var batchSize = 0;
     var start = 0;
 
@@ -31487,8 +31488,8 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-        nextProjection = sprite.projectionMatrix || this.projection3d;
-        
+        nextProjection = sprite.projectionMatrix || projection3d;
+
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
         projectionSwap = currentProjection !== nextProjection;
@@ -31525,7 +31526,7 @@ Sprite3dRenderer.prototype.flush = function ()
                 // both thease only need to be set if they are changing..
                 // set the projection
                 currentProjection = nextProjection;
-               
+
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
             }
         }
