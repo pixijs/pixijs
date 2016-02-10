@@ -60,7 +60,7 @@ function rebundle(devBundle) {
 
 function createBundler(args) {
     args = args || {};
-    args.debug = true;
+    args.debug = false;
     args.standalone = 'PIXI';
 
     var bundle = browserify(paths.jsEntry, args),

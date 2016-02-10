@@ -4,7 +4,9 @@ var math = require('../math'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    GroupD8 = math.GroupD8,
+    canvasRenderWorldTransform = new math.Matrix();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -424,8 +426,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width = texture._frame.width,
-            height = texture._frame.height;
+            width = texture.crop.width,
+            height = texture.crop.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -436,12 +438,18 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
+
+        //inline GroupD8.isSwapWidthHeight
+        if ((texture.rotate & 3) === 2) {
+            width = texture.crop.height;
+            height = texture.crop.width;
+        }
         if (texture.trim) {
-            dx = texture.trim.width/2 + texture.trim.x - this.anchor.x * texture.crop.width;
-            dy = texture.trim.height/2 + texture.trim.y - this.anchor.y * texture.crop.height;
+            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
+            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
         } else {
-            dx = (0.5 - this.anchor.x) * texture.crop.width;
-            dy = (0.5 - this.anchor.y) * texture.crop.height;
+            dx = (0.5 - this.anchor.x) * texture._frame.width;
+            dy = (0.5 - this.anchor.y) * texture._frame.height;
         }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);

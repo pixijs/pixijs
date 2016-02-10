@@ -100,6 +100,7 @@ function BaseTexture(source, scaleMode, resolution)
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
+     * All blend modes, and shaders written for default value. Change it on your own risk.
      *
      * @member {boolean}
      * @default true

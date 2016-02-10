@@ -47,8 +47,11 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     if(rotate)
     {
         //width and height div 2 div baseFrame size
-        var w2 = frame.width / 2 / tw;
-        var h2 = frame.height / 2 / th;
+
+        var swapWidthHeight = GroupD8.isSwapWidthHeight(rotate);
+        var w2 = (swapWidthHeight ? frame.height : frame.width) / 2 / tw;
+        var h2 = (swapWidthHeight ? frame.width : frame.height) / 2 / th;
+
         //coordinates of center
         var cX = frame.x / tw + w2;
         var cY = frame.y / th + h2;
