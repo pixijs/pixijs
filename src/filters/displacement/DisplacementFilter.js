@@ -45,12 +45,11 @@ module.exports = DisplacementFilter;
 
 DisplacementFilter.prototype.apply = function (filterManager, input, output)
 {
-
-    
+    var ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
-    this.uniforms.scale.x = this.scale.x * (1/800)//input.frame.width);
-    this.uniforms.scale.y = this.scale.y * (1/600)//input.frame.height);
+    this.uniforms.scale.x = this.scale.x * ratio
+    this.uniforms.scale.y = this.scale.y * ratio
 
      // draw the filter...
     filterManager.applyFilter(this, input, output);

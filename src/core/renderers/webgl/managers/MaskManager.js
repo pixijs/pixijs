@@ -10,7 +10,9 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    this.scissor = true;
+    this.scissor = false;
+
+    this.enableScissor = false;
 
     this.alphaMaskPool = [];
     this.alphaMaskPool = [];
@@ -36,7 +38,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
     else
     {
        // console.log( maskData.graphicsData[0].shape.type)
-        if(!this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
+        if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
         {
             var matrix = maskData.worldTransform;
 
@@ -75,7 +77,7 @@ MaskManager.prototype.popMask = function (target, maskData)
     }
     else
     {
-        if(!this.renderer.stencilManager.stencilMaskStack.length)
+        if(this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
         {
             this.popScissorMask(target, maskData);
         }
@@ -154,7 +156,11 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     maskData.renderable = false;
 
     gl.enable(gl.SCISSOR_TEST);
-    gl.scissor(bounds.x, this.renderer._activeRenderTarget.size.height - bounds.y - bounds.height, bounds.width , bounds.height);
+
+    gl.scissor(bounds.x, 
+               this.renderer._activeRenderTarget.root ? this.renderer._activeRenderTarget.size.height - bounds.y - bounds.height : bounds.y, 
+               bounds.width , 
+               bounds.height);
 
     this.scissor = true;
 };
