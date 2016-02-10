@@ -32,6 +32,7 @@
   "dependencies": {
     "async": "^1.5.0",
     "brfs": "^1.4.1",
+    "browserify-versionify": "^1.0.6",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
 	"gl-matrix": "^2.1.0",
@@ -68,6 +69,7 @@
   },
   "browserify": {
     "transform": [
+      "browserify-versionify",
       "brfs"
     ]
   }
