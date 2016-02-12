@@ -25,13 +25,10 @@ var buildPoly = function (graphicsData, webGLData)
         }
     }
 
-    if (points.length < 6)
-    {
-        return;
-    }
 
-    if(graphicsData.fill)
+    if(graphicsData.fill && points.length > 6)
     {
+
         // get first and last point.. figure out the middle!
         var verts = webGLData.points;
         var indices = webGLData.indices;
