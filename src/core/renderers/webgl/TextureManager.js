@@ -1,5 +1,6 @@
 var GLTexture = require('pixi-gl-core').GLTexture,
     CONST = require('../../const'),
+    RenderTarget = require('./utils/RenderTarget'),
 	utils = require('../../utils');
 
 /**
@@ -17,7 +18,6 @@ var TextureManager = function(renderer)
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
 	this._managedTextures = [];
-
 }
 
 TextureManager.prototype.bindTexture = function(texture)
@@ -40,18 +40,30 @@ TextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
+    var isRenderTexture = !!texture._glRenderTargets;
+
 	if (!texture.hasLoaded)
     {
         return;
     }
 
-    
     var glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
     if (!glTexture)
     {
-        glTexture = new GLTexture(this.gl);
-        glTexture.premultiplyAlpha = true;
+        if(isRenderTexture)
+        {
+            renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+            texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
+            glTexture = renderTarget.texture;
+        }
+        else
+        {
+            glTexture = new GLTexture(this.gl);
+            glTexture.premultiplyAlpha = true;
+            glTexture.upload(texture.source);
+        }
+
         texture._glTextures[this.renderer.CONTEXT_UID] = glTexture;
 
         texture.on('update', this.updateTexture, this);
@@ -72,9 +84,10 @@ TextureManager.prototype.updateTexture = function(texture)
         }
     }
 
-    glTexture.upload(texture.source);
-    
-    
+    if(isRenderTexture)
+    {
+        renderTarget.resize(texture.width, texture.height);
+    }
 
     return  glTexture;
 }
