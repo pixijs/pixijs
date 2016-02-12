@@ -5,7 +5,6 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
-    RenderTextureManager = require('./RenderTextureManager'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -151,7 +150,6 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(this);
-    this.renderTextureManager = new RenderTextureManager(this);
     
     this.state.resetToDefault();
 
@@ -276,11 +274,10 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 
         if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
         {
-            this.renderTextureManager.updateTexture(baseTexture);
+            this.textureManager.updateTexture(baseTexture);
         }
 
         renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
-
         renderTarget.setFrame(renderTexture.frame);
     }
     else
