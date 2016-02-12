@@ -1,8 +1,10 @@
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
+    RenderTexture = require('../textures/RenderTexture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
     GraphicsData = require('./GraphicsData'),
+    Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
@@ -146,6 +148,9 @@ function Graphics()
      */
     this.cachedSpriteDirty = false;
 
+
+    this._spriteRect = null;
+
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
      * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -159,6 +164,8 @@ function Graphics()
      * @default false
      */
 }
+
+Graphics._SPRITE_TEXTURE = null;
 
 // constructor
 Graphics.prototype = Object.create(Container.prototype);
@@ -697,6 +704,8 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
     return texture;
 };
 
+var texture = null;
+
 /**
  * Renders the object using the WebGL renderer
  *
@@ -713,12 +722,46 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    renderer.setObjectRenderer(renderer.plugins.graphics);
-    
+    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type ===  CONST.SHAPES.RECT)
+    {
+        this._renderSpriteRect(renderer);
+    }
+    else
+    {
 
-    renderer.plugins.graphics.render(this);
+        renderer.setObjectRenderer(renderer.plugins.graphics);
+        renderer.plugins.graphics.render(this);
+    }
 
 };
+
+Graphics.prototype._renderSpriteRect = function (renderer)
+{
+    var rect = this.graphicsData[0].shape;
+    if(!this._spriteRect)
+    {
+        if(!Graphics._SPRITE_TEXTURE)
+        {
+            Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+
+            var currentRenderTarget = renderer._activeRenderTarget
+            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
+            renderer.clear([1,1,1,1]);
+            renderer.bindRenderTarget(currentRenderTarget);
+        }
+
+        this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    }
+    
+    Graphics._SPRITE_TEXTURE.crop.width = rect.width;
+    Graphics._SPRITE_TEXTURE.crop.height = rect.height;
+
+    this._spriteRect.anchor.x = -rect.x / rect.width;
+    this._spriteRect.anchor.y = -rect.y / rect.height;
+
+    this._spriteRect._renderWebGL(renderer);
+}
 
 /**
  * Renders the object using the Canvas renderer
@@ -743,12 +786,14 @@ Graphics.prototype._renderCanvas = function (renderer)
     var transform = this.worldTransform;
 
     var compositeOperation = renderer.blendModes[this.blendMode];
+
     if (compositeOperation !== context.globalCompositeOperation)
     {
         context.globalCompositeOperation = compositeOperation;
     }
 
     var resolution = renderer.resolution;
+
     context.setTransform(
         transform.a * resolution,
         transform.b * resolution,
