@@ -1267,7 +1267,6 @@
 }());
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"_process":5}],2:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
@@ -1704,7 +1703,6 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-
 },{"_process":5}],5:[function(require,module,exports){
 // shim for using process in browser
 
@@ -2335,7 +2333,6 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],7:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6388,7 +6385,6 @@ module.exports = mapSize;
 }());
 
 }).call(this,require('_process'))
-
 },{"_process":5}],30:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
@@ -9717,9 +9713,11 @@ module.exports = Transform;
 },{"../math":59}],43:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
+    RenderTexture = require('../textures/RenderTexture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
     GraphicsData = require('./GraphicsData'),
+    Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
@@ -9863,6 +9861,9 @@ function Graphics()
      */
     this.cachedSpriteDirty = false;
 
+
+    this._spriteRect = null;
+
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
      * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -9876,6 +9877,8 @@ function Graphics()
      * @default false
      */
 }
+
+Graphics._SPRITE_TEXTURE = null;
 
 // constructor
 Graphics.prototype = Object.create(Container.prototype);
@@ -10414,6 +10417,8 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
     return texture;
 };
 
+var texture = null;
+
 /**
  * Renders the object using the WebGL renderer
  *
@@ -10430,12 +10435,46 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    renderer.setObjectRenderer(renderer.plugins.graphics);
-    
+    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type ===  CONST.SHAPES.RECT)
+    {
+        this._renderSpriteRect(renderer);
+    }
+    else
+    {
 
-    renderer.plugins.graphics.render(this);
+        renderer.setObjectRenderer(renderer.plugins.graphics);
+        renderer.plugins.graphics.render(this);
+    }
 
 };
+
+Graphics.prototype._renderSpriteRect = function (renderer)
+{
+    var rect = this.graphicsData[0].shape;
+    if(!this._spriteRect)
+    {
+        if(!Graphics._SPRITE_TEXTURE)
+        {
+            Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+
+            var currentRenderTarget = renderer._activeRenderTarget
+            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
+            renderer.clear([1,1,1,1]);
+            renderer.bindRenderTarget(currentRenderTarget);
+        }
+
+        this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    }
+    
+    Graphics._SPRITE_TEXTURE.crop.width = rect.width;
+    Graphics._SPRITE_TEXTURE.crop.height = rect.height;
+
+    this._spriteRect.anchor.x = -rect.x / rect.width;
+    this._spriteRect.anchor.y = -rect.y / rect.height;
+
+    this._spriteRect._renderWebGL(renderer);
+}
 
 /**
  * Renders the object using the Canvas renderer
@@ -10460,12 +10499,14 @@ Graphics.prototype._renderCanvas = function (renderer)
     var transform = this.worldTransform;
 
     var compositeOperation = renderer.blendModes[this.blendMode];
+
     if (compositeOperation !== context.globalCompositeOperation)
     {
         context.globalCompositeOperation = compositeOperation;
     }
 
     var resolution = renderer.resolution;
+
     context.setTransform(
         transform.a * resolution,
         transform.b * resolution,
@@ -10761,7 +10802,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasBuffer":67,"../renderers/canvas/utils/CanvasGraphics":68,"../textures/Texture":95,"./GraphicsData":44,"./utils/bezierCurveTo":45}],44:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasBuffer":67,"../renderers/canvas/utils/CanvasGraphics":68,"../sprites/Sprite":88,"../textures/RenderTexture":94,"../textures/Texture":95,"./GraphicsData":44,"./utils/bezierCurveTo":45}],44:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -11470,8 +11511,8 @@ var buildLine = function (graphicsData, webGLData)
 {
     // TODO OPTIMISE!
     var i = 0;
-    var points = graphicsData.points;
-
+    var points = graphicsData.shape.points;
+   
     if (points.length === 0)
     {
         return;
@@ -11703,13 +11744,10 @@ var buildPoly = function (graphicsData, webGLData)
         }
     }
 
-    if (points.length < 6)
-    {
-        return;
-    }
 
-    if(graphicsData.fill)
+    if(graphicsData.fill && points.length > 6)
     {
+
         // get first and last point.. figure out the middle!
         var verts = webGLData.points;
         var indices = webGLData.indices;
@@ -15809,7 +15847,6 @@ SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
 };
 
 }).call(this,"/src/core/renderers/webgl/filters/spriteMask")
-
 },{"../../../../math":59,"../Filter":75,"fs":3}],79:[function(require,module,exports){
 
 var WebGLManager = require('./WebGLManager'),
@@ -24311,7 +24348,6 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./accessibility":38,"./core":55,"./deprecation":103,"./extras":110,"./filters":120,"./interaction":125,"./loaders":128,"./polyfill":134}],123:[function(require,module,exports){
 var core = require('../core');
 
@@ -24454,7 +24490,7 @@ function InteractionManager(renderer, options)
      * @member {HTMLElement}
      * @private
      */
-    this.moveWhenInside = true;
+    this.moveWhenInside = false;
     
     /**
      * Have events been attached to the dom element?
@@ -25732,9 +25768,6 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}]},{},[122])(122)
 });
-
-
 //# sourceMappingURL=pixi.js.map
