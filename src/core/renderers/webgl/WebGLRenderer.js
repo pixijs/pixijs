@@ -536,6 +536,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this.gl.useProgram(null);
 
+    this.gl.flush();
+
     this.gl = null;
 };
 
