@@ -324,7 +324,7 @@ InteractionManager.prototype.dispatchEvent = function (displayObject, eventStrin
     var bubbleTarget = displayObject;
     while (bubbleTarget && !eventData.stopped) 
     {
-        bubbleTarget.emit.call(bubbleTarget, eventString, eventData);
+        bubbleTarget.emit(eventString, eventData);
         if (bubbleTarget[eventString])
         {
             bubbleTarget[eventString](eventData);
