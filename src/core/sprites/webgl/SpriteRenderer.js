@@ -113,7 +113,7 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
-    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
     // build the vao object that will render..

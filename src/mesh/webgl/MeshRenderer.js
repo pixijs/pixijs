@@ -181,7 +181,7 @@ MeshRenderer.prototype._initWebGL = function (mesh)
 
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.STREAM_DRAW);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,  mesh.uvs, gl.STATIC_DRAW);
