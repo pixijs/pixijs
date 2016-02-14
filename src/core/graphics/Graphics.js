@@ -2,7 +2,6 @@ var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     RenderTexture = require('../textures/RenderTexture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
-    CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
@@ -803,7 +802,7 @@ Graphics.prototype._renderCanvas = function (renderer)
         transform.ty * resolution
     );
 
-    CanvasGraphics.renderGraphics(this, context);
+    renderer.plugins.graphics.render(this);
 };
 
 /**

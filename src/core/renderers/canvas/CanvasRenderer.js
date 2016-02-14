@@ -83,16 +83,7 @@ function CanvasRenderer(width, height, options)
 
     this._mapBlendModes();
 
-    /**
-     * This temporary display object used as the parent of the currently being rendered item
-     *
-     * @member {PIXI.DisplayObject}
-     * @private
-     */
-    this._tempDisplayObjectParent = {
-        worldTransform: new math.Matrix(),
-        worldAlpha: 1
-    };
+    
 
 
     this.resize(width, height);
@@ -109,47 +100,54 @@ utils.pluginTarget.mixin(CanvasRenderer);
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-CanvasRenderer.prototype.render = function (object)
+CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
+    var context = this.context;
+    
     this.emit('prerender');
 
-    var cacheParent = object.parent;
+    this._lastObjectRendered = displayObject;
 
-    this._lastObjectRendered = object;
+    if(!skipUpdateTransform)
+    {       
+        // update the scene graph
+        var cacheParent = displayObject.parent;
+        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.updateTransform();
+        displayObject.parent = cacheParent;
+       // displayObject.hitArea = //TODO add a temp hit area
+    }
 
-    object.parent = this._tempDisplayObjectParent;
 
-    // update the scene graph
-    object.updateTransform();
-
-    object.parent = cacheParent;
-
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-
-    this.context.globalAlpha = 1;
-
-    this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas)
     {
-        this.context.fillStyle = 'black';
-        this.context.clear();
+        context.fillStyle = 'black';
+        context.clear();
     }
 
-    if (this.clearBeforeRender)
+    if( clear || this.clearBeforeRender)
     {
         if (this.transparent)
         {
-            this.context.clearRect(0, 0, this.width, this.height);
+            context.clearRect(0, 0, this.width, this.height);
         }
         else
         {
-            this.context.fillStyle = this._backgroundColorString;
-            this.context.fillRect(0, 0, this.width , this.height);
+            context.fillStyle = this._backgroundColorString;
+            context.fillRect(0, 0, this.width , this.height);
         }
     }
 
-    this.renderDisplayObject(object, this.context);
+    // TODO RENDER TARGET STUFF HERE..
+    var tempContext = this.context;
+
+    this.context = context;
+    displayObject.renderCanvas(this);
+    this.context = tempContext;
 
     this.emit('postrender');
 };
@@ -174,21 +172,6 @@ CanvasRenderer.prototype.destroy = function (removeView)
     this.maskManager = null;
 
     this.smoothProperty = null;
-};
-
-/**
- * Renders a display object
- *
- * @param displayObject {PIXI.DisplayObject} The displayObject to render
- * @private
- */
-CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
-{
-    var tempContext = this.context;
-
-    this.context = context;
-    displayObject.renderCanvas(this);
-    this.context = tempContext;
 };
 
 /**
