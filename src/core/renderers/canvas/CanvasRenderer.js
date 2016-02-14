@@ -1,5 +1,6 @@
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
+    CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
     utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const');
@@ -36,7 +37,8 @@ function CanvasRenderer(width, height, options)
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootResolution = this.resolution;
 
     /**
      * Boolean flag controlling canvas refresh.
@@ -50,7 +52,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {PIXI.CanvasMaskManager}
      */
-    this.maskManager = new CanvasMaskManager();
+    this.maskManager = new CanvasMaskManager(this);
 
     /**
      * The canvas property used to set the canvas smoothing property.
@@ -59,21 +61,21 @@ function CanvasRenderer(width, height, options)
      */
     this.smoothProperty = 'imageSmoothingEnabled';
 
-    if (!this.context.imageSmoothingEnabled)
+    if (!this.rootContext.imageSmoothingEnabled)
     {
-        if (this.context.webkitImageSmoothingEnabled)
+        if (this.rootContext.webkitImageSmoothingEnabled)
         {
             this.smoothProperty = 'webkitImageSmoothingEnabled';
         }
-        else if (this.context.mozImageSmoothingEnabled)
+        else if (this.rootContext.mozImageSmoothingEnabled)
         {
             this.smoothProperty = 'mozImageSmoothingEnabled';
         }
-        else if (this.context.oImageSmoothingEnabled)
+        else if (this.rootContext.oImageSmoothingEnabled)
         {
             this.smoothProperty = 'oImageSmoothingEnabled';
         }
-        else if (this.context.msImageSmoothingEnabled)
+        else if (this.rootContext.msImageSmoothingEnabled)
         {
             this.smoothProperty = 'msImageSmoothingEnabled';
         }
@@ -83,8 +85,8 @@ function CanvasRenderer(width, height, options)
 
     this._mapBlendModes();
 
-    
-
+    this.context = null;
+    this.renderingToScreen = false;
 
     this.resize(width, height);
 }
@@ -102,9 +104,33 @@ utils.pluginTarget.mixin(CanvasRenderer);
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
-    var context = this.context;
+     // can be handy to know!
+    this.renderingToScreen = !renderTexture;
+
+    
     
     this.emit('prerender');
+
+    if(renderTexture)
+    {
+        renderTexture = renderTexture.baseTexture || renderTexture;
+        if(!renderTexture._canvasRenderTarget)
+        {
+            renderTexture._canvasRenderTarget = new CanvasRenderTarget(renderTexture.width, renderTexture.height, renderTexture.resolution);
+            renderTexture.source = renderTexture._canvasRenderTarget.canvas;
+            renderTexture.valid = true;
+        }
+
+        this.context = renderTexture._canvasRenderTarget.context;
+        this.resolution = renderTexture._canvasRenderTarget.resolution;
+    }
+    else
+    {
+        this.context = this.rootContext;
+        this.resolution = this.rootResolution
+    }
+
+    var context = this.context;
 
     this._lastObjectRendered = displayObject;
 
@@ -112,6 +138,16 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     {       
         // update the scene graph
         var cacheParent = displayObject.parent;
+
+        if(transform)
+        {
+            transform.copy(this._tempDisplayObjectParent.transform.worldTransform);
+        }
+        else
+        {
+            this._tempDisplayObjectParent.transform.worldTransform.identity();
+        }
+
         displayObject.parent = this._tempDisplayObjectParent;
         displayObject.updateTransform();
         displayObject.parent = cacheParent;
@@ -188,7 +224,7 @@ CanvasRenderer.prototype.resize = function (w, h)
     //surely a browser bug?? Let pixi fix that for you..
     if(this.smoothProperty)
     {
-        this.context[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
+        this.rootContext[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
     }
 
 };

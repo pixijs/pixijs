@@ -6,10 +6,10 @@
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
  */
-function CanvasBuffer(width, height)
+function CanvasRenderTarget(width, height, resolution)
 {
     /**
-     * The Canvas object that belongs to this CanvasBuffer.
+     * The Canvas object that belongs to this CanvasRenderTarget.
      *
      * @member {HTMLCanvasElement}
      */
@@ -22,19 +22,20 @@ function CanvasBuffer(width, height)
      */
     this.context = this.canvas.getContext('2d');
 
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.resolution = resolution;
+
+    this.resize(width, height);
 }
 
-CanvasBuffer.prototype.constructor = CanvasBuffer;
-module.exports = CanvasBuffer;
+CanvasRenderTarget.prototype.constructor = CanvasRenderTarget;
+module.exports = CanvasRenderTarget;
 
-Object.defineProperties(CanvasBuffer.prototype, {
+Object.defineProperties(CanvasRenderTarget.prototype, {
     /**
      * The width of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof PIXI.CanvasBuffer#
+     * @memberof PIXI.CanvasRenderTarget#
      */
     width: {
         get: function ()
@@ -50,7 +51,7 @@ Object.defineProperties(CanvasBuffer.prototype, {
      * The height of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof PIXI.CanvasBuffer#
+     * @memberof PIXI.CanvasRenderTarget#
      */
     height: {
         get: function ()
@@ -65,11 +66,11 @@ Object.defineProperties(CanvasBuffer.prototype, {
 });
 
 /**
- * Clears the canvas that was created by the CanvasBuffer class.
+ * Clears the canvas that was created by the CanvasRenderTarget class.
  *
  * @private
  */
-CanvasBuffer.prototype.clear = function ()
+CanvasRenderTarget.prototype.clear = function ()
 {
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
@@ -81,17 +82,18 @@ CanvasBuffer.prototype.clear = function ()
  * @param width {number} the new width of the canvas
  * @param height {number} the new height of the canvas
  */
-CanvasBuffer.prototype.resize = function (width, height)
+CanvasRenderTarget.prototype.resize = function (width, height)
 {
-    this.canvas.width = width;
-    this.canvas.height = height;
+
+    this.canvas.width = width * this.resolution;
+    this.canvas.height = height * this.resolution;
 };
 
 /**
  * Destroys this canvas.
  *
  */
-CanvasBuffer.prototype.destroy = function ()
+CanvasRenderTarget.prototype.destroy = function ()
 {
     this.context = null;
     this.canvas = null;

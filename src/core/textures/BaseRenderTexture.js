@@ -68,6 +68,8 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
 
     this._glRenderTargets = [];
 
+    this._canvasRenderTarget = null;
+    
     /**
      * The renderer this BaseRenderTexture uses. A BaseRenderTexture can only belong to one renderer at the moment if its webGL.
      *

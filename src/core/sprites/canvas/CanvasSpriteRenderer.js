@@ -146,6 +146,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         }
         else
         {
+
             renderer.context.drawImage(
                 texture.baseTexture.source,
                 texture.frame.x * resolution,

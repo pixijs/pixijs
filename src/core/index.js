@@ -20,6 +20,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
+    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
     //ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
     //ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
@@ -31,6 +32,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
     GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
+    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
@@ -42,7 +44,6 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasGraphics:         require('./renderers/canvas/utils/CanvasGraphics'),
     CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
 
     // renderers - webgl
@@ -81,7 +82,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && core.utils.isWebGLSupported())
+        if (false)//!noWebGL && core.utils.isWebGLSupported())
         {
             return new core.WebGLRenderer(width, height, options);
         }
