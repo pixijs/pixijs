@@ -82,7 +82,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
         width = width || 800;
         height = height || 600;
 
-        if (false)//!noWebGL && core.utils.isWebGLSupported())
+        if (!noWebGL && core.utils.isWebGLSupported())
         {
             return new core.WebGLRenderer(width, height, options);
         }
