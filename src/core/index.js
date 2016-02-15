@@ -20,6 +20,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
+    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
     //ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
     //ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
@@ -31,6 +32,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
     GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
+    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
@@ -42,8 +44,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasGraphics:         require('./renderers/canvas/utils/CanvasGraphics'),
-    CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
+    CanvasRenderTarget:           require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),

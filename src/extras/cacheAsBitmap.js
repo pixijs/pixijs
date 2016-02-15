@@ -209,18 +209,22 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     var cachedRenderTarget = renderer.context;
 
-    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
+    this.transform.worldTransform.copy(m);
+    m.invert();
 
-    m.tx = -bounds.x;
-    m.ty = -bounds.y;
+    m.tx -= bounds.x;
+    m.ty -= bounds.y;
 
-    // set all properties to there original so we can render to a texture
+    //m.append(this.transform.worldTransform.)
+     // set all properties to there original so we can render to a texture
     this.renderCanvas = this._originalRenderCanvas;
 
-    renderTexture.render(this, m, true);
+    //renderTexture.render(this, m, true);
+    renderer.render(this, renderTexture, true, m, false);
 
     // now restore the state be setting the new properties
     renderer.context = cachedRenderTarget;
