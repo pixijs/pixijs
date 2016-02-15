@@ -1,7 +1,7 @@
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     RenderTexture = require('../textures/RenderTexture'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
+    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
@@ -689,16 +689,16 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
 
     var bounds = this.getLocalBounds();
 
-    var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
+    var canvasRenderTarget = new CanvasRenderTarget(bounds.width * resolution, bounds.height * resolution);
 
-    var texture = Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
+    var texture = Texture.fromCanvas(canvasRenderTarget.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
-    canvasBuffer.context.scale(resolution, resolution);
+    canvasRenderTarget.context.scale(resolution, resolution);
 
-    canvasBuffer.context.translate(-bounds.x,-bounds.y);
+    canvasRenderTarget.context.translate(-bounds.x,-bounds.y);
 
-    CanvasGraphics.renderGraphics(this, canvasBuffer.context);
+    CanvasGraphics.renderGraphics(this, canvasRenderTarget.context);
 
     return texture;
 };
@@ -774,33 +774,6 @@ Graphics.prototype._renderCanvas = function (renderer)
     {
         return;
     }
-
-    // if the tint has changed, set the graphics object to dirty.
-    if (this._prevTint !== this.tint) {
-        this.dirty = true;
-    }
-
-   
-    var context = renderer.context;
-    var transform = this.worldTransform;
-
-    var compositeOperation = renderer.blendModes[this.blendMode];
-
-    if (compositeOperation !== context.globalCompositeOperation)
-    {
-        context.globalCompositeOperation = compositeOperation;
-    }
-
-    var resolution = renderer.resolution;
-
-    context.setTransform(
-        transform.a * resolution,
-        transform.b * resolution,
-        transform.c * resolution,
-        transform.d * resolution,
-        transform.tx * resolution,
-        transform.ty * resolution
-    );
 
     renderer.plugins.graphics.render(this);
 };

@@ -1,5 +1,6 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const')
+    CONST = require('../../const'),
+    CanvasTinter = require('./CanvasTinter')
 
 /**
  * @author Mat Groves
@@ -52,11 +53,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         return;
     }
 
-    var compositeOperation = renderer.blendModes[this.blendMode];
-    if (compositeOperation !== renderer.context.globalCompositeOperation)
-    {
-        renderer.context.globalCompositeOperation = compositeOperation;
-    }
+    renderer.setBlendMode(sprite.blendMode);
 
     //  Ignore null sources
     if (texture.valid)

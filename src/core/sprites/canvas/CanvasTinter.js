@@ -1,5 +1,5 @@
-var utils = require('../../../utils');
-
+var utils = require('../../utils'),
+canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 /**
  * Utility methods for Sprite/Texture tinting.
  * @static
@@ -229,7 +229,7 @@ CanvasTinter.convertTintToImage = false;
  *
  * @member
  */
-CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
+CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
 
 /**
  * The tinting method that will be used.

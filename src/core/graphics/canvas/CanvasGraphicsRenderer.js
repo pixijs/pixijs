@@ -43,13 +43,32 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
     var renderer = this.renderer;
     var context = renderer.context;
     var worldAlpha = graphics.worldAlpha;
+    var transform = graphics.transform.worldTransform;
+    var resolution = renderer.resolution;
 
+     // if the tint has changed, set the graphics object to dirty.
+    if (this._prevTint !== this.tint) {
+        this.dirty = true;
+    }
+
+    context.setTransform(
+        transform.a * resolution,
+        transform.b * resolution,
+        transform.c * resolution,
+        transform.d * resolution,
+        transform.tx * resolution,
+        transform.ty * resolution
+    );
+
+    
     if (graphics.dirty)
     {
         this.updateGraphicsTint(graphics);
         graphics.dirty = false;
     }
 
+    renderer.setBlendMode(graphics.blendMode);
+    
     for (var i = 0; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];

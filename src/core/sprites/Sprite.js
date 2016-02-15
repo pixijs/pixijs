@@ -1,11 +1,9 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
-    CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
     tempPoint = new math.Point(),
-    GroupD8 = math.GroupD8,
     canvasRenderWorldTransform = new math.Matrix();
 
 /**
