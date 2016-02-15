@@ -721,7 +721,9 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type ===  CONST.SHAPES.RECT)
+    if(this.graphicsData.length === 1 
+    && this.graphicsData[0].shape.type === CONST.SHAPES.RECT
+    && !this.graphicsData[0].lineWidth)
     {
         this._renderSpriteRect(renderer);
     }
