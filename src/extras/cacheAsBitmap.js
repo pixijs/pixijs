@@ -144,7 +144,6 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-//    renderer.clear([0.5, 0.5, 0.5, 0.5])
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
     

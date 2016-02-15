@@ -2,8 +2,9 @@ var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
     Container = require('../display/Container'),
-    EventEmitter = require('eventemitter3');
-
+    RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3'),
+    tempMatrix = new math.Matrix();
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
@@ -222,6 +223,20 @@ SystemRenderer.prototype.resize = function (width, height) {
         this.view.style.height = this.height / this.resolution + 'px';
     }
 };
+
+SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
+
+    var bounds = displayObject.getLocalBounds();
+
+    var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+
+    tempMatrix.tx = -bounds.x;
+    tempMatrix.ty = -bounds.y;
+
+    this.render(displayObject, renderTexture, false, tempMatrix, true);
+
+    return renderTexture;
+}
 
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.
