@@ -272,4 +272,8 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColor = 0;
     this._backgroundColorRgba = null;
     this._backgroundColorString = null;
+
+    this.backgroundColor = 0;
+    this._tempDisplayObjectParent = null;
+    this._lastObjectRendered = null;
 };

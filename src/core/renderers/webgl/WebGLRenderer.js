@@ -42,7 +42,6 @@ function WebGLRenderer(width, height, options)
     options = options || {};
 
     SystemRenderer.call(this, 'WebGL', width, height, options);
-
     /**
      * The type of this renderer as a standardised const
      *
@@ -440,5 +439,5 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.gl.getExtension('WEBGL_lose_context').loseContext();
     this.gl = null;
 
-    this = null;
+    // this = null;
 };
