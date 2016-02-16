@@ -4159,7 +4159,8 @@ var Buffer = function(gl, type, data, drawType)
 Buffer.prototype.upload = function(data, offset, dontBind)
 {
 	// todo - needed?
-	if(!dontBind)this.bind();
+	// if(!dontBind)
+	this.bind();
 
 	var gl = this.gl;
 
@@ -4199,12 +4200,8 @@ Buffer.create = function(gl, type, data, drawType)
 	return new Buffer(gl, type, drawType);
 }
 
-//TODO Destroy..
 Buffer.prototype.destroy = function(){
 	this.gl.deleteBuffer(this.buffer);
-
-	this.gl.canvas.width = 1;
-	this.gl.canvas.height = 1;
 }
 
 module.exports = Buffer;
@@ -8219,7 +8216,7 @@ core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
 
-},{"../core":55,"./accessibleTarget":37}],37:[function(require,module,exports){
+},{"../core":57,"./accessibleTarget":37}],37:[function(require,module,exports){
 /**
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
@@ -8506,6 +8503,8 @@ var CONST = {
 module.exports = CONST;
 
 },{}],40:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"dup":39}],41:[function(require,module,exports){
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
@@ -9153,7 +9152,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":59,"../textures/RenderTexture":93,"../utils":100,"./DisplayObject":41}],41:[function(require,module,exports){
+},{"../math":61,"../textures/RenderTexture":97,"../utils":104,"./DisplayObject":42}],42:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
@@ -9640,7 +9639,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":39,"../math":59,"../textures/RenderTexture":93,"./Transform":42,"eventemitter3":12}],42:[function(require,module,exports){
+},{"../const":40,"../math":61,"../textures/RenderTexture":97,"./Transform":43,"eventemitter3":12}],43:[function(require,module,exports){
 var math = require('../math');
 
 
@@ -9716,12 +9715,11 @@ module.exports = Transform;
 
 
 
-},{"../math":59}],43:[function(require,module,exports){
+},{"../math":61}],44:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     RenderTexture = require('../textures/RenderTexture'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
-    CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
+    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
@@ -10409,16 +10407,16 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
 
     var bounds = this.getLocalBounds();
 
-    var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
+    var canvasRenderTarget = new CanvasRenderTarget(bounds.width * resolution, bounds.height * resolution);
 
-    var texture = Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
+    var texture = Texture.fromCanvas(canvasRenderTarget.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
-    canvasBuffer.context.scale(resolution, resolution);
+    canvasRenderTarget.context.scale(resolution, resolution);
 
-    canvasBuffer.context.translate(-bounds.x,-bounds.y);
+    canvasRenderTarget.context.translate(-bounds.x,-bounds.y);
 
-    CanvasGraphics.renderGraphics(this, canvasBuffer.context);
+    CanvasGraphics.renderGraphics(this, canvasRenderTarget.context);
 
     return texture;
 };
@@ -10441,7 +10439,9 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type ===  CONST.SHAPES.RECT)
+    if(this.graphicsData.length === 1 
+    && this.graphicsData[0].shape.type === CONST.SHAPES.RECT
+    && !this.graphicsData[0].lineWidth)
     {
         this._renderSpriteRect(renderer);
     }
@@ -10495,34 +10495,7 @@ Graphics.prototype._renderCanvas = function (renderer)
         return;
     }
 
-    // if the tint has changed, set the graphics object to dirty.
-    if (this._prevTint !== this.tint) {
-        this.dirty = true;
-    }
-
-   
-    var context = renderer.context;
-    var transform = this.worldTransform;
-
-    var compositeOperation = renderer.blendModes[this.blendMode];
-
-    if (compositeOperation !== context.globalCompositeOperation)
-    {
-        context.globalCompositeOperation = compositeOperation;
-    }
-
-    var resolution = renderer.resolution;
-
-    context.setTransform(
-        transform.a * resolution,
-        transform.b * resolution,
-        transform.c * resolution,
-        transform.d * resolution,
-        transform.tx * resolution,
-        transform.ty * resolution
-    );
-
-    CanvasGraphics.renderGraphics(this, context);
+    renderer.plugins.graphics.render(this);
 };
 
 /**
@@ -10808,7 +10781,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasBuffer":67,"../renderers/canvas/utils/CanvasGraphics":68,"../sprites/Sprite":87,"../textures/RenderTexture":93,"../textures/Texture":94,"./GraphicsData":44,"./utils/bezierCurveTo":45}],44:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":61,"../renderers/canvas/utils/CanvasRenderTarget":70,"../sprites/Sprite":89,"../textures/RenderTexture":97,"../textures/Texture":98,"./GraphicsData":45,"./utils/bezierCurveTo":47}],45:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -10901,7 +10874,286 @@ GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
+var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
+    CONST = require('../../const')
+
+/**
+ * @author Mat Groves
+ *
+ * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
+ * for creating the original pixi version!
+ * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
+ *
+ * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasGraphicsRenderer.java
+ */
+
+/**
+ * Renderer dedicated to drawing and batching sprites.
+ *
+ * @class
+ * @private
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
+ * @param renderer {PIXI.WebGLRenderer} The renderer sprite this batch works for.
+ */
+function CanvasGraphicsRenderer(renderer)
+{
+    this.renderer = renderer;
+}
+
+
+CanvasGraphicsRenderer.prototype.constructor = CanvasGraphicsRenderer;
+module.exports = CanvasGraphicsRenderer;
+
+CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
+
+/*
+ * Renders a Graphics object to a canvas.
+ *
+ * @param graphics {PIXI.Graphics} the actual graphics object to render
+ * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
+ */
+CanvasGraphicsRenderer.prototype.render = function (graphics)
+{
+    var renderer = this.renderer;
+    var context = renderer.context;
+    var worldAlpha = graphics.worldAlpha;
+    var transform = graphics.transform.worldTransform;
+    var resolution = renderer.resolution;
+
+     // if the tint has changed, set the graphics object to dirty.
+    if (this._prevTint !== this.tint) {
+        this.dirty = true;
+    }
+
+    context.setTransform(
+        transform.a * resolution,
+        transform.b * resolution,
+        transform.c * resolution,
+        transform.d * resolution,
+        transform.tx * resolution,
+        transform.ty * resolution
+    );
+
+
+    if (graphics.dirty)
+    {
+        this.updateGraphicsTint(graphics);
+        graphics.dirty = false;
+    }
+
+    renderer.setBlendMode(graphics.blendMode);
+
+    for (var i = 0; i < graphics.graphicsData.length; i++)
+    {
+        var data = graphics.graphicsData[i];
+        var shape = data.shape;
+
+        var fillColor = data._fillTint;
+        var lineColor = data._lineTint;
+
+        context.lineWidth = data.lineWidth;
+
+        if (data.type === CONST.SHAPES.POLY)
+        {
+            context.beginPath();
+
+            var points = shape.points;
+
+            context.moveTo(points[0], points[1]);
+
+            for (var j=1; j < points.length/2; j++)
+            {
+                context.lineTo(points[j * 2], points[j * 2 + 1]);
+            }
+
+            if (shape.closed)
+            {
+                context.lineTo(points[0], points[1]);
+            }
+
+            // if the first and last point are the same close the path - much neater :)
+            if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
+            {
+                context.closePath();
+            }
+
+            if (data.fill)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+            }
+            if (data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.stroke();
+            }
+        }
+        else if (data.type === CONST.SHAPES.RECT)
+        {
+
+            if (data.fillColor || data.fillColor === 0)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillRect(shape.x, shape.y, shape.width, shape.height);
+
+            }
+            if (data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeRect(shape.x, shape.y, shape.width, shape.height);
+            }
+        }
+        else if (data.type === CONST.SHAPES.CIRC)
+        {
+            // TODO - need to be Undefined!
+            context.beginPath();
+            context.arc(shape.x, shape.y, shape.radius,0,2*Math.PI);
+            context.closePath();
+
+            if (data.fill)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+            }
+            if (data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.stroke();
+            }
+        }
+        else if (data.type === CONST.SHAPES.ELIP)
+        {
+            // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+
+            var w = shape.width * 2;
+            var h = shape.height * 2;
+
+            var x = shape.x - w/2;
+            var y = shape.y - h/2;
+
+            context.beginPath();
+
+            var kappa = 0.5522848,
+                ox = (w / 2) * kappa, // control point offset horizontal
+                oy = (h / 2) * kappa, // control point offset vertical
+                xe = x + w,           // x-end
+                ye = y + h,           // y-end
+                xm = x + w / 2,       // x-middle
+                ym = y + h / 2;       // y-middle
+
+            context.moveTo(x, ym);
+            context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+            context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+            context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+            context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+
+            context.closePath();
+
+            if (data.fill)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+            }
+            if (data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.stroke();
+            }
+        }
+        else if (data.type === CONST.SHAPES.RREC)
+        {
+            var rx = shape.x;
+            var ry = shape.y;
+            var width = shape.width;
+            var height = shape.height;
+            var radius = shape.radius;
+
+            var maxRadius = Math.min(width, height) / 2 | 0;
+            radius = radius > maxRadius ? maxRadius : radius;
+
+            context.beginPath();
+            context.moveTo(rx, ry + radius);
+            context.lineTo(rx, ry + height - radius);
+            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+            context.lineTo(rx + width - radius, ry + height);
+            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+            context.lineTo(rx + width, ry + radius);
+            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+            context.lineTo(rx + radius, ry);
+            context.quadraticCurveTo(rx, ry, rx, ry + radius);
+            context.closePath();
+
+            if (data.fillColor || data.fillColor === 0)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+
+            }
+            if (data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.stroke();
+            }
+        }
+    }
+};
+
+/*
+ * Updates the tint of a graphics object
+ *
+ * @private
+ * @param graphics {PIXI.Graphics} the graphics that will have its tint updated
+ *
+ */
+CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
+{
+    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
+    {
+        return;
+    }
+
+    graphics._prevTint = graphics.tint;
+
+    var tintR = (graphics.tint >> 16 & 0xFF) / 255;
+    var tintG = (graphics.tint >> 8 & 0xFF) / 255;
+    var tintB = (graphics.tint & 0xFF)/ 255;
+
+    for (var i = 0; i < graphics.graphicsData.length; i++)
+    {
+        var data = graphics.graphicsData[i];
+
+        var fillColor = data.fillColor | 0;
+        var lineColor = data.lineColor | 0;
+
+        // super inline cos im an optimization NAZI :)
+        data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
+        data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+    }
+};
+
+/*
+ * destroy graphics object
+ *
+ */
+CanvasGraphicsRenderer.prototype.destroy = function ()
+{
+  this.renderer = null;
+}
+
+},{"../../const":40,"../../renderers/canvas/CanvasRenderer":68}],47:[function(require,module,exports){
 
 /**
  * Calculate the points for a bezier curve and then draws it.
@@ -10948,7 +11200,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
 };
 
 module.exports = bezierCurveTo;
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -11173,7 +11425,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 };
 
 
-},{"../../const":39,"../../math":59,"../../renderers/webgl/WebGLRenderer":72,"../../renderers/webgl/utils/ObjectRenderer":82,"../../utils":100,"./WebGLGraphicsData":47,"./shaders/PrimitiveShader":48,"./utils/buildCircle":49,"./utils/buildComplexPoly":50,"./utils/buildLine":51,"./utils/buildPoly":52,"./utils/buildRectangle":53,"./utils/buildRoundedRectangle":54}],47:[function(require,module,exports){
+},{"../../const":40,"../../math":61,"../../renderers/webgl/WebGLRenderer":74,"../../renderers/webgl/utils/ObjectRenderer":84,"../../utils":104,"./WebGLGraphicsData":49,"./shaders/PrimitiveShader":50,"./utils/buildCircle":51,"./utils/buildComplexPoly":52,"./utils/buildLine":53,"./utils/buildPoly":54,"./utils/buildRectangle":55,"./utils/buildRoundedRectangle":56}],49:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 
@@ -11292,7 +11544,7 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.glIndices = null;
 };
 
-},{"pixi-gl-core":14}],48:[function(require,module,exports){
+},{"pixi-gl-core":14}],50:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 /**
@@ -11344,7 +11596,7 @@ PrimitiveShader.prototype.constructor = PrimitiveShader;
 
 module.exports = PrimitiveShader;
 
-},{"pixi-gl-core":14}],49:[function(require,module,exports){
+},{"pixi-gl-core":14}],51:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -11431,7 +11683,7 @@ var buildCircle = function (graphicsData, webGLData)
 
 
 module.exports = buildCircle;
-},{"../../../utils":100,"./buildLine":51}],50:[function(require,module,exports){
+},{"../../../utils":104,"./buildLine":53}],52:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
     
@@ -11502,7 +11754,7 @@ var buildComplexPoly = function (graphicsData, webGLData)
 
 
 module.exports = buildComplexPoly;
-},{"../../../utils":100,"./buildLine":51}],51:[function(require,module,exports){
+},{"../../../utils":104,"./buildLine":53}],53:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils');
 
@@ -11517,7 +11769,7 @@ var buildLine = function (graphicsData, webGLData)
 {
     // TODO OPTIMISE!
     var i = 0;
-    var points = graphicsData.shape.points;
+    var points = graphicsData.points;
    
     if (points.length === 0)
     {
@@ -11722,7 +11974,7 @@ var buildLine = function (graphicsData, webGLData)
 };
 
 module.exports = buildLine;
-},{"../../../math":59,"../../../utils":100}],52:[function(require,module,exports){
+},{"../../../math":61,"../../../utils":104}],54:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
     earcut = require('earcut');
@@ -11802,7 +12054,7 @@ var buildPoly = function (graphicsData, webGLData)
 
 module.exports = buildPoly;
 
-},{"../../../utils":100,"./buildLine":51,"earcut":11}],53:[function(require,module,exports){
+},{"../../../utils":104,"./buildLine":53,"earcut":11}],55:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -11873,7 +12125,7 @@ var buildRectangle = function (graphicsData, webGLData)
 };
 
 module.exports = buildRectangle;
-},{"../../../utils":100,"./buildLine":51}],54:[function(require,module,exports){
+},{"../../../utils":104,"./buildLine":53}],56:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
     
@@ -12001,7 +12253,7 @@ quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
 
 
 module.exports = buildRoundedRectangle;
-},{"../../../utils":100,"./buildLine":51}],55:[function(require,module,exports){
+},{"../../../utils":104,"./buildLine":53}],57:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -12024,6 +12276,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
+    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
     //ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
     //ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
@@ -12035,6 +12288,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
     GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
+    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
@@ -12046,8 +12300,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasGraphics:         require('./renderers/canvas/utils/CanvasGraphics'),
-    CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
+    CanvasRenderTarget:           require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
@@ -12094,7 +12347,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./graphics/Graphics":43,"./graphics/GraphicsData":44,"./graphics/webgl/GraphicsRenderer":46,"./math":59,"./renderers/canvas/CanvasRenderer":66,"./renderers/canvas/utils/CanvasBuffer":67,"./renderers/canvas/utils/CanvasGraphics":68,"./renderers/webgl/WebGLRenderer":72,"./renderers/webgl/filters/Filter":74,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":77,"./renderers/webgl/managers/WebGLManager":81,"./renderers/webgl/utils/ObjectRenderer":82,"./renderers/webgl/utils/RenderTarget":84,"./sprites/Sprite":87,"./sprites/webgl/SpriteRenderer":88,"./text/Text":90,"./textures/BaseRenderTexture":91,"./textures/BaseTexture":92,"./textures/RenderTexture":93,"./textures/Texture":94,"./textures/TextureUvs":95,"./textures/VideoBaseTexture":96,"./ticker":98,"./utils":100,"pixi-gl-core":14}],56:[function(require,module,exports){
+},{"./const":40,"./display/Container":41,"./display/DisplayObject":42,"./graphics/Graphics":44,"./graphics/GraphicsData":45,"./graphics/canvas/CanvasGraphicsRenderer":46,"./graphics/webgl/GraphicsRenderer":48,"./math":61,"./renderers/canvas/CanvasRenderer":68,"./renderers/canvas/utils/CanvasRenderTarget":70,"./renderers/webgl/WebGLRenderer":74,"./renderers/webgl/filters/Filter":76,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":79,"./renderers/webgl/managers/WebGLManager":83,"./renderers/webgl/utils/ObjectRenderer":84,"./renderers/webgl/utils/RenderTarget":86,"./sprites/Sprite":89,"./sprites/canvas/CanvasSpriteRenderer":90,"./sprites/webgl/SpriteRenderer":92,"./text/Text":94,"./textures/BaseRenderTexture":95,"./textures/BaseTexture":96,"./textures/RenderTexture":97,"./textures/Texture":98,"./textures/TextureUvs":99,"./textures/VideoBaseTexture":100,"./ticker":102,"./utils":104,"pixi-gl-core":14}],58:[function(require,module,exports){
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
@@ -12258,7 +12511,7 @@ var GroupD8 = {
 
 module.exports = GroupD8;
 
-},{"./Matrix":57}],57:[function(require,module,exports){
+},{"./Matrix":59}],59:[function(require,module,exports){
 // @todo - ignore the too many parameters warning for now
 // should either fix it or change the jshint config
 // jshint -W072
@@ -12699,7 +12952,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":58}],58:[function(require,module,exports){
+},{"./Point":60}],60:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -12769,7 +13022,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -12792,7 +13045,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./GroupD8":56,"./Matrix":57,"./Point":58,"./shapes/Circle":60,"./shapes/Ellipse":61,"./shapes/Polygon":62,"./shapes/Rectangle":63,"./shapes/RoundedRectangle":64}],60:[function(require,module,exports){
+},{"./GroupD8":58,"./Matrix":59,"./Point":60,"./shapes/Circle":62,"./shapes/Ellipse":63,"./shapes/Polygon":64,"./shapes/Rectangle":65,"./shapes/RoundedRectangle":66}],62:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -12880,7 +13133,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":39,"./Rectangle":63}],61:[function(require,module,exports){
+},{"../../const":40,"./Rectangle":65}],63:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -12975,7 +13228,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":39,"./Rectangle":63}],62:[function(require,module,exports){
+},{"../../const":40,"./Rectangle":65}],64:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -13078,7 +13331,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":39,"../Point":58}],63:[function(require,module,exports){
+},{"../../const":40,"../Point":60}],65:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -13220,7 +13473,7 @@ Rectangle.prototype.fit = function (rectangle)
 }
 
 
-},{"../../const":39}],64:[function(require,module,exports){
+},{"../../const":40}],66:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -13312,13 +13565,14 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":39}],65:[function(require,module,exports){
+},{"../../const":40}],67:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
     Container = require('../display/Container'),
-    EventEmitter = require('eventemitter3');
-
+    RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3'),
+    tempMatrix = new math.Matrix();
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
@@ -13538,6 +13792,20 @@ SystemRenderer.prototype.resize = function (width, height) {
     }
 };
 
+SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
+
+    var bounds = displayObject.getLocalBounds();
+
+    var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+
+    tempMatrix.tx = -bounds.x;
+    tempMatrix.ty = -bounds.y;
+
+    this.render(displayObject, renderTexture, false, tempMatrix, true);
+
+    return renderTexture;
+}
+
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.
  *
@@ -13572,11 +13840,17 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColor = 0;
     this._backgroundColorRgba = null;
     this._backgroundColorString = null;
+
+    this.backgroundColor = 0;
+    this._tempDisplayObjectParent = null;
+    this._lastObjectRendered = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":59,"../utils":100,"eventemitter3":12}],66:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":61,"../textures/RenderTexture":97,"../utils":104,"eventemitter3":12}],68:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
+    CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
+    mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
     utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const');
@@ -13613,7 +13887,8 @@ function CanvasRenderer(width, height, options)
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootResolution = this.resolution;
 
     /**
      * Boolean flag controlling canvas refresh.
@@ -13627,7 +13902,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {PIXI.CanvasMaskManager}
      */
-    this.maskManager = new CanvasMaskManager();
+    this.maskManager = new CanvasMaskManager(this);
 
     /**
      * The canvas property used to set the canvas smoothing property.
@@ -13636,21 +13911,21 @@ function CanvasRenderer(width, height, options)
      */
     this.smoothProperty = 'imageSmoothingEnabled';
 
-    if (!this.context.imageSmoothingEnabled)
+    if (!this.rootContext.imageSmoothingEnabled)
     {
-        if (this.context.webkitImageSmoothingEnabled)
+        if (this.rootContext.webkitImageSmoothingEnabled)
         {
             this.smoothProperty = 'webkitImageSmoothingEnabled';
         }
-        else if (this.context.mozImageSmoothingEnabled)
+        else if (this.rootContext.mozImageSmoothingEnabled)
         {
             this.smoothProperty = 'mozImageSmoothingEnabled';
         }
-        else if (this.context.oImageSmoothingEnabled)
+        else if (this.rootContext.oImageSmoothingEnabled)
         {
             this.smoothProperty = 'oImageSmoothingEnabled';
         }
-        else if (this.context.msImageSmoothingEnabled)
+        else if (this.rootContext.msImageSmoothingEnabled)
         {
             this.smoothProperty = 'msImageSmoothingEnabled';
         }
@@ -13658,19 +13933,11 @@ function CanvasRenderer(width, height, options)
 
     this.initPlugins();
 
-    this._mapBlendModes();
+    this.blendModes = mapCanvasBlendModesToPixi();
+    this._activeBlendMode = null;
 
-    /**
-     * This temporary display object used as the parent of the currently being rendered item
-     *
-     * @member {PIXI.DisplayObject}
-     * @private
-     */
-    this._tempDisplayObjectParent = {
-        worldTransform: new math.Matrix(),
-        worldAlpha: 1
-    };
-
+    this.context = null;
+    this.renderingToScreen = false;
 
     this.resize(width, height);
 }
@@ -13681,55 +13948,112 @@ CanvasRenderer.prototype.constructor = CanvasRenderer;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
 
+
 /**
  * Renders the object to this canvas view
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
  */
-CanvasRenderer.prototype.render = function (object)
+CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
+
+    if (!this.view) return;
+
+     // can be handy to know!
+    this.renderingToScreen = !renderTexture;
+
     this.emit('prerender');
 
-    var cacheParent = object.parent;
-
-    this._lastObjectRendered = object;
-
-    object.parent = this._tempDisplayObjectParent;
-
-    // update the scene graph
-    object.updateTransform();
-
-    object.parent = cacheParent;
-
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-
-    this.context.globalAlpha = 1;
-
-    this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
-
-    if (navigator.isCocoonJS && this.view.screencanvas)
+    if(renderTexture)
     {
-        this.context.fillStyle = 'black';
-        this.context.clear();
+        renderTexture = renderTexture.baseTexture || renderTexture;
+
+        if(!renderTexture._canvasRenderTarget)
+        {
+            renderTexture._canvasRenderTarget = new CanvasRenderTarget(renderTexture.width, renderTexture.height, renderTexture.resolution);
+            renderTexture.source = renderTexture._canvasRenderTarget.canvas;
+            renderTexture.valid = true;
+        }
+
+        this.context = renderTexture._canvasRenderTarget.context;
+        this.resolution = renderTexture._canvasRenderTarget.resolution;
+    }
+    else
+    {
+
+        this.context = this.rootContext;
+        this.resolution = this.rootResolution
     }
 
-    if (this.clearBeforeRender)
+    var context = this.context;
+
+
+
+    this._lastObjectRendered = displayObject;
+
+
+
+    if(!skipUpdateTransform)
     {
-        if (this.transparent)
+        // update the scene graph
+        var cacheParent = displayObject.parent;
+        var tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+
+        if(transform)
         {
-            this.context.clearRect(0, 0, this.width, this.height);
+            transform.copy(tempWt);
         }
         else
         {
-            this.context.fillStyle = this._backgroundColorString;
-            this.context.fillRect(0, 0, this.width , this.height);
+            tempWt.identity();
+        }
+
+        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.updateTransform();
+        displayObject.parent = cacheParent;
+       // displayObject.hitArea = //TODO add a temp hit area
+    }
+
+
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
+
+    if (navigator.isCocoonJS && this.view.screencanvas)
+    {
+        context.fillStyle = 'black';
+        context.clear();
+    }
+
+    if( clear || this.clearBeforeRender)
+    {
+        if (this.transparent)
+        {
+            context.clearRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            context.fillStyle = this._backgroundColorString;
+            context.fillRect(0, 0, this.width , this.height);
         }
     }
 
-    this.renderDisplayObject(object, this.context);
+    // TODO RENDER TARGET STUFF HERE..
+    var tempContext = this.context;
+
+    this.context = context;
+    displayObject.renderCanvas(this);
+    this.context = tempContext;
 
     this.emit('postrender');
 };
+
+
+CanvasRenderer.prototype.setBlendMode = function (blendMode)
+{
+    if(this._activeBlendMode === blendMode)return;
+    this.context.globalCompositeOperation = this.blendModes[blendMode];
+}
 
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.
@@ -13754,21 +14078,6 @@ CanvasRenderer.prototype.destroy = function (removeView)
 };
 
 /**
- * Renders a display object
- *
- * @param displayObject {PIXI.DisplayObject} The displayObject to render
- * @private
- */
-CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
-{
-    var tempContext = this.context;
-
-    this.context = context;
-    displayObject.renderCanvas(this);
-    this.context = tempContext;
-};
-
-/**
  * @extends PIXI.SystemRenderer#resize
  *
  * @param {number} w
@@ -13782,368 +14091,66 @@ CanvasRenderer.prototype.resize = function (w, h)
     //surely a browser bug?? Let pixi fix that for you..
     if(this.smoothProperty)
     {
-        this.context[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
+        this.rootContext[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
     }
 
 };
 
-/**
- * Maps Pixi blend modes to canvas blend modes.
- *
- * @private
- */
-CanvasRenderer.prototype._mapBlendModes = function ()
-{
-    if (!this.blendModes)
-    {
-        this.blendModes = {};
+},{"../../const":40,"../../math":61,"../../utils":104,"../SystemRenderer":67,"./utils/CanvasMaskManager":69,"./utils/CanvasRenderTarget":70,"./utils/mapCanvasBlendModesToPixi":72}],69:[function(require,module,exports){
 
-        if (utils.canUseNewCanvasBlendModes())
-        {
-            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'multiply';
-            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'screen';
-            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'overlay';
-            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'darken';
-            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'lighten';
-            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'color-dodge';
-            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'color-burn';
-            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'hard-light';
-            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'soft-light';
-            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'difference';
-            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'exclusion';
-            this.blendModes[CONST.BLEND_MODES.HUE]           = 'hue';
-            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'saturate';
-            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'color';
-            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'luminosity';
-        }
-        else
-        {
-            // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
-            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.HUE]           = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'source-over';
-        }
-    }
-};
-
-},{"../../const":39,"../../math":59,"../../utils":100,"../SystemRenderer":65,"./utils/CanvasMaskManager":69}],67:[function(require,module,exports){
 /**
- * Creates a Canvas element of the given size.
+ * A set of functions used to handle masking.
  *
  * @class
  * @memberof PIXI
- * @param width {number} the width for the newly created canvas
- * @param height {number} the height for the newly created canvas
  */
-function CanvasBuffer(width, height)
+function CanvasMaskManager(renderer)
 {
-    /**
-     * The Canvas object that belongs to this CanvasBuffer.
-     *
-     * @member {HTMLCanvasElement}
-     */
-    this.canvas = document.createElement('canvas');
-
-    /**
-     * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
-     *
-     * @member {CanvasRenderingContext2D}
-     */
-    this.context = this.canvas.getContext('2d');
-
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.renderer = renderer;
 }
 
-CanvasBuffer.prototype.constructor = CanvasBuffer;
-module.exports = CanvasBuffer;
-
-Object.defineProperties(CanvasBuffer.prototype, {
-    /**
-     * The width of the canvas buffer in pixels.
-     *
-     * @member {number}
-     * @memberof PIXI.CanvasBuffer#
-     */
-    width: {
-        get: function ()
-        {
-            return this.canvas.width;
-        },
-        set: function (val)
-        {
-            this.canvas.width = val;
-        }
-    },
-    /**
-     * The height of the canvas buffer in pixels.
-     *
-     * @member {number}
-     * @memberof PIXI.CanvasBuffer#
-     */
-    height: {
-        get: function ()
-        {
-            return this.canvas.height;
-        },
-        set: function (val)
-        {
-            this.canvas.height = val;
-        }
-    }
-});
+CanvasMaskManager.prototype.constructor = CanvasMaskManager;
+module.exports = CanvasMaskManager;
 
 /**
- * Clears the canvas that was created by the CanvasBuffer class.
+ * This method adds it to the current stack of masks.
  *
- * @private
+ * @param maskData {object} the maskData that will be pushed
+ * @param renderer {PIXI.WebGLRenderer|PIXI.CanvasRenderer} The renderer context to use.
  */
-CanvasBuffer.prototype.clear = function ()
+CanvasMaskManager.prototype.pushMask = function (maskData)
 {
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
-};
+    var renderer = this.renderer;
 
-/**
- * Resizes the canvas to the specified width and height.
- *
- * @param width {number} the new width of the canvas
- * @param height {number} the new height of the canvas
- */
-CanvasBuffer.prototype.resize = function (width, height)
-{
-    this.canvas.width = width;
-    this.canvas.height = height;
-};
+    renderer.context.save();
 
-/**
- * Destroys this canvas.
- *
- */
-CanvasBuffer.prototype.destroy = function ()
-{
-    this.context = null;
-    this.canvas = null;
-};
+    var cacheAlpha = maskData.alpha;
+    var transform = maskData.transform.worldTransform;
+    var resolution = renderer.resolution;
 
-},{}],68:[function(require,module,exports){
-var CONST = require('../../../const');
+    renderer.context.setTransform(
+        transform.a * resolution,
+        transform.b * resolution,
+        transform.c * resolution,
+        transform.d * resolution,
+        transform.tx * resolution,
+        transform.ty * resolution
+    );
 
-/**
- * A set of functions used by the canvas renderer to draw the primitive graphics data.
- * @static
- * @class
- * @memberof PIXI
- */
-var CanvasGraphics = {};
-module.exports = CanvasGraphics;
-
-/*
- * Renders a Graphics object to a canvas.
- *
- * @param graphics {PIXI.Graphics} the actual graphics object to render
- * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
- */
-CanvasGraphics.renderGraphics = function (graphics, context)
-{
-    var worldAlpha = graphics.worldAlpha;
-
-    if (graphics.dirty)
+    //TODO suport sprite alpha masks??
+    //lots of effort required. If demand is great enough..
+    if(!maskData._texture)
     {
-        this.updateGraphicsTint(graphics);
-        graphics.dirty = false;
+        this.renderGraphicsShape(maskData);
+        renderer.context.clip();
     }
 
-    for (var i = 0; i < graphics.graphicsData.length; i++)
-    {
-        var data = graphics.graphicsData[i];
-        var shape = data.shape;
-
-        var fillColor = data._fillTint;
-        var lineColor = data._lineTint;
-
-        context.lineWidth = data.lineWidth;
-
-        if (data.type === CONST.SHAPES.POLY)
-        {
-            context.beginPath();
-
-            var points = shape.points;
-
-            context.moveTo(points[0], points[1]);
-
-            for (var j=1; j < points.length/2; j++)
-            {
-                context.lineTo(points[j * 2], points[j * 2 + 1]);
-            }
-
-            if (shape.closed)
-            {
-                context.lineTo(points[0], points[1]);
-            }
-
-            // if the first and last point are the same close the path - much neater :)
-            if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
-            {
-                context.closePath();
-            }
-
-            if (data.fill)
-            {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
-            }
-            if (data.lineWidth)
-            {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
-            }
-        }
-        else if (data.type === CONST.SHAPES.RECT)
-        {
-
-            if (data.fillColor || data.fillColor === 0)
-            {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fillRect(shape.x, shape.y, shape.width, shape.height);
-
-            }
-            if (data.lineWidth)
-            {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.strokeRect(shape.x, shape.y, shape.width, shape.height);
-            }
-        }
-        else if (data.type === CONST.SHAPES.CIRC)
-        {
-            // TODO - need to be Undefined!
-            context.beginPath();
-            context.arc(shape.x, shape.y, shape.radius,0,2*Math.PI);
-            context.closePath();
-
-            if (data.fill)
-            {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
-            }
-            if (data.lineWidth)
-            {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
-            }
-        }
-        else if (data.type === CONST.SHAPES.ELIP)
-        {
-            // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
-
-            var w = shape.width * 2;
-            var h = shape.height * 2;
-
-            var x = shape.x - w/2;
-            var y = shape.y - h/2;
-
-            context.beginPath();
-
-            var kappa = 0.5522848,
-                ox = (w / 2) * kappa, // control point offset horizontal
-                oy = (h / 2) * kappa, // control point offset vertical
-                xe = x + w,           // x-end
-                ye = y + h,           // y-end
-                xm = x + w / 2,       // x-middle
-                ym = y + h / 2;       // y-middle
-
-            context.moveTo(x, ym);
-            context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-            context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-            context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-            context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-
-            context.closePath();
-
-            if (data.fill)
-            {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
-            }
-            if (data.lineWidth)
-            {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
-            }
-        }
-        else if (data.type === CONST.SHAPES.RREC)
-        {
-            var rx = shape.x;
-            var ry = shape.y;
-            var width = shape.width;
-            var height = shape.height;
-            var radius = shape.radius;
-
-            var maxRadius = Math.min(width, height) / 2 | 0;
-            radius = radius > maxRadius ? maxRadius : radius;
-
-            context.beginPath();
-            context.moveTo(rx, ry + radius);
-            context.lineTo(rx, ry + height - radius);
-            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
-            context.lineTo(rx + width - radius, ry + height);
-            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
-            context.lineTo(rx + width, ry + radius);
-            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
-            context.lineTo(rx + radius, ry);
-            context.quadraticCurveTo(rx, ry, rx, ry + radius);
-            context.closePath();
-
-            if (data.fillColor || data.fillColor === 0)
-            {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
-
-            }
-            if (data.lineWidth)
-            {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
-            }
-        }
-    }
+    maskData.worldAlpha = cacheAlpha;
 };
 
-/*
- * Renders a graphics mask
- *
- * @private
- * @param graphics {PIXI.Graphics} the graphics which will be used as a mask
- * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
- */
-CanvasGraphics.renderGraphicsMask = function (graphics, context)
+CanvasMaskManager.prototype.renderGraphicsShape = function (graphics)
 {
+    var context = this.renderer.context;
     var len = graphics.graphicsData.length;
 
     if (len === 0)
@@ -14240,112 +14247,6 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
     }
 };
 
-/*
- * Updates the tint of a graphics object
- *
- * @private
- * @param graphics {PIXI.Graphics} the graphics that will have its tint updated
- *
- */
-CanvasGraphics.updateGraphicsTint = function (graphics)
-{
-    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
-    {
-        return;
-    }
-    graphics._prevTint = graphics.tint;
-
-    var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-    var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-    var tintB = (graphics.tint & 0xFF)/ 255;
-
-    for (var i = 0; i < graphics.graphicsData.length; i++)
-    {
-        var data = graphics.graphicsData[i];
-
-        var fillColor = data.fillColor | 0;
-        var lineColor = data.lineColor | 0;
-
-        /*
-        var colorR = (fillColor >> 16 & 0xFF) / 255;
-        var colorG = (fillColor >> 8 & 0xFF) / 255;
-        var colorB = (fillColor & 0xFF) / 255;
-
-        colorR *= tintR;
-        colorG *= tintG;
-        colorB *= tintB;
-
-        fillColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);
-
-        colorR = (lineColor >> 16 & 0xFF) / 255;
-        colorG = (lineColor >> 8 & 0xFF) / 255;
-        colorB = (lineColor & 0xFF) / 255;
-
-        colorR *= tintR;
-        colorG *= tintG;
-        colorB *= tintB;
-
-        lineColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);
-        */
-
-        // super inline cos im an optimization NAZI :)
-        data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
-        data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
-
-    }
-};
-
-
-},{"../../../const":39}],69:[function(require,module,exports){
-var CanvasGraphics = require('./CanvasGraphics');
-
-/**
- * A set of functions used to handle masking.
- *
- * @class
- * @memberof PIXI
- */
-function CanvasMaskManager()
-{}
-
-CanvasMaskManager.prototype.constructor = CanvasMaskManager;
-module.exports = CanvasMaskManager;
-
-/**
- * This method adds it to the current stack of masks.
- *
- * @param maskData {object} the maskData that will be pushed
- * @param renderer {PIXI.WebGLRenderer|PIXI.CanvasRenderer} The renderer context to use.
- */
-CanvasMaskManager.prototype.pushMask = function (maskData, renderer)
-{
-
-    renderer.context.save();
-
-    var cacheAlpha = maskData.alpha;
-    var transform = maskData.worldTransform;
-    var resolution = renderer.resolution;
-
-    renderer.context.setTransform(
-        transform.a * resolution,
-        transform.b * resolution,
-        transform.c * resolution,
-        transform.d * resolution,
-        transform.tx * resolution,
-        transform.ty * resolution
-    );
-
-    //TODO suport sprite alpha masks??
-    //lots of effort required. If demand is great enough..
-    if(!maskData.texture)
-    {
-        CanvasGraphics.renderGraphicsMask(maskData, renderer.context);
-        renderer.context.clip();
-    }
-
-    maskData.worldAlpha = cacheAlpha;
-};
-
 /**
  * Restores the current drawing context to the state it was before the mask was applied.
  *
@@ -14358,247 +14259,209 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"./CanvasGraphics":68}],70:[function(require,module,exports){
-var utils = require('../../../utils');
+},{}],70:[function(require,module,exports){
+/**
+ * Creates a Canvas element of the given size.
+ *
+ * @class
+ * @memberof PIXI
+ * @param width {number} the width for the newly created canvas
+ * @param height {number} the height for the newly created canvas
+ */
+function CanvasRenderTarget(width, height, resolution)
+{
+    /**
+     * The Canvas object that belongs to this CanvasRenderTarget.
+     *
+     * @member {HTMLCanvasElement}
+     */
+    this.canvas = document.createElement('canvas');
+
+    /**
+     * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
+     *
+     * @member {CanvasRenderingContext2D}
+     */
+    this.context = this.canvas.getContext('2d');
+
+    this.resolution = resolution;
+
+    this.resize(width, height);
+}
+
+CanvasRenderTarget.prototype.constructor = CanvasRenderTarget;
+module.exports = CanvasRenderTarget;
+
+Object.defineProperties(CanvasRenderTarget.prototype, {
+    /**
+     * The width of the canvas buffer in pixels.
+     *
+     * @member {number}
+     * @memberof PIXI.CanvasRenderTarget#
+     */
+    width: {
+        get: function ()
+        {
+            return this.canvas.width;
+        },
+        set: function (val)
+        {
+            this.canvas.width = val;
+        }
+    },
+    /**
+     * The height of the canvas buffer in pixels.
+     *
+     * @member {number}
+     * @memberof PIXI.CanvasRenderTarget#
+     */
+    height: {
+        get: function ()
+        {
+            return this.canvas.height;
+        },
+        set: function (val)
+        {
+            this.canvas.height = val;
+        }
+    }
+});
 
 /**
- * Utility methods for Sprite/Texture tinting.
- * @static
+ * Clears the canvas that was created by the CanvasRenderTarget class.
+ *
+ * @private
+ */
+CanvasRenderTarget.prototype.clear = function ()
+{
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
+    this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
+};
+
+/**
+ * Resizes the canvas to the specified width and height.
+ *
+ * @param width {number} the new width of the canvas
+ * @param height {number} the new height of the canvas
+ */
+CanvasRenderTarget.prototype.resize = function (width, height)
+{
+
+    this.canvas.width = width * this.resolution;
+    this.canvas.height = height * this.resolution;
+};
+
+/**
+ * Destroys this canvas.
+ *
+ */
+CanvasRenderTarget.prototype.destroy = function ()
+{
+    this.context = null;
+    this.canvas = null;
+};
+
+},{}],71:[function(require,module,exports){
+
+
+/**
+ * Checks whether the Canvas BlendModes are supported by the current browser
+ *
+ * @return {boolean} whether they are supported
+ */
+var canUseNewCanvasBlendModes = function ()
+{
+    if (typeof document === 'undefined')
+    {
+        return false;
+    }
+
+    var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
+    var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
+
+    var magenta = new Image();
+    magenta.src = pngHead + 'AP804Oa6' + pngEnd;
+
+    var yellow = new Image();
+    yellow.src = pngHead + '/wCKxvRF' + pngEnd;
+
+    var canvas = document.createElement('canvas');
+    canvas.width = 6;
+    canvas.height = 1;
+
+    var context = canvas.getContext('2d');
+    context.globalCompositeOperation = 'multiply';
+    context.drawImage(magenta, 0, 0);
+    context.drawImage(yellow, 2, 0);
+
+    var data = context.getImageData(2,0,1,1).data;
+
+    return (data[0] === 255 && data[1] === 0 && data[2] === 0);
+}
+
+module.exports = canUseNewCanvasBlendModes;
+
+},{}],72:[function(require,module,exports){
+var CONST = require('../../../Const'),
+canUseNewCanvasBlendModes = require('./canUseNewCanvasBlendModes');
+
+/**
+ * Maps gl blend combinations to WebGL
  * @class
  * @memberof PIXI
  */
-var CanvasTinter = {};
-module.exports = CanvasTinter;
-
-/**
- * Basically this method just needs a sprite and a color and tints the sprite with the given color.
- *
- * @param sprite {PIXI.Sprite} the sprite to tint
- * @param color {number} the color to use to tint the sprite with
- * @return {HTMLCanvasElement} The tinted canvas
- */
-CanvasTinter.getTintedTexture = function (sprite, color)
+function mapWebGLBlendModesToPixi(array)
 {
-    var texture = sprite.texture;
+    array = array || [];
 
-    color = CanvasTinter.roundColor(color);
-
-    var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
-
-    texture.tintCache = texture.tintCache || {};
-
-    if (texture.tintCache[stringColor])
+    if (canUseNewCanvasBlendModes())
     {
-        return texture.tintCache[stringColor];
-    }
-
-     // clone texture..
-    var canvas = CanvasTinter.canvas || document.createElement('canvas');
-
-    //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
-    CanvasTinter.tintMethod(texture, color, canvas);
-
-    if (CanvasTinter.convertTintToImage)
-    {
-        // is this better?
-        var tintImage = new Image();
-        tintImage.src = canvas.toDataURL();
-
-        texture.tintCache[stringColor] = tintImage;
+        array[CONST.BLEND_MODES.NORMAL]        = 'source-over';
+        array[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
+        array[CONST.BLEND_MODES.MULTIPLY]      = 'multiply';
+        array[CONST.BLEND_MODES.SCREEN]        = 'screen';
+        array[CONST.BLEND_MODES.OVERLAY]       = 'overlay';
+        array[CONST.BLEND_MODES.DARKEN]        = 'darken';
+        array[CONST.BLEND_MODES.LIGHTEN]       = 'lighten';
+        array[CONST.BLEND_MODES.COLOR_DODGE]   = 'color-dodge';
+        array[CONST.BLEND_MODES.COLOR_BURN]    = 'color-burn';
+        array[CONST.BLEND_MODES.HARD_LIGHT]    = 'hard-light';
+        array[CONST.BLEND_MODES.SOFT_LIGHT]    = 'soft-light';
+        array[CONST.BLEND_MODES.DIFFERENCE]    = 'difference';
+        array[CONST.BLEND_MODES.EXCLUSION]     = 'exclusion';
+        array[CONST.BLEND_MODES.HUE]           = 'hue';
+        array[CONST.BLEND_MODES.SATURATION]    = 'saturate';
+        array[CONST.BLEND_MODES.COLOR]         = 'color';
+        array[CONST.BLEND_MODES.LUMINOSITY]    = 'luminosity';
     }
     else
     {
-        texture.tintCache[stringColor] = canvas;
-        // if we are not converting the texture to an image then we need to lose the reference to the canvas
-        CanvasTinter.canvas = null;
+        // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
+        array[CONST.BLEND_MODES.NORMAL]        = 'source-over';
+        array[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
+        array[CONST.BLEND_MODES.MULTIPLY]      = 'source-over';
+        array[CONST.BLEND_MODES.SCREEN]        = 'source-over';
+        array[CONST.BLEND_MODES.OVERLAY]       = 'source-over';
+        array[CONST.BLEND_MODES.DARKEN]        = 'source-over';
+        array[CONST.BLEND_MODES.LIGHTEN]       = 'source-over';
+        array[CONST.BLEND_MODES.COLOR_DODGE]   = 'source-over';
+        array[CONST.BLEND_MODES.COLOR_BURN]    = 'source-over';
+        array[CONST.BLEND_MODES.HARD_LIGHT]    = 'source-over';
+        array[CONST.BLEND_MODES.SOFT_LIGHT]    = 'source-over';
+        array[CONST.BLEND_MODES.DIFFERENCE]    = 'source-over';
+        array[CONST.BLEND_MODES.EXCLUSION]     = 'source-over';
+        array[CONST.BLEND_MODES.HUE]           = 'source-over';
+        array[CONST.BLEND_MODES.SATURATION]    = 'source-over';
+        array[CONST.BLEND_MODES.COLOR]         = 'source-over';
+        array[CONST.BLEND_MODES.LUMINOSITY]    = 'source-over';
     }
 
-    return canvas;
-};
+    return array
+}
 
-/**
- * Tint a texture using the 'multiply' operation.
- *
- * @param texture {PIXI.Texture} the texture to tint
- * @param color {number} the color to use to tint the sprite with
- * @param canvas {HTMLCanvasElement} the current canvas
- */
-CanvasTinter.tintWithMultiply = function (texture, color, canvas)
-{
-    var context = canvas.getContext( '2d' );
+module.exports = mapWebGLBlendModesToPixi;
 
-    var resolution = texture.baseTexture.resolution;
-
-    var crop = texture._frame;
-
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-
-    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
-
-    context.fillRect(0, 0, crop.width, crop.height);
-
-    context.globalCompositeOperation = 'multiply';
-
-    context.drawImage(
-        texture.baseTexture.source,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
-        0,
-        0,
-        crop.width,
-        crop.height
-    );
-
-    context.globalCompositeOperation = 'destination-atop';
-
-    context.drawImage(
-        texture.baseTexture.source,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
-        0,
-        0,
-        crop.width,
-        crop.height
-    );
-};
-
-/**
- * Tint a texture using the 'overlay' operation.
- *
- * @param texture {PIXI.Texture} the texture to tint
- * @param color {number} the color to use to tint the sprite with
- * @param canvas {HTMLCanvasElement} the current canvas
- */
-CanvasTinter.tintWithOverlay = function (texture, color, canvas)
-{
-    var context = canvas.getContext( '2d' );
-
-    var resolution = texture.baseTexture.resolution;
-
-    var crop = texture._frame;
-
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-
-    context.globalCompositeOperation = 'copy';
-    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
-    context.fillRect(0, 0, crop.width, crop.height);
-
-    context.globalCompositeOperation = 'destination-atop';
-    context.drawImage(
-        texture.baseTexture.source,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
-        0,
-        0,
-        crop.width,
-        crop.height
-    );
-
-    // context.globalCompositeOperation = 'copy';
-};
-
-/**
- * Tint a texture pixel per pixel.
- *
- * @param texture {PIXI.Texture} the texture to tint
- * @param color {number} the color to use to tint the sprite with
- * @param canvas {HTMLCanvasElement} the current canvas
- */
-CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
-{
-    var context = canvas.getContext( '2d' );
-
-    var resolution = texture.baseTexture.resolution;
-
-    var crop = texture._frame;
-
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-
-    context.globalCompositeOperation = 'copy';
-    context.drawImage(
-        texture.baseTexture.source,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
-        0,
-        0,
-        crop.width,
-        crop.height
-    );
-
-    var rgbValues = utils.hex2rgb(color);
-    var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
-
-    var pixelData = context.getImageData(0, 0, crop.width, crop.height);
-
-    var pixels = pixelData.data;
-
-    for (var i = 0; i < pixels.length; i += 4)
-    {
-        pixels[i+0] *= r;
-        pixels[i+1] *= g;
-        pixels[i+2] *= b;
-    }
-
-    context.putImageData(pixelData, 0, 0);
-};
-
-/**
- * Rounds the specified color according to the CanvasTinter.cacheStepsPerColorChannel.
- *
- * @param color {number} the color to round, should be a hex color
- */
-CanvasTinter.roundColor = function (color)
-{
-    var step = CanvasTinter.cacheStepsPerColorChannel;
-
-    var rgbValues = utils.hex2rgb(color);
-
-    rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
-    rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
-    rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
-
-    return utils.rgb2hex(rgbValues);
-};
-
-/**
- * Number of steps which will be used as a cap when rounding colors.
- *
- * @member
- */
-CanvasTinter.cacheStepsPerColorChannel = 8;
-
-/**
- * Tint cache boolean flag.
- *
- * @member
- */
-CanvasTinter.convertTintToImage = false;
-
-/**
- * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
- *
- * @member
- */
-CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
-
-/**
- * The tinting method that will be used.
- *
- */
-CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
-
-},{"../../../utils":100}],71:[function(require,module,exports){
+},{"../../../Const":39,"./canUseNewCanvasBlendModes":71}],73:[function(require,module,exports){
 var GLTexture = require('pixi-gl-core').GLTexture,
     CONST = require('../../const'),
     RenderTarget = require('./utils/RenderTarget'),
@@ -14614,7 +14477,7 @@ var GLTexture = require('pixi-gl-core').GLTexture,
 
 var TextureManager = function(renderer)
 {
-  this.renderer = renderer;
+    this.renderer = renderer;
 	this.gl = renderer.gl;
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
@@ -14641,7 +14504,7 @@ TextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
-  var isRenderTexture = !!texture._glRenderTargets;
+    var isRenderTexture = !!texture._glRenderTargets;
 
 	if (!texture.hasLoaded)
     {
@@ -14669,7 +14532,7 @@ TextureManager.prototype.updateTexture = function(texture)
 
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
-
+        
         this._managedTextures.push(texture);
 
         //TODO check is power of two..
@@ -14739,12 +14602,6 @@ TextureManager.prototype.removeAll = function()
     }
 }
 
-
-TextureManager.prototype.destroyAll = function(){
-  this.destroy();
-  // this.removeAll();
-}
-
 TextureManager.prototype.destroy = function()
 {
     // destroy managed textures
@@ -14761,7 +14618,8 @@ TextureManager.prototype.destroy = function()
 
 module.exports = TextureManager;
 
-},{"../../const":39,"../../utils":100,"./utils/RenderTarget":84,"pixi-gl-core":14}],72:[function(require,module,exports){
+
+},{"../../const":40,"../../utils":104,"./utils/RenderTarget":86,"pixi-gl-core":14}],74:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
@@ -14806,7 +14664,6 @@ function WebGLRenderer(width, height, options)
     options = options || {};
 
     SystemRenderer.call(this, 'WebGL', width, height, options);
-
     /**
      * The type of this renderer as a standardised const
      *
@@ -15178,8 +15035,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
-    
-    this.textureManager.destroyAll();
+
+    this.textureManager.destroy();
 
     // call base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
@@ -15203,9 +15060,11 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.gl.useProgram(null);
     this.gl.getExtension('WEBGL_lose_context').loseContext();
     this.gl = null;
+
+    // this = null;
 };
 
-},{"../../const":39,"../../utils":100,"../SystemRenderer":65,"./TextureManager":71,"./WebGLState":73,"./managers/FilterManager":78,"./managers/MaskManager":79,"./managers/StencilManager":80,"./utils/ObjectRenderer":82,"./utils/RenderTarget":84,"./utils/mapWebGLDrawModesToPixi":86,"pixi-gl-core":14}],73:[function(require,module,exports){
+},{"../../const":40,"../../utils":104,"../SystemRenderer":67,"./TextureManager":73,"./WebGLState":75,"./managers/FilterManager":80,"./managers/MaskManager":81,"./managers/StencilManager":82,"./utils/ObjectRenderer":84,"./utils/RenderTarget":86,"./utils/mapWebGLDrawModesToPixi":88,"pixi-gl-core":14}],75:[function(require,module,exports){
 
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
     
@@ -15397,7 +15256,7 @@ WebGLState.prototype.resetToDefault = function()
 
 module.exports = WebGLState;
 
-},{"./utils/mapWebGLBlendModesToPixi":85}],74:[function(require,module,exports){
+},{"./utils/mapWebGLBlendModesToPixi":87}],76:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 var extractUniformsFromSrc = require('./extractUniformsFromSrc')
 var math = require('../../../math');
@@ -15529,7 +15388,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../math":59,"./extractUniformsFromSrc":75,"pixi-gl-core":14}],75:[function(require,module,exports){
+},{"../../../math":61,"./extractUniformsFromSrc":77,"pixi-gl-core":14}],77:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
 var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
@@ -15591,7 +15450,7 @@ function extractUniformsFromString(string, mask)
 }
 
 module.exports = extractUniformsFromSrc;
-},{"pixi-gl-core/lib/shader/defaultValue":23,"pixi-gl-core/lib/shader/mapSize":27}],76:[function(require,module,exports){
+},{"pixi-gl-core/lib/shader/defaultValue":23,"pixi-gl-core/lib/shader/mapSize":27}],78:[function(require,module,exports){
 var math = require('../../../math');
 
 /*
@@ -15699,7 +15558,7 @@ module.exports = {
     calculateNormalisedScreenSpaceMatrix:calculateNormalisedScreenSpaceMatrix,
     calculateSpriteMatrix:calculateSpriteMatrix  
 };
-},{"../../../math":59}],77:[function(require,module,exports){
+},{"../../../math":61}],79:[function(require,module,exports){
 (function (__dirname){
 var Filter = require('../Filter'),
     math =  require('../../../../math');
@@ -15753,7 +15612,7 @@ SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
 };
 
 }).call(this,"/src/core/renderers/webgl/filters/spriteMask")
-},{"../../../../math":59,"../Filter":74,"fs":3}],78:[function(require,module,exports){
+},{"../../../../math":61,"../Filter":76,"fs":3}],80:[function(require,module,exports){
 
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
@@ -16104,7 +15963,7 @@ var FilterState = function()
 FilterManager.pool = {}
 
 
-},{"../../../const":39,"../../../math":59,"../../../utils":100,"../filters/filterTransforms":76,"../utils/Quad":83,"../utils/RenderTarget":84,"./WebGLManager":81,"bit-twiddle":2,"pixi-gl-core":14}],79:[function(require,module,exports){
+},{"../../../const":40,"../../../math":61,"../../../utils":104,"../filters/filterTransforms":78,"../utils/Quad":85,"../utils/RenderTarget":86,"./WebGLManager":83,"bit-twiddle":2,"pixi-gl-core":14}],81:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
 
@@ -16281,7 +16140,7 @@ MaskManager.prototype.popScissorMask = function (target, maskData)
 };
 
 
-},{"../filters/spriteMask/SpriteMaskFilter":77,"./WebGLManager":81}],80:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":79,"./WebGLManager":83}],82:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -16330,7 +16189,7 @@ StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 StencilMaskManager.prototype.pushStencil = function (graphics)
 {
     this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
-
+    
     this.renderer._activeRenderTarget.attachStencilBuffer();
 
     var gl = this.renderer.gl,
@@ -16380,7 +16239,7 @@ StencilMaskManager.prototype.popStencil = function ()
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
         this.renderer.plugins.graphics.render(graphics)
-
+ 
         gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
@@ -16398,7 +16257,8 @@ StencilMaskManager.prototype.destroy = function ()
     this.stencilMaskStack.stencilStack = null;
 };
 
-},{"../../../utils":100,"./WebGLManager":81}],81:[function(require,module,exports){
+
+},{"../../../utils":104,"./WebGLManager":83}],83:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -16439,7 +16299,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],82:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -16497,7 +16357,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":81}],83:[function(require,module,exports){
+},{"../managers/WebGLManager":83}],85:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../../utils/createIndicesForQuads');
 
@@ -16661,7 +16521,7 @@ module.exports = Quad;
 
 
 
-},{"../../../utils/createIndicesForQuads":99,"pixi-gl-core":14}],84:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":103,"pixi-gl-core":14}],86:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -16982,7 +16842,7 @@ RenderTarget.prototype.destroy = function ()
     this.texture = null;
 };
 
-},{"../../../const":39,"../../../math":59,"../../../utils":100,"pixi-gl-core":14}],85:[function(require,module,exports){
+},{"../../../const":40,"../../../math":61,"../../../utils":104,"pixi-gl-core":14}],87:[function(require,module,exports){
 CONST = require('../../../const');
 
 /**
@@ -17019,7 +16879,7 @@ function mapWebGLBlendModesToPixi(gl, array)
 
 module.exports = mapWebGLBlendModesToPixi;
 
-},{"../../../const":39}],86:[function(require,module,exports){
+},{"../../../const":40}],88:[function(require,module,exports){
 CONST = require('../../../const');
 
 /**
@@ -17043,15 +16903,13 @@ function mapWebGLDrawModesToPixi(gl, object)
 
 module.exports = mapWebGLDrawModesToPixi;
 
-},{"../../../const":39}],87:[function(require,module,exports){
+},{"../../../const":40}],89:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
-    CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
     tempPoint = new math.Point(),
-    GroupD8 = math.GroupD8,
     canvasRenderWorldTransform = new math.Matrix();
 
 /**
@@ -17071,6 +16929,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -17247,7 +17106,7 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
-  Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.caclulateVertices = function ()
 {
     var texture = this._texture,
         wt = this.transform.worldTransform,
@@ -17307,12 +17166,24 @@ Sprite.prototype._renderWebGL = function (renderer)
     {
         this.textureDirty = false;
         // set the vertex data
-          this.caclulateVertices();
+        this.caclulateVertices();
     }
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };
+
+/**
+* Renders the object using the Canvas renderer
+*
+* @param renderer {PIXI.CanvasRenderer} The renderer
+* @private
+*/
+Sprite.prototype._renderCanvas = function (renderer)
+{
+    renderer.plugins.sprite.render(this);
+};
+
 
 /**
  * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
@@ -17330,7 +17201,7 @@ Sprite.prototype.getBounds = function (matrix)
             this.vertexDirty = false;
 
             // set the vertex data
-              this.caclulateVertices();
+            this.caclulateVertices();
 
         }
 
@@ -17445,134 +17316,6 @@ Sprite.prototype.containsPoint = function( point )
     return false;
 };
 
-/**
-* Renders the object using the Canvas renderer
-*
-* @param renderer {PIXI.CanvasRenderer} The renderer
-* @private
-*/
-Sprite.prototype._renderCanvas = function (renderer)
-{
-    if (this.texture.crop.width <= 0 || this.texture.crop.height <= 0)
-    {
-        return;
-    }
-
-    var compositeOperation = renderer.blendModes[this.blendMode];
-    if (compositeOperation !== renderer.context.globalCompositeOperation)
-    {
-        renderer.context.globalCompositeOperation = compositeOperation;
-    }
-
-    //  Ignore null sources
-    if (this.texture.valid)
-    {
-        var texture = this._texture,
-            wt = this.worldTransform,
-            dx,
-            dy,
-            width = texture.crop.width,
-            height = texture.crop.height;
-
-        renderer.context.globalAlpha = this.worldAlpha;
-
-        // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
-        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
-        {
-            renderer.context[renderer.smoothProperty] = smoothingEnabled;
-        }
-
-
-        //inline GroupD8.isSwapWidthHeight
-        if ((texture.rotate & 3) === 2) {
-            width = texture.crop.height;
-            height = texture.crop.width;
-        }
-        if (texture.trim) {
-            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
-            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
-        } else {
-            dx = (0.5 - this.anchor.x) * texture._frame.width;
-            dy = (0.5 - this.anchor.y) * texture._frame.height;
-        }
-        if(texture.rotate) {
-            wt.copy(canvasRenderWorldTransform);
-            wt = canvasRenderWorldTransform;
-            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
-            // the anchor has already been applied above, so lets set it to zero
-            dx = 0;
-            dy = 0;
-        }
-        dx -= width/2;
-        dy -= height/2;
-        // Allow for pixel rounding
-        if (renderer.roundPixels)
-        {
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                (wt.tx * renderer.resolution) | 0,
-                (wt.ty * renderer.resolution) | 0
-            );
-
-            dx = dx | 0;
-            dy = dy | 0;
-        }
-        else
-        {
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                wt.tx * renderer.resolution,
-                wt.ty * renderer.resolution
-            );
-        }
-
-        var resolution = texture.baseTexture.resolution;
-
-        if (this.tint !== 0xFFFFFF)
-        {
-            if (this.cachedTint !== this.tint)
-            {
-                this.cachedTint = this.tint;
-
-                // TODO clean up caching - how to clean up the caches?
-                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
-            }
-
-            renderer.context.drawImage(
-                this.tintedTexture,
-                0,
-                0,
-                width * resolution,
-                height * resolution,
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
-            );
-        }
-        else
-        {
-            renderer.context.drawImage(
-                texture.baseTexture.source,
-                texture.frame.x * resolution,
-                texture.frame.y * resolution,
-                width * resolution,
-                height * resolution,
-                dx  * renderer.resolution,
-                dy  * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
-            );
-        }
-    }
-};
 
 /**
  * Destroys this sprite and optionally its texture
@@ -17583,6 +17326,7 @@ Sprite.prototype._renderCanvas = function (renderer)
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
     Container.prototype.destroy.call(this);
+
     this.anchor = null;
 
     if (destroyTexture)
@@ -17631,7 +17375,417 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasTinter":70,"../textures/Texture":94,"../utils":100}],88:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":61,"../textures/Texture":98,"../utils":104}],90:[function(require,module,exports){
+var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
+    CONST = require('../../const'),
+    CanvasTinter = require('./CanvasTinter')
+
+/**
+ * @author Mat Groves
+ *
+ * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
+ * for creating the original pixi version!
+ * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
+ *
+ * Heavily inspired by LibGDX's CanvasSpriteRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasSpriteRenderer.java
+ */
+
+/**
+ * Renderer dedicated to drawing and batching sprites.
+ *
+ * @class
+ * @private
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
+ * @param renderer {PIXI.WebGLRenderer} The renderer sprite this batch works for.
+ */
+function CanvasSpriteRenderer(renderer)
+{
+    this.renderer = renderer;
+}
+
+
+CanvasSpriteRenderer.prototype.constructor = CanvasSpriteRenderer;
+module.exports = CanvasSpriteRenderer;
+
+CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+
+/**
+ * Renders the sprite object.
+ *
+ * @param sprite {PIXI.Sprite} the sprite to render when using this spritebatch
+ */
+CanvasSpriteRenderer.prototype.render = function (sprite)
+{
+    var texture = sprite._texture,
+        renderer = this.renderer,
+        wt = sprite.transform.worldTransform,
+        dx,
+        dy,
+        width = texture.crop.width,
+        height = texture.crop.height;
+
+    if (texture.crop.width <= 0 || texture.crop.height <= 0)
+    {
+        return;
+    }
+
+    renderer.setBlendMode(sprite.blendMode);
+
+    //  Ignore null sources
+    if (texture.valid)
+    {
+        renderer.context.globalAlpha = sprite.worldAlpha;
+
+        // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
+        var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
+        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
+        {
+            renderer.context[renderer.smoothProperty] = smoothingEnabled;
+        }
+
+
+        //inline GroupD8.isSwapWidthHeight
+        if ((texture.rotate & 3) === 2) {
+            width = texture.crop.height;
+            height = texture.crop.width;
+        }
+        if (texture.trim) {
+            dx = texture.crop.width/2 + texture.trim.x - sprite.anchor.x * texture.trim.width;
+            dy = texture.crop.height/2 + texture.trim.y - sprite.anchor.y * texture.trim.height;
+        } else {
+            dx = (0.5 - sprite.anchor.x) * texture._frame.width;
+            dy = (0.5 - sprite.anchor.y) * texture._frame.height;
+        }
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+        }
+        dx -= width/2;
+        dy -= height/2;
+        // Allow for pixel rounding
+        if (renderer.roundPixels)
+        {
+            renderer.context.setTransform(
+                wt.a,
+                wt.b,
+                wt.c,
+                wt.d,
+                (wt.tx * renderer.resolution) | 0,
+                (wt.ty * renderer.resolution) | 0
+            );
+
+            dx = dx | 0;
+            dy = dy | 0;
+        }
+        else
+        {
+            renderer.context.setTransform(
+                wt.a,
+                wt.b,
+                wt.c,
+                wt.d,
+                wt.tx * renderer.resolution,
+                wt.ty * renderer.resolution
+            );
+        }
+
+        var resolution = texture.baseTexture.resolution;
+
+        if (sprite.tint !== 0xFFFFFF)
+        {
+            if (sprite.cachedTint !== sprite.tint)
+            {
+                sprite.cachedTint = sprite.tint;
+
+                // TODO clean up caching - how to clean up the caches?
+                sprite.tintedTexture = CanvasTinter.getTintedTexture(sprite, sprite.tint);
+            }
+
+            renderer.context.drawImage(
+                sprite.tintedTexture,
+                0,
+                0,
+                width * resolution,
+                height * resolution,
+                dx * renderer.resolution,
+                dy * renderer.resolution,
+                width * renderer.resolution,
+                height * renderer.resolution
+            );
+        }
+        else
+        {
+
+            renderer.context.drawImage(
+                texture.baseTexture.source,
+                texture.frame.x * resolution,
+                texture.frame.y * resolution,
+                width * resolution,
+                height * resolution,
+                dx  * renderer.resolution,
+                dy  * renderer.resolution,
+                width * renderer.resolution,
+                height * renderer.resolution
+            );
+        }
+    }
+};
+
+/**
+ * destroy the sprite object.
+ *
+ */
+CanvasSpriteRenderer.prototype.destroy = function (){
+  this.renderer = null;
+}
+
+},{"../../const":40,"../../renderers/canvas/CanvasRenderer":68,"./CanvasTinter":91}],91:[function(require,module,exports){
+var utils = require('../../utils'),
+canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
+/**
+ * Utility methods for Sprite/Texture tinting.
+ * @static
+ * @class
+ * @memberof PIXI
+ */
+var CanvasTinter = {};
+module.exports = CanvasTinter;
+
+/**
+ * Basically this method just needs a sprite and a color and tints the sprite with the given color.
+ *
+ * @param sprite {PIXI.Sprite} the sprite to tint
+ * @param color {number} the color to use to tint the sprite with
+ * @return {HTMLCanvasElement} The tinted canvas
+ */
+CanvasTinter.getTintedTexture = function (sprite, color)
+{
+    var texture = sprite.texture;
+
+    color = CanvasTinter.roundColor(color);
+
+    var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+
+    texture.tintCache = texture.tintCache || {};
+
+    if (texture.tintCache[stringColor])
+    {
+        return texture.tintCache[stringColor];
+    }
+
+     // clone texture..
+    var canvas = CanvasTinter.canvas || document.createElement('canvas');
+
+    //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
+    CanvasTinter.tintMethod(texture, color, canvas);
+
+    if (CanvasTinter.convertTintToImage)
+    {
+        // is this better?
+        var tintImage = new Image();
+        tintImage.src = canvas.toDataURL();
+
+        texture.tintCache[stringColor] = tintImage;
+    }
+    else
+    {
+        texture.tintCache[stringColor] = canvas;
+        // if we are not converting the texture to an image then we need to lose the reference to the canvas
+        CanvasTinter.canvas = null;
+    }
+
+    return canvas;
+};
+
+/**
+ * Tint a texture using the 'multiply' operation.
+ *
+ * @param texture {PIXI.Texture} the texture to tint
+ * @param color {number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
+CanvasTinter.tintWithMultiply = function (texture, color, canvas)
+{
+    var context = canvas.getContext( '2d' );
+
+    var resolution = texture.baseTexture.resolution;
+
+    var crop = texture._frame;
+
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+
+    context.fillRect(0, 0, crop.width, crop.height);
+
+    context.globalCompositeOperation = 'multiply';
+
+    context.drawImage(
+        texture.baseTexture.source,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+    );
+
+    context.globalCompositeOperation = 'destination-atop';
+
+    context.drawImage(
+        texture.baseTexture.source,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+    );
+};
+
+/**
+ * Tint a texture using the 'overlay' operation.
+ *
+ * @param texture {PIXI.Texture} the texture to tint
+ * @param color {number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
+CanvasTinter.tintWithOverlay = function (texture, color, canvas)
+{
+    var context = canvas.getContext( '2d' );
+
+    var resolution = texture.baseTexture.resolution;
+
+    var crop = texture._frame;
+
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+
+    context.globalCompositeOperation = 'copy';
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+    context.fillRect(0, 0, crop.width, crop.height);
+
+    context.globalCompositeOperation = 'destination-atop';
+    context.drawImage(
+        texture.baseTexture.source,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+    );
+
+    // context.globalCompositeOperation = 'copy';
+};
+
+/**
+ * Tint a texture pixel per pixel.
+ *
+ * @param texture {PIXI.Texture} the texture to tint
+ * @param color {number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
+CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
+{
+    var context = canvas.getContext( '2d' );
+
+    var resolution = texture.baseTexture.resolution;
+
+    var crop = texture._frame;
+
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+
+    context.globalCompositeOperation = 'copy';
+    context.drawImage(
+        texture.baseTexture.source,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+    );
+
+    var rgbValues = utils.hex2rgb(color);
+    var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
+
+    var pixelData = context.getImageData(0, 0, crop.width, crop.height);
+
+    var pixels = pixelData.data;
+
+    for (var i = 0; i < pixels.length; i += 4)
+    {
+        pixels[i+0] *= r;
+        pixels[i+1] *= g;
+        pixels[i+2] *= b;
+    }
+
+    context.putImageData(pixelData, 0, 0);
+};
+
+/**
+ * Rounds the specified color according to the CanvasTinter.cacheStepsPerColorChannel.
+ *
+ * @param color {number} the color to round, should be a hex color
+ */
+CanvasTinter.roundColor = function (color)
+{
+    var step = CanvasTinter.cacheStepsPerColorChannel;
+
+    var rgbValues = utils.hex2rgb(color);
+
+    rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
+    rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
+    rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
+
+    return utils.rgb2hex(rgbValues);
+};
+
+/**
+ * Number of steps which will be used as a cap when rounding colors.
+ *
+ * @member
+ */
+CanvasTinter.cacheStepsPerColorChannel = 8;
+
+/**
+ * Tint cache boolean flag.
+ *
+ * @member
+ */
+CanvasTinter.convertTintToImage = false;
+
+/**
+ * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
+ *
+ * @member
+ */
+CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
+
+/**
+ * The tinting method that will be used.
+ *
+ */
+CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
+
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":71,"../../utils":104}],92:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
@@ -17970,11 +18124,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.vertexBuffer = null;
     this.indexBuffer = null;
 
-    for (var i = 0; i < this.sprites.length; i++) {
-      this.sprites[i].destroy();
-    }
-
-    // this.sprites = null;
+    this.sprites = null;
     this.shader = null;
 
     for (var i = 0; i < this.buffers.length; i++) {
@@ -18017,7 +18167,7 @@ Buffer.prototype.destroy = function(){
   this.colors  = null;
 }
 
-},{"../../const":39,"../../renderers/webgl/WebGLRenderer":72,"../../renderers/webgl/utils/ObjectRenderer":82,"../../utils/createIndicesForQuads":99,"./generateMultiTextureShader":89,"bit-twiddle":2,"pixi-gl-core":14}],89:[function(require,module,exports){
+},{"../../const":40,"../../renderers/webgl/WebGLRenderer":74,"../../renderers/webgl/utils/ObjectRenderer":84,"../../utils/createIndicesForQuads":103,"./generateMultiTextureShader":93,"bit-twiddle":2,"pixi-gl-core":14}],93:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 
@@ -18082,7 +18232,7 @@ var fragTemplate = [
 
 module.exports = generateMultiTextureShader;
 
-},{"pixi-gl-core":14}],90:[function(require,module,exports){
+},{"pixi-gl-core":14}],94:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -18703,12 +18853,11 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":39,"../math":59,"../sprites/Sprite":87,"../textures/Texture":94,"../utils":100}],91:[function(require,module,exports){
+},{"../const":40,"../math":61,"../sprites/Sprite":89,"../textures/Texture":98,"../utils":104}],95:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
     FilterManager = require('../renderers/webgl/managers/FilterManager'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const'),
     tempMatrix = new math.Matrix(),
@@ -18774,6 +18923,8 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
 
     this._glRenderTargets = [];
 
+    this._canvasRenderTarget = null;
+    
     /**
      * The renderer this BaseRenderTexture uses. A BaseRenderTexture can only belong to one renderer at the moment if its webGL.
      *
@@ -18990,7 +19141,7 @@ BaseRenderTexture.prototype.getPixel = function (frame, x, y)
     return this.getPixels(tempRect);
 };
 
-},{"../const":39,"../math":59,"../renderers/canvas/utils/CanvasBuffer":67,"../renderers/webgl/managers/FilterManager":78,"../renderers/webgl/utils/RenderTarget":84,"./BaseTexture":92,"./Texture":94}],92:[function(require,module,exports){
+},{"../const":40,"../math":61,"../renderers/webgl/managers/FilterManager":80,"../renderers/webgl/utils/RenderTarget":86,"./BaseTexture":96,"./Texture":98}],96:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -19428,7 +19579,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":39,"../utils":100,"eventemitter3":12}],93:[function(require,module,exports){
+},{"../const":40,"../utils":104,"eventemitter3":12}],97:[function(require,module,exports){
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture'),
     math = require('../math'),
@@ -19537,7 +19688,7 @@ RenderTexture.create = function(width, height, scaleMode, resolution)
 }
 
 
-},{"../const":39,"../math":59,"./BaseRenderTexture":91,"./Texture":94}],94:[function(require,module,exports){
+},{"../const":40,"../math":61,"./BaseRenderTexture":95,"./Texture":98}],98:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -19568,6 +19719,7 @@ var BaseTexture = require('./BaseTexture'),
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
     EventEmitter.call(this);
+
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -19706,6 +19858,7 @@ Object.defineProperties(Texture.prototype, {
         set: function (frame)
         {
             this._frame = frame;
+
             this.noFrame = false;
 
             if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
@@ -19977,7 +20130,7 @@ Texture.removeTextureFromCache = function (id)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":59,"../utils":100,"./BaseTexture":92,"./TextureUvs":95,"./VideoBaseTexture":96,"eventemitter3":12}],95:[function(require,module,exports){
+},{"../math":61,"../utils":104,"./BaseTexture":96,"./TextureUvs":99,"./VideoBaseTexture":100,"eventemitter3":12}],99:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -20070,7 +20223,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     this.uvs_uint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
 
-},{"../math/GroupD8":56}],96:[function(require,module,exports){
+},{"../math/GroupD8":58}],100:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -20307,7 +20460,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":100,"./BaseTexture":92}],97:[function(require,module,exports){
+},{"../utils":104,"./BaseTexture":96}],101:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -20662,7 +20815,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":39,"eventemitter3":12}],98:[function(require,module,exports){
+},{"../const":40,"eventemitter3":12}],102:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -20718,7 +20871,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":97}],99:[function(require,module,exports){
+},{"./Ticker":101}],103:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -20751,7 +20904,7 @@ var createIndicesForQuads = function (size)
 };
 
 module.exports = createIndicesForQuads;
-},{}],100:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -20818,40 +20971,7 @@ var utils = module.exports = {
         return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
     },
 
-    /**
-     * Checks whether the Canvas BlendModes are supported by the current browser
-     *
-     * @return {boolean} whether they are supported
-     */
-    canUseNewCanvasBlendModes: function ()
-    {
-        if (typeof document === 'undefined')
-        {
-            return false;
-        }
-
-        var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
-        var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
-
-        var magenta = new Image();
-        magenta.src = pngHead + 'AP804Oa6' + pngEnd;
-
-        var yellow = new Image();
-        yellow.src = pngHead + '/wCKxvRF' + pngEnd;
-
-        var canvas = document.createElement('canvas');
-        canvas.width = 6;
-        canvas.height = 1;
-
-        var context = canvas.getContext('2d');
-        context.globalCompositeOperation = 'multiply';
-        context.drawImage(magenta, 0, 0);
-        context.drawImage(yellow, 2, 0);
-
-        var data = context.getImageData(2,0,1,1).data;
-
-        return (data[0] === 255 && data[1] === 0 && data[2] === 0);
-    },
+    
 
     /**
      * Given a number, this function returns the closest number that is a power of two
@@ -21028,7 +21148,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":39,"./pluginTarget":101,"async":1,"eventemitter3":12}],101:[function(require,module,exports){
+},{"../const":40,"./pluginTarget":105,"async":1,"eventemitter3":12}],105:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -21098,7 +21218,7 @@ module.exports = {
     }
 };
 
-},{}],102:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     //mesh = require('./mesh'),
@@ -21449,7 +21569,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":55,"./extras":109,"./filters":119}],103:[function(require,module,exports){
+},{"./core":57,"./extras":113,"./filters":123}],107:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21837,7 +21957,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":55}],104:[function(require,module,exports){
+},{"../core":57}],108:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22157,11 +22277,11 @@ MovieClip.fromImages = function (images)
 
     return new MovieClip(textures);
 };
-},{"../core":55}],105:[function(require,module,exports){
+},{"../core":57}],109:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
-    CanvasTinter = require('../core/renderers/canvas/utils/CanvasTinter');
+    CanvasTinter = require('../core/sprites/canvas/CanvasTinter');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -22609,7 +22729,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":55,"../core/renderers/canvas/utils/CanvasTinter":70}],106:[function(require,module,exports){
+},{"../core":57,"../core/sprites/canvas/CanvasTinter":91}],110:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -22756,7 +22876,6 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-//    renderer.clear([0.5, 0.5, 0.5, 0.5])
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
     
@@ -22821,18 +22940,22 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     var cachedRenderTarget = renderer.context;
 
-    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
+    this.transform.worldTransform.copy(m);
+    m.invert();
 
-    m.tx = -bounds.x;
-    m.ty = -bounds.y;
+    m.tx -= bounds.x;
+    m.ty -= bounds.y;
 
-    // set all properties to there original so we can render to a texture
+    //m.append(this.transform.worldTransform.)
+     // set all properties to there original so we can render to a texture
     this.renderCanvas = this._originalRenderCanvas;
 
-    renderTexture.render(this, m, true);
+    //renderTexture.render(this, m, true);
+    renderer.render(this, renderTexture, true, m, false);
 
     // now restore the state be setting the new properties
     renderer.context = cachedRenderTarget;
@@ -22882,7 +23005,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":55}],107:[function(require,module,exports){
+},{"../core":57}],111:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22912,7 +23035,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":55}],108:[function(require,module,exports){
+},{"../core":57}],112:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22942,7 +23065,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":55}],109:[function(require,module,exports){
+},{"../core":57}],113:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22963,7 +23086,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":103,"./MovieClip":104,"./TilingSprite":105,"./cacheAsBitmap":106,"./getChildByName":107,"./getGlobalPosition":108}],110:[function(require,module,exports){
+},{"./BitmapText":107,"./MovieClip":108,"./TilingSprite":109,"./cacheAsBitmap":110,"./getChildByName":111,"./getGlobalPosition":112}],114:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -23079,7 +23202,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":55,"./BlurXFilter":111,"./BlurYFilter":112}],111:[function(require,module,exports){
+},{"../../core":57,"./BlurXFilter":115,"./BlurYFilter":116}],115:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -23187,7 +23310,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":55,"./generateBlurFragSource":113,"./generateBlurVertSource":114,"./getMaxBlurKernelSize":115}],112:[function(require,module,exports){
+},{"../../core":57,"./generateBlurFragSource":117,"./generateBlurVertSource":118,"./getMaxBlurKernelSize":119}],116:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -23285,7 +23408,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":55,"./generateBlurFragSource":113,"./generateBlurVertSource":114,"./getMaxBlurKernelSize":115}],113:[function(require,module,exports){
+},{"../../core":57,"./generateBlurFragSource":117,"./generateBlurVertSource":118,"./getMaxBlurKernelSize":119}],117:[function(require,module,exports){
 var core = require('../../core')
 
 var GAUSSIAN_VALUES = {
@@ -23349,7 +23472,7 @@ var fragTemplate = [
 ].join('\n');
 
 module.exports = generateFragBlurSource;
-},{"../../core":55}],114:[function(require,module,exports){
+},{"../../core":57}],118:[function(require,module,exports){
 
 var generateVertBlurSource = function(kernelSize, x)
 {
@@ -23412,7 +23535,7 @@ var vertTemplate = [
 ].join('\n');
 
 module.exports = generateVertBlurSource;
-},{}],115:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 
 
 var getMaxKernelSize = function(gl)
@@ -23429,7 +23552,7 @@ var getMaxKernelSize = function(gl)
 }
 
 module.exports = getMaxKernelSize;
-},{}],116:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23963,7 +24086,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":55}],117:[function(require,module,exports){
+},{"../../core":57}],121:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -24042,7 +24165,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":55}],118:[function(require,module,exports){
+},{"../../core":57}],122:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24091,7 +24214,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":55}],119:[function(require,module,exports){
+},{"../../core":57}],123:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24131,7 +24254,7 @@ module.exports = {
     GrayFilter:         require('./gray/GrayFilter')
 };
 
-},{"./blur/BlurFilter":110,"./blur/BlurXFilter":111,"./blur/BlurYFilter":112,"./colormatrix/ColorMatrixFilter":116,"./displacement/DisplacementFilter":117,"./gray/GrayFilter":118,"./twist/TwistFilter":120}],120:[function(require,module,exports){
+},{"./blur/BlurFilter":114,"./blur/BlurXFilter":115,"./blur/BlurYFilter":116,"./colormatrix/ColorMatrixFilter":120,"./displacement/DisplacementFilter":121,"./gray/GrayFilter":122,"./twist/TwistFilter":124}],124:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -24232,7 +24355,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":55}],121:[function(require,module,exports){
+},{"../../core":57}],125:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -24264,7 +24387,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":38,"./core":55,"./deprecation":102,"./extras":109,"./filters":119,"./interaction":124,"./loaders":127,"./polyfill":133}],122:[function(require,module,exports){
+},{"./accessibility":38,"./core":57,"./deprecation":106,"./extras":113,"./filters":123,"./interaction":128,"./loaders":131,"./polyfill":137}],126:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24313,7 +24436,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":55}],123:[function(require,module,exports){
+},{"../core":57}],127:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -25216,7 +25339,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":55,"./InteractionData":122,"./interactiveTarget":125}],124:[function(require,module,exports){
+},{"../core":57,"./InteractionData":126,"./interactiveTarget":129}],128:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25233,7 +25356,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":122,"./InteractionManager":123,"./interactiveTarget":125}],125:[function(require,module,exports){
+},{"./InteractionData":126,"./InteractionManager":127,"./interactiveTarget":129}],129:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -25282,7 +25405,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],126:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -25406,7 +25529,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":55,"../extras":109,"path":4,"resource-loader":33}],127:[function(require,module,exports){
+},{"../core":57,"../extras":113,"path":4,"resource-loader":33}],131:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25427,7 +25550,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":126,"./loader":128,"./spritesheetParser":129,"./textureParser":130,"resource-loader":33}],128:[function(require,module,exports){
+},{"./bitmapFontParser":130,"./loader":132,"./spritesheetParser":133,"./textureParser":134,"resource-loader":33}],132:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -25489,7 +25612,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":126,"./spritesheetParser":129,"./textureParser":130,"resource-loader":33}],129:[function(require,module,exports){
+},{"./bitmapFontParser":130,"./spritesheetParser":133,"./textureParser":134,"resource-loader":33}],133:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -25561,7 +25684,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":55,"path":4,"resource-loader":33}],130:[function(require,module,exports){
+},{"../core":57,"path":4,"resource-loader":33}],134:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -25583,7 +25706,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":55}],131:[function(require,module,exports){
+},{"../core":57}],135:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -25599,7 +25722,7 @@ if (!Math.sign)
     };
 }
 
-},{}],132:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -25609,12 +25732,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":13}],133:[function(require,module,exports){
+},{"object-assign":13}],137:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":131,"./Object.assign":132,"./requestAnimationFrame":134}],134:[function(require,module,exports){
+},{"./Math.sign":135,"./Object.assign":136,"./requestAnimationFrame":138}],138:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -25684,6 +25807,6 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[121])(121)
+},{}]},{},[125])(125)
 });
 //# sourceMappingURL=pixi.js.map

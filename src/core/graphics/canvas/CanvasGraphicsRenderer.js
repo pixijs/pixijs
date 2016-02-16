@@ -60,7 +60,7 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
         transform.ty * resolution
     );
 
-    
+
     if (graphics.dirty)
     {
         this.updateGraphicsTint(graphics);
@@ -68,7 +68,7 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
     }
 
     renderer.setBlendMode(graphics.blendMode);
-    
+
     for (var i = 0; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
@@ -260,10 +260,18 @@ CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
 
         var fillColor = data.fillColor | 0;
         var lineColor = data.lineColor | 0;
-        
+
         // super inline cos im an optimization NAZI :)
         data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
         data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
     }
 };
 
+/*
+ * destroy graphics object
+ *
+ */
+CanvasGraphicsRenderer.prototype.destroy = function ()
+{
+  this.renderer = null;
+}

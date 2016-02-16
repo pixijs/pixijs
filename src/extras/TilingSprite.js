@@ -1,7 +1,7 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
-    CanvasTinter = require('../core/renderers/canvas/utils/CanvasTinter');
+    CanvasTinter = require('../core/sprites/canvas/CanvasTinter');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image

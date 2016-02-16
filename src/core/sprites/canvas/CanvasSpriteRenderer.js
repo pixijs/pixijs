@@ -158,3 +158,11 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         }
     }
 };
+
+/**
+ * destroy the sprite object.
+ *
+ */
+CanvasSpriteRenderer.prototype.destroy = function (){
+  this.renderer = null;
+}

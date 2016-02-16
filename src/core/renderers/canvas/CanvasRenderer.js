@@ -85,7 +85,6 @@ function CanvasRenderer(width, height, options)
     this.initPlugins();
 
     this.blendModes = mapCanvasBlendModesToPixi();
-    console.log(this.blendModes)
     this._activeBlendMode = null;
 
     this.context = null;
@@ -108,11 +107,12 @@ utils.pluginTarget.mixin(CanvasRenderer);
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
+
+    if (!this.view) return;
+
      // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
-    
-    
     this.emit('prerender');
 
     if(renderTexture)
@@ -138,12 +138,14 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
     var context = this.context;
 
+
+
     this._lastObjectRendered = displayObject;
 
-  
+
 
     if(!skipUpdateTransform)
-    {       
+    {
         // update the scene graph
         var cacheParent = displayObject.parent;
         var tempWt = this._tempDisplayObjectParent.transform.worldTransform;
@@ -201,7 +203,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 CanvasRenderer.prototype.setBlendMode = function (blendMode)
 {
     if(this._activeBlendMode === blendMode)return;
-    renderer.context.globalCompositeOperation = renderer.blendModes[blendMode];
+    this.context.globalCompositeOperation = this.blendModes[blendMode];
 }
 
 /**
