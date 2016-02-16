@@ -2,7 +2,6 @@ var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
     FilterManager = require('../renderers/webgl/managers/FilterManager'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const'),
     tempMatrix = new math.Matrix(),
@@ -68,6 +67,8 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
 
     this._glRenderTargets = [];
 
+    this._canvasRenderTarget = null;
+    
     /**
      * The renderer this BaseRenderTexture uses. A BaseRenderTexture can only belong to one renderer at the moment if its webGL.
      *
