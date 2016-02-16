@@ -98,7 +98,7 @@ function WebGLRenderer(width, height, options)
 
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
-    
+
     this.gl.id = this.CONTEXT_UID = CONTEXT_UID++;
     this.state = new WebGLState(this.gl);
 
@@ -109,15 +109,15 @@ function WebGLRenderer(width, height, options)
      *
      * @member {PIXI.FilterManager}
      */
-   
-    
+
+
     this._initContext();
-  
+
     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.drawModes = mapWebGLDrawModesToPixi(gl)
 
-    
+
     //alert(this.state )
     this._activeShader = null;
 
@@ -150,18 +150,18 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(this);
-    
+
     this.state.resetToDefault();
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-    
+
     this.bindRenderTarget(this.rootRenderTarget);
 
     this.emit('context', gl);
 
     // setup the width/height properties and gl viewport
-    this.resize(this.width, this.height);    
+    this.resize(this.width, this.height);
 };
 
 /**
@@ -177,7 +177,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     this.emit('prerender');
 
     // no point rendering if our context has been blown up!
-    if (this.gl.isContextLost())
+    if (!this.gl || this.gl.isContextLost())
     {
         return;
     }
@@ -185,7 +185,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     this._lastObjectRendered = displayObject;
 
     if(!skipUpdateTransform)
-    {       
+    {
         // update the scene graph
         var cacheParent = displayObject.parent;
         displayObject.parent = this._tempDisplayObjectParent;
@@ -204,7 +204,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     displayObject.renderWebGL(this);
 
     // apply transform..
-    
+
     this.currentRenderer.flush();
 
     this.emit('postrender');
@@ -335,7 +335,7 @@ WebGLRenderer.prototype.bindShader = function (shader)
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
     texture = texture.baseTexture || texture;
-    
+
     var gl = this.gl;
 
     //TODO test perf of cache?
@@ -348,15 +348,15 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     }
 
     //TODO - can we cache this texture too?
-    this._activeTexture = texture;      
-    
+    this._activeTexture = texture;
+
     if (!texture._glTextures[this.CONTEXT_UID])
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
     }
     else
-    {   
+    {
         // bind the current texture
         texture._glTextures[this.CONTEXT_UID].bind();
     }
@@ -405,7 +405,7 @@ WebGLRenderer.prototype.handleContextRestored = function ()
 /**
  * Removes everything from the renderer (event listeners, spritebatch, etc...)
  *
- * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
+ * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.  https://github.com/pixijs/pixi.js/issues/2233
  */
 WebGLRenderer.prototype.destroy = function (removeView)
 {
@@ -415,7 +415,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
-    this.textureManager.destroyAll();
+    this.textureManager.destroy();
 
     // call base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
@@ -429,14 +429,16 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this.maskManager = null;
     this.filterManager = null;
+    this.textureManager = null;
     this.currentRenderer = null;
 
     this.handleContextLost = null;
     this.handleContextRestored = null;
 
     this._contextOptions = null;
-
     this.gl.useProgram(null);
+    this.gl.getExtension('WEBGL_lose_context').loseContext();
     this.gl = null;
-};
 
+    this = null;
+};

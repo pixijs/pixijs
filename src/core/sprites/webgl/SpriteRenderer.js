@@ -82,13 +82,13 @@ function SpriteRenderer(renderer)
     this.currentIndex = 0;
     this.tick =0;
     this.groups = [];
-    
+
     //TODO - 300 is a bit magic, figure out a nicer amount!
-    for (var i = 0; i < this.size; i++) 
+    for (var i = 0; i < this.size; i++)
     {
-        this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0}; 
+        this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0};
     };
-    
+
     this.sprites = [];
 }
 
@@ -141,9 +141,9 @@ SpriteRenderer.prototype.render = function (sprite)
         this.flush();
     }
 
-  
+
     // get the uvs for the texture
-   
+
 
     // if the uvs have not updated then no point rendering just yet!
     if (!sprite.texture._uvs)
@@ -172,7 +172,7 @@ SpriteRenderer.prototype.flush = function ()
 
     var sprites = this.sprites;
     var groups = this.groups;
-    
+
     var colors = buffer.colors;
     var positions = buffer.positions;
     var uvsBuffer = buffer.uvs;
@@ -193,7 +193,7 @@ SpriteRenderer.prototype.flush = function ()
 
     this.tick++;
 
-    for (var i = 0; i < this.currentIndex; i++) 
+    for (var i = 0; i < this.currentIndex; i++)
     {
         // upload the sprite elemetns...
         // they have all ready been calculated so we just need to push them into the buffer.
@@ -204,7 +204,7 @@ SpriteRenderer.prototype.flush = function ()
         if(blendMode !== sprite.blendMode)
         {
             blendMode = sprite.blendMode;
-            
+
             // force the batch to break!
             currentTexture = null;
             textureCount = this.MAX_TEXTURES;
@@ -214,9 +214,9 @@ SpriteRenderer.prototype.flush = function ()
         if(currentTexture !== nextTexture)
         {
             currentTexture = nextTexture;
-            
+
             if(nextTexture._enabled !== this.tick)
-            {   
+            {
                 if(textureCount === this.MAX_TEXTURES)
                 {
                     this.tick++;
@@ -224,7 +224,7 @@ SpriteRenderer.prototype.flush = function ()
                     textureCount = 0;
 
                     currentGroup.size = i - currentGroup.start;
-                   
+
                     currentGroup = groups[groupCount++];
                     currentGroup.textureCount = 0;
                     currentGroup.blend = blendMode;
@@ -239,7 +239,7 @@ SpriteRenderer.prototype.flush = function ()
             }
 
         }
-       
+
         var vertexData = sprite.vertexData;
 
         //TODO this sum does not need to be set each frame..
@@ -252,8 +252,8 @@ SpriteRenderer.prototype.flush = function ()
         positions[index++] = vertexData[1];
         uvsBuffer[index++] = uvs[0];
         colors[index++] = tint;
-        positions[index++] = textureId; 
-        
+        positions[index++] = textureId;
+
         // xy
         positions[index++] = vertexData[2];
         positions[index++] = vertexData[3];
@@ -278,13 +278,13 @@ SpriteRenderer.prototype.flush = function ()
     };
 
     currentGroup.size = i - currentGroup.start;
-   
+
     this.vertexBuffer.upload(buffer.vertices, 0, true);
-    
+
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
-        
+
         var group = groups[i];
 
         for (var j = 0; j < group.textureCount; j++) {
@@ -338,6 +338,11 @@ SpriteRenderer.prototype.destroy = function ()
 
     this.sprites = null;
     this.shader = null;
+
+    for (var i = 0; i < this.buffers.length; i++) {
+      this.buffers[i].destroy();
+    }
+
 };
 
 var Buffer = function(size)
@@ -351,7 +356,7 @@ var Buffer = function(size)
      * @member {Float32Array}
      */
     this.positions = new Float32Array(this.vertices);
-    
+
     /**
      * View on the vertices as a Uint32Array for uvs
      *
@@ -365,6 +370,11 @@ var Buffer = function(size)
      * @member {Uint32Array}
      */
     this.colors = new Uint32Array(this.vertices);
+}
 
-    
+Buffer.prototype.destroy = function(){
+  this.vertices = null;
+  this.positions = null;
+  this.uvs = null;
+  this.colors  = null;
 }
