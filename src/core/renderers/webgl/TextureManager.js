@@ -71,12 +71,32 @@ TextureManager.prototype.updateTexture = function(texture)
         
         this._managedTextures.push(texture);
 
-        //TODO check is power of two..
-        glTexture.enableWrapClamp();
+        
+        
 
-        if(texture.mipmap && texture.isPowerOfTwo)
+        if(texture.isPowerOfTwo)
+        {   
+            if(texture.mipmap)
+            {
+                glTexture.enableMipmap();
+            }
+            
+            if(texture.wrapMode === CONST.WRAP_MODES.CLAMP)
+            {
+                glTexture.enableWrapClamp();
+            }
+            else if(texture.wrapMode === CONST.WRAP_MODES.REPEAT)
+            {
+                glTexture.enableWrapRepeat();
+            }
+            else
+            {
+                glTexture.enableWrapMirrorRepeat();
+            }
+        }
+        else
         {
-            glTexture.enableMipmap();
+            glTexture.enableWrapClamp();
         }
 
         if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)

@@ -131,6 +131,16 @@ function BaseTexture(source, scaleMode, resolution)
      */
     this.mipmap = CONST.MIPMAP_TEXTURES;
 
+
+    /**
+     *
+     * Set this to true if a mipmap of this texture needs to be generated. This value needs to be set before the texture is used
+     * Also the texture must be a power of two size to work
+     *
+     * @member {boolean}
+     */
+    this.wrap = CONST.MIPMAP_TEXTURES;
+
     /**
      * A map of renderer IDs to webgl textures
      *
