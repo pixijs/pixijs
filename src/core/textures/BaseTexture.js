@@ -1,6 +1,7 @@
 var utils = require('../utils'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3');
+    EventEmitter = require('eventemitter3'),
+    bitTwiddle = require('bit-twiddle');
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -128,7 +129,7 @@ function BaseTexture(source, scaleMode, resolution)
      *
      * @member {boolean}
      */
-    this.mipmap = false;
+    this.mipmap = CONST.MIPMAP_TEXTURES;
 
     /**
      * A map of renderer IDs to webgl textures
@@ -180,7 +181,7 @@ BaseTexture.prototype.update = function ()
     this.width = this.realWidth / this.resolution;
     this.height = this.realHeight / this.resolution;
 
-    this.isPowerOfTwo = utils.isPowerOfTwo(this.realWidth, this.realHeight);
+    this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
 
     this.emit('update', this);
 };

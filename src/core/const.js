@@ -149,6 +149,8 @@ var CONST = {
         NEAREST:    1
     },
 
+    MIPMAP_TEXTURES:true,
+
     /**
      * The prefix that denotes a URL is for a retina asset
      *

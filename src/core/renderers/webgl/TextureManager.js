@@ -74,6 +74,11 @@ TextureManager.prototype.updateTexture = function(texture)
         //TODO check is power of two..
         glTexture.enableWrapClamp();
 
+        if(texture.mipmap && texture.isPowerOfTwo)
+        {
+            glTexture.enableMipmap();
+        }
+
         if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
         {
             glTexture.enableNearestScaling();
@@ -82,6 +87,8 @@ TextureManager.prototype.updateTexture = function(texture)
         {
             glTexture.enableLinearScaling();
         }
+
+
     }
 
     if(isRenderTexture)
