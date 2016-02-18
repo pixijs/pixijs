@@ -26,6 +26,7 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
@@ -195,6 +196,7 @@ Object.defineProperties(Text.prototype, {
             style.strokeThickness = style.strokeThickness || 0;
             style.wordWrap = style.wordWrap || false;
             style.wordWrapWidth = style.wordWrapWidth || 100;
+            style.breakWords = style.breakWords || false;
 
             style.dropShadow = style.dropShadow || false;
             style.dropShadowColor = style.dropShadowColor || '#000000';
@@ -559,22 +561,48 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if (j === 0 || wordWidthWithSpace > spaceLeft)
+            if (this._style.breakWords && wordWidth > wordWrapWidth) 
             {
-                // Skip printing the newline if it's the first word of the line that is
-                // greater than the word wrap width.
-                if (j > 0)
+                // Word should be split in the middle
+                var characters = words[j].split('');
+                for (var c = 0; c < characters.length; c++) 
                 {
-                    result += '\n';
+                  var characterWidth = this.context.measureText(characters[c]).width;
+                  if (characterWidth > spaceLeft) 
+                  {
+                    result += '\n' + characters[c];
+                    spaceLeft = wordWrapWidth - characterWidth;
+                  } 
+                  else 
+                  {
+                    if (c === 0) 
+                    {
+                      result += ' ';
+                    }
+                    result += characters[c];
+                    spaceLeft -= characterWidth;
+                  }
                 }
-                result += words[j];
-                spaceLeft = wordWrapWidth - wordWidth;
             }
-            else
+            else 
             {
-                spaceLeft -= wordWidthWithSpace;
-                result += ' ' + words[j];
+                var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                if (j === 0 || wordWidthWithSpace > spaceLeft)
+                {
+                    // Skip printing the newline if it's the first word of the line that is
+                    // greater than the word wrap width.
+                    if (j > 0)
+                    {
+                        result += '\n';
+                    }
+                    result += words[j];
+                    spaceLeft = wordWrapWidth - wordWidth;
+                }
+                else
+                {
+                    spaceLeft -= wordWidthWithSpace;
+                    result += ' ' + words[j];
+                }
             }
         }
 
