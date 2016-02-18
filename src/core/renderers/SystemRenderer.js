@@ -236,7 +236,7 @@ SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, r
     this.render(displayObject, renderTexture, false, tempMatrix, true);
 
     return renderTexture;
-}
+};
 
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.

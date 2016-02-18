@@ -11,7 +11,7 @@
  * @return {PIXI.Graphics}
  */
 var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path)
-{   
+{
     path = path || [];
 
     var n = 20,
@@ -19,7 +19,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
         dt2,
         dt3,
         t2,
-        t3
+        t3;
 
     path.push(fromX, fromY);
 

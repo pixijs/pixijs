@@ -1,6 +1,6 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
-    CanvasTinter = require('./CanvasTinter')
+    CanvasTinter = require('./CanvasTinter');
 
 /**
  * @author Mat Groves
@@ -165,4 +165,4 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
  */
 CanvasSpriteRenderer.prototype.destroy = function (){
   this.renderer = null;
-}
+};

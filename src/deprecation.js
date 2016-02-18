@@ -1,6 +1,6 @@
 /*global console */
 var core = require('./core'),
-    //mesh = require('./mesh'),
+    mesh = require('./mesh'),
     extras = require('./extras'),
     filters = require('./filters');
 

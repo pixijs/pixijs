@@ -1,5 +1,4 @@
 
-
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
  *
@@ -33,6 +32,6 @@ var canUseNewCanvasBlendModes = function ()
     var data = context.getImageData(2,0,1,1).data;
 
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
-}
+};
 
 module.exports = canUseNewCanvasBlendModes;

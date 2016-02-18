@@ -8,10 +8,10 @@ var math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
+var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
      //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = {width:1136, height:700}//sprite._texture.baseTexture;
+    // var texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
     var mappedMatrix = outputMatrix.identity();
@@ -22,12 +22,12 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
     return mappedMatrix;
 
-}
+};
 
-var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize, screenSize)
+var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = {width:800, height:600}//sprite._texture.baseTexture;
+    var texture = {width:800, height:600};//sprite._texture.baseTexture;
 
     // TODO unwrap?
     var mappedMatrix = outputMatrix.identity();
@@ -43,7 +43,7 @@ var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, t
     var translateScaleY = (textureSize.height / texture.height);
 
    // worldTransform.tx /= texture.width * translateScaleX;
- 
+
     //this...?  free beer for anyone who can explain why this makes sense!
    // worldTransform.ty /= texture.width * translateScaleX;
     // worldTransform.ty /= texture.height * translateScaleY;
@@ -59,8 +59,8 @@ var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, t
    // mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
     return mappedMatrix;
-   
-}
+
+};
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
@@ -82,7 +82,7 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
     var translateScaleY = (textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
- 
+
     //this...?  free beer for anyone who can explain why this makes sense!
     worldTransform.ty /= texture.width * translateScaleX;
     // worldTransform.ty /= texture.height * translateScaleY;
@@ -103,5 +103,5 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
 module.exports = {
     calculateScreenSpaceMatrix:calculateScreenSpaceMatrix,
     calculateNormalisedScreenSpaceMatrix:calculateNormalisedScreenSpaceMatrix,
-    calculateSpriteMatrix:calculateSpriteMatrix  
+    calculateSpriteMatrix:calculateSpriteMatrix
 };

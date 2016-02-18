@@ -1,6 +1,7 @@
-var buildLine = require('./buildLine'),
+var earcut = require('earcut'),
+    // buildLine = require('./buildLine'),
     utils = require('../../../utils');
-    
+
 /**
  * Builds a rounded rectangle to draw
  *
@@ -8,7 +9,7 @@ var buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-buildRoundedRectangle = function (graphicsData, webGLData)
+var buildRoundedRectangle = function (graphicsData, webGLData)
 {
     var rrectData = graphicsData.shape;
     var x = rrectData.x;
@@ -86,42 +87,42 @@ buildRoundedRectangle = function (graphicsData, webGLData)
  * @param [out] {number[]} The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
-{
-    var xa,
-        ya,
-        xb,
-        yb,
-        x,
-        y,
-        n = 20,
-        points = out || [];
-
-    function getPt(n1 , n2, perc) {
-        var diff = n2 - n1;
-
-        return n1 + ( diff * perc );
-    }
-
-    var j = 0;
-    for (var i = 0; i <= n; i++ ) {
-        j = i / n;
-
-        // The Green Line
-        xa = getPt( fromX , cpX , j );
-        ya = getPt( fromY , cpY , j );
-        xb = getPt( cpX , toX , j );
-        yb = getPt( cpY , toY , j );
-
-        // The Black Dot
-        x = getPt( xa , xb , j );
-        y = getPt( ya , yb , j );
-
-        points.push(x, y);
-    }
-
-    return points;
-};
+// var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
+// {
+//     var xa,
+//         ya,
+//         xb,
+//         yb,
+//         x,
+//         y,
+//         n = 20,
+//         points = out || [];
+//
+//     function getPt(n1 , n2, perc) {
+//         var diff = n2 - n1;
+//
+//         return n1 + ( diff * perc );
+//     }
+//
+//     var j = 0;
+//     for (var i = 0; i <= n; i++ ) {
+//         j = i / n;
+//
+//         // The Green Line
+//         xa = getPt( fromX , cpX , j );
+//         ya = getPt( fromY , cpY , j );
+//         xb = getPt( cpX , toX , j );
+//         yb = getPt( cpY , toY , j );
+//
+//         // The Black Dot
+//         x = getPt( xa , xb , j );
+//         y = getPt( ya , yb , j );
+//
+//         points.push(x, y);
+//     }
+//
+//     return points;
+// };
 
 
 module.exports = buildRoundedRectangle;

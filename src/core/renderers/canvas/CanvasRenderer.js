@@ -3,7 +3,6 @@ var SystemRenderer = require('../SystemRenderer'),
     CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
     mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
     utils = require('../../utils'),
-    math = require('../../math'),
     CONST = require('../../const');
 
 /**
@@ -108,7 +107,9 @@ utils.pluginTarget.mixin(CanvasRenderer);
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    if (!this.view) return;
+    if (!this.view){
+      return;
+    }
 
      // can be handy to know!
     this.renderingToScreen = !renderTexture;
@@ -133,7 +134,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     {
 
         this.context = this.rootContext;
-        this.resolution = this.rootResolution
+        this.resolution = this.rootResolution;
     }
 
     var context = this.context;
@@ -202,9 +203,12 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
 CanvasRenderer.prototype.setBlendMode = function (blendMode)
 {
-    if(this._activeBlendMode === blendMode)return;
+    if(this._activeBlendMode === blendMode) {
+      return;
+    }
+
     this.context.globalCompositeOperation = this.blendModes[blendMode];
-}
+};
 
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.

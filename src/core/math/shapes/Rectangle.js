@@ -111,7 +111,7 @@ Rectangle.prototype.pad = function (paddingX, paddingY)
 
     this.width += paddingX * 2;
     this.height += paddingY * 2;
-}
+};
 
 Rectangle.prototype.fit = function (rectangle)
 {
@@ -136,5 +136,4 @@ Rectangle.prototype.fit = function (rectangle)
     {
         this.height = rectangle.height - this.y;
     }
-}
-
+};

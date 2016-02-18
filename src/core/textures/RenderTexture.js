@@ -1,8 +1,5 @@
 var BaseRenderTexture = require('./BaseRenderTexture'),
-    Texture = require('./Texture'),
-    math = require('../math'),
-    CONST = require('../const'),
-    tempMatrix = new math.Matrix();
+    Texture = require('./Texture');
 
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -60,7 +57,7 @@ function RenderTexture(baseRenderTexture, frame)
      */
     Texture.call(this,
         baseRenderTexture,
-        frame 
+        frame
     );
 
     /**
@@ -84,7 +81,7 @@ module.exports = RenderTexture;
  */
 RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
 {
-   
+
     //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
@@ -93,7 +90,7 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
 
     if (!doNotResizeBaseTexture)
     {
-        this.baseTexture.resize(width, height)
+        this.baseTexture.resize(width, height);
     }
 
     this._updateUvs();
@@ -103,5 +100,4 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
 RenderTexture.create = function(width, height, scaleMode, resolution)
 {
     return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
-}
-
+};

@@ -357,10 +357,10 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
 
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
-    
+
     points.length -= 2;
 
-    bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points)   
+    bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points);
 
     this.dirty = this.boundsDirty = true;
 
@@ -703,8 +703,6 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
     return texture;
 };
 
-var texture = null;
-
 /**
  * Renders the object using the WebGL renderer
  *
@@ -721,15 +719,12 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    if(this.graphicsData.length === 1 
-    && this.graphicsData[0].shape.type === CONST.SHAPES.RECT
-    && !this.graphicsData[0].lineWidth)
+    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth)
     {
         this._renderSpriteRect(renderer);
     }
     else
     {
-
         renderer.setObjectRenderer(renderer.plugins.graphics);
         renderer.plugins.graphics.render(this);
     }
@@ -745,7 +740,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
         {
             Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
 
-            var currentRenderTarget = renderer._activeRenderTarget
+            var currentRenderTarget = renderer._activeRenderTarget;
             renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
             renderer.clear([1,1,1,1]);
             renderer.bindRenderTarget(currentRenderTarget);
@@ -754,7 +749,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
         this._spriteRect.tint = this.graphicsData[0].fillColor;
     }
-    
+
     Graphics._SPRITE_TEXTURE.crop.width = rect.width;
     Graphics._SPRITE_TEXTURE.crop.height = rect.height;
 
@@ -762,7 +757,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     this._spriteRect.anchor.y = -rect.y / rect.height;
 
     this._spriteRect._renderWebGL(renderer);
-}
+};
 
 /**
  * Renders the object using the Canvas renderer
@@ -1040,7 +1035,7 @@ Graphics.prototype.drawShape = function (shape)
 /**
  * Destroys the Graphics object.
  */
-Graphics.prototype.destroy = function () 
+Graphics.prototype.destroy = function ()
 {
     Container.prototype.destroy.apply(this, arguments);
 

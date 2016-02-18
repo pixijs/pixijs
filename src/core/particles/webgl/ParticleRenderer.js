@@ -1,6 +1,5 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    ParticleShader = require('./ParticleShader'),
     ParticleBuffer = require('./ParticleBuffer'),
     math            = require('../../math');
 
@@ -79,58 +78,59 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 ParticleRenderer.prototype.onContextChange = function ()
 {
     return;
-    var gl = this.renderer.gl;
 
-    this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-
-    // setup default shader
-    this.shader = new ParticleShader(this.renderer.shaderManager);
-
-    this.indexBuffer = gl.createBuffer();
-
-    // 65535 is max index, so 65535 / 6 = 10922.
-
-    //upload the index data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-
-    this.properties = [
-        // verticesData
-        {
-            attribute:this.shader.attributes.aVertexPosition,
-            size:2,
-            uploadFunction:this.uploadVertices,
-            offset:0
-        },
-        // positionData
-        {
-            attribute:this.shader.attributes.aPositionCoord,
-            size:2,
-            uploadFunction:this.uploadPosition,
-            offset:0
-        },
-        // rotationData
-        {
-            attribute:this.shader.attributes.aRotation,
-            size:1,
-            uploadFunction:this.uploadRotation,
-            offset:0
-        },
-        // uvsData
-        {
-            attribute:this.shader.attributes.aTextureCoord,
-            size:2,
-            uploadFunction:this.uploadUvs,
-            offset:0
-        },
-        // alphaData
-        {
-            attribute:this.shader.attributes.aColor,
-            size:1,
-            uploadFunction:this.uploadAlpha,
-            offset:0
-        }
-    ];
+    // var gl = this.renderer.gl;
+    //
+    // this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+    //
+    // // setup default shader
+    // this.shader = new ParticleShader(this.renderer.shaderManager);
+    //
+    // this.indexBuffer = gl.createBuffer();
+    //
+    // // 65535 is max index, so 65535 / 6 = 10922.
+    //
+    // //upload the index data
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+    //
+    // this.properties = [
+    //     // verticesData
+    //     {
+    //         attribute:this.shader.attributes.aVertexPosition,
+    //         size:2,
+    //         uploadFunction:this.uploadVertices,
+    //         offset:0
+    //     },
+    //     // positionData
+    //     {
+    //         attribute:this.shader.attributes.aPositionCoord,
+    //         size:2,
+    //         uploadFunction:this.uploadPosition,
+    //         offset:0
+    //     },
+    //     // rotationData
+    //     {
+    //         attribute:this.shader.attributes.aRotation,
+    //         size:1,
+    //         uploadFunction:this.uploadRotation,
+    //         offset:0
+    //     },
+    //     // uvsData
+    //     {
+    //         attribute:this.shader.attributes.aTextureCoord,
+    //         size:2,
+    //         uploadFunction:this.uploadUvs,
+    //         offset:0
+    //     },
+    //     // alphaData
+    //     {
+    //         attribute:this.shader.attributes.aColor,
+    //         size:1,
+    //         uploadFunction:this.uploadAlpha,
+    //         offset:0
+    //     }
+    // ];
 };
 
 /**
@@ -281,6 +281,7 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         trim,
         sx,
         sy,
+        crop,
         w0, w1, h0, h1;
 
     for (var i = 0; i < amount; i++) {
@@ -289,7 +290,8 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        var trim = texture.trim, crop = texture.crop;
+        trim = texture.trim;
+        crop = texture.crop;
 
         if (trim)
         {

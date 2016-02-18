@@ -18,18 +18,16 @@ var TextureManager = function(renderer)
 
 	// track textures in the renderer so we can no longer listen to them on destruction.
 	this._managedTextures = [];
-}
+};
 
-TextureManager.prototype.bindTexture = function(texture)
+TextureManager.prototype.bindTexture = function()
 {
+};
 
-}
 
-
-TextureManager.prototype.getTexture = function(texture)
+TextureManager.prototype.getTexture = function()
 {
-
-}
+};
 
 /**
  * Updates and/or Creates a WebGL texture for the renderer's context.
@@ -40,7 +38,7 @@ TextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
-    var isRenderTexture = !!texture._glRenderTargets;
+  var isRenderTexture = !!texture._glRenderTargets;
 
 	if (!texture.hasLoaded)
     {
@@ -68,19 +66,19 @@ TextureManager.prototype.updateTexture = function(texture)
 
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
-        
+
         this._managedTextures.push(texture);
 
-        
-        
+
+
 
         if(texture.isPowerOfTwo)
-        {   
+        {
             if(texture.mipmap)
             {
                 glTexture.enableMipmap();
             }
-            
+
             if(texture.wrapMode === CONST.WRAP_MODES.CLAMP)
             {
                 glTexture.enableWrapClamp();
@@ -117,7 +115,7 @@ TextureManager.prototype.updateTexture = function(texture)
     }
 
     return  glTexture;
-}
+};
 
 /**
  * Deletes the texture from WebGL
@@ -150,7 +148,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
             }
         }
     }
-}
+};
 
 TextureManager.prototype.removeAll = function()
 {
@@ -163,7 +161,7 @@ TextureManager.prototype.removeAll = function()
             delete texture._glTextures[this.renderer.CONTEXT_UID];
         }
     }
-}
+};
 
 TextureManager.prototype.destroy = function()
 {
@@ -177,7 +175,6 @@ TextureManager.prototype.destroy = function()
     }
 
     this._managedTextures = null;
-}
+};
 
 module.exports = TextureManager;
-
