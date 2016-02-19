@@ -310,19 +310,25 @@ DisplayObject.prototype.updateTransform = function ()
             var deltaX = transformationPoint.x;
             var deltaY = transformationPoint.y;
 
-            matrix.translate(-deltaX,-deltaY);
+            var newMatrix=new math.Matrix();
+
+            newMatrix.translate(-deltaX,-deltaY);
 
             if (transformationType === 'skew'){
-                matrix.skew(transformationValueX, transformationValueY);
+                newMatrix.skew(transformationValueX, transformationValueY);
             }
             else if (transformationType === 'rotate'){
-                matrix.rotate(transformationValue);
+                newMatrix.rotate(transformationValue);
             }
             else if (transformationType === 'scale'){
-                matrix.scale(transformationValueX, transformationValueY);
+                newMatrix.scale(transformationValueX, transformationValueY);
             }
-            matrix.translate(deltaX,deltaY);
+
+            newMatrix.translate(deltaX,deltaY);
+
+            matrix.append(newMatrix);
         }
+
 
         // translate to the final position
         matrix.translate(this.position.x, this.position.y);
