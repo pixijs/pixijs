@@ -755,6 +755,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
         this._spriteRect.tint = this.graphicsData[0].fillColor;
     }
     
+    this._spriteRect.worldAlpha = this.worldAlpha;
     Graphics._SPRITE_TEXTURE.crop.width = rect.width;
     Graphics._SPRITE_TEXTURE.crop.height = rect.height;
 
