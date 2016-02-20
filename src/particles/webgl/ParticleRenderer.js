@@ -1,8 +1,6 @@
-var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
+var core = require('../../core'),
     ParticleShader = require('./ParticleShader'),
-    ParticleBuffer = require('./ParticleBuffer'),
-    math            = require('../../math');
+    ParticleBuffer = require('./ParticleBuffer');
 
 /**
  * @author Mat Groves
@@ -24,7 +22,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 function ParticleRenderer(renderer)
 {
-    ObjectRenderer.call(this, renderer);
+    core.ObjectRenderer.call(this, renderer);
 
     // 65535 is max vertex index in the index buffer (see ParticleRenderer)
     // so max number of particles is 65536 / 4 = 16384
@@ -43,16 +41,16 @@ function ParticleRenderer(renderer)
 
     this.properties = null;
 
-    this.tempMatrix = new math.Matrix();
+    this.tempMatrix = new core.math.Matrix();
 
     this.CONTEXT_UID = 0;
 }
 
-ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
+ParticleRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
 ParticleRenderer.prototype.constructor = ParticleRenderer;
 module.exports = ParticleRenderer;
 
-WebGLRenderer.registerPlugin('particle', ParticleRenderer);
+core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
 /**
  * When there is a WebGL context change

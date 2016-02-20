@@ -1,5 +1,5 @@
 var glCore = require('pixi-gl-core'),
-    createIndicesForQuads = require('../../utils/createIndicesForQuads');
+    createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
     
 /**
  * @author Mat Groves

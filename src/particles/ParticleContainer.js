@@ -1,5 +1,4 @@
-var Container = require('../display/Container'),
-    CONST = require('../const');
+var core = require('../core');
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -35,7 +34,7 @@ var Container = require('../display/Container'),
  */
 function ParticleContainer(maxSize, properties, batchSize)
 {
-    Container.call(this);
+    core.Container.call(this);
 
     batchSize = batchSize || 15000; //CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
     maxSize = maxSize || 15000;
@@ -97,7 +96,7 @@ function ParticleContainer(maxSize, properties, batchSize)
      * @default PIXI.BLEND_MODES.NORMAL
      * @see PIXI.BLEND_MODES
      */
-    this.blendMode = CONST.BLEND_MODES.NORMAL;
+    this.blendMode = core.BLEND_MODES.NORMAL;
 
     /**
      * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
@@ -112,7 +111,7 @@ function ParticleContainer(maxSize, properties, batchSize)
     this.setProperties(properties);
 }
 
-ParticleContainer.prototype = Object.create(Container.prototype);
+ParticleContainer.prototype = Object.create(core.Container.prototype);
 ParticleContainer.prototype.constructor = ParticleContainer;
 module.exports = ParticleContainer;
 
