@@ -14,12 +14,6 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
-<<<<<<< HEAD
-*
-=======
- * Renderer dedicated to drawing and batching sprites.
- *
->>>>>>> dev
  * @class
  * @private
  * @memberof PIXI
