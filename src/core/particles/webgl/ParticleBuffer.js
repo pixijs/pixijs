@@ -1,4 +1,6 @@
-
+var glCore = require('pixi-gl-core'),
+    createIndicesForQuads = require('../../utils/createIndicesForQuads');
+    
 /**
  * @author Mat Groves
  *
@@ -102,6 +104,17 @@ ParticleBuffer.prototype.initBuffers = function ()
     var property;
 
     var dynamicOffset = 0;
+    
+   
+    /**
+     * Holds the indices of the geometry (quads) to draw
+     *
+     * @member {Uint16Array}
+     */
+    this.indices = createIndicesForQuads(this.size)
+    this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+
+
     this.dynamicStride = 0;
 
     for (i = 0; i < this.dynamicProperties.length; i++)
@@ -114,11 +127,7 @@ ParticleBuffer.prototype.initBuffers = function ()
     }
 
     this.dynamicData = new Float32Array( this.size * this.dynamicStride * 4);
-    this.dynamicBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.dynamicBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.dynamicData, gl.DYNAMIC_DRAW);
-
+    this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
 
     // static //
     var staticOffset = 0;
@@ -131,13 +140,28 @@ ParticleBuffer.prototype.initBuffers = function ()
         property.offset = staticOffset;
         staticOffset += property.size;
         this.staticStride += property.size;
+
+
     }
 
     this.staticData = new Float32Array( this.size * this.staticStride * 4);
-    this.staticBuffer = gl.createBuffer();
+    this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.staticData, gl.DYNAMIC_DRAW);
+
+    this.vao = new glCore.VertexArrayObject(gl)
+    .addIndex(this.indexBuffer);
+    
+    for (i = 0; i < this.dynamicProperties.length; i++)
+    {
+        property = this.dynamicProperties[i];
+        this.vao.addAttribute(this.dynamicBuffer, property.attribute, gl.FLOAT, false, this.dynamicStride * 4, property.offset * 4);
+    }
+
+    for (i = 0; i < this.staticProperties.length; i++)
+    {
+        property = this.staticProperties[i];
+        this.vao.addAttribute(this.staticBuffer, property.attribute, gl.FLOAT, false, this.staticStride * 4, property.offset * 4);
+    }
 };
 
 /**
@@ -154,8 +178,7 @@ ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
         property.uploadFunction(children, startIndex, amount, this.dynamicData, this.dynamicStride, property.offset);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.dynamicBuffer);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.dynamicData);
+    this.dynamicBuffer.upload();
 };
 
 /**
@@ -172,8 +195,7 @@ ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
         property.uploadFunction(children, startIndex, amount, this.staticData, this.staticStride, property.offset);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.staticData);
+    this.staticBuffer.upload();
 };
 
 /**
@@ -185,21 +207,7 @@ ParticleBuffer.prototype.bind = function ()
     var gl = this.gl;
     var i, property;
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.dynamicBuffer);
-
-    for (i = 0; i < this.dynamicProperties.length; i++)
-    {
-        property = this.dynamicProperties[i];
-        gl.vertexAttribPointer(property.attribute, property.size, gl.FLOAT, false, this.dynamicStride * 4, property.offset * 4);
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
-
-    for (i = 0; i < this.staticProperties.length; i++)
-    {
-        property = this.staticProperties[i];
-        gl.vertexAttribPointer(property.attribute, property.size, gl.FLOAT, false, this.staticStride * 4, property.offset * 4);
-    }
+    this.vao.bind();
 };
 
 /**
@@ -210,9 +218,9 @@ ParticleBuffer.prototype.destroy = function ()
 {
     this.dynamicProperties = null;
     this.dynamicData = null;
-    this.gl.deleteBuffer(this.dynamicBuffer);
+    this.dynamicBuffer.destroy();
 
     this.staticProperties = null;
     this.staticData = null;
-    this.gl.deleteBuffer(this.staticBuffer);
+    this.staticBuffer.destroy();
 };

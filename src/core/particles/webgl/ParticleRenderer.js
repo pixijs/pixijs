@@ -33,23 +33,6 @@ function ParticleRenderer(renderer)
     var numIndices = 98304;
 
     /**
-     * Holds the indices
-     *
-     * @member {Uint16Array}
-     */
-    this.indices = new Uint16Array(numIndices);
-
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
-    {
-        this.indices[i + 0] = j + 0;
-        this.indices[i + 1] = j + 1;
-        this.indices[i + 2] = j + 2;
-        this.indices[i + 3] = j + 0;
-        this.indices[i + 4] = j + 2;
-        this.indices[i + 5] = j + 3;
-    }
-
-    /**
      * The default shader that is used if a sprite doesn't have a more specific one.
      *
      * @member {PIXI.Shader}
@@ -78,21 +61,12 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
-    return;
     var gl = this.renderer.gl;
 
     this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
     // setup default shader
-    this.shader = new ParticleShader(this.renderer.shaderManager);
-
-    this.indexBuffer = gl.createBuffer();
-
-    // 65535 is max index, so 65535 / 6 = 10922.
-
-    //upload the index data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+    this.shader = new ParticleShader(gl);
 
     this.properties = [
         // verticesData
@@ -131,6 +105,7 @@ ParticleRenderer.prototype.onContextChange = function ()
             offset:0
         }
     ];
+
 };
 
 /**
@@ -139,18 +114,7 @@ ParticleRenderer.prototype.onContextChange = function ()
  */
 ParticleRenderer.prototype.start = function ()
 {
-    var gl = this.renderer.gl;
-
-    // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
-
-    // bind the buffers
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-    var shader = this.shader;
-
-    this.renderer.shaderManager.setShader(shader);
+    this.renderer.bindShader(this.shader);
 };
 
 
@@ -175,42 +139,27 @@ ParticleRenderer.prototype.render = function (container)
         totalChildren = maxSize;
     }
 
-    if(!container._buffers)
+    var buffers = container._glBuffers[this.renderer.CONTEXT_UID];
+
+    if(!buffers)
     {
-        container._buffers = this.generateBuffers( container );
+        buffers = container._glBuffers[this.renderer.CONTEXT_UID] = this.generateBuffers( container );
     }
 
     // if the uvs have not updated then no point rendering just yet!
-    this.renderer.blendModeManager.setBlendMode(container.blendMode);
+    this.renderer.setBlendMode(container.blendMode);
 
     var gl = this.renderer.gl;
 
-    var m =  container.worldTransform.copy( this.tempMatrix );
-    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
-    gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
-    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+  //  var m =  container.worldTransform.copy( this.tempMatrix );
+//    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
+    this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
     // make sure the texture is bound..
     var baseTexture = children[0]._texture.baseTexture;
 
-    if (!baseTexture._glTextures[this.CONTEXT_UID])
-    {
-        // if the texture has not updated then lets not upload any static properties
-        if(!this.renderer.updateTexture(baseTexture))
-        {
-            return;
-        }
-
-        if(!container._properties[0] || !container._properties[3])
-        {
-            container._bufferToUpdate = 0;
-        }
-    }
-    else
-    {
-        gl.bindTexture(gl.TEXTURE_2D, baseTexture._glTextures[this.CONTEXT_UID]);
-    }
+    this.renderer.bindTexture(baseTexture);
 
     // now lets upload and render the buffers..
     for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
@@ -221,7 +170,7 @@ ParticleRenderer.prototype.render = function (container)
             amount = batchSize;
         }
 
-        var buffer = container._buffers[j];
+        var buffer = buffers[j];
 
         // we always upload the dynamic
         buffer.uploadDynamic(children, i, amount);
@@ -234,11 +183,13 @@ ParticleRenderer.prototype.render = function (container)
         }
 
         // bind the buffer
-        buffer.bind( this.shader );
+        buffer.vao.bind( this.shader )
+        .draw(gl.TRIANGLES, amount * 6)
+        .unbind();
 
          // now draw those suckas!
-        gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
-        this.renderer.drawCount++;
+       // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
+       //  this.renderer.drawCount++;
     }
 };
 

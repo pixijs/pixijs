@@ -76,7 +76,7 @@ function ParticleContainer(maxSize, properties, batchSize)
      * @member {WebGLBuffer}
      * @private
      */
-    this._buffers = null;
+    this._glBuffers = [];
 
     /**
      * @member {number}
@@ -106,6 +106,8 @@ function ParticleContainer(maxSize, properties, batchSize)
      * @default true;
      */
     this.roundPixels = true;
+
+    this.baseTexture = null;
 
     this.setProperties(properties);
 }
@@ -155,6 +157,19 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
     {
         return;
     }
+
+
+    if(!this.baseTexture)
+    {
+        this.baseTexture = this.children[0]._texture.baseTexture;
+        if(!this.baseTexture.hasLoaded)
+        {
+            this.baseTexture.once('update', function(){
+                this.onChildrenChange(0);
+            }, this)
+        }
+    }
+
 
     renderer.setObjectRenderer( renderer.plugins.particle );
     renderer.plugins.particle.render( this );
