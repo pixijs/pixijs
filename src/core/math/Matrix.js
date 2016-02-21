@@ -253,6 +253,29 @@ Matrix.prototype.rotate = function (angle)
 };
 
 /**
+ * Applies a skew transformation to the matrix.
+ *
+ * @param {number} angleX - The angle in radians for the X-skew.
+ * @param {number} angleY - The angle in radians for the Y-skew.
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.skew = function (angleX, angleY)
+{
+    var tanX = Math.tan(angleX);
+    var tanY = Math.tan(angleY);
+    var a=this.a, b=this.b, c=this.c, d=this.d, tx=this.tx, ty=this.ty;
+    this.a = a + (tanX * c);
+    this.b = b + (tanX * d);
+    this.tx = tx + (tanX * ty);
+
+    this.c=(tanY * a) + c;
+    this.d=(tanY * b) + d;
+    this.ty=(tanY * tx) + ty;
+
+    return this;
+};
+
+/**
  * Appends the given Matrix to this Matrix.
  *
  * @param {PIXI.Matrix} matrix
