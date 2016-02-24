@@ -2,8 +2,7 @@ var Filter = require('../Filter'),
     math =  require('../../../../math');
 
 // @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
-
+var glslify  = require('glslify');
 /**
  * The SpriteMaskFilter class
  *
@@ -17,8 +16,8 @@ function SpriteMaskFilter(sprite)
     var maskMatrix = new math.Matrix();
 
     Filter.call(this,
-        fs.readFileSync(__dirname + '/spriteMaskFilter.vert', 'utf8'),
-        fs.readFileSync(__dirname + '/spriteMaskFilter.frag', 'utf8')
+        glslify('./spriteMaskFilter.vert'),
+        glslify('./spriteMaskFilter.frag')
     );
 
     sprite.renderable = false;
@@ -41,7 +40,7 @@ module.exports = SpriteMaskFilter;
 SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
 {
     var maskSprite = this.maskSprite;
-
+ 
     this.uniforms.mask = maskSprite._texture;
     this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
     this.uniforms.alpha = maskSprite.worldAlpha;
