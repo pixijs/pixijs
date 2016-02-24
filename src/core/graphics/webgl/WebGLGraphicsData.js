@@ -65,6 +65,8 @@ function WebGLGraphicsData(gl, shader)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
     .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
+    
+
 }
 
 WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;

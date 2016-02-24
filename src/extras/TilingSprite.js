@@ -1,7 +1,10 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
+    Sprite = require('../core/sprites/Sprite'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter');
+var glCore = require('pixi-gl-core'),
+    createIndicesForQuads = require('../core/utils/createIndicesForQuads');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -15,7 +18,23 @@ var core = require('../core'),
  */
 function TilingSprite(texture, width, height)
 {
-    core.Sprite.call(this, texture);
+    Sprite.call(this, texture);
+
+    this.gl = null;
+    /**
+     * Number of values sent in the vertex buffer.
+     * positionX, positionY, colorR, colorG, colorB = 5
+     *
+     * @member {number}
+     */
+    this.vertSize = 5;
+
+    /**
+     * The size of the vertex information in bytes.
+     *
+     * @member {number}
+     */
+    this.vertByteSize = this.vertSize * 4;
 
     /**
      * The scaling of the image that is being tiled
@@ -61,63 +80,40 @@ function TilingSprite(texture, width, height)
     this._canvasPattern = null;
 
     //TODO move..
-    this.shader = new core.Filter(
 
-      [
-        'precision lowp float;',
-        'attribute vec2 aVertexPosition;',
-        'attribute vec2 aTextureCoord;',
-        'attribute vec4 aColor;',
 
-        'uniform mat3 projectionMatrix;',
 
-        'uniform vec4 uFrame;',
-        'uniform vec4 uTransform;',
+      this.vertices = new Float32Array([
+          -1,-1,
+          1,-1,
+          1,1,
+          -1,1
+      ]);
 
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
+      this.uvs = new Float32Array([
+          0,0,
+          1,0,
+          1,1,
+          0,1
+      ]);
 
-        'void main(void){',
-        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+      this.interleaved =  new Float32Array(8 * 2);
 
-        '   vec2 coord = aTextureCoord;',
-        '   coord -= uTransform.xy;',
-        '   coord /= uTransform.zw;',
-        '   vTextureCoord = coord;',
+      for (var i = 0; i < 4; i++) {
+          this.interleaved[i*4] = this.vertices[(i*2)];
+          this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
+          this.interleaved[(i*4)+2] = this.uvs[i*2];
+          this.interleaved[(i*4)+3] = this.uvs[(i*2)+1];
+      }
 
-        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
-        '}'
-      ].join('\n'),
-      [
-        'precision lowp float;',
+      /*
+       * @member {Uint16Array} An array containing the indices of the vertices
+       */
+      this.indices = createIndicesForQuads(1);
 
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform sampler2D uSampler;',
-        'uniform vec4 uFrame;',
-        'uniform vec2 uPixelSize;',
-
-        'void main(void){',
-
-        '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
-        '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
-        '   coord += uFrame.xy;',
-
-        '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
-        '}'
-      ].join('\n'),
-
-            // set the uniforms
-            {
-                uFrame: { type: '4fv', value: [0,0,1,1] },
-                uTransform: { type: '4fv', value: [0,0,1,1] },
-                uPixelSize : { type : '2fv', value: [1, 1]}
-            }
-      );
 }
 
-TilingSprite.prototype = Object.create(core.Sprite.prototype);
+TilingSprite.prototype = Object.create(Sprite.prototype);
 TilingSprite.prototype.constructor = TilingSprite;
 module.exports = TilingSprite;
 
@@ -163,6 +159,82 @@ TilingSprite.prototype._onTextureUpdate = function ()
     return;
 };
 
+TilingSprite.prototype.initShader = function (gl)
+{
+  this.gl = gl;
+  this.shader = new glCore.GLShader(gl,
+    [
+      'precision lowp float;',
+      'attribute vec2 aVertexPosition;',
+      'attribute vec2 aTextureCoord;',
+      'attribute vec4 aColor;',
+
+      'uniform mat3 projectionMatrix;',
+
+      'uniform vec4 uFrame;',
+      'uniform vec4 uTransform;',
+
+      'varying vec2 vTextureCoord;',
+      'varying vec4 vColor;',
+
+      'void main(void){',
+      '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+
+      '   vec2 coord = aTextureCoord;',
+      '   coord -= uTransform.xy;',
+      '   coord /= uTransform.zw;',
+      '   vTextureCoord = coord;',
+
+      '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
+      '}'
+    ].join('\n'),
+    [
+      'precision lowp float;',
+
+      'varying vec2 vTextureCoord;',
+      'varying vec4 vColor;',
+
+      'uniform sampler2D uSampler;',
+      'uniform vec4 uFrame;',
+      'uniform vec2 uPixelSize;',
+
+      'void main(void){',
+
+      '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
+      '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
+      '   coord += uFrame.xy;',
+
+      // '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
+      '   gl_FragColor =  vec4(1.0);',
+      '}'
+    ].join('\n')/*8,
+
+          // set the uniforms
+          {
+              uFrame: { type: '4fv', value: [0,0,1,1] },
+              uTransform: { type: '4fv', value: [0,0,1,1] },
+              uPixelSize : { type : '2fv', value: [1, 1]}
+          }*/
+    );
+
+    /*
+     * @member {WebGLBuffer} The vertex buffer
+     */
+
+    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(this.gl, this.interleaved);
+    this.indexBuffer = glCore.GLBuffer.createIndexBuffer(this.gl, this.indices);
+
+    this.vertexBuffer.upload(this.interleaved);
+    this.indexBuffer.upload(this.indices);
+
+    this.vao = new glCore.VertexArrayObject(gl);
+
+    this.vao.addIndex(this.indexBuffer)
+      .addAttribute(this.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+      .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+      .addAttribute(this.vertexBuffer, this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+      // .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+};
 
 /**
  * Renders the object using the WebGL renderer
@@ -175,9 +247,21 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     // tweak our texture temporarily..
     var texture = this._texture;
 
+
+    // render VertexArrayObject
+
+
     if(!texture || !texture._uvs)
     {
         return;
+    }
+
+    if(!this.inited)
+    {
+      this.initShader(renderer.gl);
+      this.inited = true;
+      // create VertexArrayObject;
+      // create shader
     }
 
     var tempUvs = texture._uvs,
@@ -190,21 +274,30 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.width = this.width;
     texture._frame.height = this.height;
 
-    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
-    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
+    this.shader.uniforms.uPixelSize[0] = 1.0/tw;
+    this.shader.uniforms.uPixelSize[1] = 1.0/th;
 
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
+    this.shader.uniforms.uFrame[0] = tempUvs.x0;
+    this.shader.uniforms.uFrame[1] = tempUvs.y0;
+    this.shader.uniforms.uFrame[2] = tempUvs.x1 - tempUvs.x0;
+    this.shader.uniforms.uFrame[3] = tempUvs.y2 - tempUvs.y0;
 
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
-    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
-    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
+    this.shader.uniforms.uTransform[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
+    this.shader.uniforms.uTransform[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
+    this.shader.uniforms.uTransform[2] = ( tw / this._width ) * this.tileScale.x;
+    this.shader.uniforms.uTransform[3] = ( th / this._height ) * this.tileScale.y;
 
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render(this);
+    this.caclulateVertices();
+
+    renderer.bindShader(this.shader);
+
+    this.vertexBuffer.upload(this.interleaved);
+    this.indexBuffer.upload(this.indices);
+
+    this.vao.bind()
+      .draw(this.gl.TRIANGLES, 6 )
+      .unbind();
+    // renderer.plugins.sprite.render(this);
 
     texture._uvs = tempUvs;
     texture._frame.width = tempWidth;
@@ -293,6 +386,52 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     //context.scale(1 / this.tileScale.x, 1 / this.tileScale.y);
 };
 
+TilingSprite.prototype.caclulateVertices = function ()
+{
+    var texture = this._texture,
+        wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        vertexData = this.interleaved,
+        w0, w1, h0, h1,
+        trim = texture.trim,
+        crop = texture.crop;
+
+
+    if (trim)
+    {
+        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+        w1 = trim.x - this.anchor.x * crop.width;
+        w0 = w1 + trim.width;
+
+        h1 = trim.y - this.anchor.y * crop.height;
+        h0 = h1 + trim.height;
+
+    }
+    else
+    {
+        w0 = (crop.width ) * (1-this.anchor.x);
+        w1 = (crop.width ) * -this.anchor.x;
+
+        h0 = crop.height * (1-this.anchor.y);
+        h1 = crop.height * -this.anchor.y;
+    }
+
+    // xy
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
+
+     // xy
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
+};
 
 /**
  * Returns the framing rectangle of the sprite as a Rectangle object
@@ -401,7 +540,7 @@ TilingSprite.prototype.containsPoint = function( point )
  *
  */
 TilingSprite.prototype.destroy = function () {
-    core.Sprite.prototype.destroy.call(this);
+    Sprite.prototype.destroy.call(this);
 
     this.tileScale = null;
     this._tileScaleOffset = null;

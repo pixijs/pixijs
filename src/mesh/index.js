@@ -13,5 +13,5 @@ module.exports = {
     Plane:           require('./Plane'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
-    MeshShader:     require('./webgl/MeshShader')
+    // MeshShader:     require('./webgl/MeshShader')
 };
