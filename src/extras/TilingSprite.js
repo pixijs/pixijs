@@ -19,7 +19,7 @@ var glCore = require('pixi-gl-core'),
 function TilingSprite(texture, width, height)
 {
     Sprite.call(this, texture);
-
+    
     this.gl = null;
     /**
      * Number of values sent in the vertex buffer.

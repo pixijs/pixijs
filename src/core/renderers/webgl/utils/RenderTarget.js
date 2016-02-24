@@ -80,7 +80,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.frame = null;
 
-    this.defaultFrame = new PIXI.Rectangle();
+    this.defaultFrame = new math.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 

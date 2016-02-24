@@ -118,7 +118,9 @@ Rectangle.prototype.fit = function (rectangle)
     if (this.x < rectangle.x)
     {
         this.width += this.x;
-        if(this.width < 0)this.width = 0;
+        if(this.width < 0) {
+          this.width = 0;
+        }
 
         this.x = rectangle.x;
     }
@@ -126,19 +128,25 @@ Rectangle.prototype.fit = function (rectangle)
     if (this.y < rectangle.y)
     {
         this.height += this.y;
-        if(this.height < 0)this.height = 0;
+        if(this.height < 0) {
+          this.height = 0;
+        }
         this.y = rectangle.y;
     }
 
     if ( this.x + this.width > rectangle.x + rectangle.width )
     {
         this.width = rectangle.width - this.x;
-        if(this.width < 0)this.width = 0;
+        if(this.width < 0) {
+          this.width = 0;
+        }
     }
 
     if ( this.y + this.height > rectangle.y + rectangle.height )
     {
         this.height = rectangle.height - this.y;
-        if(this.height < 0)this.height = 0;
+        if(this.height < 0) {
+          this.height = 0;
+        }
     }
 };

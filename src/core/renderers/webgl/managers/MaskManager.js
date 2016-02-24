@@ -156,13 +156,13 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     var renderTarget = this.renderer._activeRenderTarget;
 
     var bounds = maskData.getBounds();
-    bounds.fit(renderTarget.size)
+    bounds.fit(renderTarget.size);
     maskData.renderable = false;
 
     this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
     this.renderer.scissor(bounds.x,
-               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y, 
+               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
                bounds.width ,
                bounds.height);
 

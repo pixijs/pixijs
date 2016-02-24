@@ -234,8 +234,8 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
  */
 WebGLRenderer.prototype.flush = function ()
 {
-    this.setObjectRenderer(this.emptyRenderer)
-}
+    this.setObjectRenderer(this.emptyRenderer);
+};
 
 /**
  * Resizes the webGL view to the specified width and height.

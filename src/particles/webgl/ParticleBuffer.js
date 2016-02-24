@@ -1,6 +1,6 @@
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
-    
+
 /**
  * @author Mat Groves
  *
@@ -104,14 +104,14 @@ ParticleBuffer.prototype.initBuffers = function ()
     var property;
 
     var dynamicOffset = 0;
-    
-   
+
+
     /**
      * Holds the indices of the geometry (quads) to draw
      *
      * @member {Uint16Array}
      */
-    this.indices = createIndicesForQuads(this.size)
+    this.indices = createIndicesForQuads(this.size);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
 
@@ -150,7 +150,7 @@ ParticleBuffer.prototype.initBuffers = function ()
 
     this.vao = new glCore.VertexArrayObject(gl)
     .addIndex(this.indexBuffer);
-    
+
     for (i = 0; i < this.dynamicProperties.length; i++)
     {
         property = this.dynamicProperties[i];
@@ -170,8 +170,6 @@ ParticleBuffer.prototype.initBuffers = function ()
  */
 ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
 {
-    var gl = this.gl;
-
     for (var i = 0; i < this.dynamicProperties.length; i++)
     {
         var property = this.dynamicProperties[i];
@@ -187,8 +185,6 @@ ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
  */
 ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
 {
-    var gl = this.gl;
-
     for (var i = 0; i < this.staticProperties.length; i++)
     {
         var property = this.staticProperties[i];
@@ -204,9 +200,6 @@ ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
  */
 ParticleBuffer.prototype.bind = function ()
 {
-    var gl = this.gl;
-    var i, property;
-
     this.vao.bind();
 };
 
