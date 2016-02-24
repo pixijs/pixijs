@@ -1,4 +1,6 @@
 var core = require('../core'),
+    glCore = require('pixi-gl-core'),
+    Shader = require('./webgl/MeshShader'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
 
@@ -91,6 +93,8 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {PIXI.Shader}
      */
     this.shader = null;
+
+    this._glDatas = [];
 }
 
 // constructor
@@ -143,8 +147,53 @@ Object.defineProperties(Mesh.prototype, {
  */
 Mesh.prototype._renderWebGL = function (renderer)
 {
-    renderer.setObjectRenderer(renderer.plugins.mesh);
-    renderer.plugins.mesh.render(this);
+    // get rid of any thing that may be batching.
+    renderer.flush();
+
+    //  renderer.plugins.mesh.render(this);
+    var gl = renderer.gl;
+    var glData = this._glDatas[renderer.CONTEXT_UID];
+
+    if(!glData)
+    { 
+        glData = {
+            shader:new Shader(gl),
+            vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
+            uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
+            indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
+            // build the vao object that will render..
+            vao:new glCore.VertexArrayObject(gl)
+        }
+
+        // build the vao object that will render..
+        glData.vao = new glCore.VertexArrayObject(gl)
+        .addIndex(glData.indexBuffer)
+        .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+        .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0)
+        
+        this._glDatas[renderer.CONTEXT_UID] = glData;
+    }
+    
+    if(this.dirty)
+    {
+        this.dirty = false;
+        glData.uvBuffer.upload();
+    }
+    
+    glData.vertexBuffer.upload();
+
+    renderer.bindShader(glData.shader);
+    renderer.bindTexture(this._texture, 0);
+
+    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.alpha = this.worldAlpha;
+
+    var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+
+
+    glData.vao.bind()
+    .draw(drawMode, this.indices.length)
+    .unbind();
 };
 
 /**

@@ -149,6 +149,7 @@ function Graphics()
 
 
     this._spriteRect = null;
+    this._fastRect = false;
 
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -717,9 +718,11 @@ Graphics.prototype._renderWebGL = function (renderer)
     {
         this.dirty = true;
         this.glDirty = false;
+        this._fastRect = this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
     }
 
-    if(this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth)
+    //TODO this check can be moved to dirty?
+    if(this._fastRect)
     {
         this._renderSpriteRect(renderer);
     }
@@ -750,8 +753,12 @@ Graphics.prototype._renderSpriteRect = function (renderer)
         this._spriteRect.tint = this.graphicsData[0].fillColor;
     }
 
+    this._spriteRect.worldAlpha = this.worldAlpha;
+
     Graphics._SPRITE_TEXTURE.crop.width = rect.width;
     Graphics._SPRITE_TEXTURE.crop.height = rect.height;
+
+    this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
     this._spriteRect.anchor.x = -rect.x / rect.width;
     this._spriteRect.anchor.y = -rect.y / rect.height;

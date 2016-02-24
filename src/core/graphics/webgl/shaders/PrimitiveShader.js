@@ -21,7 +21,6 @@ function PrimitiveShader(gl)
             'uniform mat3 projectionMatrix;',
 
             'uniform float alpha;',
-            'uniform float flipY;',
             'uniform vec3 tint;',
 
             'varying vec4 vColor;',

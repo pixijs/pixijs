@@ -1,4 +1,4 @@
-var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
+var Shader = require('pixi-gl-core').GLShader;
 
 /**
  * @class
@@ -6,10 +6,10 @@ var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
  * @memberof PIXI
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
-function ParticleShader(shaderManager)
+function ParticleShader(gl)
 {
-    TextureShader.call(this,
-        shaderManager,
+    Shader.call(this,
+        gl,
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
@@ -53,24 +53,14 @@ function ParticleShader(shaderManager)
             '  if (color.a == 0.0) discard;',
             '  gl_FragColor = color;',
             '}'
-        ].join('\n'),
-        // custom uniforms
-        {
-            uAlpha:  { type: '1f', value: 1 }
-        },
-        // custom attributes
-        {
-            aPositionCoord: 0,
-           // aScale:         0,
-            aRotation:      0
-        }
+        ].join('\n')
     );
 
     // TEMP HACK
 
 }
 
-ParticleShader.prototype = Object.create(TextureShader.prototype);
+ParticleShader.prototype = Object.create(Shader.prototype);
 ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;

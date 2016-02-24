@@ -1,7 +1,6 @@
-var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    ParticleBuffer = require('./ParticleBuffer'),
-    math            = require('../../math');
+var core = require('../../core'),
+    ParticleShader = require('./ParticleShader'),
+    ParticleBuffer = require('./ParticleBuffer');
 
 /**
  * @author Mat Groves
@@ -23,30 +22,13 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 function ParticleRenderer(renderer)
 {
-    ObjectRenderer.call(this, renderer);
+    core.ObjectRenderer.call(this, renderer);
 
     // 65535 is max vertex index in the index buffer (see ParticleRenderer)
     // so max number of particles is 65536 / 4 = 16384
     // and max number of element in the index buffer is 16384 * 6 = 98304
     // Creating a full index buffer, overhead is 98304 * 2 = 196Ko
     var numIndices = 98304;
-
-    /**
-     * Holds the indices
-     *
-     * @member {Uint16Array}
-     */
-    this.indices = new Uint16Array(numIndices);
-
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
-    {
-        this.indices[i + 0] = j + 0;
-        this.indices[i + 1] = j + 1;
-        this.indices[i + 2] = j + 2;
-        this.indices[i + 3] = j + 0;
-        this.indices[i + 4] = j + 2;
-        this.indices[i + 5] = j + 3;
-    }
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
@@ -59,16 +41,16 @@ function ParticleRenderer(renderer)
 
     this.properties = null;
 
-    this.tempMatrix = new math.Matrix();
+    this.tempMatrix = new core.math.Matrix();
 
     this.CONTEXT_UID = 0;
 }
 
-ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
+ParticleRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
 ParticleRenderer.prototype.constructor = ParticleRenderer;
 module.exports = ParticleRenderer;
 
-WebGLRenderer.registerPlugin('particle', ParticleRenderer);
+core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
 /**
  * When there is a WebGL context change
@@ -77,60 +59,51 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
-    return;
+    var gl = this.renderer.gl;
 
-    // var gl = this.renderer.gl;
-    //
-    // this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-    //
-    // // setup default shader
-    // this.shader = new ParticleShader(this.renderer.shaderManager);
-    //
-    // this.indexBuffer = gl.createBuffer();
-    //
-    // // 65535 is max index, so 65535 / 6 = 10922.
-    //
-    // //upload the index data
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-    //
-    // this.properties = [
-    //     // verticesData
-    //     {
-    //         attribute:this.shader.attributes.aVertexPosition,
-    //         size:2,
-    //         uploadFunction:this.uploadVertices,
-    //         offset:0
-    //     },
-    //     // positionData
-    //     {
-    //         attribute:this.shader.attributes.aPositionCoord,
-    //         size:2,
-    //         uploadFunction:this.uploadPosition,
-    //         offset:0
-    //     },
-    //     // rotationData
-    //     {
-    //         attribute:this.shader.attributes.aRotation,
-    //         size:1,
-    //         uploadFunction:this.uploadRotation,
-    //         offset:0
-    //     },
-    //     // uvsData
-    //     {
-    //         attribute:this.shader.attributes.aTextureCoord,
-    //         size:2,
-    //         uploadFunction:this.uploadUvs,
-    //         offset:0
-    //     },
-    //     // alphaData
-    //     {
-    //         attribute:this.shader.attributes.aColor,
-    //         size:1,
-    //         uploadFunction:this.uploadAlpha,
-    //         offset:0
-    //     }
-    // ];
+    this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+
+    // setup default shader
+    this.shader = new ParticleShader(gl);
+
+    this.properties = [
+        // verticesData
+        {
+            attribute:this.shader.attributes.aVertexPosition,
+            size:2,
+            uploadFunction:this.uploadVertices,
+            offset:0
+        },
+        // positionData
+        {
+            attribute:this.shader.attributes.aPositionCoord,
+            size:2,
+            uploadFunction:this.uploadPosition,
+            offset:0
+        },
+        // rotationData
+        {
+            attribute:this.shader.attributes.aRotation,
+            size:1,
+            uploadFunction:this.uploadRotation,
+            offset:0
+        },
+        // uvsData
+        {
+            attribute:this.shader.attributes.aTextureCoord,
+            size:2,
+            uploadFunction:this.uploadUvs,
+            offset:0
+        },
+        // alphaData
+        {
+            attribute:this.shader.attributes.aColor,
+            size:1,
+            uploadFunction:this.uploadAlpha,
+            offset:0
+        }
+    ];
+
 };
 
 /**
@@ -139,18 +112,7 @@ ParticleRenderer.prototype.onContextChange = function ()
  */
 ParticleRenderer.prototype.start = function ()
 {
-    var gl = this.renderer.gl;
-
-    // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
-
-    // bind the buffers
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-    var shader = this.shader;
-
-    this.renderer.shaderManager.setShader(shader);
+    this.renderer.bindShader(this.shader);
 };
 
 
@@ -175,42 +137,27 @@ ParticleRenderer.prototype.render = function (container)
         totalChildren = maxSize;
     }
 
-    if(!container._buffers)
+    var buffers = container._glBuffers[this.renderer.CONTEXT_UID];
+
+    if(!buffers)
     {
-        container._buffers = this.generateBuffers( container );
+        buffers = container._glBuffers[this.renderer.CONTEXT_UID] = this.generateBuffers( container );
     }
 
     // if the uvs have not updated then no point rendering just yet!
-    this.renderer.blendModeManager.setBlendMode(container.blendMode);
+    this.renderer.setBlendMode(container.blendMode);
 
     var gl = this.renderer.gl;
 
-    var m =  container.worldTransform.copy( this.tempMatrix );
-    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
-    gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
-    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+  //  var m =  container.worldTransform.copy( this.tempMatrix );
+//    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
+    this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
     // make sure the texture is bound..
     var baseTexture = children[0]._texture.baseTexture;
 
-    if (!baseTexture._glTextures[this.CONTEXT_UID])
-    {
-        // if the texture has not updated then lets not upload any static properties
-        if(!this.renderer.updateTexture(baseTexture))
-        {
-            return;
-        }
-
-        if(!container._properties[0] || !container._properties[3])
-        {
-            container._bufferToUpdate = 0;
-        }
-    }
-    else
-    {
-        gl.bindTexture(gl.TEXTURE_2D, baseTexture._glTextures[this.CONTEXT_UID]);
-    }
+    this.renderer.bindTexture(baseTexture);
 
     // now lets upload and render the buffers..
     for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
@@ -221,7 +168,7 @@ ParticleRenderer.prototype.render = function (container)
             amount = batchSize;
         }
 
-        var buffer = container._buffers[j];
+        var buffer = buffers[j];
 
         // we always upload the dynamic
         buffer.uploadDynamic(children, i, amount);
@@ -234,11 +181,13 @@ ParticleRenderer.prototype.render = function (container)
         }
 
         // bind the buffer
-        buffer.bind( this.shader );
+        buffer.vao.bind( this.shader )
+        .draw(gl.TRIANGLES, amount * 6)
+        .unbind();
 
          // now draw those suckas!
-        gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
-        this.renderer.drawCount++;
+       // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
+       //  this.renderer.drawCount++;
     }
 };
 
@@ -281,7 +230,6 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         trim,
         sx,
         sy,
-        crop,
         w0, w1, h0, h1;
 
     for (var i = 0; i < amount; i++) {
@@ -290,8 +238,7 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        trim = texture.trim;
-        crop = texture.crop;
+        var trim = texture.trim, crop = texture.crop;
 
         if (trim)
         {

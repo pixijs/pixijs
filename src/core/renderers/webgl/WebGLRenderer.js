@@ -91,7 +91,8 @@ function WebGLRenderer(width, height, options)
      *
      * @member {PIXI.ObjectRenderer}
      */
-    this.currentRenderer = new ObjectRenderer(this);
+    this.emptyRenderer = new ObjectRenderer(this);
+    this.currentRenderer = this.emptyRenderer;
 
     this.initPlugins();
 
@@ -225,6 +226,16 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
     this.currentRenderer = objectRenderer;
     this.currentRenderer.start();
 };
+
+/**
+ * This shoudl be called if you wish to do some custom rendering
+ * It will basically render anything that may be batched up such as sprites
+ *
+ */
+WebGLRenderer.prototype.flush = function ()
+{
+    this.setObjectRenderer(this.emptyRenderer)
+}
 
 /**
  * Resizes the webGL view to the specified width and height.

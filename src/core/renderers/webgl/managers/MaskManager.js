@@ -12,7 +12,7 @@ function MaskManager(renderer)
 
     this.scissor = false;
 
-    this.enableScissor = false;
+    this.enableScissor = true;
 
     this.alphaMaskPool = [];
     this.alphaMaskPool = [];
@@ -152,13 +152,17 @@ MaskManager.prototype.popStencilMask = function ()
 MaskManager.prototype.pushScissorMask = function (target, maskData)
 {
     maskData.renderable = true;
+
+    var renderTarget = this.renderer._activeRenderTarget;
+
     var bounds = maskData.getBounds();
+    bounds.fit(renderTarget.size)
     maskData.renderable = false;
 
     this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
-    this.renderer.gl.scissor(bounds.x,
-               this.renderer._activeRenderTarget.root ? this.renderer._activeRenderTarget.size.height - bounds.y - bounds.height : bounds.y,
+    this.renderer.scissor(bounds.x,
+               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y, 
                bounds.width ,
                bounds.height);
 
