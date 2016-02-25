@@ -1,3 +1,4 @@
+
 /**
  * Constant values used in pixi
  *
@@ -247,7 +248,7 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: 32//this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
