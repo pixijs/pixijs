@@ -1,7 +1,7 @@
 /**
  * @license
- * pixi.js - v3.0.10-dev
- * Compiled 2016-02-25T20:32:42.577Z
+ * pixi.js - v3.0.10
+ * Compiled 2016-02-25T20:34:18.010Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6967,7 +6967,7 @@ var CONST = {
      * @constant
      * @property {string} VERSION
      */
-    VERSION: '3.0.10-dev',
+    VERSION: '3.0.10',
 
     /**
      * @property {number} PI_2 - Two Pi
