@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10-dev
- * Compiled 2016-02-09T10:38:07.694Z
+ * Compiled 2016-02-25T20:32:42.577Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26492,10 +26492,11 @@ function InteractionManager(renderer, options)
      * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
+     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
      * @member {HTMLElement}
      * @private
      */
-    this.moveWhenInside = true;
+    this.moveWhenInside = false;
     
     /**
      * Have events been attached to the dom element?
