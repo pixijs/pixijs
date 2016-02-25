@@ -162,11 +162,16 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 	   	displayObject.renderId = this.renderId;
 	}
 
-	var children = displayObject.children;
 
-	for (var i = children.length - 1; i >= 0; i--) {
+	if(displayObject.interactiveChildren)
+	{
+
+		var children = displayObject.children;
+
+		for (var i = children.length - 1; i >= 0; i--) {
 		
-		this.updateAccessibleObjects(children[i]);
+			this.updateAccessibleObjects(children[i]);
+		}
 	}
 };
 
