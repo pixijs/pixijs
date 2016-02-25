@@ -32,7 +32,7 @@ function generateSampleSrc(maxTextures)
     for (var i = 0; i < maxTextures; i++) 
     {
         if(i > 0)src += '\nelse ';
-        if(i < maxTextures-1)src += 'if(ndx == ' + i + ')';
+        if(i < maxTextures-1)src += 'if(ndx == ' + i + '.0)';
         src += '\n{';
         src += '\n\tcolor = texture2D(uSamplers['+i+'], vTextureCoord);';
         src += '\n}';
@@ -54,7 +54,7 @@ var fragTemplate = [
 
     'void main(void){',
         'vec4 color;',
-        'int ndx = int(vTextureId);',
+        'float ndx = vTextureId;',
         '%forloop%',
         'gl_FragColor = color * vColor;',
     '}'
