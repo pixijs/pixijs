@@ -46,9 +46,12 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    WebGLManager:          require('./renderers/webgl/managers/WebGLManager'),
+    WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
     ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
+    TextureShader:          require('./renderers/webgl/shaders/TextureShader'),
+    PrimitiveShader:        require('./renderers/webgl/shaders/PrimitiveShader'),
+    ComplexPrimitiveShader: require('./renderers/webgl/shaders/ComplexPrimitiveShader'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
 

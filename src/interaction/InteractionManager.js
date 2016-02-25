@@ -84,6 +84,16 @@ function InteractionManager(renderer, options)
     this.interactionDOMElement = null;
 
     /**
+     * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
+     * Setting to true will make things work more in line with how the DOM verison works.
+     * Setting to false can make things easier for things like dragging
+     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
+     * @member {HTMLElement}
+     * @private
+     */
+    this.moveWhenInside = false;
+    
+    /**
      * Have events been attached to the dom element?
      *
      * @member {boolean}
@@ -154,6 +164,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this._tempPoint = new core.Point();
+    
 
     /**
      * The current resolution
@@ -382,9 +393,19 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         
         for (var i = children.length-1; i >= 0; i--)
         {
+
+            var child = children[i];
+
             // time to get recursive.. if this function will return if somthing is hit..
-            if( this.processInteractive(point, children[i], func, hitTest, interactiveParent) )
+            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
             {
+                // its a good idea to check if a child has lost its parent.
+                // this means it has been removed whilst looping so its best
+                if(!child.parent)
+                {
+                    continue;
+                }
+
                 hit = true;
 
                 // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
@@ -392,7 +413,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(children[i].interactive)
+                if(child.interactive)
                 {
                     hitTest = false;
                 }
@@ -565,8 +586,13 @@ InteractionManager.prototype.onMouseMove = function (event)
  */
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
-    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
     this.processMouseOverOut(displayObject, hit);
+    
+    // only display on mouse over
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    }
 };
 
 
@@ -765,7 +791,7 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
-        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, true );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
         this.returnTouchData( touchData );
     }
@@ -780,8 +806,10 @@ InteractionManager.prototype.onTouchMove = function (event)
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
-    hit = hit;
-    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    }
 };
 
 /**
