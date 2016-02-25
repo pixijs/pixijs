@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-02-25T20:34:18.010Z
+ * Compiled 2016-02-25T20:39:20.286Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6651,11 +6651,16 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 	   	displayObject.renderId = this.renderId;
 	}
 
-	var children = displayObject.children;
 
-	for (var i = children.length - 1; i >= 0; i--) {
+	if(displayObject.interactiveChildren)
+	{
+
+		var children = displayObject.children;
+
+		for (var i = children.length - 1; i >= 0; i--) {
 		
-		this.updateAccessibleObjects(children[i]);
+			this.updateAccessibleObjects(children[i]);
+		}
 	}
 };
 
