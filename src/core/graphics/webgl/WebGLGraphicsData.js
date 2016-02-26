@@ -9,7 +9,7 @@ var glCore = require('pixi-gl-core');
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
-function WebGLGraphicsData(gl, shader) 
+function WebGLGraphicsData(gl, shader)
 {
 
     /**
@@ -58,9 +58,12 @@ function WebGLGraphicsData(gl, shader)
     this.glPoints = null;
     this.glIndices = null;
 
-
+    /**
+     *
+     * @member {PIXI.Shader}
+     */
     this.shader = shader;
-    
+
     this.vao =  new glCore.VertexArrayObject(gl)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
@@ -73,7 +76,7 @@ module.exports = WebGLGraphicsData;
 /**
  * Resets the vertices and the indices
  */
-WebGLGraphicsData.prototype.reset = function () 
+WebGLGraphicsData.prototype.reset = function ()
 {
     this.points.length = 0;
     this.indices.length = 0;
@@ -82,7 +85,7 @@ WebGLGraphicsData.prototype.reset = function ()
 /**
  * Binds the buffers and uploads the data
  */
-WebGLGraphicsData.prototype.upload = function () 
+WebGLGraphicsData.prototype.upload = function ()
 {
     var gl = this.gl;
 
@@ -96,8 +99,10 @@ WebGLGraphicsData.prototype.upload = function ()
 };
 
 
-
-WebGLGraphicsData.prototype.destroy = function () 
+/**
+ * Empties all the data
+ */
+WebGLGraphicsData.prototype.destroy = function ()
 {
     this.color = null;
     this.points = null;
@@ -106,7 +111,7 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.vao.destroy();
     this.buffer.destroy();
     this.indexBuffer.destroy();
-    
+
     this.gl = null;
 
     this.buffer = null;

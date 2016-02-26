@@ -17,8 +17,6 @@ function Quad(gl)
      */
     this.gl = gl;
 
-//    this.textures = new TextureUvs();
-
     /**
      * An array of vertices
      *
@@ -43,7 +41,7 @@ function Quad(gl)
         0,1
     ]);
 
-    this.interleaved =  new Float32Array(8 * 2);
+    this.interleaved = new Float32Array(8 * 2);
 
     for (var i = 0; i < 4; i++) {
         this.interleaved[i*4] = this.vertices[(i*2)];
@@ -59,25 +57,35 @@ function Quad(gl)
     this.indices = createIndicesForQuads(1);
 
     /*
-     * @member {WebGLBuffer} The vertex buffer
+     * @member {glCore.GLBuffer} The vertex buffer
      */
-    
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
+
+    /*
+     * @member {glCore.GLBuffer} The index buffer
+     */
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
+    /*
+     * @member {glCore.VertexArrayObject} The index buffer
+     */
     this.vao = new glCore.VertexArrayObject(gl)
-    
-   
+
+
 }
 
 Quad.prototype.constructor = Quad;
 
+/**
+ * Initialises the vaos and uses the shader
+ * @param shader {PIXI.Shader} the shader to use
+ */
 Quad.prototype.initVao = function(shader)
 {
     this.vao.clear()
     .addIndex(this.indexBuffer)
     .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
-    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4) 
+    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4)
 }
 
 /**
@@ -121,6 +129,9 @@ Quad.prototype.map = function(targetTextureFrame, destinationFrame)
     return this;
 };
 
+/**
+ * Draws the quad
+ */
 Quad.prototype.draw = function()
 {
     this.vao.bind()
@@ -149,14 +160,15 @@ Quad.prototype.upload = function()
     return this;
 };
 
+/**
+ * Removes this quad from WebGL
+ */
 Quad.prototype.destroy = function()
 {
     var gl = this.gl;
-    
+
      gl.deleteBuffer(this.vertexBuffer);
      gl.deleteBuffer(this.indexBuffer);
 };
 
 module.exports = Quad;
-
-

@@ -1,9 +1,9 @@
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
-        
+
     GLTexture = require('pixi-gl-core').GLTexture,
-    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;    
+    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -46,6 +46,11 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.texture = null;
 
+    /**
+     * The background colour of this render target, as an array of [r,g,b,a] values
+     *
+     * @member {array}
+     */
     this.clearColor = [0, 0, 0, 0];
 
     /**
@@ -82,7 +87,12 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      * @member {PIXI.Rectangle}
      */
     this.frame = null;
-    
+
+    /**
+     * The stencil buffer stores masking data for the render target
+     *
+     * @member {WebGLRenderBuffer}
+     */
     this.defaultFrame = new PIXI.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
@@ -131,7 +141,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
-   
+
     if (!this.root)
     {
         this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
@@ -149,7 +159,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
          */
-        
+
         // this is used by the base texture
         this.texture = this.frameBuffer.texture;
     }
@@ -162,7 +172,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     }
 
     this.setFrame();
-    
+
     this.resize(width, height);
 };
 
@@ -285,7 +295,7 @@ RenderTarget.prototype.resize = function (width, height)
     width = width | 0;
     height = height | 0;
 
-    if (this.size.width === width && this.size.height === height) 
+    if (this.size.width === width && this.size.height === height)
     {
         return;
     }
@@ -298,7 +308,7 @@ RenderTarget.prototype.resize = function (width, height)
 
 
     this.frameBuffer.resize(width * this.resolution, height * this.resolution);
-    
+
     var projectionFrame = this.frame || this.size;
 
     this.calculateProjection( projectionFrame );
@@ -311,7 +321,7 @@ RenderTarget.prototype.resize = function (width, height)
 RenderTarget.prototype.destroy = function ()
 {
     var gl = this.gl;
-    
+
     this.frameBuffer.destroy();
 
     this.frameBuffer = null;

@@ -13,15 +13,50 @@ var generatorId = 0;
  */
 function TransformStatic()
 {
+    /**
+     * @member {PIXI.Matrix} The global matrix transform
+     */
     this.worldTransform = new math.Matrix();
+    /**
+     * @member {PIXI.Matrix} The local matrix transform
+     */
     this.localTransform = new math.Matrix();
 
-    this.position = new ObservablePoint(this, 0);
-    this.scale = new ObservablePoint(this,1, 1);
-    this.pivot = new ObservablePoint(this, 0, 0);
-    this.skew = new ObservablePoint(this, 0,0);
+     /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     *
+     * @member {PIXI.ObservablePoint}
+     */
+    this.position = new ObservablePoint(this,0.0);
 
+    /**
+     * The scale factor of the object.
+     *
+     * @member {PIXI.ObservablePoint}
+     */
+    this.scale = new ObservablePoint(this,1,1);
+
+    /**
+     * The pivot point of the displayObject that it rotates around
+     *
+     * @member {PIXI.ObservablePoint}
+     */
+    this.pivot = new ObservablePoint(this,0.0);
+
+    /**
+     * The skew amount, on the x and y axis.
+     *
+     * @member {PIXI.ObservablePoint}
+     */
+    this.skew = new ObservablePoint(this,0.0);
+
+    /**
+     * The rotation value of the object, in radians
+     *
+     * @member {Number}
+     */
     this.rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
 
@@ -35,6 +70,12 @@ function TransformStatic()
 
 TransformStatic.prototype.constructor = TransformStatic;
 
+
+/**
+ * Updates the values of the object and applies the parent's transform.
+ * @param parentTransform {PIXI.Transform} The transform of the parent of this object
+ *
+ */
 TransformStatic.prototype.updateTransform = function (parentTransform)
 {
     var pt = parentTransform.worldTransform;
@@ -71,5 +112,3 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
 };
 
 module.exports = TransformStatic;
-
-
