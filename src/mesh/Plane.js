@@ -65,7 +65,6 @@ Plane.prototype.refresh = function()
     var segmentsYSub = this.segmentsY - 1;
     var i = 0;
 
-    // TODO MAP UVS..
     var sizeX = texture.width / segmentsXSub;
     var sizeY = texture.height / segmentsYSub;
 
@@ -78,8 +77,9 @@ Plane.prototype.refresh = function()
         verts.push((x * sizeX),
                    (y * sizeY));
 
-        uvs.push(x / (this.segmentsX-1), y/ (this.segmentsY-1));
-    }
+        // this works for rectangular textures. 
+        uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.segmentsX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.segmentsY-1)));
+      }
 
     //  cons
 
