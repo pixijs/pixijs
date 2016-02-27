@@ -146,29 +146,14 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         glData.quad.initVao(glData.shader);
     }
 
-    var w0, w1, h0, h1,
-        crop = texture.crop;
-
     // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-    w0 = ( this._width ) * (1-this.anchor.x);
-    w1 = ( this._width ) * -this.anchor.x;
-
-    h0 =  this._height * (1-this.anchor.y);
-    h1 =  this._height * -this.anchor.y;
-
     var vertices = glData.quad.vertices;
-    
-    vertices[0] = w1
-    vertices[1] = h1
 
-    vertices[2] = w0
-    vertices[3] = h1
+    vertices[0] = vertices[6] = ( this._width ) * -this.anchor.x;
+    vertices[1] = vertices[3] = this._height * -this.anchor.y;
 
-    vertices[4] = w0
-    vertices[5] = h0
-
-    vertices[6] = w1
-    vertices[7] = h0
+    vertices[2] = vertices[4] = ( this._width ) * (1-this.anchor.x);
+    vertices[5] = vertices[7] = this._height * (1-this.anchor.y);
 
     glData.quad.upload();
     
@@ -233,7 +218,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
