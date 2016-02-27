@@ -9,7 +9,6 @@ var utils = module.exports = {
 
     EventEmitter:   require('eventemitter3'),
     pluginTarget:   require('./pluginTarget'),
-    async:          require('async'),
 
     /**
      * Gets the next unique identifier

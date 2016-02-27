@@ -90,7 +90,7 @@ function InteractionManager(renderer, options)
      * @member {HTMLElement}
      * @private
      */
-    this.moveWhenInside = true;
+    this.moveWhenInside = false;
     
     /**
      * Have events been attached to the dom element?

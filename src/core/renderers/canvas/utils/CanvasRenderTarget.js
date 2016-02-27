@@ -1,3 +1,5 @@
+var CONST = require('../../../const');
+
 /**
  * Creates a Canvas element of the given size.
  *
@@ -22,7 +24,7 @@ function CanvasRenderTarget(width, height, resolution)
      */
     this.context = this.canvas.getContext('2d');
 
-    this.resolution = resolution;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     this.resize(width, height);
 }

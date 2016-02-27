@@ -1,7 +1,8 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
-    CanvasTinter = require('../core/sprites/canvas/CanvasTinter');
+    CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
+    TilingShader = require('./webgl/TilingShader')
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -60,61 +61,7 @@ function TilingSprite(texture, width, height)
 
     this._canvasPattern = null;
 
-    //TODO move..
-    this.shader = new core.Filter(
-
-      [
-        'precision lowp float;',
-        'attribute vec2 aVertexPosition;',
-        'attribute vec2 aTextureCoord;',
-        'attribute vec4 aColor;',
-
-        'uniform mat3 projectionMatrix;',
-
-        'uniform vec4 uFrame;',
-        'uniform vec4 uTransform;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'void main(void){',
-        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-
-        '   vec2 coord = aTextureCoord;',
-        '   coord -= uTransform.xy;',
-        '   coord /= uTransform.zw;',
-        '   vTextureCoord = coord;',
-
-        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
-        '}'
-      ].join('\n'),
-      [
-        'precision lowp float;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform sampler2D uSampler;',
-        'uniform vec4 uFrame;',
-        'uniform vec2 uPixelSize;',
-
-        'void main(void){',
-
-        '   vec2 coord = mod(vTextureCoord, uFrame.zw);',
-        '   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);',
-        '   coord += uFrame.xy;',
-
-        '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
-        '}'
-      ].join('\n'),
-
-            // set the uniforms
-            {
-                uFrame: { type: '4fv', value: [0,0,1,1] },
-                uTransform: { type: '4fv', value: [0,0,1,1] },
-                uPixelSize : { type : '2fv', value: [1, 1]}
-            }
-      );
+    this._glDatas = [];
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -172,6 +119,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
+    
     // tweak our texture temporarily..
     var texture = this._texture;
 
@@ -180,35 +128,67 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         return;
     }
 
-    var tempUvs = texture._uvs,
-        tempWidth = texture._frame.width,
-        tempHeight = texture._frame.height,
-        tw = texture.baseTexture.width,
-        th = texture.baseTexture.height;
+     // get rid of any thing that may be batching.
+    renderer.flush();
 
-    texture._uvs = this._uvs;
-    texture._frame.width = this.width;
-    texture._frame.height = this.height;
+    var gl = renderer.gl;
+    var glData = this._glDatas[renderer.CONTEXT_UID];
 
-    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
-    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
+    if(!glData)
+    { 
+        glData = {
+            shader:new TilingShader(gl),
+            quad:new core.Quad(gl)
+        }
 
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
+        this._glDatas[renderer.CONTEXT_UID] = glData;
+        
+        glData.quad.initVao(glData.shader);
+    }
 
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
-    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
-    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
+    // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+    var vertices = glData.quad.vertices;
 
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render(this);
+    vertices[0] = vertices[6] = ( this._width ) * -this.anchor.x;
+    vertices[1] = vertices[3] = this._height * -this.anchor.y;
 
-    texture._uvs = tempUvs;
-    texture._frame.width = tempWidth;
-    texture._frame.height = tempHeight;
+    vertices[2] = vertices[4] = ( this._width ) * (1-this.anchor.x);
+    vertices[5] = vertices[7] = this._height * (1-this.anchor.y);
+
+    glData.quad.upload();
+    
+    renderer.bindShader(glData.shader);
+
+    var textureUvs = texture._uvs,
+        textureWidth = texture._frame.width,
+        textureHeight = texture._frame.height,
+        textureBaseWidth = texture.baseTexture.width,
+        textureBaseHeight = texture.baseTexture.height;
+
+    var uPixelSize = glData.shader.uniforms.uPixelSize;
+    uPixelSize[0] = 1.0/textureBaseWidth;
+    uPixelSize[1] = 1.0/textureBaseHeight;
+    glData.shader.uniforms.uPixelSize = uPixelSize;
+
+    var uFrame = glData.shader.uniforms.uFrame;
+    uFrame[0] = textureUvs.x0;
+    uFrame[1] = textureUvs.y0;
+    uFrame[2] = textureUvs.x1 - textureUvs.x0;
+    uFrame[3] = textureUvs.y2 - textureUvs.y0;
+    glData.shader.uniforms.uFrame = uFrame;
+
+    var uTransform = glData.shader.uniforms.uTransform;
+    uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / this._width;
+    uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / this._height;
+    uTransform[2] = ( textureBaseWidth / this._width ) * this.tileScale.x;
+    uTransform[3] = ( textureBaseHeight / this._height ) * this.tileScale.y;
+    glData.shader.uniforms.uTransform = uTransform;
+
+    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.alpha = this.worldAlpha;
+
+    renderer.bindTexture(this._texture, 0);
+    glData.quad.draw();
 };
 
 /**
@@ -238,7 +218,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
