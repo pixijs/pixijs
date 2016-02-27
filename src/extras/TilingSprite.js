@@ -158,94 +158,52 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 
     var vertices = glData.quad.vertices;
     
-    vertices[0] = w0
-    vertices[1] = h0
+    vertices[0] = w1
+    vertices[1] = h1
 
-    vertices[2] = w1
-    vertices[3] = h0
+    vertices[2] = w0
+    vertices[3] = h1
 
-    vertices[4] = w1
-    vertices[5] = h1
+    vertices[4] = w0
+    vertices[5] = h0
 
-    vertices[6] = w0
-    vertices[7] = h1
+    vertices[6] = w1
+    vertices[7] = h0
 
     glData.quad.upload();
     
     renderer.bindShader(glData.shader);
 
-    var tempUvs = texture._uvs,
-        tempWidth = texture._frame.width,
-        tempHeight = texture._frame.height,
-        tw = texture.baseTexture.width,
-        th = texture.baseTexture.height;
-
+    var textureUvs = texture._uvs,
+        textureWidth = texture._frame.width,
+        textureHeight = texture._frame.height,
+        textureBaseWidth = texture.baseTexture.width,
+        textureBaseHeight = texture.baseTexture.height;
 
     var uPixelSize = glData.shader.uniforms.uPixelSize;
-    uPixelSize[0] = 1.0/tw;
-    uPixelSize[1] = 1.0/th;
+    uPixelSize[0] = 1.0/textureBaseWidth;
+    uPixelSize[1] = 1.0/textureBaseHeight;
     glData.shader.uniforms.uPixelSize = uPixelSize;
 
     var uFrame = glData.shader.uniforms.uFrame;
-    uFrame[0] = tempUvs.x0;
-    uFrame[1] = tempUvs.y0;
-    uFrame[2] = tempUvs.x1 - tempUvs.x0;
-    uFrame[3] = tempUvs.y2 - tempUvs.y0;
+    uFrame[0] = textureUvs.x0;
+    uFrame[1] = textureUvs.y0;
+    uFrame[2] = textureUvs.x1 - textureUvs.x0;
+    uFrame[3] = textureUvs.y2 - textureUvs.y0;
     glData.shader.uniforms.uFrame = uFrame;
 
     var uTransform = glData.shader.uniforms.uTransform;
-    uTransform[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
-    uTransform[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
-    uTransform[2] = ( tw / this._width ) * this.tileScale.x;
-    uTransform[3] = ( th / this._height ) * this.tileScale.y;
+    uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / this._width;
+    uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / this._height;
+    uTransform[2] = ( textureBaseWidth / this._width ) * this.tileScale.x;
+    uTransform[3] = ( textureBaseHeight / this._height ) * this.tileScale.y;
     glData.shader.uniforms.uTransform = uTransform;
-
-
-    renderer.bindTexture(this._texture, 0);
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
 
-
+    renderer.bindTexture(this._texture, 0);
     glData.quad.draw();
-
-   
-
-
-    /*
-    
-    var tempUvs = texture._uvs,
-        tempWidth = texture._frame.width,
-        tempHeight = texture._frame.height,
-        tw = texture.baseTexture.width,
-        th = texture.baseTexture.height;
-
-    texture._uvs = this._uvs;
-    texture._frame.width = this.width;
-    texture._frame.height = this.height;
-
-    this.shader.uniforms.uPixelSize.value[0] = 1.0/tw;
-    this.shader.uniforms.uPixelSize.value[1] = 1.0/th;
-
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
-
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % (tempWidth * this.tileScale.x)) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % (tempHeight * this.tileScale.y)) / this._height;
-    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
-    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
-
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render(this);
-
-    texture._uvs = tempUvs;
-    texture._frame.width = tempWidth;
-    texture._frame.height = tempHeight;
-
-    */
-
 };
 
 /**
