@@ -36,19 +36,20 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Texture:                require('./textures/Texture'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
-    BaseRenderTexture:            require('./textures/BaseRenderTexture'),
+    BaseRenderTexture:      require('./textures/BaseRenderTexture'),
     VideoBaseTexture:       require('./textures/VideoBaseTexture'),
     TextureUvs:             require('./textures/TextureUvs'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasRenderTarget:           require('./renderers/canvas/utils/CanvasRenderTarget'),
+    CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    WebGLManager:          require('./renderers/webgl/managers/WebGLManager'),
+    WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
+    Quad:                   require('./renderers/webgl/utils/Quad'),
 
     // filters - webgl
     SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),

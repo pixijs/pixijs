@@ -99,7 +99,7 @@ function WebGLRenderer(width, height, options)
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
 
-    this.gl.id = this.CONTEXT_UID = CONTEXT_UID++;
+    this.CONTEXT_UID = CONTEXT_UID++;
     this.state = new WebGLState(this.gl);
 
     this.renderingToScreen = true;
