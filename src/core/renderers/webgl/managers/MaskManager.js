@@ -48,7 +48,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
 
             if(rot % 90)
             {
-                this.pushStencilMask(target, maskData);
+                this.pushStencilMask(maskData);
             }
             else
             {
@@ -57,7 +57,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
         }
         else
         {
-            this.pushStencilMask(target, maskData);
+            this.pushStencilMask(maskData);
         }
     }
 };

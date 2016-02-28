@@ -378,10 +378,22 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     var hit = false,
         interactiveParent = interactive = displayObject.interactive || interactive;
 
+
+    
+
     // if the displayobject has a hitArea, then it does not need to hitTest children.
     if(displayObject.hitArea)
     {
         interactiveParent = false;
+    }
+
+    // it has a mask! Then lets hit test that before continuing..
+    if(displayObject._mask)
+    {
+        if(!displayObject._mask.containsPoint(point))
+        {
+            return false;
+        }
     }
 
     // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
@@ -420,6 +432,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         }
     }
 
+   
+
     // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
     {
@@ -427,6 +441,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
         if(hitTest && !hit)
         {  
+
             if(displayObject.hitArea)
             {
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
@@ -436,6 +451,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             {
                 hit = displayObject.containsPoint(point);
             }
+
+
         }
 
         if(displayObject.interactive)
