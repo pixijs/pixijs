@@ -1,4 +1,4 @@
-
+var CONST = require('../../../const');
 /**
  * A set of functions used to handle masking.
  *

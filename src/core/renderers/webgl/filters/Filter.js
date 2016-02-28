@@ -1,6 +1,5 @@
-var Shader = require('pixi-gl-core').GLShader;
-var extractUniformsFromSrc = require('./extractUniformsFromSrc')
-var math = require('../../../math');
+var extractUniformsFromSrc = require('./extractUniformsFromSrc');
+// var math = require('../../../math');
 /**
  * @class
  * @memberof PIXI
@@ -13,7 +12,7 @@ var math = require('../../../math');
  */
 function Filter(vertexSrc, fragmentSrc, uniforms)
 {
-   
+
     /**
      * The vertex shader.
      *
@@ -27,22 +26,19 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
      * @member {string}
      */
     this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
-    
-    var key = this.fragmentSrc + this.vertexSrc;
-
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
     this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
-    
+
     this.uniforms = {};
- 
-    for (var i in this.uniformData) 
+
+    for (var i in this.uniformData)
     {
         this.uniforms[i] = this.uniformData[i].value;
-    };
+    }
 
-    // this.uniforms = 
+    // this.uniforms =
     // this is where we store shader references..
     // TODO we could cache this!
     this.glShaders = [];
@@ -58,7 +54,7 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
 Filter.prototype.constructor = Filter;
 module.exports = Filter;
 
-var tempMatrix = new math.Matrix();
+// var tempMatrix = new math.Matrix();
 
 Filter.prototype.apply = function(filterManager, input, output, clear)
 {
@@ -70,7 +66,7 @@ Filter.prototype.apply = function(filterManager, input, output, clear)
     filterManager.applyFilter(this, input, output, clear);
 
     // or just do a regular render..
-}
+};
 
 /**
  * The default vertex shader source
@@ -85,7 +81,7 @@ Filter.defaultVertexSrc = [
 
     'uniform mat3 projectionMatrix;',
     'uniform mat3 filterMatrix;',
-  
+
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',
 

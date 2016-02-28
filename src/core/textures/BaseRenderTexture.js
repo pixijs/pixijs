@@ -1,10 +1,6 @@
 var BaseTexture = require('./BaseTexture'),
-    Texture = require('./Texture'),
-    RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
-    FilterManager = require('../renderers/webgl/managers/FilterManager'),
     math = require('../math'),
     CONST = require('../const'),
-    tempMatrix = new math.Matrix(),
     tempRect = new math.Rectangle();
 
 /**
@@ -57,18 +53,18 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
     }
 
     BaseTexture.call(this, null, scaleMode);
-   
+
     this.width = width || 100;
     this.height = height || 100;
 
-    this.resolution = resolution || CONST.RESOLUTION;;
+    this.resolution = resolution || CONST.RESOLUTION;
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     this.hasLoaded = true;
 
     this._glRenderTargets = [];
 
     this._canvasRenderTarget = null;
-    
+
     /**
      * The renderer this BaseRenderTexture uses. A BaseRenderTexture can only belong to one renderer at the moment if its webGL.
      *
@@ -80,7 +76,6 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
      * @member {boolean}
      */
     this.valid = false;
-
 }
 
 BaseRenderTexture.prototype = Object.create(BaseTexture.prototype);
@@ -96,7 +91,7 @@ module.exports = BaseRenderTexture;
  */
 BaseRenderTexture.prototype.resize = function (width, height)
 {
-    
+
     if (width === this.width && height === this.height)
     {
         return;
@@ -113,7 +108,7 @@ BaseRenderTexture.prototype.resize = function (width, height)
     }
 
     this.emit('update', this);
-    
+
     //TODO - remove this!
     if(this.filterManager)
     {
@@ -168,7 +163,7 @@ BaseRenderTexture.prototype.getBase64 = function ( frame )
  */
 BaseRenderTexture.prototype.getCanvas = function ( frame )
 {
-   
+
 
     if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
@@ -207,7 +202,7 @@ BaseRenderTexture.prototype.getCanvas = function ( frame )
             frame.height = this.textureBuffer.canvas.height;
         }
 
-        if(frame.width === this.textureBuffer.canvas.width && 
+        if(frame.width === this.textureBuffer.canvas.width &&
            frame.height === this.textureBuffer.canvas.height )
         {
             return this.textureBuffer.canvas;
@@ -217,12 +212,12 @@ BaseRenderTexture.prototype.getCanvas = function ( frame )
 
             var resolution = this.resolution;
 
-            var tempCanvas = new CanvasBuffer(frame.width * resolution, frame.height * resolution);
-            var canvasData = this.textureBuffer.context.getImageData(frame.x  * resolution, frame.y * resolution, frame.width * resolution, frame.height * resolution);
+            var tempCanvas2 = new CanvasBuffer(frame.width * resolution, frame.height * resolution);
+            var canvasData2 = this.textureBuffer.context.getImageData(frame.x  * resolution, frame.y * resolution, frame.width * resolution, frame.height * resolution);
 
-            tempCanvas.context.putImageData(canvasData, 0, 0);
+            tempCanvas2.context.putImageData(canvasData2, 0, 0);
 
-            return tempCanvas.canvas;
+            return tempCanvas2.canvas;
         }
     }
 };

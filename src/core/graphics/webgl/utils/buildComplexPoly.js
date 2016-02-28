@@ -1,6 +1,5 @@
-var buildLine = require('./buildLine'),
-    utils = require('../../../utils');
-    
+var utils = require('../../../utils');
+
 
 
 /**

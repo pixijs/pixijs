@@ -35,11 +35,11 @@ function Transform()
      * @member {PIXI.Point}
      */
     this.pivot = new math.Point(0.0);
-    
+
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-    
+
 
     this.updated = true;
 }
@@ -65,10 +65,7 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.c  = lt.c  * pt.a + lt.d  * pt.c;
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;       
-
-}
+    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+};
 
 module.exports = Transform;
-
-

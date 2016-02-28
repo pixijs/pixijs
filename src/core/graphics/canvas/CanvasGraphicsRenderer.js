@@ -1,5 +1,5 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const')
+    CONST = require('../../const');
 
 /**
  * @author Mat Groves
@@ -274,4 +274,4 @@ CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
 CanvasGraphicsRenderer.prototype.destroy = function ()
 {
   this.renderer = null;
-}
+};

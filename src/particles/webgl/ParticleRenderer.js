@@ -28,7 +28,7 @@ function ParticleRenderer(renderer)
     // so max number of particles is 65536 / 4 = 16384
     // and max number of element in the index buffer is 16384 * 6 = 98304
     // Creating a full index buffer, overhead is 98304 * 2 = 196Ko
-    var numIndices = 98304;
+    // var numIndices = 98304;
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
@@ -228,6 +228,7 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
     var sprite,
         texture,
         trim,
+        crop,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -238,7 +239,8 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        var trim = texture.trim, crop = texture.crop;
+        trim = texture.trim;
+        crop = texture.crop;
 
         if (trim)
         {
@@ -418,8 +420,7 @@ ParticleRenderer.prototype.destroy = function ()
     if (this.renderer.gl) {
         this.renderer.gl.deleteBuffer(this.indexBuffer);
     }
-
-    ObjectRenderer.prototype.destroy.apply(this, arguments);
+    core.ObjectRenderer.prototype.destroy.apply(this, arguments);
 
     this.shader.destroy();
 

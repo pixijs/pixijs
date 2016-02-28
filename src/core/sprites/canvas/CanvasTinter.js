@@ -66,8 +66,6 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
 
-    var resolution = texture.baseTexture.resolution;
-
     var crop = texture._frame;
 
     canvas.width = crop.width;
@@ -117,8 +115,6 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
 
-    var resolution = texture.baseTexture.resolution;
-
     var crop = texture._frame;
 
     canvas.width = crop.width;
@@ -154,9 +150,6 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
-
-    var resolution = texture.baseTexture.resolution;
-
     var crop = texture._frame;
 
     canvas.width = crop.width;

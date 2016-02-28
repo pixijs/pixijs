@@ -1,5 +1,4 @@
 var utils = require('../../utils'),
-    math = require('../../math'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
@@ -7,14 +6,12 @@ var utils = require('../../utils'),
     PrimitiveShader = require('./shaders/PrimitiveShader'),
 
     // some drawing functions..
-    buildLine = require('./utils/buildLine');
-    buildPoly = require('./utils/buildPoly');
-    buildComplexPoly = require('./utils/buildComplexPoly');
-    buildRectangle = require('./utils/buildRectangle');
-    buildRoundedRectangle = require('./utils/buildRoundedRectangle');
+    buildPoly = require('./utils/buildPoly'),
+    buildRectangle = require('./utils/buildRectangle'),
+    buildRoundedRectangle = require('./utils/buildRoundedRectangle'),
     buildCircle = require('./utils/buildCircle');
 
-    
+
 
 /**
  * Renders the graphics object.
@@ -55,14 +52,14 @@ GraphicsRenderer.prototype.onContextChange = function()
 {
     this.gl = this.renderer.gl;
     this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-    this.primitiveShader = new PrimitiveShader(this.gl)
+    this.primitiveShader = new PrimitiveShader(this.gl);
 };
 
 /**
  * Destroys this renderer.
  *
  */
-GraphicsRenderer.prototype.destroy = function () 
+GraphicsRenderer.prototype.destroy = function ()
 {
     ObjectRenderer.prototype.destroy.call(this);
 
@@ -94,18 +91,18 @@ GraphicsRenderer.prototype.render = function(graphics)
 
     // This  could be speeded up for sure!
     var shader = this.primitiveShader;
-    renderer.bindShader(shader)
+    renderer.bindShader(shader);
     renderer.state.setBlendMode( graphics.blendMode );
 
     for (var i = 0, n = webGL.data.length; i < n; i++)
     {
         webGLData = webGL.data[i];
-        var shader = webGLData.shader;
-       
-        renderer.bindShader(shader)
-        shader.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
-        shader.uniforms.tint = utils.hex2rgb(graphics.tint);
-        shader.uniforms.alpha = graphics.worldAlpha;
+        var shaderTemp = webGLData.shader;
+
+        renderer.bindShader(shaderTemp);
+        shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
+        shaderTemp.uniforms.tint = utils.hex2rgb(graphics.tint);
+        shaderTemp.uniforms.alpha = graphics.worldAlpha;
 
         webGLData.vao.bind()
         .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
@@ -211,7 +208,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 
     if (!webGLData || webGLData.points.length > 320000)
     {
-        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);  
+        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
         webGLData.reset(type);
         webGL.data.push(webGLData);
     }
@@ -220,4 +217,3 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 
     return webGLData;
 };
-

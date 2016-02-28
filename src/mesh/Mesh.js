@@ -155,7 +155,7 @@ Mesh.prototype._renderWebGL = function (renderer)
     var glData = this._glDatas[renderer.CONTEXT_UID];
 
     if(!glData)
-    { 
+    {
         glData = {
             shader:new Shader(gl),
             vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
@@ -163,23 +163,23 @@ Mesh.prototype._renderWebGL = function (renderer)
             indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
             // build the vao object that will render..
             vao:new glCore.VertexArrayObject(gl)
-        }
+        };
 
         // build the vao object that will render..
         glData.vao = new glCore.VertexArrayObject(gl)
         .addIndex(glData.indexBuffer)
         .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
-        .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0)
-        
+        .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+
         this._glDatas[renderer.CONTEXT_UID] = glData;
     }
-    
+
     if(this.dirty)
     {
         this.dirty = false;
         glData.uvBuffer.upload();
     }
-    
+
     glData.vertexBuffer.upload();
 
     renderer.bindShader(glData.shader);

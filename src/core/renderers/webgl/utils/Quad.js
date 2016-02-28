@@ -50,9 +50,8 @@ function Quad(gl)
         this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
         this.interleaved[(i*4)+2] = this.uvs[i*2];
         this.interleaved[(i*4)+3] = this.uvs[(i*2)+1];
-    };
+    }
 
-    console.log(this.interleaved )
     /*
      * @member {Uint16Array} An array containing the indices of the vertices
      */
@@ -61,13 +60,11 @@ function Quad(gl)
     /*
      * @member {WebGLBuffer} The vertex buffer
      */
-    
+
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    this.vao = new glCore.VertexArrayObject(gl)
-    
-   
+    this.vao = new glCore.VertexArrayObject(gl);
 }
 
 Quad.prototype.constructor = Quad;
@@ -76,9 +73,9 @@ Quad.prototype.initVao = function(shader)
 {
     this.vao.clear()
     .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 4, 0)
-    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 4 * 4, 2 * 4) 
-}
+    .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, this.gl.FLOAT, false, 4 * 4, 0)
+    .addAttribute(this.vertexBuffer, shader.attributes.aTextureCoord, this.gl.FLOAT, false, 4 * 4, 2 * 4);
+};
 
 /**
  * Maps two Rectangle to the quad
@@ -124,25 +121,23 @@ Quad.prototype.map = function(targetTextureFrame, destinationFrame)
 Quad.prototype.draw = function()
 {
     this.vao.bind()
-    .draw(gl.TRIANGLES, 6, 0)
+    .draw(this.gl.TRIANGLES, 6, 0)
     .unbind();
 
     return this;
-}
+};
 
 /**
  * Binds the buffer and uploads the data
  */
 Quad.prototype.upload = function()
 {
-    var gl = this.gl;
-
     for (var i = 0; i < 4; i++) {
         this.interleaved[i*4] = this.vertices[(i*2)];
         this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
         this.interleaved[(i*4)+2] = this.uvs[i*2];
         this.interleaved[(i*4)+3] = this.uvs[(i*2)+1];
-    };
+    }
 
     this.vertexBuffer.upload(this.interleaved);
 
@@ -152,11 +147,9 @@ Quad.prototype.upload = function()
 Quad.prototype.destroy = function()
 {
     var gl = this.gl;
-    
+
      gl.deleteBuffer(this.vertexBuffer);
      gl.deleteBuffer(this.indexBuffer);
 };
 
 module.exports = Quad;
-
-

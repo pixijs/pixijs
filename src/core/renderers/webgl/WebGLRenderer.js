@@ -115,7 +115,7 @@ function WebGLRenderer(width, height, options)
 
     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
-    this.drawModes = mapWebGLDrawModesToPixi(gl)
+    this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
 
     //alert(this.state )
@@ -130,7 +130,7 @@ function WebGLRenderer(width, height, options)
     this._activeTextureLocation = 999;
     this._activeTexture = null;
 
-    this.setBlendMode(0)
+    this.setBlendMode(0);
 }
 
 // constructor
@@ -234,8 +234,8 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
  */
 WebGLRenderer.prototype.flush = function ()
 {
-    this.setObjectRenderer(this.emptyRenderer)
-}
+    this.setObjectRenderer(this.emptyRenderer);
+};
 
 /**
  * Resizes the webGL view to the specified width and height.
@@ -263,17 +263,17 @@ WebGLRenderer.prototype.resize = function (width, height)
 WebGLRenderer.prototype.setBlendMode = function (blendMode)
 {
     this.state.setBlendMode(blendMode);
-}
+};
 
 WebGLRenderer.prototype.clear = function (clearColor)
 {
     this._activeRenderTarget.clear(clearColor);
-}
+};
 
 WebGLRenderer.prototype.setTransform = function (matrix)
 {
     this._activeRenderTarget.transform = matrix;
-}
+};
 
 //TOOD - required?
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
@@ -299,7 +299,7 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     this.bindRenderTarget(renderTarget);
 
     return this;
-}
+};
 
 /**
  * Changes the current render target to the one given in parameter
@@ -323,7 +323,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
     }
 
     return this;
-}
+};
 
 
 WebGLRenderer.prototype.bindShader = function (shader)
@@ -339,7 +339,7 @@ WebGLRenderer.prototype.bindShader = function (shader)
     }
 
     return this;
-}
+};
 
 
 WebGLRenderer.prototype.bindTexture = function (texture, location)
@@ -353,7 +353,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 
     if(this._activeTextureLocation !== location)//
     {
-        this._activeTextureLocation = location
+        this._activeTextureLocation = location;
         gl.activeTexture(gl.TEXTURE0 + location );
     }
 
@@ -372,7 +372,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     }
 
     return this;
-}
+};
 
 /**
  * resets WebGL state so you can render things however you fancy!
@@ -389,7 +389,7 @@ WebGLRenderer.prototype.reset = function ()
     this.state.reset();
 
     return this;
-}
+};
 
 /**
  * Handles a lost webgl context

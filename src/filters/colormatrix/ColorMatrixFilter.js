@@ -25,12 +25,12 @@ function ColorMatrixFilter()
         // fragment shader
         glslify('./colorMatrix.frag')
     );
-    
+
     this.uniforms.m = [
                     1, 0, 0, 0, 0,
                     0, 1, 0, 0, 0,
                     0, 0, 1, 0, 0,
-                    0, 0, 0, 1, 0]
+                    0, 0, 0, 1, 0];
 
 
 }
@@ -201,7 +201,7 @@ ColorMatrixFilter.prototype.hue = function (rotation, multiply)
         0, 0, 0, 1, 0
     ];
 
-    
+
     this._loadMatrix(matrix, multiply);
 };
 

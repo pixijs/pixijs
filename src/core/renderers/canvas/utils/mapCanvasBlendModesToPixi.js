@@ -52,7 +52,7 @@ function mapWebGLBlendModesToPixi(array)
         array[CONST.BLEND_MODES.LUMINOSITY]    = 'source-over';
     }
 
-    return array
+    return array;
 }
 
 module.exports = mapWebGLBlendModesToPixi;

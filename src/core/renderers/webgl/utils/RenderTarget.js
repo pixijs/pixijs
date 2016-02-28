@@ -1,9 +1,6 @@
 var math = require('../../../math'),
-    utils = require('../../../utils'),
     CONST = require('../../../const'),
-        
-    GLTexture = require('pixi-gl-core').GLTexture,
-    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;    
+    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -82,8 +79,8 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      * @member {PIXI.Rectangle}
      */
     this.frame = null;
-    
-    this.defaultFrame = new PIXI.Rectangle();
+
+    this.defaultFrame = new math.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 
@@ -131,25 +128,25 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
-   
+
     if (!this.root)
     {
         this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
 
         if( this.scaleMode === CONST.SCALE_MODES.NEAREST)
         {
-            this.frameBuffer.texture.enableNearestScaling()
+            this.frameBuffer.texture.enableNearestScaling();
         }
         else
         {
-            this.frameBuffer.texture.enableLinearScaling()
+            this.frameBuffer.texture.enableLinearScaling();
 
         }
         /*
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
          */
-        
+
         // this is used by the base texture
         this.texture = this.frameBuffer.texture;
     }
@@ -162,7 +159,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     }
 
     this.setFrame();
-    
+
     this.resize(width, height);
 };
 
@@ -176,8 +173,8 @@ module.exports = RenderTarget;
  */
 RenderTarget.prototype.clear = function(clearColor)
 {
-    var cc = clearColor || this.clearColor
-    this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3])//r,g,b,a);
+    var cc = clearColor || this.clearColor;
+    this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3]);//r,g,b,a);
 };
 
 /**
@@ -201,7 +198,7 @@ RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
 {
     this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
     this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
-}
+};
 
 /**
  * Binds the buffers and initialises the viewport.
@@ -285,7 +282,7 @@ RenderTarget.prototype.resize = function (width, height)
     width = width | 0;
     height = height | 0;
 
-    if (this.size.width === width && this.size.height === height) 
+    if (this.size.width === width && this.size.height === height)
     {
         return;
     }
@@ -298,7 +295,7 @@ RenderTarget.prototype.resize = function (width, height)
 
 
     this.frameBuffer.resize(width * this.resolution, height * this.resolution);
-    
+
     var projectionFrame = this.frame || this.size;
 
     this.calculateProjection( projectionFrame );
@@ -310,8 +307,6 @@ RenderTarget.prototype.resize = function (width, height)
  */
 RenderTarget.prototype.destroy = function ()
 {
-    var gl = this.gl;
-    
     this.frameBuffer.destroy();
 
     this.frameBuffer = null;

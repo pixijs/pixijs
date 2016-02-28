@@ -4,13 +4,10 @@
  * @memberof PIXI
  */
 
-var GL_MAP = {};
-
-
 var createIndicesForQuads = function (size)
 {
     // the total number of indices in our array, there are 6 points per quad.
-   
+
     var totalIndices = size * 6;
 
     var indices = new Uint16Array(totalIndices);

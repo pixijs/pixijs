@@ -85,7 +85,7 @@ MaskManager.prototype.popMask = function (target, maskData)
         {
             this.popStencilMask(target, maskData);
         }
-        
+
     }
 };
 
@@ -131,7 +131,7 @@ MaskManager.prototype.popSpriteMask = function ()
  * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
-MaskManager.prototype.pushStencilMask = function (target, maskData)
+MaskManager.prototype.pushStencilMask = function (maskData)
 {
     this.renderer.currentRenderer.stop();
     this.renderer.stencilManager.pushStencil(maskData);
@@ -143,7 +143,7 @@ MaskManager.prototype.pushStencilMask = function (target, maskData)
  * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
-MaskManager.prototype.popStencilMask = function (target, maskData)
+MaskManager.prototype.popStencilMask = function ()
 {
     this.renderer.currentRenderer.stop();
     this.renderer.stencilManager.popStencil();
@@ -156,24 +156,23 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     var renderTarget = this.renderer._activeRenderTarget;
 
     var bounds = maskData.getBounds();
-    bounds.fit(renderTarget.size)
+    bounds.fit(renderTarget.size);
     maskData.renderable = false;
 
-    gl.enable(gl.SCISSOR_TEST);
+    this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
-    gl.scissor(bounds.x, 
-               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y, 
-               bounds.width , 
+    this.renderer.scissor(bounds.x,
+               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
+               bounds.width ,
                bounds.height);
 
     this.scissor = true;
 };
 
-MaskManager.prototype.popScissorMask = function (target, maskData)
+MaskManager.prototype.popScissorMask = function ()
 {
     this.scissor = false;
     // must be scissor!
     var gl = this.renderer.gl;
     gl.disable(gl.SCISSOR_TEST);
 };
-

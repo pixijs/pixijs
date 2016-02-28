@@ -10,11 +10,12 @@ function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 }
 
 
-function extractUniformsFromString(string, mask)
+function extractUniformsFromString(string)
 {
     var maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
 
     var uniforms = {};
+    var nameSplit;
 
 
     // clean the lines a little - remove extra spaces / teabs etc
@@ -23,7 +24,7 @@ function extractUniformsFromString(string, mask)
                 .split(/\s*;\s*/);
 
     // loop through..
-    for (var i = 0; i < lines.length; i++) 
+    for (var i = 0; i < lines.length; i++)
     {
         var line = lines[i].trim();
 
@@ -31,30 +32,29 @@ function extractUniformsFromString(string, mask)
         {
             var splitLine = line.split(' ');
             var type = splitLine[1];
-            
+
             var name = splitLine[2];
             var size = mapSize(type);
 
             if(name.indexOf('[') > -1)
             {
                 // array!
-                nameSplit = name.split(/\[|\]/)
+                nameSplit = name.split(/\[|\]/);
                 name = nameSplit[0];
-                size *= Number(nameSplit[1]); 
-            }  
+                size *= Number(nameSplit[1]);
+            }
 
             if(!name.match(maskRegex))
-            {     
+            {
                 uniforms[name] = {
                     value:defaultValue(type, size),
                     name:name,
                     type:type
-                }
+                };
             }
         }
-    };
-    
-    console.log(uniforms)
+    }
+
     return uniforms;
 }
 

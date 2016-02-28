@@ -3,8 +3,7 @@ var math = require('../math'),
     Container = require('../display/Container'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point(),
-    canvasRenderWorldTransform = new math.Matrix();
+    tempPoint = new math.Point();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -23,7 +22,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-
+  
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -92,7 +91,7 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.textureDirty = true
+    this.textureDirty = true;
     this.vertexData = new Float32Array(8);
 }
 
@@ -244,8 +243,7 @@ Sprite.prototype.caclulateVertices = function ()
     // xy
     vertexData[6] = a * w1 + c * h0 + tx;
     vertexData[7] = d * h0 + b * w1 + ty;
-
-}
+};
 
 /**
 *
@@ -282,10 +280,9 @@ Sprite.prototype._renderCanvas = function (renderer)
 /**
  * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Sprite.prototype.getBounds = function (matrix)
+Sprite.prototype.getBounds = function ()
 {
     //TODO lookinto caching..
     if(!this._currentBounds)
@@ -299,23 +296,21 @@ Sprite.prototype.getBounds = function (matrix)
 
         }
 
-        var minX,
-            maxX,
-            minY,
-            maxY,
+        var minX, maxX, minY, maxY,
+            w0, w1, h0, h1,
             vertexData = this.vertexData;
 
-        var x1 = vertexData[0]
-        var y1 = vertexData[1]
+        var x1 = vertexData[0];
+        var y1 = vertexData[1];
 
-        var x2 = vertexData[2]
-        var y2 = vertexData[3]
+        var x2 = vertexData[2];
+        var y2 = vertexData[3];
 
-        var x3 = vertexData[4]
-        var y3 = vertexData[5]
+        var x3 = vertexData[4];
+        var y3 = vertexData[5];
 
-        var x4 = vertexData[6]
-        var y4 = vertexData[7]
+        var x4 = vertexData[6];
+        var y4 = vertexData[7];
 
         minX = x1;
         minX = x2 < minX ? x2 : minX;

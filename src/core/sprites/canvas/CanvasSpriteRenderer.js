@@ -1,6 +1,7 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
-    CanvasTinter = require('./CanvasTinter')
+    math = require('../../math'),
+    CanvasTinter = require('./CanvasTinter');
 
 /**
  * @author Mat Groves
@@ -83,7 +84,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
-            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
@@ -165,4 +166,4 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
  */
 CanvasSpriteRenderer.prototype.destroy = function (){
   this.renderer = null;
-}
+};

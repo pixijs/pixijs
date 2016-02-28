@@ -25,7 +25,7 @@ function TextureUvs()
     this.xy2_uint32 = 0;
     this.xy3_uint32 = 0;
 
-    this.uvs_uint32 = new Uint32Array(4)
+    this.uvs_uint32 = new Uint32Array(4);
 }
 
 module.exports = TextureUvs;

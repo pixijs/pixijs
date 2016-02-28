@@ -17,6 +17,41 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteRenderer.java
  */
 
+
+ var Buffer = function(size)
+ {
+
+     this.vertices = new ArrayBuffer(size);
+
+     /**
+      * View on the vertices as a Float32Array for positions
+      *
+      * @member {Float32Array}
+      */
+     this.positions = new Float32Array(this.vertices);
+
+     /**
+      * View on the vertices as a Uint32Array for uvs
+      *
+      * @member {Float32Array}
+      */
+     this.uvs = new Uint32Array(this.vertices);
+
+     /**
+      * View on the vertices as a Uint32Array for colors
+      *
+      * @member {Uint32Array}
+      */
+     this.colors = new Uint32Array(this.vertices);
+ };
+
+ Buffer.prototype.destroy = function(){
+   this.vertices = null;
+   this.positions = null;
+   this.uvs = null;
+   this.colors  = null;
+ };
+
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -53,23 +88,20 @@ function SpriteRenderer(renderer)
     this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     // the total number of bytes in our batch
-    var numVerts = this.size * 4 * this.vertByteSize;
-
-    // the total number of indices in our batch, there are 6 points per quad.
-    var numIndices = this.size * 6;
+    // var numVerts = this.size * 4 * this.vertByteSize;
 
     this.buffers = [];
     for (var i = 1; i <= bitTwiddle.nextPow2(this.size); i*=2) {
-        var numVerts = i * 4 * this.vertByteSize;
-        this.buffers.push(new Buffer(numVerts));
-    };
+        var numVertsTemp = i * 4 * this.vertByteSize;
+        this.buffers.push(new Buffer(numVertsTemp));
+    }
 
     /**
      * Holds the indices of the geometry (quads) to draw
      *
      * @member {Uint16Array}
      */
-    this.indices = createIndicesForQuads(this.size)
+    this.indices = createIndicesForQuads(this.size);
 
     /**
      * The default shader that is used if a sprite doesn't have a more specific one.
@@ -83,11 +115,10 @@ function SpriteRenderer(renderer)
     this.tick =0;
     this.groups = [];
 
-    //TODO - 300 is a bit magic, figure out a nicer amount!
-    for (var i = 0; i < this.size; i++)
+    for (var k = 0; k < this.size; k++)
     {
-        this.groups[i] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0};
-    };
+        this.groups[k] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0};
+    }
 
     this.sprites = [];
 }
@@ -162,7 +193,9 @@ SpriteRenderer.prototype.render = function (sprite)
  */
 SpriteRenderer.prototype.flush = function ()
 {
-    if (this.currentIndex === 0)return;
+    if (this.currentIndex === 0) {
+      return;
+    }
 
     var gl = this.renderer.gl;
 
@@ -240,12 +273,12 @@ SpriteRenderer.prototype.flush = function ()
 
         }
 
-        var vertexData = sprite.vertexData;
+        vertexData = sprite.vertexData;
 
         //TODO this sum does not need to be set each frame..
-        var tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-        var uvs = sprite._texture._uvs.uvs_uint32;
-        var textureId = nextTexture._id;
+        tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        uvs = sprite._texture._uvs.uvs_uint32;
+        textureId = nextTexture._id;
 
         //xy
         positions[index++] = vertexData[0];
@@ -274,8 +307,7 @@ SpriteRenderer.prototype.flush = function ()
         uvsBuffer[index++] = uvs[3];
         colors[index++] = tint;
         positions[index++] = textureId;
-
-    };
+    }
 
     currentGroup.size = i - currentGroup.start;
 
@@ -289,13 +321,13 @@ SpriteRenderer.prototype.flush = function ()
 
         for (var j = 0; j < group.textureCount; j++) {
             this.renderer.bindTexture(group.textures[j], j);
-        };
+        }
 
         // set the blend mode..
         this.renderer.state.setBlendMode( group.blend );
 
         gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
-    };
+    }
 
     // reset elements for the next flush
     this.currentIndex = 0;
@@ -344,37 +376,3 @@ SpriteRenderer.prototype.destroy = function ()
     }
 
 };
-
-var Buffer = function(size)
-{
-
-    this.vertices = new ArrayBuffer(size);
-
-    /**
-     * View on the vertices as a Float32Array for positions
-     *
-     * @member {Float32Array}
-     */
-    this.positions = new Float32Array(this.vertices);
-
-    /**
-     * View on the vertices as a Uint32Array for uvs
-     *
-     * @member {Float32Array}
-     */
-    this.uvs = new Uint32Array(this.vertices);
-
-    /**
-     * View on the vertices as a Uint32Array for colors
-     *
-     * @member {Uint32Array}
-     */
-    this.colors = new Uint32Array(this.vertices);
-}
-
-Buffer.prototype.destroy = function(){
-  this.vertices = null;
-  this.positions = null;
-  this.uvs = null;
-  this.colors  = null;
-}

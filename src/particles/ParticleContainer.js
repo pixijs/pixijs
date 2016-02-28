@@ -165,7 +165,7 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
         {
             this.baseTexture.once('update', function(){
                 this.onChildrenChange(0);
-            }, this)
+            }, this);
         }
     }
 
@@ -318,7 +318,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
  * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
  */
 ParticleContainer.prototype.destroy = function () {
-    Container.prototype.destroy.apply(this, arguments);
+    core.Container.prototype.destroy.apply(this, arguments);
 
     if (this._buffers) {
         for (var i = 0; i < this._buffers.length; ++i) {
