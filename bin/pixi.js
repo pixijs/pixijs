@@ -8617,9 +8617,7 @@ module.exports = Transform;
 
 },{"../math":59}],43:[function(require,module,exports){
 var Container = require('../display/Container'),
-    Texture = require('../textures/Texture'),
     RenderTexture = require('../textures/RenderTexture'),
-    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
@@ -9293,34 +9291,6 @@ Graphics.prototype.clear = function ()
     return this;
 };
 
-/**
- * Useful function that returns a texture of the graphics object that can then be used to create sprites
- * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
- *
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} Should be one of the scaleMode consts
- * @return {PIXI.Texture} a texture of the graphics object
- */
-Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-
-    resolution = resolution || 1;
-
-    var bounds = this.getLocalBounds();
-
-    var canvasRenderTarget = new CanvasRenderTarget(bounds.width * resolution, bounds.height * resolution);
-
-    var texture = Texture.fromCanvas(canvasRenderTarget.canvas, scaleMode);
-    texture.baseTexture.resolution = resolution;
-
-    canvasRenderTarget.context.scale(resolution, resolution);
-
-    canvasRenderTarget.context.translate(-bounds.x,-bounds.y);
-
-    CanvasGraphics.renderGraphics(this, canvasRenderTarget.context);
-
-    return texture;
-};
 
 /**
  * Renders the object using the WebGL renderer
@@ -9683,7 +9653,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":59,"../renderers/canvas/utils/CanvasRenderTarget":68,"../sprites/Sprite":87,"../textures/RenderTexture":95,"../textures/Texture":96,"./GraphicsData":44,"./utils/bezierCurveTo":46}],44:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":59,"../sprites/Sprite":87,"../textures/RenderTexture":95,"./GraphicsData":44,"./utils/bezierCurveTo":46}],44:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -12634,6 +12604,15 @@ SystemRenderer.prototype.resize = function (width, height) {
     }
 };
 
+/**
+ * Useful function that returns a texture of the display object that can then be used to create sprites
+ * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+ *
+ * @param displayObject {number} The displayObject the object will be generated from
+ * @param scaleMode {number} Should be one of the scaleMode consts
+ * @param resolution {number} The resolution of the texture being generated
+ * @return {PIXI.Texture} a texture of the graphics object
+ */
 SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
 
     var bounds = displayObject.getLocalBounds();
@@ -14860,7 +14839,6 @@ function MaskManager(renderer)
     this.enableScissor = true;
 
     this.alphaMaskPool = [];
-    this.alphaMaskPool = [];
     this.alphaMaskIndex = 0;
 }
 
@@ -14894,7 +14872,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
 
             if(rot % 90)
             {
-                this.pushStencilMask(target, maskData);
+                this.pushStencilMask(maskData);
             }
             else
             {
@@ -14903,7 +14881,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
         }
         else
         {
-            this.pushStencilMask(target, maskData);
+            this.pushStencilMask(maskData);
         }
     }
 };
@@ -23668,10 +23646,22 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     var hit = false,
         interactiveParent = interactive = displayObject.interactive || interactive;
 
+
+    
+
     // if the displayobject has a hitArea, then it does not need to hitTest children.
     if(displayObject.hitArea)
     {
         interactiveParent = false;
+    }
+
+    // it has a mask! Then lets hit test that before continuing..
+    if(displayObject._mask)
+    {
+        if(!displayObject._mask.containsPoint(point))
+        {
+            return false;
+        }
     }
 
     // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
@@ -23710,6 +23700,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         }
     }
 
+   
+
     // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
     {
@@ -23717,6 +23709,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
         if(hitTest && !hit)
         {  
+
             if(displayObject.hitArea)
             {
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
@@ -23726,6 +23719,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             {
                 hit = displayObject.containsPoint(point);
             }
+
+
         }
 
         if(displayObject.interactive)
