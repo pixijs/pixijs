@@ -1,7 +1,5 @@
 var Container = require('../display/Container'),
-    Texture = require('../textures/Texture'),
     RenderTexture = require('../textures/RenderTexture'),
-    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
@@ -675,34 +673,6 @@ Graphics.prototype.clear = function ()
     return this;
 };
 
-/**
- * Useful function that returns a texture of the graphics object that can then be used to create sprites
- * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
- *
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} Should be one of the scaleMode consts
- * @return {PIXI.Texture} a texture of the graphics object
- */
-Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-
-    resolution = resolution || 1;
-
-    var bounds = this.getLocalBounds();
-
-    var canvasRenderTarget = new CanvasRenderTarget(bounds.width * resolution, bounds.height * resolution);
-
-    var texture = Texture.fromCanvas(canvasRenderTarget.canvas, scaleMode);
-    texture.baseTexture.resolution = resolution;
-
-    canvasRenderTarget.context.scale(resolution, resolution);
-
-    canvasRenderTarget.context.translate(-bounds.x,-bounds.y);
-
-    CanvasGraphics.renderGraphics(this, canvasRenderTarget.context);
-
-    return texture;
-};
 
 /**
  * Renders the object using the WebGL renderer
