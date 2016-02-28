@@ -15,7 +15,6 @@ function MaskManager(renderer)
     this.enableScissor = true;
 
     this.alphaMaskPool = [];
-    this.alphaMaskPool = [];
     this.alphaMaskIndex = 0;
 }
 
