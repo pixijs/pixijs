@@ -2,55 +2,11 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
     generateMultiTextureShader = require('./generateMultiTextureShader'),
+    Buffer = require('./BatchBuffer'),
     CONST = require('../../const'),
     glCore = require('pixi-gl-core'),
     bitTwiddle = require('bit-twiddle');
 
-/**
- * @author Mat Groves
- *
- * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * for creating the original pixi version!
- * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
- *
- * Heavily inspired by LibGDX's SpriteRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteRenderer.java
- */
-
-
- var Buffer = function(size)
- {
-
-     this.vertices = new ArrayBuffer(size);
-
-     /**
-      * View on the vertices as a Float32Array for positions
-      *
-      * @member {Float32Array}
-      */
-     this.positions = new Float32Array(this.vertices);
-
-     /**
-      * View on the vertices as a Uint32Array for uvs
-      *
-      * @member {Float32Array}
-      */
-     this.uvs = new Uint32Array(this.vertices);
-
-     /**
-      * View on the vertices as a Uint32Array for colors
-      *
-      * @member {Uint32Array}
-      */
-     this.colors = new Uint32Array(this.vertices);
- };
-
- Buffer.prototype.destroy = function(){
-   this.vertices = null;
-   this.positions = null;
-   this.uvs = null;
-   this.colors  = null;
- };
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -206,9 +162,8 @@ SpriteRenderer.prototype.flush = function ()
     var sprites = this.sprites;
     var groups = this.groups;
 
-    var colors = buffer.colors;
-    var positions = buffer.positions;
-    var uvsBuffer = buffer.uvs;
+    var float32View = buffer.float32View;
+    var uint32View = buffer.uint32View;
 
     var index = 0;
     var nextTexture;
@@ -221,6 +176,7 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
 
@@ -281,32 +237,32 @@ SpriteRenderer.prototype.flush = function ()
         textureId = nextTexture._id;
 
         //xy
-        positions[index++] = vertexData[0];
-        positions[index++] = vertexData[1];
-        uvsBuffer[index++] = uvs[0];
-        colors[index++] = tint;
-        positions[index++] = textureId;
+        float32View[index++] = vertexData[0];
+        float32View[index++] = vertexData[1];
+        uint32View[index++] = uvs[0];
+        uint32View[index++] = tint;
+        float32View[index++] = textureId;
 
         // xy
-        positions[index++] = vertexData[2];
-        positions[index++] = vertexData[3];
-        uvsBuffer[index++] = uvs[1];
-        colors[index++] = tint;
-        positions[index++] = textureId;
+        float32View[index++] = vertexData[2];
+        float32View[index++] = vertexData[3];
+        uint32View[index++] = uvs[1];
+        uint32View[index++] = tint;
+        float32View[index++] = textureId;
 
          // xy
-        positions[index++] = vertexData[4];
-        positions[index++] = vertexData[5];
-        uvsBuffer[index++] = uvs[2];
-        colors[index++] = tint;
-        positions[index++] = textureId;
+        float32View[index++] = vertexData[4];
+        float32View[index++] = vertexData[5];
+        uint32View[index++] = uvs[2];
+        uint32View[index++] = tint;
+        float32View[index++] = textureId;
 
         // xy
-        positions[index++] = vertexData[6];
-        positions[index++] = vertexData[7];
-        uvsBuffer[index++] = uvs[3];
-        colors[index++] = tint;
-        positions[index++] = textureId;
+        float32View[index++] = vertexData[6];
+        float32View[index++] = vertexData[7];
+        uint32View[index++] = uvs[3];
+        uint32View[index++] = tint;
+        float32View[index++] = textureId;
     }
 
     currentGroup.size = i - currentGroup.start;
