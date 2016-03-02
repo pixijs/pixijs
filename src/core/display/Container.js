@@ -356,29 +356,6 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     }
 };
 
-/**
- * Useful function that returns a texture of the display object that can then be used to create sprites
- * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
- *
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used to generate the texture.
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture} a texture of the display object
- */
-Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-    var bounds = this.getLocalBounds();
-
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, scaleMode, resolution);
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    renderTexture.render(this, _tempMatrix);
-
-    return renderTexture;
-};
-
 /*
  * Updates the transform on all children of this container for rendering
  *
@@ -406,7 +383,7 @@ Container.prototype.updateTransform = function ()
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 /**
- * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+* RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
