@@ -241,6 +241,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
         this.frame = this._frame;
     }
 
+    this.baseTexture.on('update', this.onBaseTextureUpdated, this);
     this.emit('update', this);
 };
 

@@ -38,7 +38,7 @@ TextureManager.prototype.updateTexture = function(texture)
 {
 	texture = texture.baseTexture || texture;
 
-  var isRenderTexture = !!texture._glRenderTargets;
+    var isRenderTexture = !!texture._glRenderTargets;
 
 	if (!texture.hasLoaded)
     {
@@ -51,7 +51,8 @@ TextureManager.prototype.updateTexture = function(texture)
     {
         if(isRenderTexture)
         {
-            renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+            var renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+            renderTarget.resize(texture.width, texture.height);
             texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
             glTexture = renderTarget.texture;
         }
@@ -68,9 +69,6 @@ TextureManager.prototype.updateTexture = function(texture)
         texture.on('dispose', this.destroyTexture, this);
 
         this._managedTextures.push(texture);
-
-
-
 
         if(texture.isPowerOfTwo)
         {
@@ -105,13 +103,18 @@ TextureManager.prototype.updateTexture = function(texture)
         {
             glTexture.enableLinearScaling();
         }
-
-
     }
-
-    if(isRenderTexture)
-    {
-        renderTarget.resize(texture.width, texture.height);
+    else
+    {  
+        // the textur ealrady exists so we only need to update it..   
+        if(isRenderTexture)
+        {
+            texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
+        }
+        else
+        {
+            glTexture.upload(texture.source);
+        }
     }
 
     return  glTexture;

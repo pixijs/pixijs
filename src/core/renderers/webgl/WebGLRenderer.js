@@ -109,8 +109,6 @@ function WebGLRenderer(width, height, options)
      *
      * @member {PIXI.FilterManager}
      */
-
-
     this._initContext();
 
     this.filterManager = new FilterManager(this);
@@ -275,7 +273,7 @@ WebGLRenderer.prototype.setTransform = function (matrix)
     this._activeRenderTarget.transform = matrix;
 };
 
-//TOOD - required?
+
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
     if(renderTexture)
@@ -376,7 +374,6 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 
 /**
  * resets WebGL state so you can render things however you fancy!
- * @return {[type]} [description]
  */
 WebGLRenderer.prototype.reset = function ()
 {
