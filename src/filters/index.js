@@ -34,5 +34,6 @@ module.exports = {
    
     ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
     TwistFilter:        require('./twist/TwistFilter'),
-    GrayFilter:         require('./gray/GrayFilter')
+    GrayFilter:         require('./gray/GrayFilter'),
+    GodrayFilter:         require('./godray/GodrayFilter')
 };
