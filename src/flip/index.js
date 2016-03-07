@@ -65,6 +65,13 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
 
         glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
 
+        if (this.pivot.x || this.pivot.y || this.pivot.z) {
+            temp3dTransform[0] = -this.pivot.x;
+            temp3dTransform[1] = -this.pivot.y;
+            temp3dTransform[2] = -this.pivot.z;
+            glMat.mat4.translate(this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+        }
+
         glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
 
     }

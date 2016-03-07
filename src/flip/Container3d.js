@@ -25,6 +25,7 @@ function Container3d()
     this.position = new math3d.Point3d(0, 0, 0);
     this.scale = new math3d.Point3d(1, 1, 1);
     this.rotation = new math3d.Point3d(0, 0, 0);
+    this.pivot = new math3d.Point3d(0, 0, 0);
 
     this.worldTransform3d = glMat.mat4.create();
 
