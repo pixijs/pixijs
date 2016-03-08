@@ -64,14 +64,11 @@ WebGLState.prototype.setState = function(state)
 {
 	this.setBlend(state[BLEND]);
 	this.setDepthTest(state[DEPTH_TEST]);
-	this.setDepthTest(state[FRONT_FACE]);
-	this.setDepthTest(state[CULL_FACE]);
-	this.setDepthTest(state[BLEND_FUNC]);
+	this.setFrontFace(state[FRONT_FACE]);
+	this.setCullFace(state[CULL_FACE]);
+	this.setBlendMode(state[BLEND_FUNC]);
 };
 
-WebGLState.prototype.setBlendMode = function()
-{
-};
 
 WebGLState.prototype.setBlend = function(value)
 {
@@ -184,6 +181,7 @@ WebGLState.prototype.resetToDefault = function()
 		this.nativeVaoExtension.bindVertexArrayOES(null);
 	}
 
+	var gl = this.gl;
 	// reset all attributs..
 	this.resetAttributes();
 

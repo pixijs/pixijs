@@ -169,16 +169,21 @@ WebGLRenderer.prototype._initContext = function ()
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
+
+    
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
     this.emit('prerender');
+
 
     // no point rendering if our context has been blown up!
     if (!this.gl || this.gl.isContextLost())
     {
         return;
     }
+
+    
 
     this._lastObjectRendered = displayObject;
 
@@ -194,10 +199,14 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.bindRenderTexture(renderTexture, transform);
 
+    this.currentRenderer.start();
+
     if( clear || this.clearBeforeRender)
     {
         renderTarget.clear();
     }
+
+   
 
     displayObject.renderWebGL(this);
 
@@ -377,13 +386,18 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
  */
 WebGLRenderer.prototype.reset = function ()
 {
+    this.currentRenderer.stop();
+
     this._activeShader = null;
     this._activeRenderTarget = null;
+    this._activeTextureLocation = 999;
+    this._activeTexture = null;
 
     // bind the main frame buffer (the screen);
     this.rootRenderTarget.activate();
 
-    this.state.reset();
+    this.state.resetToDefault();
+
 
     return this;
 };

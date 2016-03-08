@@ -23,8 +23,8 @@ function GodrayFilter()
     this.uniforms.density = 0.84;
     this.uniforms.weight = 5.65;  
 
-    this.uniforms.lightPositionOnScreen[0] = 0.5///0.5;
-    this.uniforms.lightPositionOnScreen[1] = 0.5//;
+    this.uniforms.lightPositionOnScreen[0] = 0.5;///0.5;
+    this.uniforms.lightPositionOnScreen[1] = 0.5;//;
 }
 
 GodrayFilter.prototype = Object.create(core.Filter.prototype);
@@ -33,7 +33,7 @@ module.exports = GodrayFilter;
 
 GodrayFilter.prototype.apply = function (filterManager, input, output, clear)
 {
-    
+
     filterManager.applyFilter(this, input, output, clear);
 };
 
