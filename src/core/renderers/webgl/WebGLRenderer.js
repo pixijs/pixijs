@@ -108,7 +108,7 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLRenderingContext}
      */
     // initialize the context so it is ready for the managers.
-    this.gl = createContext(this.view, this._contextOptions);
+    this.gl = options.context || createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
 
@@ -239,7 +239,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     // apply transform..
 
-    this.currentRenderer.flush();
+    this.setObjectRenderer(this.emptyRenderer);
 
     this.emit('postrender');
 };
@@ -279,6 +279,8 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
+    if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+
     SystemRenderer.prototype.resize.call(this, width, height);
 
     this.rootRenderTarget.resize(width, height);

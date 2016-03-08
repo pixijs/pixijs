@@ -45,10 +45,6 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  */
 function RenderTexture(baseRenderTexture, frame)
 {
-    if (!renderer)
-    {
-        throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
-    }
 
     /**
      * The base texture object that this texture uses

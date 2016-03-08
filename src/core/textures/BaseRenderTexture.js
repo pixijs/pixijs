@@ -47,11 +47,6 @@ var BaseTexture = require('./BaseTexture'),
  */
 function BaseRenderTexture(width, height, scaleMode, resolution)
 {
-    if (!renderer)
-    {
-        throw new Error('Unable to create BaseRenderTexture, you must pass a renderer into the constructor.');
-    }
-
     BaseTexture.call(this, null, scaleMode);
 
     this.width = width || 100;
