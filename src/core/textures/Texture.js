@@ -182,6 +182,9 @@ Object.defineProperties(Texture.prototype, {
                 this.width = frame.width;
                 this.height = frame.height;
                 this.crop = frame;
+            } else {
+                this.width = trim.width;
+                this.height = trim.height;
             }
 
             if (this.valid)
