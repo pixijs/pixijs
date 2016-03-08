@@ -8500,8 +8500,7 @@ var math = require('../math');
 
 
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * Generic class to deal with traditional 2D matrix transforms
  *
  * @class
  * @memberof PIXI
@@ -8510,7 +8509,13 @@ var math = require('../math');
  */
 function Transform()
 {
+    /**
+     * @member {PIXI.Matrix} The global matrix transform
+     */
     this.worldTransform = new math.Matrix();
+    /**
+     * @member {PIXI.Matrix} The local matrix transform
+     */
     this.localTransform = new math.Matrix();
 
      /**
@@ -8534,6 +8539,12 @@ function Transform()
      */
     this.pivot = new math.Point(0.0);
 
+
+    /**
+     * The rotation value of the object, in radians
+     *
+     * @member {Number}
+     */
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
@@ -8544,6 +8555,11 @@ function Transform()
 
 Transform.prototype.constructor = Transform;
 
+/**
+ * Updates the values of the object and applies the parent's transform.
+ * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
+ *
+ */
 Transform.prototype.updateTransform = function (parentTransform)
 {
     var pt = parentTransform.worldTransform;
@@ -9715,13 +9731,13 @@ var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
  */
 
 /**
- * Renderer dedicated to drawing and batching sprites.
+ * Renderer dedicated to drawing and batching graphics objects.
  *
  * @class
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {PIXI.WebGLRenderer} The renderer sprite this batch works for.
+ * @param renderer {PIXI.SystemRenderer} The current PIXI renderer.
  */
 function CanvasGraphicsRenderer(renderer)
 {
@@ -10308,7 +10324,10 @@ function WebGLGraphicsData(gl, shader)
     this.glPoints = null;
     this.glIndices = null;
 
-
+    /**
+     *
+     * @member {PIXI.Shader}
+     */
     this.shader = shader;
 
     this.vao =  new glCore.VertexArrayObject(gl)
@@ -10347,6 +10366,9 @@ WebGLGraphicsData.prototype.upload = function ()
 
 
 
+/**
+ * Empties all the data
+ */
 WebGLGraphicsData.prototype.destroy = function ()
 {
     this.color = null;
@@ -13251,15 +13273,30 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  *
  * @class
  * @memberof PIXI
- * @param gl {WebGLRenderingContext}
+ * @param renderer {PIXI.WebGLRenderer}
  */
-
 var TextureManager = function(renderer)
 {
+    /**
+     * A reference to the current renderer
+     *
+     * @member {PIXI.WebGLRenderer}
+     */
     this.renderer = renderer;
+
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = renderer.gl;
 
-	// track textures in the renderer so we can no longer listen to them on destruction.
+	/**
+     * Track textures in the renderer so we can no longer listen to them on destruction.
+     *
+     * @member {array}
+     * @private
+     */
 	this._managedTextures = [];
 };
 
@@ -13396,6 +13433,9 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
     }
 };
 
+/**
+ * Deletes all the textures from WebGL
+ */
 TextureManager.prototype.removeAll = function()
 {
 	// empty all the old gl textures as they are useless now
@@ -13409,6 +13449,9 @@ TextureManager.prototype.removeAll = function()
     }
 };
 
+/**
+ * Destroys this manager and removes all its textures
+ */
 TextureManager.prototype.destroy = function()
 {
     // destroy managed textures
@@ -13515,36 +13558,59 @@ function WebGLRenderer(width, height, options)
     this.stencilManager = new StencilManager(this);
 
     /**
-     * The currently active ObjectRenderer.
+     * An empty renderer.
      *
      * @member {PIXI.ObjectRenderer}
      */
     this.emptyRenderer = new ObjectRenderer(this);
+
+    /**
+     * The currently active ObjectRenderer.
+     *
+     * @member {PIXI.ObjectRenderer}
+     */
     this.currentRenderer = this.emptyRenderer;
 
     this.initPlugins();
 
+    /**
+     * The current WebGL rendering context, it is created here
+     *
+     * @member {WebGLRenderingContext}
+     */
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
+
+    /**
+     * The currently active ObjectRenderer.
+     *
+     * @member {PIXI.WebGLState}
+     */
     this.state = new WebGLState(this.gl);
 
     this.renderingToScreen = true;
+
+
+
+    this._initContext();
 
     /**
      * Manages the filters.
      *
      * @member {PIXI.FilterManager}
      */
-    this._initContext();
-
     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
 
-    //alert(this.state )
+    /**
+     * Holds the current shader
+     *
+     * @member {PIXI.Shader}
+     */
     this._activeShader = null;
 
     /**
@@ -13594,6 +13660,10 @@ WebGLRenderer.prototype._initContext = function ()
  * Renders the object to its webGL view
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.renderTexture}
+ * @param clear {Boolean}
+ * @param transform {PIXI.Transform}
+ * @param skipUpdateTransform {Boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -13695,22 +13765,43 @@ WebGLRenderer.prototype.resize = function (width, height)
     }
 };
 
+/**
+ * Resizes the webGL view to the specified width and height.
+ *
+ * @param blendMode {number} the desired blend mode
+ */
 WebGLRenderer.prototype.setBlendMode = function (blendMode)
 {
     this.state.setBlendMode(blendMode);
 };
 
+/**
+ * Erases the active render target and fills the drawing area with a colour
+ *
+ * @param clearColor {number} The colour
+ */
 WebGLRenderer.prototype.clear = function (clearColor)
 {
     this._activeRenderTarget.clear(clearColor);
 };
 
+/**
+ * Sets the transform of the active render target to the given matrix
+ *
+ * @param matrix {PIXI.Matrix} The transformation matrix
+ */
 WebGLRenderer.prototype.setTransform = function (matrix)
 {
     this._activeRenderTarget.transform = matrix;
 };
 
 
+/**
+ * Binds a render texture for rendering
+ *
+ * @param renderTexture {PIXI.RenderTexture} The render texture to render
+ * @param transform     {PIXI.Transform}     The transform to be applied to the render texture
+ */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
     if(renderTexture)
@@ -13760,7 +13851,11 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
     return this;
 };
 
-
+/**
+ * Changes the current shader to the one given in parameter
+ *
+ * @param shader {PIXI.Shader} the new shader
+ */
 WebGLRenderer.prototype.bindShader = function (shader)
 {
     //TODO cache
@@ -13776,7 +13871,12 @@ WebGLRenderer.prototype.bindShader = function (shader)
     return this;
 };
 
-
+/**
+ * Binds the texture ... @mat
+ *
+ * @param texture {PIXI.Texture} the new texture
+ * @param location {number} the texture location
+ */
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
     texture = texture.baseTexture || texture;
@@ -13810,7 +13910,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 };
 
 /**
- * resets WebGL state so you can render things however you fancy!
+ * Resets the WebGL state so you can render things however you fancy!
  */
 WebGLRenderer.prototype.reset = function ()
 {
@@ -13896,20 +13996,51 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
-
-
+/**
+ * A WebGL state machines
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ */
 var WebGLState = function(gl)
 {
+
+    /**
+     * The current active state
+     *
+     * @member {Uint8Array}
+     */
 	this.activeState = new Uint8Array(16);
+
+    /**
+     * The default state
+     *
+     * @member {Uint8Array}
+     */
 	this.defaultState = new Uint8Array(16);
 
 	// default blend mode..
 	this.defaultState[0] = 1;
 
+    /**
+     * The current state index in the stack
+     *
+     * @member {number}
+     * @private
+     */
 	this.stackIndex = 0;
 
+    /**
+     * The stack holding all the different states
+     *
+     * @member {array}
+     * @private
+     */
 	this.stack = [];
 
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = gl;
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
@@ -13925,6 +14056,9 @@ var WebGLState = function(gl)
     );
 };
 
+/**
+ * Pushes a new active state
+ */
 WebGLState.prototype.push = function()
 {
 	// next state..
@@ -13949,12 +14083,19 @@ var BLEND = 0,
 	CULL_FACE = 3,
 	BLEND_FUNC = 4;
 
+/**
+ * Pops a state out
+ */
 WebGLState.prototype.pop = function()
 {
-	var state =  this.state[--this.stackIndex];
+	var state = this.state[--this.stackIndex];
 	this.setState(state);
 };
 
+/**
+ * Sets the current state
+ * @param state {number}
+ */
 WebGLState.prototype.setState = function(state)
 {
 	this.setBlend(state[BLEND]);
@@ -13964,7 +14105,10 @@ WebGLState.prototype.setState = function(state)
 	this.setBlendMode(state[BLEND_FUNC]);
 };
 
-
+/**
+ * Sets the blend mode ? @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setBlend = function(value)
 {
 	if(this.activeState[BLEND] === value|0) {
@@ -13985,6 +14129,10 @@ WebGLState.prototype.setBlend = function(value)
 	}
 };
 
+/**
+ * Sets the blend mode ? @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setBlendMode = function(value)
 {
 	if(value === this.activeState[BLEND_FUNC]) {
@@ -13996,6 +14144,10 @@ WebGLState.prototype.setBlendMode = function(value)
 	this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setDepthTest = function(value)
 {
 	if(this.activeState[DEPTH_TEST] === value|0) {
@@ -14016,6 +14168,10 @@ WebGLState.prototype.setDepthTest = function(value)
 	}
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setCullFace = function(value)
 {
 	if(this.activeState[CULL_FACE] === value|0) {
@@ -14036,6 +14192,10 @@ WebGLState.prototype.setCullFace = function(value)
 	}
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setFrontFace = function(value)
 {
 	if(this.activeState[FRONT_FACE] === value|0) {
@@ -14056,6 +14216,9 @@ WebGLState.prototype.setFrontFace = function(value)
 	}
 };
 
+/**
+ * Disables all the vaos in use
+ */
 WebGLState.prototype.resetAttributes = function()
 {
 	var gl = this.gl;
@@ -14068,6 +14231,9 @@ WebGLState.prototype.resetAttributes = function()
 };
 
 //used
+/**
+ * Resets all the logic and disables the vaos
+ */
 WebGLState.prototype.resetToDefault = function()
 {
 	// unbind any VAO if they exist..
@@ -15200,8 +15366,6 @@ function Quad(gl)
      */
     this.gl = gl;
 
-//    this.textures = new TextureUvs();
-
     /**
      * An array of vertices
      *
@@ -15226,7 +15390,7 @@ function Quad(gl)
         0,1
     ]);
 
-    this.interleaved =  new Float32Array(8 * 2);
+    this.interleaved = new Float32Array(8 * 2);
 
     for (var i = 0; i < 4; i++) {
         this.interleaved[i*4] = this.vertices[(i*2)];
@@ -15241,17 +15405,28 @@ function Quad(gl)
     this.indices = createIndicesForQuads(1);
 
     /*
-     * @member {WebGLBuffer} The vertex buffer
+     * @member {glCore.GLBuffer} The vertex buffer
      */
-
     this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
+
+    /*
+     * @member {glCore.GLBuffer} The index buffer
+     */
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    this.vao = new glCore.VertexArrayObject(gl);
+    /*
+     * @member {glCore.VertexArrayObject} The index buffer
+     */
+    this.vao = new glCore.VertexArrayObject(gl)
+
 }
 
 Quad.prototype.constructor = Quad;
 
+/**
+ * Initialises the vaos and uses the shader
+ * @param shader {PIXI.Shader} the shader to use
+ */
 Quad.prototype.initVao = function(shader)
 {
     this.vao.clear()
@@ -15301,6 +15476,9 @@ Quad.prototype.map = function(targetTextureFrame, destinationFrame)
     return this;
 };
 
+/**
+ * Draws the quad
+ */
 Quad.prototype.draw = function()
 {
     this.vao.bind()
@@ -15327,6 +15505,9 @@ Quad.prototype.upload = function()
     return this;
 };
 
+/**
+ * Removes this quad from WebGL
+ */
 Quad.prototype.destroy = function()
 {
     var gl = this.gl;
@@ -15340,6 +15521,7 @@ module.exports = Quad;
 },{"../../../utils/createIndicesForQuads":102,"pixi-gl-core":1}],84:[function(require,module,exports){
 var math = require('../../../math'),
     CONST = require('../../../const'),
+    GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
@@ -15383,6 +15565,11 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.texture = null;
 
+    /**
+     * The background colour of this render target, as an array of [r,g,b,a] values
+     *
+     * @member {array}
+     */
     this.clearColor = [0, 0, 0, 0];
 
     /**
@@ -15420,7 +15607,12 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.frame = null;
 
-    this.defaultFrame = new math.Rectangle();
+    /**
+     * The stencil buffer stores masking data for the render target
+     *
+     * @member {WebGLRenderBuffer}
+     */
+    this.defaultFrame = new PIXI.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 

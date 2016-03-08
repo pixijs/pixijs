@@ -87,36 +87,59 @@ function WebGLRenderer(width, height, options)
     this.stencilManager = new StencilManager(this);
 
     /**
-     * The currently active ObjectRenderer.
+     * An empty renderer.
      *
      * @member {PIXI.ObjectRenderer}
      */
     this.emptyRenderer = new ObjectRenderer(this);
+
+    /**
+     * The currently active ObjectRenderer.
+     *
+     * @member {PIXI.ObjectRenderer}
+     */
     this.currentRenderer = this.emptyRenderer;
 
     this.initPlugins();
 
+    /**
+     * The current WebGL rendering context, it is created here
+     *
+     * @member {WebGLRenderingContext}
+     */
     // initialize the context so it is ready for the managers.
     this.gl = createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
+
+    /**
+     * The currently active ObjectRenderer.
+     *
+     * @member {PIXI.WebGLState}
+     */
     this.state = new WebGLState(this.gl);
 
     this.renderingToScreen = true;
+
+
+
+    this._initContext();
 
     /**
      * Manages the filters.
      *
      * @member {PIXI.FilterManager}
      */
-    this._initContext();
-
     this.filterManager = new FilterManager(this);
     // map some webGL blend and drawmodes..
     this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
 
-    //alert(this.state )
+    /**
+     * Holds the current shader
+     *
+     * @member {PIXI.Shader}
+     */
     this._activeShader = null;
 
     /**
@@ -166,6 +189,10 @@ WebGLRenderer.prototype._initContext = function ()
  * Renders the object to its webGL view
  *
  * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.renderTexture}
+ * @param clear {Boolean}
+ * @param transform {PIXI.Transform}
+ * @param skipUpdateTransform {Boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -267,22 +294,43 @@ WebGLRenderer.prototype.resize = function (width, height)
     }
 };
 
+/**
+ * Resizes the webGL view to the specified width and height.
+ *
+ * @param blendMode {number} the desired blend mode
+ */
 WebGLRenderer.prototype.setBlendMode = function (blendMode)
 {
     this.state.setBlendMode(blendMode);
 };
 
+/**
+ * Erases the active render target and fills the drawing area with a colour
+ *
+ * @param clearColor {number} The colour
+ */
 WebGLRenderer.prototype.clear = function (clearColor)
 {
     this._activeRenderTarget.clear(clearColor);
 };
 
+/**
+ * Sets the transform of the active render target to the given matrix
+ *
+ * @param matrix {PIXI.Matrix} The transformation matrix
+ */
 WebGLRenderer.prototype.setTransform = function (matrix)
 {
     this._activeRenderTarget.transform = matrix;
 };
 
 
+/**
+ * Binds a render texture for rendering
+ *
+ * @param renderTexture {PIXI.RenderTexture} The render texture to render
+ * @param transform     {PIXI.Transform}     The transform to be applied to the render texture
+ */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
     if(renderTexture)
@@ -332,7 +380,11 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
     return this;
 };
 
-
+/**
+ * Changes the current shader to the one given in parameter
+ *
+ * @param shader {PIXI.Shader} the new shader
+ */
 WebGLRenderer.prototype.bindShader = function (shader)
 {
     //TODO cache
@@ -348,7 +400,12 @@ WebGLRenderer.prototype.bindShader = function (shader)
     return this;
 };
 
-
+/**
+ * Binds the texture ... @mat
+ *
+ * @param texture {PIXI.Texture} the new texture
+ * @param location {number} the texture location
+ */
 WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
     texture = texture.baseTexture || texture;
@@ -382,7 +439,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 };
 
 /**
- * resets WebGL state so you can render things however you fancy!
+ * Resets the WebGL state so you can render things however you fancy!
  */
 WebGLRenderer.prototype.reset = function ()
 {

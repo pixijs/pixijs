@@ -13,13 +13,13 @@ var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
  */
 
 /**
- * Renderer dedicated to drawing and batching sprites.
+ * Renderer dedicated to drawing and batching graphics objects.
  *
  * @class
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {PIXI.WebGLRenderer} The renderer sprite this batch works for.
+ * @param renderer {PIXI.SystemRenderer} The current PIXI renderer.
  */
 function CanvasGraphicsRenderer(renderer)
 {

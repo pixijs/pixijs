@@ -1,5 +1,6 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
+    GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
@@ -43,6 +44,11 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.texture = null;
 
+    /**
+     * The background colour of this render target, as an array of [r,g,b,a] values
+     *
+     * @member {array}
+     */
     this.clearColor = [0, 0, 0, 0];
 
     /**
@@ -80,7 +86,12 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.frame = null;
 
-    this.defaultFrame = new math.Rectangle();
+    /**
+     * The stencil buffer stores masking data for the render target
+     *
+     * @member {WebGLRenderBuffer}
+     */
+    this.defaultFrame = new PIXI.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 

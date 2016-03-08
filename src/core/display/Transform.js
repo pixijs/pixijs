@@ -2,8 +2,7 @@ var math = require('../math');
 
 
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * Generic class to deal with traditional 2D matrix transforms
  *
  * @class
  * @memberof PIXI
@@ -12,7 +11,13 @@ var math = require('../math');
  */
 function Transform()
 {
+    /**
+     * @member {PIXI.Matrix} The global matrix transform
+     */
     this.worldTransform = new math.Matrix();
+    /**
+     * @member {PIXI.Matrix} The local matrix transform
+     */
     this.localTransform = new math.Matrix();
 
      /**
@@ -36,6 +41,12 @@ function Transform()
      */
     this.pivot = new math.Point(0.0);
 
+
+    /**
+     * The rotation value of the object, in radians
+     *
+     * @member {Number}
+     */
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
@@ -46,6 +57,11 @@ function Transform()
 
 Transform.prototype.constructor = Transform;
 
+/**
+ * Updates the values of the object and applies the parent's transform.
+ * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
+ *
+ */
 Transform.prototype.updateTransform = function (parentTransform)
 {
     var pt = parentTransform.worldTransform;

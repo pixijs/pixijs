@@ -8,15 +8,30 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  *
  * @class
  * @memberof PIXI
- * @param gl {WebGLRenderingContext}
+ * @param renderer {PIXI.WebGLRenderer}
  */
-
 var TextureManager = function(renderer)
 {
+    /**
+     * A reference to the current renderer
+     *
+     * @member {PIXI.WebGLRenderer}
+     */
     this.renderer = renderer;
+
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = renderer.gl;
 
-	// track textures in the renderer so we can no longer listen to them on destruction.
+	/**
+     * Track textures in the renderer so we can no longer listen to them on destruction.
+     *
+     * @member {array}
+     * @private
+     */
 	this._managedTextures = [];
 };
 
@@ -153,6 +168,9 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
     }
 };
 
+/**
+ * Deletes all the textures from WebGL
+ */
 TextureManager.prototype.removeAll = function()
 {
 	// empty all the old gl textures as they are useless now
@@ -166,6 +184,9 @@ TextureManager.prototype.removeAll = function()
     }
 };
 
+/**
+ * Destroys this manager and removes all its textures
+ */
 TextureManager.prototype.destroy = function()
 {
     // destroy managed textures

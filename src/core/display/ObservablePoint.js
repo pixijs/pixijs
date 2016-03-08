@@ -4,6 +4,7 @@
  *
  * @class
  * @memberof PIXI
+ * @param transform {PIXI.Transform} the transform object @mat
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -25,7 +26,7 @@ Object.defineProperties(ObservablePoint.prototype, {
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
      * @member {number}
-     * @memberof PIXI.DisplayObject#
+     * @memberof PIXI.ObservablePoint#
      */
     x: {
         get: function ()
@@ -38,7 +39,12 @@ Object.defineProperties(ObservablePoint.prototype, {
             this.transform._versionLocal++;
         }
     },
-
+    /**
+     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.ObservablePoint#
+     */
     y: {
         get: function ()
         {

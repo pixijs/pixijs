@@ -1,20 +1,51 @@
 
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
-
-
+/**
+ * A WebGL state machines
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ */
 var WebGLState = function(gl)
 {
+
+    /**
+     * The current active state
+     *
+     * @member {Uint8Array}
+     */
 	this.activeState = new Uint8Array(16);
+
+    /**
+     * The default state
+     *
+     * @member {Uint8Array}
+     */
 	this.defaultState = new Uint8Array(16);
 
 	// default blend mode..
 	this.defaultState[0] = 1;
 
+    /**
+     * The current state index in the stack
+     *
+     * @member {number}
+     * @private
+     */
 	this.stackIndex = 0;
 
+    /**
+     * The stack holding all the different states
+     *
+     * @member {array}
+     * @private
+     */
 	this.stack = [];
 
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = gl;
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
@@ -30,6 +61,9 @@ var WebGLState = function(gl)
     );
 };
 
+/**
+ * Pushes a new active state
+ */
 WebGLState.prototype.push = function()
 {
 	// next state..
@@ -54,12 +88,19 @@ var BLEND = 0,
 	CULL_FACE = 3,
 	BLEND_FUNC = 4;
 
+/**
+ * Pops a state out
+ */
 WebGLState.prototype.pop = function()
 {
-	var state =  this.state[--this.stackIndex];
+	var state = this.state[--this.stackIndex];
 	this.setState(state);
 };
 
+/**
+ * Sets the current state
+ * @param state {number}
+ */
 WebGLState.prototype.setState = function(state)
 {
 	this.setBlend(state[BLEND]);
@@ -69,7 +110,10 @@ WebGLState.prototype.setState = function(state)
 	this.setBlendMode(state[BLEND_FUNC]);
 };
 
-
+/**
+ * Sets the blend mode ? @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setBlend = function(value)
 {
 	if(this.activeState[BLEND] === value|0) {
@@ -90,6 +134,10 @@ WebGLState.prototype.setBlend = function(value)
 	}
 };
 
+/**
+ * Sets the blend mode ? @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setBlendMode = function(value)
 {
 	if(value === this.activeState[BLEND_FUNC]) {
@@ -101,6 +149,10 @@ WebGLState.prototype.setBlendMode = function(value)
 	this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setDepthTest = function(value)
 {
 	if(this.activeState[DEPTH_TEST] === value|0) {
@@ -121,6 +173,10 @@ WebGLState.prototype.setDepthTest = function(value)
 	}
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setCullFace = function(value)
 {
 	if(this.activeState[CULL_FACE] === value|0) {
@@ -141,6 +197,10 @@ WebGLState.prototype.setCullFace = function(value)
 	}
 };
 
+/**
+ * Sets the depth test @mat
+ * @param value {number}
+ */
 WebGLState.prototype.setFrontFace = function(value)
 {
 	if(this.activeState[FRONT_FACE] === value|0) {
@@ -161,6 +221,9 @@ WebGLState.prototype.setFrontFace = function(value)
 	}
 };
 
+/**
+ * Disables all the vaos in use
+ */
 WebGLState.prototype.resetAttributes = function()
 {
 	var gl = this.gl;
@@ -173,6 +236,9 @@ WebGLState.prototype.resetAttributes = function()
 };
 
 //used
+/**
+ * Resets all the logic and disables the vaos
+ */
 WebGLState.prototype.resetToDefault = function()
 {
 	// unbind any VAO if they exist..

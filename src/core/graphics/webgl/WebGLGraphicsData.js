@@ -58,7 +58,10 @@ function WebGLGraphicsData(gl, shader)
     this.glPoints = null;
     this.glIndices = null;
 
-
+    /**
+     *
+     * @member {PIXI.Shader}
+     */
     this.shader = shader;
 
     this.vao =  new glCore.VertexArrayObject(gl)
@@ -97,6 +100,9 @@ WebGLGraphicsData.prototype.upload = function ()
 
 
 
+/**
+ * Empties all the data
+ */
 WebGLGraphicsData.prototype.destroy = function ()
 {
     this.color = null;
