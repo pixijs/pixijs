@@ -238,7 +238,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width * resolution, texture._frame.height * resolution);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
