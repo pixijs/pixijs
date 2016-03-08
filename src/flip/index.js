@@ -15,6 +15,7 @@ module.exports = {
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
     Graphics3d          :require('./Graphics3d'),
     Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
+    FXAAFilter: require('./webgl/filters/FXAAFilter')
 };
 
 var core             = require('../core'),
@@ -22,7 +23,24 @@ var core             = require('../core'),
     math3d           = require('./math'),
     temp3dTransform  = glMat.mat4.create(),
     tempQuat         = glMat.quat.create(),
-    tempPoint        = new core.Point();
+    tempPoint        = new core.Point(),
+    tempPoint3d      = glMat.mat3.create();
+
+glMat.mat4.centralPerspective = function(out, width, height, focus, near, far) {
+    glMat.mat4.identity(out);
+    tempPoint3d[0] = width/2;
+    tempPoint3d[1] = height/2;
+    tempPoint3d[2] = 0;
+    glMat.mat4.translate(out, out, tempPoint3d);
+    glMat.mat4.identity(temp3dTransform);
+    temp3dTransform[10] = 1.0 / (far - near);
+    temp3dTransform[14] = (focus - near) / (far - near);
+    temp3dTransform[11] = 1.0 / focus;
+    glMat.mat4.multiply(out, out, temp3dTransform);
+    tempPoint3d[0] = -width/2;
+    tempPoint3d[1] = -height/2;
+    glMat.mat4.translate(out, out, tempPoint3d);
+}
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
@@ -83,6 +101,9 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
 
      // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    // reset the bounds each time this is called!
+    this._currentBounds = null;
 };
 
 core.Container.prototype.setMatrix = function( matrix )
@@ -369,7 +390,6 @@ core.Text.prototype._renderWebGL3d = function(renderer)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
 };
-
 
 core.RenderTarget.prototype.projectionMatrix3d = glMat.mat4.create();
 

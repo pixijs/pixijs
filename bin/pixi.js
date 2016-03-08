@@ -21778,12 +21778,6 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  */
 
 /**
-<<<<<<< HEAD
-*
-=======
- * Renderer dedicated to drawing and batching sprites.
- *
->>>>>>> dev
  * @class
  * @private
  * @memberof PIXI
@@ -25651,7 +25645,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":34,"./extras":91,"./filters":108,"./mesh":144}],85:[function(require,module,exports){
+},{"./core":34,"./extras":91,"./filters":108,"./mesh":145}],85:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -29946,6 +29940,7 @@ function Container3d()
     this.position = new math3d.Point3d(0, 0, 0);
     this.scale = new math3d.Point3d(1, 1, 1);
     this.rotation = new math3d.Point3d(0, 0, 0);
+    this.pivot = new math3d.Point3d(0, 0, 0);
 
     this.worldTransform3d = glMat.mat4.create();
 
@@ -30075,7 +30070,11 @@ module.exports = Graphics3d;
 var core = require('../core'),
     glMat = require('gl-matrix'),
     math3d = require('./math'),
-    tempPoint = new core.Point();
+    tempPoint = new core.Point(),
+    tempPoint3d = glMat.vec3.create(),
+    minPoint3d = glMat.vec3.create(),
+    maxPoint3d = glMat.vec3.create(),
+    tempTransform = glMat.mat4.create();
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
  *
@@ -30102,6 +30101,7 @@ function Sprite3d(texture)
     this.worldTransform3d = glMat.mat4.create();
 
     this.is3d = true;
+    this.projectionMatrix = null//glMat.mat4.create();
 }
 
 
@@ -30174,6 +30174,94 @@ Sprite3d.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite3d(core.Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
+Sprite3d.prototype.getBounds = function (matrix)
+{
+    if(!this._currentBounds)
+    {
+
+        var width = this._texture._frame.width;
+        var height = this._texture._frame.height;
+
+        var w0 = width * (1-this.anchor.x);
+        var w1 = width * -this.anchor.x;
+
+        var h0 = height * (1-this.anchor.y);
+        var h1 = height * -this.anchor.y;
+
+        var worldTransform = matrix || this.worldTransform3d;
+        if (this.projectionMatrix) {
+            glMat.mat4.multiply(tempTransform, this.projectionMatrix, worldTransform);
+        } else {
+            glMat.mat4.copy(tempTransform, worldTransform);
+        }
+
+        //TODO: test Z value, may be it cant be rendered in this camera
+        tempPoint3d[0] = w0;
+        tempPoint3d[1] = h0;
+        tempPoint3d[2] = 0;
+        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
+        glMat.vec3.copy(minPoint3d, tempPoint3d);
+        glMat.vec3.copy(maxPoint3d, tempPoint3d);
+        tempPoint3d[0] = w0;
+        tempPoint3d[1] = h1;
+        tempPoint3d[2] = 0;
+        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
+        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
+        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
+        tempPoint3d[0] = w1;
+        tempPoint3d[1] = h1;
+        tempPoint3d[2] = 0;
+        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
+        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
+        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
+        tempPoint3d[0] = w1;
+        tempPoint3d[1] = h0;
+        tempPoint3d[2] = 0;
+        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
+        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
+        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
+
+        var minX = minPoint3d[0], maxX = maxPoint3d[0], minY = minPoint3d[1], maxY = maxPoint3d[1];
+
+        //if (this.projectionMatrix) {
+        //    var halfWidth = 1.0 / this.projectionMatrix[0];
+        //    var halfHeight = -1.0 / this.projectionMatrix[5];
+        //    minX = (minPoint3d[0] + 1) * halfWidth;
+        //    maxX = (maxPoint3d[0] + 1) * halfWidth;
+        //    maxY = (-minPoint3d[1] + 1) * halfHeight;
+        //    minY = (-maxPoint3d[1] + 1) * halfHeight;
+        //}
+
+        if(this.children.length)
+        {
+            var childBounds = this.containerGetBounds();
+
+            w0 = childBounds.x;
+            w1 = childBounds.x + childBounds.width;
+            h0 = childBounds.y;
+            h1 = childBounds.y + childBounds.height;
+
+            minX = (minX < w0) ? minX : w0;
+            minY = (minY < h0) ? minY : h0;
+
+            maxX = (maxX > w1) ? maxX : w1;
+            maxY = (maxY > h1) ? maxY : h1;
+        }
+
+        var bounds = this._bounds;
+
+        bounds.x = minX;
+        bounds.width = maxX - minX;
+
+        bounds.y = minY;
+        bounds.height = maxY - minY;
+
+        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
+        this._currentBounds = bounds;
+    }
+
+    return this._currentBounds;
+};
 
 module.exports = Sprite3d;
 
@@ -30195,6 +30283,7 @@ module.exports = {
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
     Graphics3d          :require('./Graphics3d'),
     Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
+    FXAAFilter: require('./webgl/filters/FXAAFilter')
 };
 
 var core             = require('../core'),
@@ -30202,7 +30291,24 @@ var core             = require('../core'),
     math3d           = require('./math'),
     temp3dTransform  = glMat.mat4.create(),
     tempQuat         = glMat.quat.create(),
-    tempPoint        = new core.Point();
+    tempPoint        = new core.Point(),
+    tempPoint3d      = glMat.mat3.create();
+
+glMat.mat4.centralPerspective = function(out, width, height, focus, near, far) {
+    glMat.mat4.identity(out);
+    tempPoint3d[0] = width/2;
+    tempPoint3d[1] = height/2;
+    tempPoint3d[2] = 0;
+    glMat.mat4.translate(out, out, tempPoint3d);
+    glMat.mat4.identity(temp3dTransform);
+    temp3dTransform[10] = 1.0 / (far - near);
+    temp3dTransform[14] = (focus - near) / (far - near);
+    temp3dTransform[11] = 1.0 / focus;
+    glMat.mat4.multiply(out, out, temp3dTransform);
+    tempPoint3d[0] = -width/2;
+    tempPoint3d[1] = -height/2;
+    glMat.mat4.translate(out, out, tempPoint3d);
+}
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
@@ -30245,6 +30351,13 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
 
         glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
 
+        if (this.pivot.x || this.pivot.y || this.pivot.z) {
+            temp3dTransform[0] = -this.pivot.x;
+            temp3dTransform[1] = -this.pivot.y;
+            temp3dTransform[2] = -this.pivot.z;
+            glMat.mat4.translate(this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+        }
+
         glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
 
     }
@@ -30256,6 +30369,9 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
 
      // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    // reset the bounds each time this is called!
+    this._currentBounds = null;
 };
 
 core.Container.prototype.setMatrix = function( matrix )
@@ -30543,7 +30659,6 @@ core.Text.prototype._renderWebGL3d = function(renderer)
     renderer.plugins.sprite3d.render(this);
 };
 
-
 core.RenderTarget.prototype.projectionMatrix3d = glMat.mat4.create();
 
 core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
@@ -30595,7 +30710,7 @@ core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
 
 
 
-},{"../core":34,"./Container3d":121,"./Graphics3d":122,"./Sprite3d":123,"./math":126,"./webgl/Graphics3dRenderer":127,"./webgl/Sprite3dRenderer":129,"gl-matrix":13}],125:[function(require,module,exports){
+},{"../core":34,"./Container3d":121,"./Graphics3d":122,"./Sprite3d":123,"./math":126,"./webgl/Graphics3dRenderer":127,"./webgl/Sprite3dRenderer":129,"./webgl/filters/FXAAFilter":131,"gl-matrix":13}],125:[function(require,module,exports){
 /**
  * The Point3d object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -30991,7 +31106,8 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
     glMat = require('gl-matrix'),
     Sprite3dShader = require('./Sprite3dShader'),
-    CONST = require('../../core/const');
+    CONST = require('../../core/const'),
+    tempRenderTargetProjection = glMat.mat4.create();
 
 /**
  * @author Mat Groves
@@ -31391,14 +31507,10 @@ Sprite3dRenderer.prototype.flush = function ()
 
     projection3d[0] = projection2d.a;
     projection3d[5] = projection2d.d;
-    projection3d[10] = 2 / 1700;
 
     // tx // ty
     projection3d[12] = projection2d.tx;
     projection3d[13] = projection2d.ty;
-
-    // time to make a 3d one!
-    glMat.mat4.multiply(this.projectionPerspectiveMatrix, this.perspectiveMatrix, projection3d);
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++)
     {
@@ -31447,7 +31559,9 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set the projection
                 currentProjection = nextProjection;
 
-                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
+                glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                shader.syncUniforms();
+                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, this.projectionPerspectiveMatrix);
             }
         }
 
@@ -31657,6 +31771,83 @@ Sprite3dShader.prototype.constructor = Sprite3dShader;
 module.exports = Sprite3dShader;
 
 },{"../../core/renderers/webgl/shaders/Shader":66}],131:[function(require,module,exports){
+var AbstractFilter = require('../../../core/renderers/webgl/filters/AbstractFilter');
+var Sprite3dShader = require('../Sprite3dShader')
+// @see https://github.com/substack/brfs/issues/25
+
+
+/**
+ *
+ * Basic FXAA implementation based on the code on geeks3d.com with the
+ * modification that the texture2DLod stuff was removed since it's
+ * unsupported by WebGL.
+ *
+ * --
+ * From:
+ * https://github.com/mitsuhiko/webgl-meincraft
+ *
+ * @class
+ * @extends PIXI.AbstractFilter
+ * @memberof PIXI
+ *
+ */
+function FXAAFilter()
+{
+    AbstractFilter.call(this,
+        // vertex shader
+        "\nprecision mediump float;\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat4 projectionMatrix3d;\nuniform vec2 resolution;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\n            out vec2 v_rgbM) {\n    vec2 inverseVP = 1.0 / resolution.xy;\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n    v_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void){\n   gl_Position = projectionMatrix3d * vec4(aVertexPosition, 1.0);\n   vTextureCoord = aTextureCoord;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n   vResolution = resolution;\n\n   //compute the texture coords and send them to varyings\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}\n",
+        // fragment shader
+        "precision lowp float;\r\n\r\n\r\n/**\r\nBasic FXAA implementation based on the code on geeks3d.com with the\r\nmodification that the texture2DLod stuff was removed since it's\r\nunsupported by WebGL.\r\n\r\n--\r\n\r\nFrom:\r\nhttps://github.com/mitsuhiko/webgl-meincraft\r\n\r\nCopyright (c) 2011 by Armin Ronacher.\r\n\r\nSome rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without\r\nmodification, are permitted provided that the following conditions are\r\nmet:\r\n\r\n    * Redistributions of source code must retain the above copyright\r\n      notice, this list of conditions and the following disclaimer.\r\n\r\n    * Redistributions in binary form must reproduce the above\r\n      copyright notice, this list of conditions and the following\r\n      disclaimer in the documentation and/or other materials provided\r\n      with the distribution.\r\n\r\n    * The names of the contributors may not be used to endorse or\r\n      promote products derived from this software without specific\r\n      prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\r\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\r\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\r\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\r\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\r\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\r\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\r\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\r\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\r\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\r\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n*/\r\n\r\n#ifndef FXAA_REDUCE_MIN\r\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\r\n#endif\r\n#ifndef FXAA_REDUCE_MUL\r\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\r\n#endif\r\n#ifndef FXAA_SPAN_MAX\r\n    #define FXAA_SPAN_MAX     8.0\r\n#endif\r\n\r\n//optimized version for mobile, where dependent\r\n//texture reads can be a bottleneck\r\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\r\n            vec2 v_rgbNW, vec2 v_rgbNE,\r\n            vec2 v_rgbSW, vec2 v_rgbSE,\r\n            vec2 v_rgbM) {\r\n    vec4 color;\r\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\r\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\r\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\r\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\r\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\r\n    vec4 texColor = texture2D(tex, v_rgbM);\r\n    vec3 rgbM  = texColor.xyz;\r\n    vec3 luma = vec3(0.299, 0.587, 0.114);\r\n    float lumaNW = dot(rgbNW, luma);\r\n    float lumaNE = dot(rgbNE, luma);\r\n    float lumaSW = dot(rgbSW, luma);\r\n    float lumaSE = dot(rgbSE, luma);\r\n    float lumaM  = dot(rgbM,  luma);\r\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\r\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\r\n\r\n    mediump vec2 dir;\r\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\r\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\r\n\r\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\r\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\r\n\r\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\r\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\r\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\r\n              dir * rcpDirMin)) * inverseVP;\r\n\r\n    vec3 rgbA = 0.5 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\r\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\r\n\r\n    float lumaB = dot(rgbB, luma);\r\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\r\n        color = vec4(rgbA, texColor.a);\r\n    else\r\n        color = vec4(rgbB, texColor.a);\r\n    return color;\r\n}\r\n\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vResolution;\r\n\r\n//texcoords computed in vertex step\r\n//to avoid dependent texture reads\r\nvarying vec2 v_rgbNW;\r\nvarying vec2 v_rgbNE;\r\nvarying vec2 v_rgbSW;\r\nvarying vec2 v_rgbSE;\r\nvarying vec2 v_rgbM;\r\n\r\nuniform sampler2D uSampler;\r\n\r\n\r\nvoid main(void){\r\n\r\n    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\r\n\r\n}\r\n",
+        // uniforms
+        {
+            resolution: { type: 'v2', value: { x: 1, y: 1 } }
+        }
+    );
+
+}
+
+FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
+FXAAFilter.prototype.constructor = FXAAFilter;
+module.exports = FXAAFilter;
+
+/**
+ * Applies the filter
+ *
+ * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {PIXI.RenderTarget}
+ * @param output {PIXI.RenderTarget}
+ */
+FXAAFilter.prototype.applyFilter = function (renderer, input, output)
+{
+    var filterManager = renderer.filterManager;
+
+    var shader = this.getShader( renderer );
+     // draw the filter...
+    filterManager.applyFilter(shader, input, output);
+};
+
+FXAAFilter.prototype.getShader = function (renderer)
+{
+    var gl = renderer.gl;
+
+    var shader = this.shaders[gl.id];
+
+    if (!shader)
+    {
+        shader = new Sprite3dShader(renderer.shaderManager,
+            this.vertexSrc,
+            this.fragmentSrc,
+            this.uniforms,
+            this.attributes
+        );
+
+        this.shaders[gl.id] = shader;
+    }
+
+    return shader;
+};
+
+},{"../../../core/renderers/webgl/filters/AbstractFilter":55,"../Sprite3dShader":130}],132:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -31690,7 +31881,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":26,"./core":34,"./deprecation":84,"./extras":91,"./filters":108,"./flip":124,"./interaction":134,"./loaders":137,"./mesh":144,"./polyfill":149}],132:[function(require,module,exports){
+},{"./accessibility":26,"./core":34,"./deprecation":84,"./extras":91,"./filters":108,"./flip":124,"./interaction":135,"./loaders":138,"./mesh":145,"./polyfill":150}],133:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -31739,7 +31930,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":34}],133:[function(require,module,exports){
+},{"../core":34}],134:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -32642,7 +32833,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":34,"./InteractionData":132,"./interactiveTarget":135}],134:[function(require,module,exports){
+},{"../core":34,"./InteractionData":133,"./interactiveTarget":136}],135:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -32659,7 +32850,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":132,"./InteractionManager":133,"./interactiveTarget":135}],135:[function(require,module,exports){
+},{"./InteractionData":133,"./InteractionManager":134,"./interactiveTarget":136}],136:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -32708,7 +32899,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],136:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -32832,7 +33023,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34,"../extras":91,"path":4,"resource-loader":154}],137:[function(require,module,exports){
+},{"../core":34,"../extras":91,"path":4,"resource-loader":155}],138:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -32853,7 +33044,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":136,"./loader":138,"./spritesheetParser":139,"./textureParser":140,"resource-loader":154}],138:[function(require,module,exports){
+},{"./bitmapFontParser":137,"./loader":139,"./spritesheetParser":140,"./textureParser":141,"resource-loader":155}],139:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -32915,7 +33106,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":136,"./spritesheetParser":139,"./textureParser":140,"resource-loader":154}],139:[function(require,module,exports){
+},{"./bitmapFontParser":137,"./spritesheetParser":140,"./textureParser":141,"resource-loader":155}],140:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -32999,7 +33190,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34,"path":4,"resource-loader":154}],140:[function(require,module,exports){
+},{"../core":34,"path":4,"resource-loader":155}],141:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -33021,7 +33212,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34}],141:[function(require,module,exports){
+},{"../core":34}],142:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -33497,7 +33688,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":34}],142:[function(require,module,exports){
+},{"../core":34}],143:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -33623,7 +33814,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":141}],143:[function(require,module,exports){
+},{"./Mesh":142}],144:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -33836,7 +34027,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":34,"./Mesh":141}],144:[function(require,module,exports){
+},{"../core":34,"./Mesh":142}],145:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -33855,7 +34046,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":141,"./Plane":142,"./Rope":143,"./webgl/MeshRenderer":145,"./webgl/MeshShader":146}],145:[function(require,module,exports){
+},{"./Mesh":142,"./Plane":143,"./Rope":144,"./webgl/MeshRenderer":146,"./webgl/MeshShader":147}],146:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -34084,7 +34275,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":34,"../Mesh":141}],146:[function(require,module,exports){
+},{"../../core":34,"../Mesh":142}],147:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -34145,7 +34336,7 @@ module.exports = MeshShader;
 
 core.ShaderManager.registerPlugin('meshShader', MeshShader);
 
-},{"../../core":34}],147:[function(require,module,exports){
+},{"../../core":34}],148:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -34161,7 +34352,7 @@ if (!Math.sign)
     };
 }
 
-},{}],148:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -34171,12 +34362,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":23}],149:[function(require,module,exports){
+},{"object-assign":23}],150:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":147,"./Object.assign":148,"./requestAnimationFrame":150}],150:[function(require,module,exports){
+},{"./Math.sign":148,"./Object.assign":149,"./requestAnimationFrame":151}],151:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -34246,7 +34437,7 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],151:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
     Resource    = require('./Resource'),
@@ -34704,7 +34895,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":152,"async":1,"eventemitter3":2,"url":10}],152:[function(require,module,exports){
+},{"./Resource":153,"async":1,"eventemitter3":2,"url":10}],153:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     _url = require('url'),
     // tests is CORS is supported in XHR, if not we need to use XDR
@@ -35514,7 +35705,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":2,"url":10}],153:[function(require,module,exports){
+},{"eventemitter3":2,"url":10}],154:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -35580,7 +35771,7 @@ module.exports = {
     }
 };
 
-},{}],154:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -35594,7 +35785,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":151,"./Resource":152,"./middlewares/caching/memory":155,"./middlewares/parsing/blob":156}],155:[function(require,module,exports){
+},{"./Loader":152,"./Resource":153,"./middlewares/caching/memory":156,"./middlewares/parsing/blob":157}],156:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -35616,7 +35807,7 @@ module.exports = function () {
     };
 };
 
-},{}],156:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -35676,6 +35867,6 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":152,"../../b64":153}]},{},[131])(131)
+},{"../../Resource":153,"../../b64":154}]},{},[132])(132)
 });
 //# sourceMappingURL=pixi.js.map

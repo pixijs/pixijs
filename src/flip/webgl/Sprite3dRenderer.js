@@ -3,7 +3,8 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
     glMat = require('gl-matrix'),
     Sprite3dShader = require('./Sprite3dShader'),
-    CONST = require('../../core/const');
+    CONST = require('../../core/const'),
+    tempRenderTargetProjection = glMat.mat4.create();
 
 /**
  * @author Mat Groves
@@ -403,14 +404,10 @@ Sprite3dRenderer.prototype.flush = function ()
 
     projection3d[0] = projection2d.a;
     projection3d[5] = projection2d.d;
-    projection3d[10] = 2 / 1700;
 
     // tx // ty
     projection3d[12] = projection2d.tx;
     projection3d[13] = projection2d.ty;
-
-    // time to make a 3d one!
-    glMat.mat4.multiply(this.projectionPerspectiveMatrix, this.perspectiveMatrix, projection3d);
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++)
     {
@@ -459,7 +456,9 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set the projection
                 currentProjection = nextProjection;
 
-                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, currentProjection);
+                glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                shader.syncUniforms();
+                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, this.projectionPerspectiveMatrix);
             }
         }
 
