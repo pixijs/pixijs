@@ -1,4 +1,5 @@
 var Shader = require('../../core/renderers/webgl/shaders/Shader');
+var glMat = require('gl-matrix');
 
 /**
  * @class
@@ -14,10 +15,7 @@ function Sprite3dShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, c
     var uniforms = {
 
         uSampler:           { type: 'sampler2D', value: 0 },
-        projectionMatrix3d:   { type: 'mat4', value: new Float32Array(1, 0, 0, 0,
-                                                                      0, 1, 0, 0,
-                                                                      0, 0, 1, 0,
-                                                                      0, 0, 0, 1)}
+        projectionMatrix3d:   { type: 'mat4', value: glMat.mat4.create()}
     };
 
     if (customUniforms)

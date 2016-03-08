@@ -417,7 +417,7 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-        nextProjection = sprite.projectionMatrix || projection3d;
+        nextProjection = sprite.projectionMatrix;
 
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
@@ -456,7 +456,10 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set the projection
                 currentProjection = nextProjection;
 
-                glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                if (currentProjection)
+                    glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                else
+                    glMat.mat4.copy(this.projectionPerspectiveMatrix, projection3d);
                 shader.syncUniforms();
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, this.projectionPerspectiveMatrix);
             }

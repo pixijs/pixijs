@@ -31520,7 +31520,7 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-        nextProjection = sprite.projectionMatrix || projection3d;
+        nextProjection = sprite.projectionMatrix;
 
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
@@ -31559,7 +31559,10 @@ Sprite3dRenderer.prototype.flush = function ()
                 // set the projection
                 currentProjection = nextProjection;
 
-                glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                if (currentProjection)
+                    glMat.mat4.multiply(this.projectionPerspectiveMatrix, projection3d, currentProjection);
+                else
+                    glMat.mat4.copy(this.projectionPerspectiveMatrix, projection3d);
                 shader.syncUniforms();
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, this.projectionPerspectiveMatrix);
             }
@@ -31676,6 +31679,7 @@ Sprite3dRenderer.prototype.destroy = function ()
 
 },{"../../core/const":27,"../../core/renderers/webgl/WebGLRenderer":54,"../../core/renderers/webgl/shaders/Shader":66,"../../core/renderers/webgl/utils/ObjectRenderer":68,"./Sprite3dShader":130,"gl-matrix":13}],130:[function(require,module,exports){
 var Shader = require('../../core/renderers/webgl/shaders/Shader');
+var glMat = require('gl-matrix');
 
 /**
  * @class
@@ -31691,10 +31695,7 @@ function Sprite3dShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, c
     var uniforms = {
 
         uSampler:           { type: 'sampler2D', value: 0 },
-        projectionMatrix3d:   { type: 'mat4', value: new Float32Array(1, 0, 0, 0,
-                                                                      0, 1, 0, 0,
-                                                                      0, 0, 1, 0,
-                                                                      0, 0, 0, 1)}
+        projectionMatrix3d:   { type: 'mat4', value: glMat.mat4.create()}
     };
 
     if (customUniforms)
@@ -31770,7 +31771,7 @@ Sprite3dShader.prototype = Object.create(Shader.prototype);
 Sprite3dShader.prototype.constructor = Sprite3dShader;
 module.exports = Sprite3dShader;
 
-},{"../../core/renderers/webgl/shaders/Shader":66}],131:[function(require,module,exports){
+},{"../../core/renderers/webgl/shaders/Shader":66,"gl-matrix":13}],131:[function(require,module,exports){
 var AbstractFilter = require('../../../core/renderers/webgl/filters/AbstractFilter');
 var Sprite3dShader = require('../Sprite3dShader')
 // @see https://github.com/substack/brfs/issues/25
@@ -31795,7 +31796,7 @@ function FXAAFilter()
 {
     AbstractFilter.call(this,
         // vertex shader
-        "\nprecision mediump float;\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat4 projectionMatrix3d;\nuniform vec2 resolution;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvarying vec2 vResolution;\n\n//texcoords computed in vertex step\n//to avoid dependent texture reads\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\n            out vec2 v_rgbM) {\n    vec2 inverseVP = 1.0 / resolution.xy;\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n    v_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void){\n   gl_Position = projectionMatrix3d * vec4(aVertexPosition, 1.0);\n   vTextureCoord = aTextureCoord;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n   vResolution = resolution;\n\n   //compute the texture coords and send them to varyings\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}\n",
+        "\r\nprecision mediump float;\r\n\r\nattribute vec3 aVertexPosition;\r\nattribute vec2 aTextureCoord;\r\nattribute vec4 aColor;\r\n\r\nuniform mat4 projectionMatrix3d;\r\nuniform vec2 resolution;\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\n\r\nvarying vec2 vResolution;\r\n\r\n//texcoords computed in vertex step\r\n//to avoid dependent texture reads\r\nvarying vec2 v_rgbNW;\r\nvarying vec2 v_rgbNE;\r\nvarying vec2 v_rgbSW;\r\nvarying vec2 v_rgbSE;\r\nvarying vec2 v_rgbM;\r\n\r\n\r\nvoid texcoords(vec2 fragCoord, vec2 resolution,\r\n            out vec2 v_rgbNW, out vec2 v_rgbNE,\r\n            out vec2 v_rgbSW, out vec2 v_rgbSE,\r\n            out vec2 v_rgbM) {\r\n    vec2 inverseVP = 1.0 / resolution.xy;\r\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\r\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\r\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\r\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\r\n    v_rgbM = vec2(fragCoord * inverseVP);\r\n}\r\n\r\nvoid main(void){\r\n   gl_Position = projectionMatrix3d * vec4(aVertexPosition, 1.0);\r\n   vTextureCoord = aTextureCoord;\r\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\r\n   vResolution = resolution;\r\n\r\n   //compute the texture coords and send them to varyings\r\n   texcoords(aTextureCoord * resolution, resolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\r\n}\r\n",
         // fragment shader
         "precision lowp float;\r\n\r\n\r\n/**\r\nBasic FXAA implementation based on the code on geeks3d.com with the\r\nmodification that the texture2DLod stuff was removed since it's\r\nunsupported by WebGL.\r\n\r\n--\r\n\r\nFrom:\r\nhttps://github.com/mitsuhiko/webgl-meincraft\r\n\r\nCopyright (c) 2011 by Armin Ronacher.\r\n\r\nSome rights reserved.\r\n\r\nRedistribution and use in source and binary forms, with or without\r\nmodification, are permitted provided that the following conditions are\r\nmet:\r\n\r\n    * Redistributions of source code must retain the above copyright\r\n      notice, this list of conditions and the following disclaimer.\r\n\r\n    * Redistributions in binary form must reproduce the above\r\n      copyright notice, this list of conditions and the following\r\n      disclaimer in the documentation and/or other materials provided\r\n      with the distribution.\r\n\r\n    * The names of the contributors may not be used to endorse or\r\n      promote products derived from this software without specific\r\n      prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\r\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\r\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\r\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\r\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\r\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\r\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\r\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\r\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\r\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\r\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n*/\r\n\r\n#ifndef FXAA_REDUCE_MIN\r\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\r\n#endif\r\n#ifndef FXAA_REDUCE_MUL\r\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\r\n#endif\r\n#ifndef FXAA_SPAN_MAX\r\n    #define FXAA_SPAN_MAX     8.0\r\n#endif\r\n\r\n//optimized version for mobile, where dependent\r\n//texture reads can be a bottleneck\r\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\r\n            vec2 v_rgbNW, vec2 v_rgbNE,\r\n            vec2 v_rgbSW, vec2 v_rgbSE,\r\n            vec2 v_rgbM) {\r\n    vec4 color;\r\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\r\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\r\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\r\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\r\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\r\n    vec4 texColor = texture2D(tex, v_rgbM);\r\n    vec3 rgbM  = texColor.xyz;\r\n    vec3 luma = vec3(0.299, 0.587, 0.114);\r\n    float lumaNW = dot(rgbNW, luma);\r\n    float lumaNE = dot(rgbNE, luma);\r\n    float lumaSW = dot(rgbSW, luma);\r\n    float lumaSE = dot(rgbSE, luma);\r\n    float lumaM  = dot(rgbM,  luma);\r\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\r\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\r\n\r\n    mediump vec2 dir;\r\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\r\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\r\n\r\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\r\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\r\n\r\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\r\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\r\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\r\n              dir * rcpDirMin)) * inverseVP;\r\n\r\n    vec3 rgbA = 0.5 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\r\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\r\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\r\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\r\n\r\n    float lumaB = dot(rgbB, luma);\r\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\r\n        color = vec4(rgbA, texColor.a);\r\n    else\r\n        color = vec4(rgbB, texColor.a);\r\n    return color;\r\n}\r\n\r\n\r\nvarying vec2 vTextureCoord;\r\nvarying vec4 vColor;\r\nvarying vec2 vResolution;\r\n\r\n//texcoords computed in vertex step\r\n//to avoid dependent texture reads\r\nvarying vec2 v_rgbNW;\r\nvarying vec2 v_rgbNE;\r\nvarying vec2 v_rgbSW;\r\nvarying vec2 v_rgbSE;\r\nvarying vec2 v_rgbM;\r\n\r\nuniform sampler2D uSampler;\r\n\r\n\r\nvoid main(void){\r\n\r\n    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\r\n\r\n}\r\n",
         // uniforms
