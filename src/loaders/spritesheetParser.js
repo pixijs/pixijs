@@ -1,8 +1,9 @@
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
+async = require('async');
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 1000;
 
 module.exports = function() {
     return function(resource, next) {
@@ -16,9 +17,7 @@ module.exports = function() {
             loadType: Resource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata
         };
-
         var route = path.dirname(resource.url.replace(this.baseUrl, ''));
-
         var resolution = core.utils.getResolutionOfUrl(resource.url);
 
         // load the image for this sheet
@@ -27,10 +26,22 @@ module.exports = function() {
 
             var frames = resource.data.frames;
             var frameKeys = Object.keys(frames);
+            var batchIndex = 0;
 
-            function processBatch(frameIndexOffset, done) {
-                var frameIndex = frameIndexOffset;
-                while (frameIndex - frameIndexOffset  < BATCH_SIZE && frameIndex < frameKeys.length) {
+            function shouldProcessNextBatch() {
+                return batchIndex * BATCH_SIZE < frameKeys.length;
+            }
+
+            function getTimerLabel() {
+                return 'PARSING SHEET: ' + resource.name + ' BATCH: ' + batchIndex + '\n';
+            }
+
+            function processNextBatch(done) {
+                console.time(getTimerLabel());
+                const initialFrameIndex = batchIndex * BATCH_SIZE;
+                var frameIndex = initialFrameIndex;
+
+                while (frameIndex - initialFrameIndex < BATCH_SIZE && frameIndex < frameKeys.length) {
                     var frame = frames[frameKeys[frameIndex]];
                     var rect = frame.frame;
 
@@ -74,15 +85,12 @@ module.exports = function() {
                     }
                     frameIndex++;
                 }
-                done();
+                console.timeEnd(getTimerLabel());
+                batchIndex++;
+                setTimeout(done, 0);
             }
 
-            console.log('start process');
-            for(var batchIndex = 0; batchIndex * BATCH_SIZE < frameKeys.length; batchIndex++) {
-                console.log('process batch', batchIndex);
-                processBatch(batchIndex * BATCH_SIZE, function() {});
-            }
-            next();
+            async.whilst(shouldProcessNextBatch, processNextBatch, next);
         });
     };
 };
