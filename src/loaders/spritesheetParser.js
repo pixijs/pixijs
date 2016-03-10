@@ -1,6 +1,9 @@
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
+async = require('async');
+
+const BATCH_SIZE = 1000;
 
 module.exports = function ()
 {
@@ -20,7 +23,7 @@ module.exports = function ()
 
         var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
-        var resolution = core.utils.getResolutionOfUrl( resource.url );
+        var resolution = core.utils.getResolutionOfUrl(resource.url);
 
         // load the image for this sheet
         this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
@@ -28,55 +31,79 @@ module.exports = function ()
             resource.textures = {};
 
             var frames = resource.data.frames;
+            var frameKeys = Object.keys(frames);
+            var batchIndex = 0;
 
-            for (var i in frames)
+            function shouldProcessNextBatch()
             {
-                var rect = frames[i].frame;
-
-                if (rect)
-                {
-                    var size = null;
-                    var trim = null;
-
-                    if (frames[i].rotated) {
-                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
-                    }
-                    else {
-                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
-                    }
-
-                    //  Check to see if the sprite is trimmed
-                    if (frames[i].trimmed)
-                    {
-                        trim = new core.Rectangle(
-                            frames[i].spriteSourceSize.x / resolution,
-                            frames[i].spriteSourceSize.y / resolution,
-                            frames[i].sourceSize.w / resolution,
-                            frames[i].sourceSize.h / resolution
-                         );
-                    }
-
-                    // flip the width and height!
-                    if (frames[i].rotated)
-                    {
-                        var temp = size.width;
-                        size.width = size.height;
-                        size.height = temp;
-                    }
-
-                    size.x /= resolution;
-                    size.y /= resolution;
-                    size.width /= resolution;
-                    size.height /= resolution;
-
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated ? 2 : 0);
-
-                    // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    core.utils.TextureCache[i] = resource.textures[i];
-                }
+                return batchIndex * BATCH_SIZE < frameKeys.length;
             }
 
-            next();
+            function getTimerLabel()
+            {
+                return 'PARSING SHEET: ' + resource.name + ' BATCH: ' + batchIndex + '\n';
+            }
+
+            function processNextBatch(done)
+            {
+                const initialFrameIndex = batchIndex * BATCH_SIZE;
+                var frameIndex = initialFrameIndex;
+
+                while (frameIndex - initialFrameIndex < BATCH_SIZE && frameIndex < frameKeys.length)
+                {
+                    var frame = frames[frameKeys[frameIndex]];
+                    var rect = frame.frame;
+
+                    if (rect)
+                    {
+                        var size = null;
+                        var trim = null;
+
+                        if (frame.rotated)
+                        {
+                            size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        }
+                        else
+                        {
+                            size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        }
+
+                        //  Check to see if the sprite is trimmed
+                        if (frame.trimmed)
+                        {
+                            trim = new core.Rectangle(
+                                frame.spriteSourceSize.x / resolution,
+                                frame.spriteSourceSize.y / resolution,
+                                frame.sourceSize.w / resolution,
+                                frame.sourceSize.h / resolution
+                            );
+                        }
+
+                        // flip the width and height!
+                        if (frame.rotated)
+                        {
+                            var temp = size.width;
+                            size.width = size.height;
+                            size.height = temp;
+                        }
+
+                        size.x /= resolution;
+                        size.y /= resolution;
+                        size.width /= resolution;
+                        size.height /= resolution;
+
+                        resource.textures[frameKeys[frameIndex]] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frame.rotated);
+
+                        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+                        core.utils.TextureCache[frameKeys[frameIndex]] = resource.textures[frameKeys[frameIndex]];
+                    }
+                    frameIndex++;
+                }
+                batchIndex++;
+                setTimeout(done, 0);
+            }
+
+            async.whilst(shouldProcessNextBatch, processNextBatch, next);
         });
     };
 };
