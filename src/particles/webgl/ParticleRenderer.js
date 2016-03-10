@@ -41,7 +41,7 @@ function ParticleRenderer(renderer)
 
     this.properties = null;
 
-    this.tempMatrix = new core.math.Matrix();
+    this.tempMatrix = new core.Matrix();
 
     this.CONTEXT_UID = 0;
 }

@@ -50,13 +50,7 @@ function TransformStatic()
      */
     this.skew = new ObservablePoint(this,0.0);
 
-    /**
-     * The rotation value of the object, in radians
-     *
-     * @member {Number}
-     */
-    this.rotation = 0;
-
+    this._rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
 
@@ -70,7 +64,6 @@ function TransformStatic()
 
 TransformStatic.prototype.constructor = TransformStatic;
 
-
 /**
  * Updates the values of the object and applies the parent's transform.
  * @param parentTransform {PIXI.Transform} The transform of the parent of this object
@@ -82,6 +75,7 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     var wt = this.worldTransform;
     var lt = this.localTransform;
 
+    this.updated = false;
     if(this._dirtyLocal !== this._versionLocal ||
         parentTransform._dirtyParentId !== parentTransform._transformId ||
         parentTransform._dirtyParentVersion !== parentTransform._versionGlobal )
@@ -108,7 +102,32 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
         this._dirtyParentId = parentTransform._transformId;
         this._dirtyParentVersion = parentTransform._versionGlobal;
         this._versionGlobal++;
+        this.updated = true;
     }
 };
+
+TransformStatic.prototype.updateChildTransform = function (childTransform)
+{
+    childTransform.updateTransform(this);
+    return childTransform;
+};
+
+Object.defineProperties(TransformStatic.prototype, {
+    /**
+     * The rotation of the object in radians.
+     *
+     * @member {number}
+     */
+    rotation: {
+        get: function () {
+            return this._rotation;
+        },
+        set: function (value) {
+            this._rotation = value;
+            this._sr = Math.sin(value);
+            this._cr = Math.cos(value);
+        }
+    }
+});
 
 module.exports = TransformStatic;

@@ -104,13 +104,13 @@ Container.prototype.onChildrenChange = function () {};
 
 /**
  * Adds a child to the container.
- * 
+ *
  * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
  * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
  * @return {PIXI.DisplayObject} The child that was added.
  */
 Container.prototype.addChild = function (child)
-{ 
+{
     var argumentsLength = arguments.length;
 
     // if there is only one argument we can bypass looping through the them
@@ -122,7 +122,7 @@ Container.prototype.addChild = function (child)
         {
             this.addChild( arguments[i] );
         }
-    }     
+    }
     else
     {
         // if the child has a parent then lets remove it as Pixi objects can only exist in one place
@@ -132,7 +132,7 @@ Container.prototype.addChild = function (child)
         }
 
         child.parent = this;
-        
+
         this.children.push(child);
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -274,9 +274,9 @@ Container.prototype.removeChild = function (child)
         {
             this.removeChild( arguments[i] );
         }
-    }     
+    }
     else
-    {   
+    {
         var index = this.children.indexOf(child);
 
         if (index === -1)
@@ -368,7 +368,9 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform.updateTransform(this.parent.transform);
+    this.transform = this.parent.transform.updateChildTransform(this.transform);
+
+    //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
@@ -489,7 +491,7 @@ Container.prototype.renderWebGL = function (renderer)
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
-      
+
         return;
     }
 
