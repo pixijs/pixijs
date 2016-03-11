@@ -92,20 +92,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this._uvs = null;
 
     /**
-     * The width of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.width = 0;
-
-    /**
-     * The height of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.height = 0;
-
-    /**
      * This is the area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
@@ -178,9 +164,8 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim) {
-                this.width = frame.width;
-                this.height = frame.height;
+            if (!this.trim)
+            {
                 this.crop = frame;
             }
 
@@ -211,6 +196,28 @@ Object.defineProperties(Texture.prototype, {
             {
                 this._updateUvs();
             }
+        }
+    },
+
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    width: {
+        get: function() {
+            return this.crop ? this.crop.width : 0;
+        }
+    },
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    height: {
+        get: function() {
+            return this.crop ? this.crop.height : 0;
         }
     }
 });
