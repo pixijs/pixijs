@@ -197,7 +197,7 @@ WebGLRenderer.prototype._initContext = function ()
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    
+
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
@@ -210,7 +210,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    
+
 
     this._lastObjectRendered = displayObject;
 
@@ -233,7 +233,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         renderTarget.clear();
     }
 
-   
+
 
     displayObject.renderWebGL(this);
 
@@ -279,7 +279,7 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
-    if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+    //if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
     SystemRenderer.prototype.resize.call(this, width, height);
 
