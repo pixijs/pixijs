@@ -386,6 +386,19 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
     // letterSpacing of 0 means normal
     var letterSpacing = style.letterSpacing;
 
+    if (letterSpacing === 0)
+    {
+        if (isStroke)
+        {
+            this.context.strokeText(text, x, y);
+        }
+        else
+        {
+            this.context.fillText(text, x, y);
+        }
+        return;
+    }
+
     var characters = String.prototype.split.call(text, ''),
         index = 0,
         current,
