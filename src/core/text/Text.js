@@ -26,6 +26,7 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
  * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
@@ -197,6 +198,7 @@ Object.defineProperties(Text.prototype, {
             style.wordWrap = style.wordWrap || false;
             style.wordWrapWidth = style.wordWrapWidth || 100;
             style.breakWords = style.breakWords || false;
+            style.letterSpacing = style.letterSpacing || 0;
 
             style.dropShadow = style.dropShadow || false;
             style.dropShadowColor = style.dropShadowColor || '#000000';
@@ -262,7 +264,7 @@ Text.prototype.updateText = function ()
     var fontProperties = this.determineFontProperties(style.font);
     for (var i = 0; i < lines.length; i++)
     {
-        var lineWidth = this.context.measureText(lines[i]).width;
+        var lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
@@ -284,7 +286,7 @@ Text.prototype.updateText = function ()
         height += style.dropShadowDistance;
     }
 
-    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
+    this.canvas.height = ( height + style.padding * 2 ) * this.resolution;
 
     this.context.scale( this.resolution, this.resolution);
 
@@ -335,7 +337,7 @@ Text.prototype.updateText = function ()
 
             if (style.fill)
             {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
+                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
             }
         }
     }
@@ -360,16 +362,48 @@ Text.prototype.updateText = function ()
 
         if (style.stroke && style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding, true);
         }
 
         if (style.fill)
         {
-            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding);
         }
     }
 
     this.updateTexture();
+};
+
+/**
+ * Render the text with letter-spacing.
+ *
+ * @private
+ */
+Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
+{
+    var style = this._style;
+
+    // letterSpacing of 0 means normal
+    var letterSpacing = style.letterSpacing;
+    
+    var characters = String.prototype.split.call(text, ''),
+        index = 0,
+        current,
+        currentPosition = x;
+    
+    while (index < text.length)
+    {
+        current = characters[index++];
+        if (isStroke) 
+        {
+            this.context.strokeText(current, currentPosition, y);
+        }
+        else
+        {
+            this.context.fillText(current, currentPosition, y);
+        }
+        currentPosition += this.context.measureText(current).width + letterSpacing;
+    }
 };
 
 /**
@@ -380,6 +414,7 @@ Text.prototype.updateText = function ()
 Text.prototype.updateTexture = function ()
 {
     var texture = this._texture;
+    var style = this._style;
 
     texture.baseTexture.hasLoaded = true;
     texture.baseTexture.resolution = this.resolution;
@@ -390,10 +425,10 @@ Text.prototype.updateTexture = function ()
     texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
 
     texture.trim.x = 0;
-    texture.trim.y = -this._style.padding;
+    texture.trim.y = -style.padding;
 
     texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - this._style.padding*2;
+    texture.trim.height = texture._frame.height - style.padding*2;
 
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
