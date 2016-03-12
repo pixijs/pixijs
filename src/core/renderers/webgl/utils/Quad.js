@@ -8,7 +8,7 @@ var glCore = require('pixi-gl-core'),
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
-function Quad(gl)
+function Quad(gl, state)
 {
     /*
      * the current WebGL drawing context
@@ -68,7 +68,7 @@ function Quad(gl)
     /*
      * @member {glCore.VertexArrayObject} The index buffer
      */
-    this.vao = new glCore.VertexArrayObject(gl)
+    this.vao = new glCore.VertexArrayObject(gl, state)
 
 }
 

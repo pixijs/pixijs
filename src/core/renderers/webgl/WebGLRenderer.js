@@ -9,6 +9,7 @@ var SystemRenderer = require('../SystemRenderer'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
     utils = require('../../utils'),
+    glCore = require('pixi-gl-core'),
     CONST = require('../../const');
 
 var CONTEXT_UID = 0;
@@ -109,7 +110,7 @@ function WebGLRenderer(width, height, options)
      */
     // initialize the context so it is ready for the managers.
     this.gl = options.context || createContext(this.view, this._contextOptions);
-
+   
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
@@ -238,8 +239,8 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     displayObject.renderWebGL(this);
 
     // apply transform..
-
-    this.setObjectRenderer(this.emptyRenderer);
+    this.currentRenderer.flush();
+    //this.setObjectRenderer(this.emptyRenderer);
 
     this.emit('postrender');
 };
@@ -279,7 +280,7 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
-    if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+  //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
     SystemRenderer.prototype.resize.call(this, width, height);
 
@@ -439,6 +440,11 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 
     return this;
 };
+
+WebGLRenderer.prototype.createVao = function ()
+{
+    return new glCore.VertexArrayObject(this.gl, this.state.attribState);
+}
 
 /**
  * Resets the WebGL state so you can render things however you fancy!

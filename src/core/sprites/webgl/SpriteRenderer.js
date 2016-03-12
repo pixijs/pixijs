@@ -77,6 +77,12 @@ function SpriteRenderer(renderer)
     }
 
     this.sprites = [];
+
+    this.vertexBuffers = [];
+    this.vaos = [];
+
+    this.vaoMax = 10
+    this.vertexCount = 0;
 }
 
 
@@ -100,17 +106,25 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
-    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    // build the vao object that will render..
-    this.vao = new glCore.VertexArrayObject(gl)
-    .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    
 
+    for (var i = 0; i < this.vaoMax; i++) {
+        this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+        // build the vao object that will render..
+        this.vaos[i] = this.renderer.createVao()
+        .addIndex(this.indexBuffer)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    }
+   
+    this.vertexBuffer = this.vertexBuffers[0];
+    this.vao = this.vaos[0];
+
+    
     this.currentBlendMode = 99999;
 };
 
@@ -267,8 +281,12 @@ SpriteRenderer.prototype.flush = function ()
 
     currentGroup.size = i - currentGroup.start;
 
-    this.vertexBuffer.upload(buffer.vertices, 0, true);
+    this.vertexCount++;
+    this.vertexCount %= this.vaoMax;
 
+    this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
+    this.vao = this.vaos[this.vertexCount].bind();
+   
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
@@ -296,8 +314,6 @@ SpriteRenderer.prototype.flush = function ()
 SpriteRenderer.prototype.start = function ()
 {
     this.renderer.bindShader(this.shader);
-    this.vao.bind();
-    this.vertexBuffer.bind();
     this.tick %= 1000;
 };
 
@@ -312,7 +328,11 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    this.vertexBuffer.destroy();
+    for (var i = 0; i < this.vaoMax; i++) {
+        this.vertexBuffers[i].destroy();
+        this.vaoMax[i].destroy();
+    };
+
     this.indexBuffer.destroy();
 
     ObjectRenderer.prototype.destroy.call(this);
