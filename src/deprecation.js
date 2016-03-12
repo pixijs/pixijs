@@ -227,6 +227,12 @@ Object.defineProperties(core, {
     }
 });
 
+core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
+{
+    return renderer.generateTexture(renderer, scaleMode, resolution)
+    console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+};
+
 /**
  * @method
  * @private
