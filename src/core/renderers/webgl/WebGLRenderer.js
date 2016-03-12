@@ -211,7 +211,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    
+    var gl = this.gl;
 
     this._lastObjectRendered = displayObject;
 
@@ -339,11 +339,21 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
+        var gl = this.gl;
 
         if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
         {
+
             this.textureManager.updateTexture(baseTexture);
+            gl.bindTexture(gl.TEXTURE_2D, null);
         }
+        else
+        {
+            // the texture needs to be unbound if its being rendererd too..
+            gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+
 
         renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
         renderTarget.setFrame(renderTexture.frame);
