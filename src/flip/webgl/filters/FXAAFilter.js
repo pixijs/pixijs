@@ -1,5 +1,5 @@
 var AbstractFilter = require('../../../core/renderers/webgl/filters/AbstractFilter');
-var Sprite3dShader = require('../Sprite3dShader')
+var Sprite3dShader = require('../Sprite3dShader');
 // @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 

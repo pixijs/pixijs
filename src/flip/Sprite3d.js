@@ -1,11 +1,7 @@
 var core = require('../core'),
+    Container3d = require('./Container3d'),
     glMat = require('gl-matrix'),
-    math3d = require('./math'),
-    tempPoint = new core.Point(),
-    tempPoint3d = glMat.vec3.create(),
-    minPoint3d = glMat.vec3.create(),
-    maxPoint3d = glMat.vec3.create(),
-    tempTransform = glMat.mat4.create();
+    math3d = require('./math');
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
  *
@@ -22,54 +18,46 @@ var core = require('../core'),
  */
 function Sprite3d(texture)
 {
+    this.euler = new math3d.Euler(0, 0, 0);
     core.Sprite.call(this, texture);
 
     // pixin some new 3d magic!
     this.position = new math3d.Point3d(0, 0, 0);
     this.scale = new math3d.Point3d(1, 1, 1);
-    this.rotation = new math3d.Point3d(0, 0, 0);
 
     this.worldTransform3d = glMat.mat4.create();
 
     this.is3d = true;
-    this.projectionMatrix = null//glMat.mat4.create();
+    this.isCulled3d = false;
+    this._bounds2 = new core.Rectangle();
+    this.projectionMatrix = null;
+    this.worldProjectionMatrix = null;
 }
 
+Object.defineProperties(Sprite3d.prototype, {
+    /**
+     * @member {number}
+     * @memberof PIXI.flip.Sprite3d#
+     */
+    rotation: {
+        get: function () {
+            return this.euler.z;
+        },
+        set: function (value) {
+            this.euler.z = value;
+        }
+    }
+});
 
 // constructor
 Sprite3d.prototype = Object.create(core.Sprite.prototype);
 Sprite3d.prototype.constructor = Sprite3d;
 
-Sprite3d.prototype.updateTransform = function()
-{
-    if(this.parent.convertFrom2dTo3d)
-    {
-        this.parent.convertFrom2dTo3d(true)//this.parent);
-    }
-    else
-    {
-        if(!this.parent.worldTransform3d)this.parent.worldTransform3d = glMat.mat4.create()
-    }
+Sprite3d.prototype.updateTransform = Container3d.prototype.updateTransform3d;
 
-    this.updateTransform3d();
-};
+Sprite3d.prototype.updateTransform3d = Container3d.prototype.updateTransform3d;
 
-Sprite3d.prototype.updateTransform3d = function()
-{
-    this.displayObjectUpdateTransform3d();
-    var i,j;
-
-    for (i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].updateTransform3d();
-    }
-};
-
-Sprite3d.prototype.renderWebGL = function(renderer)
-{
-    this.renderWebGL3d( renderer );
-};
-
+Sprite3d.prototype.renderWebGL = Container3d.prototype.renderWebGL;
 
 
 /**
@@ -105,6 +93,19 @@ Sprite3d.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite3d(core.Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
+Sprite3d.prototype.containsPlanePoint = function(point) {
+    var width = this._texture._frame.width;
+    var height = this._texture._frame.height;
+
+    var w0 = width * (1-this.anchor.x);
+    var w1 = width * -this.anchor.x;
+
+    var h0 = height * (1-this.anchor.y);
+    var h1 = height * -this.anchor.y;
+    return point.x >= w0 && point.x <= w1 &&
+        point.y >= h0 && point.y <= h1;
+};
+
 Sprite3d.prototype.getBounds = function (matrix)
 {
     if(!this._currentBounds)
@@ -120,75 +121,16 @@ Sprite3d.prototype.getBounds = function (matrix)
         var h1 = height * -this.anchor.y;
 
         var worldTransform = matrix || this.worldTransform3d;
-        if (this.projectionMatrix) {
-            glMat.mat4.multiply(tempTransform, this.projectionMatrix, worldTransform);
-        } else {
-            glMat.mat4.copy(tempTransform, worldTransform);
-        }
 
-        //TODO: test Z value, may be it cant be rendered in this camera
-        tempPoint3d[0] = w0;
-        tempPoint3d[1] = h0;
-        tempPoint3d[2] = 0;
-        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
-        glMat.vec3.copy(minPoint3d, tempPoint3d);
-        glMat.vec3.copy(maxPoint3d, tempPoint3d);
-        tempPoint3d[0] = w0;
-        tempPoint3d[1] = h1;
-        tempPoint3d[2] = 0;
-        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
-        tempPoint3d[0] = w1;
-        tempPoint3d[1] = h1;
-        tempPoint3d[2] = 0;
-        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
-        tempPoint3d[0] = w1;
-        tempPoint3d[1] = h0;
-        tempPoint3d[2] = 0;
-        glMat.vec3.transformMat4(tempPoint3d, tempPoint3d, tempTransform);
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint3d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint3d);
-
-        var minX = minPoint3d[0], maxX = maxPoint3d[0], minY = minPoint3d[1], maxY = maxPoint3d[1];
-
-        //if (this.projectionMatrix) {
-        //    var halfWidth = 1.0 / this.projectionMatrix[0];
-        //    var halfHeight = -1.0 / this.projectionMatrix[5];
-        //    minX = (minPoint3d[0] + 1) * halfWidth;
-        //    maxX = (maxPoint3d[0] + 1) * halfWidth;
-        //    maxY = (-minPoint3d[1] + 1) * halfHeight;
-        //    minY = (-maxPoint3d[1] + 1) * halfHeight;
-        //}
+        var b = math3d.makeRectBounds(this._bounds2, worldTransform, this.worldProjectionMatrix, w0, h0, w1, h1);
+        if (b === core.Rectangle.EMPTY)
+            return this._currentBounds = b;
 
         if(this.children.length)
         {
-            var childBounds = this.containerGetBounds();
-
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
+            b.enlarge(this.containerGetBounds());
         }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
+        this._currentBounds = b;
     }
 
     return this._currentBounds;

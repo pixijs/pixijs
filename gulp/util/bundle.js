@@ -18,6 +18,7 @@ var fs          = require('fs'),
 
 // TODO - Concat license header to dev/prod build files.
 function rebundle(devBundle) {
+	devBundle = true;
     if (devBundle) {
         gutil.log('Starting dev rebundle...');
     }

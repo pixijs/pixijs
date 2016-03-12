@@ -3,8 +3,7 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
     glMat = require('gl-matrix'),
     Sprite3dShader = require('./Sprite3dShader'),
-    CONST = require('../../core/const'),
-    tempRenderTargetProjection = glMat.mat4.create();
+    CONST = require('../../core/const');
 
 /**
  * @author Mat Groves
@@ -13,7 +12,7 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
  * for creating the original pixi version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
- * Heavily inspired by LibGDX's Sprite3dRenderer:
+ * Heavily inspired by LibGDX's SpriteRenderer:
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/Sprite3dRenderer.java
  */
 
@@ -417,7 +416,7 @@ Sprite3dRenderer.prototype.flush = function ()
         nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
-        nextProjection = sprite.projectionMatrix;
+        nextProjection = sprite.worldProjectionMatrix;
 
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???

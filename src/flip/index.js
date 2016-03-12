@@ -5,19 +5,6 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-/**
- * @namespace PIXI
- */
-module.exports = {
-    glMat: require('gl-matrix'),
-    Container3d    :require('./Container3d'),
-    Sprite3d            :require('./Sprite3d'),
-    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
-    Graphics3d          :require('./Graphics3d'),
-    Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
-    FXAAFilter: require('./webgl/filters/FXAAFilter')
-};
-
 var core             = require('../core'),
     glMat            = require('gl-matrix'),
     math3d           = require('./math'),
@@ -25,6 +12,26 @@ var core             = require('../core'),
     tempQuat         = glMat.quat.create(),
     tempPoint        = new core.Point(),
     tempPoint3d      = glMat.mat3.create();
+
+/**
+ * @namespace PIXI.flip
+ */
+module.exports = {
+    glMat: require('gl-matrix'),
+    math3d: math3d,
+    Container3d    :require('./Container3d'),
+    Sprite3d            :require('./Sprite3d'),
+    Mesh3d            :require('./Mesh3d'),
+    Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
+    Graphics3d          :require('./Graphics3d'),
+    Graphics3dRenderer    :require('./webgl/Graphics3dRenderer'),
+    Mesh3dRenderer    :require('./webgl/Mesh3dRenderer'),
+    Mesh3dShader:     require('./webgl/Mesh3dShader'),
+    FXAAFilter: require('./webgl/filters/FXAAFilter')
+};
+
+core.Euler = math3d.Euler;
+core.Point3d = math3d.Point3d;
 
 glMat.mat4.centralPerspective = function(out, width, height, focus, near, far) {
     glMat.mat4.identity(out);
@@ -53,9 +60,9 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
     {
         var quat = tempQuat;
 
-        var rx = this.rotation.x;
-        var ry = this.rotation.y;
-        var rz = this.rotation.z;
+        var rx = this.euler.x;
+        var ry = this.euler.y;
+        var rz = this.euler.z;
 
         //TODO cach sin cos?
         var c1 = Math.cos( rx / 2 );
@@ -113,6 +120,7 @@ core.Container.prototype.setMatrix = function( matrix )
 
 core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
 {
+    if (this.is3d) return;
     if(!this.worldTransform3d)
     {
         this.worldTransform3d = glMat.mat4.create();
@@ -235,7 +243,7 @@ core.Container.prototype.updateTransform3d = function()
 core.Container.prototype.renderWebGL3d = function (renderer)
 {
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
+    if (!this.visible || this.worldAlpha <= 0 || !this.renderable || this.isCulled3d)
     {
         return;
     }
@@ -439,5 +447,3 @@ core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
     glMat.mat4.multiply(this.projectionMatrix3d, perspectiveMatrix, projection3d);
 
 };
-
-
