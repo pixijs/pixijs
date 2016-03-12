@@ -350,6 +350,7 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
         else
         {
             // the texture needs to be unbound if its being rendererd too..
+            this._activeTextureLocation = baseTexture._id;
             gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
