@@ -208,7 +208,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 
     if (!webGLData || webGLData.points.length > 320000)
     {
-        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
+        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
         webGLData.reset(type);
         webGL.data.push(webGLData);
     }

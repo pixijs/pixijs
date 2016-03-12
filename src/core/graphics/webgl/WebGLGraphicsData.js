@@ -9,7 +9,7 @@ var glCore = require('pixi-gl-core');
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
-function WebGLGraphicsData(gl, shader)
+function WebGLGraphicsData(gl, shader, attribsState)
 {
 
     /**
@@ -64,7 +64,7 @@ function WebGLGraphicsData(gl, shader)
      */
     this.shader = shader;
 
-    this.vao =  new glCore.VertexArrayObject(gl)
+    this.vao =  new glCore.VertexArrayObject(gl, attribsState)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
     .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
