@@ -45,6 +45,16 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  */
 function RenderTexture(baseRenderTexture, frame)
 {
+    if(baseRenderTexture instanceof Number)
+    {
+        // we have an old render texture..
+        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(400, 400)')
+
+        var width = baseRenderTexture;
+        var height = frame;
+        
+        baseRenderTexture = new BaseRenderTexture(width, height);
+    }
 
     /**
      * The base texture object that this texture uses
