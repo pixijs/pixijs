@@ -14031,7 +14031,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    
+    var gl = this.gl;
 
     this._lastObjectRendered = displayObject;
 
@@ -14159,11 +14159,22 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
+        var gl = this.gl;
 
         if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
         {
+
             this.textureManager.updateTexture(baseTexture);
+            gl.bindTexture(gl.TEXTURE_2D, null);
         }
+        else
+        {
+            // the texture needs to be unbound if its being rendererd too..
+            this._activeTextureLocation = baseTexture._id;
+            gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+
 
         renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
         renderTarget.setFrame(renderTexture.frame);
@@ -17277,6 +17288,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 
 
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
+    
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
@@ -17294,10 +17306,6 @@ SpriteRenderer.prototype.onContextChange = function ()
         .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
    
-    this.vertexBuffer = this.vertexBuffers[0];
-    this.vao = this.vaos[0];
-
-    
     this.currentBlendMode = 99999;
 };
 
@@ -18996,6 +19004,16 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  */
 function RenderTexture(baseRenderTexture, frame)
 {
+    if(baseRenderTexture instanceof Number)
+    {
+        // we have an old render texture..
+        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(400, 400)')
+
+        var width = baseRenderTexture;
+        var height = frame;
+        
+        baseRenderTexture = new BaseRenderTexture(width, height);
+    }
 
     /**
      * The base texture object that this texture uses
@@ -20794,6 +20812,18 @@ Object.defineProperties(core, {
         }
     }
 });
+
+core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
+{
+    return renderer.generateTexture(renderer, scaleMode, resolution)
+    console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+};
+
+core.RenderTexture.prototype.render = function()
+{
+    //displayObject, matrix, clear, updateTransform
+    console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
+};
 
 /**
  * @method
@@ -23493,8 +23523,10 @@ DisplacementFilter.prototype.apply = function (filterManager, input, output)
     var ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
-    this.uniforms.scale.x = this.scale.x * ratio;
-    this.uniforms.scale.y = this.scale.y * ratio;
+    this.uniforms.scale.x = 0.01//this.scale.x * ratio;
+    this.uniforms.scale.y = 0.01//this.scale.y * ratio;
+
+   // console.log( this.scale)
 
      // draw the filter...
     filterManager.applyFilter(this, input, output);
