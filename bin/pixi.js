@@ -15,24 +15,54 @@ module.exports = {
 
 };
 },{"./lib/GLBuffer":2,"./lib/GLFramebuffer":3,"./lib/GLShader":4,"./lib/GLTexture":5,"./lib/VertexArrayObject":6,"./lib/createContext":7,"./lib/setVertexAttribArrays":8}],2:[function(require,module,exports){
+var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
 
 /**
  * Helper class to create a webGL buffer
  *
  * @class
- * @memberof PIXI
- * @param gl {WebGLRenderingContext}
+ * @memberof pixi.gl
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param type {gl.ARRAY_BUFFER | gl.ELEMENT_ARRAY_BUFFER} @mat
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ * @param drawType {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
  */
-
-var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
-
 var Buffer = function(gl, type, data, drawType)
 {
+
+	/**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = gl;
 
+	/**
+     * The WebGL buffer, created upon instantiation
+     *
+     * @member {WebGLBuffer}
+     */
 	this.buffer = gl.createBuffer();
+
+	/**
+     * The type of the buffer
+     *
+     * @member {gl.ARRAY_BUFFER || gl.ELEMENT_ARRAY_BUFFER}
+     */
 	this.type = type || gl.ARRAY_BUFFER;
+
+	/**
+     * The draw type of the buffer
+     *
+     * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
+     */
 	this.drawType = drawType || gl.STATIC_DRAW;
+
+	/**
+     * The data in the buffer, as a typed array
+     *
+     * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
+     */
 	this.data = EMPTY_ARRAY_BUFFER;
 
 	if(data)
@@ -41,7 +71,12 @@ var Buffer = function(gl, type, data, drawType)
 	}
 }
 
-
+/**
+ * Uploads the buffer to the GPU
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
+ * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
+ * @param dontBind {Boolean} whether to bind the buffer before uploading it
+ */
 Buffer.prototype.upload = function(data, offset, dontBind)
 {
 	// todo - needed?
@@ -63,7 +98,10 @@ Buffer.prototype.upload = function(data, offset, dontBind)
 
 	this.data = data;
 }
-
+/**
+ * Binds the buffer
+ *
+ */
 Buffer.prototype.bind = function()
 {
 	var gl = this.gl;
@@ -85,6 +123,10 @@ Buffer.create = function(gl, type, data, drawType)
 	return new Buffer(gl, type, drawType);
 }
 
+/**
+ * Destroys the buffer
+ *
+ */
 Buffer.prototype.destroy = function(){
 	this.gl.deleteBuffer(this.buffer);
 }
@@ -99,23 +141,59 @@ var Texture = require('./GLTexture');
  * Helper class to create a webGL Framebuffer
  *
  * @class
- * @memberof PIXI
- * @param gl {WebGLRenderingContext}
+ * @memberof pixi.gl
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
  */
-
 var Framebuffer = function(gl, width, height)
 {
+	/**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
 	this.gl = gl;
 
+	/**
+     * The frame buffer
+     *
+     * @member {WebGLFramebuffer}
+     */
 	this.framebuffer = gl.createFramebuffer();
-	
+
+	/**
+     * The stencil buffer
+     *
+     * @member {WebGLRenderbuffer}
+     */
 	this.stencil = null;
+
+	/**
+     * The stencil buffer
+     *
+     * @member {GLTexture}
+     */
 	this.texture = null;
 
+	/**
+     * The width of the drawing area of the buffer
+     *
+     * @member {Number}
+     */
 	this.width = width || 100;
+	/**
+     * The height of the drawing area of the buffer
+     *
+     * @member {Number}
+     */
 	this.height = height || 100;
 }
 
+/**
+ * Adds a texture to the frame buffer
+ * @param texture {GLTexture}
+ */
 Framebuffer.prototype.enableTexture = function(texture)
 {
 	var gl = this.gl;
@@ -131,6 +209,10 @@ Framebuffer.prototype.enableTexture = function(texture)
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
 }
 
+/**
+ * Initialises the stencil buffer
+ * @mat maybe you can come up with a better explaination
+ */
 Framebuffer.prototype.enableStencil = function()
 {
 	if(this.stencil)return;
@@ -138,41 +220,59 @@ Framebuffer.prototype.enableStencil = function()
 	var gl = this.gl;
 
 	this.stencil = gl.createRenderbuffer();
-    
+
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
-    
+
     // TODO.. this is depth AND stencil?
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencil);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
 }
 
+/**
+ * Erases the drawing area and fills it with a colour
+ * @param  r {Number} the red value of the clearing colour
+ * @param  g {Number} the green value of the clearing colour
+ * @param  b {Number} the blue value of the clearing colour
+ * @param  a {Number} the alpha value of the clearing colour
+ */
 Framebuffer.prototype.clear = function( r, g, b, a )
 {
 	this.bind();
 
 	var gl = this.gl;
-    
+
     gl.clearColor(r, g, b, a);
     gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
+/**
+ * Binds the frame buffer to the WebGL context
+ */
 Framebuffer.prototype.bind = function()
 {
 	var gl = this.gl;
-	
+
 	if(this.texture)
 	{
 		this.texture.unbind();
 	}
 
-	gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
 }
 
+/**
+ * Unbinds the frame buffer to the WebGL context
+ */
 Framebuffer.prototype.unbind = function()
 {
+	var gl = this.gl;
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null );	
 }
-
+/**
+ * Resizes the drawing area of the buffer to the given width and height
+ * @param  width  {Number} the new width
+ * @param  height {Number} the new height
+ */
 Framebuffer.prototype.resize = function(width, height)
 {
 	var gl = this.gl;
@@ -193,10 +293,13 @@ Framebuffer.prototype.resize = function(width, height)
     }
 }
 
+/**
+ * Destroys this buffer
+ */
 Framebuffer.prototype.destroy = function()
 {
 	var gl = this.gl;
-	
+
 	//TODO
 	if(this.texture)
 	{
@@ -211,6 +314,15 @@ Framebuffer.prototype.destroy = function()
 	this.texture = null;
 }
 
+/**
+ * Creates a frame buffer with a texture containing the given data
+ * @mat can you confirm ? :)
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ */
 Framebuffer.createRGBA = function(gl, width, height, data)
 {
 	var texture = Texture.fromData(gl, null, width, height);
@@ -222,10 +334,19 @@ Framebuffer.createRGBA = function(gl, width, height, data)
     fbo.enableTexture(texture);
 
     fbo.unbind();
-    
+
     return fbo;
 }
 
+/**
+ * Creates a frame buffer with a texture containing the given data
+ * @mat not sure what the difference is with the method above ?
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ */
 Framebuffer.createFloat32 = function(gl, width, height, data)
 {
 	// create a new texture..
@@ -244,7 +365,6 @@ Framebuffer.createFloat32 = function(gl, width, height, data)
 
 module.exports = Framebuffer;
 
-
 },{"./GLTexture":5}],4:[function(require,module,exports){
 
 var compileProgram = require('./shader/compileProgram'),
@@ -256,29 +376,66 @@ var compileProgram = require('./shader/compileProgram'),
  * Helper class to create a webGL Shader
  *
  * @class
- * @memberof PIXI
+ * @memberof pixi.gl
  * @param gl {WebGLRenderingContext}
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  */
 var Shader = function(gl, vertexSrc, fragmentSrc)
 {
+	/**
+	 * The current WebGL rendering context
+	 *
+	 * @member {WebGLRenderingContext}
+	 */
 	this.gl = gl;
 
+	/**
+	 * The shader program
+	 *
+	 * @member {WebGLProgram}
+	 */
 	// First compile the program..
 	this.program = compileProgram(gl, vertexSrc, fragmentSrc);
 
+
+	/**
+	 * The attributes of the shader as an object containing the following properties
+	 * {
+	 * 	type,
+	 * 	size,
+	 * 	location,
+	 * 	pointer
+	 * }
+	 * @member {Object}
+	 */
 	// next extract the attributes
-	this.attributes = extractAttributes(gl, this.program); 
+	this.attributes = extractAttributes(gl, this.program);
 
     var uniformData = extractUniforms(gl, this.program);
 
+	/**
+	 * The uniforms of the shader as an object containing the following properties
+	 * {
+	 * 	gl,
+	 * 	data
+	 * }
+	 * @member {Object}
+	 */
     this.uniforms = generateUniformAccessObject( gl, uniformData );
 }
-
+/**
+ * Uses this shader
+ */
 Shader.prototype.bind = function()
 {
 	this.gl.useProgram(this.program);
 }
 
+/**
+ * Destroys this shader
+ * TODO
+ */
 Shader.prototype.destroy = function()
 {
 	var gl = this.gl;
@@ -286,42 +443,85 @@ Shader.prototype.destroy = function()
 
 module.exports = Shader;
 
-
 },{"./shader/compileProgram":9,"./shader/extractAttributes":11,"./shader/extractUniforms":12,"./shader/generateUniformAccessObject":13}],5:[function(require,module,exports){
 
 /**
- * Helper class to create a webGL Texture
+ * Helper class to create a WebGL Texture
  *
  * @class
- * @memberof PIXI
- * @param gl {WebGLRenderingContext} a WebGL context
- * @param width {number} the width of the texture 
- * @param height {number} the height of the texture 
+ * @memberof pixi.gl
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param width {number} the width of the texture
+ * @param height {number} the height of the texture
  * @param format {number} the pixel format of the texture. defaults to gl.RGBA
  * @param type {number} the gl type of the texture. defaults to gl.UNSIGNED_BYTE
  */
 var Texture = function(gl, width, height, format, type)
 {
+	/**
+	 * The current WebGL rendering context
+	 *
+	 * @member {WebGLRenderingContext}
+	 */
 	this.gl = gl;
 
+
+	/**
+	 * The WebGL texture
+	 *
+	 * @member {WebGLTexture}
+	 */
 	this.texture = gl.createTexture();
 
+	/**
+	 * If mipmapping was used for this texture, enable and disable with enableMipmap()
+	 *
+	 * @member {Boolean}
+	 */
 	// some settings..
 	this.mipmap = false;
 
+
+	/**
+	 * Set to true to enable pre-multiplied alpha
+	 *
+	 * @member {Boolean}
+	 */
 	this.premultiplyAlpha = false;
 
+	/**
+	 * The width of texture
+	 *
+	 * @member {Number}
+	 */
 	this.width = width || 0;
+	/**
+	 * The height of texture
+	 *
+	 * @member {Number}
+	 */
 	this.height = height || 0;
 
+	/**
+	 * The pixel format of the texture. defaults to gl.RGBA
+	 *
+	 * @member {Number}
+	 */
 	this.format = format || gl.RGBA;
+
+	/**
+	 * The gl type of the texture. defaults to gl.UNSIGNED_BYTE
+	 *
+	 * @member {Number}
+	 */
 	this.type = type || gl.UNSIGNED_BYTE;
 
-	
+
 }
 
 /**
- * @param {PIXI.glCore.Texture} [varname] [description]
+ * Uploads this texture to the GPU
+ * @param source {HTMLImageElement|ImageData} the source image of the texture
  */
 Texture.prototype.upload = function(source)
 {
@@ -338,10 +538,18 @@ Texture.prototype.upload = function(source)
 
 var FLOATING_POINT_AVAILABLE = false;
 
+/**
+ * Use a data source and uploads this texture to the GPU
+ * @param data {TypedArray} the data to upload to the texture
+ * @param width {number} the new width of the texture
+ * @param height {number} the new height of the texture
+ */
 Texture.prototype.uploadData = function(data, width, height)
 {
 	this.bind();
-	
+
+	var gl = this.gl;
+
 	this.width = width || this.width;
 	this.height = height || this.height;
 
@@ -350,7 +558,7 @@ Texture.prototype.uploadData = function(data, width, height)
 		if(!FLOATING_POINT_AVAILABLE)
 		{
 			var ext = gl.getExtension("OES_texture_float");
-			
+
 			if(ext)
 			{
 				FLOATING_POINT_AVAILABLE = true;
@@ -369,12 +577,18 @@ Texture.prototype.uploadData = function(data, width, height)
 		this.type = gl.UNSIGNED_BYTE;
 	}
 
+	
+
 	// what type of data?
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
 	gl.texImage2D(gl.TEXTURE_2D, 0, this.format,  this.width, this.height, 0, this.format, this.type, data || null);
 
 }
 
+/**
+ * Binds the texture
+ * @param  location {@mat}
+ */
 Texture.prototype.bind = function(location)
 {
 	var gl = this.gl;
@@ -387,12 +601,19 @@ Texture.prototype.bind = function(location)
 	gl.bindTexture(gl.TEXTURE_2D, this.texture);
 }
 
+/**
+ * Unbinds the texture
+ */
 Texture.prototype.unbind = function()
 {
 	var gl = this.gl;
 	gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
+/**
+ * @mat
+ * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
+ */
 Texture.prototype.minFilter = function( linear )
 {
 	var gl = this.gl;
@@ -406,9 +627,13 @@ Texture.prototype.minFilter = function( linear )
 	else
 	{
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-	}	
+	}
 }
 
+/**
+ * @mat
+ * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
+ */
 Texture.prototype.magFilter = function( linear )
 {
 	var gl = this.gl;
@@ -418,26 +643,41 @@ Texture.prototype.magFilter = function( linear )
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, linear ? gl.LINEAR : gl.NEAREST);
 }
 
+/**
+ * Enables mipmapping
+ */
 Texture.prototype.enableMipmap = function()
 {
+	var gl = this.gl;
+
 	this.bind();
 
 	this.mipmap = true;
+
 	gl.generateMipmap(gl.TEXTURE_2D);
 }
 
+/**
+ * Enables linear filtering
+ */
 Texture.prototype.enableLinearScaling = function()
 {
 	this.minFilter(true);
 	this.magFilter(true);
 }
 
+/**
+ * Enables nearest neighbour interpolation
+ */
 Texture.prototype.enableNearestScaling = function()
 {
 	this.minFilter(false);
 	this.magFilter(false);
 }
 
+/**
+ * Enables clamping on the texture so WebGL will not repeat it
+ */
 Texture.prototype.enableWrapClamp = function()
 {
 	var gl = this.gl;
@@ -448,28 +688,36 @@ Texture.prototype.enableWrapClamp = function()
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 }
 
+/**
+ * Enable tiling on the texture
+ */
 Texture.prototype.enableWrapRepeat = function()
 {
 	var gl = this.gl;
 
 	this.bind();
-	
+
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 }
 
+/**
+ * @mat
+ */
 Texture.prototype.enableWrapMirrorRepeat = function()
 {
 	var gl = this.gl;
 
 	this.bind();
-	
+
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
 }
 
 
-
+/**
+ * Destroys this texture
+ */
 Texture.prototype.destroy = function()
 {
 	var gl = this.gl;
@@ -477,7 +725,12 @@ Texture.prototype.destroy = function()
 	gl.deleteTexture(this.texture);
 }
 
-//Texture.
+/**
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param source {HTMLImageElement|ImageData} the source image of the texture
+ * @param premultiplyAlpha {Boolean} If we want to use pre-multiplied alpha
+ */
 Texture.fromSource = function(gl, source, premultiplyAlpha)
 {
 	var texture = new Texture(gl);
@@ -487,6 +740,13 @@ Texture.fromSource = function(gl, source, premultiplyAlpha)
 	return texture;
 }
 
+/**
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param data {TypedArray} the data to upload to the texture
+ * @param width {number} the new width of the texture
+ * @param height {number} the new height of the texture
+ */
 Texture.fromData = function(gl, data, width, height)
 {
 	//console.log(data, width, height);
@@ -499,52 +759,83 @@ Texture.fromData = function(gl, data, width, height)
 
 module.exports = Texture;
 
-
 },{}],6:[function(require,module,exports){
 
-/**
- * Generic Mask Stack data structure
- * @class
- * @memberof PIXI
- */
-
 // state object//
-function VertexArrayObject(gl)
+var setVertexAttribArrays = require( './setVertexAttribArrays' );
+
+/**
+ * Helper class to work with WebGL VertexArrayObjects (vaos)
+ * Only works if WebGL extensions are enabled (they usually are)
+ *
+ * @class
+ * @memberof pixi.gl
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ */
+function VertexArrayObject(gl, state)
 {
-	
+
 	this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||
       gl.getExtension('MOZ_OES_vertex_array_object') ||
       gl.getExtension('WEBKIT_OES_vertex_array_object')
     );
 
-//	this.nativeVaoExtension = null;
+	this.nativeState = state;
 
 	if(this.nativeVaoExtension)
 	{
-		this.nativeVao = this.nativeVaoExtension.createVertexArrayOES();  
+		this.nativeVao = this.nativeVaoExtension.createVertexArrayOES();
+		
+		var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+		
+		// VAO - overwrite the state..
+		this.nativeState = {tempAttribState:new Array(maxAttribs)
+							,attribState:new Array(maxAttribs)};
 	}
 
+	/**
+	 * The current WebGL rendering context
+	 *
+	 * @member {WebGLRenderingContext}
+	 */
 	this.gl = gl;
 
+	/**
+	 * An array of attributes ? @mat
+	 *
+	 * @member {Array}
+	 */
 	this.attributes = [];
 
+	/**
+	 * @mat
+	 *
+	 * @member {Array}
+	 */
 	this.indexBuffer = null;
 
+	/**
+	 * A boolean flag
+	 *
+	 * @member {Boolean}
+	 */
 	this.dirty = false;
-
-	
 }
 
 VertexArrayObject.prototype.constructor = VertexArrayObject;
 module.exports = VertexArrayObject;
 
+
+/**
+ * Binds the buffer
+ */
 VertexArrayObject.prototype.bind = function()
 {
 	if(this.nativeVao)
 	{
-		this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);  
-		
+		this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
+
 		if(this.dirty)
 		{
 			this.dirty = false;
@@ -553,12 +844,16 @@ VertexArrayObject.prototype.bind = function()
 	}
 	else
 	{
+		
 		this.activate();
 	}
 
 	return this;
 }
 
+/**
+ * Unbinds the buffer
+ */
 VertexArrayObject.prototype.unbind = function()
 {
 	if(this.nativeVao)
@@ -569,30 +864,51 @@ VertexArrayObject.prototype.unbind = function()
 	return this;
 }
 
+/**
+ * Uses this vao
+ */
 VertexArrayObject.prototype.activate = function()
 {
+	
 	var gl = this.gl;
+	var lastBuffer = null;
 
-	for (var i = 0; i < this.attributes.length; i++) 
+	for (var i = 0; i < this.attributes.length; i++)
 	{
 		var attrib = this.attributes[i];
-		attrib.buffer.bind();	
 
-		//attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start); 
+		if(lastBuffer !== attrib.buffer)
+		{
+			attrib.buffer.bind();
+			lastBuffer = attrib.buffer;
+		}
+
+		//attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start);
 		gl.vertexAttribPointer(attrib.attribute.location,
-							   attrib.attribute.size, attrib.type || gl.FLOAT, 
-							   attrib.normalized || false, 
-							   attrib.stride || 0, 
+							   attrib.attribute.size, attrib.type || gl.FLOAT,
+							   attrib.normalized || false,
+							   attrib.stride || 0,
 							   attrib.start || 0);
-		
-		gl.enableVertexAttribArray(attrib.attribute.location);
+
+
 	};
 
+	setVertexAttribArrays(gl, this.attributes, this.nativeState);
+	
 	this.indexBuffer.bind();
 
 	return this;
 }
 
+/**
+ *
+ * @param buffer     {WebGLBuffer}
+ * @param attribute  {[type]}
+ * @param type       {[type]}
+ * @param normalized {[type]}
+ * @param stride     {Number}
+ * @param start      {Number}
+ */
 VertexArrayObject.prototype.addAttribute = function(buffer, attribute, type, normalized, stride, start)
 {
     this.attributes.push({
@@ -611,7 +927,11 @@ VertexArrayObject.prototype.addAttribute = function(buffer, attribute, type, nor
 	return this;
 }
 
-
+/**
+ *
+ * @param buffer   {WebGLBuffer}
+ * @param options  {Object}
+ */
 VertexArrayObject.prototype.addIndex = function(buffer, options)
 {
     this.indexBuffer = buffer;
@@ -621,27 +941,32 @@ VertexArrayObject.prototype.addIndex = function(buffer, options)
     return this;
 }
 
+/**
+ * Unbinds this vao and disables it
+ */
 VertexArrayObject.prototype.clear = function()
 {
+	var gl = this.gl;
+
 	// TODO - should this function unbind after clear?
 	// for now, no but lets see what happens in the real world!
 	if(this.nativeVao)
 	{
-		this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);  
+		this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
 	}
-
-	for (var i = 0; i < this.attributes.length; i++) 
-	{
-		var attrib = this.attributes[i];
-		gl.disableVertexAttribArray(attrib.attribute.location);
-	};
 
 	this.attributes.length = 0;
 	this.indexBuffer = null;
-	
+
 	return this;
 }
 
+/**
+ * @mat
+ * @param type  {Number}
+ * @param size  {Number}
+ * @param start {Number}
+ */
 VertexArrayObject.prototype.draw = function(type, size, start)
 {
 	var gl = this.gl;
@@ -650,22 +975,21 @@ VertexArrayObject.prototype.draw = function(type, size, start)
 	return this;
 }
 
-
-},{}],7:[function(require,module,exports){
+},{"./setVertexAttribArrays":8}],7:[function(require,module,exports){
 
 /**
  * Helper class to create a webGL Context
  *
  * @class
- * @memberof PIXI
- * @param gl {WebGLRenderingContext}
+ * @memberof pixi.gl
+ * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
+ * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
+ *                         see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
+ * @return {WebGLRenderingContext} the WebGL context
  */
-
-
-
 var createContext = function(canvas, options)
 {
-    gl = canvas.getContext('webgl', options) || 
+    var gl = canvas.getContext('webgl', options) || 
     	 canvas.getContext('experimental-webgl', options);
 
     if (!gl)
@@ -679,68 +1003,74 @@ var createContext = function(canvas, options)
 
 module.exports = createContext;
 
-
 },{}],8:[function(require,module,exports){
-/**
- * Generic Mask Stack data structure
- * @class
- * @memberof PIXI
- */
-
 var GL_MAP = {};
 
+/**
+ * @mat
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param attribs {[type]}
+ */
+var setVertexAttribArrays = function (gl, attribs, state)
+{
 
-var setVertexAttribArrays = function (gl, attribs)
-{	
-   // console.log(gl.id)
-    var data = GL_MAP[gl.id];
-
-    if(!data)
+    if(state)
     {
-	   var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
-		data = GL_MAP[gl.id] = {tempAttribState:new Array(maxAttribs)
-				 	 		   ,attribState:new Array(maxAttribs)};
-	}
-	
-    var i,
-    	tempAttribState = data.tempAttribState,
-    	attribState = data.attribState;
 
-    for (i = 0; i < tempAttribState.length; i++)
-    {
-        tempAttribState[i] = false;
-    }
+        var i,
+            tempAttribState = state.tempAttribState,
+            attribState = state.attribState;
 
-    // set the new attribs
-    for (i in attribs)
-    {
-        tempAttribState[attribs[i].location] = true;
-    }
-
-    for (i = 1; i < attribState.length; i++)
-    {
-        if (attribState[i] !== tempAttribState[i])
+        for (i = 0; i < tempAttribState.length; i++)
         {
-            attribState[i] = tempAttribState[i];
+            tempAttribState[i] = false;
+        }
 
-            if (data.attribState[i])
+        // set the new attribs
+        for (i in attribs)
+        {
+            tempAttribState[attribs[i].attribute.location] = true;
+        }
+
+        for (i = 0; i < attribState.length; i++)
+        {
+            if (attribState[i] !== tempAttribState[i])
             {
-                gl.enableVertexAttribArray(i);
+                attribState[i] = tempAttribState[i];
+
+                if (state.attribState[i])
+                {
+                    gl.enableVertexAttribArray(i);
+                }
+                else
+                {
+                    gl.disableVertexAttribArray(i);
+                }
             }
-            else
-            {
-                gl.disableVertexAttribArray(i);
-            }
+        }
+
+    }
+    else
+    {
+        for (var i = 0; i < attribs.length; i++)
+        {
+            var attrib = attribs[i];
+            gl.enableVertexAttribArray(attrib.attribute.location);
         }
     }
 };
 
 module.exports = setVertexAttribArrays;
+
 },{}],9:[function(require,module,exports){
 
-
-
-
+/**
+ *
+ * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ * @return {WebGLProgram} the shader program
+ */
 compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
     var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
@@ -776,6 +1106,13 @@ compileProgram = function(gl, vertexSrc, fragmentSrc)
     return program;
 }
 
+/**
+ *
+ * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
+ * @param type {Number} the type, can be either VERTEX_SHADER or FRAGMENT_SHADER
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @return {WebGLShader} the shader
+ */
 var compileShader = function (gl, type, src)
 {
     var shader = gl.createShader(type);
@@ -793,7 +1130,6 @@ var compileShader = function (gl, type, src)
 };
 
 module.exports = compileProgram;
-
 
 },{}],10:[function(require,module,exports){
 
@@ -876,13 +1212,19 @@ module.exports = defaultValue;
 var mapType = require('./mapType');
 var mapSize = require('./mapSize');
 
+/**
+ * Extracts the attributes
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param program {WebGLProgram} The shader program to get the attributes from
+ * @return attributes {Object}
+ */
 var extractAttributes = function(gl, program)
 {
     var attributes = {};
 
     var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
 
-    for (var i = 0; i < totalAttributes; i++) 
+    for (var i = 0; i < totalAttributes; i++)
     {
         var attribData = gl.getActiveAttrib(program, i);
         var type = mapType(gl, attribData.type);
@@ -895,30 +1237,34 @@ var extractAttributes = function(gl, program)
             pointer:function(type, normalized, stride, start){
 
              //   console.log(this.location)
-                gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0); 
+                gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
 
             }
         }
     };
 
-    return attributes;  
+    return attributes;
 }
 
 module.exports = extractAttributes;
-
 
 },{"./mapSize":14,"./mapType":15}],12:[function(require,module,exports){
 var mapType = require('./mapType');
 var defaultValue = require('./defaultValue');
 
-
+/**
+ * Extracts the uniforms
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param program {WebGLProgram} The shader program to get the uniforms from
+ * @return uniforms {Object}
+ */
 var extractUniforms = function(gl, program)
 {
 	var uniforms = {};
-	
+
     var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
 
-    for (var i = 0; i < totalUniforms; i++) 
+    for (var i = 0; i < totalUniforms; i++)
     {
     	var uniformData = gl.getActiveUniform(program, i);
     	var name = uniformData.name.replace(/\[.*?\]/, "");
@@ -931,15 +1277,19 @@ var extractUniforms = function(gl, program)
     		value:defaultValue(type, uniformData.size)
     	}
     };
-	
-	return uniforms;	
+
+	return uniforms;
 }
 
 module.exports = extractUniforms;
 
-
 },{"./defaultValue":10,"./mapType":15}],13:[function(require,module,exports){
-
+/**
+ * Extracts the attributes
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param uniforms {Array} @mat ?
+ * @return attributes {Object}
+ */
 var generateUniformAccessObject = function(gl, uniformData)
 {
     // this is the object we will be sending back.
@@ -947,10 +1297,10 @@ var generateUniformAccessObject = function(gl, uniformData)
     var uniforms = {data:{}};
 
     uniforms.gl = gl;
-    
+
     var uniformKeys= Object.keys(uniformData);
 
-    for (var i = 0; i < uniformKeys.length; i++) 
+    for (var i = 0; i < uniformKeys.length; i++)
     {
         var fullName = uniformKeys[i]
 
@@ -983,7 +1333,7 @@ var generateSetter = function(name, uniform)
 {
     var template = setterTemplate.replace(/%%/g, name);
     var setTemplate
-    
+
     if(uniform.size === 1)
     {
         setTemplate = GLSL_TO_SINGLE_SETTERS[uniform.type];
@@ -1005,7 +1355,7 @@ var getUniformGroup = function(nameTokens, uniform)
 {
     var cur = uniform;
 
-    for (var i = 0; i < nameTokens.length - 1; i++) 
+    for (var i = 0; i < nameTokens.length - 1; i++)
     {
         var o = cur[nameTokens[i]] || {data:{}};
         cur[nameTokens[i]] = o;
@@ -1032,7 +1382,7 @@ var GLSL_TO_SINGLE_SETTERS = {
     'vec2':     'uniform2f(location, value[0], value[1])',
     'vec3':     'uniform3f(location, value[0], value[1], value[2])',
     'vec4':     'uniform4f(location, value[0], value[1], value[2], value[3])',
-    	
+
     'int':      'uniform1i(location, value)',
     'ivec2':    'uniform2i(location, value[0], value[1])',
     'ivec3':    'uniform3i(location, value[0], value[1], value[2])',
@@ -1057,7 +1407,7 @@ var GLSL_TO_ARRAY_SETTERS = {
     'vec2':     'uniform2fv(location, value)',
     'vec3':     'uniform3fv(location, value)',
     'vec4':     'uniform4fv(location, value)',
-    	
+
     'int':      'uniform1iv(location, value)',
     'ivec2':    'uniform2iv(location, value)',
     'ivec3':    'uniform3iv(location, value)',
@@ -1067,12 +1417,11 @@ var GLSL_TO_ARRAY_SETTERS = {
     'bvec2':    'uniform2iv(location, value)',
     'bvec3':    'uniform3iv(location, value)',
     'bvec4':    'uniform4iv(location, value)',
-   
+
     'sampler2D':'uniform1iv(location, value)'
 }
 
 module.exports = generateUniformAccessObject;
-
 
 },{}],14:[function(require,module,exports){
 
@@ -10253,7 +10602,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
 
     if (!webGLData || webGLData.points.length > 320000)
     {
-        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl, this.primitiveShader);
+        webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
         webGLData.reset(type);
         webGL.data.push(webGLData);
     }
@@ -10275,7 +10624,7 @@ var glCore = require('pixi-gl-core');
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
-function WebGLGraphicsData(gl, shader)
+function WebGLGraphicsData(gl, shader, attribsState)
 {
 
     /**
@@ -10330,7 +10679,7 @@ function WebGLGraphicsData(gl, shader)
      */
     this.shader = shader;
 
-    this.vao =  new glCore.VertexArrayObject(gl)
+    this.vao =  new glCore.VertexArrayObject(gl, attribsState)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
     .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
@@ -13480,6 +13829,7 @@ var SystemRenderer = require('../SystemRenderer'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
     utils = require('../../utils'),
+    glCore = require('pixi-gl-core'),
     CONST = require('../../const');
 
 var CONTEXT_UID = 0;
@@ -13579,8 +13929,8 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLRenderingContext}
      */
     // initialize the context so it is ready for the managers.
-    this.gl = createContext(this.view, this._contextOptions);
-
+    this.gl = options.context || createContext(this.view, this._contextOptions);
+   
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
@@ -13709,8 +14059,8 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     displayObject.renderWebGL(this);
 
     // apply transform..
-
     this.currentRenderer.flush();
+    //this.setObjectRenderer(this.emptyRenderer);
 
     this.emit('postrender');
 };
@@ -13750,6 +14100,8 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
+  //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+
     SystemRenderer.prototype.resize.call(this, width, height);
 
     this.rootRenderTarget.resize(width, height);
@@ -13909,6 +14261,11 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     return this;
 };
 
+WebGLRenderer.prototype.createVao = function ()
+{
+    return new glCore.VertexArrayObject(this.gl, this.state.attribState);
+}
+
 /**
  * Resets the WebGL state so you can render things however you fancy!
  */
@@ -14045,9 +14402,14 @@ var WebGLState = function(gl)
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
+	this.attribState = {tempAttribState:new Array(this.maxAttribs)
+                       ,attribState:new Array(this.maxAttribs)};
+
+
+
 	this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-
+	
 	// check we have vao..
 	this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||
@@ -14642,7 +15004,7 @@ function FilterManager(renderer)
 
     this.gl = this.renderer.gl;
     // know about sprites!
-    this.quad = new Quad(this.gl);
+    this.quad = new Quad(this.gl, renderer.state.attribState);
 
     var rootState = new FilterState();
     rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;
@@ -15357,7 +15719,7 @@ var glCore = require('pixi-gl-core'),
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
-function Quad(gl)
+function Quad(gl, state)
 {
     /*
      * the current WebGL drawing context
@@ -15417,7 +15779,7 @@ function Quad(gl)
     /*
      * @member {glCore.VertexArrayObject} The index buffer
      */
-    this.vao = new glCore.VertexArrayObject(gl)
+    this.vao = new glCore.VertexArrayObject(gl, state)
 
 }
 
@@ -16888,6 +17250,12 @@ function SpriteRenderer(renderer)
     }
 
     this.sprites = [];
+
+    this.vertexBuffers = [];
+    this.vaos = [];
+
+    this.vaoMax = 10
+    this.vertexCount = 0;
 }
 
 
@@ -16911,17 +17279,25 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
-    this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    // build the vao object that will render..
-    this.vao = new glCore.VertexArrayObject(gl)
-    .addIndex(this.indexBuffer)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-    .addAttribute(this.vertexBuffer, this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    
 
+    for (var i = 0; i < this.vaoMax; i++) {
+        this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+        // build the vao object that will render..
+        this.vaos[i] = this.renderer.createVao()
+        .addIndex(this.indexBuffer)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    }
+   
+    this.vertexBuffer = this.vertexBuffers[0];
+    this.vao = this.vaos[0];
+
+    
     this.currentBlendMode = 99999;
 };
 
@@ -17078,8 +17454,12 @@ SpriteRenderer.prototype.flush = function ()
 
     currentGroup.size = i - currentGroup.start;
 
-    this.vertexBuffer.upload(buffer.vertices, 0, true);
+    this.vertexCount++;
+    this.vertexCount %= this.vaoMax;
 
+    this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
+    this.vao = this.vaos[this.vertexCount].bind();
+   
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
@@ -17107,8 +17487,6 @@ SpriteRenderer.prototype.flush = function ()
 SpriteRenderer.prototype.start = function ()
 {
     this.renderer.bindShader(this.shader);
-    this.vao.bind();
-    this.vertexBuffer.bind();
     this.tick %= 1000;
 };
 
@@ -17123,7 +17501,11 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    this.vertexBuffer.destroy();
+    for (var i = 0; i < this.vaoMax; i++) {
+        this.vertexBuffers[i].destroy();
+        this.vaoMax[i].destroy();
+    };
+
     this.indexBuffer.destroy();
 
     ObjectRenderer.prototype.destroy.call(this);
@@ -17889,11 +18271,6 @@ var BaseTexture = require('./BaseTexture'),
  */
 function BaseRenderTexture(width, height, scaleMode, resolution)
 {
-    if (!renderer)
-    {
-        throw new Error('Unable to create BaseRenderTexture, you must pass a renderer into the constructor.');
-    }
-
     BaseTexture.call(this, null, scaleMode);
 
     this.width = width || 100;
@@ -18619,10 +18996,6 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  */
 function RenderTexture(baseRenderTexture, frame)
 {
-    if (!renderer)
-    {
-        throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
-    }
 
     /**
      * The base texture object that this texture uses
@@ -18771,20 +19144,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this._uvs = null;
 
     /**
-     * The width of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.width = 0;
-
-    /**
-     * The height of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.height = 0;
-
-    /**
      * This is the area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
@@ -18857,9 +19216,8 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim) {
-                this.width = frame.width;
-                this.height = frame.height;
+            if (!this.trim)
+            {
                 this.crop = frame;
             }
 
@@ -18890,6 +19248,28 @@ Object.defineProperties(Texture.prototype, {
             {
                 this._updateUvs();
             }
+        }
+    },
+
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    width: {
+        get: function() {
+            return this.crop ? this.crop.width : 0;
+        }
+    },
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    height: {
+        get: function() {
+            return this.crop ? this.crop.height : 0;
         }
     }
 });
@@ -26477,7 +26857,7 @@ ParticleRenderer.prototype.render = function (container)
         }
 
         // bind the buffer
-        buffer.vao.bind( this.shader )
+        buffer.vao.bind()
         .draw(gl.TRIANGLES, amount * 6)
         .unbind();
 
