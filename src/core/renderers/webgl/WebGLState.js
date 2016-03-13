@@ -50,9 +50,14 @@ var WebGLState = function(gl)
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
+	this.attribState = {tempAttribState:new Array(this.maxAttribs)
+                       ,attribState:new Array(this.maxAttribs)};
+
+
+
 	this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-
+	
 	// check we have vao..
 	this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||

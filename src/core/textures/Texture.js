@@ -411,6 +411,51 @@ Texture.fromVideoUrl = function (videoUrl, scaleMode)
 };
 
 /**
+ * Helper function that creates a new Texture based on the source you provide.
+ * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+ *
+ * @static
+ * @param source {}
+ * @return {PIXI.Texture} A Texture
+ */
+Texture.from = function (source)
+{
+    //TODO auto detect cross origin..
+    //TODO pass in scale mode?
+    if(typeof source === 'string')
+    {
+        var texture = utils.TextureCache[source];
+
+        if (!texture)
+        {
+            // check if its a video..
+            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) != null;
+            if(isVideo)
+            {
+                return Texture.fromVideoUrl(source);
+            }
+
+            return Texture.fromImage(source);
+        }
+
+        return texture
+    }
+    else if(source instanceof HTMLCanvasElement)
+    {
+        return Texture.fromCanvas(source);
+    }
+    else if(source instanceof HTMLVideoElement)
+    {
+        return Texture.fromVideo(source);
+    }
+    else if(source instanceof BaseTexture)
+    {
+        return new Texture(BaseTexture);
+    }
+}
+
+
+/**
  * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.
  *
  * @static
