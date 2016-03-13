@@ -1,6 +1,7 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
+    canvasRenderWorldTransform = new math.Matrix();
     CanvasTinter = require('./CanvasTinter');
 
 /**
@@ -69,11 +70,11 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         }
 
         if (texture.trim) {
-            dx = texture.trim.width/2 + texture.trim.x - this.anchor.x * texture.crop.width;
-            dy = texture.trim.height/2 + texture.trim.y - this.anchor.y * texture.crop.height;
+            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.crop.width;
+            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.crop.height;
         } else {
-            dx = (0.5 - this.anchor.x) * texture.crop.width;
-            dy = (0.5 - this.anchor.y) * texture.crop.height;
+            dx = (0.5 - sprite.anchor.x) * texture.crop.width;
+            dy = (0.5 - sprite.anchor.y) * texture.crop.height;
         }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
@@ -141,8 +142,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
 
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.frame.x * resolution,
-                texture.frame.y * resolution,
+                texture._frame.x * resolution,
+                texture._frame.y * resolution,
                 width * resolution,
                 height * resolution,
                 dx  * renderer.resolution,
