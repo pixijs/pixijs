@@ -1,4 +1,5 @@
-var math = require('../math');
+var math = require('../math'),
+    ObservablePoint = require('./ObservablePoint');
 
 
 /**
@@ -33,6 +34,9 @@ function Transform()
      * @member {PIXI.Point}
      */
     this.scale = new math.Point(1,1);
+        
+
+    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -50,12 +54,24 @@ function Transform()
     this.rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-
-
+    this._cy  = Math.cos(0)//skewY);
+    this._sy  = Math.sin(0)//skewY);
+    this._nsx = Math.sin(0)//skewX);
+    this._cx  = Math.cos(0)//skewX);
+    
+    this._dirty = false;
     this.updated = true;
 }
 
 Transform.prototype.constructor = Transform;
+
+Transform.prototype.updateSkew = function ()
+{
+    this._cy  = Math.cos(this.skew.y);
+    this._sy  = Math.sin(this.skew.y);
+    this._nsx = Math.sin(this.skew.x);
+    this._cx  = Math.cos(this.skew.x);
+}
 
 /**
  * Updates the values of the object and applies the parent's transform.
@@ -63,18 +79,26 @@ Transform.prototype.constructor = Transform;
  *
  */
 Transform.prototype.updateTransform = function (parentTransform)
-{
+{ 
+
     var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
     var lt = this.localTransform;
+    var a, b, c, d;
 
-    // get the matrix values of the displayobject based on its transform properties..
-    lt.a  =  this._cr * this.scale.x;
-    lt.b  =  this._sr * this.scale.x;
-    lt.c  = -this._sr * this.scale.y;
-    lt.d  =  this._cr * this.scale.y;
+    a  =  this._cr * this.scale.x;
+    b  =  this._sr * this.scale.x;
+    c  = -this._sr * this.scale.y;
+    d  =  this._cr * this.scale.y;
+
+    lt.a  = this._cy * a + this._sy * c;
+    lt.b  = this._cy * b + this._sy * d;
+    lt.c  = this._nsx * a + this._cx * c;
+    lt.d  = this._nsx * b + this._cx * d;
+
     lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
     lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
+
     // concat the parent matrix with the objects transform.
     wt.a  = lt.a  * pt.a + lt.b  * pt.c;
     wt.b  = lt.a  * pt.b + lt.b  * pt.d;
