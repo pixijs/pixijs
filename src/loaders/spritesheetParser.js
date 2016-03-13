@@ -9,8 +9,10 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data, its not json, or it isn't spritesheet data
-        if (!resource.data || !resource.isJson || !resource.data.frames)
+        var imageResourceName = resource.name + '_image';
+
+        // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
+        if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
         {
             return next();
         }
@@ -23,15 +25,14 @@ module.exports = function ()
 
         var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
-        var resolution = core.utils.getResolutionOfUrl(resource.url);
-
         // load the image for this sheet
-        this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
+        this.add(imageResourceName, route + '/' + resource.data.meta.image, loadOptions, function (res)
         {
             resource.textures = {};
 
             var frames = resource.data.frames;
             var frameKeys = Object.keys(frames);
+            var resolution = core.utils.getResolutionOfUrl(resource.url);
             var batchIndex = 0;
 
             function processFrames(initialFrameIndex, maxFrames)
