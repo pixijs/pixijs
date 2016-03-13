@@ -34,17 +34,11 @@ module.exports = function ()
             var frameKeys = Object.keys(frames);
             var batchIndex = 0;
 
-            function shouldProcessNextBatch()
+            function processFrames(initialFrameIndex, maxFrames)
             {
-                return batchIndex * BATCH_SIZE < frameKeys.length;
-            }
-
-            function processNextBatch(done)
-            {
-                var initialFrameIndex = batchIndex * BATCH_SIZE;
                 var frameIndex = initialFrameIndex;
 
-                while (frameIndex - initialFrameIndex < BATCH_SIZE && frameIndex < frameKeys.length)
+                while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
                     var frame = frames[frameKeys[frameIndex]];
                     var rect = frame.frame;
@@ -94,11 +88,29 @@ module.exports = function ()
                     }
                     frameIndex++;
                 }
+            }
+
+            function shouldProcessNextBatch()
+            {
+                return batchIndex * BATCH_SIZE < frameKeys.length;
+            }
+
+            function processNextBatch(done)
+            {
+                processFrames(batchIndex * BATCH_SIZE, BATCH_SIZE);
                 batchIndex++;
                 setTimeout(done, 0);
             }
 
-            async.whilst(shouldProcessNextBatch, processNextBatch, next);
+            if (frameKeys.length <= BATCH_SIZE)
+            {
+                processFrames(0, BATCH_SIZE);
+                next();
+            }
+            else
+            {
+                async.whilst(shouldProcessNextBatch, processNextBatch, next);
+            }
         });
     };
 };
