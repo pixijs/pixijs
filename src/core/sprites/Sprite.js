@@ -430,6 +430,19 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 // some helper functions..
 
 /**
+ * Helper function that creates a new sprite based on the source you provide.
+ * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+ *
+ * @static
+ * @param source {}
+ * @return {PIXI.Texture} A Texture
+ */
+Sprite.from = function (source)
+{
+    return new Sprite(Texture.from(source));
+}
+
+/**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
  *

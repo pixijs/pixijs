@@ -8,12 +8,13 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function ObservablePoint(transform, x, y)
+function ObservablePoint(cb, scope, x, y)
 {
     this._x = x || 0;
     this._y = y || 0;
 
-    this.transform = transform;
+    this.cb = cb;
+    this.scope = scope;
 }
 
 ObservablePoint.prototype.constructor = ObservablePoint;
@@ -36,7 +37,7 @@ Object.defineProperties(ObservablePoint.prototype, {
         set: function (value)
         {
             this._x = value;
-            this.transform._versionLocal++;
+            this.cb.call(this.scope);
         }
     },
     /**
@@ -53,7 +54,7 @@ Object.defineProperties(ObservablePoint.prototype, {
         set: function (value)
         {
             this._y = value;
-            this.transform._versionLocal++;
+            this.cb.call(this.scope);
         }
     }
 });

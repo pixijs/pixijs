@@ -1,6 +1,7 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
+    canvasRenderWorldTransform = new math.Matrix();
     CanvasTinter = require('./CanvasTinter');
 
 /**
@@ -46,8 +47,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         wt = sprite.transform.worldTransform,
         dx,
         dy,
-        width = texture.crop.width,
-        height = texture.crop.height;
+        width = texture._frame.width,
+        height = texture._frame.height;
 
     if (texture.crop.width <= 0 || texture.crop.height <= 0)
     {
@@ -68,18 +69,12 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-
-        //inline GroupD8.isSwapWidthHeight
-        if ((texture.rotate & 3) === 2) {
-            width = texture.crop.height;
-            height = texture.crop.width;
-        }
         if (texture.trim) {
-            dx = texture.crop.width/2 + texture.trim.x - sprite.anchor.x * texture.trim.width;
-            dy = texture.crop.height/2 + texture.trim.y - sprite.anchor.y * texture.trim.height;
+            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.crop.width;
+            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.crop.height;
         } else {
-            dx = (0.5 - sprite.anchor.x) * texture._frame.width;
-            dy = (0.5 - sprite.anchor.y) * texture._frame.height;
+            dx = (0.5 - sprite.anchor.x) * texture.crop.width;
+            dy = (0.5 - sprite.anchor.y) * texture.crop.height;
         }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
@@ -147,8 +142,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
 
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.frame.x * resolution,
-                texture.frame.y * resolution,
+                texture._frame.x * resolution,
+                texture._frame.y * resolution,
                 width * resolution,
                 height * resolution,
                 dx  * renderer.resolution,

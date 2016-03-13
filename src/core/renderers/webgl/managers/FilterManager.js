@@ -31,7 +31,7 @@ function FilterManager(renderer)
 
     this.gl = this.renderer.gl;
     // know about sprites!
-    this.quad = new Quad(this.gl);
+    this.quad = new Quad(this.gl, renderer.state.attribState);
 
     var rootState = new FilterState();
     rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;

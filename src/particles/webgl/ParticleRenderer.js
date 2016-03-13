@@ -181,7 +181,7 @@ ParticleRenderer.prototype.render = function (container)
         }
 
         // bind the buffer
-        buffer.vao.bind( this.shader )
+        buffer.vao.bind()
         .draw(gl.TRIANGLES, amount * 6)
         .unbind();
 
