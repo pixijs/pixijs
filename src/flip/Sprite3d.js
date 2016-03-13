@@ -30,8 +30,12 @@ function Sprite3d(texture)
     this.is3d = true;
     this.isCulled3d = false;
     this._bounds2 = new core.Rectangle();
+
     this.projectionMatrix = null;
     this.worldProjectionMatrix = null;
+
+    this._currentSphereBounds = null;
+    this._sphereBounds = new math3d.Sphere();
 }
 
 Object.defineProperties(Sprite3d.prototype, {
@@ -58,6 +62,8 @@ Sprite3d.prototype.updateTransform = Container3d.prototype.updateTransform3d;
 Sprite3d.prototype.updateTransform3d = Container3d.prototype.updateTransform3d;
 
 Sprite3d.prototype.renderWebGL = Container3d.prototype.renderWebGL;
+
+Sprite3d.prototype.containerGetSphereBounds = Container3d.prototype.containerGetSphereBounds;
 
 
 /**
@@ -134,6 +140,58 @@ Sprite3d.prototype.getBounds = function (matrix)
     }
 
     return this._currentBounds;
+};
+
+var vec3 = glMat.vec3;
+var tempVec3 = vec3.create();
+
+Sprite3d.prototype.getSphereBounds = function(matrix) {
+    if(!this._currentSphereBounds)
+    {
+        var width = this._texture._frame.width;
+        var height = this._texture._frame.height;
+
+        var w0 = width * (1-this.anchor.x);
+        var w1 = width * -this.anchor.x;
+
+        var h0 = height * (1-this.anchor.y);
+        var h1 = height * -this.anchor.y;
+
+        var worldTransform = matrix || this.worldTransform3d;
+        var b = this._sphereBounds;
+        b.v[0] = w0;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(tempVec3, b.v, worldTransform);
+        b.v[0] = w1;
+        b.v[1] = h1;
+        b.v[2] = 0;
+        vec3.transformMat4(b.v, b.v, worldTransform);
+        b.r = vec3.distance(b.v, tempVec3)/2;
+        b.v[0] = w1;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(tempVec3, b.v, worldTransform);
+        b.v[0] = w1;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(b.v, b.v, worldTransform);
+        b.r = Math.max(b.r, vec3.distance(b.v, tempVec3)/2);
+
+        vec3.lerp(b.v, tempVec3, b.v, 0.5);
+
+        if (b === core.Rectangle.EMPTY) {
+            return this._currentBounds = b;
+        }
+
+        if(this.children.length)
+        {
+            b.enlarge(this.containerGetSphereBounds());
+        }
+        this._currentSphereBounds = b;
+    }
+
+    return this._currentSphereBounds;
 };
 
 module.exports = Sprite3d;

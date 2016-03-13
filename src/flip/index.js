@@ -20,6 +20,7 @@ module.exports = {
     glMat: require('gl-matrix'),
     math3d: math3d,
     Container3d    :require('./Container3d'),
+    Camera3d    :require('./Camera3d'),
     Sprite3d            :require('./Sprite3d'),
     Mesh3d            :require('./Mesh3d'),
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
@@ -32,85 +33,74 @@ module.exports = {
 
 core.Euler = math3d.Euler;
 core.Point3d = math3d.Point3d;
-
-glMat.mat4.centralPerspective = function(out, width, height, focus, near, far) {
-    glMat.mat4.identity(out);
-    tempPoint3d[0] = width/2;
-    tempPoint3d[1] = height/2;
-    tempPoint3d[2] = 0;
-    glMat.mat4.translate(out, out, tempPoint3d);
-    glMat.mat4.identity(temp3dTransform);
-    temp3dTransform[10] = 1.0 / (far - near);
-    temp3dTransform[14] = (focus - near) / (far - near);
-    temp3dTransform[11] = 1.0 / focus;
-    glMat.mat4.multiply(out, out, temp3dTransform);
-    tempPoint3d[0] = -width/2;
-    tempPoint3d[1] = -height/2;
-    glMat.mat4.translate(out, out, tempPoint3d);
-}
+core.Sphere = math3d.Sphere;
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
 core.Container.prototype._customMatrix = null;
-
 
 core.Container.prototype.displayObjectUpdateTransform3d = function()
 {
     if(!this._customMatrix)
     {
         var quat = tempQuat;
+        var localTransform = this.worldTransform3d;
 
         var rx = this.euler.x;
         var ry = this.euler.y;
         var rz = this.euler.z;
 
-        //TODO cach sin cos?
-        var c1 = Math.cos( rx / 2 );
-        var c2 = Math.cos( ry / 2 );
-        var c3 = Math.cos( rz / 2 );
-
-        var s1 = Math.sin( rx / 2 );
-        var s2 = Math.sin( ry / 2 );
-        var s3 = Math.sin( rz / 2 );
-
-        quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
-        quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
-        quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
-        quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
-
         temp3dTransform[0] = this.position.x;
         temp3dTransform[1] = this.position.y;
         temp3dTransform[2] = this.position.z;
+        if (rx !== 0 || ry !== 0 || rz !== 0 || true) {
+            //TODO cach sin cos?
+            var c1 = Math.cos(rx / 2);
+            var c2 = Math.cos(ry / 2);
+            var c3 = Math.cos(rz / 2);
 
-        glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
+            var s1 = Math.sin(rx / 2);
+            var s2 = Math.sin(ry / 2);
+            var s3 = Math.sin(rz / 2);
 
-        temp3dTransform[0] = this.scale.x;
-        temp3dTransform[1] = this.scale.y;
-        temp3dTransform[2] = this.scale.z;
+            quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
+            quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
+            quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
+            quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
+            glMat.mat4.fromRotationTranslation(localTransform, quat, temp3dTransform);
+        } else
+        {
+            glMat.mat4.fromTranslation(localTransform, temp3dTransform);
+        }
 
-        glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
+        rx = this.scale.x; ry = this.scale.y; rz = this.scale.z;
+        if (rx !== 1 || ry !== 1 || rz !== 1) {
+            temp3dTransform[0] = rx;
+            temp3dTransform[1] = ry;
+            temp3dTransform[2] = rz;
+            glMat.mat4.scale(localTransform, localTransform, temp3dTransform);
+        }
 
-        if (this.pivot.x || this.pivot.y || this.pivot.z) {
+        rx = this.pivot.x; ry = this.pivot.y; rz = this.pivot.z;
+
+        if (rx || ry || rz) {
             temp3dTransform[0] = -this.pivot.x;
             temp3dTransform[1] = -this.pivot.y;
             temp3dTransform[2] = -this.pivot.z;
-            glMat.mat4.translate(this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+            glMat.mat4.translate(localTransform, localTransform, temp3dTransform)
         }
-
-        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-
+        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, localTransform);
     }
     else
     {
         glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this._customMatrix);
     }
-
-
      // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     // reset the bounds each time this is called!
     this._currentBounds = null;
+    this._currentSphereBounds = null;
 };
 
 core.Container.prototype.setMatrix = function( matrix )
@@ -446,4 +436,24 @@ core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
     // time to make a 3d one!
     glMat.mat4.multiply(this.projectionMatrix3d, perspectiveMatrix, projection3d);
 
+};
+
+core.interaction.InteractionData.prototype.getLocalPosition = function (displayObject, out, globalPos)
+{
+    globalPos = globalPos || this.global;
+
+    if (!displayObject.worldTransform3d || !displayObject.worldProjectionMatrix) {
+        return displayObject.worldTransform.applyInverse(globalPos || this.global, out);
+    }
+
+    var ray = math3d.getRayFromScreen(globalPos, displayObject.worldProjectionMatrix);
+    var p = math3d.get2DContactPoint(ray, displayObject);
+    out = out || new core.Point();
+    if (p) {
+        out.copy(p);
+    } else {
+        out.set(0, 0);
+    }
+    return out;
+    //its a projection, yay!
 };

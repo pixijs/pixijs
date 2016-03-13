@@ -27236,7 +27236,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":34,"./extras":91,"./filters":108,"./mesh":149}],85:[function(require,module,exports){
+},{"./core":34,"./extras":91,"./filters":108,"./mesh":151}],85:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -31506,6 +31506,184 @@ Object.defineProperties(TwistFilter.prototype, {
 },{"../../core":34}],121:[function(require,module,exports){
 var core = require('../core'),
     glMat = require('gl-matrix'),
+    vec3 = glMat.vec3,
+    math3d = require('./math'),
+    Container3d = require('./Container3d'),
+
+    temp3dTransform  = glMat.mat4.create(),
+    tempQuat         = glMat.quat.create(),
+    tempPoint        = new core.Point(),
+    tempPoint3d      = glMat.mat3.create();
+
+
+/**
+ * The Camera object
+ *
+ * @class Camera3d
+ * @extends Container3d
+ * @namespace PIXI.flip
+ */
+function Camera3d()
+{
+    Container3d.call(this);
+
+    this._near = 0;
+
+    this._far = 1;
+
+    this._focus = 0;
+
+    this.viewport = new core.Rectangle(0, 0, 1, 1);
+
+    this.isPerspective = false;
+
+    this.enableSphereCulling = false;
+    this.enableBoundsCulling = false;
+}
+
+
+// constructor
+Camera3d.prototype = Object.create(Container3d.prototype);
+Camera3d.prototype.constructor = Camera3d;
+
+Object.defineProperties(Camera3d.prototype, {
+    /**
+     * @member {number}
+     * @memberof PIXI.flip.Container3d#
+     */
+    rotation: {
+        get: function () {
+            return this.euler.z;
+        },
+        set: function (value) {
+            this.euler.z = value;
+        }
+    }
+});
+
+Camera3d.prototype.easyPerspective = function(renderer, focus, near, far) {
+    var w = renderer.width, h = renderer.height;
+    this.position.x = w/2;
+    this.position.y = h/2;
+    this.centralPerspective(0, w, 0, h, focus, near, far);
+};
+
+Camera3d.prototype.centralPerspective = function(left, right, top, bottom, focus, near, far) {
+    this.viewport.x = left;
+    this.viewport.width = right-left;
+    this.viewport.y = top;
+    this.viewport.height = bottom-top;
+    var cx = (right+left)/2;
+    var cy = (top+bottom)/2;
+    this._near = near;
+    this._far = far;
+    this._focus = focus;
+
+    var out = this.projectionMatrix = (this.projectionMatrix || glMat.mat4.create());
+    glMat.mat4.identity(out);
+    tempPoint3d[0] = cx;
+    tempPoint3d[1] = cy;
+    tempPoint3d[2] = 0;
+    glMat.mat4.translate(out, out, tempPoint3d);
+    glMat.mat4.identity(temp3dTransform);
+    temp3dTransform[10] = 1.0 / (far - near);
+    temp3dTransform[14] = (focus - near) / (far - near);
+    temp3dTransform[11] = 1.0 / focus;
+    glMat.mat4.multiply(out, out, temp3dTransform);
+    tempPoint3d[0] = -cx;
+    tempPoint3d[1] = -cy;
+    glMat.mat4.translate(out, out, tempPoint3d);
+};
+
+Camera3d.prototype.sphereCulling = function (elem) {
+    if (!this.projectionMatrix) return;
+    var viewport = this.viewport;
+    var x1 = viewport.x, x2 = viewport.x + viewport.width;
+    var y1 = viewport.y, y2 = viewport.y + viewport.height;
+    var cx = (x1+x2)/2;
+    var cy = (y1+y2)/2;
+    var focus = this._focus, far = this._far, near = this._near;
+    var z1 = near - focus, z2 = far - focus;
+    var EMPTY = math3d.Sphere.EMPTY;
+
+    var n1 = vec3.fromValues(-focus, 0, x1-cx);
+    var n2 = vec3.fromValues(focus, 0, -x2+cx);
+    var n3 = vec3.fromValues(0, -focus, y1-cy);
+    var n4 = vec3.fromValues(0, focus, -y2+cy);
+    vec3.normalize(n1, n1);
+    vec3.normalize(n2, n2);
+    vec3.normalize(n3, n3);
+    vec3.normalize(n4, n4);
+
+    function culler(element) {
+        var s = element.getSphereBounds();
+        var v = s.v;
+        var r = s.r;
+        var b = element.renderable =
+            s != EMPTY &&
+            (v[2] + r >= z1 && v[2] - r <= z2 &&
+            (v[0] - x1) * n1[0] + n1[2] * v[2] < r &&
+            (v[0] - x2) * n2[0] + n2[2] * v[2] < r &&
+            (v[1] - y1) * n3[1] + n3[2] * v[2] < r &&
+            (v[1] - y2) * n4[1] + n4[2] * v[2] < r &&
+            true);
+
+        if (!b) return false;
+        var children = element.children;
+        for (var i = 0; i < children.length; i++) {
+            var c = children[i];
+            if (!c.visible || !c.is3d) continue;
+            culler(c);
+        }
+        return true;
+    }
+
+    culler(elem || this);
+};
+
+Camera3d.prototype.boundsCulling = function (elem) {
+    if (!this.projectionMatrix) return;
+    var viewport = this.viewport;
+    var x1 = viewport.x, x2 = viewport.x + viewport.width;
+    var y1 = viewport.y, y2 = viewport.y + viewport.height;
+    var EMPTY = core.Rectangle.EMPTY;
+
+    function culler(element) {
+        var s = element.getBounds();
+        var b = element.renderable =
+            s != EMPTY &&
+            (s.x + s.width >= x1 && s.x <= x2 &&
+                s.y + s.height >= y1 && s.y <= y2);
+
+        if (!b) return false;
+        var children = element.children;
+        for (var i = 0; i < children.length; i++) {
+            var c = children[i];
+            if (!c.visible) continue;
+            culler(c);
+        }
+        return true;
+    }
+
+    culler(elem || this);
+};
+
+Camera3d.prototype.updateTransform3d = function() {
+    this.containerUpdateTransform3d();
+    if (this.enableSphereCulling) {
+        this.sphereCulling(this);
+    } else {
+        if (this.enableBoundsCulling) {
+            this.boundsCulling(this);
+        }
+    }
+};
+
+module.exports = Camera3d;
+
+},{"../core":34,"./Container3d":122,"./math":130,"gl-matrix":13}],122:[function(require,module,exports){
+var core = require('../core'),
+    glMat = require('gl-matrix'),
     math3d = require('./math');
 
 
@@ -31536,9 +31714,10 @@ function Container3d()
     this.worldTransform3d = glMat.mat4.create();
 
     this.is3d = true;
-    this.isCulled3d = false;
     this.projectionMatrix = null;
     this.worldProjectionMatrix = null;
+    this._currentSphereBounds = null;
+    this._sphereBounds = new math3d.Sphere();
 }
 
 
@@ -31577,25 +31756,84 @@ Container3d.prototype.updateTransform = function()
 
 Container3d.prototype.updateTransform3d = function()
 {
-    this.worldProjectionMatrix = this.projectionMatrix || this.parent.worldProjectionMatrix;
+    //this.worldProjectionMatrix = this.projectionMatrix || this.parent.worldProjectionMatrix;
+    this.worldProjectionMatrix = this.projectionMatrix || this.worldProjectionMatrix;
     this.displayObjectUpdateTransform3d();
 
     var i,j;
 
     for (i = 0, j = this.children.length; i < j; ++i)
     {
+        this.children[i].worldProjectionMatrix = this.worldProjectionMatrix;
         this.children[i].updateTransform3d();
     }
 };
 
+Container3d.prototype.containerUpdateTransform3d = Container3d.prototype.updateTransform3d;
+
 Container3d.prototype.renderWebGL = function(renderer)
 {
     this.renderWebGL3d( renderer );
-}
+};
+
+Container3d.prototype.getSphereBounds = function(matrix) {
+    if(!this._currentSphereBounds)
+    {
+        if (this.children.length === 0)
+        {
+            return math3d.Sphere.EMPTY;
+        }
+
+        var sphere = this._sphereBounds;
+
+        var childBounds;
+        var childVisible = false;
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            var child = this.children[i];
+
+            if (!child.visible || !this.children[i].is3d || !this.children[i].getSphereBounds)
+            {
+                continue;
+            }
+
+            childBounds = this.children[i].getSphereBounds(matrix);
+            if (childBounds === math3d.Sphere.EMPTY) {
+                continue;
+            }
+            if (!childVisible) {
+                childVisible = true;
+                sphere.copy(childBounds);
+            } else {
+                sphere.enlarge(childBounds);
+            }
+        }
+
+        if (!childVisible)
+        {
+            return this._currentSphereBounds = math3d.Sphere.EMPTY;
+        }
+        this._currentSphereBounds = sphere;
+    }
+
+    return this._currentSphereBounds;
+};
+
+Container3d.prototype.containerGetSphereBounds = Container3d.prototype.getSphereBounds;
+
+
+Container3d.prototype.cullRectangle = function(rect, focus, near, far) {
+    var x1 = rect.x;
+    var x2 = rect.x + rect.width;
+    var y1 = rect.y;
+    var y2 = rect.y + rect.height;
+
+    var p = this.projectionMatrix;
+};
 
 module.exports = Container3d;
 
-},{"../core":34,"./math":128,"gl-matrix":13}],122:[function(require,module,exports){
+},{"../core":34,"./math":130,"gl-matrix":13}],123:[function(require,module,exports){
 var core = require('../core'),
     glMat = require('gl-matrix'),
     math3d = require('./math'),
@@ -31672,7 +31910,7 @@ Graphics3d.prototype.renderWebGL = function(renderer)
 
 module.exports = Graphics3d;
 
-},{"../core":34,"./math":128,"gl-matrix":13}],123:[function(require,module,exports){
+},{"../core":34,"./math":130,"gl-matrix":13}],124:[function(require,module,exports){
 var core = require('../core'),
     Container3d = require('./Container3d'),
     glMat = require('gl-matrix'),
@@ -31760,7 +31998,7 @@ Mesh3d.prototype.getBounds = function (matrix)
 
 module.exports = Mesh3d;
 
-},{"../core":34,"./Container3d":121,"./math":128,"gl-matrix":13}],124:[function(require,module,exports){
+},{"../core":34,"./Container3d":122,"./math":130,"gl-matrix":13}],125:[function(require,module,exports){
 var core = require('../core'),
     Container3d = require('./Container3d'),
     glMat = require('gl-matrix'),
@@ -31793,8 +32031,12 @@ function Sprite3d(texture)
     this.is3d = true;
     this.isCulled3d = false;
     this._bounds2 = new core.Rectangle();
+
     this.projectionMatrix = null;
     this.worldProjectionMatrix = null;
+
+    this._currentSphereBounds = null;
+    this._sphereBounds = new math3d.Sphere();
 }
 
 Object.defineProperties(Sprite3d.prototype, {
@@ -31821,6 +32063,8 @@ Sprite3d.prototype.updateTransform = Container3d.prototype.updateTransform3d;
 Sprite3d.prototype.updateTransform3d = Container3d.prototype.updateTransform3d;
 
 Sprite3d.prototype.renderWebGL = Container3d.prototype.renderWebGL;
+
+Sprite3d.prototype.containerGetSphereBounds = Container3d.prototype.containerGetSphereBounds;
 
 
 /**
@@ -31899,9 +32143,61 @@ Sprite3d.prototype.getBounds = function (matrix)
     return this._currentBounds;
 };
 
+var vec3 = glMat.vec3;
+var tempVec3 = vec3.create();
+
+Sprite3d.prototype.getSphereBounds = function(matrix) {
+    if(!this._currentSphereBounds)
+    {
+        var width = this._texture._frame.width;
+        var height = this._texture._frame.height;
+
+        var w0 = width * (1-this.anchor.x);
+        var w1 = width * -this.anchor.x;
+
+        var h0 = height * (1-this.anchor.y);
+        var h1 = height * -this.anchor.y;
+
+        var worldTransform = matrix || this.worldTransform3d;
+        var b = this._sphereBounds;
+        b.v[0] = w0;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(tempVec3, b.v, worldTransform);
+        b.v[0] = w1;
+        b.v[1] = h1;
+        b.v[2] = 0;
+        vec3.transformMat4(b.v, b.v, worldTransform);
+        b.r = vec3.distance(b.v, tempVec3)/2;
+        b.v[0] = w1;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(tempVec3, b.v, worldTransform);
+        b.v[0] = w1;
+        b.v[1] = h0;
+        b.v[2] = 0;
+        vec3.transformMat4(b.v, b.v, worldTransform);
+        b.r = Math.max(b.r, vec3.distance(b.v, tempVec3)/2);
+
+        vec3.lerp(b.v, tempVec3, b.v, 0.5);
+
+        if (b === core.Rectangle.EMPTY) {
+            return this._currentBounds = b;
+        }
+
+        if(this.children.length)
+        {
+            b.enlarge(this.containerGetSphereBounds());
+        }
+        this._currentSphereBounds = b;
+    }
+
+    return this._currentSphereBounds;
+};
+
 module.exports = Sprite3d;
 
-},{"../core":34,"./Container3d":121,"./math":128,"gl-matrix":13}],125:[function(require,module,exports){
+},{"../core":34,"./Container3d":122,"./math":130,"gl-matrix":13}],126:[function(require,module,exports){
 /**
  * @file       FLIP
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -31924,6 +32220,7 @@ module.exports = {
     glMat: require('gl-matrix'),
     math3d: math3d,
     Container3d    :require('./Container3d'),
+    Camera3d    :require('./Camera3d'),
     Sprite3d            :require('./Sprite3d'),
     Mesh3d            :require('./Mesh3d'),
     Sprite3dRenderer    :require('./webgl/Sprite3dRenderer'),
@@ -31936,85 +32233,74 @@ module.exports = {
 
 core.Euler = math3d.Euler;
 core.Point3d = math3d.Point3d;
-
-glMat.mat4.centralPerspective = function(out, width, height, focus, near, far) {
-    glMat.mat4.identity(out);
-    tempPoint3d[0] = width/2;
-    tempPoint3d[1] = height/2;
-    tempPoint3d[2] = 0;
-    glMat.mat4.translate(out, out, tempPoint3d);
-    glMat.mat4.identity(temp3dTransform);
-    temp3dTransform[10] = 1.0 / (far - near);
-    temp3dTransform[14] = (focus - near) / (far - near);
-    temp3dTransform[11] = 1.0 / focus;
-    glMat.mat4.multiply(out, out, temp3dTransform);
-    tempPoint3d[0] = -width/2;
-    tempPoint3d[1] = -height/2;
-    glMat.mat4.translate(out, out, tempPoint3d);
-}
+core.Sphere = math3d.Sphere;
 
 core.Container.prototype.worldTransform3d = null;
 core.Container.prototype.depthBias = 0;
 core.Container.prototype._customMatrix = null;
-
 
 core.Container.prototype.displayObjectUpdateTransform3d = function()
 {
     if(!this._customMatrix)
     {
         var quat = tempQuat;
+        var localTransform = this.worldTransform3d;
 
         var rx = this.euler.x;
         var ry = this.euler.y;
         var rz = this.euler.z;
 
-        //TODO cach sin cos?
-        var c1 = Math.cos( rx / 2 );
-        var c2 = Math.cos( ry / 2 );
-        var c3 = Math.cos( rz / 2 );
-
-        var s1 = Math.sin( rx / 2 );
-        var s2 = Math.sin( ry / 2 );
-        var s3 = Math.sin( rz / 2 );
-
-        quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
-        quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
-        quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
-        quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
-
         temp3dTransform[0] = this.position.x;
         temp3dTransform[1] = this.position.y;
         temp3dTransform[2] = this.position.z;
+        if (rx !== 0 || ry !== 0 || rz !== 0 || true) {
+            //TODO cach sin cos?
+            var c1 = Math.cos(rx / 2);
+            var c2 = Math.cos(ry / 2);
+            var c3 = Math.cos(rz / 2);
 
-        glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
+            var s1 = Math.sin(rx / 2);
+            var s2 = Math.sin(ry / 2);
+            var s3 = Math.sin(rz / 2);
 
-        temp3dTransform[0] = this.scale.x;
-        temp3dTransform[1] = this.scale.y;
-        temp3dTransform[2] = this.scale.z;
+            quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
+            quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
+            quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
+            quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
+            glMat.mat4.fromRotationTranslation(localTransform, quat, temp3dTransform);
+        } else
+        {
+            glMat.mat4.fromTranslation(localTransform, temp3dTransform);
+        }
 
-        glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
+        rx = this.scale.x; ry = this.scale.y; rz = this.scale.z;
+        if (rx !== 1 || ry !== 1 || rz !== 1) {
+            temp3dTransform[0] = rx;
+            temp3dTransform[1] = ry;
+            temp3dTransform[2] = rz;
+            glMat.mat4.scale(localTransform, localTransform, temp3dTransform);
+        }
 
-        if (this.pivot.x || this.pivot.y || this.pivot.z) {
+        rx = this.pivot.x; ry = this.pivot.y; rz = this.pivot.z;
+
+        if (rx || ry || rz) {
             temp3dTransform[0] = -this.pivot.x;
             temp3dTransform[1] = -this.pivot.y;
             temp3dTransform[2] = -this.pivot.z;
-            glMat.mat4.translate(this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+            glMat.mat4.translate(localTransform, localTransform, temp3dTransform)
         }
-
-        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-
+        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, localTransform);
     }
     else
     {
         glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this._customMatrix);
     }
-
-
      // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     // reset the bounds each time this is called!
     this._currentBounds = null;
+    this._currentSphereBounds = null;
 };
 
 core.Container.prototype.setMatrix = function( matrix )
@@ -32352,7 +32638,27 @@ core.RenderTarget.prototype.calculateProjection = function (projectionFrame)
 
 };
 
-},{"../core":34,"./Container3d":121,"./Graphics3d":122,"./Mesh3d":123,"./Sprite3d":124,"./math":128,"./webgl/Graphics3dRenderer":129,"./webgl/Mesh3dRenderer":130,"./webgl/Mesh3dShader":131,"./webgl/Sprite3dRenderer":133,"./webgl/filters/FXAAFilter":135,"gl-matrix":13}],126:[function(require,module,exports){
+core.interaction.InteractionData.prototype.getLocalPosition = function (displayObject, out, globalPos)
+{
+    globalPos = globalPos || this.global;
+
+    if (!displayObject.worldTransform3d || !displayObject.worldProjectionMatrix) {
+        return displayObject.worldTransform.applyInverse(globalPos || this.global, out);
+    }
+
+    var ray = math3d.getRayFromScreen(globalPos, displayObject.worldProjectionMatrix);
+    var p = math3d.get2DContactPoint(ray, displayObject);
+    out = out || new core.Point();
+    if (p) {
+        out.copy(p);
+    } else {
+        out.set(0, 0);
+    }
+    return out;
+    //its a projection, yay!
+};
+
+},{"../core":34,"./Camera3d":121,"./Container3d":122,"./Graphics3d":123,"./Mesh3d":124,"./Sprite3d":125,"./math":130,"./webgl/Graphics3dRenderer":131,"./webgl/Mesh3dRenderer":132,"./webgl/Mesh3dShader":133,"./webgl/Sprite3dRenderer":135,"./webgl/filters/FXAAFilter":137,"gl-matrix":13}],127:[function(require,module,exports){
 /**
  * The Euler angles, order is YZX
  * @class
@@ -32445,7 +32751,7 @@ Euler.prototype.set = function (x, y, z) {
     this.z = z || 0;
 };
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 /**
  * The Point3d object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -32502,13 +32808,117 @@ Point3d.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
+var vec3 = require('gl-matrix').vec3;
+
+/**
+ * Sphere for bounds
+ *
+ * @class
+ * @namespace PIXI.flip.math3d
+ */
+function Sphere()
+{
+    /**
+     * @member {Float32Array}
+     */
+    this.v = vec3.create();
+
+
+    /**
+     * @member {Number}
+     */
+    this.r = 0;
+}
+
+Sphere.prototype.constructor = Sphere;
+module.exports = Sphere;
+
+Object.defineProperties(Sphere.prototype, {
+    /**
+     * @member {number}
+     * @memberof PIXI.Sphere#
+     */
+    x: {
+        get: function () {
+            return this.v[0];
+        },
+        set: function (value) {
+            this.v[0] = value;
+        }
+    },
+    y: {
+        get: function () {
+            return this.v[1];
+        },
+        set: function (value) {
+            this.v[1] = value;
+        }
+    },
+    z: {
+        get: function () {
+            return this.v[2];
+        },
+        set: function (value) {
+            this.v[2] = value;
+        }
+    }
+});
+
+/**
+ * Creates a clone of this point3d
+ *
+ * @return {Point3d} a copy of the point3d
+ */
+Sphere.prototype.clone = function ()
+{
+    return new Point3d(this.x, this.y, this.z);
+};
+
+Sphere.prototype.set = function (x, y, z, r)
+{
+    this.v[0] = x || 0;
+    this.v[1] = y || 0;
+    this.v[2] = z || 0;
+    this.r = r || 0;
+};
+
+Sphere.prototype.copy = function (s)
+{
+    vec3.copy(this.v, s.v);
+    this.r = s.r;
+};
+
+
+Sphere.prototype.enlarge = function(s) {
+    if (s === Sphere.EMPTY) return;
+    var v1 = this.v, v2 = s.v , r1 = this.r, r2 = s.r;
+    var d = vec3.distance(v1, v2);
+    var r = (r1 + r2 + d) / 2;
+    if (r < r1) {
+        return;
+    }
+    if (r < r2) {
+        vec3.copy(v1, v2);
+        this.r = r2;
+        return;
+    }
+    this.r = r;
+    if (d > 1e-9) {
+        vec3.lerp(v1, v1, v2, (-r1 + r) / d);
+    }
+};
+
+Sphere.EMPTY = new Sphere();
+
+},{"gl-matrix":13}],130:[function(require,module,exports){
 /**
  * @namespace PIXI.math
  */
 
 var glMat = require('gl-matrix'),
     Point3d = require('./Point3d'),
+    Sphere = require('./Sphere'),
     Euler = require('./Euler'),
     vec3 = glMat.vec3,
     mat4 = glMat.mat4,
@@ -32547,13 +32957,14 @@ function checkPoint4d() {
 module.exports = {
     Point3d: Point3d,
     Euler: Euler,
+    Sphere: Sphere,
     IDENTITY: glMat.mat4.create(),
 
     intersectPlane: function (n, p0, l0, l, t) {
         // assuming vectors are all normalized
         var denom = vec3.dot(n, l);
 
-        if (denom > 1e-6) {
+        if (Math.abs(denom) > -1e-6) {
 
             var p0l0 = vec3.sub(vec3.create(), p0, l0);
 
@@ -32567,18 +32978,15 @@ module.exports = {
         return null;
     },
 
-    getRayFromScreen: function (point, renderer) {
+    getRayFromScreen: function (point, projectionMatrix) {
         var tempP = vec3.create();
 
-        //TODO MAKE THIS NOT THIS!
-        var combinedMatrix = window.combinedMatrix;//mat4.multiply(mat4.create(), perspectiveMatrix, projection3d);
-        if (!combinedMatrix)return [[0, 0, 0], [0, 0, 0]];
-        var inverse = mat4.invert(mat4.create(), combinedMatrix);
-
+        if (!projectionMatrix)return [[0, 0, 0], [0, 0, 0]];
+        var inverse = mat4.invert(mat4.create(), projectionMatrix);
 
         // get the near plane..
-        tempP[0] = (point.x / (renderer.width * 0.5)) - 1;
-        tempP[1] = 1 - (point.y / (renderer.height * 0.5));
+        tempP[0] = point.x;
+        tempP[1] = point.y;
         tempP[2] = 0;
 
         var origin = vec3.transformMat4(vec3.create(), tempP, inverse);
@@ -32586,7 +32994,7 @@ module.exports = {
         // get the far plane
         tempP[2] = 0.99;
 
-        tempP = this.projectionTransformMat4(vec3.create(), tempP, inverse);
+        tempP = vec3.transformMat4(vec3.create(), tempP, inverse);
 
         // now calculate the origin..
         var direction = vec3.subtract(vec3.create(), tempP, origin);
@@ -32596,15 +33004,7 @@ module.exports = {
         return [origin, direction];
     },
 
-    projectionTransformMat4: function (out, a, m) {
-        var x = a[0], y = a[1], z = a[2],
-            w = m[3] * x + m[7] * y + m[11] * z + m[15];
-        w = w || 1.0;
-        out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-        out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-        out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
-        return out;
-    },
+    testSign: 0,
 
     get2DContactPoint: function (ray, container) {
         var transposeInverse = mat3.normalFromMat4(mat3.create(), container.worldTransform3d);
@@ -32617,7 +33017,9 @@ module.exports = {
             transposeInverse[8]
         ]
 
-        if (normal[2] < 0) {
+        if (normal[2] * this.testSign <  0) {
+            normal[0] *= -1;
+            normal[1] *= -1;
             normal[2] *= -1
         }
 
@@ -32647,53 +33049,59 @@ module.exports = {
     },
 
     makeRectBounds(out, worldTransform3d, projectionMatrix, w0, h0, w1, h1) {
-        if (projectionMatrix) {
-            glMat.mat4.multiply(tempTransform, projectionMatrix, worldTransform3d);
-        } else {
-            glMat.mat4.copy(tempTransform, worldTransform3d);
-        }
-
         //TODO: test Z value, may be it cant be rendered in this camera
         tempPoint4d[0] = w0;
         tempPoint4d[1] = h0;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.copy(minPoint3d, tempPoint4d);
-        glMat.vec3.copy(maxPoint3d, tempPoint4d);
+        glMat.vec2.copy(minPoint3d, tempPoint4d);
+        glMat.vec2.copy(maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w0;
         tempPoint4d[1] = h1;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w1;
         tempPoint4d[1] = h1;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w1;
         tempPoint4d[1] = h0;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
 
         out.x = minPoint3d[0];
         out.y = minPoint3d[1];
@@ -32738,7 +33146,7 @@ module.exports = {
     }
 };
 
-},{"../../core":34,"./Euler":126,"./Point3d":127,"gl-matrix":13}],129:[function(require,module,exports){
+},{"../../core":34,"./Euler":127,"./Point3d":128,"./Sphere":129,"gl-matrix":13}],131:[function(require,module,exports){
 var GraphicsRenderer = require('../../core/graphics/webgl/GraphicsRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
     Primitive3dShader = require('./Primitive3dShader'),
@@ -32886,7 +33294,7 @@ module.exports = Graphics3dRenderer;
 WebGLRenderer.registerPlugin('graphics3d', Graphics3dRenderer);
 
 
-},{"../../core/graphics/webgl/GraphicsRenderer":32,"../../core/renderers/webgl/WebGLRenderer":54,"../../core/utils":82,"./Primitive3dShader":132,"gl-matrix":13}],130:[function(require,module,exports){
+},{"../../core/graphics/webgl/GraphicsRenderer":32,"../../core/renderers/webgl/WebGLRenderer":54,"../../core/utils":82,"./Primitive3dShader":134,"gl-matrix":13}],132:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../../mesh/Mesh'),
     MeshRenderer = require('../../mesh/webgl/MeshRenderer'),
@@ -33034,7 +33442,7 @@ Mesh3dRenderer.prototype.render = function (mesh)
 
 };
 
-},{"../../core":34,"../../mesh/Mesh":146,"../../mesh/webgl/MeshRenderer":150,"gl-matrix":13}],131:[function(require,module,exports){
+},{"../../core":34,"../../mesh/Mesh":148,"../../mesh/webgl/MeshRenderer":152,"gl-matrix":13}],133:[function(require,module,exports){
 var core = require('../../core');
 var glMat = require('gl-matrix');
 
@@ -33096,7 +33504,7 @@ module.exports = Mesh3dShader;
 
 core.ShaderManager.registerPlugin('mesh3dShader', Mesh3dShader);
 
-},{"../../core":34,"gl-matrix":13}],132:[function(require,module,exports){
+},{"../../core":34,"gl-matrix":13}],134:[function(require,module,exports){
 var Shader = require('../../core/renderers/webgl/shaders/Shader');
 
 
@@ -33158,7 +33566,7 @@ Primitive3dShader.prototype = Object.create(Shader.prototype);
 Primitive3dShader.prototype.constructor = Primitive3dShader;
 module.exports = Primitive3dShader;
 
-},{"../../core/renderers/webgl/shaders/Shader":66}],133:[function(require,module,exports){
+},{"../../core/renderers/webgl/shaders/Shader":66}],135:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../core/renderers/webgl/shaders/Shader'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
@@ -33734,7 +34142,7 @@ Sprite3dRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../core/const":27,"../../core/renderers/webgl/WebGLRenderer":54,"../../core/renderers/webgl/shaders/Shader":66,"../../core/renderers/webgl/utils/ObjectRenderer":68,"./Sprite3dShader":134,"gl-matrix":13}],134:[function(require,module,exports){
+},{"../../core/const":27,"../../core/renderers/webgl/WebGLRenderer":54,"../../core/renderers/webgl/shaders/Shader":66,"../../core/renderers/webgl/utils/ObjectRenderer":68,"./Sprite3dShader":136,"gl-matrix":13}],136:[function(require,module,exports){
 var Shader = require('../../core/renderers/webgl/shaders/Shader');
 var glMat = require('gl-matrix');
 
@@ -33828,7 +34236,7 @@ Sprite3dShader.prototype = Object.create(Shader.prototype);
 Sprite3dShader.prototype.constructor = Sprite3dShader;
 module.exports = Sprite3dShader;
 
-},{"../../core/renderers/webgl/shaders/Shader":66,"gl-matrix":13}],135:[function(require,module,exports){
+},{"../../core/renderers/webgl/shaders/Shader":66,"gl-matrix":13}],137:[function(require,module,exports){
 var AbstractFilter = require('../../../core/renderers/webgl/filters/AbstractFilter');
 var Sprite3dShader = require('../Sprite3dShader');
 // @see https://github.com/substack/brfs/issues/25
@@ -33905,7 +34313,7 @@ FXAAFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
-},{"../../../core/renderers/webgl/filters/AbstractFilter":55,"../Sprite3dShader":134}],136:[function(require,module,exports){
+},{"../../../core/renderers/webgl/filters/AbstractFilter":55,"../Sprite3dShader":136}],138:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -33939,7 +34347,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":26,"./core":34,"./deprecation":84,"./extras":91,"./filters":108,"./flip":125,"./interaction":139,"./loaders":142,"./mesh":149,"./polyfill":154}],137:[function(require,module,exports){
+},{"./accessibility":26,"./core":34,"./deprecation":84,"./extras":91,"./filters":108,"./flip":126,"./interaction":141,"./loaders":144,"./mesh":151,"./polyfill":156}],139:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -33988,7 +34396,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":34}],138:[function(require,module,exports){
+},{"../core":34}],140:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -34891,7 +35299,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":34,"./InteractionData":137,"./interactiveTarget":140}],139:[function(require,module,exports){
+},{"../core":34,"./InteractionData":139,"./interactiveTarget":142}],141:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -34908,7 +35316,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":137,"./InteractionManager":138,"./interactiveTarget":140}],140:[function(require,module,exports){
+},{"./InteractionData":139,"./InteractionManager":140,"./interactiveTarget":142}],142:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -34957,7 +35365,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],141:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -35081,7 +35489,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34,"../extras":91,"path":4,"resource-loader":159}],142:[function(require,module,exports){
+},{"../core":34,"../extras":91,"path":4,"resource-loader":161}],144:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -35102,7 +35510,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":141,"./loader":143,"./spritesheetParser":144,"./textureParser":145,"resource-loader":159}],143:[function(require,module,exports){
+},{"./bitmapFontParser":143,"./loader":145,"./spritesheetParser":146,"./textureParser":147,"resource-loader":161}],145:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -35164,7 +35572,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":141,"./spritesheetParser":144,"./textureParser":145,"resource-loader":159}],144:[function(require,module,exports){
+},{"./bitmapFontParser":143,"./spritesheetParser":146,"./textureParser":147,"resource-loader":161}],146:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -35248,7 +35656,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34,"path":4,"resource-loader":159}],145:[function(require,module,exports){
+},{"../core":34,"path":4,"resource-loader":161}],147:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -35270,7 +35678,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":34}],146:[function(require,module,exports){
+},{"../core":34}],148:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -35746,7 +36154,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":34}],147:[function(require,module,exports){
+},{"../core":34}],149:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -35872,7 +36280,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":146}],148:[function(require,module,exports){
+},{"./Mesh":148}],150:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -36085,7 +36493,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":34,"./Mesh":146}],149:[function(require,module,exports){
+},{"../core":34,"./Mesh":148}],151:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -36104,7 +36512,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":146,"./Plane":147,"./Rope":148,"./webgl/MeshRenderer":150,"./webgl/MeshShader":151}],150:[function(require,module,exports){
+},{"./Mesh":148,"./Plane":149,"./Rope":150,"./webgl/MeshRenderer":152,"./webgl/MeshShader":153}],152:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -36137,7 +36545,7 @@ function MeshRenderer(renderer)
      *
      * @member {Uint16Array}
      */
-
+    
     this.indices = new Uint16Array(15000);
 
     //TODO this could be a single buffer shared amongst all renderers as we reuse this set up in most renderers
@@ -36319,7 +36727,7 @@ MeshRenderer.prototype.flush = function ()
  */
 MeshRenderer.prototype.start = function ()
 {
-
+    
 
     this.currentShader = null;
 };
@@ -36333,7 +36741,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":34,"../Mesh":146}],151:[function(require,module,exports){
+},{"../../core":34,"../Mesh":148}],153:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -36394,7 +36802,7 @@ module.exports = MeshShader;
 
 core.ShaderManager.registerPlugin('meshShader', MeshShader);
 
-},{"../../core":34}],152:[function(require,module,exports){
+},{"../../core":34}],154:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -36410,7 +36818,7 @@ if (!Math.sign)
     };
 }
 
-},{}],153:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -36420,12 +36828,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":23}],154:[function(require,module,exports){
+},{"object-assign":23}],156:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":152,"./Object.assign":153,"./requestAnimationFrame":155}],155:[function(require,module,exports){
+},{"./Math.sign":154,"./Object.assign":155,"./requestAnimationFrame":157}],157:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -36495,7 +36903,7 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],156:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 var async       = require('async'),
     urlParser   = require('url'),
     Resource    = require('./Resource'),
@@ -36953,7 +37361,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":157,"async":1,"eventemitter3":2,"url":10}],157:[function(require,module,exports){
+},{"./Resource":159,"async":1,"eventemitter3":2,"url":10}],159:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     _url = require('url'),
     // tests is CORS is supported in XHR, if not we need to use XDR
@@ -37763,7 +38171,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":2,"url":10}],158:[function(require,module,exports){
+},{"eventemitter3":2,"url":10}],160:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -37829,7 +38237,7 @@ module.exports = {
     }
 };
 
-},{}],159:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -37843,7 +38251,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":156,"./Resource":157,"./middlewares/caching/memory":160,"./middlewares/parsing/blob":161}],160:[function(require,module,exports){
+},{"./Loader":158,"./Resource":159,"./middlewares/caching/memory":162,"./middlewares/parsing/blob":163}],162:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -37865,7 +38273,7 @@ module.exports = function () {
     };
 };
 
-},{}],161:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -37925,6 +38333,6 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":157,"../../b64":158}]},{},[136])(136)
+},{"../../Resource":159,"../../b64":160}]},{},[138])(138)
 });
 //# sourceMappingURL=pixi.js.map

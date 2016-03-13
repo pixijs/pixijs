@@ -4,6 +4,7 @@
 
 var glMat = require('gl-matrix'),
     Point3d = require('./Point3d'),
+    Sphere = require('./Sphere'),
     Euler = require('./Euler'),
     vec3 = glMat.vec3,
     mat4 = glMat.mat4,
@@ -42,13 +43,14 @@ function checkPoint4d() {
 module.exports = {
     Point3d: Point3d,
     Euler: Euler,
+    Sphere: Sphere,
     IDENTITY: glMat.mat4.create(),
 
     intersectPlane: function (n, p0, l0, l, t) {
         // assuming vectors are all normalized
         var denom = vec3.dot(n, l);
 
-        if (denom > 1e-6) {
+        if (Math.abs(denom) > -1e-6) {
 
             var p0l0 = vec3.sub(vec3.create(), p0, l0);
 
@@ -62,18 +64,15 @@ module.exports = {
         return null;
     },
 
-    getRayFromScreen: function (point, renderer) {
+    getRayFromScreen: function (point, projectionMatrix) {
         var tempP = vec3.create();
 
-        //TODO MAKE THIS NOT THIS!
-        var combinedMatrix = window.combinedMatrix;//mat4.multiply(mat4.create(), perspectiveMatrix, projection3d);
-        if (!combinedMatrix)return [[0, 0, 0], [0, 0, 0]];
-        var inverse = mat4.invert(mat4.create(), combinedMatrix);
-
+        if (!projectionMatrix)return [[0, 0, 0], [0, 0, 0]];
+        var inverse = mat4.invert(mat4.create(), projectionMatrix);
 
         // get the near plane..
-        tempP[0] = (point.x / (renderer.width * 0.5)) - 1;
-        tempP[1] = 1 - (point.y / (renderer.height * 0.5));
+        tempP[0] = point.x;
+        tempP[1] = point.y;
         tempP[2] = 0;
 
         var origin = vec3.transformMat4(vec3.create(), tempP, inverse);
@@ -81,7 +80,7 @@ module.exports = {
         // get the far plane
         tempP[2] = 0.99;
 
-        tempP = this.projectionTransformMat4(vec3.create(), tempP, inverse);
+        tempP = vec3.transformMat4(vec3.create(), tempP, inverse);
 
         // now calculate the origin..
         var direction = vec3.subtract(vec3.create(), tempP, origin);
@@ -91,15 +90,7 @@ module.exports = {
         return [origin, direction];
     },
 
-    projectionTransformMat4: function (out, a, m) {
-        var x = a[0], y = a[1], z = a[2],
-            w = m[3] * x + m[7] * y + m[11] * z + m[15];
-        w = w || 1.0;
-        out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-        out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-        out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
-        return out;
-    },
+    testSign: 0,
 
     get2DContactPoint: function (ray, container) {
         var transposeInverse = mat3.normalFromMat4(mat3.create(), container.worldTransform3d);
@@ -112,7 +103,9 @@ module.exports = {
             transposeInverse[8]
         ]
 
-        if (normal[2] < 0) {
+        if (normal[2] * this.testSign <  0) {
+            normal[0] *= -1;
+            normal[1] *= -1;
             normal[2] *= -1
         }
 
@@ -142,53 +135,59 @@ module.exports = {
     },
 
     makeRectBounds(out, worldTransform3d, projectionMatrix, w0, h0, w1, h1) {
-        if (projectionMatrix) {
-            glMat.mat4.multiply(tempTransform, projectionMatrix, worldTransform3d);
-        } else {
-            glMat.mat4.copy(tempTransform, worldTransform3d);
-        }
-
         //TODO: test Z value, may be it cant be rendered in this camera
         tempPoint4d[0] = w0;
         tempPoint4d[1] = h0;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.copy(minPoint3d, tempPoint4d);
-        glMat.vec3.copy(maxPoint3d, tempPoint4d);
+        glMat.vec2.copy(minPoint3d, tempPoint4d);
+        glMat.vec2.copy(maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w0;
         tempPoint4d[1] = h1;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w1;
         tempPoint4d[1] = h1;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
         tempPoint4d[0] = w1;
         tempPoint4d[1] = h0;
         tempPoint4d[2] = 0;
         tempPoint4d[3] = 1;
-        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, tempTransform);
-        if (!checkPoint4d()) {
-            return core.Rectangle.EMPTY;
+        glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, worldTransform3d);
+        if (projectionMatrix) {
+            glMat.vec4.transformMat4(tempPoint4d, tempPoint4d, projectionMatrix);
+            if (!checkPoint4d()) {
+                return core.Rectangle.EMPTY;
+            }
         }
-        glMat.vec3.min(minPoint3d, minPoint3d, tempPoint4d);
-        glMat.vec3.max(maxPoint3d, maxPoint3d, tempPoint4d);
+        glMat.vec2.min(minPoint3d, minPoint3d, tempPoint4d);
+        glMat.vec2.max(maxPoint3d, maxPoint3d, tempPoint4d);
 
         out.x = minPoint3d[0];
         out.y = minPoint3d[1];
