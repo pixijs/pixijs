@@ -1,6 +1,7 @@
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
+    determineCrossOrigin = require('../utils/determineCrossOrigin'),
     bitTwiddle = require('bit-twiddle');
 
 /**
@@ -391,19 +392,16 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = utils.BaseTextureCache[imageUrl];
 
-    if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
-    {
-        crossorigin = true;
-    }
-
     if (!baseTexture)
     {
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
-        if (crossorigin)
+      
+
+        if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
         {
-            image.crossOrigin = '';
+            image.crossOrigin = determineCrossOrigin(imageUrl);
         }
 
         baseTexture = new BaseTexture(image, scaleMode);
