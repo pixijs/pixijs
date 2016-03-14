@@ -422,9 +422,11 @@ Container.prototype.getBounds = function ()
                 continue;
             }
 
-            childVisible = true;
-
             childBounds = this.children[i].getBounds();
+            if (childBounds === math.Rectangle.EMPTY) {
+                continue;
+            }
+            childVisible = true;
 
             minX = minX < childBounds.x ? minX : childBounds.x;
             minY = minY < childBounds.y ? minY : childBounds.y;
@@ -438,7 +440,7 @@ Container.prototype.getBounds = function ()
 
         if (!childVisible)
         {
-            return math.Rectangle.EMPTY;
+            return this._currentBounds = math.Rectangle.EMPTY;
         }
 
         var bounds = this._bounds;
