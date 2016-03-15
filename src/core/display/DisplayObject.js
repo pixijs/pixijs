@@ -113,7 +113,7 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            this.position.x = value;
+            this.transform.position.x = value;
         }
     },
 
@@ -130,7 +130,7 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            this.position.y = value;
+            this.transform.position.y = value;
         }
     },
 
