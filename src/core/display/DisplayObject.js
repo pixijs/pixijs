@@ -18,43 +18,8 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    //TODO: need to create Transform from factory
     this.transform = new Transform();
-
-    /**
-     * The coordinate of the object relative to the local coordinates of the parent.
-     *
-     * @member {PIXI.Point}
-     */
-    this.position = this.transform.position;
-
-    /**
-     * The scale factor of the object.
-     *
-     * @member {PIXI.Point}
-     */
-    this.scale = this.transform.scale;
-
-    /**
-     * The pivot point of the displayObject that it rotates around
-     *
-     * @member {PIXI.Point}
-     */
-    this.pivot = this.transform.pivot;
-
-
-    /**
-     * The skew factor for the object in radians.
-     *
-     * @member {PIXI.Point}
-     */
-    this.skew = this.transform.skew;
-
-    /**
-     * The rotation of the object in radians.
-     *
-     * @member {number}
-     */
-    this._rotation = 0;
 
     /**
      * The opacity of the object.
@@ -96,15 +61,6 @@ function DisplayObject()
     this.worldAlpha = 1;
 
     /**
-     * Current transform of the object based on world (parent) factors
-     *
-     * @member {PIXI.Matrix}
-     * @readOnly
-     */
-    this.worldTransform = this.transform.worldTransform; // short hand!
-    this.localTransform = this.transform.localTransform;
-
-    /**
      * The area the filter is applied to. This is used as more of an optimisation
      * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
      *
@@ -135,8 +91,6 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
-
-  //  this.dirtyTransform = true;
 }
 
 // constructor
@@ -159,8 +113,7 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            this.position.x = value;
-            this.dirtyTransform = true;
+            this.transform.position.x = value;
         }
     },
 
@@ -177,22 +130,106 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            this.position.y = value;
-            this.dirtyTransform = true;
+            this.transform.position.y = value;
         }
     },
 
+    /**
+     * Current transform of the object based on world (parent) factors
+     *
+     * @member {PIXI.Matrix}
+     * @readOnly
+     */
+    worldTransform: {
+        get: function ()
+        {
+            return this.transform.worldTransform;
+        }
+    },
+
+    /**
+     * Current transform of the object based on local factors: position, scale, other stuff
+     *
+     * @member {PIXI.Matrix}
+     * @readOnly
+     */
+    localTransform: {
+        get: function ()
+        {
+            return this.transform.localTransform;
+        }
+    },
+
+    /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     *
+     * @member {PIXI.Point}
+     */
+    position: {
+        get: function()
+        {
+            return this.transform.position;
+        },
+        set: function(value) {
+            this.transform.position = value;
+        }
+    },
+
+    /**
+     * The scale factor of the object.
+     *
+     * @member {PIXI.Point}
+     */
+    scale: {
+        get: function() {
+            return this.transform.scale;
+        },
+        set: function(value) {
+            this.transform.scale = value;
+        }
+    },
+
+    /**
+     * The pivot point of the displayObject that it rotates around
+     *
+     * @member {PIXI.Point}
+     */
+    pivot: {
+        get: function() {
+            return this.transform.pivot;
+        },
+        set: function(value) {
+            this.transform.pivot = value;
+        }
+    },
+
+    /**
+     * The skew factor for the object in radians.
+     *
+     * @member {PIXI.Point}
+     */
+    skew: {
+        get: function() {
+            return this.transform.skew;
+        },
+        set: function(value) {
+            this.transform.skew = value;
+        }
+    },
+
+    /**
+     * The rotation of the object in radians.
+     *
+     * @member {number}
+     */
     rotation: {
         get: function ()
         {
-            return this._rotation;
+            return this.transform.rotation;
         },
         set: function (value)
         {
-            this._rotation = value;
-            this.transform.dirty = true;
-            this.transform._sr = Math.sin(value);
-            this.transform._cr = Math.cos(value);
+            this.transform.rotation = value;
         }
     },
 
@@ -280,8 +317,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    //if(this.transform.dirty || parent.transform.dirty)
-    this.transform.updateTransform(this.parent.transform);
+    this.transform =  this.parent.transform.updateChildTransform(this.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
@@ -435,7 +471,6 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
     this.skew.y = skewY || 0;
     this.pivot.x = pivotX || 0;
     this.pivot.y = pivotY || 0;
-    this.dirtyTransform = true;
     return this;
 };
 

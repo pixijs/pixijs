@@ -233,6 +233,14 @@ core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, res
     console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
 };
 
+
+core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
+{
+    console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
+
+    return this.generateCanvasTexture(scaleMode, resolution)
+}
+
 core.RenderTexture.prototype.render = function()
 {
     //displayObject, matrix, clear, updateTransform
@@ -251,6 +259,8 @@ core.Sprite.prototype.setTexture = function(texture)
     this.texture = texture;
     console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
+
+
 
 /**
  * @method

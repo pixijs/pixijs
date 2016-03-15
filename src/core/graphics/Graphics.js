@@ -1,11 +1,15 @@
 var Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
+    Texture = require('../textures/Texture'),
     GraphicsData = require('./GraphicsData'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
-
+    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
+    CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
+    canvasRenderer,
+    tempMatrix = new math.Matrix(),
     tempPoint = new math.Point();
 
 /**
@@ -1008,6 +1012,30 @@ Graphics.prototype.drawShape = function (shape)
 
     return data;
 };
+
+Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
+{
+    resolution = resolution || 1;
+
+    var bounds = this.getLocalBounds();
+
+    var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+
+    if(!canvasRenderer)
+    {
+        canvasRenderer = new CanvasRenderer();
+    }
+
+    tempMatrix.tx = -bounds.x;
+    tempMatrix.ty = -bounds.y;
+
+    canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
+    
+    var texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+    texture.baseTexture.resolution = resolution;
+
+    return texture;
+}
 
 /**
  * Destroys the Graphics object.

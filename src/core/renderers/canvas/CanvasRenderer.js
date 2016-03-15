@@ -119,9 +119,10 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     if(renderTexture)
     {
         renderTexture = renderTexture.baseTexture || renderTexture;
-
+        
         if(!renderTexture._canvasRenderTarget)
         {
+
             renderTexture._canvasRenderTarget = new CanvasRenderTarget(renderTexture.width, renderTexture.height, renderTexture.resolution);
             renderTexture.source = renderTexture._canvasRenderTarget.canvas;
             renderTexture.valid = true;

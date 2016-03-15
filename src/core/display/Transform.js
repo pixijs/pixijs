@@ -34,7 +34,7 @@ function Transform()
      * @member {PIXI.Point}
      */
     this.scale = new math.Point(1,1);
-        
+
 
     this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
 
@@ -51,14 +51,14 @@ function Transform()
      *
      * @member {Number}
      */
-    this.rotation = 0;
+    this._rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     this._cy  = Math.cos(0)//skewY);
     this._sy  = Math.sin(0)//skewY);
     this._nsx = Math.sin(0)//skewX);
     this._cx  = Math.cos(0)//skewX);
-    
+
     this._dirty = false;
     this.updated = true;
 }
@@ -79,7 +79,7 @@ Transform.prototype.updateSkew = function ()
  *
  */
 Transform.prototype.updateTransform = function (parentTransform)
-{ 
+{
 
     var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
@@ -107,5 +107,29 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
 };
+
+Transform.prototype.updateChildTransform = function (childTransform)
+{
+    childTransform.updateTransform(this);
+    return childTransform;
+};
+
+Object.defineProperties(Transform.prototype, {
+    /**
+     * The rotation of the object in radians.
+     *
+     * @member {number}
+     */
+    rotation: {
+        get: function () {
+            return this._rotation;
+        },
+        set: function (value) {
+            this._rotation = value;
+            this._sr = Math.sin(value);
+            this._cr = Math.cos(value);
+        }
+    }
+});
 
 module.exports = Transform;

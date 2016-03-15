@@ -150,3 +150,15 @@ Rectangle.prototype.fit = function (rectangle)
         }
     }
 };
+
+Rectangle.prototype.enlarge = function (rect) {
+    if (rect === Rectangle.EMPTY) return;
+    var x1 = Math.min(this.x, rect.x);
+    var x2 = Math.max(this.x + this.width, rect.x + rect.width);
+    var y1 = Math.min(this.y, rect.y);
+    var y2 = Math.max(this.y + this.height, rect.y + rect.height);
+    this.x = x1;
+    this.width = x2 - x1;
+    this.y = y1;
+    this.height = y2 - y1;
+};
