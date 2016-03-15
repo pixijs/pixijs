@@ -65,7 +65,6 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
      *
      * @member {PIXI.CanvasRenderer|PIXI.WebGLRenderer}
      */
-    this.renderer = renderer;
 
     /**
      * @member {boolean}

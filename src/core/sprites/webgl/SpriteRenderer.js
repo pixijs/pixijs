@@ -81,7 +81,7 @@ function SpriteRenderer(renderer)
     this.vertexBuffers = [];
     this.vaos = [];
 
-    this.vaoMax = 10
+    this.vaoMax = 20;
     this.vertexCount = 0;
 }
 
