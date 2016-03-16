@@ -308,7 +308,6 @@ BitmapText.prototype.updateText = function ()
     }
 
     var lenChars = chars.length;
-    var tint = this.tint;
 
     for (i = 0; i < lenChars; i++)
     {
@@ -327,7 +326,6 @@ BitmapText.prototype.updateText = function ()
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
-        c.tint = tint;
 
         if (!c.parent)
         {

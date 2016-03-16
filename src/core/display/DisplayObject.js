@@ -108,6 +108,39 @@ function DisplayObject()
      * @member {PIXI.Rectangle}
      */
     this.filterArea = null;
+    
+    /**
+     * The tint applied to the DisplayObject (and its children). This is a hex value. A value of
+     * 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @default 0xFFFFFF
+     */
+    this.tint = 0xFFFFFF;
+    
+    /**
+     * The multiplied tint of the DisplayObject.
+     *
+     * @member {number}
+     * @readOnly
+     */
+    this.worldTint = 0xFFFFFF;
+    
+    /**
+     * cached parent world tint
+     *
+     * @member {number}
+     * @private
+     */
+    this._lastParentTint = 0xFFFFFF;
+    
+    /**
+     * cached self tint - not the world tint
+     *
+     * @member {number}
+     * @private
+     */
+    this._lastSelfTint = 0xFFFFFF;
 
     /**
      * cached sin rotation
@@ -362,6 +395,20 @@ DisplayObject.prototype.updateTransform = function ()
 
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    if (this.tint !== this._lastSelfTint || this.parent.worldTint !== this._lastParentTint)
+    {
+        var selfTint = this._lastSelfTint = this.tint;
+        var parentTint = this._lastParentTint = this.parent.worldTint;
+        //split up the two values into RGB for multiplying
+        var parentR = (parentTint >> 16) & 0xff;
+        var parentG = (parentTint >> 8) & 0xff;
+        var parentB = parentTint & 0xff;
+        var selfR = (selfTint >> 16) & 0xff;
+        var selfG = (selfTint >> 8) & 0xff;
+        var selfB = selfTint & 0xff;
+        //mutliply the two colors and recombine them into one number
+        this.worldTint = (Math.round((parentR * selfR) / 255) << 16) | (Math.round((parentG * selfG) / 255) << 8) | Math.round((parentB * selfB) / 255);
+    }
 
     // reset the bounds each time this is called!
     this._currentBounds = null;
