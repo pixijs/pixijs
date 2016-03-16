@@ -95,11 +95,12 @@ document.body.appendChild(renderer.view);
 
 // You need to create a root container that will hold the scene you want to draw.
 var stage = new PIXI.Container();
+var bunny;
 
 // load the texture we need
 PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
     // This creates a texture from a 'bunny.png' image.
-    var bunny = new PIXI.Sprite(resources.bunny.texture);
+    bunny = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position and scale of the bunny
     bunny.position.x = 400;
