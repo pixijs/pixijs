@@ -88,7 +88,7 @@ function InteractionManager(renderer, options)
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
      * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
-     * @member {HTMLElement}
+     * @member {boolean}
      * @private
      */
     this.moveWhenInside = false;
