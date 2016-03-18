@@ -22,7 +22,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-  
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -92,7 +92,8 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.vertexData = new Float32Array(8);
+    this.geometry = new math.Geometry2d();
+    this.geometry.setSize(4);
 }
 
 // constructor
@@ -227,6 +228,8 @@ Sprite.prototype.caclulateVertices = function ()
         h0 = crop.height * (1-this.anchor.y);
         h1 = crop.height * -this.anchor.y;
     }
+
+    this.geometry.setRectCoords(0, w0, w1, h0, h1);
 
     // xy
     vertexData[0] = a * w1 + c * h1 + tx;

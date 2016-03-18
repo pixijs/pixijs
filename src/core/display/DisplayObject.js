@@ -53,6 +53,13 @@ function DisplayObject()
     this.parent = null;
 
     /**
+     * Geometry, can be used to calculate the bounds
+     *
+     * @member {PIXI.Geometry}
+     */
+    this.geometry = null;
+
+    /**
      * The multiplied alpha of the displayObject
      *
      * @member {number}
@@ -327,7 +334,6 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 
 /**
  *
- *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @param matrix {PIXI.Matrix}
@@ -335,7 +341,13 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  */
 DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
 {
-    return math.Rectangle.EMPTY;
+    var geom = this.geometry;
+    if (!geom) return math.Rectangle.EMPTY;
+    if (!this._currentBounds) {
+        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
+        this._currentBounds = this.transform.getGeometryBounds(geom, this._bounds, matrix);
+    }
+    return this._currentBounds;
 };
 
 /**

@@ -1,4 +1,5 @@
 var math = require('../math');
+var Transform = require('./Transform');
 var ObservablePoint = require('./ObservablePoint');
 
 var generatorId = 0;
@@ -106,11 +107,8 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     }
 };
 
-TransformStatic.prototype.updateChildTransform = function (childTransform)
-{
-    childTransform.updateTransform(this);
-    return childTransform;
-};
+TransformStatic.prototype.updateChildTransform = Transform.prototype.updateTransform;
+TransformStatic.prototype.getGeometryBounds = Transform.prototype.getGeometryBounds;
 
 Object.defineProperties(TransformStatic.prototype, {
     /**

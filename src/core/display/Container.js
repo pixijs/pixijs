@@ -387,14 +387,17 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
 /**
 * RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
+ * @param matrix {PIXI.Matrix} just a legacy
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
-Container.prototype.getBounds = function ()
+Container.prototype.getBounds = function (matrix)
 {
     if(!this._currentBounds)
     {
+        var geom = this.geometry;
+        if (!geom) return math.Rectangle.EMPTY;
 
-        if (this.children.length === 0)
+        if (!geom && this.children.length === 0)
         {
             return math.Rectangle.EMPTY;
         }
@@ -407,11 +410,21 @@ Container.prototype.getBounds = function ()
         var maxX = -Infinity;
         var maxY = -Infinity;
 
+        var childVisible = false;
+        var bounds = this._bounds;
+        if (geom) {
+            if (this.transform.getGeometryBounds(geom, bounds, matrix) !== math.Rectangle.EMPTY) {
+                minX = bounds.x;
+                maxX = bounds.y;
+                minY = bounds.x + bounds.width;
+                maxY = bounds.y + bounds.height;
+                childVisible = true;
+            }
+        }
+
         var childBounds;
         var childMaxX;
         var childMaxY;
-
-        var childVisible = false;
 
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
@@ -442,8 +455,6 @@ Container.prototype.getBounds = function ()
         {
             return this._currentBounds = math.Rectangle.EMPTY;
         }
-
-        var bounds = this._bounds;
 
         bounds.x = minX;
         bounds.y = minY;

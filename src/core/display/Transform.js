@@ -63,6 +63,10 @@ function Transform()
     this.updated = true;
 }
 
+Transform.prototype.getIdentity = function() {
+    return math.Matrix.IDENTITY;
+};
+
 Transform.prototype.constructor = Transform;
 
 Transform.prototype.updateSkew = function ()
@@ -71,7 +75,7 @@ Transform.prototype.updateSkew = function ()
     this._sy  = Math.sin(this.skew.y);
     this._nsx = Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
-}
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.
@@ -112,6 +116,55 @@ Transform.prototype.updateChildTransform = function (childTransform)
 {
     childTransform.updateTransform(this);
     return childTransform;
+};
+
+/**
+ * Get bounds of geometry based on its stride
+ *
+ * @param geometry
+ * @param bounds
+ * @returns {*}
+ */
+Transform.prototype.getGeometryBounds = function(geom, bounds, matrix) {
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    matrix = matrix || this.worldTransform;
+    var a = matrix.a;
+    var b = matrix.b;
+    var c = matrix.c;
+    var d = matrix.d;
+    var tx = matrix.tx;
+    var ty = matrix.ty;
+
+    var vertices = geometry.vertices;
+    var stride = geometry.stride;
+    for (var i = 0, n = vertices.length; i < n; i += stride) {
+        var rawX = vertices[i], rawY = vertices[i + 1];
+        var x = (a * rawX) + (c * rawY) + tx;
+        var y = (d * rawY) + (b * rawX) + ty;
+
+        minX = x < minX ? x : minX;
+        minY = y < minY ? y : minY;
+
+        maxX = x > maxX ? x : maxX;
+        maxY = y > maxY ? y : maxY;
+    }
+
+    if (minX === -Infinity || maxY === Infinity) {
+        return core.Rectangle.EMPTY;
+    }
+
+    bounds.x = minX;
+    bounds.width = maxX - minX;
+
+    bounds.y = minY;
+    bounds.height = maxY - minY;
+
+    return bounds;
 };
 
 Object.defineProperties(Transform.prototype, {
