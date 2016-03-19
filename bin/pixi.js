@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-03-19T14:29:05.529Z
+ * Compiled 2016-03-19T14:54:52.423Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26895,10 +26895,10 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(child.interactive)
-                {
-                    hitTest = false;
-                }
+                //if(child.interactive)
+                //{
+                hitTest = false;
+                //}
 
                 // we can break now as we have hit an object.
                 break;
