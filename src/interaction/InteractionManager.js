@@ -418,7 +418,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 //}
 
                 // we can break now as we have hit an object.
-                break;
+                //break;
             }
         }
     }

@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-03-19T14:54:52.423Z
+ * Compiled 2016-03-19T14:56:12.319Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26901,7 +26901,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 //}
 
                 // we can break now as we have hit an object.
-                break;
+                //break;
             }
         }
     }
