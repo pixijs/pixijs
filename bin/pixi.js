@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-03-17T20:17:05.532Z
+ * Compiled 2016-03-19T14:29:05.529Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26876,7 +26876,6 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         
         for (var i = children.length-1; i >= 0; i--)
         {
-
             var child = children[i];
 
             // time to get recursive.. if this function will return if somthing is hit..
@@ -26900,6 +26899,9 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 {
                     hitTest = false;
                 }
+
+                // we can break now as we have hit an object.
+                break;
             }
         }
     }
