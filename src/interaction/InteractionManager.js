@@ -393,7 +393,6 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         
         for (var i = children.length-1; i >= 0; i--)
         {
-
             var child = children[i];
 
             // time to get recursive.. if this function will return if somthing is hit..
@@ -417,6 +416,9 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 {
                     hitTest = false;
                 }
+
+                // we can break now as we have hit an object.
+                break;
             }
         }
     }
