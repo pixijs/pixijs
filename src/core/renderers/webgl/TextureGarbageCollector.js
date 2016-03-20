@@ -69,6 +69,7 @@ TextueGarbageCollector.prototype.run = function()
                 }
             }
             managedTextures.length = j;
+            removed.length = 0;
         }
     }
 }
