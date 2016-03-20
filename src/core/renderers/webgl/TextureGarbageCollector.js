@@ -6,7 +6,7 @@ var CONST = require('../../const');
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-function TextueGarbageCollector(renderer)
+function TextureGarbageCollector(renderer)
 {
     this.renderer = renderer;
 
@@ -18,14 +18,14 @@ function TextueGarbageCollector(renderer)
     this.mode = CONST.GC_MODES.DEFAULT;
 }
 
-TextueGarbageCollector.prototype.constructor = TextueGarbageCollector;
-module.exports = TextueGarbageCollector;
+TextureGarbageCollector.prototype.constructor = TextureGarbageCollector;
+module.exports = TextureGarbageCollector;
 
-TextueGarbageCollector.prototype.update = function()
+TextureGarbageCollector.prototype.update = function()
 {
+    this.count++;
     if(this.mode === CONST.GC_MODES.MANUAL)return;
 
-    this.count++;
     this.checkCount++;
 
 
@@ -35,9 +35,9 @@ TextueGarbageCollector.prototype.update = function()
 
         this.run();
     }
-}
+};
 
-TextueGarbageCollector.prototype.run = function()
+TextureGarbageCollector.prototype.run = function()
 {
     var tm = this.renderer.textureManager;
     var managedTextures =  tm._managedTextures;
@@ -71,4 +71,4 @@ TextueGarbageCollector.prototype.run = function()
 
         managedTextures.length = j;
     }
-}
+};
