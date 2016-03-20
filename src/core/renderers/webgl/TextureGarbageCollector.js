@@ -41,24 +41,34 @@ TextueGarbageCollector.prototype.run = function()
 {
     var tm = this.renderer.textureManager;
     var managedTextures =  tm._managedTextures;
-
     var wasRemoved = false;
-    for (var i = 0; i < managedTextures.length; i++) {
+    var i,j;
+
+    for (i = 0; i < managedTextures.length; i++) 
+    {
         var texture = managedTextures[i];
+
         // only supports non generated textures at the moment!
-        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) {
+        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) 
+        {
             tm.destroyTexture(texture, true);
             managedTextures[i] = null;
             wasRemoved = true;
         }
     }
-    if (wasRemoved) {
-        var j = 0;
-        for (var i = 0; i < managedTextures.length; i++) {
-            if (managedTextures[i] !== null) {
+    
+    if (wasRemoved) 
+    {
+        j = 0;
+
+        for (i = 0; i < managedTextures.length; i++) 
+        {
+            if (managedTextures[i] !== null) 
+            {
                 managedTextures[j++] = managedTextures[i];
             }
         }
+
         managedTextures.length = j;
     }
 }
