@@ -46,30 +46,27 @@ TextueGarbageCollector.prototype.run = function()
     var removed = this._removedIndices;
     removed.length = 0;
     var i,j;
-    try {
-        this.renderer.textureManager._cleaning = true;
-        for (i = 0; i < managedTextures.length; i++) {
-            var texture = managedTextures[i];
-            // only supports non generated textures at the moment!
-            if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) {
-                removed.push(i);
-                texture.dispose();
+    this.renderer.textureManager._cleaning = true;
+    for (i = 0; i < managedTextures.length; i++) {
+        var texture = managedTextures[i];
+        // only supports non generated textures at the moment!
+        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) {
+            removed.push(i);
+            texture.dispose();
+        }
+    }
+    this.renderer.textureManager._cleaning = false;
+    if (removed.length>0) {
+        for (i = 0; i < removed.length; i++) {
+            managedTextures[i] = null;
+        }
+        j = 0;
+        for (var i = 0; i < managedTextures.length; i++) {
+            if (managedTextures[i] != null) {
+                managedTextures[j++] = managedTextures[i];
             }
         }
-    } finally {
-        this.renderer.textureManager._cleaning = false;
-        if (removed.length>0) {
-            for (i = 0; i < removed.length; i++) {
-                managedTextures[i] = null;
-            }
-            j = 0;
-            for (var i = 0; i < managedTextures.length; i++) {
-                if (managedTextures[i] != null) {
-                    managedTextures[j++] = managedTextures[i];
-                }
-            }
-            managedTextures.length = j;
-            removed.length = 0;
-        }
+        managedTextures.length = j;
+        removed.length = 0;
     }
 }
