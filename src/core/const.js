@@ -172,6 +172,12 @@ var CONST = {
         MIRRORED_REPEAT:2
     },
 
+    GC_MODES: {
+        DEFAULT:        0,
+        AUTO:           0,
+        MANUAL:         1,
+    },
+
     /**
      * If set to true WebGL will attempt make textures mimpaped by default
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions
