@@ -33,13 +33,6 @@ var TextureManager = function(renderer)
      * @private
      */
 	this._managedTextures = [];
-
-    /**
-     * While its true, no texture will be removed from _managedTextures array
-     * @type {boolean}
-     * @private
-     */
-    this._isCleaning = false;
 };
 
 TextureManager.prototype.bindTexture = function()
@@ -165,7 +158,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 
         delete texture._glTextures[this.renderer.CONTEXT_UID];
 
-        if (!_skipRemove && !this._isCleaning)
+        if (!_skipRemove)
         {
             var i = this._managedTextures.indexOf(texture);
             if (i !== -1) {

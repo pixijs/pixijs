@@ -15,9 +15,7 @@ function TextueGarbageCollector(renderer)
     this.maxIdle = 60 * 60;
     this.checkCountMax = 60 * 10;
 
-    this.mode = CONST.GC_MODES.DEFAULT
-
-    this._removedIndices = [];
+    this.mode = CONST.GC_MODES.DEFAULT;
 }
 
 TextueGarbageCollector.prototype.constructor = TextueGarbageCollector;
@@ -41,32 +39,26 @@ TextueGarbageCollector.prototype.update = function()
 
 TextueGarbageCollector.prototype.run = function()
 {
-    var managedTextures =  this.renderer.textureManager._managedTextures;
+    var tm = this.renderer.textureManager;
+    var managedTextures =  tm._managedTextures;
 
-    var removed = this._removedIndices;
-    removed.length = 0;
-    var i,j;
-    this.renderer.textureManager._cleaning = true;
-    for (i = 0; i < managedTextures.length; i++) {
+    var wasRemoved = false;
+    for (var i = 0; i < managedTextures.length; i++) {
         var texture = managedTextures[i];
         // only supports non generated textures at the moment!
         if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) {
-            removed.push(i);
-            texture.dispose();
+            tm.destroyTexture(texture, true);
+            managedTextures[i] = null;
+            wasRemoved = true;
         }
     }
-    this.renderer.textureManager._cleaning = false;
-    if (removed.length>0) {
-        for (i = 0; i < removed.length; i++) {
-            managedTextures[i] = null;
-        }
-        j = 0;
+    if (wasRemoved) {
+        var j = 0;
         for (var i = 0; i < managedTextures.length; i++) {
-            if (managedTextures[i] != null) {
+            if (managedTextures[i] !== null) {
                 managedTextures[j++] = managedTextures[i];
             }
         }
         managedTextures.length = j;
-        removed.length = 0;
     }
 }
