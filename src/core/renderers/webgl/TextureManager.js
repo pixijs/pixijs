@@ -33,6 +33,13 @@ var TextureManager = function(renderer)
      * @private
      */
 	this._managedTextures = [];
+
+    /**
+     * While its true, no texture will be removed from _managedTextures array
+     * @type {boolean}
+     * @private
+     */
+    this._isCleaning = false;
 };
 
 TextureManager.prototype.bindTexture = function()
@@ -120,8 +127,8 @@ TextureManager.prototype.updateTexture = function(texture)
         }
     }
     else
-    {  
-        // the textur ealrady exists so we only need to update it..   
+    {
+        // the textur ealrady exists so we only need to update it..
         if(isRenderTexture)
         {
             texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
@@ -158,7 +165,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 
         delete texture._glTextures[this.renderer.CONTEXT_UID];
 
-        if (!_skipRemove)
+        if (!_skipRemove && !this._isCleaning)
         {
             var i = this._managedTextures.indexOf(texture);
             if (i !== -1) {
