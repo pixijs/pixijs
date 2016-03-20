@@ -28,29 +28,37 @@ TextueGarbageCollector.prototype.update = function()
     this.count++;
     this.checkCount++;
 
-    
+
     if(this.checkCount > this.checkCountMax)
     {
         this.checkCount = 0;
 
         this.run();
-    }    
+    }
 }
 
 TextueGarbageCollector.prototype.run = function()
 {
-    var managedTextures =  this.renderer.textureManager._managedTextures;
+    var tm = this.renderer.textureManager;
+    var managedTextures =  tm._managedTextures;
 
+    var wasRemoved = false;
     for (var i = 0; i < managedTextures.length; i++) {
-            
         var texture = managedTextures[i];
-
         // only supports non generated textures at the moment!
-        if( !texture._glRenderTargets && this.count  - texture.touched > this.maxIdle)
-        {
-            texture.dispose();
-            i--;
+        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) {
+            tm.destroyTexture(texture, true);
+            managedTextures[i] = null;
+            wasRemoved = true;
         }
-        
-    };
+    }
+    if (wasRemoved) {
+        var j = 0;
+        for (var i = 0; i < managedTextures.length; i++) {
+            if (managedTextures[i] !== null) {
+                managedTextures[j++] = managedTextures[i];
+            }
+        }
+        managedTextures.length = j;
+    }
 }

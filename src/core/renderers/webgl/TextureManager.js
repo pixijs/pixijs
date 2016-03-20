@@ -120,8 +120,8 @@ TextureManager.prototype.updateTexture = function(texture)
         }
     }
     else
-    {  
-        // the textur ealrady exists so we only need to update it..   
+    {
+        // the textur ealrady exists so we only need to update it..
         if(isRenderTexture)
         {
             texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
