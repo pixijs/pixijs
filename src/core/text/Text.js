@@ -226,7 +226,10 @@ Object.defineProperties(Text.prototype, {
             return this._text;
         },
         set: function (text){
-            text = text.toString() || ' ';
+
+            text = text || ' ';
+            text = text.toString();
+            
             if (this._text === text)
             {
                 return;
