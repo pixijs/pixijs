@@ -64,9 +64,18 @@ function DisplayObject()
      * The area the filter is applied to. This is used as more of an optimisation
      * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
      *
+     * Also works as an interaction mask
+     *
      * @member {PIXI.Rectangle}
      */
     this.filterArea = null;
+
+    /**
+     * Interaction shape. Children will be hit first, then this shape will be checked.
+     *
+     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     */
+    this.hitArea = null;
 
     /**
      * The original, cached bounds of the object
