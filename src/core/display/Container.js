@@ -394,9 +394,8 @@ Container.prototype.getBounds = function (matrix)
 {
     if(!this._currentBounds)
     {
-        var geom = this.geometry;
-        if (!geom) return math.Rectangle.EMPTY;
-
+        this.updateGeometry();
+        var geom = this.worldGeometry;
         if (!geom && this.children.length === 0)
         {
             return math.Rectangle.EMPTY;
@@ -412,14 +411,13 @@ Container.prototype.getBounds = function (matrix)
 
         var childVisible = false;
         var bounds = this._bounds;
-        if (geom) {
-            if (this.transform.getGeometryBounds(geom, bounds, matrix) !== math.Rectangle.EMPTY) {
-                minX = bounds.x;
-                maxX = bounds.y;
-                minY = bounds.x + bounds.width;
-                maxY = bounds.y + bounds.height;
-                childVisible = true;
-            }
+        if (geom && geom.valid) {
+            var ownBounds = geom.bounds;
+            minX = ownBounds.x;
+            maxX = ownBounds.y;
+            minY = ownBounds.x + ownBounds.width;
+            maxY = ownBounds.y + ownBounds.height;
+            childVisible = true;
         }
 
         var childBounds;

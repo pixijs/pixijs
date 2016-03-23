@@ -1,5 +1,7 @@
 var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint');
+    ObservablePoint = require('./ObservablePoint'),
+    utils = require('../utils'),
+    GeometryCache2d = require('./GeometryCache2d');
 
 
 /**
@@ -61,6 +63,9 @@ function Transform()
 
     this._dirty = false;
     this.updated = true;
+
+    this.versionGlobal = 0;
+    this.uid = utils.uid();
 }
 
 Transform.prototype.getIdentity = function() {
@@ -110,6 +115,8 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+    this.versionGlobal++;
 };
 
 Transform.prototype.updateChildTransform = function (childTransform)
@@ -125,46 +132,11 @@ Transform.prototype.updateChildTransform = function (childTransform)
  * @param bounds
  * @returns {*}
  */
-Transform.prototype.getGeometryBounds = function(geom, bounds, matrix) {
-    var maxX = -Infinity;
-    var maxY = -Infinity;
-
-    var minX = Infinity;
-    var minY = Infinity;
-
-    matrix = matrix || this.worldTransform;
-    var a = matrix.a;
-    var b = matrix.b;
-    var c = matrix.c;
-    var d = matrix.d;
-    var tx = matrix.tx;
-    var ty = matrix.ty;
-
-    var vertices = geometry.vertices;
-    var stride = geometry.stride;
-    for (var i = 0, n = vertices.length; i < n; i += stride) {
-        var rawX = vertices[i], rawY = vertices[i + 1];
-        var x = (a * rawX) + (c * rawY) + tx;
-        var y = (d * rawY) + (b * rawX) + ty;
-
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
-    }
-
-    if (minX === -Infinity || maxY === Infinity) {
-        return core.Rectangle.EMPTY;
-    }
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    return bounds;
+Transform.prototype.updateGeometry = function(geometryCache, geometry) {
+    if (!geometry || !geometry.valid) return null;
+    geometryCache = geometryCache || new GeometryCache2d();
+    geometryCache.applyTransformStatic(geometry, this);
+    return geometryCache;
 };
 
 Object.defineProperties(Transform.prototype, {

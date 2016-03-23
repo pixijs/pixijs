@@ -1,3 +1,5 @@
+var Geometry = require('./Geometry');
+
 /**
  * Used by both Meshes and Sprites, mutable storage for sets of 2d points
  *
@@ -9,9 +11,12 @@
  * @memberof PIXI
  */
 function Geometry2d() {
-    this.vertices = null;
-    this.indices = null;
+    Geometry.call(this);
 }
+
+Geometry2d.prototype = Object.create(Geometry.prototype);
+Geometry2d.prototype.constructor = Geometry;
+module.exports = Geometry2d;
 
 Geometry2d.prototype.setRectCoords = function (offset, x1, y1, x2, y2) {
     var vs = this.vertices;
@@ -23,6 +28,7 @@ Geometry2d.prototype.setRectCoords = function (offset, x1, y1, x2, y2) {
     vs[offset++] = y2;
     vs[offset++] = x1;
     vs[offset++] = y2;
+    this.version++;
     return offset;
 };
 

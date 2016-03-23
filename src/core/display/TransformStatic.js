@@ -1,8 +1,8 @@
 var math = require('../math');
 var Transform = require('./Transform');
 var ObservablePoint = require('./ObservablePoint');
+var utils = require('../utils');
 
-var generatorId = 0;
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -55,12 +55,12 @@ function TransformStatic()
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
 
-    this._versionLocal = 0;
-    this._versionGlobal = 0;
+    this.versionLocal = 0;
+    this.versionGlobal = 0;
     this._dirtyLocal = 0;
     this._dirtyParentVersion = -1;
     this._dirtyParentId = -1;
-    this._transformId = ++generatorId;
+    this.uid = utils.uid();
 }
 
 TransformStatic.prototype.constructor = TransformStatic;
@@ -77,11 +77,11 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     var lt = this.localTransform;
 
     this.updated = false;
-    if(this._dirtyLocal !== this._versionLocal ||
-        parentTransform._dirtyParentId !== parentTransform._transformId ||
-        parentTransform._dirtyParentVersion !== parentTransform._versionGlobal )
+    if(this.versionLocal !== this._dirtyLocal ||
+        parentTransform._dirtyParentId !== parentTransform.uid ||
+        parentTransform._dirtyParentVersion !== parentTransform.versionGlobal )
     {
-        if(this._dirtyLocal !== this._versionLocal)
+        if(this.versionLocal !== this._dirtyLocal)
         {
             // get the matrix values of the displayobject based on its transform properties..
             lt.a  =  this._cr * this.scale._x;
@@ -90,7 +90,7 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
             lt.d  =  this._cr * this.scale._y;
             lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
             lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
-            this._dirtyLocal = this._versionLocal;
+            this.versionLocal = this._dirtyLocal;
         }
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;
@@ -100,9 +100,9 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
         wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
         wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
 
-        this._dirtyParentId = parentTransform._transformId;
-        this._dirtyParentVersion = parentTransform._versionGlobal;
-        this._versionGlobal++;
+        this._dirtyParentId = parentTransform.uid;
+        this._dirtyParentVersion = parentTransform.versionGlobal;
+        this.versionGlobal++;
         this.updated = true;
     }
 };

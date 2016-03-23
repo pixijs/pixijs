@@ -53,11 +53,18 @@ function DisplayObject()
     this.parent = null;
 
     /**
-     * Geometry, can be used to calculate the bounds
+     * Local geometry, like sprite with anchors
      *
      * @member {PIXI.Geometry}
      */
-    this.geometry = null;
+    this.localGeometry = null;
+
+    /**
+     * Geometry cache, can be used to calculate the bounds
+     *
+     * @member {PIXI.Geometry}
+     */
+    this.worldGeometry = null;
 
     /**
      * The multiplied alpha of the displayObject
@@ -324,9 +331,18 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    this.transform =  this.parent.transform.updateChildTransform(this.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    return this.transform = this.parent.transform.updateChildTransform(this.transform);
+};
+
+/**
+ * Updates the object geometry. Assume that geometry actually exist.
+ * @returns {*}
+ */
+DisplayObject.prototype.updateGeometry = function ()
+{
+    return this.worldGeometry = this.transform.updateGeometry(this.worldGeometry, this.localGeometry);
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -339,10 +355,12 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {PIXI.Matrix}
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
+DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
-    var geom = this.geometry;
+    this.updateGeometry();
+    var geom = this.worldGeometry;
     if (!geom) return math.Rectangle.EMPTY;
+    if (!geom || !geom.valid) return math.Rectangle.EMPTY;
     if (!this._currentBounds) {
         // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
         this._currentBounds = this.transform.getGeometryBounds(geom, this._bounds, matrix);

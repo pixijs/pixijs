@@ -1,6 +1,7 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
+    Geometry2d = require('../display/Geometry2d'),
     utils = require('../utils'),
     CONST = require('../const'),
     tempPoint = new math.Point();
@@ -92,8 +93,8 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.geometry = new math.Geometry2d();
-    this.geometry.setSize(4);
+    this.localGeometry = new core.Geometry2d();
+    this.localGeometry.setSize(4);
 }
 
 // constructor
@@ -200,12 +201,9 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
-Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
-        wt = this.transform.worldTransform,
-        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
-        vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim,
         crop = texture.crop;
@@ -229,23 +227,8 @@ Sprite.prototype.caclulateVertices = function ()
         h1 = crop.height * -this.anchor.y;
     }
 
-    this.geometry.setRectCoords(0, w0, w1, h0, h1);
-
-    // xy
-    vertexData[0] = a * w1 + c * h1 + tx;
-    vertexData[1] = d * h1 + b * w1 + ty;
-
-    // xy
-    vertexData[2] = a * w0 + c * h1 + tx;
-    vertexData[3] = d * h1 + b * w0 + ty;
-
-     // xy
-    vertexData[4] = a * w0 + c * h0 + tx;
-    vertexData[5] = d * h0 + b * w0 + ty;
-
-    // xy
-    vertexData[6] = a * w1 + c * h0 + tx;
-    vertexData[7] = d * h0 + b * w1 + ty;
+    this.localGeometry.setRectCoords(0, w0, w1, h0, h1);
+    this.updateGeometry();
 };
 
 /**
@@ -261,7 +244,7 @@ Sprite.prototype._renderWebGL = function (renderer)
     {
         this.textureDirty = false;
         // set the vertex data
-        this.caclulateVertices();
+        this.calculateVertices();
     }
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
@@ -295,7 +278,7 @@ Sprite.prototype.getBounds = function ()
             this.vertexDirty = false;
 
             // set the vertex data
-            this.caclulateVertices();
+            this.calculateVertices();
 
         }
 
