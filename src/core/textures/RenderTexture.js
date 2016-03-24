@@ -12,7 +12,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  *
  * ```js
  * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var renderTexture = new PIXI.RenderTexture(renderer, 800, 600);
+ * var renderTexture = PIXI.RenderTexture.create(800, 600);
  * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
@@ -20,7 +20,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderTexture.render(sprite);
+ * renderer.render(sprite, renderTexture);
  * ```
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
@@ -31,17 +31,13 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  *
  * doc.addChild(sprite);
  *
- * renderTexture.render(doc);  // Renders to center of renderTexture
+ * renderer.render(doc, renderTexture);  // Renders to center of renderTexture
  * ```
  *
  * @class
  * @extends PIXI.Texture
  * @memberof PIXI
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used for this RenderTexture
- * @param [width=100] {number} The width of the render texture
- * @param [height=100] {number} The height of the render texture
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution of the texture being generated
+ * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
  */
 function RenderTexture(baseRenderTexture, frame)
 {
@@ -109,7 +105,13 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
     this._updateUvs();
 };
 
-
+/**
+ * A short hand way of creating a render texture..
+ * @param [width=100] {number} The width of the render texture
+ * @param [height=100] {number} The height of the render texture
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [resolution=1] {number} The resolution of the texture being generated
+ */
 RenderTexture.create = function(width, height, scaleMode, resolution)
 {
     return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
