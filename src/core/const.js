@@ -173,6 +173,27 @@ var CONST = {
     },
 
     /**
+     * The wrap modes that are supported by pixi.
+     *
+     * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
+     * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
+     * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
+     * Handy for mobile devices! 
+     * This property only affects WebGL
+     * @static
+     * @constant
+     * @property {object} GC_MODES
+     * @property {number} GC_MODES.DEFAULT=DEFAULT
+     * @property {number} GC_MODES.AUTO Garbage collection will happen periodically automatically
+     * @property {number} GC_MODES.MANUAL Garbage collection will need to be called manually
+     */
+    GC_MODES: {
+        DEFAULT:        1,
+        AUTO:           0,
+        MANUAL:         1,
+    },
+
+    /**
      * If set to true WebGL will attempt make textures mimpaped by default
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions
      * @static

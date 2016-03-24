@@ -241,8 +241,9 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
     return this.generateCanvasTexture(scaleMode, resolution)
 }
 
-core.RenderTexture.prototype.render = function()
+core.RenderTexture.prototype.render = function(displayObject)
 {
+    this.legacyRenderer.render(displayObject, this)
     //displayObject, matrix, clear, updateTransform
     console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
