@@ -33,15 +33,17 @@ var BaseTexture = require('./BaseTexture'),
  *
  * doc.addChild(sprite);
  *
- * BaserenderTexture.render(doc);  // Renders to center of BaserenderTexture
+ * var baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * var renderTexture = new PIXI.RenderTexture(baseRenderTexture);
+ * 
+ * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
  * ```
  *
  * @class
- * @extends PIXI.Texture
+ * @extends PIXI.BaseTexture
  * @memberof PIXI
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used for this BaseRenderTexture
- * @param [width=100] {number} The width of the render texture
- * @param [height=100] {number} The height of the render texture
+ * @param [width=100] {number} The width of the base render texture
+ * @param [height=100] {number} The height of the base render texture
  * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution of the texture being generated
  */
@@ -56,15 +58,21 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     this.hasLoaded = true;
 
+    /**
+     * A map of renderer IDs to webgl renderTargets
+     *
+     * @member {object<number, WebGLTexture>}
+     * @private
+     */
     this._glRenderTargets = [];
 
-    this._canvasRenderTarget = null;
-
     /**
-     * The renderer this BaseRenderTexture uses. A BaseRenderTexture can only belong to one renderer at the moment if its webGL.
+     * A reference to the canvas render target (we only need one as this can be shared accross renderers)
      *
-     * @member {PIXI.CanvasRenderer|PIXI.WebGLRenderer}
+     * @member {object<number, WebGLTexture>}
+     * @private
      */
+    this._canvasRenderTarget = null;
 
     /**
      * @member {boolean}
