@@ -241,6 +241,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
     var textureSource = this._texture.baseTexture.source;
     var textureWidth = this._texture.baseTexture.width;
     var textureHeight = this._texture.baseTexture.height;
+    var resolution = this._texture.baseTexture.resolution;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
@@ -304,7 +305,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
         deltaB / delta, deltaE / delta,
         deltaC / delta, deltaF / delta);
 
-    context.drawImage(textureSource, 0, 0);
+    context.drawImage(textureSource, 0, 0, textureWidth * resolution, textureHeight * resolution, 0, 0, textureWidth, textureHeight);
     context.restore();
 };
 
