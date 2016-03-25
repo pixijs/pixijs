@@ -18,6 +18,8 @@ function BaseTexture(source, scaleMode, resolution)
     EventEmitter.call(this);
 
     this.uid = utils.uid();
+    
+    this.touched = 0;
 
     /**
      * The Resolution of the texture.
