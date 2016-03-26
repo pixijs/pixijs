@@ -24,7 +24,7 @@ module.exports = ComputedGeometry2d;
 
 ComputedGeometry2d.prototype.applyTransformStatic = function (geometry, transform) {
     if (this._transformUid === transform.uid &&
-        this._transformVersion === transform.versionGlobal &&
+        this._transformVersion === transform.version &&
         this._geometryUid === geometry.uid &&
         this._geometryVersion === geometry.version) {
         //TODO: we need geometry version too
@@ -32,7 +32,7 @@ ComputedGeometry2d.prototype.applyTransformStatic = function (geometry, transfor
         return false;
     }
     this._transformUid = transform.uid;
-    this._transformVersion = transform.versionGlobal;
+    this._transformVersion = transform.version;
     this._geometryUid = geometry.uid;
     this._geometryVersion = geometry.version;
 
@@ -46,7 +46,7 @@ ComputedGeometry2d.prototype.applyTransform = function(geometry, transform) {
         this.size = geometry.size;
     }
     //TODO: may be optimize for case of rotation===0
-    this.applyMatrix(geometry, transform.worldTransform);
+    this.applyMatrix(geometry, transform.matrix2d);
 };
 
 ComputedGeometry2d.prototype.applyMatrix = function(geometry, matrix) {

@@ -36,8 +36,10 @@ Object.defineProperties(ObservablePoint.prototype, {
         },
         set: function (value)
         {
-            this._x = value;
-            this.cb.call(this.scope);
+            if (this._x !== value) {
+                this._x = value;
+                this.cb.call(this.scope);
+            }
         }
     },
     /**
@@ -53,8 +55,10 @@ Object.defineProperties(ObservablePoint.prototype, {
         },
         set: function (value)
         {
-            this._y = value;
-            this.cb.call(this.scope);
+            if (this._y !== value) {
+                this._y = value;
+                this.cb.call(this.scope);
+            }
         }
     }
 });
@@ -68,8 +72,22 @@ Object.defineProperties(ObservablePoint.prototype, {
  */
 ObservablePoint.prototype.set = function (x, y)
 {
-    this._x = x || 0;
-    this._y = y || ( (y !== 0) ? this._x : 0 );
+    var _x = x || 0;
+    var _y = ( (y !== 0) ? this._x : 0 );
+    if (this._x !== _x || this._y !== _y) {
+        this._x = _x;
+        this._y = _y;
+        this.cb.call(this.scope);
+    }
+};
 
-    this.transform._versionLocal++;
+ObservablePoint.prototype.copy = function (p)
+{
+    var _x = p.x;
+    var _y = p.y;
+    if (this._x !== _x || this._y !== _y) {
+        this._x = _x;
+        this._y = _y;
+        this.cb.call(this.scope);
+    }
 };

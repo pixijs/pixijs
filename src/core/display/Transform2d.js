@@ -1,7 +1,6 @@
 var math = require('../math'),
     ObservablePoint = require('./ObservablePoint'),
-    utils = require('../utils'),
-    ComputedGeometry2d = require('./ComputedGeometry2d');
+    utils = require('../utils');
 
 
 /**
@@ -12,40 +11,38 @@ var math = require('../math'),
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function Transform()
+function Transform2d(isStatic)
 {
     /**
      * @member {PIXI.Matrix} The global matrix transform
      */
-    this.worldTransform = new math.Matrix();
-    /**
-     * @member {PIXI.Matrix} The local matrix transform
-     */
-    this.localTransform = new math.Matrix();
+    this.matrix2d = new math.Matrix();
+
+    this.isStatic = !!isStatic;
 
      /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
      * @member {PIXI.Point}
      */
-    this.position = new math.Point(0.0);
+    this.position = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
 
     /**
      * The scale factor of the object.
      *
      * @member {PIXI.Point}
      */
-    this.scale = new math.Point(1,1);
+    this.scale = isStatic ? new ObservablePoint(this.makeDirty, this, 1,1) : new math.Point(1,1);
 
 
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    this.skew = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point}
      */
-    this.pivot = new math.Point(0.0);
+    this.pivot = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
 
 
     /**
@@ -54,6 +51,7 @@ function Transform()
      * @member {Number}
      */
     this._rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     this._cy  = Math.cos(0);//skewY);
@@ -61,43 +59,40 @@ function Transform()
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
 
-    this._dirty = false;
-    this.updated = true;
+    this._dirtyVersion = 0;
+    this.version = 0;
 
-    this.versionGlobal = 0;
     this.uid = utils.uid();
 }
 
-Transform.prototype.getIdentityMatrix = function() {
-    return math.Matrix.IDENTITY;
-};
+Transform2d.prototype.constructor = Transform2d;
 
-Transform.prototype.getIdentityTransform = function() {
-    return Transform.IDENTITY;
-};
-
-Transform.IDENTITY = new Transform();
-
-Transform.prototype.constructor = Transform;
-
-Transform.prototype.updateSkew = function ()
+Transform2d.prototype.updateSkew = function ()
 {
     this._cy  = Math.cos(this.skew.y);
     this._sy  = Math.sin(this.skew.y);
     this._nsx = Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
+    this._dirtyVersion++;
 };
+
+Transform2d.prototype.makeDirty = function() {
+    this._dirtyVersion++;
+}
 
 /**
  * Updates the values of the object and applies the parent's transform.
  * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
  *
  */
-Transform.prototype.updateTransform = function (parentTransform)
+Transform2d.prototype.update = function ()
 {
-    var pt = parentTransform.worldTransform;
-    var wt = this.worldTransform;
-    var lt = this.localTransform;
+    if (this.isStatic &&
+        this.version === this._dirtyVersion) {
+        return false;
+    }
+
+    var lt = this.matrix2d;
     var a, b, c, d;
 
     a  =  this._cr * this.scale.x;
@@ -113,40 +108,11 @@ Transform.prototype.updateTransform = function (parentTransform)
     lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
     lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
 
-    // concat the parent matrix with the objects transform.
-    wt.a  = lt.a  * pt.a + lt.b  * pt.c;
-    wt.b  = lt.a  * pt.b + lt.b  * pt.d;
-    wt.c  = lt.c  * pt.a + lt.d  * pt.c;
-    wt.d  = lt.c  * pt.b + lt.d  * pt.d;
-    wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
-
-    this.versionGlobal++;
+    this.version = ++this._dirtyVersion;
+    return true;
 };
 
-Transform.prototype.updateChildTransform = function (childTransform)
-{
-    childTransform.updateTransform(this);
-    return childTransform;
-};
-
-/**
- * Get bounds of geometry based on its stride
- *
- * @param geometry
- * @param bounds
- * @returns {*}
- */
-Transform.prototype.updateGeometry = function(computedGeometry, geometry) {
-    if (!geometry || !geometry.valid) {
-        return null;
-    }
-    computedGeometry = computedGeometry || new ComputedGeometry2d();
-    computedGeometry.applyTransformStatic(geometry, this);
-    return computedGeometry;
-};
-
-Object.defineProperties(Transform.prototype, {
+Object.defineProperties(Transform2d.prototype, {
     /**
      * The rotation of the object in radians.
      *
@@ -157,11 +123,19 @@ Object.defineProperties(Transform.prototype, {
             return this._rotation;
         },
         set: function (value) {
-            this._rotation = value;
-            this._sr = Math.sin(value);
-            this._cr = Math.cos(value);
+            if (this._rotation !== value) {
+                this._rotation = value;
+                this._sr = Math.sin(value);
+                this._cr = Math.cos(value);
+                this._dirtyVersion++;
+            }
+        }
+    },
+    matrix: {
+        get: function() {
+            return this.matrix2d;
         }
     }
 });
 
-module.exports = Transform;
+module.exports = Transform2d;

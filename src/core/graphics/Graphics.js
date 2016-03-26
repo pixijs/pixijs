@@ -732,7 +732,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     Graphics._SPRITE_TEXTURE.crop.width = rect.width;
     Graphics._SPRITE_TEXTURE.crop.height = rect.height;
 
-    this._spriteRect.transform.worldTransform = this.transform.worldTransform;
+    this._spriteRect.computedTransform = this.computedTransform;
 
     this._spriteRect.anchor.x = -rect.x / rect.width;
     this._spriteRect.anchor.y = -rect.y / rect.height;
@@ -1030,7 +1030,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
     tempMatrix.ty = -bounds.y;
 
     canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
-    
+
     var texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 

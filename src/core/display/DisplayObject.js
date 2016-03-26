@@ -1,8 +1,8 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
-    Transform = require('./Transform'),
-    _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
-
+    Transform2d = require('./Transform2d'),
+    ComputedTransform2d = require('./ComputedTransform2d'),
+    _tempDisplayObjectParent = null;
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -16,8 +16,9 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
-    //TODO: need to create Transform from factory
-    this.transform = new Transform();
+    this.transform = null;
+
+    this.computedTransform = null;
 
     /**
      * The opacity of the object.
@@ -103,6 +104,8 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    this.initTransform();
 }
 
 // constructor
@@ -121,7 +124,7 @@ Object.defineProperties(DisplayObject.prototype, {
     x: {
         get: function ()
         {
-            return this.position.x;
+            return this.transform.position.x;
         },
         set: function (value)
         {
@@ -138,7 +141,7 @@ Object.defineProperties(DisplayObject.prototype, {
     y: {
         get: function ()
         {
-            return this.position.y;
+            return this.transform.position.y;
         },
         set: function (value)
         {
@@ -155,7 +158,7 @@ Object.defineProperties(DisplayObject.prototype, {
     worldTransform: {
         get: function ()
         {
-            return this.transform.worldTransform;
+            return this.computedTransform.matrix;
         }
     },
 
@@ -168,7 +171,7 @@ Object.defineProperties(DisplayObject.prototype, {
     localTransform: {
         get: function ()
         {
-            return this.transform.localTransform;
+            return this.transform.matrix;
         }
     },
 
@@ -183,7 +186,7 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.position;
         },
         set: function(value) {
-            this.transform.position = value;
+            this.transform.position.copy(value);
         }
     },
 
@@ -197,7 +200,7 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.scale;
         },
         set: function(value) {
-            this.transform.scale = value;
+            this.transform.scale.copy(value);
         }
     },
 
@@ -211,7 +214,7 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.pivot;
         },
         set: function(value) {
-            this.transform.pivot = value;
+            this.transform.pivot.copy(value);
         }
     },
 
@@ -225,7 +228,7 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.skew;
         },
         set: function(value) {
-            this.transform.skew = value;
+            this.transform.skew.copy(value);
         }
     },
 
@@ -322,6 +325,11 @@ Object.defineProperties(DisplayObject.prototype, {
 
 });
 
+DisplayObject.prototype.initTransform = function(isStatic) {
+    this.transform = new Transform2d(isStatic);
+    this.computedTransform = new ComputedTransform2d();
+};
+
 /*
  * Updates the object transform for rendering
  *
@@ -331,8 +339,8 @@ DisplayObject.prototype.updateTransform = function ()
 {
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
-    return this.transform;
+    this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
+    return this.computedTransform;
 };
 
 /**
@@ -341,7 +349,7 @@ DisplayObject.prototype.updateTransform = function ()
  */
 DisplayObject.prototype.updateGeometry = function ()
 {
-    this.computedGeometry = this.transform.updateGeometry(this.computedGeometry, this.geometry);
+    this.computedGeometry = this.computedTransform.updateGeometry(this.computedGeometry, this.geometry);
     return this.computedGeometry;
 };
 
@@ -528,3 +536,5 @@ DisplayObject.prototype.destroy = function ()
     this.worldTransform = null;
     this.filterArea = null;
 };
+
+_tempDisplayObjectParent = new DisplayObject();

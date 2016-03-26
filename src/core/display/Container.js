@@ -366,7 +366,7 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
+    this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
 
     //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
@@ -470,7 +470,7 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
-    var ID = this.transform.getIdentityTransform();
+    var ID = this.computedTransform.getIdentityTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {

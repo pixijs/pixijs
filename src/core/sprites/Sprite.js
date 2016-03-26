@@ -240,12 +240,13 @@ Sprite.prototype.calculateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
+    if(this.textureDirty)
     {
         this.textureDirty = false;
         // set the vertex data
         this.calculateVertices();
     }
+    this.updateGeometry();
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -325,7 +326,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 Sprite.from = function (source)
 {
     return new Sprite(Texture.from(source));
-}
+};
 
 /**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId

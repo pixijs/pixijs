@@ -119,7 +119,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     if(renderTexture)
     {
         renderTexture = renderTexture.baseTexture || renderTexture;
-        
+
         if(!renderTexture._canvasRenderTarget)
         {
 
@@ -150,7 +150,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     {
         // update the scene graph
         var cacheParent = displayObject.parent;
-        var tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+        var tempWt = this._tempDisplayObjectParent.worldTransform;
 
         if(transform)
         {

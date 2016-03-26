@@ -44,7 +44,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
 {
     var texture = sprite._texture,
         renderer = this.renderer,
-        wt = sprite.transform.worldTransform,
+        wt = sprite.worldTransform,
         dx,
         dy,
         width = texture._frame.width,
