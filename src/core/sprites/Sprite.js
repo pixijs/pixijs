@@ -24,8 +24,21 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-
+    /**
+     * Private anchor
+     *
+     * @member {PIXI.ObservablePoint}
+     * @private
+     */
     this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
+
+    /**
+     * Private size
+     *
+     * @member {PIXI.ObservablePoint}
+     * @private
+     */
+    this._size = new ObservablePoint(this.makeDirty, this, 0, 0);
 
     /**
      * The texture that the sprite is using
@@ -34,22 +47,6 @@ function Sprite(texture)
      * @private
      */
     this._texture = null;
-
-    /**
-     * The width of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._width = 0;
-
-    /**
-     * The height of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._height = 0;
 
     /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
@@ -97,7 +94,7 @@ module.exports = Sprite;
 
 Object.defineProperties(Sprite.prototype, {
     /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
+     * The width of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -105,18 +102,21 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.crop.width;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeX : this.texture.width;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.crop.width;
-            this._width = value;
+            this._size.x = value;
+            if (this._size.y === 0) {
+                this._size.y = this.texture.height;
+            }
         }
     },
 
     /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set
+     * The height of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -124,13 +124,16 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.crop.height;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeY : this.texture.height;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.crop.height;
-            this._height = value;
+            this._size.y = value;
+            if (this._size.x === 0) {
+                this._size.x = this.texture.width;
+            }
         }
     },
 
@@ -162,11 +165,11 @@ Object.defineProperties(Sprite.prototype, {
                 // wait for the texture to load
                 if (value.baseTexture.hasLoaded)
                 {
-                    this._onTextureUpdate();
+                    this.makeDirty();
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate, this);
+                    value.once('update', this.makeDirty, this);
                 }
             }
         }
@@ -188,29 +191,24 @@ Object.defineProperties(Sprite.prototype, {
         set: function(value) {
             this._anchor.copy(value);
         }
+    },
+
+    /**
+     * If both size.x and size.y is not zero, it will override texture dimensions
+     * size does not affect scale
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.Sprite#
+     */
+    size: {
+        get: function() {
+            return this._size;
+        },
+        set: function(value) {
+            this._size.copy(value);
+        }
     }
 });
-
-/**
- * When the texture is updated, this event will fire to update the scale and frame
- *
- * @private
- */
-Sprite.prototype._onTextureUpdate = function ()
-{
-    this.textureDirty = true;
-
-    // so if _width is 0 then width was not set..
-    if (this._width)
-    {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.crop.width;
-    }
-
-    if (this._height)
-    {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.crop.height;
-    }
-};
 
 Sprite.prototype.calculateVertices = function ()
 {
@@ -238,6 +236,16 @@ Sprite.prototype.calculateVertices = function ()
         h1 = crop.height * -this.anchor.y;
     }
 
+    var sizeX = this._size._x;
+    var sizeY = this._size._y;
+    if (sizeX && sizeY) {
+        sizeX /= crop.width;
+        sizeY /= crop.height;
+        w0 *= sizeX;
+        h0 *= sizeY;
+        w1 *= sizeX;
+        h1 *= sizeY;
+    }
     this.geometry.setRectCoords(0, w1, h1, w0, h0);
 };
 
