@@ -339,6 +339,7 @@ DisplayObject.prototype.updateTransform = function ()
 {
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    this.transform.update();
     this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
     return this.computedTransform;
 };

@@ -48,7 +48,6 @@ ComputedTransform2d.IDENTITY = new ComputedTransform2d();
  */
 ComputedTransform2d.prototype.updateTransform = function (parentTransform, localTransform)
 {
-    localTransform.update();
     if (this._dirtyLocalUid === localTransform.uid &&
         this._dirtyLocalVersion === localTransform.version &&
         this._dirtyParentUid === parentTransform.uid &&
