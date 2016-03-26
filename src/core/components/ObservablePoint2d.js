@@ -8,7 +8,7 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function ObservablePoint(cb, scope, x, y)
+function ObservablePoint2d(cb, scope, x, y)
 {
     this._x = x || 0;
     this._y = y || 0;
@@ -17,17 +17,17 @@ function ObservablePoint(cb, scope, x, y)
     this.scope = scope;
 }
 
-ObservablePoint.prototype.constructor = ObservablePoint;
-module.exports = ObservablePoint;
+ObservablePoint2d.prototype.constructor = ObservablePoint2d;
+module.exports = ObservablePoint2d;
 
 
 
-Object.defineProperties(ObservablePoint.prototype, {
+Object.defineProperties(ObservablePoint2d.prototype, {
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
      * @member {number}
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PIXI.ObservablePoint2d#
      */
     x: {
         get: function ()
@@ -46,7 +46,7 @@ Object.defineProperties(ObservablePoint.prototype, {
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
      * @member {number}
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PIXI.ObservablePoint2d#
      */
     y: {
         get: function ()
@@ -70,7 +70,7 @@ Object.defineProperties(ObservablePoint.prototype, {
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-ObservablePoint.prototype.set = function (x, y)
+ObservablePoint2d.prototype.set = function (x, y)
 {
     var _x = x || 0;
     var _y = y || ( (y !== 0) ? _x : 0 );
@@ -81,7 +81,7 @@ ObservablePoint.prototype.set = function (x, y)
     }
 };
 
-ObservablePoint.prototype.copy = function (p)
+ObservablePoint2d.prototype.copy = function (p)
 {
     var _x = p.x;
     var _y = p.y;
@@ -92,7 +92,7 @@ ObservablePoint.prototype.copy = function (p)
     }
 };
 
-ObservablePoint.prototype.destroy = function () {
+ObservablePoint2d.prototype.destroy = function () {
     this.cb = null;
     this.scope = null;
-}
+};

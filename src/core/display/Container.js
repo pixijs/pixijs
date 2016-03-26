@@ -443,6 +443,10 @@ Container.prototype._getChildBounds = function() {
  */
 Container.prototype.getBounds = function ()
 {
+    if (this._localBounds) {
+        return this._localBounds.getBounds(this.computedTransform, this.worldProjection);
+    }
+
     if(!this._currentBounds)
     {
         var geom = this.updateGeometry();
@@ -467,6 +471,10 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
+    if (this._localBounds) {
+        return this._localBounds.local.getBounds();
+    }
+
     var ID = this.computedTransform.getIdentityTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)

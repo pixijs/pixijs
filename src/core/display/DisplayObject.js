@@ -1,7 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
-    Transform2d = require('./Transform2d'),
-    ComputedTransform2d = require('./ComputedTransform2d'),
+    Transform2d = require('../components/Transform2d'),
+    ComputedTransform2d = require('../components/ComputedTransform2d'),
     _tempDisplayObjectParent = null;
 
 /**
@@ -66,6 +66,27 @@ function DisplayObject()
      * @member {PIXI.ComputedGeometry2d}
      */
     this.projectedGeometry = null;
+
+    /**
+     * Local geometry special for fast calculation of bounds
+     *
+     * @member {PIXI.GeometrySet}
+     */
+    this._localBounds = null;
+
+    /**
+     * Local geometry special for faster calculation of bounds
+     *
+     * @member {PIXI.Geometry2d}
+     */
+    this._localBoundsTransformed = null;
+
+    /**
+     * Local geometry special for faster calculation of bounds
+     *
+     * @member {PIXI.Geometry2d}
+     */
+    this._localBoundsProjected = null;
 
     /**
      * The opacity of the object.
@@ -184,14 +205,29 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * Current transform of the object based on world (parent) factors
+     * This thing will work in 3d too
      *
      * @member {PIXI.Matrix}
      * @readOnly
      */
-    worldTransform: {
+    projectionMatrix: {
         get: function ()
         {
-            return this.computedTransform.matrix;
+            return this.updateProjectedTransform().matrix;
+        }
+    },
+
+    /**
+     * Current transform of the object based on world (parent) factors
+     * Its a legacy function
+     *
+     * @member {PIXI.Matrix}
+     * @readOnly
+     */
+    projectionMatrix2d: {
+        get: function ()
+        {
+            return this.updateProjectedTransform().matrix2d;
         }
     },
 
@@ -376,6 +412,7 @@ DisplayObject.prototype.displayObjectInitTransform = DisplayObject.prototype.ini
  */
 DisplayObject.prototype.updateTransform = function ()
 {
+    this._currentBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
     if (this.projection) {
@@ -406,15 +443,17 @@ DisplayObject.prototype.updateGeometry = function ()
 };
 
 /**
- * Updates projection matrix. Used only by canvas renderers.
- * @returns {*}
+ * Updates projection matrix. Used by interaction manager and canvas renderer, throught legacy property worldTransform
+ *
+ * @returns {PIXI.Transform2d} Projected or computed transform
  */
 DisplayObject.prototype.updateProjectedTransform = function() {
     var wp = this.worldProjection;
     if (wp) {
         this.projectedTransform = wp.updateChildTransform(this.projectedTransform || new ComputedTransform2d(), this.computedTransform);
+        return this.projectedTransform;
     }
-    return this.projectedTransform;
+    return this.computedTransform;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -429,6 +468,10 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  */
 DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
+    if (this._localBounds) {
+        return this._localBounds.getBounds(this.computedTransform, this.projectedTransform);
+    }
+
     var geom = this.updateGeometry();
     if (!geom || !geom.valid) {
         return math.Rectangle.EMPTY;
@@ -446,6 +489,10 @@ DisplayObject.prototype.getBounds = function () // jshint unused:false
  */
 DisplayObject.prototype.getLocalBounds = function ()
 {
+    if (this._localBounds) {
+        return this._localBounds.getBounds(this.computedTransform, this.worldProjection);
+    }
+
     var geom = this.geometry;
     if (!geom) {
         return math.Rectangle.EMPTY;
@@ -476,7 +523,7 @@ DisplayObject.prototype.toGlobal = function (position)
     }
 
     // don't need to update the lot
-    return this.worldTransform.apply(position);
+    return this.projectionMatrix.apply(position);
 };
 
 /**
@@ -509,7 +556,7 @@ DisplayObject.prototype.toLocal = function (position, from, point)
     }
 
     // simply apply the matrix..
-    return this.worldTransform.applyInverse(position, point);
+    return this.projectionMatrix.applyInverse(position, point);
 };
 
 /**

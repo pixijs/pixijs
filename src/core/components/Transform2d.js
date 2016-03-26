@@ -1,5 +1,5 @@
 var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint'),
+    ObservablePoint2d = require('./ObservablePoint2d'),
     ComputedTransform2d = require('./ComputedTransform2d'),
     utils = require('../utils');
 
@@ -26,24 +26,24 @@ function Transform2d(isStatic)
      *
      * @member {PIXI.Point}
      */
-    this.position = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
+    this.position = isStatic ? new ObservablePoint2d(this.makeDirty, this, 0,0) : new math.Point(0,0);
 
     /**
      * The scale factor of the object.
      *
      * @member {PIXI.Point}
      */
-    this.scale = isStatic ? new ObservablePoint(this.makeDirty, this, 1,1) : new math.Point(1,1);
+    this.scale = isStatic ? new ObservablePoint2d(this.makeDirty, this, 1,1) : new math.Point(1,1);
 
 
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    this.skew = new ObservablePoint2d(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point}
      */
-    this.pivot = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
+    this.pivot = isStatic ? new ObservablePoint2d(this.makeDirty, this, 0,0) : new math.Point(0,0);
 
 
     /**

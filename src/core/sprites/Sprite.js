@@ -1,8 +1,8 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
-    ObservablePoint = require('../display/ObservablePoint'),
+    ObservablePoint2d = require('../components/ObservablePoint2d'),
+    Geometry2d = require('../components/Geometry2d'),
     Container = require('../display/Container'),
-    Geometry2d = require('../display/Geometry2d'),
     utils = require('../utils'),
     CONST = require('../const'),
     tempPoint = new math.Point();
@@ -27,18 +27,18 @@ function Sprite(texture)
     /**
      * Private anchor
      *
-     * @member {PIXI.ObservablePoint}
+     * @member {PIXI.ObservablePoint2d}
      * @private
      */
-    this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
+    this._anchor = new ObservablePoint2d(this.makeDirty, this, 0, 0);
 
     /**
      * Private size
      *
-     * @member {PIXI.ObservablePoint}
+     * @member {PIXI.ObservablePoint2d}
      * @private
      */
-    this._size = new ObservablePoint(this.makeDirty, this, 0, 0);
+    this._size = new ObservablePoint2d(this.makeDirty, this, 0, 0);
 
     /**
      * The texture that the sprite is using
@@ -83,18 +83,15 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
+
+    this.geometry = new Geometry2d();
+    this.geometry.size = 4;
 }
 
 // constructor
 Sprite.prototype = Object.create(Container.prototype);
 Sprite.prototype.constructor = Sprite;
 module.exports = Sprite;
-
-Sprite.prototype.initTransform = function(isStatic) {
-    this.geometry = new Geometry2d();
-    this.geometry.size = 4;
-    this.displayObjectInitTransform(isStatic);
-};
 
 Object.defineProperties(Sprite.prototype, {
     /**
@@ -185,7 +182,7 @@ Object.defineProperties(Sprite.prototype, {
      * Setting the anchor to 0.5,0.5 means the texture's origin is centered
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
-     * @member {PIXI.ObservablePoint}
+     * @member {PIXI.ObservablePoint2d}
      * @memberof PIXI.Sprite#
      */
     anchor: {
@@ -201,7 +198,7 @@ Object.defineProperties(Sprite.prototype, {
      * If both size.x and size.y is not zero, it will override texture dimensions
      * size does not affect scale
      *
-     * @member {PIXI.ObservablePoint}
+     * @member {PIXI.ObservablePoint2d}
      * @memberof PIXI.Sprite#
      */
     size: {

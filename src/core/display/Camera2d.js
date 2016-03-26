@@ -1,20 +1,13 @@
 var math = require('../math'),
-    Transform2d = require('../display/Transform2d'),
-    Container = require('../display/Container');
+    Container = require('./Container'),
+    Transform2d = require('../components/Transform2d');
 
 /**
- * The Sprite object is the base for all textured objects that are rendered to the screen
- *
- * A sprite can be created directly from an image like this:
- *
- * ```js
- * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
- * ```
+ * Camera object, stores everything in `projection` instead of `transform`
  *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI
- * @param texture {PIXI.Texture} The texture for this sprite
  */
 function Camera2d(texture)
 {

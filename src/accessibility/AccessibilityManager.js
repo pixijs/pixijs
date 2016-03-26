@@ -221,7 +221,7 @@ AccessibilityManager.prototype.update = function()
 			// map div to display..
 			div = child._accessibleDiv;
 			var hitArea = child.hitArea;
-			var wt = child.worldTransform;
+			var wt = child.projectionMatrix2d;
 
 			if(child.hitArea)
 			{
