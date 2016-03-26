@@ -1,5 +1,4 @@
 var Geometry2d = require('./Geometry2d');
-var utils = require('../utils');
 
 /**
  * Used by both Meshes and Sprites, mutable storage for sets of 2d points
@@ -11,20 +10,19 @@ var utils = require('../utils');
  * @class
  * @memberof PIXI
  */
-function GeometryCache2d() {
+function ComputedGeometry2d() {
     Geometry2d.call(this);
     this._transformUid = -1;
     this._transformVersion = -1;
     this._geometryUid = -1;
     this._geometryVersion = -1;
-    this.bounds = new PIXI.Rectangle();
 }
 
-GeometryCache2d.prototype = Object.create(Geometry2d.prototype);
-GeometryCache2d.prototype.constructor = Geometry2d;
-module.exports = GeometryCache2d;
+ComputedGeometry2d.prototype = Object.create(Geometry2d.prototype);
+ComputedGeometry2d.prototype.constructor = Geometry2d;
+module.exports = ComputedGeometry2d;
 
-GeometryCache2d.prototype.applyTransformStatic = function (transform, geometry) {
+ComputedGeometry2d.prototype.applyTransformStatic = function (geometry, transform) {
     if (this._transformUid === transform.uid &&
         this._transformVersion === transform.versionGlobal &&
         this._geometryUid === geometry.uid &&
@@ -38,29 +36,20 @@ GeometryCache2d.prototype.applyTransformStatic = function (transform, geometry) 
     this._geometryUid = geometry.uid;
     this._geometryVersion = geometry.version;
 
-    this.applyTransform(transform, geometry);
+    this.applyTransform(geometry, transform);
     return true;
 };
 
-GeometryCache2d.prototype.applyTransform = function(geometry, transform) {
+ComputedGeometry2d.prototype.applyTransform = function(geometry, transform) {
     this.stride = geometry.stride;
-    if (!this.vertices || this.size != geometry.size) {
+    if (!this.vertices || this.size !== geometry.size) {
         this.size = geometry.size;
     }
-
     //TODO: may be optimize for case of rotation===0
     this.applyMatrix(geometry, transform.worldTransform);
 };
 
-GeometryCache2d.prototype.applyMatrix = function(geometry, matrix) {
-    var bounds = this.bounds;
-
-    var maxX = -Infinity;
-    var maxY = -Infinity;
-
-    var minX = Infinity;
-    var minY = Infinity;
-
+ComputedGeometry2d.prototype.applyMatrix = function(geometry, matrix) {
     var a = matrix.a;
     var b = matrix.b;
     var c = matrix.c;
@@ -76,10 +65,4 @@ GeometryCache2d.prototype.applyMatrix = function(geometry, matrix) {
         out[i] = (a * rawX) + (c * rawY) + tx;
         out[i+1] = (d * rawY) + (b * rawX) + ty;
     }
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
 };

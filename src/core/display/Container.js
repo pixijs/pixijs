@@ -1,8 +1,6 @@
 var math = require('../math'),
     utils = require('../utils'),
-    DisplayObject = require('./DisplayObject'),
-    RenderTexture = require('../textures/RenderTexture'),
-    _tempMatrix = new math.Matrix();
+    DisplayObject = require('./DisplayObject');
 
 /**
  * A Container represents a collection of display objects.
@@ -384,84 +382,81 @@ Container.prototype.updateTransform = function ()
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
+Container.prototype._getChildBounds = function() {
+    if (this.children.length === 0)
+    {
+        return math.Rectangle.EMPTY;
+    }
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var childVisible = false;
+    var bounds = this._bounds;
+
+    var childBounds;
+    var childMaxX;
+    var childMaxY;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        var child = this.children[i];
+
+        if (!child.visible)
+        {
+            continue;
+        }
+
+        childBounds = this.children[i].getBounds();
+        if (childBounds === math.Rectangle.EMPTY) {
+            continue;
+        }
+        childVisible = true;
+
+        minX = minX < childBounds.x ? minX : childBounds.x;
+        minY = minY < childBounds.y ? minY : childBounds.y;
+
+        childMaxX = childBounds.width + childBounds.x;
+        childMaxY = childBounds.height + childBounds.y;
+
+        maxX = maxX > childMaxX ? maxX : childMaxX;
+        maxY = maxY > childMaxY ? maxY : childMaxY;
+    }
+
+    bounds.x = minX;
+    bounds.y = minY;
+    bounds.width = maxX - minX;
+    bounds.height = maxY - minY;
+
+    if (!childVisible)
+    {
+        return math.Rectangle.EMPTY;
+    }
+    return bounds;
+};
+
 /**
 * RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @param matrix {PIXI.Matrix} just a legacy
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
-Container.prototype.getBounds = function (matrix)
+Container.prototype.getBounds = function ()
 {
     if(!this._currentBounds)
     {
-        this.updateGeometry();
-        var geom = this.worldGeometry;
-        if (!geom && this.children.length === 0)
+        var geom = this.updateGeometry();
+        if (!geom)
         {
-            return math.Rectangle.EMPTY;
-        }
-
-        // TODO the bounds have already been calculated this render session so return what we have
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var childVisible = false;
-        var bounds = this._bounds;
-        if (geom && geom.valid) {
-            var ownBounds = geom.bounds;
-            minX = ownBounds.x;
-            maxX = ownBounds.y;
-            minY = ownBounds.x + ownBounds.width;
-            maxY = ownBounds.y + ownBounds.height;
-            childVisible = true;
-        }
-
-        var childBounds;
-        var childMaxX;
-        var childMaxY;
-
-        for (var i = 0, j = this.children.length; i < j; ++i)
+            this._currentBounds = this._getChildBounds();
+        } else
         {
-            var child = this.children[i];
-
-            if (!child.visible)
-            {
-                continue;
-            }
-
-            childBounds = this.children[i].getBounds();
-            if (childBounds === math.Rectangle.EMPTY) {
-                continue;
-            }
-            childVisible = true;
-
-            minX = minX < childBounds.x ? minX : childBounds.x;
-            minY = minY < childBounds.y ? minY : childBounds.y;
-
-            childMaxX = childBounds.width + childBounds.x;
-            childMaxY = childBounds.height + childBounds.y;
-
-            maxX = maxX > childMaxX ? maxX : childMaxX;
-            maxY = maxY > childMaxY ? maxY : childMaxY;
+            this._currentBounds = geom.getBounds().enlarge(this._getChildBounds());
         }
-
-        if (!childVisible)
-        {
-            return this._currentBounds = math.Rectangle.EMPTY;
-        }
-
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-
-        this._currentBounds = bounds;
     }
-
     return this._currentBounds;
 };
 
@@ -475,20 +470,22 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
-    var matrixCache = this.transform.worldTransform;
-
-    this.transform.worldTransform = math.Matrix.IDENTITY;
+    var ID = this.transform.getIdentityTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].updateTransform();
+        this.children[i].updateTransform(ID);
     }
 
-    this.transform.worldTransform = matrixCache;
-
-    this._currentBounds = null;
-
-    return this.getBounds( math.Matrix.IDENTITY );
+    var geom = this.geometry;
+    if (!geom)
+    {
+        this._currentBounds = this._getChildBounds();
+    } else
+    {
+        this._currentBounds = geom.getBounds().enlarge(this._getChildBounds());
+    }
+    return this._currentBounds;
 };
 
 /**

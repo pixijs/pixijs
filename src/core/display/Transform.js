@@ -1,7 +1,7 @@
 var math = require('../math'),
     ObservablePoint = require('./ObservablePoint'),
     utils = require('../utils'),
-    GeometryCache2d = require('./GeometryCache2d');
+    ComputedGeometry2d = require('./ComputedGeometry2d');
 
 
 /**
@@ -56,10 +56,10 @@ function Transform()
     this._rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-    this._cy  = Math.cos(0)//skewY);
-    this._sy  = Math.sin(0)//skewY);
-    this._nsx = Math.sin(0)//skewX);
-    this._cx  = Math.cos(0)//skewX);
+    this._cy  = Math.cos(0);//skewY);
+    this._sy  = Math.sin(0);//skewY);
+    this._nsx = Math.sin(0);//skewX);
+    this._cx  = Math.cos(0);//skewX);
 
     this._dirty = false;
     this.updated = true;
@@ -68,9 +68,15 @@ function Transform()
     this.uid = utils.uid();
 }
 
-Transform.prototype.getIdentity = function() {
+Transform.prototype.getIdentityMatrix = function() {
     return math.Matrix.IDENTITY;
 };
+
+Transform.prototype.getIdentityTransform = function() {
+    return Transform.IDENTITY;
+};
+
+Transform.IDENTITY = new Transform();
 
 Transform.prototype.constructor = Transform;
 
@@ -89,7 +95,6 @@ Transform.prototype.updateSkew = function ()
  */
 Transform.prototype.updateTransform = function (parentTransform)
 {
-
     var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
     var lt = this.localTransform;
@@ -132,11 +137,13 @@ Transform.prototype.updateChildTransform = function (childTransform)
  * @param bounds
  * @returns {*}
  */
-Transform.prototype.updateGeometry = function(geometryCache, geometry) {
-    if (!geometry || !geometry.valid) return null;
-    geometryCache = geometryCache || new GeometryCache2d();
-    geometryCache.applyTransformStatic(geometry, this);
-    return geometryCache;
+Transform.prototype.updateGeometry = function(computedGeometry, geometry) {
+    if (!geometry || !geometry.valid) {
+        return null;
+    }
+    computedGeometry = computedGeometry || new ComputedGeometry2d();
+    computedGeometry.applyTransformStatic(geometry, this);
+    return computedGeometry;
 };
 
 Object.defineProperties(Transform.prototype, {

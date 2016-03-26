@@ -429,7 +429,7 @@ Texture.from = function (source)
         if (!texture)
         {
             // check if its a video..
-            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) != null;
+            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
             if(isVideo)
             {
                 return Texture.fromVideoUrl(source);
@@ -438,7 +438,7 @@ Texture.from = function (source)
             return Texture.fromImage(source);
         }
 
-        return texture
+        return texture;
     }
     else if(source instanceof HTMLCanvasElement)
     {
@@ -452,7 +452,7 @@ Texture.from = function (source)
     {
         return new Texture(BaseTexture);
     }
-}
+};
 
 
 /**

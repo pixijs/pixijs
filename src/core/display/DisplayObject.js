@@ -1,8 +1,6 @@
 var math = require('../math'),
-    RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
-    _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
 
@@ -57,14 +55,14 @@ function DisplayObject()
      *
      * @member {PIXI.Geometry}
      */
-    this.localGeometry = null;
+    this.geometry = null;
 
     /**
-     * Geometry cache, can be used to calculate the bounds
+     * Geometry transformed to world coordinates
      *
      * @member {PIXI.Geometry}
      */
-    this.worldGeometry = null;
+    this.computedGeometry = null;
 
     /**
      * The multiplied alpha of the displayObject
@@ -333,7 +331,8 @@ DisplayObject.prototype.updateTransform = function ()
 {
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-    return this.transform = this.parent.transform.updateChildTransform(this.transform);
+    this.transform = this.parent.transform.updateChildTransform(this.transform);
+    return this.transform;
 };
 
 /**
@@ -342,7 +341,8 @@ DisplayObject.prototype.updateTransform = function ()
  */
 DisplayObject.prototype.updateGeometry = function ()
 {
-    return this.worldGeometry = this.transform.updateGeometry(this.worldGeometry, this.localGeometry);
+    this.computedGeometry = this.transform.updateGeometry(this.computedGeometry, this.geometry);
+    return this.computedGeometry;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -357,13 +357,12 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  */
 DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
-    this.updateGeometry();
-    var geom = this.worldGeometry;
-    if (!geom) return math.Rectangle.EMPTY;
-    if (!geom || !geom.valid) return math.Rectangle.EMPTY;
+    var geom = this.updateGeometry();
+    if (!geom || !geom.valid) {
+        return math.Rectangle.EMPTY;
+    }
     if (!this._currentBounds) {
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = this.transform.getGeometryBounds(geom, this._bounds, matrix);
+        this._currentBounds = geom.getBounds();
     }
     return this._currentBounds;
 };
@@ -375,7 +374,11 @@ DisplayObject.prototype.getBounds = function () // jshint unused:false
  */
 DisplayObject.prototype.getLocalBounds = function ()
 {
-    return this.getBounds(math.Matrix.IDENTITY);
+    var geom = this.geometry;
+    if (!geom) {
+        return math.Rectangle.EMPTY;
+    }
+    return geom.getBounds();
 };
 
 /**

@@ -152,7 +152,9 @@ Rectangle.prototype.fit = function (rectangle)
 };
 
 Rectangle.prototype.enlarge = function (rect) {
-    if (rect === Rectangle.EMPTY) return;
+    if (rect === Rectangle.EMPTY) {
+        return;
+    }
     var x1 = Math.min(this.x, rect.x);
     var x2 = Math.max(this.x + this.width, rect.x + rect.width);
     var y1 = Math.min(this.y, rect.y);

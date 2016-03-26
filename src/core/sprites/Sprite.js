@@ -93,8 +93,8 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.localGeometry = new core.Geometry2d();
-    this.localGeometry.setSize(4);
+    this.geometry = new Geometry2d();
+    this.geometry.size = 4;
 }
 
 // constructor
@@ -227,7 +227,7 @@ Sprite.prototype.calculateVertices = function ()
         h1 = crop.height * -this.anchor.y;
     }
 
-    this.localGeometry.setRectCoords(0, w0, w1, h0, h1);
+    this.geometry.setRectCoords(0, w1, h1, w0, h0);
     this.updateGeometry();
 };
 
@@ -260,107 +260,6 @@ Sprite.prototype._renderWebGL = function (renderer)
 Sprite.prototype._renderCanvas = function (renderer)
 {
     renderer.plugins.sprite.render(this);
-};
-
-
-/**
- * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @return {PIXI.Rectangle} the framing rectangle
- */
-Sprite.prototype.getBounds = function ()
-{
-    //TODO lookinto caching..
-    if(!this._currentBounds)
-    {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
-
-            // set the vertex data
-            this.calculateVertices();
-
-        }
-
-        var minX, maxX, minY, maxY,
-            w0, w1, h0, h1,
-            vertexData = this.vertexData;
-
-        var x1 = vertexData[0];
-        var y1 = vertexData[1];
-
-        var x2 = vertexData[2];
-        var y2 = vertexData[3];
-
-        var x3 = vertexData[4];
-        var y3 = vertexData[5];
-
-        var x4 = vertexData[6];
-        var y4 = vertexData[7];
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        // check for children
-        if(this.children.length)
-        {
-            var childBounds = this.containerGetBounds();
-
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
-};
-
-/**
- * Gets the local bounds of the sprite object.
- *
- */
-Sprite.prototype.getLocalBounds = function ()
-{
-    this._bounds.x = -this._texture.crop.width * this.anchor.x;
-    this._bounds.y = -this._texture.crop.height * this.anchor.y;
-    this._bounds.width = this._texture.crop.width;
-    this._bounds.height = this._texture.crop.height;
-    return this._bounds;
 };
 
 /**
