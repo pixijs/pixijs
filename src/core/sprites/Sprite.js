@@ -295,16 +295,10 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture.crop.width;
-    var height = this._texture.crop.height;
-    var x1 = -width * this.anchor.x;
-    var y1;
-
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    var v = this.geometry.vertices;
+    if ( tempPoint.x > v[0] && tempPoint.x < v[4] )
     {
-        y1 = -height * this.anchor.y;
-
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        if ( tempPoint.y > v[1] && tempPoint.y < v[5] )
         {
             return true;
         }
