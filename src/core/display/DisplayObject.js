@@ -16,9 +16,50 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    /**
+     * Local transform
+     * @member {PIXI.Transform2d}
+     */
     this.transform = null;
 
+    /**
+     * World transform
+     * @type {PIXI.Transform2d}
+     */
     this.computedTransform = null;
+
+    /**
+     * Projection, for camera
+     * @type {PIXI.Transform2d}
+     */
+    this.projection = null;
+
+    /**
+     * World projection, for camera
+     * @type {PIXI.Transform2d}
+     */
+    this.worldProjection = null;
+
+    /**
+     * Local geometry, for sprites and meshes
+     *
+     * @member {PIXI.Geometry2d}
+     */
+    this.geometry = null;
+
+    /**
+     * Geometry transformed to world coordinates
+     *
+     * @member {PIXI.ComputedGeometry2d}
+     */
+    this.computedGeometry = null;
+
+    /**
+     * Geometry transformed to projected coordinates
+     *
+     * @member {PIXI.ComputedGeometry2d}
+     */
+    this.projectedGeometry = null;
 
     /**
      * The opacity of the object.
@@ -50,20 +91,6 @@ function DisplayObject()
      * @readOnly
      */
     this.parent = null;
-
-    /**
-     * Local geometry, like sprite with anchors
-     *
-     * @member {PIXI.Geometry}
-     */
-    this.geometry = null;
-
-    /**
-     * Geometry transformed to world coordinates
-     *
-     * @member {PIXI.Geometry}
-     */
-    this.computedGeometry = null;
 
     /**
      * The multiplied alpha of the displayObject
@@ -325,10 +352,16 @@ Object.defineProperties(DisplayObject.prototype, {
 
 });
 
+/**
+ * initialize or change transforms here.
+ * @param isStatic use static optimizations. Set "false" for particles
+ */
 DisplayObject.prototype.initTransform = function(isStatic) {
     this.transform = new Transform2d(isStatic);
     this.computedTransform = new ComputedTransform2d();
 };
+
+DisplayObject.prototype.displayObjectInitTransform = DisplayObject.prototype.initTransform;
 
 /*
  * Updates the object transform for rendering
@@ -339,6 +372,12 @@ DisplayObject.prototype.updateTransform = function ()
 {
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    if (this.projection) {
+        this.projection.update();
+        this.worldProjection = this.projection.makeComputedTransform(this.worldProjection);
+    } else {
+        this.worldProjection = this.parent.worldProjection;
+    }
     this.transform.update();
     this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
     return this.computedTransform;
@@ -351,6 +390,11 @@ DisplayObject.prototype.updateTransform = function ()
 DisplayObject.prototype.updateGeometry = function ()
 {
     this.computedGeometry = this.computedTransform.updateGeometry(this.computedGeometry, this.geometry);
+    if (this.worldProjection && this.computedGeometry) {
+        this.projectedGeometry = this.worldProjection.updateGeometry(this.projectedGeometry, this.computedGeometry);
+        return this.projectedGeometry;
+    }
+    this.projectedGeometry = null;
     return this.computedGeometry;
 };
 
@@ -536,6 +580,8 @@ DisplayObject.prototype.destroy = function ()
 
     this.transform = null;
     this.computedTransform = null;
+    this.projection = null;
+    this.worldProjection = null;
     this.filterArea = null;
 };
 

@@ -17,6 +17,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
+    Camera2d:               require('./display/Camera2d'),
     Geometry:               require('./display/Geometry'),
     Geometry2d:             require('./display/Geometry2d'),
     ComputedGeometry2d:     require('./display/ComputedGeometry2d'),

@@ -83,14 +83,18 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.geometry = new Geometry2d();
-    this.geometry.size = 4;
 }
 
 // constructor
 Sprite.prototype = Object.create(Container.prototype);
 Sprite.prototype.constructor = Sprite;
 module.exports = Sprite;
+
+Sprite.prototype.initTransform = function(isStatic) {
+    this.geometry = new Geometry2d();
+    this.geometry.size = 4;
+    this.displayObjectInitTransform(isStatic);
+};
 
 Object.defineProperties(Sprite.prototype, {
     /**

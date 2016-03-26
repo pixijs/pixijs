@@ -73,7 +73,7 @@ function SpriteRenderer(renderer)
 
     for (var k = 0; k < this.size; k++)
     {
-        this.groups[k] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0};
+        this.groups[k] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0, worldProjection: null};
     }
 
     this.sprites = [];
@@ -188,10 +188,12 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+    var worldProjection = sprites[0].worldProjection;
 
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
-
+    currentGroup.blend = blendMode;
+    currentGroup.worldProjection = worldProjection;
     this.tick++;
 
     for (var i = 0; i < this.currentIndex; i++)
@@ -202,9 +204,10 @@ SpriteRenderer.prototype.flush = function ()
 
         nextTexture = sprite._texture.baseTexture;
 
-        if(blendMode !== sprite.blendMode)
+        if(blendMode !== sprite.blendMode || worldProjection !== sprite.worldProjection)
         {
             blendMode = sprite.blendMode;
+            worldProjection = sprite.worldProjection;
 
             // force the batch to break!
             currentTexture = null;
@@ -229,6 +232,7 @@ SpriteRenderer.prototype.flush = function ()
                     currentGroup = groups[groupCount++];
                     currentGroup.textureCount = 0;
                     currentGroup.blend = blendMode;
+                    currentGroup.worldProjection = worldProjection;
                     currentGroup.start = i;
                 }
 
@@ -285,11 +289,11 @@ SpriteRenderer.prototype.flush = function ()
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
     this.vao = this.vaos[this.vertexCount].bind();
 
-
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
 
         var group = groups[i];
+        this.renderer.bindProjection(group.worldProjection);
 
         for (var j = 0; j < group.textureCount; j++) {
             this.renderer.bindTexture(group.textures[j], j);

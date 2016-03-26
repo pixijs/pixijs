@@ -1,5 +1,6 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
+    Transform2d = require('../../../display/Transform2d'),
     GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
@@ -66,11 +67,17 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.resolution = resolution || CONST.RESOLUTION;
 
     /**
-     * The projection matrix
+     * The actual transform from pixels region to webgl (-1,1)
      *
-     * @member {PIXI.Matrix}
+     * @member {PIXI.Transform2d}
      */
-    this.projectionMatrix = new math.Matrix();
+    this.projection2d = new Transform2d();
+
+    /**
+     * World transform for this target. Sometimes it changes
+     * @member {PIXI.ComputedTransform2d}
+     */
+    this.worldProjection = null;
 
     /**
      * The object's transform
@@ -177,6 +184,36 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 RenderTarget.prototype.constructor = RenderTarget;
 module.exports = RenderTarget;
 
+Object.defineProperties(RenderTarget.prototype, {
+    /**
+     * The projection matrix
+     *
+     * @member {PIXI.Matrix}
+     */
+    projectionMatrix: {
+        get: function() {
+            return this.worldProjection ? this.worldProjection.matrix : this.projection2d.matrix;
+        }
+    }
+});
+
+RenderTarget.prototype.setWorldProjection = function(worldProjection) {
+    if (worldProjection) {
+        this.worldProjection = worldProjection.updateChildReverseTransform(this.worldProjection, this.projection2d);
+    } else {
+        this.worldProjection = null;
+    }
+};
+
+RenderTarget.prototype.checkWorldProjection = function(worldProjection) {
+    if (worldProjection) {
+        if (!this.worldProjection) return true;
+        return worldProjection.checkChildReverseTransform(this.worldProjection, this.projection2d);
+    } else {
+        return worldProjection != null;
+    }
+};
+
 /**
  * Clears the filter texture.
  *
@@ -215,7 +252,7 @@ RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
  * Binds the buffers and initialises the viewport.
  *
  */
-RenderTarget.prototype.activate = function()
+RenderTarget.prototype.activate = function(worldProjection)
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
@@ -227,8 +264,10 @@ RenderTarget.prototype.activate = function()
 
     if(this.transform)
     {
-        this.projectionMatrix.append(this.transform);
+        this.projection2d.matrix2d.append(this.transform);
+        this.projection2d.version++;
     }
+    this.setWorldProjection(worldProjection);
 
     //TODO add a check as them may be the same!
     if(this.destinationFrame !== this.sourceFrame)
@@ -256,7 +295,8 @@ RenderTarget.prototype.activate = function()
  */
 RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceFrame)
 {
-    var pm = this.projectionMatrix;
+    var p = this.projection2d;
+    var pm = p.matrix2d;
 
     sourceFrame = sourceFrame || destinationFrame;
 
@@ -279,6 +319,7 @@ RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceF
         pm.tx = -1 - sourceFrame.x * pm.a;
         pm.ty = 1 - sourceFrame.y * pm.d;
     }
+    p.version++;
 };
 
 

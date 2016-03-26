@@ -1,5 +1,4 @@
 var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint'),
     utils = require('../utils'),
     ComputedGeometry2d = require('./ComputedGeometry2d');
 
@@ -82,6 +81,30 @@ ComputedTransform2d.prototype.updateChildTransform = function (childTransform, l
     childTransform.updateTransform(this, localTransform);
     return childTransform;
 };
+
+ComputedTransform2d.prototype.updateChildReverseTransform = function (childTransform, localTransform)
+{
+    childTransform = childTransform || new ComputedTransform2d();
+    childTransform.updateTransform(localTransform, this);
+    return childTransform;
+};
+
+ComputedTransform2d.prototype.checkChildReverseTransform = function (childTransform, localTransform)
+{
+    if (!childTransform) {
+        return true;
+    }
+
+    if (childTransform._dirtyLocalUid === this.uid &&
+        childTransform._dirtyLocalVersion === this.version &&
+        childTransform._dirtyParentUid === localTransform.uid &&
+        childTransform._dirtyParentVersion === localTransform.version) {
+        return false;
+    }
+
+    return true;
+};
+
 
 /**
  * Get bounds of geometry based on its stride

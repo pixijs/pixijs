@@ -366,11 +366,7 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform.update();
-    this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
-
-    //TODO: check render flags, how to process stuff here
-    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    this.displayObjectUpdateTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {

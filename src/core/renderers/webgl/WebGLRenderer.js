@@ -5,7 +5,6 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
-    TextureGarbageCollector = require('./TextureGarbageCollector'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -111,7 +110,7 @@ function WebGLRenderer(width, height, options)
      */
     // initialize the context so it is ready for the managers.
     this.gl = options.context || createContext(this.view, this._contextOptions);
-   
+
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
@@ -154,8 +153,6 @@ function WebGLRenderer(width, height, options)
     this._activeTexture = null;
 
     this.setBlendMode(0);
-
-    
 }
 
 // constructor
@@ -175,13 +172,11 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(this);
-    this.textureGC = new TextureGarbageCollector(this);
 
     this.state.resetToDefault();
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-    
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -203,7 +198,7 @@ WebGLRenderer.prototype._initContext = function ()
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    
+
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
@@ -239,15 +234,13 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         renderTarget.clear();
     }
 
-   
+
 
     displayObject.renderWebGL(this);
 
     // apply transform..
     this.currentRenderer.flush();
     //this.setObjectRenderer(this.emptyRenderer);
-
-    this.textureGC.update();
 
     this.emit('postrender');
 };
@@ -378,6 +371,24 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 };
 
 /**
+ * Binds projection uniform
+ *
+ * @param worldProjection {PIXI.ComputedTransform2d} Calculated projection
+ */
+WebGLRenderer.prototype.bindProjection = function(worldProjection) {
+    var aRT = this._activeRenderTarget;
+    var aS = this._activeShader;
+    if (aRT && aRT.checkWorldProjection(worldProjection)) {
+        aRT.setWorldProjection(worldProjection);
+        if (aS) {
+            aS.uniforms.projectionMatrix = aRT.projectionMatrix.toArray(true);
+        }
+        return true;
+    }
+    return false;
+};
+
+/**
  * Changes the current render target to the one given in parameter
  *
  * @param renderTarget {PIXI.RenderTarget} the new render target
@@ -449,11 +460,9 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-       
     }
     else
     {
-        texture.touched = this.textureGC.count;
         // bind the current texture
         texture._glTextures[this.CONTEXT_UID].bind();
     }
@@ -464,7 +473,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);
-}
+};
 
 /**
  * Resets the WebGL state so you can render things however you fancy!

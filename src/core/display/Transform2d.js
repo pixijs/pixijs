@@ -1,5 +1,6 @@
 var math = require('../math'),
     ObservablePoint = require('./ObservablePoint'),
+    ComputedTransform2d = require('./ComputedTransform2d'),
     utils = require('../utils');
 
 
@@ -78,7 +79,7 @@ Transform2d.prototype.updateSkew = function ()
 
 Transform2d.prototype.makeDirty = function() {
     this._dirtyVersion++;
-}
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.
@@ -110,6 +111,15 @@ Transform2d.prototype.update = function ()
 
     this.version = ++this._dirtyVersion;
     return true;
+};
+
+Transform2d.prototype.makeComputedTransform = function(computedTransform) {
+    if (!computedTransform || computedTransform._dirtyLocalUid !== this.uid) {
+        computedTransform = new ComputedTransform2d();
+    }
+    computedTransform.matrix2d = this.matrix2d;
+    computedTransform.version = this.version;
+    return computedTransform;
 };
 
 Transform2d.prototype.destroy = function() {
