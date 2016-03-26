@@ -105,7 +105,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this.initTransform();
+    this.initTransform(true);
 }
 
 // constructor

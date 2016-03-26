@@ -73,7 +73,7 @@ Object.defineProperties(ObservablePoint.prototype, {
 ObservablePoint.prototype.set = function (x, y)
 {
     var _x = x || 0;
-    var _y = ( (y !== 0) ? this._x : 0 );
+    var _y = y || ( (y !== 0) ? _x : 0 );
     if (this._x !== _x || this._y !== _y) {
         this._x = _x;
         this._y = _y;

@@ -1,5 +1,6 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
+    ObservablePoint = require('../display/ObservablePoint'),
     Container = require('../display/Container'),
     Geometry2d = require('../display/Geometry2d'),
     utils = require('../utils'),
@@ -24,15 +25,7 @@ function Sprite(texture)
 {
     Container.call(this);
 
-    /**
-     * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the texture's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
-     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
-     *
-     * @member {PIXI.Point}
-     */
-    this.anchor = new math.Point();
+    this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
 
     /**
      * The texture that the sprite is using
@@ -177,6 +170,24 @@ Object.defineProperties(Sprite.prototype, {
                 }
             }
         }
+    },
+
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.Sprite#
+     */
+    anchor: {
+        get: function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            this._anchor.copy(value);
+        }
     }
 });
 
@@ -228,7 +239,10 @@ Sprite.prototype.calculateVertices = function ()
     }
 
     this.geometry.setRectCoords(0, w1, h1, w0, h0);
-    this.updateGeometry();
+};
+
+Sprite.prototype.makeDirty = function() {
+    this.textureDirty = true;
 };
 
 /**
