@@ -35,7 +35,7 @@ function Transform2d(isStatic)
     this.scale = isStatic ? new ObservablePoint(this.makeDirty, this, 1,1) : new math.Point(1,1);
 
 
-    this.skew = isStatic ? new ObservablePoint(this.makeDirty, this, 0,0) : new math.Point(0,0);
+    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -110,6 +110,20 @@ Transform2d.prototype.update = function ()
 
     this.version = ++this._dirtyVersion;
     return true;
+};
+
+Transform2d.prototype.destroy = function() {
+    this.skew.destroy();
+    if (this.isStatic) {
+        this.position.destroy();
+        this.scale.destroy();
+        this.pivot.destroy();
+    }
+
+    this.position = null;
+    this.scale = null;
+    this.pivot = null;
+    this.skew = null;
 };
 
 Object.defineProperties(Transform2d.prototype, {

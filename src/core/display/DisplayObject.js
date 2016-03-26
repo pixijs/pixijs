@@ -522,7 +522,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
  */
 DisplayObject.prototype.destroy = function ()
 {
-
+    this.transform.destroy();
     this.position = null;
     this.scale = null;
     this.pivot = null;
@@ -534,7 +534,8 @@ DisplayObject.prototype.destroy = function ()
     this._currentBounds = null;
     this._mask = null;
 
-    this.worldTransform = null;
+    this.transform = null;
+    this.computedTransform = null;
     this.filterArea = null;
 };
 

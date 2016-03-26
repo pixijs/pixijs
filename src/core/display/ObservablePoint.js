@@ -91,3 +91,8 @@ ObservablePoint.prototype.copy = function (p)
         this.cb.call(this.scope);
     }
 };
+
+ObservablePoint.prototype.destroy = function () {
+    this.cb = null;
+    this.scope = null;
+}
