@@ -19,6 +19,11 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
 {
     core.Container.call(this);
 
+    this.geometry = new core.Geometry2d(vertices || new Float32Array([0, 0,
+            100, 0,
+            100, 100,
+            0, 100]));
+
     /**
      * The texture of the Mesh
      *
@@ -37,16 +42,6 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
         1, 1,
         0, 1]);
 
-    /**
-     * An array of vertices
-     *
-     * @member {Float32Array}
-     */
-    this.vertices = vertices || new Float32Array([0, 0,
-        100, 0,
-        100, 100,
-        0, 100]);
-
     /*
      * @member {Uint16Array} An array containing the indices of the vertices
      */
@@ -59,6 +54,14 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {boolean}
      */
     this.dirty = true;
+
+    /**
+     * Whether the Mesh vertices are dirty or not
+     * @private
+     */
+    this.dirtyVertex = false;
+
+    this._geometryVersion = -1;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -103,6 +106,11 @@ Mesh.prototype.constructor = Mesh;
 module.exports = Mesh;
 
 Object.defineProperties(Mesh.prototype, {
+    vertices: {
+        get: function() {
+            return this.geometry.vertices;
+        }
+    },
     /**
      * The texture that the sprite is using
      *
@@ -174,15 +182,20 @@ Mesh.prototype._renderWebGL = function (renderer)
         this._glDatas[renderer.CONTEXT_UID] = glData;
     }
 
+    if (this.dirtyVertex || this._geometryVersion !== this.geometry.version) {
+        this.dirtyVertex = false;
+        this._geometryVersion = this.geometry.version;
+        glData.vertexBuffer.upload();
+    }
+
     if(this.dirty)
     {
         this.dirty = false;
         glData.uvBuffer.upload();
     }
 
-    glData.vertexBuffer.upload();
-
     renderer.bindShader(glData.shader);
+    renderer.bindProjection(this.worldProjection);
     renderer.bindTexture(this._texture, 0);
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
@@ -207,6 +220,11 @@ Mesh.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
 
     var transform = this.worldTransform;
+
+    if (this.worldProjection) {
+        this.updateProjectedTransform();
+        transform = this.projectedTransform.matrix2d;
+    }
 
     if (renderer.roundPixels)
     {

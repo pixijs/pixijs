@@ -49,8 +49,13 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         dy,
         sourceWidth = texture._frame.width,
         sourceHeight = texture._frame.height,
-        targetWidth = width,
-        targetHeight = height;
+        targetWidth = sourceWidth,
+        targetHeight = sourceHeight;
+
+    if (sprite.worldProjection) {
+        sprite.updateProjectedTransform();
+        wt = sprite.projectedTransform.matrix2d;
+    }
 
     if (texture.crop.width <= 0 || texture.crop.height <= 0)
     {
@@ -81,8 +86,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         var sizeX = sprite.size._x;
         var sizeY = sprite.size._y;
         if (sizeX && sizeY) {
-            sizeX /= crop.width;
-            sizeY /= crop.height;
+            sizeX /= texture.crop.width;
+            sizeY /= texture.crop.height;
             dx *= sizeX;
             dy *= sizeY;
             targetWidth *= sizeX;

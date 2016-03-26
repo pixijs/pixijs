@@ -29,6 +29,12 @@ function DisplayObject()
     this.computedTransform = null;
 
     /**
+     * Projected transform, need for canvas mode
+     * @type {PIXI.Transform2d}
+     */
+    this.projectedTransform = null;
+
+    /**
      * Projection, for camera
      * @type {PIXI.Transform2d}
      */
@@ -391,11 +397,24 @@ DisplayObject.prototype.updateGeometry = function ()
 {
     this.computedGeometry = this.computedTransform.updateGeometry(this.computedGeometry, this.geometry);
     if (this.worldProjection && this.computedGeometry) {
+        //TODO: in some cases its better to use projectedTransform, for example if mesh is too big
         this.projectedGeometry = this.worldProjection.updateGeometry(this.projectedGeometry, this.computedGeometry);
         return this.projectedGeometry;
     }
     this.projectedGeometry = null;
     return this.computedGeometry;
+};
+
+/**
+ * Updates projection matrix. Used only by canvas renderers.
+ * @returns {*}
+ */
+DisplayObject.prototype.updateProjectedTransform = function() {
+    var wp = this.worldProjection;
+    if (wp) {
+        this.projectedTransform = wp.updateChildTransform(this.projectedTransform || new ComputedTransform2d(), this.computedTransform);
+    }
+    return this.projectedTransform;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -580,6 +599,7 @@ DisplayObject.prototype.destroy = function ()
 
     this.transform = null;
     this.computedTransform = null;
+    this.projectedTransform = null;
     this.projection = null;
     this.worldProjection = null;
     this.filterArea = null;
