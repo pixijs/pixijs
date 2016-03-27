@@ -2,16 +2,14 @@ var Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
     GraphicsData = require('./GraphicsData'),
-    GeometrySet = require('../components/GeometrySet'),
+    GeometrySet = require('../c2d/GeometrySet'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
-    tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point();
-
+    tempMatrix = new math.Matrix();
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
@@ -155,6 +153,8 @@ function Graphics()
 
     this._localBounds = new GeometrySet();
     this._localBounds.local.size = 4;
+    this.isRaycastCheckingBoundsFirst = true;
+    this.isRaycastPossible = true;
 
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -815,14 +815,11 @@ Graphics.prototype.getLocalBounds = function ()
 * @param point {PIXI.Point} the point to test
 * @return {boolean} the result of the test
 */
-Graphics.prototype.containsPoint = function( point )
+Graphics.prototype.containsLocalPoint = function( point )
 {
-    if (!this.getBounds().contains(point.x, point.y)) {
+    if (!this.getLocalBounds().contains(point.x, point.y)) {
         return false;
     }
-
-    this.projectionMatrix.applyInverse(point,  tempPoint);
-
     var graphicsData = this.graphicsData;
 
     for (var i = 0; i < graphicsData.length; i++)
@@ -837,7 +834,7 @@ Graphics.prototype.containsPoint = function( point )
         // only deal with fills..
         if (data.shape)
         {
-            if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
+            if ( data.shape.contains( point.x, point.y ) )
             {
                 return true;
             }

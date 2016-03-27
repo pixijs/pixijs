@@ -247,14 +247,13 @@ Object.defineProperties(core.DisplayObject, {
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
-    return renderer.generateTexture(renderer, scaleMode, resolution)
+    return renderer.generateTexture(renderer, scaleMode, resolution);
 };
-
 
 core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
 {
     console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
-    return this.generateCanvasTexture(scaleMode, resolution)
+    return this.generateCanvasTexture(scaleMode, resolution);
 };
 
 core.RenderTexture.prototype.render = function(displayObject)

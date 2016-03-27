@@ -27,8 +27,6 @@ ComputedGeometry2d.prototype.applyTransformStatic = function (geometry, transfor
         this._transformVersion === transform.version &&
         this._geometryUid === geometry.uid &&
         this._geometryVersion === geometry.version) {
-        //TODO: we need geometry version too
-        //no changes
         return false;
     }
     this._transformUid = transform.uid;

@@ -156,7 +156,7 @@ function InteractionManager(renderer, options)
      * @member {string}
      * @default "inherit"
      */
-    this.defaultCursorStyle = "inherit";
+    this.defaultCursorStyle = 'inherit';
 
     /**
      * The css style of the cursor that is being used
@@ -406,7 +406,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // it has a filterArea! Same as mask but easier, its a rectangle
     if(hitTest && displayObject.filterArea)
     {
-        if(!displayObject.filterArea.containsPoint(point))
+        if(!displayObject.filterArea.contains(point.x, point.y))
         {
             hitTest = false;
         }
@@ -460,18 +460,10 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
         if(hitTest && !hit)
         {
-
-            if(displayObject.hitArea)
-            {
-                displayObject.worldTransform.applyInverse(point,  this._tempPoint);
-                hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
-            }
-            else if(displayObject.containsPoint)
+            if(displayObject.hitArea || displayObject.isRaycastPossible)
             {
                 hit = displayObject.containsPoint(point);
             }
-
-
         }
 
         if(displayObject.interactive)

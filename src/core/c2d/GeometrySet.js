@@ -13,9 +13,9 @@ function GeometrySet(local) {
 }
 
 GeometrySet.prototype.getBounds = function (computed, projected) {
-    this.computed = computed.updateGeometry(this.computed, this.local);
+    this.computed = computed.updateChildGeometry(this.computed, this.local);
     if (projected) {
-        this.projected = projected.updateGeometry(this.projected, this.computed);
+        this.projected = projected.updateChildGeometry(this.projected, this.computed);
         return this.projected.getBounds();
     }
     return this.computed.getBounds();

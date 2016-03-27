@@ -1,6 +1,7 @@
 var math = require('../math'),
     utils = require('../utils'),
-    ComputedGeometry2d = require('./ComputedGeometry2d');
+    ComputedGeometry2d = require('./ComputedGeometry2d'),
+    Raycast2d = require('./Raycast2d');
 
 
 /**
@@ -26,6 +27,11 @@ function ComputedTransform2d()
     this._dirtyLocalVersion = -1;
     this._dirtyParentUid = -1;
     this._dirtyParentVersion = -1;
+
+    this.computedRaycast = null;
+    this._dirtyRaycastUid = -1;
+    this._dirtyRaycastVersion = -1;
+    this._dirtyRaycastMyVersion = -1;
 }
 
 ComputedTransform2d.prototype.constructor = ComputedTransform2d;
@@ -76,6 +82,18 @@ ComputedTransform2d.prototype.updateTransform = function (parentTransform, local
     return true;
 };
 
+ComputedTransform2d.prototype.updateRaycast = function(parentRaycast) {
+    if (this._dirtyRaycastMyVersion === this.version &&
+        this._dirtyRaycastUid === parentRaycast.uid &&
+        this._dirtyRaycastVersion === parentRaycast.version) {
+        this.updated = false;
+        return false;
+    }
+
+    this.computedRaycast = this.updateChildRaycast(this.computedRaycast, parentRaycast);
+    return this.computedRaycast;
+};
+
 ComputedTransform2d.prototype.updateChildTransform = function (childTransform, localTransform)
 {
     childTransform.updateTransform(this, localTransform);
@@ -113,13 +131,22 @@ ComputedTransform2d.prototype.checkChildReverseTransform = function (childTransf
  * @param bounds
  * @returns {*}
  */
-ComputedTransform2d.prototype.updateGeometry = function(computedGeometry, geometry) {
+ComputedTransform2d.prototype.updateChildGeometry = function(computedGeometry, geometry) {
     if (!geometry || !geometry.valid) {
         return null;
     }
     computedGeometry = computedGeometry || new ComputedGeometry2d();
     computedGeometry.applyTransformStatic(geometry, this);
     return computedGeometry;
+};
+
+ComputedTransform2d.prototype.updateChildRaycast = function(computedRaycast, parentRaycast) {
+    if (!parentRaycast || !parentRaycast.valid) {
+        return null;
+    }
+    computedRaycast = computedRaycast || new Raycast2d();
+    computedRaycast.applyTransformStatic(parentRaycast, this);
+    return computedRaycast;
 };
 
 Object.defineProperties(ComputedTransform2d.prototype, {

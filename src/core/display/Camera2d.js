@@ -1,6 +1,5 @@
-var math = require('../math'),
-    Container = require('./Container'),
-    Transform2d = require('../components/Transform2d');
+var Container = require('./Container'),
+    Transform2d = require('../c2d/Transform2d');
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -9,7 +8,7 @@ var math = require('../math'),
  * @extends PIXI.Container
  * @memberof PIXI
  */
-function Camera2d(texture)
+function Camera2d()
 {
     Container.call(this);
 }

@@ -1,7 +1,6 @@
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
-    Shader = require('./webgl/MeshShader'),
-    tempPoint = new core.Point();
+    Shader = require('./webgl/MeshShader');
 
 /**
  * Base mesh class
@@ -93,6 +92,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     this.shader = null;
 
     this._glDatas = [];
+
+    this.isRaycastCheckingBounds = true;
+    this.isRaycastPossible = true;
 }
 
 // constructor
@@ -423,17 +425,14 @@ Mesh.prototype._onTextureUpdate = function ()
 };
 
 /**
- * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+ * Tests if a point is inside this mesh.
  *
  * @param point {PIXI.Point} the point to test
  * @return {boolean} the result of the test
  */
-Mesh.prototype.containsPoint = function( point ) {
-    if (!this.getBounds().contains(point.x, point.y)) {
-        return false;
-    }
-    this.projectionMatrix.applyInverse(point,  tempPoint);
-    return this.geometry.containsPoint(tempPoint, this.drawMode === Mesh.DRAW_MODES.TRIANGLES);
+Mesh.prototype.containsLocalPoint = function( point ) {
+    return this.geometry.getBounds().containsPoint(point.x, point.y) &&
+        this.geometry.containsPoint(point, this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH);
 };
 
 /**

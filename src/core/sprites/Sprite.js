@@ -1,7 +1,7 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
-    ObservablePoint2d = require('../components/ObservablePoint2d'),
-    Geometry2d = require('../components/Geometry2d'),
+    ObservablePoint2d = require('../c2d/ObservablePoint2d'),
+    Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),
     utils = require('../utils'),
     CONST = require('../const'),
@@ -86,6 +86,8 @@ function Sprite(texture)
 
     this.geometry = new Geometry2d();
     this.geometry.size = 4;
+
+    this.isRaycastPossible = true;
 }
 
 // constructor
@@ -308,6 +310,25 @@ Sprite.prototype.containsPoint = function( point )
     return false;
 };
 
+/**
+ * Tests if a point is inside this sprite in LOCAL coordinates
+ *
+ * @param point {PIXI.Point || PIXI.Raycast2d || PIXI.} the point to test
+ * @return {boolean} the result of the test
+ */
+Sprite.prototype.containsLocalPoint = function( point )
+{
+    var v = this.geometry.vertices;
+    if ( point.x > v[0] && point.x < v[4] )
+    {
+        if ( point.y > v[1] && point.y < v[5] )
+        {
+            return true;
+        }
+    }
+
+    return false;
+};
 
 /**
  * Destroys this sprite and optionally its texture

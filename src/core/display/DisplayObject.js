@@ -1,7 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
-    Transform2d = require('../components/Transform2d'),
-    ComputedTransform2d = require('../components/ComputedTransform2d'),
+    Transform2d = require('../c2d/Transform2d'),
+    ComputedTransform2d = require('../c2d/ComputedTransform2d'),
     _tempDisplayObjectParent = null;
 
 /**
@@ -75,20 +75,6 @@ function DisplayObject()
     this._localBounds = null;
 
     /**
-     * Local geometry special for faster calculation of bounds
-     *
-     * @member {PIXI.Geometry2d}
-     */
-    this._localBoundsTransformed = null;
-
-    /**
-     * Local geometry special for faster calculation of bounds
-     *
-     * @member {PIXI.Geometry2d}
-     */
-    this._localBoundsProjected = null;
-
-    /**
      * The opacity of the object.
      *
      * @member {number}
@@ -159,6 +145,18 @@ function DisplayObject()
      * @private
      */
     this._currentBounds = null;
+
+    /**
+     * Whether we have to check our bounds before raycasting this thing
+     * @type {boolean}
+     */
+    this.isRaycastCheckingBoundsFirst = false;
+
+    /**
+     * Whether we can raycast it
+     * @type {boolean}
+     */
+    this.isRaycastPossible = false;
 
     /**
      * The original, cached mask of the object
@@ -441,10 +439,10 @@ DisplayObject.prototype.updateTransform = function ()
  */
 DisplayObject.prototype.updateGeometry = function ()
 {
-    this.computedGeometry = this.computedTransform.updateGeometry(this.computedGeometry, this.geometry);
+    this.computedGeometry = this.computedTransform.updateChildGeometry(this.computedGeometry, this.geometry);
     if (this.worldProjection && this.computedGeometry) {
         //TODO: in some cases its better to use projectedTransform, for example if mesh is too big
-        this.projectedGeometry = this.worldProjection.updateGeometry(this.projectedGeometry, this.computedGeometry);
+        this.projectedGeometry = this.worldProjection.updateChildGeometry(this.projectedGeometry, this.computedGeometry);
         return this.projectedGeometry;
     }
     this.projectedGeometry = null;
@@ -566,6 +564,40 @@ DisplayObject.prototype.toLocal = function (position, from, point)
 
     // simply apply the matrix..
     return this.projectionMatrix.applyInverse(position, point);
+};
+
+/**
+ *
+ * @param {PIXI.DisplayPoint} point
+ * @returns {PIXI.Raycast2d} raycast result. Can be null. Can be not valid. MUTABLE OBJECT, DO NOT CHANGE!
+ */
+DisplayObject.prototype.raycast = function(point) {
+    if (!this.hitArea && this.isRaycastCheckingBoundsFirst && !this.getBounds().contains(point.x, point.y)) {
+        return null;
+    }
+    if (this.worldProjection) {
+        point = this.worldProjection.updateRaycast( point );
+    }
+    point = this.computedTransform.updateRaycast( point );
+    if (point && point.valid) {
+        point.intersects = this.hitArea ? this.hitArea.contains( point.x, point.y ) : this.containsLocalPoint( point );
+    }
+    return point;
+};
+
+DisplayObject.prototype.containsPoint = function(point) {
+    var rc = this.raycast(point);
+    return rc && rc.valid && rc.intersects;
+};
+
+/**
+ * Interaction local point
+ * @param point
+ * @returns {boolean}
+ */
+DisplayObject.prototype.containsLocalPoint = function() {
+    //NOPE
+    return false;
 };
 
 /**

@@ -1,6 +1,6 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
-    Transform2d = require('../../../components/Transform2d'),
+    Transform2d = require('../../../c2d/Transform2d'),
     GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
