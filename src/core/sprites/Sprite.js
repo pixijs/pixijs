@@ -61,14 +61,6 @@ function Sprite(texture)
     this._height = 0;
 
     /**
-     * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-     *
-     * @member {number}
-     * @default 0xFFFFFF
-     */
-    this.tint = 0xFFFFFF;
-
-    /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
      * @member {number}
@@ -468,14 +460,14 @@ Sprite.prototype._renderCanvas = function (renderer)
 
         var resolution = texture.baseTexture.resolution;
 
-        if (this.tint !== 0xFFFFFF)
+        if (this.worldTint !== 0xFFFFFF)
         {
-            if (this.cachedTint !== this.tint)
+            if (this.cachedTint !== this.worldTint)
             {
-                this.cachedTint = this.tint;
+                this.cachedTint = this.worldTint;
 
                 // TODO clean up caching - how to clean up the caches?
-                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
+                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.worldTint);
             }
 
             renderer.context.drawImage(

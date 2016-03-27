@@ -241,13 +241,13 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
 
         // Tint the tiling sprite
-        if (this.tint !== 0xFFFFFF)
+        if (this.worldTint !== 0xFFFFFF)
         {
-            if (this.cachedTint !== this.tint)
+            if (this.cachedTint !== this.worldTint)
             {
-                this.cachedTint = this.tint;
+                this.cachedTint = this.worldTint;
 
-                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
+                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.worldTint);
             }
             tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
         }

@@ -52,14 +52,6 @@ function Graphics()
     this.graphicsData = [];
 
     /**
-     * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to reset the tint.
-     *
-     * @member {number}
-     * @default 0xFFFFFF
-     */
-    this.tint = 0xFFFFFF;
-
-    /**
      * The previous tint applied to the graphic shape. Used to compare to the current tint and check if theres change.
      *
      * @member {number}
@@ -773,7 +765,7 @@ Graphics.prototype._renderCanvas = function (renderer)
     }
 
     // if the tint has changed, set the graphics object to dirty.
-    if (this._prevTint !== this.tint) {
+    if (this._prevTint !== this.worldTint) {
         this.dirty = true;
     }
 

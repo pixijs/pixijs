@@ -117,7 +117,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
             gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
-            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
+            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.worldTint));
 
             gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
 

@@ -304,15 +304,15 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
-    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
+    if (graphics.worldTint === 0xFFFFFF && graphics._prevTint === graphics.worldTint)
     {
         return;
     }
-    graphics._prevTint = graphics.tint;
+    graphics._prevTint = graphics.worldTint;
 
-    var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-    var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-    var tintB = (graphics.tint & 0xFF)/ 255;
+    var tintR = (graphics.worldTint >> 16 & 0xFF) / 255;
+    var tintG = (graphics.worldTint >> 8 & 0xFF) / 255;
+    var tintB = (graphics.worldTint & 0xFF)/ 255;
 
     for (var i = 0; i < graphics.graphicsData.length; i++)
     {
