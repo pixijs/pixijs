@@ -289,28 +289,6 @@ Sprite.prototype._renderCanvas = function (renderer)
 };
 
 /**
-* Tests if a point is inside this sprite
-*
-* @param point {PIXI.Point} the point to test
-* @return {boolean} the result of the test
-*/
-Sprite.prototype.containsPoint = function( point )
-{
-    this.worldTransform.applyInverse(point,  tempPoint);
-
-    var v = this.geometry.vertices;
-    if ( tempPoint.x > v[0] && tempPoint.x < v[4] )
-    {
-        if ( tempPoint.y > v[1] && tempPoint.y < v[5] )
-        {
-            return true;
-        }
-    }
-
-    return false;
-};
-
-/**
  * Tests if a point is inside this sprite in LOCAL coordinates
  *
  * @param point {PIXI.Point || PIXI.Raycast2d || PIXI.} the point to test

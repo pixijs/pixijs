@@ -150,7 +150,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     {
         // update the scene graph
         var cacheParent = displayObject.parent;
-        var tempWt = this._tempDisplayObjectParent.worldTransform;
+        var tempWt = this._tempDisplayObjectParent.projectionMatrix2d;
 
         if(transform)
         {

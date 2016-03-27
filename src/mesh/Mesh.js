@@ -206,7 +206,7 @@ Mesh.prototype._renderWebGL = function (renderer)
     renderer.bindProjection(this.worldProjection);
     renderer.bindTexture(this._texture, 0);
 
-    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
 
     var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
@@ -227,7 +227,7 @@ Mesh.prototype._renderCanvas = function (renderer)
 {
     var context = renderer.context;
 
-    var transform = this.worldTransform;
+    var transform = this.projectionMatrix2d;
 
     if (renderer.roundPixels)
     {
@@ -320,8 +320,8 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
 
     if (this.canvasPadding > 0)
     {
-        var paddingX = this.canvasPadding / this.worldTransform.a;
-        var paddingY = this.canvasPadding / this.worldTransform.d;
+        var paddingX = this.canvasPadding / this.projectionMatrix2d.a;
+        var paddingY = this.canvasPadding / this.projectionMatrix2d.d;
         var centerX = (x0 + x1 + x2) / 3;
         var centerY = (y0 + y1 + y2) / 3;
 

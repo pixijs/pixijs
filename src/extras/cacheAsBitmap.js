@@ -211,7 +211,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     // need to set //
     var m = _tempMatrix;
-    this.worldTransform.copy(m);
+    this.projectionMatrix2d.copy(m);
     m.invert();
 
     m.tx -= bounds.x;

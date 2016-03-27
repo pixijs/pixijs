@@ -201,7 +201,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     }
 
     var context = renderer.context;
-    var transform = this.worldTransform;
+    var transform = this.projectionMatrix2d;
     var isRotated = true;
 
     var positionX = 0;
@@ -266,7 +266,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 
             child.displayObjectUpdateTransform();
 
-            var childTransform = child.worldTransform;
+            var childTransform = child.projectionMatrix2d;
 
             if (renderer.roundPixels)
             {
