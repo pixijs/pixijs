@@ -4,14 +4,12 @@
  * @class
  * @memberof PIXI
  * @param lineWidth {number} the width of the line to draw
- * @param lineColor {number} the color of the line to draw
- * @param lineAlpha {number} the alpha of the line to draw
- * @param fillColor {number} the color of the fill
- * @param fillAlpha {number} the alpha of the fill
+ * @param strokeStyle {Brush} the brush used for drawing the border of the shape
+ * @param fillStyle {Brush} the brush used for filling the shape
  * @param fill      {boolean} whether or not the shape is filled with a colour
  * @param shape     {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
  */
-function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
+function GraphicsData(lineWidth, strokeStyle, fillStyle, fill, shape)
 {
     /*
      * @member {number} the width of the line to draw
@@ -19,32 +17,14 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
     this.lineWidth = lineWidth;
 
     /*
-     * @member {number} the color of the line to draw
+     * @member {Brush} the style of the line to draw
      */
-    this.lineColor = lineColor;
-    /*
-     * @member {number} the alpha of the line to draw
-     */
-    this.lineAlpha = lineAlpha;
-    /*
-     * @member {number} cached tint of the line to draw
-     */
-    this._lineTint = lineColor;
+    this.strokeStyle = strokeStyle;
 
     /*
-     * @member {number} the color of the fill
+     * @member {Brush} the style of the fill
      */
-    this.fillColor = fillColor;
-
-    /*
-     * @member {number} the alpha of the fill
-     */
-    this.fillAlpha = fillAlpha;
-
-    /*
-     * @member {number} cached tint of the fill
-     */
-    this._fillTint = fillColor;
+    this.fillStyle = fillStyle;
 
     /*
      * @member {boolean} whether or not the shape is filled with a colour
@@ -74,10 +54,8 @@ GraphicsData.prototype.clone = function ()
 {
     return new GraphicsData(
         this.lineWidth,
-        this.lineColor,
-        this.lineAlpha,
-        this.fillColor,
-        this.fillAlpha,
+        this.strokeStyle,
+        this.fillStyle,
         this.fill,
         this.shape
     );
