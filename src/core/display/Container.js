@@ -58,7 +58,6 @@ Object.defineProperties(Container.prototype, {
                 this.scale.x = 1;
             }
 
-
             this._width = value;
         }
     },

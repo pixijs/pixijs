@@ -4,8 +4,7 @@ var math = require('../math'),
     Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),
     utils = require('../utils'),
-    CONST = require('../const'),
-    tempPoint = new math.Point();
+    CONST = require('../const');
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen

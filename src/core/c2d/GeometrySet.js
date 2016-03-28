@@ -10,6 +10,8 @@ function GeometrySet(local) {
     this.local = local || new Geometry2d();
     this.computed = null;
     this.projected = null;
+    this.valid = true;
+    //TODO: add "valid" field
 }
 
 GeometrySet.prototype.getBounds = function (computed, projected) {

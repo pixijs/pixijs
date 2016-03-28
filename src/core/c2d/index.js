@@ -1,6 +1,7 @@
 module.exports = {
     Geometry:               require('./Geometry'),
     GeometrySet:            require('./GeometrySet'),
+    GeometrySetProxy:       require('./GeometrySetProxy'),
     Geometry2d:             require('./Geometry2d'),
     ComputedGeometry2d:     require('./ComputedGeometry2d'),
     ObservablePoint2d:      require('./ObservablePoint2d'),

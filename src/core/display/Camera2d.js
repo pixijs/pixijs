@@ -1,5 +1,6 @@
 var Container = require('./Container'),
-    Transform2d = require('../c2d/Transform2d');
+    Transform2d = require('../c2d/Transform2d'),
+    ComputedTransform2d = require('../c2d/ComputedTransform2d');
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -11,6 +12,20 @@ var Container = require('./Container'),
 function Camera2d()
 {
     Container.call(this);
+
+    /**
+     * Projection, for camera
+     * @type {PIXI.Transform2d}
+     */
+    this.projection = null;
+
+    /**
+     * List of proxies, hashmap
+     * @type {Object[]}
+     */
+    this.proxyCache = [{}, {}];
+
+    this.initProjection();
 }
 
 // constructor
@@ -19,8 +34,12 @@ Camera2d.prototype.constructor = Camera2d;
 module.exports = Camera2d;
 
 Camera2d.prototype.initTransform = function() {
-    this.projection = new Transform2d(true);
     this.displayObjectInitTransform(true);
+};
+
+Camera2d.prototype.initProjection = function() {
+    this.projection = new Transform2d(true);
+    this.worldProjection = new ComputedTransform2d(true);
 };
 
 Object.defineProperties(Camera2d.prototype, {
@@ -131,3 +150,79 @@ Object.defineProperties(Camera2d.prototype, {
         }
     }
 });
+
+
+Camera2d.prototype.displayObjectUpdateTransform = function() {
+    this._currentBounds = null;
+    // multiply the alphas..
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    //Transform will be Identity in most cases, and we really can remove these two lines. I leave it because there will be only a few cameras
+    this.transform.update();
+    this.computedTransform = this.transform.makeComputedTransform(this.computedTransform);
+
+    //Projection combines parent transform and its worldProjection
+    this.projection.update();
+    if (!this.parent) {
+        this.worldProjection = this.projection.makeComputedTransform(this.worldProjection);
+    } else {
+        this.worldProjection = this.parent.updateProjectedTransform().updateChildTransform(this.worldProjection, this.projection);
+    }
+    return this.computedTransform;
+};
+
+Camera2d.prototype._proxyContainer = function(containerFrom, containerTo) {
+    var proxyCache = this.proxyCache[0];
+    var newProxyCache = this.proxyCache[1];
+
+    var ch1 = containerFrom.children;
+    var ch2 = containerTo.children;
+    ch2.length = 0;
+    for (var i=0;i<ch1.length;i++) {
+        var c1 = ch1[i];
+        var c2 = proxyCache[c1.uid] || c1.createProxy();
+        newProxyCache[c1.uid] = c2;
+        ch2.push(c2);
+        c2.parent = containerTo;
+        //its a container!
+        if (c2.children) {
+            this._proxyContainer(c1, c2);
+        }
+    }
+};
+
+Camera2d.prototype._proxySwapBuffer = function() {
+    this.proxyCache[0] = this.proxyCache[1];
+    this.proxyCache[1] = {};
+};
+
+Camera2d.prototype.proxyContainer = function(containerFrom, containerTo) {
+    if (!containerTo) {
+        containerTo = this;
+    }
+    this._proxyContainer(containerFrom, containerTo);
+    this._proxySwapBuffer();
+};
+
+Camera2d.prototype.proxySwapContext = function() {
+    var pc = this.proxyCache[0];
+    for (var key in pc) {
+        var val = pc[key];
+        val.swapContext();
+    }
+};
+
+Camera2d.prototype.containerRenderWebGL = Container.prototype.renderWebGL;
+Camera2d.prototype.containerRenderCanvas = Container.prototype.renderCanvas;
+
+Camera2d.prototype.renderWebGL = function(renderer) {
+    this.proxySwapContext();
+    this.containerRenderWebGL(renderer);
+    this.proxySwapContext();
+};
+
+Camera2d.prototype.renderCanvas = function(renderer) {
+    this.proxySwapContext();
+    this.containerRenderCanvas(renderer);
+    this.proxySwapContext();
+};

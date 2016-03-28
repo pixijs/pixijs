@@ -2,6 +2,7 @@ var math = require('../math'),
     EventEmitter = require('eventemitter3'),
     Transform2d = require('../c2d/Transform2d'),
     ComputedTransform2d = require('../c2d/ComputedTransform2d'),
+    utils = require('../utils'),
     _tempDisplayObjectParent = null;
 
 /**
@@ -15,6 +16,12 @@ var math = require('../math'),
 function DisplayObject()
 {
     EventEmitter.call(this);
+
+    /**
+     * DisplayObject uid, for making a map out of it
+     * @member {null}
+     */
+    this.uid = utils.uid();
 
     /**
      * Local transform
@@ -33,12 +40,6 @@ function DisplayObject()
      * @type {PIXI.Transform2d}
      */
     this.projectedTransform = null;
-
-    /**
-     * Projection, for camera
-     * @type {PIXI.Transform2d}
-     */
-    this.projection = null;
 
     /**
      * World projection, for camera
@@ -165,6 +166,12 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    /**
+     * At rendering stage, if some proxy swapped its context to ours, then we can read the original context here
+     * @type {PIXI.DisplayObjectProxy}
+     */
+    this.proxyContext = null;
 
     this.initTransform(true);
 }
@@ -422,12 +429,7 @@ DisplayObject.prototype.updateTransform = function ()
     this._currentBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-    if (this.projection) {
-        this.projection.update();
-        this.worldProjection = this.projection.makeComputedTransform(this.worldProjection);
-    } else {
-        this.worldProjection = this.parent.worldProjection;
-    }
+    this.worldProjection = this.parent.worldProjection;
     this.transform.update();
     this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
     return this.computedTransform;

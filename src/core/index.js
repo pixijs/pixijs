@@ -18,6 +18,9 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
     Camera2d:               require('./display/Camera2d'),
+    DisplayObjectProxy:     require('./display/DisplayObjectProxy'),
+    ContainerProxy:         require('./display/ContainerProxy'),
+    CameraProxy:         require('./display/CameraProxy'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
