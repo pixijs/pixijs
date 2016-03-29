@@ -7,6 +7,11 @@ Object.assign(
     require('./interactiveTarget')
 );
 
+Object.defineProperties(
+    core.DisplayObjectProxy.prototype,
+    require('./interactiveTargetProxy')
+);
+
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true

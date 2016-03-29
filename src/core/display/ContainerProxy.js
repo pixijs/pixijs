@@ -1,5 +1,4 @@
-var math = require('../math'),
-    DisplayObjectProxy = require('./DisplayObjectProxy'),
+var DisplayObjectProxy = require('./DisplayObjectProxy'),
     Container = require('./Container');
 
 /**

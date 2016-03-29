@@ -219,6 +219,10 @@ DisplayObjectProxy.prototype.updateTransform = function ()
 
 DisplayObjectProxy.prototype.displayObjectUpdateTransform = DisplayObjectProxy.prototype.updateTransform;
 
+DisplayObjectProxy.prototype.containsLocalPoint = function(point) {
+    return this.original.containsLocalPoint(point);
+}
+
 DisplayObjectProxy.prototype.destroy = function() {
     //do nothing.
 };
@@ -229,6 +233,18 @@ DisplayObjectProxy.prototype.destroy = function() {
  */
 DisplayObjectProxy.prototype.createProxy = function() {
     return new DisplayObjectProxy(this);
+};
+
+DisplayObjectProxy.prototype.getOriginal = function() {
+    var orig = this.original;
+    while (orig.original) {
+        orig = orig.original;
+    }
+    return orig;
+};
+
+DisplayObjectProxy.prototype.emit = function(eventString, eventData) {
+    this.original.emit(eventString, eventData);
 };
 
 /**

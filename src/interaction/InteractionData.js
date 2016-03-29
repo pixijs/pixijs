@@ -19,8 +19,16 @@ function InteractionData()
      * The target Sprite that was interacted with
      *
      * @member {PIXI.Sprite}
+     * @private
      */
-    this.target = null;
+    this._target = null;
+
+    /**
+     * The target proxy that was interacted with
+     *
+     * @member {PIXI.Sprite}
+     */
+    this.targetProxy = null;
 
     /**
      * When passed to an event handler, this will be the original DOM Event that was captured
@@ -32,6 +40,23 @@ function InteractionData()
 
 InteractionData.prototype.constructor = InteractionData;
 module.exports = InteractionData;
+
+Object.defineProperties(InteractionData.prototype, {
+    target: {
+        get: function() {
+            return this._target;
+        },
+        set: function(value) {
+            if (value && value.original) {
+                this._target = value.getOriginal();
+                this.targetProxy = value;
+            } else {
+                this._target = value;
+                this.targetProxy = null;
+            }
+        }
+    }
+});
 
 /**
  * This will return the local coordinates of the specified displayObject for this InteractionData

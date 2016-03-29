@@ -264,16 +264,20 @@ Sprite.prototype.makeDirty = function() {
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
+    this.updateGeometry();
+
+    renderer.setObjectRenderer(renderer.plugins.sprite);
+    renderer.plugins.sprite.render(this);
+};
+
+Sprite.prototype.updateTransform = function() {
     if(this.textureDirty)
     {
         this.textureDirty = false;
         // set the vertex data
         this.calculateVertices();
     }
-    this.updateGeometry();
-
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render(this);
+    this.containerUpdateTransform();
 };
 
 /**
