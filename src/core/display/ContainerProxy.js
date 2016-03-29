@@ -50,6 +50,22 @@ ContainerProxy.prototype.containerGetBounds = Container.prototype.getBounds;
 
 ContainerProxy.prototype.getLocalBounds = Container.prototype.getLocalBounds;
 
+ContainerProxy.prototype.renderWebGL = Container.prototype.renderWebGL;
+
+ContainerProxy.prototype.renderCanvas = Container.prototype.renderCanvas;
+
+ContainerProxy.prototype._renderWebGL = function(renderer) {
+    this.swapContext();
+    this.original._renderWebGL(renderer);
+    this.swapContext();
+};
+
+ContainerProxy.prototype._renderCanvas = function(renderer) {
+    this.swapContext();
+    this.original._renderCanvas(renderer);
+    this.swapContext();
+};
+
 /**
  * Make a proxy object, for extra camera projections. Original createProxy() will be called
  * @return {PIXI.ContainerProxy}

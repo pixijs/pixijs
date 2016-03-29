@@ -14,7 +14,7 @@ function Geometry() {
     this.indices = null;
     this.stride = 2;
     this.is3d = false;
-    this.uid = utils.uid();
+    this.uid = utils.incGeometry();
     this.version = 0;
     this._bounds = new math.Rectangle();
     this._dirtyBounds = -1;

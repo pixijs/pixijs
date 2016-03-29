@@ -20,6 +20,31 @@ var utils = module.exports = {
         return ++utils._uid;
     },
 
+    _uidTransform: 0,
+    _uidUpdateOrder: 0,
+    _uidDisplayObject: 0,
+    _uidGeometry: 0,
+    _uidRaycast: 0,
+
+    incTransform: function() {
+        return ++utils._uidTransform;
+    },
+    incUpdateOrder: function() {
+        return ++utils._uidUpdateOrder;
+    },
+    incDisplayObject: function() {
+        return ++utils._uidDisplayObject;
+    },
+    incGeometry: function() {
+        return ++utils._uidGeometry;
+    },
+    incRaycast: function() {
+        return ++utils._uidRaycast;
+    },
+    resetUpdateOrder: function() {
+        this._uidUpdateOrder = 0;
+    },
+
     /**
      * Converts a hex color number to an [R, G, B] array
      *

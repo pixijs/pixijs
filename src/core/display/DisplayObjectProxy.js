@@ -14,7 +14,7 @@ function DisplayObjectProxy(original)
 {
     this.original = original;
 
-    this.uid = utils.uid();
+    this.uid = utils.incDisplayObject();
 
     /**
      * Projected transform, need for canvas mode
@@ -81,6 +81,13 @@ function DisplayObjectProxy(original)
      * @type {PIXI.DisplayObjectProxy}
      */
     this.proxyContext = this;
+
+    /**
+     * z-order is used for display ordering
+     * Two objects with same z-index will be sorted by zOrder and then by updateOrder
+     * @member {number}
+     */
+    this.zOrder = 0;
 }
 
 // constructor
@@ -173,6 +180,11 @@ Object.defineProperties(DisplayObjectProxy.prototype, {
         get: function() {
             return this.original.visible;
         }
+    },
+    zIndex: {
+        get: function() {
+            return this.original.zIndex;
+        }
     }
 });
 
@@ -202,16 +214,20 @@ DisplayObjectProxy.prototype.swapContext = function() {
 };
 
 DisplayObjectProxy.prototype.renderWebGL = function(renderer) {
+    this.swapContext();
     this.original.renderWebGL(renderer);
+    this.swapContext();
 };
 
 DisplayObjectProxy.prototype.renderCanvas = function(renderer) {
+    this.swapContext();
     this.original.renderCanvas(renderer);
+    this.swapContext();
 };
 
 DisplayObjectProxy.prototype.updateTransform = function ()
 {
-    // multiply the alphas..
+    this.updateOrder = utils.incUpdateOrder();
     this._currentBounds = null;
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
     this.worldProjection = this.parent.worldProjection;
@@ -221,7 +237,7 @@ DisplayObjectProxy.prototype.displayObjectUpdateTransform = DisplayObjectProxy.p
 
 DisplayObjectProxy.prototype.containsLocalPoint = function(point) {
     return this.original.containsLocalPoint(point);
-}
+};
 
 DisplayObjectProxy.prototype.destroy = function() {
     //do nothing.

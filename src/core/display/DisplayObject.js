@@ -21,7 +21,7 @@ function DisplayObject()
      * DisplayObject uid, for making a map out of it
      * @member {null}
      */
-    this.uid = utils.uid();
+    this.uid = utils.incDisplayObject();
 
     /**
      * Local transform
@@ -169,9 +169,43 @@ function DisplayObject()
 
     /**
      * At rendering stage, if some proxy swapped its context to ours, then we can read the original context here
-     * @type {PIXI.DisplayObjectProxy}
+     * @member {PIXI.DisplayObjectProxy}
      */
     this.proxyContext = null;
+
+    /**
+     * Order in updateTransform
+     * @member {number}
+     */
+    this.updateOrder = 0;
+
+    /**
+     *
+     * @member {number}
+     */
+    this.displayOrder = 0;
+
+    /**
+     * if object has zIndex, it will be used for display ordering
+     * @member {boolean}
+     */
+    this.inheritZIndex = true;
+
+    /**
+     * z-index is used for display ordering
+     * You MUST specify it in your camera too, otherwise it wont work
+     * Two objects with same z-index will be sorted in zOrder and then in display order
+     * @member {number}
+     * @private
+     */
+    this._zIndex = 0;
+
+    /**
+     * z-order is used for display ordering
+     * Two objects with same z-index will be sorted by zOrder and then by updateOrder
+     * @member {number}
+     */
+    this.zOrder = 0;
 
     this.initTransform(true);
 }
@@ -183,6 +217,23 @@ module.exports = DisplayObject;
 
 
 Object.defineProperties(DisplayObject.prototype, {
+    /**
+     * z-index is used for display ordering
+     * You MUST specify it in your camera too, otherwise it wont work
+     * Two objects with same z-index will be sorted in zOrder and then in display order
+     * @member {number}
+     * @memberof PIXI.DisplayObject#
+     */
+    zIndex: {
+        get: function() {
+            return this._zIndex;
+        },
+        set: function(value) {
+            this._zIndex = value;
+            this.inheritZIndex = false;
+        }
+    },
+
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
@@ -426,6 +477,7 @@ DisplayObject.prototype.displayObjectInitTransform = DisplayObject.prototype.ini
  */
 DisplayObject.prototype.updateTransform = function ()
 {
+    this.updateOrder = utils.incUpdateOrder();
     this._currentBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;

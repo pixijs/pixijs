@@ -63,7 +63,7 @@ function Transform2d(isStatic)
     this._dirtyVersion = 0;
     this.version = 0;
 
-    this.uid = utils.uid();
+    this.uid = utils.incTransform();
 }
 
 Transform2d.prototype.constructor = Transform2d;

@@ -217,6 +217,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if(!skipUpdateTransform)
     {
+        utils.resetUpdateOrder();
         // update the scene graph
         var cacheParent = displayObject.parent;
         displayObject.parent = this._tempDisplayObjectParent;

@@ -1,5 +1,4 @@
-var math = require('../math'),
-    Texture = require('../textures/Texture'),
+var Texture = require('../textures/Texture'),
     ObservablePoint2d = require('../c2d/ObservablePoint2d'),
     Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),

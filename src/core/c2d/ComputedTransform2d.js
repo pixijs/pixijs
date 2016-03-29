@@ -20,7 +20,7 @@ function ComputedTransform2d()
     this.matrix2d = new math.Matrix();
 
     this.version = 0;
-    this.uid = utils.uid();
+    this.uid = utils.incTransform();
     this.is3d = false;
     this.updated = false;
     this._dirtyLocalUid = -1;

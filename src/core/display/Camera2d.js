@@ -26,6 +26,37 @@ function Camera2d()
     this.proxyCache = [{}, {}];
 
     this.initProjection();
+
+    /**
+     * Calculate z-order to make a displaylist
+     * @member {Function}
+     */
+    this.onZOrder = null;
+
+    /**
+     * Display list
+     * @type {Array}
+     * @Private
+     */
+    this._displayList = [];
+
+    this._displayListFlag = [];
+
+    /**
+     * Enable display list, sort elements by z-index, z-order and updateOrder
+     * @type {boolean}
+     */
+    this.enableDisplayList = false;
+
+    this.displayListSort = function(a, b) {
+        if (a.zIndex !== b.zIndex) {
+            return a.zIndex - b.zIndex;
+        }
+        if (a.zOrder !== b.zOrder) {
+            return b.zOrder - a.zOrder;
+        }
+        return a.updateOrder - b.updateOrder;
+    };
 }
 
 // constructor
@@ -171,6 +202,13 @@ Camera2d.prototype.displayObjectUpdateTransform = function() {
     return this.computedTransform;
 };
 
+Camera2d.prototype.updateTransform = function() {
+    this.containerUpdateTransform();
+    if (this.enableDisplayList) {
+        this.updateDisplayList();
+    }
+};
+
 Camera2d.prototype._proxyContainer = function(containerFrom, containerTo) {
     var proxyCache = this.proxyCache[0];
     var newProxyCache = this.proxyCache[1];
@@ -204,25 +242,92 @@ Camera2d.prototype.proxyContainer = function(containerFrom, containerTo) {
     this._proxySwapBuffer();
 };
 
-Camera2d.prototype.proxySwapContext = function() {
+/*Camera2d.prototype.proxySwapContext = function() {
     var pc = this.proxyCache[0];
     for (var key in pc) {
         var val = pc[key];
         val.swapContext();
     }
-};
+};*/
 
 Camera2d.prototype.containerRenderWebGL = Container.prototype.renderWebGL;
 Camera2d.prototype.containerRenderCanvas = Container.prototype.renderCanvas;
 
 Camera2d.prototype.renderWebGL = function(renderer) {
-    this.proxySwapContext();
-    this.containerRenderWebGL(renderer);
-    this.proxySwapContext();
+    if (this.enableDisplayList) {
+        var list = this._displayList;
+        var flags = this._displayListFlag;
+        for (var i=0;i<list.length;i++) {
+            if (flags[i]) {
+                list[i].renderWebGL(renderer);
+            } else {
+                list[i]._renderWebGL(renderer);
+            }
+        }
+    } else {
+        this.containerRenderWebGL(renderer);
+    }
 };
 
 Camera2d.prototype.renderCanvas = function(renderer) {
-    this.proxySwapContext();
-    this.containerRenderCanvas(renderer);
-    this.proxySwapContext();
+    if (this.enableDisplayList) {
+        var list = this._displayList;
+        var flags = this._displayListFlag;
+        for (var i=0;i<list.length;i++) {
+            if (flags[i]) {
+                list[i].renderCanvas(renderer);
+            } else {
+                list[i]._renderCanvas(renderer);
+            }
+        }
+    } else {
+        this.containerRenderCanvas(renderer);
+    }
+};
+
+Camera2d.prototype._addInList = function(container, parentZ) {
+    if (!container.visible || !container.renderable) {
+        return;
+    }
+    var list = this._displayList;
+    var flags = this._displayListFlag;
+    container.displayOrder = list.length;
+    if (container.inheritZIndex) {
+        container.zIndex = parentZ;
+    }
+    var z = container.zIndex;
+    list.push(container);
+    if (container._mask || container._filters && !container._filters.length) {
+        flags.push(1);
+    } else {
+        var children = container.children;
+        if (children) {
+            flags.push(0);
+            for (var i = 0; i < children.length; i++) {
+                this._addInList(children[i], z);
+            }
+        } else {
+            flags.push(2);
+        }
+    }
+};
+
+Camera2d.prototype.updateDisplayList = function() {
+    var list = this._displayList;
+    var flags = this._displayListFlag;
+    list.length = 0;
+    flags.length = 0;
+    var children = this.children;
+    for (var i=0;i<children.length;i++) {
+        this._addInList(children[i], 0);
+    }
+    if (this.onZOrder) {
+        for (i = 0; i < list.length; i++) {
+            this.onZOrder(list[i]);
+        }
+    }
+    list.sort(this.displayListSort);
+    for (i=0;i<list.length;i++) {
+        list[i].displayOrder = i+1;
+    }
 };

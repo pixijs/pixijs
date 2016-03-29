@@ -11,7 +11,7 @@ function Raycast2d() {
     this.valid = false;
     this.intersects = false;
     this.version = 0;
-    this.uid = utils.uid();
+    this.uid = utils.incRaycast();
 }
 
 Object.defineProperties(Raycast2d.prototype, {

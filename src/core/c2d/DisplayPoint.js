@@ -4,7 +4,7 @@ var Point = require('../math/Point'),
 
 function DisplayPoint() {
     this._point = new Point();
-    this.uid = utils.uid();
+    this.uid = utils.incRaycast();
     this.is3d = false;
     this.version = 0;
     this.valid = true;
