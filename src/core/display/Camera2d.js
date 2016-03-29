@@ -1,7 +1,8 @@
 var Container = require('./Container'),
     Transform2d = require('../c2d/Transform2d'),
     ComputedTransform2d = require('../c2d/ComputedTransform2d'),
-    utils = require('../utils');
+    utils = require('../utils'),
+    math = require('../math');
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -58,6 +59,27 @@ function Camera2d()
         }
         return a.updateOrder - b.updateOrder;
     };
+
+    /**
+     * viewport
+     * @type {boolean}
+     */
+    this.viewport = new math.Rectangle();
+
+    //TODO: make viewport local geometry!
+
+    /**
+     * auto-updates viewport rectangle of the camera
+     * @type {boolean}
+     */
+    this.autoUpdateViewport = true;
+
+
+    /**
+     * Enables culling by rectangle bounds
+     * @type {boolean}
+     */
+    this.enableBoundsCulling = false;
 }
 
 // constructor
@@ -205,6 +227,10 @@ Camera2d.prototype.displayObjectUpdateTransform = function() {
 
 Camera2d.prototype.updateTransform = function() {
     this.containerUpdateTransform();
+    if (this.enableBoundsCulling) {
+        this.updateBoundsCulling();
+    }
+    this.emit('culling');
     if (this.enableDisplayList) {
         this.updateDisplayList();
     }
@@ -255,6 +281,12 @@ Camera2d.prototype.containerRenderWebGL = Container.prototype.renderWebGL;
 Camera2d.prototype.containerRenderCanvas = Container.prototype.renderCanvas;
 
 Camera2d.prototype.renderWebGL = function(renderer) {
+    if (this.autoUpdateViewport) {
+        this.viewport.x = 0;
+        this.viewport.y = 0;
+        this.viewport.width = renderer.width;
+        this.viewport.height = renderer.height;
+    }
     if (this.enableDisplayList) {
         var list = this._displayList;
         var flags = this._displayListFlag;
@@ -272,6 +304,12 @@ Camera2d.prototype.renderWebGL = function(renderer) {
 };
 
 Camera2d.prototype.renderCanvas = function(renderer) {
+    if (this.autoUpdateViewport) {
+        this.viewport.x = 0;
+        this.viewport.y = 0;
+        this.viewport.width = renderer.width;
+        this.viewport.height = renderer.height;
+    }
     if (this.enableDisplayList) {
         var list = this._displayList;
         var flags = this._displayListFlag;
@@ -330,4 +368,30 @@ Camera2d.prototype.updateDisplayList = function() {
         }
     }
     list.sort(this.displayListSort);
+};
+
+Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
+    viewport = viewport || this.viewport;
+    var x1 = viewport.x, x2 = viewport.x + viewport.width;
+    var y1 = viewport.y, y2 = viewport.y + viewport.height;
+    var EMPTY = math.Rectangle.EMPTY;
+
+    function culler(element) {
+        var s = element.getBounds();
+        var b = element.renderable =
+            s != EMPTY &&
+            (s.x + s.width >= x1 && s.x <= x2 &&
+            s.y + s.height >= y1 && s.y <= y2);
+
+        if (!b) return false;
+        var children = element.children;
+        for (var i = 0; i < children.length; i++) {
+            var c = children[i];
+            if (!c.visible) continue;
+            culler(c);
+        }
+        return true;
+    }
+
+    culler(container || this);
 };

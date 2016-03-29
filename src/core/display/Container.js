@@ -460,7 +460,8 @@ Container.prototype.getBounds = function ()
             this._currentBounds = this._getChildBounds();
         } else
         {
-            this._currentBounds = geom.getBounds().enlarge(this._getChildBounds());
+            this._currentBounds = geom.getBounds()
+            this._currentBounds.enlarge(this._getChildBounds());
         }
     }
     return this._currentBounds;
@@ -493,7 +494,8 @@ Container.prototype.getLocalBounds = function ()
         this._currentBounds = this._getChildBounds();
     } else
     {
-        this._currentBounds = geom.getBounds().enlarge(this._getChildBounds());
+        this._currentBounds = geom.getBounds();
+        this._currentBounds.enlarge(this._getChildBounds());
     }
     return this._currentBounds;
 };
