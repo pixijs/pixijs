@@ -180,7 +180,7 @@ function DisplayObject()
     this.updateOrder = 0;
 
     /**
-     *
+     * Order in displayList of camera
      * @member {number}
      */
     this.displayOrder = 0;
@@ -193,7 +193,7 @@ function DisplayObject()
 
     /**
      * z-index is used for display ordering
-     * You MUST specify it in your camera too, otherwise it wont work
+     * You MUST specify camera.enableDisplayList=true for this to work
      * Two objects with same z-index will be sorted in zOrder and then in display order
      * @member {number}
      * @private
@@ -478,6 +478,7 @@ DisplayObject.prototype.displayObjectInitTransform = DisplayObject.prototype.ini
 DisplayObject.prototype.updateTransform = function ()
 {
     this.updateOrder = utils.incUpdateOrder();
+    this.displayOrder = 0;
     this._currentBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;

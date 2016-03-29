@@ -1,6 +1,7 @@
 var Container = require('./Container'),
     Transform2d = require('../c2d/Transform2d'),
-    ComputedTransform2d = require('../c2d/ComputedTransform2d');
+    ComputedTransform2d = require('../c2d/ComputedTransform2d'),
+    utils = require('../utils');
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -261,6 +262,7 @@ Camera2d.prototype.renderWebGL = function(renderer) {
             if (flags[i]) {
                 list[i].renderWebGL(renderer);
             } else {
+                list[i].displayOrder = utils.incDisplayOrder();
                 list[i]._renderWebGL(renderer);
             }
         }
@@ -277,6 +279,7 @@ Camera2d.prototype.renderCanvas = function(renderer) {
             if (flags[i]) {
                 list[i].renderCanvas(renderer);
             } else {
+                list[i].displayOrder = utils.incDisplayOrder();
                 list[i]._renderCanvas(renderer);
             }
         }
@@ -327,7 +330,4 @@ Camera2d.prototype.updateDisplayList = function() {
         }
     }
     list.sort(this.displayListSort);
-    for (i=0;i<list.length;i++) {
-        list[i].displayOrder = i+1;
-    }
 };

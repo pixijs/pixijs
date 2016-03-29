@@ -236,7 +236,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     }
 
 
-
+    utils.resetDisplayOrder();
     displayObject.renderWebGL(this);
 
     // apply transform..

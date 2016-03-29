@@ -25,6 +25,12 @@ function Container()
      * @readonly
      */
     this.children = [];
+
+    /**
+     * Display post order, to determine if some element is a direct child of this container
+     * @type {number}
+     */
+    this.updatePostOrder = 0;
 }
 
 // constructor
@@ -372,7 +378,7 @@ Container.prototype.updateTransform = function ()
         this.children[i].updateTransform();
     }
 
-    this._currentBounds = null;
+    this.updatePostOrder = utils.incUpdateOrder();
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -499,13 +505,14 @@ Container.prototype.getLocalBounds = function ()
  */
 Container.prototype.renderWebGL = function (renderer)
 {
-
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
-
+        this.displayOrder = 0;
         return;
     }
+
+    this.displayOrder = utils.incDisplayOrder();
 
     var i, j;
 

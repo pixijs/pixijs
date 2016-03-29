@@ -22,6 +22,7 @@ var utils = module.exports = {
 
     _uidTransform: 0,
     _uidUpdateOrder: 0,
+    _uidDisplayOrder: 0,
     _uidDisplayObject: 0,
     _uidGeometry: 0,
     _uidRaycast: 0,
@@ -31,6 +32,9 @@ var utils = module.exports = {
     },
     incUpdateOrder: function() {
         return ++utils._uidUpdateOrder;
+    },
+    incDisplayOrder: function() {
+        return ++utils._uidDisplayOrder;
     },
     incDisplayObject: function() {
         return ++utils._uidDisplayObject;
@@ -43,6 +47,9 @@ var utils = module.exports = {
     },
     resetUpdateOrder: function() {
         this._uidUpdateOrder = 0;
+    },
+    resetDisplayOrder: function() {
+        this._uidDisplayOrder = 0;
     },
 
     /**

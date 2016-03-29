@@ -88,6 +88,10 @@ function DisplayObjectProxy(original)
      * @member {number}
      */
     this.zOrder = 0;
+
+    this.updateOrder = 0;
+
+    this.displayOrder = 0;
 }
 
 // constructor
@@ -228,6 +232,7 @@ DisplayObjectProxy.prototype.renderCanvas = function(renderer) {
 DisplayObjectProxy.prototype.updateTransform = function ()
 {
     this.updateOrder = utils.incUpdateOrder();
+    this.displayOrder = 0;
     this._currentBounds = null;
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
     this.worldProjection = this.parent.worldProjection;
