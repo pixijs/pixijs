@@ -448,7 +448,7 @@ Container.prototype.getBounds = function ()
 
     if(!this._currentBounds)
     {
-        var geom = this.updateGeometry();
+        var geom = this.updateProjectedGeometry();
         if (!geom)
         {
             this._currentBounds = this._getChildBounds();

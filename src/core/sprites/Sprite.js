@@ -265,7 +265,6 @@ Sprite.prototype.makeDirty = function() {
 Sprite.prototype._renderWebGL = function (renderer)
 {
     this.updateGeometry();
-
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };

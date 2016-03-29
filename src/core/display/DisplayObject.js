@@ -442,6 +442,16 @@ DisplayObject.prototype.updateTransform = function ()
 DisplayObject.prototype.updateGeometry = function ()
 {
     this.computedGeometry = this.computedTransform.updateChildGeometry(this.computedGeometry, this.geometry);
+    return this.computedGeometry;
+};
+
+/**
+ * Updates the object geometry. Assume that geometry actually exist.
+ * @returns {*}
+ */
+DisplayObject.prototype.updateProjectedGeometry = function ()
+{
+    this.computedGeometry = this.computedTransform.updateChildGeometry(this.computedGeometry, this.geometry);
     if (this.worldProjection && this.computedGeometry) {
         //TODO: in some cases its better to use projectedTransform, for example if mesh is too big
         this.projectedGeometry = this.worldProjection.updateChildGeometry(this.projectedGeometry, this.computedGeometry);
@@ -481,7 +491,7 @@ DisplayObject.prototype.getBounds = function () // jshint unused:false
         return this._localBounds.getBounds(this.computedTransform, this.projectedTransform);
     }
 
-    var geom = this.updateGeometry();
+    var geom = this.updateProjectedGeometry();
     if (!geom || !geom.valid) {
         return math.Rectangle.EMPTY;
     }
