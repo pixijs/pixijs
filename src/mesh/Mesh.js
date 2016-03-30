@@ -59,6 +59,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {boolean}
      */
     this.dirty = true;
+    this.indexDirty = true;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -172,12 +173,22 @@ Mesh.prototype._renderWebGL = function (renderer)
         .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
         this._glDatas[renderer.CONTEXT_UID] = glData;
+
+
+        this.indexDirty = false;
     }
 
     if(this.dirty)
     {
         this.dirty = false;
         glData.uvBuffer.upload();
+
+    }
+
+    if(this.indexDirty)
+    {
+        this.indexDirty = false;
+        glData.indexBuffer.upload();
     }
 
     glData.vertexBuffer.upload();
