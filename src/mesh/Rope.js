@@ -125,6 +125,7 @@ Rope.prototype.refresh = function ()
     }
 
     this.dirty = true;
+    this.indexDirty = true;
 };
 
 /**
@@ -134,6 +135,7 @@ Rope.prototype.refresh = function ()
  */
 Rope.prototype._onTextureUpdate = function ()
 {
+
     Mesh.prototype._onTextureUpdate.call(this);
 
     // wait for the Rope ctor to finish before calling refresh
