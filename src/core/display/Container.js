@@ -628,11 +628,20 @@ Container.prototype.destroy = function (destroyChildren)
 {
     DisplayObject.prototype.destroy.call(this);
 
-    if (destroyChildren)
-    {
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            this.children[i].destroy(destroyChildren);
+    if (!destroyChildren) {
+    } else {
+        for (var i = 0, j = this.children.length; i < j; ++i) {
+            var child = this.children[i];
+            var isSprite = !!child._texture; //TODO: Need a better way to detect if it's a sprite
+
+            if (isSprite)
+            {
+                child.destroy();
+            }
+            else
+            {
+                child.destroy(destroyChildren);
+            }
         }
     }
 
