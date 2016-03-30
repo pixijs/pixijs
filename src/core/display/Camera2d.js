@@ -326,7 +326,7 @@ Camera2d.prototype.renderCanvas = function(renderer) {
     }
 };
 
-Camera2d.prototype._addInList = function(container, parentZ) {
+Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) {
     if (!container.visible || !container.renderable) {
         return;
     }
@@ -334,7 +334,12 @@ Camera2d.prototype._addInList = function(container, parentZ) {
     var flags = this._displayListFlag;
     container.displayOrder = list.length;
     if (container.inheritZIndex) {
-        container.zIndex = parentZ;
+        container._zIndex = parentZIndex;
+        container.zOrder = parentZOrder;
+    } else {
+        if (this.onZOrder) {
+            this.onZOrder(list[i]);
+        }
     }
     var z = container.zIndex;
     list.push(container);
@@ -345,7 +350,7 @@ Camera2d.prototype._addInList = function(container, parentZ) {
         if (children) {
             flags.push(0);
             for (var i = 0; i < children.length; i++) {
-                this._addInList(children[i], z);
+                this._addInList(children[i], container.zIndex, container.zOrder);
             }
         } else {
             flags.push(2);
