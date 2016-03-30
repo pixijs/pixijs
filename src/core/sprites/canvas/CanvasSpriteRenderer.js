@@ -1,7 +1,7 @@
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
-    canvasRenderWorldTransform = new math.Matrix();
+    canvasRenderWorldTransform = new math.Matrix(),
     CanvasTinter = require('./CanvasTinter');
 
 /**

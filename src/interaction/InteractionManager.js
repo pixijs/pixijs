@@ -154,9 +154,9 @@ function InteractionManager(renderer, options)
     /**
      * Every update cursor will be reset to this value, if some element wont override it in its hitTest
      * @member {string}
-     * @default "inherit"
+     * @default 'inherit'
      */
-    this.defaultCursorStyle = "inherit";
+    this.defaultCursorStyle = 'inherit';
 
     /**
      * The css style of the cursor that is being used

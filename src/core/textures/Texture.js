@@ -429,7 +429,7 @@ Texture.from = function (source)
         if (!texture)
         {
             // check if its a video..
-            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) != null;
+            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
             if(isVideo)
             {
                 return Texture.fromVideoUrl(source);
