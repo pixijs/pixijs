@@ -48,17 +48,18 @@ function RenderTexture(baseRenderTexture, frame)
     {
         var width = arguments[1];
         var height = arguments[2];
+        var scaleMode = arguments[3] || 0;
+        var resolution = arguments[4] || 1;
 
         // we have an old render texture..
         console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');
         this.legacyRenderer = arguments[0];
 
         frame = null;
-        baseRenderTexture = new BaseRenderTexture(width, height, 0, 1);
-        
+        baseRenderTexture = new BaseRenderTexture(width, height, scaleMode, resolution);
     }
 
-    
+
     /**
      * The base texture object that this texture uses
      *
