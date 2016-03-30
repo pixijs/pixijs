@@ -22,7 +22,7 @@ var core = require('../core');
  *
  * @class
  * @extends PIXI.Container
- * @memberof PIXI
+ * @memberof PIXI.particles
  * @param [maxSize=15000] {number} The maximum number of particles that can be renderer by the container.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.

@@ -1,6 +1,7 @@
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
+    particles = require('./particles'),
     extras = require('./extras'),
     filters = require('./filters');
 
@@ -95,6 +96,21 @@ Object.defineProperties(core, {
         {
             console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
             return mesh.Rope;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name ParticleContainer
+     * @memberof PIXI
+     * @see PIXI.particles.ParticleContainer
+     * @deprecated since version 4.0.0
+     */
+    ParticleContainer: {
+        get: function() {
+            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please useparticles.ParticleContainer from now on.');
+            return particles.ParticleContainer;
         }
     },
 
