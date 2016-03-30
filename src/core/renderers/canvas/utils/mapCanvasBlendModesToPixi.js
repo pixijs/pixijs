@@ -1,4 +1,4 @@
-var CONST = require('../../../Const'),
+var CONST = require('../../../const'),
 canUseNewCanvasBlendModes = require('./canUseNewCanvasBlendModes');
 
 /**
