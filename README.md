@@ -97,6 +97,9 @@ document.body.appendChild(renderer.view);
 var stage = new PIXI.Container();
 var bunny;
 
+// Declare a global variable for our sprite so that the animate function can access it.
+var bunny = null;
+
 // load the texture we need
 PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
     // This creates a texture from a 'bunny.png' image.

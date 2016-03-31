@@ -238,7 +238,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width * resolution, texture._frame.height * resolution);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
@@ -253,7 +253,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         }
         else
         {
-            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x * resolution, -texture._frame.y * resolution);
         }
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
@@ -268,7 +268,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
                        transform.ty * resolution);
 
     // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x,this.tileScale.y);
+    context.scale(this.tileScale.x / resolution, this.tileScale.y / resolution);
 
     context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
@@ -284,8 +284,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     context.fillStyle = this._canvasPattern;
     context.fillRect(-modX,
                      -modY,
-                     this._width / this.tileScale.x,
-                     this._height / this.tileScale.y);
+                     this._width * resolution / this.tileScale.x,
+                     this._height * resolution / this.tileScale.y);
 
 
     //TODO - pretty sure this can be deleted...
