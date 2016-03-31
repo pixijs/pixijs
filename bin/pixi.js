@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-03-19T14:56:12.319Z
+ * Compiled 2016-03-31T20:37:03.464Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -23210,7 +23210,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width * resolution, texture._frame.height * resolution);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
@@ -23225,7 +23225,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         }
         else
         {
-            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x * resolution, -texture._frame.y * resolution);
         }
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
@@ -23240,7 +23240,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
                        transform.ty * resolution);
 
     // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x,this.tileScale.y);
+    context.scale(this.tileScale.x / resolution, this.tileScale.y / resolution);
 
     context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
@@ -23256,8 +23256,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     context.fillStyle = this._canvasPattern;
     context.fillRect(-modX,
                      -modY,
-                     this._width / this.tileScale.x,
-                     this._height / this.tileScale.y);
+                     this._width * resolution / this.tileScale.x,
+                     this._height * resolution / this.tileScale.y);
 
 
     //TODO - pretty sure this can be deleted...
@@ -27961,14 +27961,15 @@ Mesh.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
 
     var transform = this.worldTransform;
+    var res = renderer.resolution;
 
     if (renderer.roundPixels)
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
     }
     else
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
     }
 
     if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
@@ -28041,15 +28042,16 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this._texture.baseTexture.source;
-    var textureWidth = this._texture.baseTexture.width;
-    var textureHeight = this._texture.baseTexture.height;
+    var base = this._texture.baseTexture;
+    var textureSource = base.source;
+    var textureWidth = base.width;
+    var textureHeight = base.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
 
-    var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
-    var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
+    var u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
+    var v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
 
     if (this.canvasPadding > 0)
     {
@@ -28107,7 +28109,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
         deltaB / delta, deltaE / delta,
         deltaC / delta, deltaF / delta);
 
-    context.drawImage(textureSource, 0, 0);
+    context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
     context.restore();
 };
 
