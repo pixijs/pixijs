@@ -406,7 +406,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // it has a filterArea! Same as mask but easier, its a rectangle
     if(hitTest && displayObject.filterArea)
     {
-        if(!displayObject.filterArea.containsPoint(point))
+        if(!displayObject.filterArea.contains(point))
         {
             hitTest = false;
         }
@@ -420,7 +420,6 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
         for (var i = children.length-1; i >= 0; i--)
         {
-
             var child = children[i];
 
             // time to get recursive.. if this function will return if somthing is hit..
