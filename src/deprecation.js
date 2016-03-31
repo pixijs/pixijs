@@ -109,7 +109,7 @@ Object.defineProperties(core, {
      */
     ParticleContainer: {
         get: function() {
-            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please useparticles.ParticleContainer from now on.');
+            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             return particles.ParticleContainer;
         }
     },
