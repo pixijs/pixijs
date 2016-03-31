@@ -578,7 +578,7 @@ Texture.prototype.uploadData = function(data, width, height)
 		this.type = gl.UNSIGNED_BYTE;
 	}
 
-	
+
 
 	// what type of data?
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
@@ -20068,7 +20068,7 @@ function BaseTexture(source, scaleMode, resolution)
     EventEmitter.call(this);
 
     this.uid = utils.uid();
-    
+
     this.touched = 0;
 
     /**
@@ -20203,7 +20203,7 @@ function BaseTexture(source, scaleMode, resolution)
     this._glTextures = [];
     this._enabled = 0;
     this._id = 0;
-    
+
     // if no source passed don't try to load
     if (source)
     {
@@ -20238,8 +20238,8 @@ module.exports = BaseTexture;
  */
 BaseTexture.prototype.update = function ()
 {
-    this.realWidth = this.source.naturalWidth || this.source.width;
-    this.realHeight = this.source.naturalHeight || this.source.height;
+    this.realWidth = this.source.naturalWidth || this.source.videoWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.videoHeight || this.source.height;
 
     this.width = this.realWidth / this.resolution;
     this.height = this.realHeight / this.resolution;
@@ -20449,7 +20449,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
-      
+
 
         if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
         {
@@ -22476,9 +22476,34 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
 core.RenderTexture.prototype.render = function(displayObject)
 {
     this.legacyRenderer.render(displayObject, this);
-    //displayObject, matrix, clear, updateTransform
     console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
+
+core.RenderTexture.prototype.getImage = function(target)
+{
+    console.warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
+    return this.legacyRenderer.extract.image(target);
+};
+
+core.RenderTexture.prototype.getBase64 = function(target)
+{
+    console.warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
+    this.legacyRenderer.extract.base64(target);
+};
+
+core.RenderTexture.prototype.getCanvas = function(target)
+{
+    console.warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
+    this.legacyRenderer.extract.canvas(target);
+};
+
+core.RenderTexture.prototype.getPixels = function(target)
+{
+    console.warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
+    this.legacyRenderer.pixels(target);
+};
+
+
 
 /**
  * @method
