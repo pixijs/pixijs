@@ -1,8 +1,10 @@
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3');
-
+    Container = require('../display/Container'),
+    RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3'),
+    tempMatrix = new math.Matrix();
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
@@ -146,7 +148,7 @@ function SystemRenderer(system, width, height, options)
      * @member {number[]}
      * @private
      */
-    this._backgroundColorRgb = [0, 0, 0];
+    this._backgroundColorRgba = [0, 0, 0, 0];
 
     /**
      * The background color as a string.
@@ -164,7 +166,7 @@ function SystemRenderer(system, width, height, options)
      * @member {PIXI.DisplayObject}
      * @private
      */
-    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
+    this._tempDisplayObjectParent = new Container();
 
     /**
      * The last root object that the renderer tried to render.
@@ -197,7 +199,7 @@ Object.defineProperties(SystemRenderer.prototype, {
         {
             this._backgroundColor = val;
             this._backgroundColorString = utils.hex2string(val);
-            utils.hex2rgb(val, this._backgroundColorRgb);
+            utils.hex2rgb(val, this._backgroundColorRgba);
         }
     }
 });
@@ -220,6 +222,29 @@ SystemRenderer.prototype.resize = function (width, height) {
         this.view.style.width = this.width / this.resolution + 'px';
         this.view.style.height = this.height / this.resolution + 'px';
     }
+};
+
+/**
+ * Useful function that returns a texture of the display object that can then be used to create sprites
+ * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+ *
+ * @param displayObject {number} The displayObject the object will be generated from
+ * @param scaleMode {number} Should be one of the scaleMode consts
+ * @param resolution {number} The resolution of the texture being generated
+ * @return {PIXI.Texture} a texture of the graphics object
+ */
+SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
+
+    var bounds = displayObject.getLocalBounds();
+
+    var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+
+    tempMatrix.tx = -bounds.x;
+    tempMatrix.ty = -bounds.y;
+
+    this.render(displayObject, renderTexture, false, tempMatrix, true);
+
+    return renderTexture;
 };
 
 /**
@@ -254,6 +279,10 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this.roundPixels = false;
 
     this._backgroundColor = 0;
-    this._backgroundColorRgb = null;
+    this._backgroundColorRgba = null;
     this._backgroundColorString = null;
+
+    this.backgroundColor = 0;
+    this._tempDisplayObjectParent = null;
+    this._lastObjectRendered = null;
 };

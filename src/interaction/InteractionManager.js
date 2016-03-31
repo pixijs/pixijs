@@ -92,7 +92,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this.moveWhenInside = false;
-    
+
     /**
      * Have events been attached to the dom element?
      *
@@ -153,6 +153,13 @@ function InteractionManager(renderer, options)
     this.last = 0;
 
     /**
+     * Every update cursor will be reset to this value, if some element wont override it in its hitTest
+     * @member {string}
+     * @default 'inherit'
+     */
+    this.defaultCursorStyle = 'inherit';
+
+    /**
      * The css style of the cursor that is being used
      * @member {string}
      */
@@ -164,7 +171,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this._tempPoint = new core.Point();
-    
+
 
     /**
      * The current resolution
@@ -296,7 +303,7 @@ InteractionManager.prototype.update = function (deltaTime)
         return;
     }
 
-    this.cursor = 'inherit';
+    this.cursor = this.defaultCursorStyle;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
@@ -366,18 +373,21 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     }
 
     // Took a little while to rework this function correctly! But now it is done and nice and optimised. ^_^
-    // 
+    //
     // This function will now loop through all objects and then only hit test the objects it HAS to, not all of them. MUCH faster..
     // An object will be hit test if the following is true:
-    // 
+    //
     // 1: It is interactive.
     // 2: It belongs to a parent that is interactive AND one of the parents children have not already been hit.
-    // 
+    //
     // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
     // A final optimisation is that an object is not hit test directly if a child has already been hit.
-    
+
     var hit = false,
         interactiveParent = interactive = displayObject.interactive || interactive;
+
+
+
 
     // if the displayobject has a hitArea, then it does not need to hitTest children.
     if(displayObject.hitArea)
@@ -385,12 +395,30 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         interactiveParent = false;
     }
 
-    // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
+    // it has a mask! Then lets hit test that before continuing..
+    if(hitTest && displayObject._mask)
+    {
+        if(!displayObject._mask.containsPoint(point))
+        {
+            hitTest = false;
+        }
+    }
+
+    // it has a filterArea! Same as mask but easier, its a rectangle
+    if(hitTest && displayObject.filterArea)
+    {
+        if(!displayObject.filterArea.contains(point))
+        {
+            hitTest = false;
+        }
+    }
+
+    // ** FREE TIP **! If an object is not interactive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
     // This will allow pixi to completly ignore and bypass checking the displayObjects children.
     if(displayObject.interactiveChildren)
-    {       
+    {
         var children = displayObject.children;
-        
+
         for (var i = children.length-1; i >= 0; i--)
         {
             var child = children[i];
@@ -409,19 +437,20 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
                 // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
                 interactiveParent = false;
-                
-                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
+
+                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                //if(child.interactive)
+
                 //{
                 hitTest = false;
                 //}
 
                 // we can break now as we have hit an object.
-                //break;
             }
         }
     }
+
+
 
     // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
@@ -429,7 +458,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         // if we are hit testing (as in we have no hit any objects yet)
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
         if(hitTest && !hit)
-        {  
+        {
+
             if(displayObject.hitArea)
             {
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
@@ -439,16 +469,18 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             {
                 hit = displayObject.containsPoint(point);
             }
+
+
         }
 
         if(displayObject.interactive)
         {
-            func(displayObject, hit); 
+            func(displayObject, hit);
         }
     }
 
     return hit;
-  
+
 };
 
 
@@ -485,7 +517,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 {
     var e = this.mouse.originalEvent;
-    
+
     var isRightButton = e.button === 2 || e.which === 3;
 
     if(hit)
@@ -494,6 +526,7 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
         this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
     }
 };
+
 
 
 
@@ -566,7 +599,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 
     this.didMove = true;
 
-    this.cursor = 'inherit';
+    this.cursor = this.defaultCursorStyle;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
 
@@ -589,7 +622,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
     this.processMouseOverOut(displayObject, hit);
-    
+
     // only display on mouse over
     if(!this.moveWhenInside || hit)
     {
@@ -612,7 +645,7 @@ InteractionManager.prototype.onMouseOut = function (event)
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    this.interactionDOMElement.style.cursor = this.defaultCursorStyle;
 
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY );

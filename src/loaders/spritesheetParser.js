@@ -41,52 +41,42 @@ module.exports = function ()
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    var frame = frames[frameKeys[frameIndex]];
+                    var i = frameKeys[frameIndex]
+                    var frame = frames[i];
                     var rect = frame.frame;
 
                     if (rect)
                     {
-                        var size = null;
-                        var trim = null;
 
-                        if (frame.rotated)
-                        {
-                            size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        var frame = null;
+                        var trim = null;
+                        var crop = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+
+                        if (frames[i].rotated) {
+                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                         }
-                        else
-                        {
-                            size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        else {
+                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
                         }
 
                         //  Check to see if the sprite is trimmed
-                        if (frame.trimmed)
+                        if (frames[i].trimmed)
                         {
                             trim = new core.Rectangle(
-                                frame.spriteSourceSize.x / resolution,
-                                frame.spriteSourceSize.y / resolution,
-                                frame.sourceSize.w / resolution,
-                                frame.sourceSize.h / resolution
-                            );
+                                frames[i].spriteSourceSize.x / resolution,
+                                frames[i].spriteSourceSize.y / resolution,
+                                frames[i].spriteSourceSize.w / resolution,
+                                frames[i].spriteSourceSize.h / resolution
+                             );
                         }
 
-                        // flip the width and height!
-                        if (frame.rotated)
-                        {
-                            var temp = size.width;
-                            size.width = size.height;
-                            size.height = temp;
-                        }
-
-                        size.x /= resolution;
-                        size.y /= resolution;
-                        size.width /= resolution;
-                        size.height /= resolution;
-
-                        resource.textures[frameKeys[frameIndex]] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frame.rotated);
+                        resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, crop, trim, frames[i].rotated ? 2 : 0);
 
                         // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                        core.utils.TextureCache[frameKeys[frameIndex]] = resource.textures[frameKeys[frameIndex]];
+                        core.utils.TextureCache[i] = resource.textures[i];
+                   
                     }
+                    
                     frameIndex++;
                 }
             }

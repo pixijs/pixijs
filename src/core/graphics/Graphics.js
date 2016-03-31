@@ -1,10 +1,15 @@
 var Container = require('../display/Container'),
+    RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
-    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
-    CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
     GraphicsData = require('./GraphicsData'),
+    Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
+    bezierCurveTo = require('./utils/bezierCurveTo'),
+    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
+    CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
+    canvasRenderer,
+    tempMatrix = new math.Matrix(),
     tempPoint = new math.Point();
 
 /**
@@ -144,6 +149,10 @@ function Graphics()
      */
     this.cachedSpriteDirty = false;
 
+
+    this._spriteRect = null;
+    this._fastRect = false;
+
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
      * This is useful if your graphics element does not change often, as it will speed up the rendering
@@ -157,6 +166,8 @@ function Graphics()
      * @default false
      */
 }
+
+Graphics._SPRITE_TEXTURE = null;
 
 // constructor
 Graphics.prototype = Object.create(Container.prototype);
@@ -289,6 +300,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
         this.moveTo(0,0);
     }
 
+
     var xa,
         ya,
         n = 20,
@@ -344,33 +356,14 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
         this.moveTo(0,0);
     }
 
-    var n = 20,
-        dt,
-        dt2,
-        dt3,
-        t2,
-        t3,
-        points = this.currentPath.shape.points;
+    var points = this.currentPath.shape.points;
 
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
 
-    var j = 0;
+    points.length -= 2;
 
-    for (var i = 1; i <= n; ++i)
-    {
-        j = i / n;
-
-        dt = (1 - j);
-        dt2 = dt * dt;
-        dt3 = dt2 * dt;
-
-        t2 = j * j;
-        t3 = t2 * j;
-
-        points.push( dt3 * fromX + 3 * dt2 * j * cpX + 3 * dt * t2 * cpX2 + t3 * toX,
-                     dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
-    }
+    bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points);
 
     this.dirty = this.boundsDirty = true;
 
@@ -684,34 +677,6 @@ Graphics.prototype.clear = function ()
     return this;
 };
 
-/**
- * Useful function that returns a texture of the graphics object that can then be used to create sprites
- * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
- *
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} Should be one of the scaleMode consts
- * @return {PIXI.Texture} a texture of the graphics object
- */
-Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-
-    resolution = resolution || 1;
-
-    var bounds = this.getLocalBounds();
-
-    var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
-
-    var texture = Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
-    texture.baseTexture.resolution = resolution;
-
-    canvasBuffer.context.scale(resolution, resolution);
-
-    canvasBuffer.context.translate(-bounds.x,-bounds.y);
-
-    CanvasGraphics.renderGraphics(this, canvasBuffer.context);
-
-    return texture;
-};
 
 /**
  * Renders the object using the WebGL renderer
@@ -723,40 +688,56 @@ Graphics.prototype._renderWebGL = function (renderer)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
 
-    // this code may still be needed so leaving for now..
-    //
-    /*
-    if (this._cacheAsBitmap)
-    {
-        if (this.dirty || this.cachedSpriteDirty)
-        {
-            this._generateCachedSprite();
-
-            // we will also need to update the texture on the gpu too!
-            this.updateCachedSpriteTexture();
-
-            this.cachedSpriteDirty = false;
-            this.dirty = false;
-        }
-
-        this._cachedSprite.worldAlpha = this.worldAlpha;
-
-        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
-
-        return;
-    }
-
-    */
-
     if (this.glDirty)
     {
         this.dirty = true;
         this.glDirty = false;
+        this._fastRect = this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
     }
 
-    renderer.setObjectRenderer(renderer.plugins.graphics);
-    renderer.plugins.graphics.render(this);
+    //TODO this check can be moved to dirty?
+    if(this._fastRect)
+    {
+        this._renderSpriteRect(renderer);
+    }
+    else
+    {
+        renderer.setObjectRenderer(renderer.plugins.graphics);
+        renderer.plugins.graphics.render(this);
+    }
 
+};
+
+Graphics.prototype._renderSpriteRect = function (renderer)
+{
+    var rect = this.graphicsData[0].shape;
+    if(!this._spriteRect)
+    {
+        if(!Graphics._SPRITE_TEXTURE)
+        {
+            Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+
+            var currentRenderTarget = renderer._activeRenderTarget;
+            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
+            renderer.clear([1,1,1,1]);
+            renderer.bindRenderTarget(currentRenderTarget);
+        }
+
+        this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    }
+
+    this._spriteRect.worldAlpha = this.worldAlpha;
+
+    Graphics._SPRITE_TEXTURE.crop.width = rect.width;
+    Graphics._SPRITE_TEXTURE.crop.height = rect.height;
+
+    this._spriteRect.transform.worldTransform = this.transform.worldTransform;
+
+    this._spriteRect.anchor.x = -rect.x / rect.width;
+    this._spriteRect.anchor.y = -rect.y / rect.height;
+
+    this._spriteRect._renderWebGL(renderer);
 };
 
 /**
@@ -772,54 +753,7 @@ Graphics.prototype._renderCanvas = function (renderer)
         return;
     }
 
-    // if the tint has changed, set the graphics object to dirty.
-    if (this._prevTint !== this.tint) {
-        this.dirty = true;
-    }
-
-    // this code may still be needed so leaving for now..
-    //
-    /*
-    if (this._cacheAsBitmap)
-    {
-        if (this.dirty || this.cachedSpriteDirty)
-        {
-            this._generateCachedSprite();
-
-            // we will also need to update the texture
-            this.updateCachedSpriteTexture();
-
-            this.cachedSpriteDirty = false;
-            this.dirty = false;
-        }
-
-        this._cachedSprite.alpha = this.alpha;
-
-        Sprite.prototype._renderCanvas.call(this._cachedSprite, renderer);
-
-        return;
-    }
-    */
-    var context = renderer.context;
-    var transform = this.worldTransform;
-
-    var compositeOperation = renderer.blendModes[this.blendMode];
-    if (compositeOperation !== context.globalCompositeOperation)
-    {
-        context.globalCompositeOperation = compositeOperation;
-    }
-
-    var resolution = renderer.resolution;
-    context.setTransform(
-        transform.a * resolution,
-        transform.b * resolution,
-        transform.c * resolution,
-        transform.d * resolution,
-        transform.tx * resolution,
-        transform.ty * resolution
-    );
-
-    CanvasGraphics.renderGraphics(this, context);
+    renderer.plugins.graphics.render(this);
 };
 
 /**
@@ -1044,84 +978,6 @@ Graphics.prototype.updateLocalBounds = function ()
     this._localBounds.height = (maxY - minY) + padding * 2;
 };
 
-/**
- * Generates the cached sprite when the sprite has cacheAsBitmap = true
- *
- * @private
- */
-/*
-Graphics.prototype._generateCachedSprite = function ()
-{
-    var bounds = this.getLocalBounds();
-
-    if (!this._cachedSprite)
-    {
-        var canvasBuffer = new CanvasBuffer(bounds.width, bounds.height);
-        var texture = Texture.fromCanvas(canvasBuffer.canvas);
-
-        this._cachedSprite = new Sprite(texture);
-        this._cachedSprite.buffer = canvasBuffer;
-
-        this._cachedSprite.worldTransform = this.worldTransform;
-    }
-    else
-    {
-        this._cachedSprite.buffer.resize(bounds.width, bounds.height);
-    }
-
-    // leverage the anchor to account for the offset of the element
-    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
-    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
-
-    // this._cachedSprite.buffer.context.save();
-    this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
-
-    // make sure we set the alpha of the graphics to 1 for the render..
-    this.worldAlpha = 1;
-
-    // now render the graphic..
-    CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
-
-    this._cachedSprite.alpha = this.alpha;
-};
-*/
-/**
- * Updates texture size based on canvas size
- *
- * @private
- */
-/*
-Graphics.prototype.updateCachedSpriteTexture = function ()
-{
-    var cachedSprite = this._cachedSprite;
-    var texture = cachedSprite.texture;
-    var canvas = cachedSprite.buffer.canvas;
-
-    texture.baseTexture.width = canvas.width;
-    texture.baseTexture.height = canvas.height;
-    texture.crop.width = texture.frame.width = canvas.width;
-    texture.crop.height = texture.frame.height = canvas.height;
-
-    cachedSprite._width = canvas.width;
-    cachedSprite._height = canvas.height;
-
-    // update the dirty base textures
-    texture.baseTexture.dirty();
-};*/
-
-/**
- * Destroys a previous cached sprite.
- *
- */
-/*
-Graphics.prototype.destroyCachedSprite = function ()
-{
-    this._cachedSprite.texture.destroy(true);
-
-    // let the gc collect the unused sprite
-    // TODO could be object pooled!
-    this._cachedSprite = null;
-};*/
 
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
@@ -1157,10 +1013,35 @@ Graphics.prototype.drawShape = function (shape)
     return data;
 };
 
+Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
+{
+    resolution = resolution || 1;
+
+    var bounds = this.getLocalBounds();
+
+    var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+
+    if(!canvasRenderer)
+    {
+        canvasRenderer = new CanvasRenderer();
+    }
+
+    tempMatrix.tx = -bounds.x;
+    tempMatrix.ty = -bounds.y;
+
+    canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
+    
+    var texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+    texture.baseTexture.resolution = resolution;
+
+    return texture;
+}
+
 /**
  * Destroys the Graphics object.
  */
-Graphics.prototype.destroy = function () {
+Graphics.prototype.destroy = function ()
+{
     Container.prototype.destroy.apply(this, arguments);
 
     // destroy each of the GraphicsData objects

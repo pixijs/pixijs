@@ -19,7 +19,7 @@ function AccessibilityManager(renderer)
 {
 	// first we create a div that will sit over the pixi element. This is where the div overlays will go.
     var div = document.createElement('div');
-    
+
     div.style.width = 100 + 'px';
     div.style.height = 100 + 'px';
     div.style.position = 'absolute';
@@ -27,10 +27,10 @@ function AccessibilityManager(renderer)
     div.style.left = 0;
    //
     div.style.zIndex = 2;
-   	
+
    	/**
    	 * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
-   	 * 
+   	 *
    	 * @type {HTMLElement}
    	 * @private
    	 */
@@ -38,7 +38,7 @@ function AccessibilityManager(renderer)
 
    	/**
    	 * A simple pool for storing divs.
-   	 * 
+   	 *
    	 * @type {Array}
    	 * @private
    	 */
@@ -46,7 +46,7 @@ function AccessibilityManager(renderer)
 
  	/**
  	 * This is a tick used to check if an object is no longer being rendered.
- 	 * 
+ 	 *
  	 * @type {Number}
  	 * @private
  	 */
@@ -54,7 +54,7 @@ function AccessibilityManager(renderer)
 
    	/**
    	 * Setting this to true will visually show the divs
-   	 * 
+   	 *
    	 * @type {Boolean}
    	 */
    	this.debug = false;
@@ -73,13 +73,13 @@ function AccessibilityManager(renderer)
      * @private
      */
    	this.children = [];
-   	
+
    	/**
      * pre bind the functions..
      */
    	this._onKeyDown = this._onKeyDown.bind(this);
    	this._onMouseMove = this._onMouseMove.bind(this);
-   	
+
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
@@ -115,7 +115,7 @@ AccessibilityManager.prototype.activate = function()
 
 	this.renderer.on('postrender', this.update, this);
 
-	this.renderer.view.parentNode.appendChild(this.div);	
+	this.renderer.view.parentNode.appendChild(this.div);
 };
 
 /**
@@ -158,14 +158,14 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 		{
 			this.addChild(displayObject);
 		}
-	   	
+
 	   	displayObject.renderId = this.renderId;
 	}
 
 	var children = displayObject.children;
 
 	for (var i = children.length - 1; i >= 0; i--) {
-		
+
 		this.updateAccessibleObjects(children[i]);
 	}
 };
@@ -177,6 +177,9 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
  */
 AccessibilityManager.prototype.update = function()
 {
+	if(!this.renderer.renderingToScreen) {
+    return;
+  }
 
 	// update children...
 	this.updateAccessibleObjects(this.renderer._lastObjectRendered);
@@ -227,7 +230,7 @@ AccessibilityManager.prototype.update = function()
 
 				div.style.width = (hitArea.width * wt.a * sx) + 'px';
 				div.style.height = (hitArea.height * wt.d * sy) + 'px';
-			
+
 			}
 			else
 			{
@@ -240,7 +243,7 @@ AccessibilityManager.prototype.update = function()
 
 				div.style.width = (hitArea.width * sx) + 'px';
 				div.style.height = (hitArea.height * sy) + 'px';
-			}		
+			}
 		}
 	}
 
@@ -281,12 +284,12 @@ AccessibilityManager.prototype.capHitArea = function (hitArea)
 AccessibilityManager.prototype.addChild = function(displayObject)
 {
 //	this.activate();
-	
+
 	var div = this.pool.pop();
 
 	if(!div)
 	{
-		div = document.createElement('button'); 
+		div = document.createElement('button');
 
 	    div.style.width = 100 + 'px';
 	    div.style.height = 100 + 'px';
@@ -295,19 +298,19 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	    div.style.zIndex = 2;
 	    div.style.borderStyle = 'none';
 
-	    
+
 	    div.addEventListener('click', this._onClick.bind(this));
 	    div.addEventListener('focus', this._onFocus.bind(this));
 	    div.addEventListener('focusout', this._onFocusOut.bind(this));
 	}
-	   	
+
 
 
 
 	div.title = displayObject.accessibleTitle || 'displayObject ' + this.tabIndex;
 
 	//
-	
+
 	displayObject._accessibleActive = true;
 	displayObject._accessibleDiv = div;
 	div.displayObject = displayObject;
@@ -379,7 +382,7 @@ AccessibilityManager.prototype._onMouseMove = function()
  * Destroys the accessibility manager
  *
  */
-AccessibilityManager.prototype.destroy = function () 
+AccessibilityManager.prototype.destroy = function ()
 {
 	this.div = null;
 
@@ -388,10 +391,10 @@ AccessibilityManager.prototype.destroy = function ()
 		this.children[i].div = null;
 	}
 
-	
+
 	window.document.removeEventListener('mousemove', this._onMouseMove);
 	window.removeEventListener('keydown', this._onKeyDown);
-		
+
 	this.pool = null;
 	this.children = null;
 	this.renderer = null;
@@ -400,4 +403,3 @@ AccessibilityManager.prototype.destroy = function ()
 
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
-

@@ -1,3 +1,4 @@
+
 /**
  * Constant values used in pixi
  *
@@ -150,6 +151,58 @@ var CONST = {
     },
 
     /**
+     * The wrap modes that are supported by pixi.
+     *
+     * The DEFAULT wrap mode affects the default wraping mode of future operations.
+     * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
+     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2
+     * This property only affects WebGL
+     * @static
+     * @constant
+     * @property {object} WRAP_MODES
+     * @property {number} WRAP_MODES.DEFAULT=CLAMP
+     * @property {number} WRAP_MODES.CLAMP The textures uvs are clamped
+     * @property {number} WRAP_MODES.REPEAT The texture uvs tile and repeat
+     * @property {number} WRAP_MODES.MIRRORED_REPEAT The texture uvs tile and repeat with mirroring
+     */
+    WRAP_MODES: {
+        DEFAULT:        0,
+        CLAMP:          0,
+        REPEAT:         1,
+        MIRRORED_REPEAT:2
+    },
+
+    /**
+     * The wrap modes that are supported by pixi.
+     *
+     * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
+     * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
+     * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
+     * Handy for mobile devices! 
+     * This property only affects WebGL
+     * @static
+     * @constant
+     * @property {object} GC_MODES
+     * @property {number} GC_MODES.DEFAULT=DEFAULT
+     * @property {number} GC_MODES.AUTO Garbage collection will happen periodically automatically
+     * @property {number} GC_MODES.MANUAL Garbage collection will need to be called manually
+     */
+    GC_MODES: {
+        DEFAULT:        1,
+        AUTO:           0,
+        MANUAL:         1,
+    },
+
+    /**
+     * If set to true WebGL will attempt make textures mimpaped by default
+     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions
+     * @static
+     * @constant
+     * @property {bool} MIPMAP_TEXTURES
+     */
+    MIPMAP_TEXTURES:true,
+
+    /**
      * The prefix that denotes a URL is for a retina asset
      *
      * @static
@@ -162,7 +215,7 @@ var CONST = {
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
-
+    
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.
@@ -215,7 +268,8 @@ var CONST = {
 
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-    SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
+    SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;

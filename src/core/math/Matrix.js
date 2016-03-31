@@ -51,6 +51,7 @@ function Matrix()
      * @default 0
      */
     this.ty = 0;
+
 }
 
 Matrix.prototype.constructor = Matrix;

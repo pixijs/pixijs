@@ -7,29 +7,35 @@ var core = require('../../core'),
  * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 function BlurFilter()
 {
-    core.AbstractFilter.call(this);
+    core.Filter.call(this);
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
+    this.resolution = 0.25;//0.25;//0.25//1//01.26;
+    this.blurYFilter.passes = this.blurXFilter.passes = 1;
+    this.blurYFilter.strength = this.blurXFilter.strength = 4;//4// 4
+
+    this.padding = 20;
+
 }
 
-BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
+BlurFilter.prototype = Object.create(core.Filter.prototype);
 BlurFilter.prototype.constructor = BlurFilter;
 module.exports = BlurFilter;
 
-BlurFilter.prototype.applyFilter = function (renderer, input, output)
+BlurFilter.prototype.apply = function (filterManager, input, output)
 {
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
+    var renderTarget = filterManager.getRenderTarget(true);
 
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-    this.blurYFilter.applyFilter(renderer, renderTarget, output);
+    this.blurXFilter.apply(filterManager, input, renderTarget, true);
+    this.blurYFilter.apply(filterManager, renderTarget, output);
 
-    renderer.filterManager.returnRenderTarget(renderTarget);
+    filterManager.returnRenderTarget(renderTarget);
 };
 
 Object.defineProperties(BlurFilter.prototype, {

@@ -22,7 +22,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture
- * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
+ * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
  * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
@@ -55,15 +55,15 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.baseTexture = baseTexture;
 
     /**
-     * The frame specifies the region of the base texture that this texture uses
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
      * @member {PIXI.Rectangle}
-     * @private
      */
     this._frame = frame;
 
     /**
-     * The texture trim data.
+     * This is the trimmed area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
@@ -92,22 +92,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this._uvs = null;
 
     /**
-     * The width of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.width = 0;
-
-    /**
-     * The height of the Texture in pixels.
-     *
-     * @member {number}
-     */
-    this.height = 0;
-
-    /**
-     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
-     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     * This is the area of original texture, before it was put in atlas
      *
      * @member {PIXI.Rectangle}
      */
@@ -171,10 +156,7 @@ Object.defineProperties(Texture.prototype, {
 
             this.noFrame = false;
 
-            this.width = frame.width;
-            this.height = frame.height;
-
-            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
@@ -182,14 +164,7 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (this.trim)
-            {
-                this.width = this.trim.width;
-                this.height = this.trim.height;
-                this._frame.width = this.trim.width;
-                this._frame.height = this.trim.height;
-            }
-            else
+            if (!this.trim)
             {
                 this.crop = frame;
             }
@@ -222,6 +197,28 @@ Object.defineProperties(Texture.prototype, {
                 this._updateUvs();
             }
         }
+    },
+
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    width: {
+        get: function() {
+            return this.crop ? this.crop.width : 0;
+        }
+    },
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @member {number}
+     */
+    height: {
+        get: function() {
+            return this.crop ? this.crop.height : 0;
+        }
     }
 });
 
@@ -251,6 +248,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
         this.frame = this._frame;
     }
 
+    this.baseTexture.on('update', this.onBaseTextureUpdated, this);
     this.emit('update', this);
 };
 
@@ -320,7 +318,7 @@ Texture.prototype._updateUvs = function ()
         this._uvs = new TextureUvs();
     }
 
-    this._uvs.set(this.crop, this.baseTexture, this.rotate);
+    this._uvs.set(this._frame, this.baseTexture, this.rotate);
 };
 
 /**
@@ -411,6 +409,51 @@ Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
     return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
 };
+
+/**
+ * Helper function that creates a new Texture based on the source you provide.
+ * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+ *
+ * @static
+ * @param source {}
+ * @return {PIXI.Texture} A Texture
+ */
+Texture.from = function (source)
+{
+    //TODO auto detect cross origin..
+    //TODO pass in scale mode?
+    if(typeof source === 'string')
+    {
+        var texture = utils.TextureCache[source];
+
+        if (!texture)
+        {
+            // check if its a video..
+            var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
+            if(isVideo)
+            {
+                return Texture.fromVideoUrl(source);
+            }
+
+            return Texture.fromImage(source);
+        }
+
+        return texture
+    }
+    else if(source instanceof HTMLCanvasElement)
+    {
+        return Texture.fromCanvas(source);
+    }
+    else if(source instanceof HTMLVideoElement)
+    {
+        return Texture.fromVideo(source);
+    }
+    else if(source instanceof BaseTexture)
+    {
+        return new Texture(BaseTexture);
+    }
+}
+
 
 /**
  * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.

@@ -1,6 +1,7 @@
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
+    particles = require('./particles'),
     extras = require('./extras'),
     filters = require('./filters');
 
@@ -95,6 +96,21 @@ Object.defineProperties(core, {
         {
             console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
             return mesh.Rope;
+        }
+    },
+
+    /**
+     * @class
+     * @private
+     * @name ParticleContainer
+     * @memberof PIXI
+     * @see PIXI.particles.ParticleContainer
+     * @deprecated since version 4.0.0
+     */
+    ParticleContainer: {
+        get: function() {
+            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please useparticles.ParticleContainer from now on.');
+            return particles.ParticleContainer;
         }
     },
 
@@ -227,6 +243,27 @@ Object.defineProperties(core, {
     }
 });
 
+core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
+{
+    return renderer.generateTexture(renderer, scaleMode, resolution)
+    console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+};
+
+
+core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
+{
+    console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
+
+    return this.generateCanvasTexture(scaleMode, resolution)
+}
+
+core.RenderTexture.prototype.render = function(displayObject)
+{
+    this.legacyRenderer.render(displayObject, this)
+    //displayObject, matrix, clear, updateTransform
+    console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
+};
+
 /**
  * @method
  * @private
@@ -239,6 +276,8 @@ core.Sprite.prototype.setTexture = function(texture)
     this.texture = texture;
     console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
+
+
 
 /**
  * @method

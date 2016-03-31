@@ -104,13 +104,13 @@ Container.prototype.onChildrenChange = function () {};
 
 /**
  * Adds a child to the container.
- * 
+ *
  * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
  * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
  * @return {PIXI.DisplayObject} The child that was added.
  */
 Container.prototype.addChild = function (child)
-{ 
+{
     var argumentsLength = arguments.length;
 
     // if there is only one argument we can bypass looping through the them
@@ -122,7 +122,7 @@ Container.prototype.addChild = function (child)
         {
             this.addChild( arguments[i] );
         }
-    }     
+    }
     else
     {
         // if the child has a parent then lets remove it as Pixi objects can only exist in one place
@@ -132,7 +132,7 @@ Container.prototype.addChild = function (child)
         }
 
         child.parent = this;
-        
+
         this.children.push(child);
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -274,9 +274,9 @@ Container.prototype.removeChild = function (child)
         {
             this.removeChild( arguments[i] );
         }
-    }     
+    }
     else
-    {   
+    {
         var index = this.children.indexOf(child);
 
         if (index === -1)
@@ -356,29 +356,6 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     }
 };
 
-/**
- * Useful function that returns a texture of the display object that can then be used to create sprites
- * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
- *
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used to generate the texture.
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture} a texture of the display object
- */
-Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-    var bounds = this.getLocalBounds();
-
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, scaleMode, resolution);
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    renderTexture.render(this, _tempMatrix);
-
-    return renderTexture;
-};
-
 /*
  * Updates the transform on all children of this container for rendering
  *
@@ -391,19 +368,24 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.displayObjectUpdateTransform();
+    this.transform = this.parent.transform.updateChildTransform(this.transform);
+
+    //TODO: check render flags, how to process stuff here
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform();
     }
+
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 /**
- * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+* RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
@@ -440,9 +422,11 @@ Container.prototype.getBounds = function ()
                 continue;
             }
 
-            childVisible = true;
-
             childBounds = this.children[i].getBounds();
+            if (childBounds === math.Rectangle.EMPTY) {
+                continue;
+            }
+            childVisible = true;
 
             minX = minX < childBounds.x ? minX : childBounds.x;
             minY = minY < childBounds.y ? minY : childBounds.y;
@@ -456,7 +440,7 @@ Container.prototype.getBounds = function ()
 
         if (!childVisible)
         {
-            return math.Rectangle.EMPTY;
+            return this._currentBounds = math.Rectangle.EMPTY;
         }
 
         var bounds = this._bounds;
@@ -482,16 +466,16 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
-    var matrixCache = this.worldTransform;
+    var matrixCache = this.transform.worldTransform;
 
-    this.worldTransform = math.Matrix.IDENTITY;
+    this.transform.worldTransform = math.Matrix.IDENTITY;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform();
     }
 
-    this.worldTransform = matrixCache;
+    this.transform.worldTransform = matrixCache;
 
     this._currentBounds = null;
 
@@ -509,6 +493,7 @@ Container.prototype.renderWebGL = function (renderer)
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
+
         return;
     }
 

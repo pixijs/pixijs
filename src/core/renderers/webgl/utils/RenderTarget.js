@@ -1,8 +1,7 @@
 var math = require('../../../math'),
-    utils = require('../../../utils'),
     CONST = require('../../../const'),
-    //StencilManager = require('../managers/StencilManager'),
-    StencilMaskStack = require('./StencilMaskStack');
+    GLTexture = require('pixi-gl-core').GLTexture,
+    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -46,6 +45,13 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.texture = null;
 
     /**
+     * The background colour of this render target, as an array of [r,g,b,a] values
+     *
+     * @member {array}
+     */
+    this.clearColor = [0, 0, 0, 0];
+
+    /**
      * The size of the object as a rectangle
      *
      * @member {PIXI.Rectangle}
@@ -85,6 +91,15 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {WebGLRenderBuffer}
      */
+    this.defaultFrame = new PIXI.Rectangle();
+    this.destinationFrame = null;
+    this.sourceFrame = null;
+
+    /**
+     * The stencil buffer stores masking data for the render target
+     *
+     * @member {WebGLRenderBuffer}
+     */
     this.stencilBuffer = null;
 
     /**
@@ -92,7 +107,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {PIXI.StencilMaskStack}
      */
-    this.stencilMaskStack = new StencilMaskStack();
+    this.stencilMaskStack = [];
 
     /**
      * Stores filter data for the render target
@@ -124,43 +139,37 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      */
     this.root = root;
 
+
     if (!this.root)
     {
-       // this.flipY = true;
-        this.frameBuffer = gl.createFramebuffer();
+        this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
 
+        if( this.scaleMode === CONST.SCALE_MODES.NEAREST)
+        {
+            this.frameBuffer.texture.enableNearestScaling();
+        }
+        else
+        {
+            this.frameBuffer.texture.enableLinearScaling();
+
+        }
         /*
             A frame buffer needs a target to render to..
             create a texture and bind it attach it to the framebuffer..
          */
 
-        this.texture = gl.createTexture();
-
-        gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-
-        // set the scale properties of the texture..
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        // check to see if the texture is a power of two!
-        var isPowerOfTwo = utils.isPowerOfTwo(width, height);
-
-        //TODO for 99% of use cases if a texture is power of two we should tile the texture...
-         if (!isPowerOfTwo)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+        // this is used by the base texture
+        this.texture = this.frameBuffer.texture;
     }
+    else
+    {
+        // make it a null framebuffer..
+        this.frameBuffer = new GLFramebuffer(gl, 100, 100);
+        this.frameBuffer.framebuffer = null;
+
+    }
+
+    this.setFrame();
 
     this.resize(width, height);
 };
@@ -173,16 +182,10 @@ module.exports = RenderTarget;
  *
  * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
  */
-RenderTarget.prototype.clear = function(bind)
+RenderTarget.prototype.clear = function(clearColor)
 {
-    var gl = this.gl;
-    if(bind)
-    {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-    }
-
-    gl.clearColor(0,0,0,0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    var cc = clearColor || this.clearColor;
+    this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3]);//r,g,b,a);
 };
 
 /**
@@ -191,25 +194,21 @@ RenderTarget.prototype.clear = function(bind)
  */
 RenderTarget.prototype.attachStencilBuffer = function()
 {
-
-    if (this.stencilBuffer)
-    {
-        return;
-    }
-
+    //TODO check if stencil is done?
     /**
      * The stencil buffer is used for masking in pixi
      * lets create one and then add attach it to the framebuffer..
      */
     if (!this.root)
     {
-        var gl = this.gl;
-
-        this.stencilBuffer = gl.createRenderbuffer();
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.size.width * this.resolution  , this.size.height * this.resolution );
+        this.frameBuffer.enableStencil();
     }
+};
+
+RenderTarget.prototype.setFrame = function(destinationFrame, sourceFrame)
+{
+    this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
+    this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 };
 
 /**
@@ -221,46 +220,64 @@ RenderTarget.prototype.activate = function()
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+    // make surethe texture is unbound!
+    this.frameBuffer.bind();
 
-    var projectionFrame = this.frame || this.size;
-
-    // TODO add a dirty flag to this of a setter for the frame?
-    this.calculateProjection( projectionFrame );
+    this.calculateProjection( this.destinationFrame, this.sourceFrame );
 
     if(this.transform)
     {
         this.projectionMatrix.append(this.transform);
     }
 
-    gl.viewport(0,0, projectionFrame.width * this.resolution, projectionFrame.height * this.resolution);
+    //TODO add a check as them may be the same!
+    if(this.destinationFrame !== this.sourceFrame)
+    {
+
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
+    }
+    else
+    {
+        gl.disable(gl.SCISSOR_TEST);
+    }
+
+
+    // TODO - does not need to be updated all the time??
+    gl.viewport(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height * this.resolution)|0);
+
+
 };
+
 
 /**
  * Updates the projection matrix based on a projection frame (which is a rectangle)
  *
  */
-RenderTarget.prototype.calculateProjection = function (projectionFrame)
+RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceFrame)
 {
     var pm = this.projectionMatrix;
 
+    sourceFrame = sourceFrame || destinationFrame;
+
     pm.identity();
 
+    // TODO: make dest scale source
     if (!this.root)
     {
-        pm.a = 1 / projectionFrame.width*2;
-        pm.d = 1 / projectionFrame.height*2;
+        pm.a = 1 / destinationFrame.width*2;
+        pm.d = 1 / destinationFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a;
-        pm.ty = -1 - projectionFrame.y * pm.d;
+        pm.tx = -1 - sourceFrame.x * pm.a;
+        pm.ty = -1 - sourceFrame.y * pm.d;
     }
     else
     {
-        pm.a = 1 / projectionFrame.width*2;
-        pm.d = -1 / projectionFrame.height*2;
+        pm.a = 1 / destinationFrame.width*2;
+        pm.d = -1 / destinationFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a;
-        pm.ty = 1 - projectionFrame.y * pm.d;
+        pm.tx = -1 - sourceFrame.x * pm.a;
+        pm.ty = 1 - sourceFrame.y * pm.d;
     }
 };
 
@@ -276,28 +293,19 @@ RenderTarget.prototype.resize = function (width, height)
     width = width | 0;
     height = height | 0;
 
-    if (this.size.width === width && this.size.height === height) {
+    if (this.size.width === width && this.size.height === height)
+    {
         return;
     }
 
     this.size.width = width;
     this.size.height = height;
 
-    if (!this.root)
-    {
-        var gl = this.gl;
+    this.defaultFrame.width = width;
+    this.defaultFrame.height = height;
 
-        gl.bindTexture(gl.TEXTURE_2D,  this.texture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width * this.resolution, height * this.resolution , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-        if (this.stencilBuffer )
-        {
-            // update the stencil buffer width and height
-            gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width * this.resolution, height * this.resolution );
-        }
-    }
+    this.frameBuffer.resize(width * this.resolution, height * this.resolution);
 
     var projectionFrame = this.frame || this.size;
 
@@ -310,10 +318,7 @@ RenderTarget.prototype.resize = function (width, height)
  */
 RenderTarget.prototype.destroy = function ()
 {
-    var gl = this.gl;
-    gl.deleteRenderbuffer( this.stencilBuffer );
-    gl.deleteFramebuffer( this.frameBuffer );
-    gl.deleteTexture( this.texture );
+    this.frameBuffer.destroy();
 
     this.frameBuffer = null;
     this.texture = null;
