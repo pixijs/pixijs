@@ -41,9 +41,8 @@ module.exports = function ()
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    var i = frameKeys[frameIndex]
-                    var frame = frames[i];
-                    var rect = frame.frame;
+                    var i = frameKeys[frameIndex];
+                    var rect = frames[i].frame;
 
                     if (rect)
                     {
@@ -74,9 +73,9 @@ module.exports = function ()
 
                         // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                         core.utils.TextureCache[i] = resource.textures[i];
-                   
+
                     }
-                    
+
                     frameIndex++;
                 }
             }

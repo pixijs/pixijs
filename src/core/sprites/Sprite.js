@@ -22,7 +22,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-  
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -440,7 +440,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 Sprite.from = function (source)
 {
     return new Sprite(Texture.from(source));
-}
+};
 
 /**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId

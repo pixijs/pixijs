@@ -24,7 +24,11 @@ module.exports = TextureGarbageCollector;
 TextureGarbageCollector.prototype.update = function()
 {
     this.count++;
-    if(this.mode === CONST.GC_MODES.MANUAL)return;
+
+    if(this.mode === CONST.GC_MODES.MANUAL)
+    {
+        return;
+    }
 
     this.checkCount++;
 
@@ -44,26 +48,26 @@ TextureGarbageCollector.prototype.run = function()
     var wasRemoved = false;
     var i,j;
 
-    for (i = 0; i < managedTextures.length; i++) 
+    for (i = 0; i < managedTextures.length; i++)
     {
         var texture = managedTextures[i];
 
         // only supports non generated textures at the moment!
-        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle) 
+        if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle)
         {
             tm.destroyTexture(texture, true);
             managedTextures[i] = null;
             wasRemoved = true;
         }
     }
-    
-    if (wasRemoved) 
+
+    if (wasRemoved)
     {
         j = 0;
 
-        for (i = 0; i < managedTextures.length; i++) 
+        for (i = 0; i < managedTextures.length; i++)
         {
-            if (managedTextures[i] !== null) 
+            if (managedTextures[i] !== null)
             {
                 managedTextures[j++] = managedTextures[i];
             }
