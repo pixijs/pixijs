@@ -109,7 +109,7 @@ Object.defineProperties(core, {
      */
     ParticleContainer: {
         get: function() {
-            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please useparticles.ParticleContainer from now on.');
+            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             return particles.ParticleContainer;
         }
     },
@@ -409,4 +409,9 @@ core.utils.uuid = function ()
 {
     console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
     return core.utils.uid();
+};
+
+core.utils.canUseNewCanvasBlendModes = function() {
+    console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
+    return core.CanvasTinter.canUseMultiply;
 };
