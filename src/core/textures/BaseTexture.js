@@ -18,7 +18,7 @@ function BaseTexture(source, scaleMode, resolution)
     EventEmitter.call(this);
 
     this.uid = utils.uid();
-    
+
     this.touched = 0;
 
     /**
@@ -153,7 +153,7 @@ function BaseTexture(source, scaleMode, resolution)
     this._glTextures = [];
     this._enabled = 0;
     this._id = 0;
-    
+
     // if no source passed don't try to load
     if (source)
     {
@@ -188,8 +188,8 @@ module.exports = BaseTexture;
  */
 BaseTexture.prototype.update = function ()
 {
-    this.realWidth = this.source.naturalWidth || this.source.width;
-    this.realHeight = this.source.naturalHeight || this.source.height;
+    this.realWidth = this.source.naturalWidth || this.source.videoWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.videoHeight || this.source.height;
 
     this.width = this.realWidth / this.resolution;
     this.height = this.realHeight / this.resolution;
@@ -399,7 +399,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
-      
+
 
         if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
         {
