@@ -1,4 +1,3 @@
-
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
 /**
@@ -50,14 +49,14 @@ var WebGLState = function(gl)
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
-	this.attribState = {tempAttribState:new Array(this.maxAttribs)
-                       ,attribState:new Array(this.maxAttribs)};
+	this.attribState = {tempAttribState:new Array(this.maxAttribs),
+                        attribState:new Array(this.maxAttribs)};
 
 
 
 	this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-	
+
 	// check we have vao..
 	this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||
@@ -235,9 +234,9 @@ WebGLState.prototype.resetAttributes = function()
 
 	// im going to assume one is always active for performance reasons.
 	for (var i = 1; i < this.maxAttribs; i++)
-  {
+  	{
 		gl.disableVertexAttribArray(i);
-  }
+  	}
 };
 
 //used
@@ -252,7 +251,6 @@ WebGLState.prototype.resetToDefault = function()
 		this.nativeVaoExtension.bindVertexArrayOES(null);
 	}
 
-	var gl = this.gl;
 	// reset all attributs..
 	this.resetAttributes();
 

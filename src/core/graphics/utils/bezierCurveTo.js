@@ -10,7 +10,7 @@
  * @param toY {number} Destination point y
  * @return {PIXI.Graphics}
  */
-var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path)
+var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
 {
     path = path || [];
 

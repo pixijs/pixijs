@@ -245,24 +245,48 @@ Object.defineProperties(core, {
 
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
-    return renderer.generateTexture(renderer, scaleMode, resolution)
     console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+    return renderer.generateTexture(renderer, scaleMode, resolution);
 };
 
 
 core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
 {
     console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
-
-    return this.generateCanvasTexture(scaleMode, resolution)
-}
+    return this.generateCanvasTexture(scaleMode, resolution);
+};
 
 core.RenderTexture.prototype.render = function(displayObject)
 {
-    this.legacyRenderer.render(displayObject, this)
-    //displayObject, matrix, clear, updateTransform
+    this.legacyRenderer.render(displayObject, this);
     console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
+
+core.RenderTexture.prototype.getImage = function(target)
+{
+    console.warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
+    return this.legacyRenderer.extract.image(target);
+};
+
+core.RenderTexture.prototype.getBase64 = function(target)
+{
+    console.warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
+    this.legacyRenderer.extract.base64(target);
+};
+
+core.RenderTexture.prototype.getCanvas = function(target)
+{
+    console.warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
+    this.legacyRenderer.extract.canvas(target);
+};
+
+core.RenderTexture.prototype.getPixels = function(target)
+{
+    console.warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
+    this.legacyRenderer.pixels(target);
+};
+
+
 
 /**
  * @method

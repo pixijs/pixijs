@@ -87,7 +87,8 @@ function InteractionManager(renderer, options)
      * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
-     * @member {HTMLElement}
+     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
+     * @member {boolean}
      * @private
      */
     this.moveWhenInside = false;
@@ -439,13 +440,12 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                //  if(child.interactive)
+
                 //{
                 hitTest = false;
                 //}
 
                 // we can break now as we have hit an object.
-
             }
         }
     }

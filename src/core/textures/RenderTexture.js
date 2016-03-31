@@ -52,7 +52,7 @@ function RenderTexture(baseRenderTexture, frame)
         var resolution = arguments[4] || 1;
 
         // we have an old render texture..
-        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');
+        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line
         this.legacyRenderer = arguments[0];
 
         frame = null;

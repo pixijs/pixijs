@@ -1,6 +1,5 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
-    GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
@@ -91,7 +90,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {WebGLRenderBuffer}
      */
-    this.defaultFrame = new PIXI.Rectangle();
+    this.defaultFrame = new math.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 
