@@ -410,3 +410,8 @@ core.utils.uuid = function ()
     console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
     return core.utils.uid();
 };
+
+core.utils.canUseNewCanvasBlendModes = function() {
+    console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
+    return core.CanvasTinter.canUseMultiply;
+};
