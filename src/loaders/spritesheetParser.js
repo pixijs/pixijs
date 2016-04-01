@@ -25,13 +25,14 @@ module.exports = function ()
         };
 
         // Prepend url path unless the resource image is a data url
-        if (Resource.isDataUrl(resource.url)) {
+        if (resource.isDataUrl) 
+        {
             resourcePath = resource.data.meta.image;
-        } else {
+        } 
+        else 
+        {
             resourcePath = path.dirname(resource.url.replace(this.baseUrl, '')) + '/' + resource.data.meta.image;
         }
-
-        var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
         // load the image for this sheet
         this.add(imageResourceName, resourcePath, loadOptions, function (res)
