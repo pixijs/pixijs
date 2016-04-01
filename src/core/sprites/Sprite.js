@@ -102,8 +102,8 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            var sizeX = this._size._x;
-            var sizeY = this._size._y;
+            var sizeX = this._size.x;
+            var sizeY = this._size.y;
             return sizeX && sizeY ? sizeX : this._texture.width;
         },
         set: function (value)
@@ -124,8 +124,8 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            var sizeX = this._size._x;
-            var sizeY = this._size._y;
+            var sizeX = this._size.x;
+            var sizeY = this._size.y;
             return sizeX && sizeY ? sizeY : this._texture.height;
         },
         set: function (value)
@@ -230,8 +230,8 @@ Sprite.prototype.caclulateVertices = function ()
         h1 = orig.height * -this.anchor.y;
     }
 
-    var sizeX = this._size._x;
-    var sizeY = this._size._y;
+    var sizeX = this._size.x;
+    var sizeY = this._size.y;
     if (sizeX && sizeY) {
         sizeX /= orig.width;
         sizeY /= orig.height;
