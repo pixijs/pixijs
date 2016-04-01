@@ -102,16 +102,11 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            var sizeX = this._size.x;
-            var sizeY = this._size.y;
-            return sizeX && sizeY ? sizeX : this._texture.width;
+            return this._size.x || this._texture.width;
         },
         set: function (value)
         {
             this._size.x = value;
-            if (this._size.y === 0) {
-                this._size.y = this._texture.height;
-            }
         }
     },
 
@@ -124,16 +119,11 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            var sizeX = this._size.x;
-            var sizeY = this._size.y;
-            return sizeX && sizeY ? sizeY : this._texture.height;
+            return this._size.y || this._texture.height;
         },
         set: function (value)
         {
             this._size.y = value;
-            if (this._size.x === 0) {
-                this._size.x = this._texture.width;
-            }
         }
     },
     /**
@@ -231,13 +221,15 @@ Sprite.prototype.caclulateVertices = function ()
     }
 
     var sizeX = this._size.x;
-    var sizeY = this._size.y;
-    if (sizeX && sizeY) {
+    if (sizeX) {
         sizeX /= orig.width;
-        sizeY /= orig.height;
         w0 *= sizeX;
-        h0 *= sizeY;
         w1 *= sizeX;
+    }
+    var sizeY = this._size.y;
+    if (sizeY) {
+        sizeY /= orig.height;
+        h0 *= sizeY;
         h1 *= sizeY;
     }
 
@@ -400,14 +392,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture.orig.width;
-    var height = this._texture.orig.height;
-    var sizeX = this._size.x;
-    var sizeY = this._size.y;
-    if (sizeX && sizeY) {
-        width = sizeX;
-        height = sizeY;
-    }
+    var width = this._size.x || this._texture.orig.width;
+    var height = this._size.y || this._texture.orig.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
