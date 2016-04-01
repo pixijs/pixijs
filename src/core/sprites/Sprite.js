@@ -39,7 +39,7 @@ function Sprite(texture)
      * @member {PIXI.Point}
      * @private
      */
-    this._size = new Point();
+    this._size = new math.Point();
 
     /**
      * The texture that the sprite is using
