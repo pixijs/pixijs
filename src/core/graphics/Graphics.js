@@ -981,7 +981,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
+ * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)
