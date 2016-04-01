@@ -9,6 +9,7 @@ module.exports = function ()
 {
     return function (resource, next)
     {
+        var resourcePath;
         var imageResourceName = resource.name + '_image';
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
@@ -23,10 +24,17 @@ module.exports = function ()
             metadata: resource.metadata.imageMetadata
         };
 
+        // Prepend url path unless the resource image is a data url
+        if (Resource.isDataUrl(resource.url)) {
+            resourcePath = resource.data.meta.image;
+        } else {
+            resourcePath = path.dirname(resource.url.replace(this.baseUrl, '')) + '/' + resource.data.meta.image;
+        }
+
         var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
         // load the image for this sheet
-        this.add(imageResourceName, route + '/' + resource.data.meta.image, loadOptions, function (res)
+        this.add(imageResourceName, resourcePath, loadOptions, function (res)
         {
             resource.textures = {};
 
