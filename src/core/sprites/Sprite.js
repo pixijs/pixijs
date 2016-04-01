@@ -50,22 +50,6 @@ function Sprite(texture)
     this._texture = null;
 
     /**
-     * The width of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._width = 0;
-
-    /**
-     * The height of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._height = 0;
-
-    /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
@@ -215,17 +199,6 @@ Object.defineProperties(Sprite.prototype, {
 Sprite.prototype._onTextureUpdate = function ()
 {
     this.textureDirty = true;
-
-    // so if _width is 0 then width was not set..
-    if (this._width)
-    {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
-    }
-
-    if (this._height)
-    {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
-    }
 };
 
 Sprite.prototype.caclulateVertices = function ()
