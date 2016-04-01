@@ -5,7 +5,6 @@ Pixi.js — A 2D JavaScript Renderer
 
 
 
-## Pixi.js ##
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
