@@ -34,6 +34,14 @@ function Sprite(texture)
     this.anchor = new math.Point();
 
     /**
+     * Private size
+     *
+     * @member {PIXI.Point}
+     * @private
+     */
+    this._size = new Point();
+
+    /**
      * The texture that the sprite is using
      *
      * @member {PIXI.Texture}
@@ -102,7 +110,7 @@ module.exports = Sprite;
 
 Object.defineProperties(Sprite.prototype, {
     /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
+     * The width of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -110,18 +118,21 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.orig.width;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeX : this._texture.width;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
+            this._size.x = value;
+            if (this._size.y === 0) {
+                this._size.y = this._texture.height;
+            }
         }
     },
 
     /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set
+     * The height of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -129,13 +140,31 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.orig.height;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeY : this._texture.height;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
-            this._height = value;
+            this._size.y = value;
+            if (this._size.x === 0) {
+                this._size.x = this._texture.width;
+            }
+        }
+    },
+    /**
+     * If both size.x and size.y is not zero, it will override texture dimensions
+     * size does not affect scale
+     *
+     * @member {PIXI.Point}
+     * @memberof PIXI.Sprite#
+     */
+    size: {
+        get: function() {
+            return this._size;
+        },
+        set: function(value) {
+            this._size.copy(value);
         }
     },
 
@@ -226,6 +255,17 @@ Sprite.prototype.caclulateVertices = function ()
 
         h0 = orig.height * (1-this.anchor.y);
         h1 = orig.height * -this.anchor.y;
+    }
+
+    var sizeX = this._size._x;
+    var sizeY = this._size._y;
+    if (sizeX && sizeY) {
+        sizeX /= orig.width;
+        sizeY /= orig.height;
+        w0 *= sizeX;
+        h0 *= sizeY;
+        w1 *= sizeX;
+        h1 *= sizeY;
     }
 
     // xy
@@ -389,6 +429,12 @@ Sprite.prototype.containsPoint = function( point )
 
     var width = this._texture.orig.width;
     var height = this._texture.orig.height;
+    var sizeX = this._size.x;
+    var sizeY = this._size.y;
+    if (sizeX && sizeY) {
+        width = sizeX;
+        height = sizeY;
+    }
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -417,6 +463,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
     Container.prototype.destroy.call(this);
 
     this.anchor = null;
+    this._size = null;
 
     if (destroyTexture)
     {
