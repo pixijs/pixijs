@@ -50,7 +50,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         width = texture._frame.width,
         height = texture._frame.height;
 
-    if (texture.crop.width <= 0 || texture.crop.height <= 0)
+    if (texture.orig.width <= 0 || texture.orig.height <= 0)
     {
         return;
     }
@@ -70,11 +70,11 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         }
 
         if (texture.trim) {
-            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.crop.width;
-            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.crop.height;
+            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.orig.width;
+            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.orig.height;
         } else {
-            dx = (0.5 - sprite.anchor.x) * texture.crop.width;
-            dy = (0.5 - sprite.anchor.y) * texture.crop.height;
+            dx = (0.5 - sprite.anchor.x) * texture.orig.width;
+            dy = (0.5 - sprite.anchor.y) * texture.orig.height;
         }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
