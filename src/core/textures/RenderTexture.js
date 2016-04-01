@@ -95,8 +95,8 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
     //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
-    this._frame.width = this.crop.width = width;
-    this._frame.height = this.crop.height = height;
+    this._frame.width = this.orig.width = width;
+    this._frame.height = this.orig.height = height;
 
     if (!doNotResizeBaseTexture)
     {

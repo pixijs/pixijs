@@ -21,11 +21,11 @@ var BaseTexture = require('./BaseTexture'),
  * @memberof PIXI
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
- * @param [crop] {PIXI.Rectangle} The area of original texture
+ * @param [orig] {PIXI.Rectangle} The area of original texture
  * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
  * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
-function Texture(baseTexture, frame, crop, trim, rotate)
+function Texture(baseTexture, frame, orig, trim, rotate)
 {
     EventEmitter.call(this);
 
@@ -96,7 +96,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      *
      * @member {PIXI.Rectangle}
      */
-    this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
+    this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
 
     this._rotate = +(rotate || 0);
 
@@ -166,7 +166,7 @@ Object.defineProperties(Texture.prototype, {
 
             if (!this.trim)
             {
-                this.crop = frame;
+                this.orig = frame;
             }
 
             if (this.valid)
@@ -206,7 +206,7 @@ Object.defineProperties(Texture.prototype, {
      */
     width: {
         get: function() {
-            return this.crop ? this.crop.width : 0;
+            return this.orig ? this.orig.width : 0;
         }
     },
 
@@ -217,7 +217,7 @@ Object.defineProperties(Texture.prototype, {
      */
     height: {
         get: function() {
-            return this.crop ? this.crop.height : 0;
+            return this.orig ? this.orig.height : 0;
         }
     }
 });
@@ -288,7 +288,7 @@ Texture.prototype.destroy = function (destroyBase)
     this._frame = null;
     this._uvs = null;
     this.trim = null;
-    this.crop = null;
+    this.orig = null;
 
     this.valid = false;
 
@@ -303,7 +303,7 @@ Texture.prototype.destroy = function (destroyBase)
  */
 Texture.prototype.clone = function ()
 {
-    return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
+    return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate);
 };
 
 /**
