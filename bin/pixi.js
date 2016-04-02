@@ -17879,13 +17879,19 @@ var fragTemplate = [
     '}'
 ].join('\n');
 
-var checkMaxIfStatmentsInShader = function(maxIfs)
+var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 {
-    var tinyCanvas = document.createElement('canvas');
-    tinyCanvas.width = 1;
-    tinyCanvas.height = 1;
+    var createTempContext = !gl;
 
-    var gl = glCore.createContext(tinyCanvas);
+    if(createTempContext)
+    {
+        var tinyCanvas = document.createElement('canvas');
+        tinyCanvas.width = 1;
+        tinyCanvas.height = 1;
+
+        gl = glCore.createContext(tinyCanvas);
+    }
+
     var shader = gl.createShader(gl.FRAGMENT_SHADER);
 
     while(true)
@@ -17906,10 +17912,13 @@ var checkMaxIfStatmentsInShader = function(maxIfs)
         }
     }
 
-    // get rid of context
-    if(gl.getExtension('WEBGL_lose_context'))
+    if(createTempContext)
     {
-        gl.getExtension('WEBGL_lose_context').loseContext();
+        // get rid of context
+        if(gl.getExtension('WEBGL_lose_context'))
+        {
+            gl.getExtension('WEBGL_lose_context').loseContext();
+        }
     }
 
     return maxIfs;
@@ -19022,7 +19031,7 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
 
     // step 2: check the maximum number of if statements the shader can have too..
-    this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES );
+    this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
 
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
@@ -22607,7 +22616,22 @@ Object.defineProperties(core, {
             console.warn('The math namespace is deprecated, please access members already accessible on PIXI.');
             return core;
         }
-    }
+    },
+
+     /**
+     * @class
+     * @private
+     * @name PIXI.AbstractFilter
+     * @see PIXI.Filter
+     * @deprecated since version 3.0.6
+     */
+    AbstractFilter: {
+        get: function()
+        {
+            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
+            return core.Filter;
+        }
+    },
 });
 
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
@@ -22730,7 +22754,7 @@ Object.defineProperties(filters, {
     AbstractFilter: {
         get: function()
         {
-            console.warn('filters.AbstractFilter is an undocumented alias, please use AbstractFilter from now on.');
+            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
             return core.AbstractFilter;
         }
     },
@@ -22782,6 +22806,7 @@ core.utils.canUseNewCanvasBlendModes = function() {
     console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;
 };
+
 
 },{"./core":56,"./extras":120,"./filters":132,"./mesh":147,"./particles":150}],111:[function(require,module,exports){
 var core = require('../../core'),
