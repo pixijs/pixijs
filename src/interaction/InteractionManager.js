@@ -407,7 +407,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // it has a filterArea! Same as mask but easier, its a rectangle
     if(hitTest && displayObject.filterArea)
     {
-        if(!displayObject.filterArea.contains(point))
+        if(!displayObject.filterArea.contains(point.x, point.y))
         {
             hitTest = false;
         }
