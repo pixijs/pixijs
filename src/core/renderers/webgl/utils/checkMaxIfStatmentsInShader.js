@@ -1,5 +1,14 @@
 var glCore = require('pixi-gl-core');
 
+var fragTemplate = [
+    'precision lowp float;',
+    'void main(void){',
+        'float test = 0.1;',
+        '%forloop%',
+        'gl_FragColor = vec4(0.0);',
+    '}'
+].join('\n');
+
 var checkMaxIfStatmentsInShader = function(maxIfs)
 {
     var tinyCanvas = document.createElement('canvas');
@@ -34,16 +43,8 @@ var checkMaxIfStatmentsInShader = function(maxIfs)
     }
 
     return maxIfs;
-}
+};
 
-var fragTemplate = [
-    'precision lowp float;',
-    'void main(void){',
-        'float test = 0.1;',
-        '%forloop%',
-        'gl_FragColor = vec4(0.0);',
-    '}'
-].join('\n');
 
 
 function generateIfTestSrc(maxIfs)
