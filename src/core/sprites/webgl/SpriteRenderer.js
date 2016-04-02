@@ -111,8 +111,6 @@ SpriteRenderer.prototype.onContextChange = function ()
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-
-
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
@@ -131,7 +129,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 SpriteRenderer.prototype.onPrerender = function ()
 {
     this.vertexCount = 0;
-}
+};
 
 /**
  * Renders the sprite object.
