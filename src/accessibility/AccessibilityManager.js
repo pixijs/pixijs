@@ -305,13 +305,17 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
-	if(displayObject.accessibleTitle) {
+	if(displayObject.accessibleTitle) 
+	{
 		div.title = displayObject.accessibleTitle;
-	} else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) {
+	} 
+	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) 
+	{
 		div.title = 'displayObject ' + this.tabIndex;
 	}
 
-	if(displayObject.accessibleHint) {
+	if(displayObject.accessibleHint) 
+	{
 		div.setAttribute('aria-label', displayObject.accessibleHint);	
 	}
 	
