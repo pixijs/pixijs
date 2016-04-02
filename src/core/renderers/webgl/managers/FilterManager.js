@@ -69,16 +69,11 @@ FilterManager.prototype.pushFilter = function(target, filters)
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
+    sourceFrame.x = (((targetBounds.x + padding) * resolution) | 0) / resolution;
+    sourceFrame.y = (((targetBounds.y + padding) * resolution) | 0) / resolution;
+    sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
+    sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
-
-
-
-    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
-    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
-    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
-    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
-
-    sourceFrame.pad(padding * resolution);
     sourceFrame.fit(this.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
