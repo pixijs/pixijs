@@ -9,13 +9,19 @@ var fragTemplate = [
     '}'
 ].join('\n');
 
-var checkMaxIfStatmentsInShader = function(maxIfs)
+var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 {
-    var tinyCanvas = document.createElement('canvas');
-    tinyCanvas.width = 1;
-    tinyCanvas.height = 1;
+    var createTempContext = !gl;
 
-    var gl = glCore.createContext(tinyCanvas);
+    if(createTempContext)
+    {
+        var tinyCanvas = document.createElement('canvas');
+        tinyCanvas.width = 1;
+        tinyCanvas.height = 1;
+
+        gl = glCore.createContext(tinyCanvas);
+    }
+
     var shader = gl.createShader(gl.FRAGMENT_SHADER);
 
     while(true)
@@ -36,10 +42,13 @@ var checkMaxIfStatmentsInShader = function(maxIfs)
         }
     }
 
-    // get rid of context
-    if(gl.getExtension('WEBGL_lose_context'))
+    if(createTempContext)
     {
-        gl.getExtension('WEBGL_lose_context').loseContext();
+        // get rid of context
+        if(gl.getExtension('WEBGL_lose_context'))
+        {
+            gl.getExtension('WEBGL_lose_context').loseContext();
+        }
     }
 
     return maxIfs;

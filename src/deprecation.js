@@ -240,7 +240,22 @@ Object.defineProperties(core, {
             console.warn('The math namespace is deprecated, please access members already accessible on PIXI.');
             return core;
         }
-    }
+    },
+
+     /**
+     * @class
+     * @private
+     * @name PIXI.AbstractFilter
+     * @see PIXI.Filter
+     * @deprecated since version 3.0.6
+     */
+    AbstractFilter: {
+        get: function()
+        {
+            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
+            return core.Filter;
+        }
+    },
 });
 
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
@@ -363,7 +378,7 @@ Object.defineProperties(filters, {
     AbstractFilter: {
         get: function()
         {
-            console.warn('filters.AbstractFilter is an undocumented alias, please use AbstractFilter from now on.');
+            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
             return core.AbstractFilter;
         }
     },
@@ -415,3 +430,4 @@ core.utils.canUseNewCanvasBlendModes = function() {
     console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;
 };
+

@@ -109,7 +109,7 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
 
     // step 2: check the maximum number of if statements the shader can have too..
-    this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES );
+    this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
 
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
