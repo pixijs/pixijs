@@ -1,7 +1,7 @@
 /**
  * @license
  * pixi.js - v3.0.10
- * Compiled 2016-03-26T16:10:15.172Z
+ * Compiled 2016-04-02T01:08:16.784Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26585,7 +26585,7 @@ function InteractionManager(renderer, options)
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
      * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
-     * @member {HTMLElement}
+     * @member {boolean}
      * @private
      */
     this.moveWhenInside = false;
@@ -26910,10 +26910,13 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(child.interactive)
-                {
-                    hitTest = false;
-                }
+                //if(child.interactive)
+                //{
+                hitTest = false;
+                //}
+
+                // we can break now as we have hit an object.
+                //break;
             }
         }
     }
