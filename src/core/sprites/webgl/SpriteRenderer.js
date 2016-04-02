@@ -81,8 +81,10 @@ function SpriteRenderer(renderer)
     this.vertexBuffers = [];
     this.vaos = [];
 
-    this.vaoMax = 20;
+    this.vaoMax = 2;
     this.vertexCount = 0;
+
+    this.renderer.on('prerender', this.onPrerender, this);
 }
 
 
@@ -125,6 +127,11 @@ SpriteRenderer.prototype.onContextChange = function ()
     this.vao = this.vaos[0];
     this.currentBlendMode = 99999;
 };
+
+SpriteRenderer.prototype.onPrerender = function ()
+{
+    this.vertexCount = 0;
+}
 
 /**
  * Renders the sprite object.
@@ -281,11 +288,22 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.size = i - currentGroup.start;
 
     this.vertexCount++;
-    this.vertexCount %= this.vaoMax;
+
+    if(this.vaoMax <= this.vertexCount)
+    {
+        this.vaoMax++;
+        this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+        // build the vao object that will render..
+        this.vaos[this.vertexCount] = this.renderer.createVao()
+        .addIndex(this.indexBuffer)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
     this.vao = this.vaos[this.vertexCount].bind();
-
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
