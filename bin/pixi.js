@@ -15141,6 +15141,8 @@ module.exports = mapWebGLBlendModesToPixi;
 var CONST = require('../../const');
 
 /**
+ * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged up with textures that are no longer being used.
+ *
  * @class
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
@@ -15160,6 +15162,10 @@ function TextureGarbageCollector(renderer)
 TextureGarbageCollector.prototype.constructor = TextureGarbageCollector;
 module.exports = TextureGarbageCollector;
 
+/**
+ * Checks to see when the last time a texture was used
+ * if the texture has not been used for a specified amount of time it will be removed from the GPU
+ */
 TextureGarbageCollector.prototype.update = function()
 {
     this.count++;
@@ -15180,6 +15186,10 @@ TextureGarbageCollector.prototype.update = function()
     }
 };
 
+/**
+ * Checks to see when the last time a texture was used
+ * if the texture has not been used for a specified amount of time it will be removed from the GPU
+ */
 TextureGarbageCollector.prototype.run = function()
 {
     var tm = this.renderer.textureManager;
@@ -15215,6 +15225,27 @@ TextureGarbageCollector.prototype.run = function()
         managedTextures.length = j;
     }
 };
+
+/**
+ * Removes all the textures within the specified displayObject and its children from the GPU
+ *
+ * @param displayObject {PIXI.DisplayObject} the displayObject to remove the textures from.
+ */
+TextureGarbageCollector.prototype.unload = function( displayObject )
+{
+    var tm = this.renderer.textureManager;
+
+    if(displayObject._texture)
+    {
+        tm.destroyTexture(displayObject._texture, true);
+    }
+
+    for (var i = displayObject.children.length - 1; i >= 0; i--) {
+
+        this.unload(displayObject.children[i]);
+
+    };
+}
 
 },{"../../const":39}],73:[function(require,module,exports){
 var GLTexture = require('pixi-gl-core').GLTexture,
@@ -15968,7 +15999,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-    this.gl.getExtension('WEBGL_lose_context').loseContext();
+
+    if(this.gl.getExtension('WEBGL_lose_context'))
+    {
+        this.gl.getExtension('WEBGL_lose_context').loseContext();
+    }
+
     this.gl = null;
 
     // this = null;
@@ -16672,16 +16708,11 @@ FilterManager.prototype.pushFilter = function(target, filters)
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
+    sourceFrame.x = (((targetBounds.x + padding) * resolution) | 0) / resolution;
+    sourceFrame.y = (((targetBounds.y + padding) * resolution) | 0) / resolution;
+    sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
+    sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
-
-
-
-    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
-    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
-    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
-    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
-
-    sourceFrame.pad(padding * resolution);
     sourceFrame.fit(this.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
@@ -26459,7 +26490,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // it has a filterArea! Same as mask but easier, its a rectangle
     if(hitTest && displayObject.filterArea)
     {
-        if(!displayObject.filterArea.contains(point))
+        if(!displayObject.filterArea.contains(point.x, point.y))
         {
             hitTest = false;
         }
