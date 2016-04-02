@@ -8948,7 +8948,7 @@ var CONST = {
      * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
-     * Handy for mobile devices! 
+     * Handy for mobile devices!
      * This property only affects WebGL
      * @static
      * @constant
@@ -8985,7 +8985,7 @@ var CONST = {
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
-    
+
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.
@@ -9039,7 +9039,7 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(16)//this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
@@ -18902,8 +18902,6 @@ SpriteRenderer.prototype.onContextChange = function ()
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-
-
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
@@ -18922,7 +18920,7 @@ SpriteRenderer.prototype.onContextChange = function ()
 SpriteRenderer.prototype.onPrerender = function ()
 {
     this.vertexCount = 0;
-}
+};
 
 /**
  * Renders the sprite object.
@@ -19190,7 +19188,7 @@ function generateMultiTextureShader(gl, maxTextures)
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
 
     var sampleValues = [];
-    for (var i = 0; i < maxTextures; i++) 
+    for (var i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
     }
@@ -19207,8 +19205,8 @@ function generateSampleSrc(maxTextures)
 
     src += '\n';
     src += '\n';
-    
-    for (var i = 0; i < maxTextures; i++) 
+
+    for (var i = 0; i < maxTextures; i++)
     {
         if(i > 0)
         {
