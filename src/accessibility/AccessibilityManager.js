@@ -305,9 +305,16 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
+	if(displayObject.accessibleTitle) {
+		div.title = displayObject.accessibleTitle;
+	} else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) {
+		div.title = 'displayObject ' + this.tabIndex;
+	}
 
-
-	div.title = displayObject.accessibleTitle || 'displayObject ' + this.tabIndex;
+	if(displayObject.accessibleHint) {
+		div.setAttribute('aria-label', displayObject.accessibleHint);	
+	}
+	
 
 	//
 
