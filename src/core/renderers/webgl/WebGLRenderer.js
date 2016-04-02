@@ -543,7 +543,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-    this.gl.getExtension('WEBGL_lose_context').loseContext();
+
+    if(this.gl.getExtension('WEBGL_lose_context'))
+    {
+        this.gl.getExtension('WEBGL_lose_context').loseContext();
+    }
+
     this.gl = null;
 
     // this = null;
