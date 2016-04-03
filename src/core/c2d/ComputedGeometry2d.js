@@ -63,4 +63,5 @@ ComputedGeometry2d.prototype.applyMatrix = function(geometry, matrix) {
         out[i] = (a * rawX) + (c * rawY) + tx;
         out[i+1] = (d * rawY) + (b * rawX) + ty;
     }
+    this.version++;
 };

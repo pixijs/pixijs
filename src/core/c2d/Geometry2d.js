@@ -16,7 +16,7 @@ function Geometry2d() {
 }
 
 Geometry2d.prototype = Object.create(Geometry.prototype);
-Geometry2d.prototype.constructor = Geometry;
+Geometry2d.prototype.constructor = Geometry2d;
 module.exports = Geometry2d;
 
 Geometry2d.prototype.setRectCoords = function (offset, x1, y1, x2, y2) {
