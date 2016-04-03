@@ -17,6 +17,10 @@ function DisplayObject()
     EventEmitter.call(this);
 
     //TODO: need to create Transform from factory
+    /**
+     * World transform and local transform of this object.
+     * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+     */
     this.transform = new Transform();
 
     /**
