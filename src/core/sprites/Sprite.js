@@ -311,10 +311,10 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
     Container.prototype.destroy.call(this);
 
-    this.anchor.destroy();
-    this.size.destroy();
-    this.anchor = null;
-    this.size = null;
+    this._anchor.destroy();
+    this._size.destroy();
+    this._anchor = null;
+    this._size = null;
 
     if (destroyTexture)
     {
