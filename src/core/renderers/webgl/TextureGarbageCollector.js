@@ -105,5 +105,5 @@ TextureGarbageCollector.prototype.unload = function( displayObject )
 
         this.unload(displayObject.children[i]);
 
-    };
-}
+    }
+};
