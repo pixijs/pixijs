@@ -149,8 +149,9 @@ ParticleRenderer.prototype.render = function (container)
 
     var gl = this.renderer.gl;
 
-  //  var m =  container.worldTransform.copy( this.tempMatrix );
-//    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
+    var m =  container.worldTransform.copy( this.tempMatrix );
+    m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
+    this.shader.uniforms.projectionMatrix = m.toArray(true);
     this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
