@@ -103,16 +103,11 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            var sizeX = this._size._x;
-            var sizeY = this._size._y;
-            return sizeX && sizeY ? sizeX : this.texture.width;
+            return this._size.x || this.texture.width;
         },
         set: function (value)
         {
             this._size.x = value;
-            if (this._size.y === 0) {
-                this._size.y = this.texture.height;
-            }
         }
     },
 
@@ -125,16 +120,11 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            var sizeX = this._size._x;
-            var sizeY = this._size._y;
-            return sizeX && sizeY ? sizeY : this.texture.height;
+            return this._size.y || this.texture.height;
         },
         set: function (value)
         {
             this._size.y = value;
-            if (this._size.x === 0) {
-                this._size.x = this.texture.width;
-            }
         }
     },
 
@@ -216,35 +206,37 @@ Sprite.prototype.calculateVertices = function ()
     var texture = this._texture,
         w0, w1, h0, h1,
         trim = texture.trim,
-        crop = texture.crop;
+        orig = texture.orig;
 
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * crop.width;
+        w1 = trim.x - this.anchor.x * orig.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * crop.height;
+        h1 = trim.y - this.anchor.y * orig.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (crop.width ) * (1-this.anchor.x);
-        w1 = (crop.width ) * -this.anchor.x;
+        w0 = (orig.width ) * (1-this.anchor.x);
+        w1 = (orig.width ) * -this.anchor.x;
 
-        h0 = crop.height * (1-this.anchor.y);
-        h1 = crop.height * -this.anchor.y;
+        h0 = orig.height * (1-this.anchor.y);
+        h1 = orig.height * -this.anchor.y;
     }
 
     var sizeX = this._size._x;
-    var sizeY = this._size._y;
-    if (sizeX && sizeY) {
-        sizeX /= crop.width;
-        sizeY /= crop.height;
+    if (sizeX ) {
+        sizeX /= orig.width;
         w0 *= sizeX;
-        h0 *= sizeY;
         w1 *= sizeX;
+    }
+    var sizeY = this._size._y;
+    if (sizeY) {
+        sizeY /= orig.height;
+        h0 *= sizeY;
         h1 *= sizeY;
     }
     this.geometry.setRectCoords(0, w1, h1, w0, h0);

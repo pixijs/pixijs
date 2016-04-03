@@ -79,13 +79,15 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
             dy = (0.5 - sprite.anchor.y) * texture.orig.height;
         }
         var sizeX = sprite.size._x;
-        var sizeY = sprite.size._y;
-        if (sizeX && sizeY) {
-            sizeX /= texture.crop.width;
-            sizeY /= texture.crop.height;
+        if (sizeX) {
+            sizeX /= texture.orig.width;
             dx *= sizeX;
-            dy *= sizeY;
             targetWidth *= sizeX;
+        }
+        var sizeY = sprite.size._y;
+        if (sizeY) {
+            sizeY /= texture.orig.height;
+            dy *= sizeY;
             targetHeight *= sizeY;
         }
         if(texture.rotate) {
