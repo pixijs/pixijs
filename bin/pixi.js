@@ -19397,6 +19397,7 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
     currentGroup.blend = blendMode;
+    currentGroup.worldProjection = worldProjection;
 
     this.tick++;
 
