@@ -634,10 +634,11 @@ DisplayObject.prototype.toLocal = function (position, from, point)
 /**
  *
  * @param {PIXI.DisplayPoint} point
+ * @param {boolean} ignoreBoundsCheck Ignore bounds check
  * @returns {PIXI.Raycast2d} raycast result. Can be null. Can be not valid. MUTABLE OBJECT, DO NOT CHANGE!
  */
-DisplayObject.prototype.raycast = function(point) {
-    if (!this.hitArea && this.isRaycastCheckingBoundsFirst && !this.getBounds().contains(point.x, point.y)) {
+DisplayObject.prototype.raycast = function(point, ignoreBoundsCheck) {
+    if (!ignoreBoundsCheck && !this.hitArea && this.isRaycastCheckingBoundsFirst && !this.getBounds().contains(point.x, point.y)) {
         return null;
     }
     if (this.worldProjection) {

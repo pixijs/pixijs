@@ -69,5 +69,7 @@ Object.defineProperties(InteractionData.prototype, {
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
-    return (point || new core.Point()).copy(displayObject.raycast(globalPos || this.global));
+    point = point || new core.Point();
+    point.copy(displayObject.raycast(globalPos || this.global, true));
+    return point;
 };
