@@ -10466,11 +10466,6 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
 DisplayObject.prototype.destroy = function ()
 {
     this.transform.destroy();
-    this.position = null;
-    this.scale = null;
-    this.pivot = null;
-    this.skew = null;
-
     this.parent = null;
 
     this._bounds = null;
@@ -18074,7 +18069,7 @@ RenderTarget.prototype.checkWorldProjection = function(worldProjection) {
         }
         return worldProjection.checkChildReverseTransform(this.worldProjection, this.projection2d);
     } else {
-        return worldProjection !== null;
+        return this.worldProjection !== null;
     }
 };
 

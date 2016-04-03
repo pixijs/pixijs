@@ -211,7 +211,7 @@ RenderTarget.prototype.checkWorldProjection = function(worldProjection) {
         }
         return worldProjection.checkChildReverseTransform(this.worldProjection, this.projection2d);
     } else {
-        return worldProjection !== null;
+        return this.worldProjection !== null;
     }
 };
 
