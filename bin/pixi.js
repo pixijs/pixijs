@@ -8948,7 +8948,7 @@ var CONST = {
      * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
-     * Handy for mobile devices! 
+     * Handy for mobile devices!
      * This property only affects WebGL
      * @static
      * @constant
@@ -8985,7 +8985,7 @@ var CONST = {
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
-    
+
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.
@@ -9039,7 +9039,7 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(16)//this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
@@ -11123,8 +11123,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
     this._spriteRect.worldAlpha = this.worldAlpha;
 
-    Graphics._SPRITE_TEXTURE.crop.width = rect.width;
-    Graphics._SPRITE_TEXTURE.crop.height = rect.height;
+    Graphics._SPRITE_TEXTURE.frame.width = rect.width;
+    Graphics._SPRITE_TEXTURE.frame.height = rect.height;
 
     this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
@@ -11376,7 +11376,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
+ * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)
@@ -11512,7 +11512,7 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
     this.fill = fill;
 
     /*
-     * @member {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
+     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
      */
     this.shape = shape;
 
@@ -12887,7 +12887,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
     // text
@@ -12957,7 +12958,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./graphics/Graphics":44,"./graphics/GraphicsData":45,"./graphics/canvas/CanvasGraphicsRenderer":46,"./graphics/webgl/GraphicsRenderer":48,"./math":60,"./renderers/canvas/CanvasRenderer":67,"./renderers/canvas/utils/CanvasRenderTarget":69,"./renderers/webgl/WebGLRenderer":74,"./renderers/webgl/filters/Filter":76,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":79,"./renderers/webgl/managers/WebGLManager":83,"./renderers/webgl/utils/ObjectRenderer":84,"./renderers/webgl/utils/Quad":85,"./renderers/webgl/utils/RenderTarget":86,"./sprites/Sprite":89,"./sprites/canvas/CanvasSpriteRenderer":90,"./sprites/webgl/SpriteRenderer":93,"./text/Text":95,"./textures/BaseRenderTexture":96,"./textures/BaseTexture":97,"./textures/RenderTexture":98,"./textures/Texture":99,"./textures/TextureUvs":100,"./textures/VideoBaseTexture":101,"./ticker":103,"./utils":106,"pixi-gl-core":1}],57:[function(require,module,exports){
+},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./graphics/Graphics":44,"./graphics/GraphicsData":45,"./graphics/canvas/CanvasGraphicsRenderer":46,"./graphics/webgl/GraphicsRenderer":48,"./math":60,"./renderers/canvas/CanvasRenderer":67,"./renderers/canvas/utils/CanvasRenderTarget":69,"./renderers/webgl/WebGLRenderer":74,"./renderers/webgl/filters/Filter":76,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":79,"./renderers/webgl/managers/WebGLManager":83,"./renderers/webgl/utils/ObjectRenderer":84,"./renderers/webgl/utils/Quad":85,"./renderers/webgl/utils/RenderTarget":86,"./sprites/Sprite":89,"./sprites/canvas/CanvasSpriteRenderer":90,"./sprites/canvas/CanvasTinter":91,"./sprites/webgl/SpriteRenderer":93,"./text/Text":95,"./textures/BaseRenderTexture":96,"./textures/BaseTexture":97,"./textures/RenderTexture":98,"./textures/Texture":99,"./textures/TextureUvs":100,"./textures/VideoBaseTexture":101,"./ticker":103,"./utils":106,"pixi-gl-core":1}],57:[function(require,module,exports){
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
@@ -16223,7 +16224,10 @@ WebGLState.prototype.resetToDefault = function()
 module.exports = WebGLState;
 
 },{"./utils/mapWebGLBlendModesToPixi":87}],76:[function(require,module,exports){
-var extractUniformsFromSrc = require('./extractUniformsFromSrc');
+var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
+    utils = require('../../../utils'),
+    SOURCE_KEY_MAP = {};
+
 // var math = require('../../../math');
 /**
  * @class
@@ -16263,20 +16267,24 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
         this.uniforms[i] = this.uniformData[i].value;
     }
 
-    // this.uniforms =
     // this is where we store shader references..
     // TODO we could cache this!
     this.glShaders = [];
 
-    // used for cacheing..
-    this.glShaderKey = null;
+    // used for cacheing.. sure there is a better way!
+    if(!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
+    {
+        SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = utils.uid();
+    }
+
+    this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
 
     this.padding = 4;
     this.resolution = 1;
 }
 
 // constructor
-Filter.prototype.constructor = Filter;
+//Filter.prototype.constructor = Filter;
 module.exports = Filter;
 
 // var tempMatrix = new math.Matrix();
@@ -16350,7 +16358,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./extractUniformsFromSrc":77}],77:[function(require,module,exports){
+},{"../../../utils":106,"./extractUniformsFromSrc":77}],77:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
 var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
@@ -17983,12 +17991,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.crop.width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.crop.width;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -18002,12 +18010,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.crop.height;
+            return  Math.abs(this.scale.y) * this.texture.orig.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.crop.height;
+            this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
         }
     },
@@ -18063,12 +18071,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.crop.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.crop.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
     }
 };
 
@@ -18080,25 +18088,25 @@ Sprite.prototype.caclulateVertices = function ()
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim,
-        crop = texture.crop;
+        orig = texture.orig;
 
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * crop.width;
+        w1 = trim.x - this.anchor.x * orig.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * crop.height;
+        h1 = trim.y - this.anchor.y * orig.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (crop.width ) * (1-this.anchor.x);
-        w1 = (crop.width ) * -this.anchor.x;
+        w0 = (orig.width ) * (1-this.anchor.x);
+        w1 = (orig.width ) * -this.anchor.x;
 
-        h0 = crop.height * (1-this.anchor.y);
-        h1 = crop.height * -this.anchor.y;
+        h0 = orig.height * (1-this.anchor.y);
+        h1 = orig.height * -this.anchor.y;
     }
 
     // xy
@@ -18243,10 +18251,10 @@ Sprite.prototype.getBounds = function ()
  */
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture.crop.width * this.anchor.x;
-    this._bounds.y = -this._texture.crop.height * this.anchor.y;
-    this._bounds.width = this._texture.crop.width;
-    this._bounds.height = this._texture.crop.height;
+    this._bounds.x = -this._texture.orig.width * this.anchor.x;
+    this._bounds.y = -this._texture.orig.height * this.anchor.y;
+    this._bounds.width = this._texture.orig.width;
+    this._bounds.height = this._texture.orig.height;
     return this._bounds;
 };
 
@@ -18260,8 +18268,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture.crop.width;
-    var height = this._texture.crop.height;
+    var width = this._texture.orig.width;
+    var height = this._texture.orig.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -18403,7 +18411,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         width = texture._frame.width,
         height = texture._frame.height;
 
-    if (texture.crop.width <= 0 || texture.crop.height <= 0)
+    if (texture.orig.width <= 0 || texture.orig.height <= 0)
     {
         return;
     }
@@ -18423,11 +18431,11 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         }
 
         if (texture.trim) {
-            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.crop.width;
-            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.crop.height;
+            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.orig.width;
+            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.orig.height;
         } else {
-            dx = (0.5 - sprite.anchor.x) * texture.crop.width;
-            dy = (0.5 - sprite.anchor.y) * texture.crop.height;
+            dx = (0.5 - sprite.anchor.x) * texture.orig.width;
+            dy = (0.5 - sprite.anchor.y) * texture.orig.height;
         }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
@@ -18864,8 +18872,10 @@ function SpriteRenderer(renderer)
     this.vertexBuffers = [];
     this.vaos = [];
 
-    this.vaoMax = 20;
+    this.vaoMax = 2;
     this.vertexCount = 0;
+
+    this.renderer.on('prerender', this.onPrerender, this);
 }
 
 
@@ -18892,8 +18902,6 @@ SpriteRenderer.prototype.onContextChange = function ()
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-
-
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
@@ -18907,6 +18915,11 @@ SpriteRenderer.prototype.onContextChange = function ()
 
     this.vao = this.vaos[0];
     this.currentBlendMode = 99999;
+};
+
+SpriteRenderer.prototype.onPrerender = function ()
+{
+    this.vertexCount = 0;
 };
 
 /**
@@ -19064,11 +19077,22 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.size = i - currentGroup.start;
 
     this.vertexCount++;
-    this.vertexCount %= this.vaoMax;
+
+    if(this.vaoMax <= this.vertexCount)
+    {
+        this.vaoMax++;
+        this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+        // build the vao object that will render..
+        this.vaos[this.vertexCount] = this.renderer.createVao()
+        .addIndex(this.indexBuffer)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+    }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
     this.vao = this.vaos[this.vertexCount].bind();
-
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {
@@ -19164,7 +19188,7 @@ function generateMultiTextureShader(gl, maxTextures)
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
 
     var sampleValues = [];
-    for (var i = 0; i < maxTextures; i++) 
+    for (var i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
     }
@@ -19181,8 +19205,8 @@ function generateSampleSrc(maxTextures)
 
     src += '\n';
     src += '\n';
-    
-    for (var i = 0; i < maxTextures; i++) 
+
+    for (var i = 0; i < maxTextures; i++)
     {
         if(i > 0)
         {
@@ -19649,8 +19673,8 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.width = this.canvas.width / this.resolution;
     texture.baseTexture.height = this.canvas.height / this.resolution;
-    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
-    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
+    texture.orig.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.orig.height = texture._frame.height = this.canvas.height / this.resolution;
 
     texture.trim.x = 0;
     texture.trim.y = -style.padding;
@@ -20594,8 +20618,8 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
     //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
-    this._frame.width = this.crop.width = width;
-    this._frame.height = this.crop.height = height;
+    this._frame.width = this.orig.width = width;
+    this._frame.height = this.orig.height = height;
 
     if (!doNotResizeBaseTexture)
     {
@@ -20641,11 +20665,11 @@ var BaseTexture = require('./BaseTexture'),
  * @memberof PIXI
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
- * @param [crop] {PIXI.Rectangle} The area of original texture
+ * @param [orig] {PIXI.Rectangle} The area of original texture
  * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
  * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
-function Texture(baseTexture, frame, crop, trim, rotate)
+function Texture(baseTexture, frame, orig, trim, rotate)
 {
     EventEmitter.call(this);
 
@@ -20716,7 +20740,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      *
      * @member {PIXI.Rectangle}
      */
-    this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
+    this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
 
     this._rotate = +(rotate || 0);
 
@@ -20786,7 +20810,7 @@ Object.defineProperties(Texture.prototype, {
 
             if (!this.trim)
             {
-                this.crop = frame;
+                this.orig = frame;
             }
 
             if (this.valid)
@@ -20826,7 +20850,7 @@ Object.defineProperties(Texture.prototype, {
      */
     width: {
         get: function() {
-            return this.crop ? this.crop.width : 0;
+            return this.orig ? this.orig.width : 0;
         }
     },
 
@@ -20837,7 +20861,7 @@ Object.defineProperties(Texture.prototype, {
      */
     height: {
         get: function() {
-            return this.crop ? this.crop.height : 0;
+            return this.orig ? this.orig.height : 0;
         }
     }
 });
@@ -20908,7 +20932,7 @@ Texture.prototype.destroy = function (destroyBase)
     this._frame = null;
     this._uvs = null;
     this.trim = null;
-    this.crop = null;
+    this.orig = null;
 
     this.valid = false;
 
@@ -20923,7 +20947,7 @@ Texture.prototype.destroy = function (destroyBase)
  */
 Texture.prototype.clone = function ()
 {
-    return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
+    return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate);
 };
 
 /**
@@ -22326,7 +22350,7 @@ Object.defineProperties(core, {
      */
     ParticleContainer: {
         get: function() {
-            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please useparticles.ParticleContainer from now on.');
+            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             return particles.ParticleContainer;
         }
     },
@@ -22626,6 +22650,11 @@ core.utils.uuid = function ()
 {
     console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
     return core.utils.uid();
+};
+
+core.utils.canUseNewCanvasBlendModes = function() {
+    console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
+    return core.CanvasTinter.canUseMultiply;
 };
 
 },{"./core":56,"./extras":119,"./filters":131,"./mesh":146,"./particles":149}],110:[function(require,module,exports){
@@ -25857,7 +25886,7 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
-core.extract  = require('./extract');
+core.extract  		= require('./extract');
 
 // export a premade loader instance
 /**
@@ -27189,7 +27218,7 @@ module.exports = function ()
 
                         var frame = null;
                         var trim = null;
-                        var crop = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+                        var orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
                         if (frames[i].rotated) {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
@@ -27209,7 +27238,7 @@ module.exports = function ()
                              );
                         }
 
-                        resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, crop, trim, frames[i].rotated ? 2 : 0);
+                        resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, orig, trim, frames[i].rotated ? 2 : 0);
 
                         // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                         core.utils.TextureCache[i] = resource.textures[i];
@@ -29014,7 +29043,7 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
     var sprite,
         texture,
         trim,
-        crop,
+        orig,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -29026,25 +29055,25 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         sx = sprite.scale.x;
         sy = sprite.scale.y;
         trim = texture.trim;
-        crop = texture.crop;
+        orig = texture.orig;
 
         if (trim)
         {
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-            w1 = trim.x - sprite.anchor.x * crop.width;
+            w1 = trim.x - sprite.anchor.x * orig.width;
             w0 = w1 + trim.width;
 
-            h1 = trim.y - sprite.anchor.y * crop.height;
+            h1 = trim.y - sprite.anchor.y * orig.height;
             h0 = h1 + trim.height;
 
         }
         else
         {
-            w0 = (crop.width ) * (1-sprite.anchor.x);
-            w1 = (crop.width ) * -sprite.anchor.x;
+            w0 = (orig.width ) * (1-sprite.anchor.x);
+            w1 = (orig.width ) * -sprite.anchor.x;
 
-            h0 = crop.height * (1-sprite.anchor.y);
-            h1 = crop.height * -sprite.anchor.y;
+            h0 = orig.height * (1-sprite.anchor.y);
+            h1 = orig.height * -sprite.anchor.y;
         }
 
         array[offset] = w1 * sx;

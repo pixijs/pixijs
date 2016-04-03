@@ -69,7 +69,7 @@ Rectangle.prototype.clone = function ()
 Rectangle.prototype.copy = function (rectangle)
 {
     this.x = rectangle.x;
-    this.x = rectangle.y;
+    this.y = rectangle.y;
     this.width = rectangle.width;
     this.height = rectangle.height;
 
