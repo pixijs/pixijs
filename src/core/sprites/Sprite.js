@@ -260,13 +260,17 @@ Sprite.prototype._renderWebGL = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-Sprite.prototype.updateTransform = function() {
+Sprite.prototype.checkVertices = function() {
     if(this.textureDirty)
     {
         this.textureDirty = false;
         // set the vertex data
         this.calculateVertices();
     }
+};
+
+Sprite.prototype.updateTransform = function() {
+    this.checkVertices();
     this.containerUpdateTransform();
 };
 

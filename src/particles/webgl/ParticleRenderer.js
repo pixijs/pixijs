@@ -149,9 +149,7 @@ ParticleRenderer.prototype.render = function (container)
 
     var gl = this.renderer.gl;
 
-    var m = container.worldTransform.copy( this.tempMatrix );
-    m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
-    this.shader.uniforms.projectionMatrix = m.toArray(true);
+    this.renderer.bindProjection(container.updateProjectedTransform());
     this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
@@ -228,8 +226,6 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
 {
     var sprite,
         texture,
-        trim,
-        orig,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -240,27 +236,13 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        trim = texture.trim;
-        orig = texture.orig;
 
-        if (trim)
-        {
-            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-            w1 = trim.x - sprite.anchor.x * orig.width;
-            w0 = w1 + trim.width;
-
-            h1 = trim.y - sprite.anchor.y * orig.height;
-            h0 = h1 + trim.height;
-
-        }
-        else
-        {
-            w0 = (orig.width ) * (1-sprite.anchor.x);
-            w1 = (orig.width ) * -sprite.anchor.x;
-
-            h0 = orig.height * (1-sprite.anchor.y);
-            h1 = orig.height * -sprite.anchor.y;
-        }
+        sprite.checkVertices();
+        var vertices = sprite.geometry.vertices;
+        w0 = vertices[2];
+        h0 = vertices[5];
+        w1 = vertices[0];
+        h1 = vertices[1];
 
         array[offset] = w1 * sx;
         array[offset + 1] = h1 * sy;
@@ -325,7 +307,6 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
     for (var i = 0; i < amount; i++)
     {
         var spriteRotation = children[startIndex + i].rotation;
-
 
         array[offset] = spriteRotation;
         array[offset + stride] = spriteRotation;

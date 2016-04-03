@@ -123,7 +123,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / height;
     uTransform[2] = ( textureBaseWidth / width ) * this.tileScale.x;
     uTransform[3] = ( textureBaseHeight / height ) * this.tileScale.y;
-    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.computedTransform.matrix2d.toArray(true);
     glData.shader.uniforms.uTransform = uTransform;
     glData.shader.uniforms.alpha = this.worldAlpha;
 
