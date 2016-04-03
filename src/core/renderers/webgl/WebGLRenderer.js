@@ -5,6 +5,7 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
+    TextureGarbageCollector = require('./TextureGarbageCollector'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -172,6 +173,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(this);
+    this.textureGC = new TextureGarbageCollector(this);
 
     this.state.resetToDefault();
 
@@ -211,8 +213,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    var gl = this.gl;
-
     this._lastObjectRendered = displayObject;
 
     if(!skipUpdateTransform)
@@ -223,7 +223,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         displayObject.parent = this._tempDisplayObjectParent;
         displayObject.updateTransform();
         displayObject.parent = cacheParent;
-       // displayObject.hitArea = //TODO add a temp hit area
+        // displayObject.hitArea = //TODO add a temp hit area
     }
 
     this.bindRenderTexture(renderTexture, transform);
@@ -232,7 +232,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if( clear || this.clearBeforeRender)
     {
-        renderTarget.clear();
+        this._activeRenderTarget.clear();
     }
 
 
@@ -243,6 +243,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     this.currentRenderer.flush();
     //this.setObjectRenderer(this.emptyRenderer);
 
+    this.textureGC.update();
     this.emit('postrender');
 };
 
@@ -281,7 +282,7 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
-  //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+    //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
     SystemRenderer.prototype.resize.call(this, width, height);
 
@@ -337,6 +338,7 @@ WebGLRenderer.prototype.setTransform = function (matrix)
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
+    var renderTarget;
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
@@ -464,6 +466,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     }
     else
     {
+        texture.touched = this.textureGC.count;
         // bind the current texture
         texture._glTextures[this.CONTEXT_UID].bind();
     }

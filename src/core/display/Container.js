@@ -460,7 +460,7 @@ Container.prototype.getBounds = function ()
             this._currentBounds = this._getChildBounds();
         } else
         {
-            this._currentBounds = geom.getBounds()
+            this._currentBounds = geom.getBounds();
             this._currentBounds.enlarge(this._getChildBounds());
         }
     }

@@ -338,10 +338,9 @@ Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) 
         container.zOrder = parentZOrder;
     } else {
         if (this.onZOrder) {
-            this.onZOrder(list[i]);
+            this.onZOrder(container);
         }
     }
-    var z = container.zIndex;
     list.push(container);
     if (container._mask || container._filters && !container._filters.length) {
         flags.push(1);
@@ -384,15 +383,19 @@ Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
     function culler(element) {
         var s = element.getBounds();
         var b = element.renderable =
-            s != EMPTY &&
+            s !== EMPTY &&
             (s.x + s.width >= x1 && s.x <= x2 &&
             s.y + s.height >= y1 && s.y <= y2);
 
-        if (!b) return false;
+        if (!b) {
+            return false;
+        }
         var children = element.children;
         for (var i = 0; i < children.length; i++) {
             var c = children[i];
-            if (!c.visible) continue;
+            if (!c.visible) {
+                continue;
+            }
             culler(c);
         }
         return true;

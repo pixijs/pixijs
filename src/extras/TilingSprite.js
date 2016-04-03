@@ -1,5 +1,4 @@
 var core = require('../core'),
-    tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
     TilingShader = require('./webgl/TilingShader');
 

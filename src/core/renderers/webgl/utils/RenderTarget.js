@@ -1,7 +1,6 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
     Transform2d = require('../../../c2d/Transform2d'),
-    GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
@@ -207,10 +206,12 @@ RenderTarget.prototype.setWorldProjection = function(worldProjection) {
 
 RenderTarget.prototype.checkWorldProjection = function(worldProjection) {
     if (worldProjection) {
-        if (!this.worldProjection) return true;
+        if (!this.worldProjection) {
+            return true;
+        }
         return worldProjection.checkChildReverseTransform(this.worldProjection, this.projection2d);
     } else {
-        return worldProjection != null;
+        return worldProjection !== null;
     }
 };
 
