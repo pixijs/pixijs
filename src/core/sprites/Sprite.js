@@ -1,9 +1,9 @@
-var math = require('../math'),
-    Texture = require('../textures/Texture'),
+var Texture = require('../textures/Texture'),
+    ObservablePoint2d = require('../c2d/ObservablePoint2d'),
+    Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),
     utils = require('../utils'),
-    CONST = require('../const'),
-    tempPoint = new math.Point();
+    CONST = require('../const');
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -22,16 +22,21 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
+    /**
+     * Private anchor
+     *
+     * @member {PIXI.ObservablePoint2d}
+     * @private
+     */
+    this._anchor = new ObservablePoint2d(this.makeDirty, this, 0, 0);
 
     /**
-     * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the texture's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
-     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     * Private size
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint2d}
+     * @private
      */
-    this.anchor = new math.Point();
+    this._size = new ObservablePoint2d(this.makeDirty, this, 0, 0);
 
     /**
      * The texture that the sprite is using
@@ -40,22 +45,6 @@ function Sprite(texture)
      * @private
      */
     this._texture = null;
-
-    /**
-     * The width of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._width = 0;
-
-    /**
-     * The height of the sprite (this is initially set by the texture)
-     *
-     * @member {number}
-     * @private
-     */
-    this._height = 0;
 
     /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
@@ -92,7 +81,11 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.vertexData = new Float32Array(8);
+
+    this.geometry = new Geometry2d();
+    this.geometry.size = 4;
+
+    this.isRaycastPossible = true;
 }
 
 // constructor
@@ -102,7 +95,7 @@ module.exports = Sprite;
 
 Object.defineProperties(Sprite.prototype, {
     /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
+     * The width of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -110,18 +103,21 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.orig.width;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeX : this.texture.width;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
+            this._size.x = value;
+            if (this._size.y === 0) {
+                this._size.y = this.texture.height;
+            }
         }
     },
 
     /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set
+     * The height of the sprite, setting this will actually modify the size to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
@@ -129,13 +125,16 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.orig.height;
+            var sizeX = this._size._x;
+            var sizeY = this._size._y;
+            return sizeX && sizeY ? sizeY : this.texture.height;
         },
         set: function (value)
         {
-            var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
-            this._height = value;
+            this._size.y = value;
+            if (this._size.x === 0) {
+                this._size.x = this.texture.width;
+            }
         }
     },
 
@@ -167,82 +166,92 @@ Object.defineProperties(Sprite.prototype, {
                 // wait for the texture to load
                 if (value.baseTexture.hasLoaded)
                 {
-                    this._onTextureUpdate();
+                    this.makeDirty();
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate, this);
+                    value.once('update', this.makeDirty, this);
                 }
             }
+        }
+    },
+
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     *
+     * @member {PIXI.ObservablePoint2d}
+     * @memberof PIXI.Sprite#
+     */
+    anchor: {
+        get: function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            this._anchor.copy(value);
+        }
+    },
+
+    /**
+     * If both size.x and size.y is not zero, it will override texture dimensions
+     * size does not affect scale
+     *
+     * @member {PIXI.ObservablePoint2d}
+     * @memberof PIXI.Sprite#
+     */
+    size: {
+        get: function() {
+            return this._size;
+        },
+        set: function(value) {
+            this._size.copy(value);
         }
     }
 });
 
-/**
- * When the texture is updated, this event will fire to update the scale and frame
- *
- * @private
- */
-Sprite.prototype._onTextureUpdate = function ()
-{
-    this.textureDirty = true;
-
-    // so if _width is 0 then width was not set..
-    if (this._width)
-    {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
-    }
-
-    if (this._height)
-    {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
-    }
-};
-
-Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
-        wt = this.transform.worldTransform,
-        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
-        vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim,
-        orig = texture.orig;
+        crop = texture.crop;
 
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * orig.width;
+        w1 = trim.x - this.anchor.x * crop.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * orig.height;
+        h1 = trim.y - this.anchor.y * crop.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (orig.width ) * (1-this.anchor.x);
-        w1 = (orig.width ) * -this.anchor.x;
+        w0 = (crop.width ) * (1-this.anchor.x);
+        w1 = (crop.width ) * -this.anchor.x;
 
-        h0 = orig.height * (1-this.anchor.y);
-        h1 = orig.height * -this.anchor.y;
+        h0 = crop.height * (1-this.anchor.y);
+        h1 = crop.height * -this.anchor.y;
     }
 
-    // xy
-    vertexData[0] = a * w1 + c * h1 + tx;
-    vertexData[1] = d * h1 + b * w1 + ty;
+    var sizeX = this._size._x;
+    var sizeY = this._size._y;
+    if (sizeX && sizeY) {
+        sizeX /= crop.width;
+        sizeY /= crop.height;
+        w0 *= sizeX;
+        h0 *= sizeY;
+        w1 *= sizeX;
+        h1 *= sizeY;
+    }
+    this.geometry.setRectCoords(0, w1, h1, w0, h0);
+};
 
-    // xy
-    vertexData[2] = a * w0 + c * h1 + tx;
-    vertexData[3] = d * h1 + b * w0 + ty;
-
-     // xy
-    vertexData[4] = a * w0 + c * h0 + tx;
-    vertexData[5] = d * h0 + b * w0 + ty;
-
-    // xy
-    vertexData[6] = a * w1 + c * h0 + tx;
-    vertexData[7] = d * h0 + b * w1 + ty;
+Sprite.prototype.makeDirty = function() {
+    this.textureDirty = true;
 };
 
 /**
@@ -254,15 +263,19 @@ Sprite.prototype.caclulateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
+    this.updateGeometry();
+    renderer.setObjectRenderer(renderer.plugins.sprite);
+    renderer.plugins.sprite.render(this);
+};
+
+Sprite.prototype.updateTransform = function() {
+    if(this.textureDirty)
     {
         this.textureDirty = false;
         // set the vertex data
-        this.caclulateVertices();
+        this.calculateVertices();
     }
-
-    renderer.setObjectRenderer(renderer.plugins.sprite);
-    renderer.plugins.sprite.render(this);
+    this.containerUpdateTransform();
 };
 
 /**
@@ -276,127 +289,18 @@ Sprite.prototype._renderCanvas = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-
 /**
- * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
+ * Tests if a point is inside this sprite in LOCAL coordinates
  *
- * @return {PIXI.Rectangle} the framing rectangle
+ * @param point {PIXI.Point || PIXI.Raycast2d || PIXI.} the point to test
+ * @return {boolean} the result of the test
  */
-Sprite.prototype.getBounds = function ()
+Sprite.prototype.containsLocalPoint = function( point )
 {
-    //TODO lookinto caching..
-    if(!this._currentBounds)
+    var v = this.geometry.vertices;
+    if ( point.x > v[0] && point.x < v[4] )
     {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
-
-            // set the vertex data
-            this.caclulateVertices();
-
-        }
-
-        var minX, maxX, minY, maxY,
-            w0, w1, h0, h1,
-            vertexData = this.vertexData;
-
-        var x1 = vertexData[0];
-        var y1 = vertexData[1];
-
-        var x2 = vertexData[2];
-        var y2 = vertexData[3];
-
-        var x3 = vertexData[4];
-        var y3 = vertexData[5];
-
-        var x4 = vertexData[6];
-        var y4 = vertexData[7];
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        // check for children
-        if(this.children.length)
-        {
-            var childBounds = this.containerGetBounds();
-
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
-};
-
-/**
- * Gets the local bounds of the sprite object.
- *
- */
-Sprite.prototype.getLocalBounds = function ()
-{
-    this._bounds.x = -this._texture.orig.width * this.anchor.x;
-    this._bounds.y = -this._texture.orig.height * this.anchor.y;
-    this._bounds.width = this._texture.orig.width;
-    this._bounds.height = this._texture.orig.height;
-    return this._bounds;
-};
-
-/**
-* Tests if a point is inside this sprite
-*
-* @param point {PIXI.Point} the point to test
-* @return {boolean} the result of the test
-*/
-Sprite.prototype.containsPoint = function( point )
-{
-    this.worldTransform.applyInverse(point,  tempPoint);
-
-    var width = this._texture.orig.width;
-    var height = this._texture.orig.height;
-    var x1 = -width * this.anchor.x;
-    var y1;
-
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
-    {
-        y1 = -height * this.anchor.y;
-
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        if ( point.y > v[1] && point.y < v[5] )
         {
             return true;
         }
@@ -404,7 +308,6 @@ Sprite.prototype.containsPoint = function( point )
 
     return false;
 };
-
 
 /**
  * Destroys this sprite and optionally its texture
@@ -416,7 +319,10 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
     Container.prototype.destroy.call(this);
 
+    this.anchor.destroy();
+    this.size.destroy();
     this.anchor = null;
+    this.size = null;
 
     if (destroyTexture)
     {

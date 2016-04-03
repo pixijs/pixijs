@@ -9,7 +9,7 @@
  * @namespace PIXI
  */
 // export core and const. We assign core to const so that the non-reference types in const remain in-tact
-var core = module.exports = Object.assign(require('./const'), require('./math'), {
+var core = module.exports = Object.assign(require('./const'), require('./math'), require('./c2d'), {
     // utils
     utils: require('./utils'),
     ticker: require('./ticker'),
@@ -17,12 +17,14 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
-    Transform:              require('./display/Transform'),
-    TransformStatic:        require('./display/TransformStatic'),
+    Camera2d:               require('./display/Camera2d'),
+    DisplayObjectProxy:     require('./display/DisplayObjectProxy'),
+    ContainerProxy:         require('./display/ContainerProxy'),
+    CameraProxy:         require('./display/CameraProxy'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
     CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 

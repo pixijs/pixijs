@@ -26,7 +26,7 @@ CanvasMaskManager.prototype.pushMask = function (maskData)
     renderer.context.save();
 
     var cacheAlpha = maskData.alpha;
-    var transform = maskData.transform.worldTransform;
+    var transform = maskData.projectionMatrix2d;
     var resolution = renderer.resolution;
 
     renderer.context.setTransform(

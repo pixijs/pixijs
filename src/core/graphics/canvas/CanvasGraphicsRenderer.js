@@ -43,7 +43,7 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
     var renderer = this.renderer;
     var context = renderer.context;
     var worldAlpha = graphics.worldAlpha;
-    var transform = graphics.transform.worldTransform;
+    var transform = graphics.projectionMatrix2d;
     var resolution = renderer.resolution;
 
      // if the tint has changed, set the graphics object to dirty.

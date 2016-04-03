@@ -5,7 +5,6 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     TextureManager = require('./TextureManager'),
-    TextureGarbageCollector = require('./TextureGarbageCollector'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
@@ -154,8 +153,6 @@ function WebGLRenderer(width, height, options)
     this._activeTexture = null;
 
     this.setBlendMode(0);
-
-
 }
 
 // constructor
@@ -175,13 +172,11 @@ WebGLRenderer.prototype._initContext = function ()
 
     // create a texture manager...
     this.textureManager = new TextureManager(this);
-    this.textureGC = new TextureGarbageCollector(this);
 
     this.state.resetToDefault();
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -216,10 +211,13 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
+    var gl = this.gl;
+
     this._lastObjectRendered = displayObject;
 
     if(!skipUpdateTransform)
     {
+        utils.resetUpdateOrder();
         // update the scene graph
         var cacheParent = displayObject.parent;
         displayObject.parent = this._tempDisplayObjectParent;
@@ -234,18 +232,16 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if( clear || this.clearBeforeRender)
     {
-        this._activeRenderTarget.clear();
+        renderTarget.clear();
     }
 
 
-
+    utils.resetDisplayOrder();
     displayObject.renderWebGL(this);
 
     // apply transform..
     this.currentRenderer.flush();
     //this.setObjectRenderer(this.emptyRenderer);
-
-    this.textureGC.update();
 
     this.emit('postrender');
 };
@@ -341,8 +337,6 @@ WebGLRenderer.prototype.setTransform = function (matrix)
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
-    var renderTarget;
-
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
@@ -375,6 +369,24 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     this.bindRenderTarget(renderTarget);
 
     return this;
+};
+
+/**
+ * Binds projection uniform
+ *
+ * @param worldProjection {PIXI.ComputedTransform2d} Calculated projection
+ */
+WebGLRenderer.prototype.bindProjection = function(worldProjection) {
+    var aRT = this._activeRenderTarget;
+    var aS = this._activeShader;
+    if (aRT && aRT.checkWorldProjection(worldProjection)) {
+        aRT.setWorldProjection(worldProjection);
+        if (aS) {
+            aS.uniforms.projectionMatrix = aRT.projectionMatrix.toArray(true);
+        }
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -449,11 +461,9 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-
     }
     else
     {
-        texture.touched = this.textureGC.count;
         // bind the current texture
         texture._glTextures[this.CONTEXT_UID].bind();
     }
@@ -543,12 +553,10 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-
     if(this.gl.getExtension('WEBGL_lose_context'))
     {
         this.gl.getExtension('WEBGL_lose_context').loseContext();
     }
-
     this.gl = null;
 
     // this = null;

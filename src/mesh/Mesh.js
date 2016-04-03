@@ -1,8 +1,6 @@
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
-    Shader = require('./webgl/MeshShader'),
-    tempPoint = new core.Point(),
-    tempPolygon = new core.Polygon();
+    Shader = require('./webgl/MeshShader');
 
 /**
  * Base mesh class
@@ -18,6 +16,13 @@ var core = require('../core'),
 function Mesh(texture, vertices, uvs, indices, drawMode)
 {
     core.Container.call(this);
+
+    vertices = vertices ||  new Float32Array([0, 0,
+        100, 0,
+        100, 100,
+        0, 100]);
+    indices = indices || new Uint16Array([0, 1, 3, 2]);
+    this.geometry = core.Geometry2d.fromBuffers(vertices, indices);
 
     /**
      * The texture of the Mesh
@@ -38,28 +43,20 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
         0, 1]);
 
     /**
-     * An array of vertices
-     *
-     * @member {Float32Array}
-     */
-    this.vertices = vertices || new Float32Array([0, 0,
-        100, 0,
-        100, 100,
-        0, 100]);
-
-    /*
-     * @member {Uint16Array} An array containing the indices of the vertices
-     */
-    //  TODO auto generate this based on draw mode!
-    this.indices = indices || new Uint16Array([0, 1, 3, 2]);
-
-    /**
      * Whether the Mesh is dirty or not
      *
      * @member {boolean}
      */
     this.dirty = true;
     this.indexDirty = true;
+
+    /**
+     * Whether the Mesh vertices are dirty or not
+     * @private
+     */
+    this.dirtyVertex = false;
+
+    this._geometryVersion = -1;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -96,6 +93,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     this.shader = null;
 
     this._glDatas = [];
+
+    this.isRaycastCheckingBounds = true;
+    this.isRaycastPossible = true;
 }
 
 // constructor
@@ -104,6 +104,22 @@ Mesh.prototype.constructor = Mesh;
 module.exports = Mesh;
 
 Object.defineProperties(Mesh.prototype, {
+    /*
+     * @member {Uint16Array} An array containing the vertices
+     */
+    vertices: {
+        get: function() {
+            return this.geometry.vertices;
+        }
+    },
+    /*
+     * @member {Uint16Array} An array containing the indices of the vertices
+     */
+    indices: {
+        get: function() {
+            return this.geometry.indices;
+        }
+    },
     /**
      * The texture that the sprite is using
      *
@@ -173,16 +189,18 @@ Mesh.prototype._renderWebGL = function (renderer)
         .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
         this._glDatas[renderer.CONTEXT_UID] = glData;
+    }
 
-
-        this.indexDirty = false;
+    if (this.dirtyVertex || this._geometryVersion !== this.geometry.version) {
+        this.dirtyVertex = false;
+        this._geometryVersion = this.geometry.version;
+        glData.vertexBuffer.upload();
     }
 
     if(this.dirty)
     {
         this.dirty = false;
         glData.uvBuffer.upload();
-
     }
 
     if(this.indexDirty)
@@ -194,9 +212,10 @@ Mesh.prototype._renderWebGL = function (renderer)
     glData.vertexBuffer.upload();
 
     renderer.bindShader(glData.shader);
+    renderer.bindProjection(this.worldProjection);
     renderer.bindTexture(this._texture, 0);
 
-    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
 
     var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
@@ -217,16 +236,15 @@ Mesh.prototype._renderCanvas = function (renderer)
 {
     var context = renderer.context;
 
-    var transform = this.worldTransform;
-    var res = renderer.resolution;
+    var transform = this.projectionMatrix2d;
 
     if (renderer.roundPixels)
     {
-        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
     else
     {
-        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
     if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
@@ -299,21 +317,20 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var base = this._texture.baseTexture;
-    var textureSource = base.source;
-    var textureWidth = base.width;
-    var textureHeight = base.height;
+    var textureSource = this._texture.baseTexture.source;
+    var textureWidth = this._texture.baseTexture.width;
+    var textureHeight = this._texture.baseTexture.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
 
-    var u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
-    var v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
+    var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
+    var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
 
     if (this.canvasPadding > 0)
     {
-        var paddingX = this.canvasPadding / this.worldTransform.a;
-        var paddingY = this.canvasPadding / this.worldTransform.d;
+        var paddingX = this.canvasPadding / this.projectionMatrix2d.a;
+        var paddingY = this.canvasPadding / this.projectionMatrix2d.d;
         var centerX = (x0 + x1 + x2) / 3;
         var centerY = (y0 + y1 + y2) / 3;
 
@@ -366,7 +383,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
         deltaB / delta, deltaE / delta,
         deltaC / delta, deltaF / delta);
 
-    context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
+    context.drawImage(textureSource, 0, 0);
     context.restore();
 };
 
@@ -417,108 +434,14 @@ Mesh.prototype._onTextureUpdate = function ()
 };
 
 /**
- * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
- * @return {PIXI.Rectangle} the framing rectangle
- */
-Mesh.prototype.getBounds = function (matrix)
-{
-    if (!this._currentBounds) {
-        var worldTransform = matrix || this.worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var vertices = this.vertices;
-        for (var i = 0, n = vertices.length; i < n; i += 2) {
-            var rawX = vertices[i], rawY = vertices[i + 1];
-            var x = (a * rawX) + (c * rawY) + tx;
-            var y = (d * rawY) + (b * rawX) + ty;
-
-            minX = x < minX ? x : minX;
-            minY = y < minY ? y : minY;
-
-            maxX = x > maxX ? x : maxX;
-            maxY = y > maxY ? y : maxY;
-        }
-
-        if (minX === -Infinity || maxY === Infinity) {
-            return core.Rectangle.EMPTY;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
-};
-
-/**
- * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
+ * Tests if a point is inside this mesh.
  *
  * @param point {PIXI.Point} the point to test
  * @return {boolean} the result of the test
  */
-Mesh.prototype.containsPoint = function( point ) {
-    if (!this.getBounds().contains(point.x, point.y)) {
-        return false;
-    }
-    this.worldTransform.applyInverse(point,  tempPoint);
-
-    var vertices = this.vertices;
-    var points = tempPolygon.points;
-    var i, len;
-
-    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
-        var indices = this.indices;
-        len = this.indices.length;
-        //TODO: inline this.
-        for (i=0;i<len;i+=3) {
-            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0+1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1+1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2+1];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
-        }
-    } else {
-        len = vertices.length;
-        for (i=0;i<len;i+=6) {
-            points[0] = vertices[i];
-            points[1] = vertices[i+1];
-            points[2] = vertices[i+2];
-            points[3] = vertices[i+3];
-            points[4] = vertices[i+4];
-            points[5] = vertices[i+5];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
-        }
-    }
-    return false;
+Mesh.prototype.containsLocalPoint = function( point ) {
+    return this.geometry.getBounds().containsPoint(point.x, point.y) &&
+        this.geometry.containsPoint(point, this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH);
 };
 
 /**

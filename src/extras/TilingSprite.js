@@ -183,7 +183,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     uTransform[3] = ( textureBaseHeight / this._height ) * this.tileScale.y;
     glData.shader.uniforms.uTransform = uTransform;
 
-    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
 
     renderer.bindTexture(this._texture, 0);
@@ -206,7 +206,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     }
 
     var context = renderer.context,
-        transform = this.worldTransform,
+        transform = this.projectionMatrix2d,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
         modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width,
@@ -353,20 +353,18 @@ TilingSprite.prototype.getBounds = function ()
  * Checks if a point is inside this tiling sprite
  * @param point {PIXI.Point} the point to check
  */
-TilingSprite.prototype.containsPoint = function( point )
+TilingSprite.prototype.containsLocalPoint = function( point )
 {
-    this.worldTransform.applyInverse(point,  tempPoint);
-
     var width = this._width;
     var height = this._height;
     var x1 = -width * this.anchor.x;
     var y1;
 
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    if ( point.x > x1 && point.x < x1 + width )
     {
         y1 = -height * this.anchor.y;
 
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        if ( point.y > y1 && point.y < y1 + height )
         {
             return true;
         }

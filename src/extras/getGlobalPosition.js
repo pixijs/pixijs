@@ -15,8 +15,8 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     {
         this.displayObjectUpdateTransform();
 
-        point.x = this.worldTransform.tx;
-        point.y = this.worldTransform.ty;
+        point.x = this.projectionMatrix2d.tx;
+        point.y = this.projectionMatrix2d.ty;
     }
     else
     {
