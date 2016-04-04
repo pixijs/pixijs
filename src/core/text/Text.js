@@ -233,7 +233,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -410,7 +410,7 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
     while (index < text.length)
     {
         current = characters[index++];
-        if (isStroke) 
+        if (isStroke)
         {
             this.context.strokeText(current, currentPosition, y);
         }
@@ -451,6 +451,8 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.emit('update',  texture.baseTexture);
 
+    this.makeDirty();
+    this.checkVertices();
     this.dirty = false;
 };
 
@@ -459,7 +461,7 @@ Text.prototype.updateTexture = function ()
  *
  * @param renderer {PIXI.WebGLRenderer}
  */
-Text.prototype.renderWebGL = function (renderer)
+Text.prototype._renderWebGL = function (renderer)
 {
     if (this.dirty)
     {
@@ -468,7 +470,7 @@ Text.prototype.renderWebGL = function (renderer)
         this.updateText();
     }
 
-    Sprite.prototype.renderWebGL.call(this, renderer);
+    Sprite.prototype._renderWebGL.call(this, renderer);
 };
 
 /**
@@ -612,21 +614,21 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            if (this._style.breakWords && wordWidth > wordWrapWidth) 
+            if (this._style.breakWords && wordWidth > wordWrapWidth)
             {
                 // Word should be split in the middle
                 var characters = words[j].split('');
-                for (var c = 0; c < characters.length; c++) 
+                for (var c = 0; c < characters.length; c++)
                 {
                   var characterWidth = this.context.measureText(characters[c]).width;
-                  if (characterWidth > spaceLeft) 
+                  if (characterWidth > spaceLeft)
                   {
                     result += '\n' + characters[c];
                     spaceLeft = wordWrapWidth - characterWidth;
-                  } 
-                  else 
+                  }
+                  else
                   {
-                    if (c === 0) 
+                    if (c === 0)
                     {
                       result += ' ';
                     }
@@ -635,7 +637,7 @@ Text.prototype.wordWrap = function (text)
                   }
                 }
             }
-            else 
+            else
             {
                 var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                 if (j === 0 || wordWidthWithSpace > spaceLeft)
@@ -671,14 +673,14 @@ Text.prototype.wordWrap = function (text)
  * @param matrix {PIXI.Matrix} the transformation matrix of the Text
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Text.prototype.getBounds = function (matrix)
+Text.prototype.getBounds = function ()
 {
     if (this.dirty)
     {
         this.updateText();
     }
 
-    return Sprite.prototype.getBounds.call(this, matrix);
+    return Sprite.prototype.getBounds.call(this);
 };
 
 /**

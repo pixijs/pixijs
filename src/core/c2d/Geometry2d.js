@@ -37,6 +37,7 @@ Geometry2d.fromBuffers = function (vertices, indices) {
     var geometry = new Geometry2d();
     geometry.vertices = vertices || null;
     geometry.indices = indices || null;
+    return geometry;
 };
 
 var tempPolygon = new math.Polygon();

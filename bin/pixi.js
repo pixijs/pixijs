@@ -7435,6 +7435,7 @@ ComputedGeometry2d.prototype.applyMatrix = function(geometry, matrix) {
         out[i] = (a * rawX) + (c * rawY) + tx;
         out[i+1] = (d * rawY) + (b * rawX) + ty;
     }
+    this.version++;
 };
 
 },{"./Geometry2d":38}],35:[function(require,module,exports){
@@ -7761,7 +7762,7 @@ function Geometry2d() {
 }
 
 Geometry2d.prototype = Object.create(Geometry.prototype);
-Geometry2d.prototype.constructor = Geometry;
+Geometry2d.prototype.constructor = Geometry2d;
 module.exports = Geometry2d;
 
 Geometry2d.prototype.setRectCoords = function (offset, x1, y1, x2, y2) {
@@ -7782,6 +7783,7 @@ Geometry2d.fromBuffers = function (vertices, indices) {
     var geometry = new Geometry2d();
     geometry.vertices = vertices || null;
     geometry.indices = indices || null;
+    return geometry;
 };
 
 var tempPolygon = new math.Polygon();
@@ -10361,10 +10363,11 @@ DisplayObject.prototype.toLocal = function (position, from, point)
 /**
  *
  * @param {PIXI.DisplayPoint} point
+ * @param {boolean} ignoreBoundsCheck Ignore bounds check
  * @returns {PIXI.Raycast2d} raycast result. Can be null. Can be not valid. MUTABLE OBJECT, DO NOT CHANGE!
  */
-DisplayObject.prototype.raycast = function(point) {
-    if (!this.hitArea && this.isRaycastCheckingBoundsFirst && !this.getBounds().contains(point.x, point.y)) {
+DisplayObject.prototype.raycast = function(point, ignoreBoundsCheck) {
+    if (!ignoreBoundsCheck && !this.hitArea && this.isRaycastCheckingBoundsFirst && !this.getBounds().contains(point.x, point.y)) {
         return null;
     }
     if (this.worldProjection) {
@@ -18628,13 +18631,17 @@ Sprite.prototype._renderWebGL = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-Sprite.prototype.updateTransform = function() {
+Sprite.prototype.checkVertices = function() {
     if(this.textureDirty)
     {
         this.textureDirty = false;
         // set the vertex data
         this.calculateVertices();
     }
+};
+
+Sprite.prototype.updateTransform = function() {
+    this.checkVertices();
     this.containerUpdateTransform();
 };
 
@@ -19877,7 +19884,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -20054,7 +20061,7 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
     while (index < text.length)
     {
         current = characters[index++];
-        if (isStroke) 
+        if (isStroke)
         {
             this.context.strokeText(current, currentPosition, y);
         }
@@ -20095,6 +20102,8 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.emit('update',  texture.baseTexture);
 
+    this.makeDirty();
+    this.checkVertices();
     this.dirty = false;
 };
 
@@ -20103,7 +20112,7 @@ Text.prototype.updateTexture = function ()
  *
  * @param renderer {PIXI.WebGLRenderer}
  */
-Text.prototype.renderWebGL = function (renderer)
+Text.prototype._renderWebGL = function (renderer)
 {
     if (this.dirty)
     {
@@ -20112,7 +20121,7 @@ Text.prototype.renderWebGL = function (renderer)
         this.updateText();
     }
 
-    Sprite.prototype.renderWebGL.call(this, renderer);
+    Sprite.prototype._renderWebGL.call(this, renderer);
 };
 
 /**
@@ -20256,21 +20265,21 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            if (this._style.breakWords && wordWidth > wordWrapWidth) 
+            if (this._style.breakWords && wordWidth > wordWrapWidth)
             {
                 // Word should be split in the middle
                 var characters = words[j].split('');
-                for (var c = 0; c < characters.length; c++) 
+                for (var c = 0; c < characters.length; c++)
                 {
                   var characterWidth = this.context.measureText(characters[c]).width;
-                  if (characterWidth > spaceLeft) 
+                  if (characterWidth > spaceLeft)
                   {
                     result += '\n' + characters[c];
                     spaceLeft = wordWrapWidth - characterWidth;
-                  } 
-                  else 
+                  }
+                  else
                   {
-                    if (c === 0) 
+                    if (c === 0)
                     {
                       result += ' ';
                     }
@@ -20279,7 +20288,7 @@ Text.prototype.wordWrap = function (text)
                   }
                 }
             }
-            else 
+            else
             {
                 var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                 if (j === 0 || wordWidthWithSpace > spaceLeft)
@@ -20315,14 +20324,14 @@ Text.prototype.wordWrap = function (text)
  * @param matrix {PIXI.Matrix} the transformation matrix of the Text
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Text.prototype.getBounds = function (matrix)
+Text.prototype.getBounds = function ()
 {
     if (this.dirty)
     {
         this.updateText();
     }
 
-    return Sprite.prototype.getBounds.call(this, matrix);
+    return Sprite.prototype.getBounds.call(this);
 };
 
 /**
@@ -24293,7 +24302,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / height;
     uTransform[2] = ( textureBaseWidth / width ) * this.tileScale.x;
     uTransform[3] = ( textureBaseHeight / height ) * this.tileScale.y;
-    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.computedTransform.matrix2d.toArray(true);
     glData.shader.uniforms.uTransform = uTransform;
     glData.shader.uniforms.alpha = this.worldAlpha;
 
@@ -26324,7 +26333,9 @@ Object.defineProperties(InteractionData.prototype, {
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
-    return (point || new core.Point()).copy(displayObject.raycast(globalPos || this.global));
+    point = point || new core.Point();
+    point.copy(displayObject.raycast(globalPos || this.global, true));
+    return point;
 };
 
 },{"../core":64}],144:[function(require,module,exports){
@@ -28361,7 +28372,7 @@ var core = require('../core');
  */
 function Rope(texture, points)
 {
-    Mesh.call(this, texture);
+    Mesh.call(this, texture, new Float32Array(points.length * 4), new Float32Array(points.length * 4), new Uint16Array(points.length * 2));
 
     /*
      * @member {PIXI.Point[]} An array of points that determine the rope
@@ -28369,24 +28380,9 @@ function Rope(texture, points)
     this.points = points;
 
     /*
-     * @member {Float32Array} An array of vertices used to construct this rope.
-     */
-    this.vertices = new Float32Array(points.length * 4);
-
-    /*
-     * @member {Float32Array} The WebGL Uvs of the rope.
-     */
-    this.uvs = new Float32Array(points.length * 4);
-
-    /*
      * @member {Float32Array} An array containing the color components
      */
     this.colors = new Float32Array(points.length * 2);
-
-    /*
-     * @member {Uint16Array} An array containing the indices of the vertices
-     */
-    this.indices = new Uint16Array(points.length * 2);
 
     /**
      * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
@@ -28506,7 +28502,8 @@ Rope.prototype.updateTransform = function ()
 
     // this.count -= 0.2;
 
-    var vertices = this.vertices;
+    var geometry = this.geometry;
+    var vertices = geometry.vertices;
     var total = points.length,
         point, index, ratio, perpLength, num;
 
@@ -28549,6 +28546,7 @@ Rope.prototype.updateTransform = function ()
 
         lastPoint = point;
     }
+    geometry.version++;
 
     this.containerUpdateTransform();
 };
@@ -29343,9 +29341,7 @@ ParticleRenderer.prototype.render = function (container)
 
     var gl = this.renderer.gl;
 
-    var m = container.worldTransform.copy( this.tempMatrix );
-    m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
-    this.shader.uniforms.projectionMatrix = m.toArray(true);
+    this.renderer.bindProjection(container.updateProjectedTransform());
     this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
@@ -29422,8 +29418,6 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
 {
     var sprite,
         texture,
-        trim,
-        orig,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -29434,27 +29428,13 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
         texture = sprite._texture;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        trim = texture.trim;
-        orig = texture.orig;
 
-        if (trim)
-        {
-            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-            w1 = trim.x - sprite.anchor.x * orig.width;
-            w0 = w1 + trim.width;
-
-            h1 = trim.y - sprite.anchor.y * orig.height;
-            h0 = h1 + trim.height;
-
-        }
-        else
-        {
-            w0 = (orig.width ) * (1-sprite.anchor.x);
-            w1 = (orig.width ) * -sprite.anchor.x;
-
-            h0 = orig.height * (1-sprite.anchor.y);
-            h1 = orig.height * -sprite.anchor.y;
-        }
+        sprite.checkVertices();
+        var vertices = sprite.geometry.vertices;
+        w0 = vertices[2];
+        h0 = vertices[5];
+        w1 = vertices[0];
+        h1 = vertices[1];
 
         array[offset] = w1 * sx;
         array[offset + 1] = h1 * sy;
@@ -29519,7 +29499,6 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
     for (var i = 0; i < amount; i++)
     {
         var spriteRotation = children[startIndex + i].rotation;
-
 
         array[offset] = spriteRotation;
         array[offset + stride] = spriteRotation;

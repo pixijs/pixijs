@@ -20,7 +20,7 @@ var core = require('../core');
  */
 function Rope(texture, points)
 {
-    Mesh.call(this, texture);
+    Mesh.call(this, texture, new Float32Array(points.length * 4), new Float32Array(points.length * 4), new Uint16Array(points.length * 2));
 
     /*
      * @member {PIXI.Point[]} An array of points that determine the rope
@@ -28,24 +28,9 @@ function Rope(texture, points)
     this.points = points;
 
     /*
-     * @member {Float32Array} An array of vertices used to construct this rope.
-     */
-    this.vertices = new Float32Array(points.length * 4);
-
-    /*
-     * @member {Float32Array} The WebGL Uvs of the rope.
-     */
-    this.uvs = new Float32Array(points.length * 4);
-
-    /*
      * @member {Float32Array} An array containing the color components
      */
     this.colors = new Float32Array(points.length * 2);
-
-    /*
-     * @member {Uint16Array} An array containing the indices of the vertices
-     */
-    this.indices = new Uint16Array(points.length * 2);
 
     /**
      * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
@@ -165,7 +150,8 @@ Rope.prototype.updateTransform = function ()
 
     // this.count -= 0.2;
 
-    var vertices = this.vertices;
+    var geometry = this.geometry;
+    var vertices = geometry.vertices;
     var total = points.length,
         point, index, ratio, perpLength, num;
 
@@ -208,6 +194,7 @@ Rope.prototype.updateTransform = function ()
 
         lastPoint = point;
     }
+    geometry.version++;
 
     this.containerUpdateTransform();
 };
