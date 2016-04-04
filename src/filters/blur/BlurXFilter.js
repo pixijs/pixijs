@@ -40,9 +40,9 @@ BlurXFilter.prototype.constructor = BlurXFilter;
 module.exports = BlurXFilter;
 
 BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
-{   
+{
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
 
@@ -52,7 +52,7 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-   
+
 
     this.uniforms.strength = (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
@@ -99,7 +99,7 @@ Object.defineProperties(BlurXFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding =  Math.abs(value) * 0.5;
+            this.padding =  Math.abs(value) * 2;
             this.strength = value;
         }
     }
