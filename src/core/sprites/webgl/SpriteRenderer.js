@@ -349,7 +349,7 @@ SpriteRenderer.prototype.destroy = function ()
 {
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i].destroy();
-        this.vaoMax[i].destroy();
+        this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
