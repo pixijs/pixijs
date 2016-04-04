@@ -2,15 +2,14 @@ var Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
     GraphicsData = require('./GraphicsData'),
+    GeometrySet = require('../c2d/GeometrySet'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
-    tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point();
-
+    tempMatrix = new math.Matrix();
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.
@@ -151,6 +150,11 @@ function Graphics()
 
     this._spriteRect = null;
     this._fastRect = false;
+
+    this._localBounds = new GeometrySet();
+    this._localBounds.local.size = 4;
+    this.isRaycastCheckingBoundsFirst = true;
+    this.isRaycastPossible = true;
 
     /**
      * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
@@ -731,7 +735,7 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     Graphics._SPRITE_TEXTURE.frame.width = rect.width;
     Graphics._SPRITE_TEXTURE.frame.height = rect.height;
 
-    this._spriteRect.transform.worldTransform = this.transform.worldTransform;
+    this._spriteRect.computedTransform = this.computedTransform;
 
     this._spriteRect.anchor.x = -rect.x / rect.width;
     this._spriteRect.anchor.y = -rect.y / rect.height;
@@ -758,11 +762,9 @@ Graphics.prototype._renderCanvas = function (renderer)
 /**
  * Retrieves the bounds of the graphic shape as a rectangle object
  *
- * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
- *  object's worldTransform.
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-Graphics.prototype.getBounds = function (matrix)
+Graphics.prototype.getBounds = function ()
 {
     if(!this._currentBounds)
     {
@@ -782,67 +784,29 @@ Graphics.prototype.getBounds = function (matrix)
             this.boundsDirty = false;
         }
 
-        var bounds = this._localBounds;
-
-        var w0 = bounds.x;
-        var w1 = bounds.width + bounds.x;
-
-        var h0 = bounds.y;
-        var h1 = bounds.height + bounds.y;
-
-        var worldTransform = matrix || this.worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var x1 = a * w1 + c * h1 + tx;
-        var y1 = d * h1 + b * w1 + ty;
-
-        var x2 = a * w0 + c * h1 + tx;
-        var y2 = d * h1 + b * w0 + ty;
-
-        var x3 = a * w0 + c * h0 + tx;
-        var y3 = d * h0 + b * w0 + ty;
-
-        var x4 =  a * w1 + c * h0 + tx;
-        var y4 =  d * h0 + b * w1 + ty;
-
-        var maxX = x1;
-        var maxY = y1;
-
-        var minX = x1;
-        var minY = y1;
-
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        this._bounds.x = minX;
-        this._bounds.width = maxX - minX;
-
-        this._bounds.y = minY;
-        this._bounds.height = maxY - minY;
-
-        this._currentBounds = this._bounds;
+        this._currentBounds = this._localBounds.getBounds(this.computedTransform, this.worldProjection);
     }
 
     return this._currentBounds;
+};
+
+/**
+ * Retrieves the bounds of the graphic shape as a rectangle object
+ *
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+Graphics.prototype.getLocalBounds = function ()
+{
+    if (this.boundsDirty)
+    {
+        this.updateLocalBounds();
+
+        this.glDirty = true;
+        this.cachedSpriteDirty = true;
+        this.boundsDirty = false;
+    }
+
+    this._currentBounds = this._localBounds.local.getBounds();
 };
 
 /**
@@ -851,10 +815,11 @@ Graphics.prototype.getBounds = function (matrix)
 * @param point {PIXI.Point} the point to test
 * @return {boolean} the result of the test
 */
-Graphics.prototype.containsPoint = function( point )
+Graphics.prototype.containsLocalPoint = function( point )
 {
-    this.worldTransform.applyInverse(point,  tempPoint);
-
+    if (!this.getLocalBounds().contains(point.x, point.y)) {
+        return false;
+    }
     var graphicsData = this.graphicsData;
 
     for (var i = 0; i < graphicsData.length; i++)
@@ -869,7 +834,7 @@ Graphics.prototype.containsPoint = function( point )
         // only deal with fills..
         if (data.shape)
         {
-            if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
+            if ( data.shape.contains( point.x, point.y ) )
             {
                 return true;
             }
@@ -891,90 +856,78 @@ Graphics.prototype.updateLocalBounds = function ()
     var minY = Infinity;
     var maxY = -Infinity;
 
-    if (this.graphicsData.length)
+    if (!this.graphicsData.length) {
+        this._localBounds.local.size = 0;
+        return;
+    }
+    var shape, points, x, y, w, h;
+
+    for (var i = 0; i < this.graphicsData.length; i++)
     {
-        var shape, points, x, y, w, h;
+        var data = this.graphicsData[i];
+        var type = data.type;
+        var lineWidth = data.lineWidth;
+        shape = data.shape;
 
-        for (var i = 0; i < this.graphicsData.length; i++)
+        if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
         {
-            var data = this.graphicsData[i];
-            var type = data.type;
-            var lineWidth = data.lineWidth;
-            shape = data.shape;
+            x = shape.x - lineWidth/2;
+            y = shape.y - lineWidth/2;
+            w = shape.width + lineWidth;
+            h = shape.height + lineWidth;
 
-            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
+            minX = x < minX ? x : minX;
+            maxX = x + w > maxX ? x + w : maxX;
+
+            minY = y < minY ? y : minY;
+            maxY = y + h > maxY ? y + h : maxY;
+        }
+        else if (type === CONST.SHAPES.CIRC)
+        {
+            x = shape.x;
+            y = shape.y;
+            w = shape.radius + lineWidth/2;
+            h = shape.radius + lineWidth/2;
+
+            minX = x - w < minX ? x - w : minX;
+            maxX = x + w > maxX ? x + w : maxX;
+
+            minY = y - h < minY ? y - h : minY;
+            maxY = y + h > maxY ? y + h : maxY;
+        }
+        else if (type === CONST.SHAPES.ELIP)
+        {
+            x = shape.x;
+            y = shape.y;
+            w = shape.width + lineWidth/2;
+            h = shape.height + lineWidth/2;
+
+            minX = x - w < minX ? x - w : minX;
+            maxX = x + w > maxX ? x + w : maxX;
+
+            minY = y - h < minY ? y - h : minY;
+            maxY = y + h > maxY ? y + h : maxY;
+        }
+        else
+        {
+            // POLY
+            points = shape.points;
+
+            for (var j = 0; j < points.length; j += 2)
             {
-                x = shape.x - lineWidth/2;
-                y = shape.y - lineWidth/2;
-                w = shape.width + lineWidth;
-                h = shape.height + lineWidth;
+                x = points[j];
+                y = points[j+1];
 
-                minX = x < minX ? x : minX;
-                maxX = x + w > maxX ? x + w : maxX;
+                minX = x-lineWidth < minX ? x-lineWidth : minX;
+                maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
 
-                minY = y < minY ? y : minY;
-                maxY = y + h > maxY ? y + h : maxY;
-            }
-            else if (type === CONST.SHAPES.CIRC)
-            {
-                x = shape.x;
-                y = shape.y;
-                w = shape.radius + lineWidth/2;
-                h = shape.radius + lineWidth/2;
-
-                minX = x - w < minX ? x - w : minX;
-                maxX = x + w > maxX ? x + w : maxX;
-
-                minY = y - h < minY ? y - h : minY;
-                maxY = y + h > maxY ? y + h : maxY;
-            }
-            else if (type === CONST.SHAPES.ELIP)
-            {
-                x = shape.x;
-                y = shape.y;
-                w = shape.width + lineWidth/2;
-                h = shape.height + lineWidth/2;
-
-                minX = x - w < minX ? x - w : minX;
-                maxX = x + w > maxX ? x + w : maxX;
-
-                minY = y - h < minY ? y - h : minY;
-                maxY = y + h > maxY ? y + h : maxY;
-            }
-            else
-            {
-                // POLY
-                points = shape.points;
-
-                for (var j = 0; j < points.length; j += 2)
-                {
-                    x = points[j];
-                    y = points[j+1];
-
-                    minX = x-lineWidth < minX ? x-lineWidth : minX;
-                    maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
-
-                    minY = y-lineWidth < minY ? y-lineWidth : minY;
-                    maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
-                }
+                minY = y-lineWidth < minY ? y-lineWidth : minY;
+                maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
             }
         }
     }
-    else
-    {
-        minX = 0;
-        maxX = 0;
-        minY = 0;
-        maxY = 0;
-    }
-
     var padding = this.boundsPadding;
-
-    this._localBounds.x = minX - padding;
-    this._localBounds.width = (maxX - minX) + padding * 2;
-
-    this._localBounds.y = minY - padding;
-    this._localBounds.height = (maxY - minY) + padding * 2;
+    this._localBounds.local.setRectCoords(minX - padding, maxX - padding, minY + padding, maxY + padding);
 };
 
 

@@ -25,6 +25,12 @@ function Container()
      * @readonly
      */
     this.children = [];
+
+    /**
+     * Display post order, to determine if some element is a direct child of this container
+     * @type {number}
+     */
+    this.updatePostOrder = 0;
 }
 
 // constructor
@@ -57,7 +63,6 @@ Object.defineProperties(Container.prototype, {
             {
                 this.scale.x = 1;
             }
-
 
             this._width = value;
         }
@@ -366,92 +371,99 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
-
-    //TODO: check render flags, how to process stuff here
-    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+    this.displayObjectUpdateTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform();
     }
 
-    this._currentBounds = null;
+    this.updatePostOrder = utils.incUpdateOrder();
 };
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
+Container.prototype._getChildBounds = function() {
+    if (this.children.length === 0)
+    {
+        return math.Rectangle.EMPTY;
+    }
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var childVisible = false;
+    var bounds = this._bounds;
+
+    var childBounds;
+    var childMaxX;
+    var childMaxY;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        var child = this.children[i];
+
+        if (!child.visible)
+        {
+            continue;
+        }
+
+        childBounds = this.children[i].getBounds();
+        if (childBounds === math.Rectangle.EMPTY) {
+            continue;
+        }
+        childVisible = true;
+
+        minX = minX < childBounds.x ? minX : childBounds.x;
+        minY = minY < childBounds.y ? minY : childBounds.y;
+
+        childMaxX = childBounds.width + childBounds.x;
+        childMaxY = childBounds.height + childBounds.y;
+
+        maxX = maxX > childMaxX ? maxX : childMaxX;
+        maxY = maxY > childMaxY ? maxY : childMaxY;
+    }
+
+    bounds.x = minX;
+    bounds.y = minY;
+    bounds.width = maxX - minX;
+    bounds.height = maxY - minY;
+
+    if (!childVisible)
+    {
+        return math.Rectangle.EMPTY;
+    }
+    return bounds;
+};
+
 /**
 * RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
+ * @param matrix {PIXI.Matrix} just a legacy
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
 Container.prototype.getBounds = function ()
 {
-    if(!this._currentBounds)
-    {
-
-        if (this.children.length === 0)
-        {
-            return math.Rectangle.EMPTY;
-        }
-
-        // TODO the bounds have already been calculated this render session so return what we have
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var childBounds;
-        var childMaxX;
-        var childMaxY;
-
-        var childVisible = false;
-
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            var child = this.children[i];
-
-            if (!child.visible)
-            {
-                continue;
-            }
-
-            childBounds = this.children[i].getBounds();
-            if (childBounds === math.Rectangle.EMPTY) {
-                continue;
-            }
-            childVisible = true;
-
-            minX = minX < childBounds.x ? minX : childBounds.x;
-            minY = minY < childBounds.y ? minY : childBounds.y;
-
-            childMaxX = childBounds.width + childBounds.x;
-            childMaxY = childBounds.height + childBounds.y;
-
-            maxX = maxX > childMaxX ? maxX : childMaxX;
-            maxY = maxY > childMaxY ? maxY : childMaxY;
-        }
-
-        if (!childVisible)
-        {
-             this._currentBounds = math.Rectangle.EMPTY;
-             return this._currentBounds;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-
-        this._currentBounds = bounds;
+    if (this._localBounds) {
+        return this._localBounds.getBounds(this.computedTransform, this.worldProjection);
     }
 
+    if(!this._currentBounds)
+    {
+        var geom = this.updateProjectedGeometry();
+        if (!geom)
+        {
+            this._currentBounds = this._getChildBounds();
+        } else
+        {
+            this._currentBounds = geom.getBounds();
+            this._currentBounds.enlarge(this._getChildBounds());
+        }
+    }
     return this._currentBounds;
 };
 
@@ -465,20 +477,27 @@ Container.prototype.containerGetBounds = Container.prototype.getBounds;
  */
 Container.prototype.getLocalBounds = function ()
 {
-    var matrixCache = this.transform.worldTransform;
+    if (this._localBounds) {
+        return this._localBounds.local.getBounds();
+    }
 
-    this.transform.worldTransform = math.Matrix.IDENTITY;
+    var ID = this.computedTransform.getIdentityTransform();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].updateTransform();
+        this.children[i].updateTransform(ID);
     }
 
-    this.transform.worldTransform = matrixCache;
-
-    this._currentBounds = null;
-
-    return this.getBounds( math.Matrix.IDENTITY );
+    var geom = this.geometry;
+    if (!geom)
+    {
+        this._currentBounds = this._getChildBounds();
+    } else
+    {
+        this._currentBounds = geom.getBounds();
+        this._currentBounds.enlarge(this._getChildBounds());
+    }
+    return this._currentBounds;
 };
 
 /**
@@ -488,13 +507,14 @@ Container.prototype.getLocalBounds = function ()
  */
 Container.prototype.renderWebGL = function (renderer)
 {
-
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
-
+        this.displayOrder = 0;
         return;
     }
+
+    this.displayOrder = utils.incDisplayOrder();
 
     var i, j;
 

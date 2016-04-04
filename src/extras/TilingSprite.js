@@ -1,5 +1,4 @@
 var core = require('../core'),
-    tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
     TilingShader = require('./webgl/TilingShader');
 
@@ -17,13 +16,14 @@ function TilingSprite(texture, width, height)
 {
     core.Sprite.call(this, texture);
 
+    this._size._x = width || 100;
+    this._size._y = height || 100;
     /**
      * The scaling of the image that is being tiled
      *
      * @member {PIXI.Point}
      */
     this.tileScale = new core.Point(1,1);
-
 
     /**
      * The offset position of the image that is being tiled
@@ -32,23 +32,7 @@ function TilingSprite(texture, width, height)
      */
     this.tilePosition = new core.Point(0,0);
 
-    ///// private
-
-    /**
-     * The with of the tiling sprite
-     *
-     * @member {number}
-     * @private
-     */
-    this._width = width || 100;
-
-    /**
-     * The height of the tiling sprite
-     *
-     * @member {number}
-     * @private
-     */
-    this._height = height || 100;
+    //TODO: for v4.1 make dirty uvs separated, and tileScale/tilePosition observable
 
     /**
      * An internal WebGL UV cache.
@@ -66,49 +50,6 @@ function TilingSprite(texture, width, height)
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
 TilingSprite.prototype.constructor = TilingSprite;
 module.exports = TilingSprite;
-
-
-Object.defineProperties(TilingSprite.prototype, {
-    /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof PIXI.extras.TilingSprite#
-     */
-    width: {
-        get: function ()
-        {
-            return this._width;
-        },
-        set: function (value)
-        {
-            this._width = value;
-        }
-    },
-
-    /**
-     * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof PIXI.extras.TilingSprite#
-     */
-    height: {
-        get: function ()
-        {
-            return this._height;
-        },
-        set: function (value)
-        {
-            this._height = value;
-        }
-    }
-});
-
-TilingSprite.prototype._onTextureUpdate = function ()
-{
-    return;
-};
-
 
 /**
  * Renders the object using the WebGL renderer
@@ -147,16 +88,14 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 
     // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
     var vertices = glData.quad.vertices;
-
-    vertices[0] = vertices[6] = ( this._width ) * -this.anchor.x;
-    vertices[1] = vertices[3] = this._height * -this.anchor.y;
-
-    vertices[2] = vertices[4] = ( this._width ) * (1-this.anchor.x);
-    vertices[5] = vertices[7] = this._height * (1-this.anchor.y);
-
+    var geomVertices = this.geometry.vertices;
+    for (var i=0;i<8;i++) {
+        vertices[i] = geomVertices[i];
+    }
     glData.quad.upload();
 
     renderer.bindShader(glData.shader);
+    renderer.bindProjection(this.worldProjection);
 
     var textureUvs = texture._uvs,
         textureWidth = texture._frame.width,
@@ -176,14 +115,16 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     uFrame[3] = textureUvs.y2 - textureUvs.y0;
     glData.shader.uniforms.uFrame = uFrame;
 
-    var uTransform = glData.shader.uniforms.uTransform;
-    uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / this._width;
-    uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / this._height;
-    uTransform[2] = ( textureBaseWidth / this._width ) * this.tileScale.x;
-    uTransform[3] = ( textureBaseHeight / this._height ) * this.tileScale.y;
-    glData.shader.uniforms.uTransform = uTransform;
+    var width = this._size._x;
+    var height = this._size._y;
 
-    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    var uTransform = glData.shader.uniforms.uTransform;
+    uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / width;
+    uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / height;
+    uTransform[2] = ( textureBaseWidth / width ) * this.tileScale.x;
+    uTransform[3] = ( textureBaseHeight / height ) * this.tileScale.y;
+    glData.shader.uniforms.translationMatrix = this.computedTransform.matrix2d.toArray(true);
+    glData.shader.uniforms.uTransform = uTransform;
     glData.shader.uniforms.alpha = this.worldAlpha;
 
     renderer.bindTexture(this._texture, 0);
@@ -206,7 +147,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     }
 
     var context = renderer.context,
-        transform = this.worldTransform,
+        transform = this.projectionMatrix2d,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
         modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width,
@@ -249,8 +190,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-    context.translate(modX + (this.anchor.x * -this._width ),
-                      modY + (this.anchor.y * -this._height));
+    context.translate(modX + (this.anchor.x * -this._size._x),
+                      modY + (this.anchor.y * -this._size._y));
 
     // check blend mode
     var compositeOperation = renderer.blendModes[this.blendMode];
@@ -263,8 +204,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     context.fillStyle = this._canvasPattern;
     context.fillRect(-modX,
                      -modY,
-                     this._width / this.tileScale.x,
-                     this._height / this.tileScale.y);
+                     this._size._x / this.tileScale.x,
+                     this._size._y / this.tileScale.y);
 
 
     //TODO - pretty sure this can be deleted...
@@ -273,100 +214,34 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 };
 
 
-/**
- * Returns the framing rectangle of the sprite as a Rectangle object
-*
- * @return {PIXI.Rectangle} the framing rectangle
- */
-TilingSprite.prototype.getBounds = function ()
-{
-    var width = this._width;
-    var height = this._height;
+TilingSprite.prototype.calculateVertices = function () {
+    var width = this._size._x;
+    var height = this._size._y;
 
     var w0 = width * (1-this.anchor.x);
     var w1 = width * -this.anchor.x;
 
     var h0 = height * (1-this.anchor.y);
     var h1 = height * -this.anchor.y;
-
-    var worldTransform = this.worldTransform;
-
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
-
-    var x1 = a * w1 + c * h1 + tx;
-    var y1 = d * h1 + b * w1 + ty;
-
-    var x2 = a * w0 + c * h1 + tx;
-    var y2 = d * h1 + b * w0 + ty;
-
-    var x3 = a * w0 + c * h0 + tx;
-    var y3 = d * h0 + b * w0 + ty;
-
-    var x4 =  a * w1 + c * h0 + tx;
-    var y4 =  d * h0 + b * w1 + ty;
-
-    var minX,
-        maxX,
-        minY,
-        maxY;
-
-    minX = x1;
-    minX = x2 < minX ? x2 : minX;
-    minX = x3 < minX ? x3 : minX;
-    minX = x4 < minX ? x4 : minX;
-
-    minY = y1;
-    minY = y2 < minY ? y2 : minY;
-    minY = y3 < minY ? y3 : minY;
-    minY = y4 < minY ? y4 : minY;
-
-    maxX = x1;
-    maxX = x2 > maxX ? x2 : maxX;
-    maxX = x3 > maxX ? x3 : maxX;
-    maxX = x4 > maxX ? x4 : maxX;
-
-    maxY = y1;
-    maxY = y2 > maxY ? y2 : maxY;
-    maxY = y3 > maxY ? y3 : maxY;
-    maxY = y4 > maxY ? y4 : maxY;
-
-    var bounds = this._bounds;
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    this._currentBounds = bounds;
-
-    return bounds;
+    this.geometry.setRectCoords(0, w1, h1, w0, h0);
 };
 
 /**
  * Checks if a point is inside this tiling sprite
  * @param point {PIXI.Point} the point to check
  */
-TilingSprite.prototype.containsPoint = function( point )
+TilingSprite.prototype.containsLocalPoint = function( point )
 {
-    this.worldTransform.applyInverse(point,  tempPoint);
-
-    var width = this._width;
-    var height = this._height;
+    var width = this._size._x;
+    var height = this._size._y;
     var x1 = -width * this.anchor.x;
     var y1;
 
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    if ( point.x > x1 && point.x < x1 + width )
     {
         y1 = -height * this.anchor.y;
 
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        if ( point.y > y1 && point.y < y1 + height )
         {
             return true;
         }

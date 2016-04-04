@@ -39,7 +39,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
        // console.log( maskData.graphicsData[0].shape.type)
         if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
         {
-            var matrix = maskData.worldTransform;
+            var matrix = maskData.projectionMatrix2d;
 
             var rot = Math.atan2(matrix.b, matrix.a);
 

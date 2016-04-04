@@ -154,8 +154,6 @@ function WebGLRenderer(width, height, options)
     this._activeTexture = null;
 
     this.setBlendMode(0);
-
-
 }
 
 // constructor
@@ -181,7 +179,6 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -220,12 +217,13 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if(!skipUpdateTransform)
     {
+        utils.resetUpdateOrder();
         // update the scene graph
         var cacheParent = displayObject.parent;
         displayObject.parent = this._tempDisplayObjectParent;
         displayObject.updateTransform();
         displayObject.parent = cacheParent;
-       // displayObject.hitArea = //TODO add a temp hit area
+        // displayObject.hitArea = //TODO add a temp hit area
     }
 
     this.bindRenderTexture(renderTexture, transform);
@@ -238,7 +236,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     }
 
 
-
+    utils.resetDisplayOrder();
     displayObject.renderWebGL(this);
 
     // apply transform..
@@ -246,7 +244,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     //this.setObjectRenderer(this.emptyRenderer);
 
     this.textureGC.update();
-
     this.emit('postrender');
 };
 
@@ -285,7 +282,7 @@ WebGLRenderer.prototype.flush = function ()
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
-  //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
+    //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
     SystemRenderer.prototype.resize.call(this, width, height);
 
@@ -342,7 +339,6 @@ WebGLRenderer.prototype.setTransform = function (matrix)
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
     var renderTarget;
-
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
@@ -375,6 +371,24 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
     this.bindRenderTarget(renderTarget);
 
     return this;
+};
+
+/**
+ * Binds projection uniform
+ *
+ * @param worldProjection {PIXI.ComputedTransform2d} Calculated projection
+ */
+WebGLRenderer.prototype.bindProjection = function(worldProjection) {
+    var aRT = this._activeRenderTarget;
+    var aS = this._activeShader;
+    if (aRT && aRT.checkWorldProjection(worldProjection)) {
+        aRT.setWorldProjection(worldProjection);
+        if (aS) {
+            aS.uniforms.projectionMatrix = aRT.projectionMatrix.toArray(true);
+        }
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -449,7 +463,6 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-
     }
     else
     {
@@ -543,12 +556,10 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-
     if(this.gl.getExtension('WEBGL_lose_context'))
     {
         this.gl.getExtension('WEBGL_lose_context').loseContext();
     }
-
     this.gl = null;
 
     // this = null;

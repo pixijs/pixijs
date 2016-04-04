@@ -258,6 +258,23 @@ Object.defineProperties(core, {
     },
 });
 
+Object.defineProperties(core.DisplayObject, {
+    /**
+     * @namespace
+     * @private
+     * @name worldTransform
+     * @memberof PIXI.DisplayObject
+     * @see PIXI.DisplayObject
+     * @deprecated since version 4.0
+     */
+    worldTransform: {
+        get: function() {
+            console.warn();
+            return this.projectionMatrix2d;
+        }
+    }
+});
+
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');

@@ -7,6 +7,11 @@ Object.assign(
     require('./interactiveTarget')
 );
 
+Object.defineProperties(
+    core.DisplayObjectProxy.prototype,
+    require('./interactiveTargetProxy')
+);
+
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -155,7 +160,7 @@ function InteractionManager(renderer, options)
     /**
      * Every update cursor will be reset to this value, if some element wont override it in its hitTest
      * @member {string}
-     * @default 'inherit'
+     * @default "inherit"
      */
     this.defaultCursorStyle = 'inherit';
 
@@ -172,6 +177,9 @@ function InteractionManager(renderer, options)
      */
     this._tempPoint = new core.Point();
 
+    this._queue = [[], []];
+
+    this._eventDisplayOrder = 0;
 
     /**
      * The current resolution
@@ -356,16 +364,9 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 };
 
 /**
- * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
- * It will also take care of hit testing the interactive objects and passes the hit across in the function.
- *
- * @param  {PIXI.Point} point the point that is tested for collision
- * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
- * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
- * @return {boolean} returns true if the displayObject hit the point
+ * This is private recursive copy of processInteractive
  */
-InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
+InteractionManager.prototype._processInteractive = function (point, displayObject, hitTestOrder, interactive)
 {
     if(!displayObject || !displayObject.visible)
     {
@@ -383,7 +384,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
     // A final optimisation is that an object is not hit test directly if a child has already been hit.
 
-    var hit = false,
+    var hit = 0,
         interactiveParent = interactive = displayObject.interactive || interactive;
 
 
@@ -396,20 +397,20 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     }
 
     // it has a mask! Then lets hit test that before continuing..
-    if(hitTest && displayObject._mask)
+    if(hitTestOrder < Infinity && displayObject._mask)
     {
         if(!displayObject._mask.containsPoint(point))
         {
-            hitTest = false;
+            hitTestOrder = Infinity;
         }
     }
 
     // it has a filterArea! Same as mask but easier, its a rectangle
-    if(hitTest && displayObject.filterArea)
+    if(hitTestOrder < Infinity && displayObject.filterArea)
     {
         if(!displayObject.filterArea.contains(point.x, point.y))
         {
-            hitTest = false;
+            hitTestOrder = Infinity;
         }
     }
 
@@ -421,31 +422,15 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
         for (var i = children.length-1; i >= 0; i--)
         {
+
             var child = children[i];
 
-            // time to get recursive.. if this function will return if somthing is hit..
-            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
+            var hitChild = this._processInteractive(point, child, hitTestOrder, interactiveParent);
+            // time to get recursive.. if this function will return if something is hit..
+            if(hitChild)
             {
-                // its a good idea to check if a child has lost its parent.
-                // this means it has been removed whilst looping so its best
-                if(!child.parent)
-                {
-                    continue;
-                }
-
-                hit = true;
-
-                // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
-                interactiveParent = false;
-
-                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
-                // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-
-                //{
-                hitTest = false;
-                //}
-
-                // we can break now as we have hit an object.
+                hit = hitChild;
+                hitTestOrder = hitChild;
             }
         }
     }
@@ -457,25 +442,19 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     {
         // if we are hit testing (as in we have no hit any objects yet)
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
-        if(hitTest && !hit)
+        if(hitTestOrder < displayObject.displayOrder)
         {
-
-            if(displayObject.hitArea)
+            if(displayObject.hitArea || displayObject.isRaycastPossible)
             {
-                displayObject.worldTransform.applyInverse(point,  this._tempPoint);
-                hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
+                if (displayObject.containsPoint(point)) {
+                    hit = displayObject.displayOrder;
+                }
             }
-            else if(displayObject.containsPoint)
-            {
-                hit = displayObject.containsPoint(point);
-            }
-
-
         }
 
         if(displayObject.interactive)
         {
-            func(displayObject, hit);
+            this._queueAdd(displayObject, hit);
         }
     }
 
@@ -483,6 +462,61 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
 };
 
+/**
+ * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
+ * It will also take care of hit testing the interactive objects and passes the hit across in the function.
+ *
+ * @param  {PIXI.Point} point the point that is tested for collision
+ * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recursively crawls its children)
+ * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @param {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @private
+ * @return {boolean} returns true if the displayObject hit the point
+ */
+InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest) {
+    this._startInteractionProcess();
+    this._processInteractive(point, displayObject, hitTest ? 0 : Infinity, false);
+    this._finishInteractionProcess(func);
+};
+
+InteractionManager.prototype._startInteractionProcess = function() {
+    this._eventDisplayOrder = 1;
+    this._queue[0].length = 0;
+    this._queue[1].length = 0;
+};
+
+InteractionManager.prototype._queueAdd = function(displayObject, order) {
+    var queue = this._queue;
+    if (order < this._eventDisplayOrder) {
+        queue[0].push(displayObject);
+    } else {
+        if (order > this._eventDisplayOrder) {
+            this._eventDisplayOrder = order;
+            var q = queue[1];
+            for (var i = 0; i < q.length; i++) {
+                queue[0].push(q[i]);
+            }
+            queue[1].length = 0;
+        }
+        queue[1].push(displayObject);
+    }
+};
+
+/**
+ *
+ * @param {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ */
+InteractionManager.prototype._finishInteractionProcess = function(func) {
+    var queue = this._queue;
+    var q = queue[0];
+    for (var i = 0; i < q.length; i++) {
+        func(q[i], false);
+    }
+    q = queue[1];
+    for (i = q.length - 1; i>=0; i--) {
+        func(q[i], true);
+    }
+};
 
 /**
  * Is called when the mouse button is pressed down on the renderer element
