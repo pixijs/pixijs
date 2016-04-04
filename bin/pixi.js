@@ -8799,7 +8799,7 @@ module.exports = {
  */
 var CONST = {
     /**
-     * String of the current PIXI version
+     * String of the current PIXI version.
      *
      * @static
      * @constant
@@ -8808,21 +8808,27 @@ var CONST = {
     VERSION: '4.0.0',
 
     /**
-     * @property {number} PI_2 - Two Pi
+     * Two Pi.
+     * 
+     * @property {number} PI_2
      * @constant
      * @static
      */
     PI_2: Math.PI * 2,
 
     /**
-     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
+     * Conversion factor for converting radians to degrees.
+     * 
+     * @property {number} RAD_TO_DEG
      * @constant
      * @static
      */
     RAD_TO_DEG: 180 / Math.PI,
 
     /**
-     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
+     * Conversion factor for converting degrees to radians.
+     * 
+     * @property {number} DEG_TO_RAD
      * @constant
      * @static
      */
@@ -8854,9 +8860,10 @@ var CONST = {
     },
 
     /**
-     * Various blend modes supported by PIXI. IMPORTANT - The WebGL renderer only supports
-     * the NORMAL, ADD, MULTIPLY and SCREEN blend modes. Anything else will silently act like
-     * NORMAL.
+     * Various blend modes supported by PIXI.
+     * 
+     * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+     * Anything else will silently act like NORMAL.
      *
      * @static
      * @constant
@@ -8948,8 +8955,9 @@ var CONST = {
      *
      * The DEFAULT wrap mode affects the default wraping mode of future operations.
      * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
-     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2
-     * This property only affects WebGL
+     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2.
+     * This property only affects WebGL.
+     * 
      * @static
      * @constant
      * @property {object} WRAP_MODES
@@ -8966,13 +8974,14 @@ var CONST = {
     },
 
     /**
-     * The wrap modes that are supported by pixi.
+     * The gc modes that are supported by pixi.
      *
      * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
      * Handy for mobile devices!
-     * This property only affects WebGL
+     * This property only affects WebGL.
+     * 
      * @static
      * @constant
      * @property {object} GC_MODES
@@ -8987,8 +8996,9 @@ var CONST = {
     },
 
     /**
-     * If set to true WebGL will attempt make textures mimpaped by default
-     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions
+     * If set to true WebGL will attempt make textures mimpaped by default.
+     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
+     * 
      * @static
      * @constant
      * @property {bool} MIPMAP_TEXTURES
@@ -8996,17 +9006,31 @@ var CONST = {
     MIPMAP_TEXTURES:true,
 
     /**
-     * The prefix that denotes a URL is for a retina asset
+     * The prefix that denotes a URL is for a retina asset.
      *
      * @static
      * @constant
      * @property {string} RETINA_PREFIX
+     * @example `@2x`
      */
-    //example: '@2x',
     RETINA_PREFIX: /@(.+)x/,
 
+    /**
+     * Default resolution of the renderer.
+     * 
+     * @property {number} RESOLUTION
+     * @constant
+     * @static
+     */
     RESOLUTION:1,
 
+    /**
+     * Default filter resolution.
+     * 
+     * @property {number} FILTER_RESOLUTION
+     * @constant
+     * @static
+     */
     FILTER_RESOLUTION:1,
 
     /**
@@ -9017,14 +9041,15 @@ var CONST = {
      * @constant
      * @property {object} DEFAULT_RENDER_OPTIONS
      * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
+     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
      * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
-     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
      * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
      * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.roundPixels=false
      */
     DEFAULT_RENDER_OPTIONS: {
         view: null,
@@ -9045,11 +9070,11 @@ var CONST = {
      * @static
      * @constant
      * @property {object} SHAPES
-     * @property {object} SHAPES.POLY=0
-     * @property {object} SHAPES.RECT=1
-     * @property {object} SHAPES.CIRC=2
-     * @property {object} SHAPES.ELIP=3
-     * @property {object} SHAPES.RREC=4
+     * @property {number} SHAPES.POLY=0
+     * @property {number} SHAPES.RECT=1
+     * @property {number} SHAPES.CIRC=2
+     * @property {number} SHAPES.ELIP=3
+     * @property {number} SHAPES.RREC=4
      */
     SHAPES: {
         POLY: 0,
@@ -9062,7 +9087,7 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32) //this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
@@ -19405,7 +19430,7 @@ SpriteRenderer.prototype.destroy = function ()
 {
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i].destroy();
-        this.vaoMax[i].destroy();
+        this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
@@ -25249,7 +25274,7 @@ module.exports = generateVertBlurSource;
 
 var getMaxKernelSize = function(gl)
 {
-    var maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) / 2 ) | 0;
+    var maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) );
     var kernelSize = 15;
 
     while(kernelSize > maxVaryings)
