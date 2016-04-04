@@ -244,6 +244,10 @@ DisplayObjectProxy.prototype.containsLocalPoint = function(point) {
     return this.original.containsLocalPoint(point);
 };
 
+DisplayObjectProxy.prototype.getComputedBounds = function() {
+    return this.original.getComputedBounds();
+};
+
 DisplayObjectProxy.prototype.destroy = function() {
     //do nothing.
 };

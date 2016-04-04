@@ -14,6 +14,12 @@ function GeometrySet(local) {
     //TODO: add "valid" field
 }
 
+
+GeometrySet.prototype.getComputedBounds = function (computed) {
+    this.computed = computed.updateChildGeometry(this.computed, this.local);
+    return this.computed.getBounds();
+};
+
 GeometrySet.prototype.getBounds = function (computed, projected) {
     this.computed = computed.updateChildGeometry(this.computed, this.local);
     if (projected) {
