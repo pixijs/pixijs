@@ -7853,6 +7853,12 @@ function GeometrySet(local) {
     //TODO: add "valid" field
 }
 
+
+GeometrySet.prototype.getComputedBounds = function (computed) {
+    this.computed = computed.updateChildGeometry(this.computed, this.local);
+    return this.computed.getBounds();
+};
+
 GeometrySet.prototype.getBounds = function (computed, projected) {
     this.computed = computed.updateChildGeometry(this.computed, this.local);
     if (projected) {
@@ -8259,7 +8265,7 @@ module.exports = {
  */
 var CONST = {
     /**
-     * String of the current PIXI version
+     * String of the current PIXI version.
      *
      * @static
      * @constant
@@ -8268,21 +8274,27 @@ var CONST = {
     VERSION: '4.0.0',
 
     /**
-     * @property {number} PI_2 - Two Pi
+     * Two Pi.
+     * 
+     * @property {number} PI_2
      * @constant
      * @static
      */
     PI_2: Math.PI * 2,
 
     /**
-     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
+     * Conversion factor for converting radians to degrees.
+     * 
+     * @property {number} RAD_TO_DEG
      * @constant
      * @static
      */
     RAD_TO_DEG: 180 / Math.PI,
 
     /**
-     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
+     * Conversion factor for converting degrees to radians.
+     * 
+     * @property {number} DEG_TO_RAD
      * @constant
      * @static
      */
@@ -8314,9 +8326,10 @@ var CONST = {
     },
 
     /**
-     * Various blend modes supported by PIXI. IMPORTANT - The WebGL renderer only supports
-     * the NORMAL, ADD, MULTIPLY and SCREEN blend modes. Anything else will silently act like
-     * NORMAL.
+     * Various blend modes supported by PIXI.
+     * 
+     * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+     * Anything else will silently act like NORMAL.
      *
      * @static
      * @constant
@@ -8408,8 +8421,9 @@ var CONST = {
      *
      * The DEFAULT wrap mode affects the default wraping mode of future operations.
      * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
-     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2
-     * This property only affects WebGL
+     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2.
+     * This property only affects WebGL.
+     * 
      * @static
      * @constant
      * @property {object} WRAP_MODES
@@ -8426,13 +8440,14 @@ var CONST = {
     },
 
     /**
-     * The wrap modes that are supported by pixi.
+     * The gc modes that are supported by pixi.
      *
      * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
      * Handy for mobile devices!
-     * This property only affects WebGL
+     * This property only affects WebGL.
+     * 
      * @static
      * @constant
      * @property {object} GC_MODES
@@ -8447,8 +8462,9 @@ var CONST = {
     },
 
     /**
-     * If set to true WebGL will attempt make textures mimpaped by default
-     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions
+     * If set to true WebGL will attempt make textures mimpaped by default.
+     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
+     * 
      * @static
      * @constant
      * @property {bool} MIPMAP_TEXTURES
@@ -8456,17 +8472,31 @@ var CONST = {
     MIPMAP_TEXTURES:true,
 
     /**
-     * The prefix that denotes a URL is for a retina asset
+     * The prefix that denotes a URL is for a retina asset.
      *
      * @static
      * @constant
      * @property {string} RETINA_PREFIX
+     * @example `@2x`
      */
-    //example: '@2x',
     RETINA_PREFIX: /@(.+)x/,
 
+    /**
+     * Default resolution of the renderer.
+     * 
+     * @property {number} RESOLUTION
+     * @constant
+     * @static
+     */
     RESOLUTION:1,
 
+    /**
+     * Default filter resolution.
+     * 
+     * @property {number} FILTER_RESOLUTION
+     * @constant
+     * @static
+     */
     FILTER_RESOLUTION:1,
 
     /**
@@ -8477,14 +8507,15 @@ var CONST = {
      * @constant
      * @property {object} DEFAULT_RENDER_OPTIONS
      * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
+     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
      * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
-     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
      * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
      * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.roundPixels=false
      */
     DEFAULT_RENDER_OPTIONS: {
         view: null,
@@ -8505,11 +8536,11 @@ var CONST = {
      * @static
      * @constant
      * @property {object} SHAPES
-     * @property {object} SHAPES.POLY=0
-     * @property {object} SHAPES.RECT=1
-     * @property {object} SHAPES.CIRC=2
-     * @property {object} SHAPES.ELIP=3
-     * @property {object} SHAPES.RREC=4
+     * @property {number} SHAPES.POLY=0
+     * @property {number} SHAPES.RECT=1
+     * @property {number} SHAPES.CIRC=2
+     * @property {number} SHAPES.ELIP=3
+     * @property {number} SHAPES.RREC=4
      */
     SHAPES: {
         POLY: 0,
@@ -8522,7 +8553,7 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)//this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32) //this is the MAXIMUM - various gpus will have there own limits.
 };
 
 module.exports = CONST;
@@ -8530,9 +8561,12 @@ module.exports = CONST;
 },{"./utils/maxRecommendedTextures":116}],46:[function(require,module,exports){
 var Container = require('./Container'),
     Transform2d = require('../c2d/Transform2d'),
+    Geometry2d = require('../c2d/Geometry2d'),
+    ComputedGeometry2d = require('../c2d/ComputedGeometry2d'),
     ComputedTransform2d = require('../c2d/ComputedTransform2d'),
     utils = require('../utils'),
-    math = require('../math');
+    math = require('../math'),
+    tempMatrix = new math.Matrix();
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -8610,6 +8644,11 @@ function Camera2d()
      * @type {boolean}
      */
     this.enableBoundsCulling = false;
+
+    this._viewportGeom = new Geometry2d();
+    this._viewportGeom.size = 4;
+    this._invProjectedViewport = new ComputedGeometry2d();
+    this._invProjectedViewport.size = 4;
 }
 
 // constructor
@@ -8758,7 +8797,7 @@ Camera2d.prototype.displayObjectUpdateTransform = function() {
 Camera2d.prototype.updateTransform = function() {
     this.containerUpdateTransform();
     if (this.enableBoundsCulling) {
-        this.updateBoundsCulling();
+        this.updateViewportCulling();
     }
     this.emit('culling');
     if (this.enableDisplayList) {
@@ -8904,15 +8943,16 @@ Camera2d.prototype.updateDisplayList = function() {
     list.sort(this.displayListSort);
 };
 
-Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
-    viewport = viewport || this.viewport;
-    var x1 = viewport.x, x2 = viewport.x + viewport.width;
-    var y1 = viewport.y, y2 = viewport.y + viewport.height;
+Camera2d.prototype.updateBoundsCulling = function (viewportBounds, container) {
+    var x1 = viewportBounds.x, x2 = viewportBounds.x + viewportBounds.width;
+    var y1 = viewportBounds.y, y2 = viewportBounds.y + viewportBounds.height;
     var EMPTY = math.Rectangle.EMPTY;
 
+    var self = this;
     function culler(element) {
-        var s = element.getBounds();
+        var s = element.getComputedBounds();
         var b = element.renderable =
+            element === self ||
             s !== EMPTY &&
             (s.x + s.width >= x1 && s.x <= x2 &&
             s.y + s.height >= y1 && s.y <= y2);
@@ -8934,7 +8974,17 @@ Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
     culler(container || this);
 };
 
-},{"../c2d/ComputedTransform2d":35,"../c2d/Transform2d":43,"../math":68,"../utils":115,"./Container":48}],47:[function(require,module,exports){
+Camera2d.prototype.updateViewportCulling = function (viewport, container) {
+    viewport = viewport || this.viewport;
+    this._viewportGeom.setRectCoords(0, viewport.x, viewport.y, viewport.x + viewport.width, viewport.y + viewport.height);
+    this.projection.matrix2d.copy(tempMatrix);
+    tempMatrix.invert();
+    this._invProjectedViewport.applyMatrix(this._viewportGeom, tempMatrix);
+    var viewportBounds = this._invProjectedViewport.getBounds();
+    this.updateBoundsCulling(viewportBounds, container);
+};
+
+},{"../c2d/ComputedGeometry2d":34,"../c2d/ComputedTransform2d":35,"../c2d/Geometry2d":38,"../c2d/Transform2d":43,"../math":68,"../utils":115,"./Container":48}],47:[function(require,module,exports){
 var ContainerProxy = require('./ContainerProxy'),
     Camera2d = require('./Camera2d'),
     ComputedTransform2d = require('../c2d/ComputedTransform2d');
@@ -9438,8 +9488,64 @@ Container.prototype._getChildBounds = function() {
     return bounds;
 };
 
+Container.prototype._getChildComputedBounds = function() {
+    if (this.children.length === 0)
+    {
+        return math.Rectangle.EMPTY;
+    }
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var childVisible = false;
+    var bounds = this._computedBounds;
+
+    var childBounds;
+    var childMaxX;
+    var childMaxY;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        var child = this.children[i];
+
+        if (!child.visible)
+        {
+            continue;
+        }
+
+        childBounds = this.children[i].getComputedBounds();
+        if (childBounds === math.Rectangle.EMPTY) {
+            continue;
+        }
+        childVisible = true;
+
+        minX = minX < childBounds.x ? minX : childBounds.x;
+        minY = minY < childBounds.y ? minY : childBounds.y;
+
+        childMaxX = childBounds.width + childBounds.x;
+        childMaxY = childBounds.height + childBounds.y;
+
+        maxX = maxX > childMaxX ? maxX : childMaxX;
+        maxY = maxY > childMaxY ? maxY : childMaxY;
+    }
+
+    bounds.x = minX;
+    bounds.y = minY;
+    bounds.width = maxX - minX;
+    bounds.height = maxY - minY;
+
+    if (!childVisible)
+    {
+        return math.Rectangle.EMPTY;
+    }
+    return bounds;
+};
+
 /**
-* RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @param matrix {PIXI.Matrix} just a legacy
  * @return {PIXI.Rectangle} The rectangular bounding area
@@ -9463,6 +9569,33 @@ Container.prototype.getBounds = function ()
         }
     }
     return this._currentBounds;
+};
+
+/**
+ *
+ * Retrieves the computed bounds of the Container as a rectangle object
+ *
+ * @param matrix {PIXI.Matrix}
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+Container.prototype.getComputedBounds = function () // jshint unused:false
+{
+    if (this._localBounds) {
+        return this._localBounds.getComputedBounds(this.computedTransform);
+    }
+    if(!this._currentComputedBounds)
+    {
+        var geom = this.updateGeometry();
+        if (!geom)
+        {
+            this._currentComputedBounds = this._getChildComputedBounds();
+        } else
+        {
+            this._currentComputedBounds = geom.getBounds();
+            this._currentComputedBounds.enlarge(this._getChildComputedBounds());
+        }
+    }
+    return this._currentComputedBounds;
 };
 
 Container.prototype.containerGetBounds = Container.prototype.getBounds;
@@ -9861,6 +9994,14 @@ function DisplayObject()
     this.hitArea = null;
 
     /**
+     * The original, cached computed bounds of the object
+     *
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._computedBounds = new math.Rectangle(0, 0, 1, 1);
+
+    /**
      * The original, cached bounds of the object
      *
      * @member {PIXI.Rectangle}
@@ -9869,12 +10010,20 @@ function DisplayObject()
     this._bounds = new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The most up-to-date bounds of the object
+     * The most up-to-date projected bounds of the object
      *
      * @member {PIXI.Rectangle}
      * @private
      */
     this._currentBounds = null;
+
+    /**
+     * The most up-to-date computed bounds of the object
+     *
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._currentComputedBounds = null;
 
     /**
      * Whether we have to check our bounds before raycasting this thing
@@ -10209,6 +10358,7 @@ DisplayObject.prototype.updateTransform = function ()
     this.updateOrder = utils.incUpdateOrder();
     this.displayOrder = 0;
     this._currentBounds = null;
+    this._currentComputedBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
     this.worldProjection = this.parent.worldProjection;
@@ -10262,7 +10412,29 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 
 /**
  *
- * Retrieves the bounds of the displayObject as a rectangle object
+ * Retrieves the computed bounds of the displayObject as a rectangle object
+ *
+ * @param matrix {PIXI.Matrix}
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+DisplayObject.prototype.getComputedBounds = function () // jshint unused:false
+{
+    if (this._localBounds) {
+        return this._localBounds.getComputedBounds(this.computedTransform);
+    }
+    if (!this._currentComputedBounds) {
+        var geom = this.updateGeometry();
+        if (!geom || !geom.valid) {
+            return math.Rectangle.EMPTY;
+        }
+        this._currentComputedBounds = geom.getBounds();
+    }
+    return this._currentComputedBounds;
+};
+
+/**
+ *
+ * Retrieves the projected bounds of the displayObject as a rectangle object
  *
  * @param matrix {PIXI.Matrix}
  * @return {PIXI.Rectangle} the rectangular bounding area
@@ -10730,6 +10902,10 @@ DisplayObjectProxy.prototype.displayObjectUpdateTransform = DisplayObjectProxy.p
 
 DisplayObjectProxy.prototype.containsLocalPoint = function(point) {
     return this.original.containsLocalPoint(point);
+};
+
+DisplayObjectProxy.prototype.getComputedBounds = function() {
+    return this.original.getComputedBounds();
 };
 
 DisplayObjectProxy.prototype.destroy = function() {
@@ -17019,14 +17195,13 @@ FilterManager.prototype.pushFilter = function(target, filters)
     // for now we go off the filter of the first resolution..
     var resolution = filters[0].resolution;
     var padding = filters[0].padding;
-
     var targetBounds = target.filterArea || target.getBounds();
 
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
-    sourceFrame.x = (((targetBounds.x + padding) * resolution) | 0) / resolution;
-    sourceFrame.y = (((targetBounds.y + padding) * resolution) | 0) / resolution;
+    sourceFrame.x = (((targetBounds.x - padding) * resolution) | 0) / resolution;
+    sourceFrame.y = (((targetBounds.y - padding) * resolution) | 0) / resolution;
     sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
@@ -19551,7 +19726,7 @@ SpriteRenderer.prototype.destroy = function ()
 {
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i].destroy();
-        this.vaoMax[i].destroy();
+        this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
@@ -22695,6 +22870,32 @@ var core = require('./core'),
     extras = require('./extras'),
     filters = require('./filters');
 
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
+function warn(msg) {
+    var stack = new Error().stack;
+
+    // Handle IE < 10 and Safari < 6
+    if (typeof stack === 'undefined') {
+        console.warn('Deprecation Warning: ', msg);
+    }
+    else {
+        // chop off the stack trace which includes pixi.js internal calls
+        stack = stack.split('\n').splice(3).join('\n');
+
+        if (console.groupCollapsed) {
+            console.groupCollapsed('%cDeprecation Warning: %c%s', 'color:#614108;background:#fffbe6', 'font-weight:normal;color:#614108;background:#fffbe6', msg);
+            console.warn(stack);
+            console.groupEnd();
+        }
+        else {
+            console.warn('Deprecation Warning: ', msg);
+            console.warn(stack);
+        }
+    }
+}
+
 /**
  * @class
  * @private
@@ -22736,7 +22937,7 @@ Object.defineProperties(core, {
     Stage: {
         get: function()
         {
-            console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
+            warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
             return core.Container;
         }
     },
@@ -22752,7 +22953,7 @@ Object.defineProperties(core, {
     DisplayObjectContainer: {
         get: function()
         {
-            console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
+            warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
             return core.Container;
         }
     },
@@ -22768,7 +22969,7 @@ Object.defineProperties(core, {
     Strip: {
         get: function()
         {
-            console.warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
+            warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
             return mesh.Mesh;
         }
     },
@@ -22784,7 +22985,7 @@ Object.defineProperties(core, {
     Rope: {
         get: function()
         {
-            console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
+            warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
             return mesh.Rope;
         }
     },
@@ -22799,7 +23000,7 @@ Object.defineProperties(core, {
      */
     ParticleContainer: {
         get: function() {
-            console.warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
+            warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             return particles.ParticleContainer;
         }
     },
@@ -22815,7 +23016,7 @@ Object.defineProperties(core, {
     MovieClip: {
         get: function()
         {
-            console.warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
+            warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
             return extras.MovieClip;
         }
     },
@@ -22831,7 +23032,7 @@ Object.defineProperties(core, {
     TilingSprite: {
         get: function()
         {
-            console.warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
+            warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
             return extras.TilingSprite;
         }
     },
@@ -22847,7 +23048,7 @@ Object.defineProperties(core, {
     BitmapText: {
         get: function()
         {
-            console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
+            warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
             return extras.BitmapText;
         }
     },
@@ -22863,7 +23064,7 @@ Object.defineProperties(core, {
     blendModes: {
         get: function()
         {
-            console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
+            warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
             return core.BLEND_MODES;
         }
     },
@@ -22879,7 +23080,7 @@ Object.defineProperties(core, {
     scaleModes: {
         get: function()
         {
-            console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
+            warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
             return core.SCALE_MODES;
         }
     },
@@ -22895,7 +23096,7 @@ Object.defineProperties(core, {
     BaseTextureCache: {
         get: function ()
         {
-            console.warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
+            warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
             return core.utils.BaseTextureCache;
         }
     },
@@ -22911,7 +23112,7 @@ Object.defineProperties(core, {
     TextureCache: {
         get: function ()
         {
-            console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
+            warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
             return core.utils.TextureCache;
         }
     },
@@ -22927,7 +23128,7 @@ Object.defineProperties(core, {
     math: {
         get: function ()
         {
-            console.warn('The math namespace is deprecated, please access members already accessible on PIXI.');
+            warn('The math namespace is deprecated, please access members already accessible on PIXI.');
             return core;
         }
     },
@@ -22942,7 +23143,7 @@ Object.defineProperties(core, {
     AbstractFilter: {
         get: function()
         {
-            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
+            warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
             return core.Filter;
         }
     },
@@ -22967,44 +23168,44 @@ Object.defineProperties(core.DisplayObject, {
 
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
-    console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+    warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
     return renderer.generateTexture(renderer, scaleMode, resolution);
 };
 
 
 core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
 {
-    console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
+    warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
     return this.generateCanvasTexture(scaleMode, resolution);
 };
 
 core.RenderTexture.prototype.render = function(displayObject)
 {
     this.legacyRenderer.render(displayObject, this);
-    console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
+    warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
 
 core.RenderTexture.prototype.getImage = function(target)
 {
-    console.warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
+    warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
     return this.legacyRenderer.extract.image(target);
 };
 
 core.RenderTexture.prototype.getBase64 = function(target)
 {
-    console.warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
+    warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
     this.legacyRenderer.extract.base64(target);
 };
 
 core.RenderTexture.prototype.getCanvas = function(target)
 {
-    console.warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
+    warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
     this.legacyRenderer.extract.canvas(target);
 };
 
 core.RenderTexture.prototype.getPixels = function(target)
 {
-    console.warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
+    warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
     this.legacyRenderer.pixels(target);
 };
 
@@ -23020,7 +23221,7 @@ core.RenderTexture.prototype.getPixels = function(target)
 core.Sprite.prototype.setTexture = function(texture)
 {
     this.texture = texture;
-    console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
+    warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
 
 
@@ -23034,7 +23235,7 @@ core.Sprite.prototype.setTexture = function(texture)
 extras.BitmapText.prototype.setText = function(text)
 {
     this.text = text;
-    console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
+    warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
 };
 
 /**
@@ -23046,7 +23247,7 @@ extras.BitmapText.prototype.setText = function(text)
 core.Text.prototype.setText = function(text)
 {
     this.text = text;
-    console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
+    warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
 /**
@@ -23058,7 +23259,7 @@ core.Text.prototype.setText = function(text)
 core.Text.prototype.setStyle = function(style)
 {
     this.style = style;
-    console.warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
+    warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
 
 /**
@@ -23070,7 +23271,7 @@ core.Text.prototype.setStyle = function(style)
 core.Texture.prototype.setFrame = function(frame)
 {
     this.frame = frame;
-    console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
+    warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
 };
 
 Object.defineProperties(filters, {
@@ -23085,7 +23286,7 @@ Object.defineProperties(filters, {
     AbstractFilter: {
         get: function()
         {
-            console.warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
+            warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
             return core.AbstractFilter;
         }
     },
@@ -23100,7 +23301,7 @@ Object.defineProperties(filters, {
     FXAAFilter: {
         get: function()
         {
-            console.warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
+            warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
             return core.FXAAFilter;
         }
     },
@@ -23115,7 +23316,7 @@ Object.defineProperties(filters, {
     SpriteMaskFilter: {
         get: function()
         {
-            console.warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
+            warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
             return core.SpriteMaskFilter;
         }
     }
@@ -23129,12 +23330,12 @@ Object.defineProperties(filters, {
  */
 core.utils.uuid = function ()
 {
-    console.warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
+    warn('utils.uuid() is deprecated, please use utils.uid() from now on.');
     return core.utils.uid();
 };
 
 core.utils.canUseNewCanvasBlendModes = function() {
-    console.warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
+    warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;
 };
 
@@ -24895,6 +25096,7 @@ module.exports = BlurFilter;
 
 BlurFilter.prototype.apply = function (filterManager, input, output)
 {
+
     var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.apply(filterManager, input, renderTarget, true);
@@ -24918,7 +25120,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
@@ -24937,6 +25139,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+
             this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
@@ -24955,6 +25158,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = value;
         }
     },
@@ -24973,6 +25177,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurYFilter.blur = value;
         }
     }
@@ -25021,9 +25226,9 @@ BlurXFilter.prototype.constructor = BlurXFilter;
 module.exports = BlurXFilter;
 
 BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
-{   
+{
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
 
@@ -25033,7 +25238,7 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-   
+
 
     this.uniforms.strength = (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
@@ -25080,7 +25285,7 @@ Object.defineProperties(BlurXFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding =  Math.abs(value) * 0.5;
+            this.padding =  Math.abs(value) * 2;
             this.strength = value;
         }
     }
@@ -25123,10 +25328,10 @@ module.exports = BlurYFilter;
 BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
 {
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
-        
+
         this.vertexSrc = generateBlurVertSource(kernelSize, false);
         this.fragmentSrc = generateBlurFragSource(kernelSize);
 
@@ -25178,7 +25383,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.abs(value) * 2;
             this.strength = value;
         }
     }
@@ -25320,7 +25525,7 @@ module.exports = generateVertBlurSource;
 
 var getMaxKernelSize = function(gl)
 {
-    var maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) / 2 ) | 0;
+    var maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) );
     var kernelSize = 15;
 
     while(kernelSize > maxVaryings)
