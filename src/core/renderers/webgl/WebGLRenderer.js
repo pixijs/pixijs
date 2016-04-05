@@ -232,17 +232,16 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.currentRenderer.start();
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
         this._activeRenderTarget.clear();
     }
-
-
 
     displayObject.renderWebGL(this);
 
     // apply transform..
     this.currentRenderer.flush();
+
     //this.setObjectRenderer(this.emptyRenderer);
 
     this.textureGC.update();
@@ -471,10 +470,10 @@ WebGLRenderer.prototype.createVao = function ()
  */
 WebGLRenderer.prototype.reset = function ()
 {
-    this.currentRenderer.stop();
+    this.setObjectRenderer(this.emptyRenderer);
 
     this._activeShader = null;
-    this._activeRenderTarget = null;
+    this._activeRenderTarget = this.rootRenderTarget;
     this._activeTextureLocation = 999;
     this._activeTexture = null;
 
@@ -482,7 +481,6 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.resetToDefault();
-
 
     return this;
 };
