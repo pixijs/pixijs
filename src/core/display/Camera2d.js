@@ -236,7 +236,7 @@ Camera2d.prototype.displayObjectUpdateTransform = function() {
 Camera2d.prototype.updateTransform = function() {
     this.containerUpdateTransform();
     if (this.enableBoundsCulling) {
-        this.updateBoundsCulling();
+        this.updateViewportCulling();
     }
     this.emit('culling');
     if (this.enableDisplayList) {
@@ -382,14 +382,7 @@ Camera2d.prototype.updateDisplayList = function() {
     list.sort(this.displayListSort);
 };
 
-Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
-    viewport = viewport || this.viewport;
-    this._viewportGeom.setRectCoords(0, viewport.x, viewport.y, viewport.x + viewport.width, viewport.y + viewport.height);
-    this.projection.matrix2d.copy(tempMatrix);
-    tempMatrix.invert();
-    this._invProjectedViewport.applyMatrix(this._viewportGeom, tempMatrix);
-    var viewportBounds = this._invProjectedViewport.getBounds();
-
+Camera2d.prototype.updateBoundsCulling = function (viewportBounds, container) {
     var x1 = viewportBounds.x, x2 = viewportBounds.x + viewportBounds.width;
     var y1 = viewportBounds.y, y2 = viewportBounds.y + viewportBounds.height;
     var EMPTY = math.Rectangle.EMPTY;
@@ -418,4 +411,14 @@ Camera2d.prototype.updateBoundsCulling = function (viewport, container) {
     }
 
     culler(container || this);
+};
+
+Camera2d.prototype.updateViewportCulling = function (viewport, container) {
+    viewport = viewport || this.viewport;
+    this._viewportGeom.setRectCoords(0, viewport.x, viewport.y, viewport.x + viewport.width, viewport.y + viewport.height);
+    this.projection.matrix2d.copy(tempMatrix);
+    tempMatrix.invert();
+    this._invProjectedViewport.applyMatrix(this._viewportGeom, tempMatrix);
+    var viewportBounds = this._invProjectedViewport.getBounds();
+    this.updateBoundsCulling(viewportBounds, container);
 };
