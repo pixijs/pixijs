@@ -58,6 +58,7 @@
     "gulp-util": "^3.0.6",
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
     "jsdoc": "^3.4.0",
+    "jshint": "^2.9.1",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",

@@ -63,14 +63,13 @@ FilterManager.prototype.pushFilter = function(target, filters)
     // for now we go off the filter of the first resolution..
     var resolution = filters[0].resolution;
     var padding = filters[0].padding;
-
     var targetBounds = target.filterArea || target.getBounds();
 
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
-    sourceFrame.x = (((targetBounds.x + padding) * resolution) | 0) / resolution;
-    sourceFrame.y = (((targetBounds.y + padding) * resolution) | 0) / resolution;
+    sourceFrame.x = (((targetBounds.x - padding) * resolution) | 0) / resolution;
+    sourceFrame.y = (((targetBounds.y - padding) * resolution) | 0) / resolution;
     sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
