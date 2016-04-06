@@ -48,7 +48,9 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         dx,
         dy,
         source = texture._frame,
-        dest = sprite._frame.inner || sprite._frame;
+        dest = sprite._frame.inner || sprite._frame,
+        width = dest.width,
+        height = dest.height;
 
     if (dest.width <= 0 || dest.height <= 0)
     {
@@ -72,9 +74,14 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
-            math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dest.x + dest.width/2, dest.y + dest.height/2);
-            dx = -dest.width/2;
-            dy = -dest.height/2;
+            math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dest.x + width/2, dest.y + height/2);
+            if (math.GroupD8.isSwapWidthHeight(texture.rotate)) {
+                var w = width;
+                width = height;
+                height = w;
+            }
+            dx = -width/2;
+            dy = -height/2;
         } else {
             dx = dest.x;
             dy = dest.y;
@@ -126,8 +133,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
                 source.height * resolution,
                 dx * renderer.resolution,
                 dy * renderer.resolution,
-                dest.width * renderer.resolution,
-                dest.height * renderer.resolution
+                width * renderer.resolution,
+                height * renderer.resolution
             );
         }
         else
@@ -141,8 +148,8 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
                 source.height * resolution,
                 dx  * renderer.resolution,
                 dy  * renderer.resolution,
-                dest.width * renderer.resolution,
-                dest.height * renderer.resolution
+                width * renderer.resolution,
+                height * renderer.resolution
             );
         }
     }
