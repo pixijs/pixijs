@@ -22,6 +22,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
+    SpriteFrame:            require('./sprites/SpriteFrame'),
     CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
     CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
@@ -37,6 +38,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // textures
     Texture:                require('./textures/Texture'),
+    DoubleRect:             require('./textures/DoubleRect'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
     BaseRenderTexture:      require('./textures/BaseRenderTexture'),

@@ -227,9 +227,7 @@ ParticleRenderer.prototype.generateBuffers = function (container)
 ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amount, array, stride, offset)
 {
     var sprite,
-        texture,
-        trim,
-        orig,
+        frame,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -237,30 +235,14 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
     for (var i = 0; i < amount; i++) {
 
         sprite = children[startIndex + i];
-        texture = sprite._texture;
+        frame = sprite._frame.inner || sprite._frame;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
-        trim = texture.trim;
-        orig = texture.orig;
 
-        if (trim)
-        {
-            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-            w1 = trim.x - sprite.anchor.x * orig.width;
-            w0 = w1 + trim.width;
-
-            h1 = trim.y - sprite.anchor.y * orig.height;
-            h0 = h1 + trim.height;
-
-        }
-        else
-        {
-            w0 = (orig.width ) * (1-sprite.anchor.x);
-            w1 = (orig.width ) * -sprite.anchor.x;
-
-            h0 = orig.height * (1-sprite.anchor.y);
-            h1 = orig.height * -sprite.anchor.y;
-        }
+        w1 = frame.x;
+        h1 = frame.y;
+        w0 = w1 + frame.width;
+        h0 = h1 + frame.height;
 
         array[offset] = w1 * sx;
         array[offset + 1] = h1 * sy;

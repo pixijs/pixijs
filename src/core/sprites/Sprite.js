@@ -1,6 +1,7 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
+    SpriteFrame = require('./SpriteFrame'),
     utils = require('../utils'),
     CONST = require('../const'),
     tempPoint = new math.Point();
@@ -18,20 +19,29 @@ var math = require('../math'),
  * @extends PIXI.Container
  * @memberof PIXI
  * @param texture {PIXI.Texture} The texture for this sprite
+ * @param sharedFrame {PIXI.SpriteFrame} Special for particles - use pre-defined anchors and sizes
  */
-function Sprite(texture)
+function Sprite(texture, sharedFrame)
 {
     Container.call(this);
 
     /**
-     * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the texture's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
-     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     * Frame that sprite is using, read-only
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Texture}
+     * @private
      */
-    this.anchor = new math.Point();
+    this._frame = sharedFrame || new SpriteFrame();
+
+    /**
+     * Frame that was passed in constructor - less objects, less memory use
+     *
+     * @member {PIXI.SpriteFrame}
+     * @private
+     */
+    this._sharedFrame = sharedFrame;
+
+    this._frameVersion = -1;
 
     /**
      * The texture that the sprite is using
@@ -91,7 +101,6 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.textureDirty = true;
     this.vertexData = new Float32Array(8);
 }
 
@@ -110,12 +119,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.orig.width;
+            return Math.abs(this.scale.x) * this._frame.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
+            this.scale.x = sign * value / this._frame.width;
             this._width = value;
         }
     },
@@ -129,12 +138,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.orig.height;
+            return  Math.abs(this.scale.y) * this._frame.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
+            this.scale.y = sign * value / this._frame.height;
             this._height = value;
         }
     },
@@ -160,10 +169,12 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
-            this.textureDirty = true;
-
             if (value)
             {
+                if (!this._sharedFrame) {
+                    this._frame.textureFrame = value.orig;
+                }
+
                 // wait for the texture to load
                 if (value.baseTexture.hasLoaded)
                 {
@@ -173,6 +184,45 @@ Object.defineProperties(Sprite.prototype, {
                 {
                     value.once('update', this._onTextureUpdate, this);
                 }
+            }
+        }
+    },
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     *
+     * @member {PIXI.Point | number}
+     */
+    anchor : {
+        get : function() {
+            return this._frame.anchor;
+        },
+        set: function(value) {
+            if (typeof value === 'number'){
+                this._frame.anchor.set(value);
+            }
+            else {
+                this._frame.anchor.copy(value);
+            }
+        }
+    },
+    /**
+     * Size overrides texture dimensions.
+     *
+     * @member {PIXI.Point | number}
+     */
+    size : {
+        get : function() {
+            return this._frame.size;
+        },
+        set: function(value) {
+            if (typeof value === 'number'){
+                this._frame.size.set(value);
+            }
+            else {
+                this._frame.size.copy(value);
             }
         }
     }
@@ -185,48 +235,35 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
-    this.textureDirty = true;
+    if (!this._sharedFrame) {
+        //don't do that if we share the frame with other particle sprites
+        this._frame.update();
+    }
 
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this._frame.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this._frame.height;
     }
 };
 
 Sprite.prototype.calculateVertices = function ()
 {
-    var texture = this._texture,
-        wt = this.transform.worldTransform,
+    var wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         vertexData = this.vertexData,
-        w0, w1, h0, h1,
-        trim = texture.trim,
-        orig = texture.orig;
+        frame = this._frame.inner || this._frame;
 
-    if (trim)
-    {
-        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * orig.width;
-        w0 = w1 + trim.width;
-
-        h1 = trim.y - this.anchor.y * orig.height;
-        h0 = h1 + trim.height;
-
-    }
-    else
-    {
-        w0 = (orig.width ) * (1-this.anchor.x);
-        w1 = (orig.width ) * -this.anchor.x;
-
-        h0 = orig.height * (1-this.anchor.y);
-        h1 = orig.height * -this.anchor.y;
-    }
+    var w1 = frame.x,
+        h1 = frame.y,
+        w0 = w1 + frame.width,
+        h0 = h1 + frame.height;
+    this._frameVersion = this._frame.version;
 
     // xy
     vertexData[0] = a * w1 + c * h1 + tx;
@@ -254,9 +291,8 @@ Sprite.prototype.calculateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
+    if(this.transform.updated || this._frameVersion !== this._frame.version)
     {
-        this.textureDirty = false;
         // set the vertex data
         this.calculateVertices();
     }
@@ -284,17 +320,9 @@ Sprite.prototype._renderCanvas = function (renderer)
  */
 Sprite.prototype.getBounds = function ()
 {
-    //TODO lookinto caching..
     if(!this._currentBounds)
     {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
-
-            // set the vertex data
-            this.calculateVertices();
-
-        }
+        this.calculateVertices();
 
         var minX, maxX, minY, maxY,
             w0, w1, h0, h1,
@@ -370,11 +398,7 @@ Sprite.prototype.getBounds = function ()
  */
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture.orig.width * this.anchor.x;
-    this._bounds.y = -this._texture.orig.height * this.anchor.y;
-    this._bounds.width = this._texture.orig.width;
-    this._bounds.height = this._texture.orig.height;
-    return this._bounds;
+    return this._frame;
 };
 
 /**
@@ -387,16 +411,10 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture.orig.width;
-    var height = this._texture.orig.height;
-    var x1 = -width * this.anchor.x;
-    var y1;
-
-    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    var frame = this._frame;
+    if ( tempPoint.x > frame.x && tempPoint.x < frame.x + frame.width )
     {
-        y1 = -height * this.anchor.y;
-
-        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        if ( tempPoint.y > frame.y && tempPoint.y < frame.y + frame.height )
         {
             return true;
         }
@@ -416,7 +434,8 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
     Container.prototype.destroy.call(this);
 
-    this.anchor = null;
+    this._frame = null;
+    this._sharedFrame = null;
 
     if (destroyTexture)
     {

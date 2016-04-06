@@ -47,10 +47,10 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         wt = sprite.transform.worldTransform,
         dx,
         dy,
-        width = texture._frame.width,
-        height = texture._frame.height;
+        source = texture._frame,
+        dest = sprite._frame.inner || sprite._frame;
 
-    if (texture.orig.width <= 0 || texture.orig.height <= 0)
+    if (dest.width <= 0 || dest.height <= 0)
     {
         return;
     }
@@ -69,23 +69,16 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        if (texture.trim) {
-            dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.orig.width;
-            dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.orig.height;
-        } else {
-            dx = (0.5 - sprite.anchor.x) * texture.orig.width;
-            dy = (0.5 - sprite.anchor.y) * texture.orig.height;
-        }
         if(texture.rotate) {
             wt.copy(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
-            math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
-            // the anchor has already been applied above, so lets set it to zero
-            dx = 0;
-            dy = 0;
+            math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dest.x + dest.width/2, dest.y + dest.height/2);
+            dx = -dest.width/2;
+            dy = -dest.height/2;
+        } else {
+            dx = dest.x;
+            dy = dest.y;
         }
-        dx -= width/2;
-        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
@@ -129,12 +122,12 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
                 sprite.tintedTexture,
                 0,
                 0,
-                width * resolution,
-                height * resolution,
+                source.width * resolution,
+                source.height * resolution,
                 dx * renderer.resolution,
                 dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                dest.width * renderer.resolution,
+                dest.height * renderer.resolution
             );
         }
         else
@@ -142,14 +135,14 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
 
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture._frame.x * resolution,
-                texture._frame.y * resolution,
-                width * resolution,
-                height * resolution,
+                source.x * resolution,
+                source.y * resolution,
+                source.width * resolution,
+                source.height * resolution,
                 dx  * renderer.resolution,
                 dy  * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                dest.width * renderer.resolution,
+                dest.height * renderer.resolution
             );
         }
     }
