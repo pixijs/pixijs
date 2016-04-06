@@ -48,7 +48,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         dx,
         dy,
         width = texture._frame.width,
-        height = texture._frame.height;
+        height = texture._frame.height,;
 
     if (texture.orig.width <= 0 || texture.orig.height <= 0)
     {
