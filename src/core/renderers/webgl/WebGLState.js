@@ -251,6 +251,7 @@ WebGLState.prototype.resetToDefault = function()
 		this.nativeVaoExtension.bindVertexArrayOES(null);
 	}
 
+
 	// reset all attributs..
 	this.resetAttributes();
 
@@ -259,6 +260,10 @@ WebGLState.prototype.resetToDefault = function()
 	{
 		this.activeState[i] = 2;
 	}
+
+	var gl = this.gl;
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
 
 	this.setState(this.defaultState);
 };

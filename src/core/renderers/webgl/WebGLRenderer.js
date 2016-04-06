@@ -230,7 +230,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.currentRenderer.start();
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
         this._activeRenderTarget.clear();
     }
