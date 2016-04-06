@@ -199,7 +199,7 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
-Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
         wt = this.transform.worldTransform,
@@ -258,7 +258,7 @@ Sprite.prototype._renderWebGL = function (renderer)
     {
         this.textureDirty = false;
         // set the vertex data
-        this.caclulateVertices();
+        this.calculateVertices();
     }
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
@@ -292,7 +292,7 @@ Sprite.prototype.getBounds = function ()
             this.vertexDirty = false;
 
             // set the vertex data
-            this.caclulateVertices();
+            this.calculateVertices();
 
         }
 

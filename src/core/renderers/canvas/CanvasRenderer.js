@@ -178,7 +178,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
         context.clear();
     }
 
-    if(clear !== undefined || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
         if (this.renderingToScreen) {
             if (this.transparent) {
