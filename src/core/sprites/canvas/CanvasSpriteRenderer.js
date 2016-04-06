@@ -52,7 +52,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         width = dest.width,
         height = dest.height;
 
-    if (dest.width <= 0 || dest.height <= 0)
+    if (width <= 0 || height <= 0)
     {
         return;
     }
