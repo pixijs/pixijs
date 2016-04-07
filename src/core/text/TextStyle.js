@@ -92,8 +92,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._font;
         }, set: function (font)
         {
-            this._font = font;
-            this.emit('styleChanged');
+            if (this._font !== font)
+            {
+                this._font = font;
+                this.emit('styleChanged');
+            }
         }
     },
     fill: {
@@ -102,8 +105,12 @@ Object.defineProperties(TextStyle.prototype, {
             return this._fill;
         }, set: function (fill)
         {
-            this._fill = typeof fill === 'number' ? utils.hex2string(fill) : fill;
-            this.emit('styleChanged');
+            var outputColor = typeof fill === 'number' ? utils.hex2string(fill) : fill;
+            if (this._fill !== outputColor)
+            {
+                this._fill = outputColor;
+                this.emit('styleChanged');
+            }
         }
     },
     align: {
@@ -112,8 +119,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._align;
         }, set: function (align)
         {
-            this._align = align;
-            this.emit('styleChanged');
+            if (this._align !== align)
+            {
+                this._align = align;
+                this.emit('styleChanged');
+            }
         }
     },
     stroke: {
@@ -122,8 +132,12 @@ Object.defineProperties(TextStyle.prototype, {
             return this._stroke;
         }, set: function (stroke)
         {
-            this._stroke = typeof stroke === 'number' ? utils.hex2string(stroke) : stroke;
-            this.emit('styleChanged');
+            var outputColor = typeof stroke === 'number' ? utils.hex2string(stroke) : stroke;
+            if (this._stroke !== outputColor)
+            {
+                this._stroke = outputColor;
+                this.emit('styleChanged');
+            }
         }
     },
     strokeThickness: {
@@ -132,8 +146,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._strokeThickness;
         }, set: function (strokeThickness)
         {
-            this._strokeThickness = strokeThickness;
-            this.emit('styleChanged');
+            if (this._strokeThickness !== strokeThickness)
+            {
+                this._strokeThickness = strokeThickness;
+                this.emit('styleChanged');
+            }
         }
     },
     wordWrap: {
@@ -142,8 +159,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._wordWrap;
         }, set: function (wordWrap)
         {
-            this._wordWrap = wordWrap;
-            this.emit('styleChanged');
+            if (this._wordWrap !== wordWrap)
+            {
+                this._wordWrap = wordWrap;
+                this.emit('styleChanged');
+            }
         }
     },
     wordWrapWidth: {
@@ -152,8 +172,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._wordWrapWidth;
         }, set: function (wordWrapWidth)
         {
-            this._wordWrapWidth = wordWrapWidth;
-            this.emit('styleChanged');
+            if (this._wordWrapWidth !== wordWrapWidth)
+            {
+                this._wordWrapWidth = wordWrapWidth;
+                this.emit('styleChanged');
+            }
         }
     },
     dropShadow: {
@@ -162,8 +185,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadow;
         }, set: function (dropShadow)
         {
-            this._dropShadow = dropShadow;
-            this.emit('styleChanged');
+            if (this._dropShadow !== dropShadow)
+            {
+                this._dropShadow = dropShadow;
+                this.emit('styleChanged');
+            }
         }
     },
     dropShadowColor: {
@@ -172,8 +198,12 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadowColor;
         }, set: function (dropShadowColor)
         {
-            this._dropShadowColor = typeof dropShadowColor === 'number' ? utils.hex2string(dropShadowColor) : dropShadowColor;
-            this.emit('styleChanged');
+            var outputColor = typeof dropShadowColor === 'number' ? utils.hex2string(dropShadowColor) : dropShadowColor;
+            if (this._dropShadowColor !== outputColor)
+            {
+                this._dropShadowColor = outputColor;
+                this.emit('styleChanged');
+            }
         }
     },
     dropShadowAngle: {
@@ -182,8 +212,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadowAngle;
         }, set: function (dropShadowAngle)
         {
-            this._dropShadowAngle = dropShadowAngle;
-            this.emit('styleChanged');
+            if (this._dropShadowAngle !== dropShadowAngle)
+            {
+                this._dropShadowAngle = dropShadowAngle;
+                this.emit('styleChanged');
+            }
         }
     },
     dropShadowDistance: {
@@ -192,8 +225,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadowDistance;
         }, set: function (dropShadowDistance)
         {
-            this._dropShadowDistance = dropShadowDistance;
-            this.emit('styleChanged');
+            if (this._dropShadowDistance !== dropShadowDistance)
+            {
+                this._dropShadowDistance = dropShadowDistance;
+                this.emit('styleChanged');
+            }
         }
     },
     dropShadowBlur: {
@@ -202,8 +238,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadowBlur;
         }, set: function (dropShadowBlur)
         {
-            this._dropShadowBlur = dropShadowBlur;
-            this.emit('styleChanged');
+            if (this._dropShadowBlur !== dropShadowBlur)
+            {
+                this._dropShadowBlur = dropShadowBlur;
+                this.emit('styleChanged');
+            }
         }
     },
     padding: {
@@ -212,8 +251,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._padding;
         }, set: function (padding)
         {
-            this._padding = padding;
-            this.emit('styleChanged');
+            if (this._padding !== padding)
+            {
+                this._padding = padding;
+                this.emit('styleChanged');
+            }
         }
     },
     textBaseline: {
@@ -222,8 +264,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._textBaseline;
         }, set: function (textBaseline)
         {
-            this._textBaseline = textBaseline;
-            this.emit('styleChanged');
+            if (this._textBaseline !== textBaseline)
+            {
+                this._textBaseline = textBaseline;
+                this.emit('styleChanged');
+            }
         }
     },
     lineJoin: {
@@ -232,8 +277,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._lineJoin;
         }, set: function (lineJoin)
         {
-            this._lineJoin = lineJoin;
-            this.emit('styleChanged');
+            if (this._lineJoin !== lineJoin)
+            {
+                this._lineJoin = lineJoin;
+                this.emit('styleChanged');
+            }
         }
     },
     lineHeight: {
@@ -242,8 +290,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._lineHeight;
         }, set: function (lineHeight)
         {
-            this._lineHeight = lineHeight;
-            this.emit('styleChanged');
+            if (this._lineHeight !== lineHeight)
+            {
+                this._lineHeight = lineHeight;
+                this.emit('styleChanged');
+            }
         }
     },
     miterLimit: {
@@ -252,8 +303,11 @@ Object.defineProperties(TextStyle.prototype, {
             return this._miterLimit;
         }, set: function (miterLimit)
         {
-            this._miterLimit = miterLimit;
-            this.emit('styleChanged');
+            if (this._miterLimit !== miterLimit)
+            {
+                this._miterLimit = miterLimit;
+                this.emit('styleChanged');
+            }
         }
     }
 });
