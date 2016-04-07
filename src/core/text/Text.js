@@ -94,6 +94,26 @@ Text.fontPropertiesCache = {};
 Text.fontPropertiesCanvas = document.createElement('canvas');
 Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
 
+// Set the default styles of the text.
+Text.prototype._defaultStyles = {
+    font: 'bold 20pt Arial',
+    fill: 'black',
+    align: 'left',
+    stroke: 'black',
+    strokeThickness: 0,
+    wordWrap: false,
+    wordWrapWidth: 100,
+    dropShadow: false,
+    dropShadowColor: '#000000',
+    dropShadowAngle: Math.PI / 6,
+    dropShadowDistance: 5,
+    dropShadowBlur: 0,
+    padding: 0,
+    textBaseline: 'alphabetic',
+    lineJoin: 'miter',
+    miterLimit: 10
+};
+
 Object.defineProperties(Text.prototype, {
     /**
      * The width of the Text, setting this will actually modify the scale to achieve the value set
@@ -168,49 +188,11 @@ Object.defineProperties(Text.prototype, {
      * @memberof PIXI.Text#
      */
     style: {
-        get: function ()
-        {
+        get: function () {
             return this._style;
         },
-        set: function (style)
-        {
-            style = style || {};
-
-            if (typeof style.fill === 'number') {
-                style.fill = utils.hex2string(style.fill);
-            }
-
-            if (typeof style.stroke === 'number') {
-                style.stroke = utils.hex2string(style.stroke);
-            }
-
-            if (typeof style.dropShadowColor === 'number') {
-                style.dropShadowColor = utils.hex2string(style.dropShadowColor);
-            }
-
-            style.font = style.font || 'bold 20pt Arial';
-            style.fill = style.fill || 'black';
-            style.align = style.align || 'left';
-            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/pixijs/pixi.js/issues/136
-            style.strokeThickness = style.strokeThickness || 0;
-            style.wordWrap = style.wordWrap || false;
-            style.wordWrapWidth = style.wordWrapWidth || 100;
-
-            style.dropShadow = style.dropShadow || false;
-            style.dropShadowColor = style.dropShadowColor || '#000000';
-            style.dropShadowAngle = style.dropShadowAngle !== undefined ? style.dropShadowAngle : Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance !== undefined ? style.dropShadowDistance : 5;
-            style.dropShadowBlur = style.dropShadowBlur !== undefined ? style.dropShadowBlur : 0; //shadowBlur is '0' by default according to HTML
-
-            style.padding = style.padding || 0;
-
-            style.textBaseline = style.textBaseline || 'alphabetic';
-
-            style.lineJoin = style.lineJoin || 'miter';
-            style.miterLimit = style.miterLimit || 10;
-
-            this._style = style;
-            this.dirty = true;
+        set: function (style) {
+            this._style = this._createStyleObject(style || {});
         }
     },
 
@@ -229,7 +211,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -587,6 +569,89 @@ Text.prototype.wordWrap = function (text)
         }
     }
     return result;
+};
+
+/**
+ * Creates a base style object that uses setters to automatically convert colors and mark the text as dirty on any change.
+ *
+ * @return {object} The base style object with getters/setters for each property.
+ * @private
+ */
+Text.prototype._createStyleBase = function ()
+{
+    function convertColor(color)
+    {
+        if (typeof color === 'number')
+        {
+            return utils.hex2string(color);
+        } else
+        {
+            return color;
+        }
+    }
+
+    var _this = this;
+    var styleBase = {};
+    var setter = function (key, value)
+    {
+        if (this['_' + key] !== value)
+        {  // Check that it's not the same value before marking it as dirty, because text drawing operations are pretty expensive.
+            _this.dirty = true;
+            this['_' + key] = value;
+        }
+    }.bind(styleBase);
+    var colorSetter = function (key, color)
+    {
+        setter(key, convertColor(color));
+    };
+
+    for (var key in this._defaultStyles)
+    {
+        var getter = function (key)
+        {
+            return this['_' + key];
+        }.bind(styleBase, key);
+        if (['fill', 'stroke', 'dropShadowColor'].indexOf(key) !== -1)
+        {
+            Object.defineProperty(styleBase, key, {
+                get: getter,
+                set: colorSetter.bind(styleBase, key)
+            });
+        } else
+        {
+            Object.defineProperty(styleBase, key, {
+                get: getter,
+                set: setter.bind(styleBase, key)
+            });
+        }
+    }
+    return styleBase;
+};
+
+/**
+ * Creates a style object with the specified styles.
+ *
+ * @param style {object} The style settings
+ * @return {object} The style settings with getters/setters attached
+ * @private
+ */
+Text.prototype._createStyleObject = function (style)
+{
+    if (!style)
+    {
+        style = {};
+    }
+
+    var styleBase = this._createStyleBase();
+    return Object.assign(styleBase, this._defaultStyles, style);
+};
+
+/**
+ * Resets all style settings to their defaults.
+ */
+Text.prototype.resetStyle = function ()
+{
+    this.style = {};
 };
 
 /**
