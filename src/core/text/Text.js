@@ -604,23 +604,22 @@ Text.prototype._createStyleBase = function ()
     {
         setter(key, convertColor(color));
     };
-
+    var getter = function (key)
+    {
+        return this['_' + key];
+    };
     for (var key in this._defaultStyles)
     {
-        var getter = function (key)
-        {
-            return this['_' + key];
-        }.bind(styleBase, key);
         if (['fill', 'stroke', 'dropShadowColor'].indexOf(key) !== -1)
         {
             Object.defineProperty(styleBase, key, {
-                get: getter,
+                get: getter.bind(styleBase, key),
                 set: colorSetter.bind(styleBase, key)
             });
         } else
         {
             Object.defineProperty(styleBase, key, {
-                get: getter,
+                get: getter.bind(styleBase, key),
                 set: setter.bind(styleBase, key)
             });
         }
