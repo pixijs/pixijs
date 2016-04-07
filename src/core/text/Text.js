@@ -599,7 +599,7 @@ Text.prototype._createStyleBase = function ()
             _this.dirty = true;
             this['_' + key] = value;
         }
-    }.bind(styleBase);
+    };
     var colorSetter = function (key, color)
     {
         setter(key, convertColor(color));
