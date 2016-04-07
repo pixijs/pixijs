@@ -602,7 +602,7 @@ Text.prototype._createStyleBase = function ()
     };
     var colorSetter = function (key, color)
     {
-        setter(key, convertColor(color));
+        setter.call(styleBase, key, convertColor(color));
     };
     var getter = function (key)
     {
