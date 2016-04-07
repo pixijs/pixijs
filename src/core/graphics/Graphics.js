@@ -1036,6 +1036,30 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
     return texture;
 };
 
+Graphics.prototype.closePath = function ()
+{
+    // ok so close path assumes next one is a hole!
+    var currentPath = this.currentPath;
+    if (currentPath && currentPath.shape)
+    {
+        currentPath.shape.close();
+    }
+    return this;
+};
+
+Graphics.prototype.addHole = function()
+{
+    // this is a hole!
+    var hole = this.graphicsData.pop();
+
+    this.currentPath = this.graphicsData[this.graphicsData.length-1];
+
+    this.currentPath.addHole(hole.shape);
+    this.currentPath = null;
+
+    return this;
+};
+
 /**
  * Destroys the Graphics object.
  */

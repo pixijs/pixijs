@@ -51,6 +51,9 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      */
     this.fill = fill;
 
+
+    this.holes = [];
+
     /*
      * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
      */
@@ -83,9 +86,15 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
+GraphicsData.prototype.addHole = function (shape)
+{
+    this.holes.push(shape);
+};
+
 /**
  * Destroys the Graphics data.
  */
 GraphicsData.prototype.destroy = function () {
     this.shape = null;
+    this.holes = null;
 };
