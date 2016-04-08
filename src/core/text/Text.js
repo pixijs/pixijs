@@ -57,13 +57,14 @@ function Text(text, style, resolution)
      * @private
      */
     this._style = null;
+
     /**
-     * Private listener to track style changes.
+     * Last rendered version number of the style object.
      *
      * @member {Function}
      * @private
      */
-    this._styleListener = null;
+    this._styleVersion = null;
 
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
@@ -92,11 +93,7 @@ Object.defineProperties(Text.prototype, {
     width: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
+            this.updateText(true);
             return this.scale.x * this._texture._frame.width;
         },
         set: function (value)
@@ -115,11 +112,7 @@ Object.defineProperties(Text.prototype, {
     height: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
+            this.updateText(true);
             return  this.scale.y * this._texture._frame.height;
         },
         set: function (value)
@@ -142,10 +135,6 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
-            if (this._style) {
-                this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
-            }
-
             style = style || {};
             if (style instanceof TextStyle)
             {
@@ -154,8 +143,7 @@ Object.defineProperties(Text.prototype, {
             {
                 this._style = new TextStyle(style);
             }
-            this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
-            this.dirty = true;
+            this._styleVersion = -1;  // Force it to re-render and grab the version number.
         }
     },
 
@@ -182,16 +170,36 @@ Object.defineProperties(Text.prototype, {
             this._text = text;
             this.dirty = true;
         }
+    },
+
+    /**
+     * Indicates whether the text should be re-rendered. Takes into account style changes.
+     *
+     * @param dirty {boolean} Whether the text should be rerendered
+     * @memberof PIXI.Text#
+     */
+    dirty: {
+        get: function() {
+            return this._dirty || this._styleVersion !== this.style.version;
+        },
+        set: function (dirty) {
+            this._dirty = dirty;
+        }
     }
+
 });
 
 /**
  * Renders text and updates it when needed
  *
+ * @param [respectDirty=true] {boolean} Whether to ignore the dirty indicator and force a re-render.
  * @private
  */
-Text.prototype.updateText = function ()
+Text.prototype.updateText = function (respectDirty)
 {
+    if (!this.dirty && respectDirty) {  // If for
+        return;
+    }
     var style = this._style;
     this.context.font = style.font;
 
@@ -344,6 +352,7 @@ Text.prototype.updateTexture = function ()
     texture.baseTexture.emit('update',  texture.baseTexture);
 
     this.dirty = false;
+    this._styleVersion = this._style.version;
 };
 
 /**
@@ -353,12 +362,7 @@ Text.prototype.updateTexture = function ()
  */
 Text.prototype.renderWebGL = function (renderer)
 {
-    if (this.dirty)
-    {
-        //this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype.renderWebGL.call(this, renderer);
 };
@@ -371,10 +375,7 @@ Text.prototype.renderWebGL = function (renderer)
  */
 Text.prototype._renderCanvas = function (renderer)
 {
-    if (this.dirty)
-    {
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype._renderCanvas.call(this, renderer);
 };
@@ -537,20 +538,9 @@ Text.prototype.wordWrap = function (text)
  */
 Text.prototype.getBounds = function (matrix)
 {
-    if (this.dirty)
-    {
-        this.updateText();
-    }
+    this.updateText(true);
 
     return Sprite.prototype.getBounds.call(this, matrix);
-};
-
-/**
- * Method to be called upon a TextStyle change.
- */
-Text.prototype._onStyleChange = function ()
-{
-    this.dirty = true;
 };
 
 /**
@@ -563,8 +553,6 @@ Text.prototype.destroy = function (destroyBaseTexture)
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;
-
-    this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);

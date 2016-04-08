@@ -1,13 +1,10 @@
-var EventEmitter = require('eventemitter3'),
-    CONST = require('../const'),
-    utils = require('../utils');
+var utils = require('../utils');
 
 /**
  * A TextStyle Object decorates a Text Object. It acts as an event emitter, and can be shared between
  * multiple Text objects.
  *
  * @class
- * @extends EventEmitter
  * @memberof PIXI
  * @param [style] {object} The style parameters
  * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
@@ -33,11 +30,10 @@ var EventEmitter = require('eventemitter3'),
  */
 function TextStyle(style)
 {
-    EventEmitter.call(this);
     Object.assign(this, this._defaults, style);
+    this.version = 0;
 }
 
-TextStyle.prototype = Object.create(EventEmitter.prototype);
 TextStyle.prototype.constructor = TextStyle;
 module.exports = TextStyle;
 
@@ -100,7 +96,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._font !== font)
             {
                 this._font = font;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -114,7 +110,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._fill !== outputColor)
             {
                 this._fill = outputColor;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -127,7 +123,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._align !== align)
             {
                 this._align = align;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -141,7 +137,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._stroke !== outputColor)
             {
                 this._stroke = outputColor;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -154,7 +150,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._strokeThickness !== strokeThickness)
             {
                 this._strokeThickness = strokeThickness;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -167,7 +163,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._wordWrap !== wordWrap)
             {
                 this._wordWrap = wordWrap;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -180,7 +176,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._wordWrapWidth !== wordWrapWidth)
             {
                 this._wordWrapWidth = wordWrapWidth;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -193,7 +189,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._dropShadow !== dropShadow)
             {
                 this._dropShadow = dropShadow;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -207,7 +203,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._dropShadowColor !== outputColor)
             {
                 this._dropShadowColor = outputColor;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -220,7 +216,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._dropShadowAngle !== dropShadowAngle)
             {
                 this._dropShadowAngle = dropShadowAngle;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -233,7 +229,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._dropShadowDistance !== dropShadowDistance)
             {
                 this._dropShadowDistance = dropShadowDistance;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -246,7 +242,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._dropShadowBlur !== dropShadowBlur)
             {
                 this._dropShadowBlur = dropShadowBlur;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -259,7 +255,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._padding !== padding)
             {
                 this._padding = padding;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -272,7 +268,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._textBaseline !== textBaseline)
             {
                 this._textBaseline = textBaseline;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -285,7 +281,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._lineJoin !== lineJoin)
             {
                 this._lineJoin = lineJoin;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -298,7 +294,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._lineHeight !== lineHeight)
             {
                 this._lineHeight = lineHeight;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     },
@@ -311,7 +307,7 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._miterLimit !== miterLimit)
             {
                 this._miterLimit = miterLimit;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
+                this.version += 1;
             }
         }
     }
