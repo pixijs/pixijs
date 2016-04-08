@@ -110,7 +110,7 @@ Object.defineProperties(TextStyle.prototype, {
             return this._fill;
         }, set: function (fill)
         {
-            var outputColor = typeof fill === 'number' ? utils.hex2string(fill) : fill;
+            var outputColor = getColor(fill);
             if (this._fill !== outputColor)
             {
                 this._fill = outputColor;
@@ -137,7 +137,7 @@ Object.defineProperties(TextStyle.prototype, {
             return this._stroke;
         }, set: function (stroke)
         {
-            var outputColor = typeof stroke === 'number' ? utils.hex2string(stroke) : stroke;
+            var outputColor = getColor(stroke);
             if (this._stroke !== outputColor)
             {
                 this._stroke = outputColor;
@@ -203,7 +203,7 @@ Object.defineProperties(TextStyle.prototype, {
             return this._dropShadowColor;
         }, set: function (dropShadowColor)
         {
-            var outputColor = typeof dropShadowColor === 'number' ? utils.hex2string(dropShadowColor) : dropShadowColor;
+            var outputColor = getColor(dropShadowColor);
             if (this._dropShadowColor !== outputColor)
             {
                 this._dropShadowColor = outputColor;
@@ -317,4 +317,18 @@ Object.defineProperties(TextStyle.prototype, {
     }
 });
 
-
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ *
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (typeof color === 'number')
+    {
+        return utils.hex2string(color);
+    } else
+    {
+        return color;
+    }
+}
