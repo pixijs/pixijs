@@ -83,10 +83,7 @@ TextStyle.prototype.clone = function ()
  */
 TextStyle.prototype.reset = function ()
 {
-    for (var property in this._defaults)
-    {
-        this[property] = this._defaults[property];
-    }
+    Object.assign(this, this._defaults);
 };
 
 /**
