@@ -9,7 +9,7 @@ var math = require('../math'),
  * @param {PIXI.DoubleRect} texture frame we will depend upon
  */
 function SpriteFrame(textureFrame) {
-    math.Rectangle.call(this);
+    math.Rectangle.call(this, 0, 0, 1, 1);
 
     this.inner = null;
     /**
