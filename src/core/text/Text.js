@@ -155,6 +155,7 @@ Object.defineProperties(Text.prototype, {
                 this._style = new TextStyle(style);
             }
             this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
+            this.dirty = true;
         }
     },
 
