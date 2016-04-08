@@ -87,11 +87,11 @@ function InteractionManager(renderer, options)
      * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
-     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
+     * It is set to true as default as of v4; before that the default was false.
      * @member {boolean}
      * @private
      */
-    this.moveWhenInside = false;
+    this.moveWhenInside = true;
 
     /**
      * Have events been attached to the dom element?
