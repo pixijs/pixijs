@@ -96,7 +96,6 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.onContextChange = function ()
 {
@@ -104,12 +103,12 @@ SpriteRenderer.prototype.onContextChange = function ()
 
 
     this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
-    
+
     this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    
+
 
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
@@ -121,7 +120,7 @@ SpriteRenderer.prototype.onContextChange = function ()
         .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
         .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
-    
+
     this.vao = this.vaos[0];
     this.currentBlendMode = 99999;
 };
@@ -285,7 +284,7 @@ SpriteRenderer.prototype.flush = function ()
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
     this.vao = this.vaos[this.vertexCount].bind();
-   
+
 
     /// render the groups..
     for (i = 0; i < groupCount; i++) {

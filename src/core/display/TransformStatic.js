@@ -8,8 +8,6 @@ var generatorId = 0;
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
 function TransformStatic()
 {

@@ -309,7 +309,7 @@ Texture.prototype.clone = function ()
 /**
  * Updates the internal WebGL UV cache.
  *
- * @private
+ * @protected
  */
 Texture.prototype._updateUvs = function ()
 {
@@ -368,7 +368,7 @@ Texture.fromFrame = function (frameId)
  * Helper function that creates a new Texture based on the given canvas element.
  *
  * @static
- * @param canvas {Canvas} The canvas element source of the texture
+ * @param canvas {HTMLCanvasElement} The canvas element source of the texture
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture}
  */

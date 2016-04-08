@@ -17,7 +17,6 @@ module.exports = CanvasMaskManager;
  * This method adds it to the current stack of masks.
  *
  * @param maskData {object} the maskData that will be pushed
- * @param renderer {PIXI.WebGLRenderer|PIXI.CanvasRenderer} The renderer context to use.
  */
 CanvasMaskManager.prototype.pushMask = function (maskData)
 {

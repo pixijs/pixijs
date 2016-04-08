@@ -25,8 +25,8 @@ module.exports = MaskManager;
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
+ * @param target {PIXI.Graphics}
+ * @param maskData {any[]}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
 {
@@ -127,7 +127,6 @@ MaskManager.prototype.popSpriteMask = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {PIXI.RenderTarget}
  * @param maskData {any[]}
  */
 MaskManager.prototype.pushStencilMask = function (maskData)
@@ -139,8 +138,6 @@ MaskManager.prototype.pushStencilMask = function (maskData)
 /**
  * Removes the last filter from the filter stack and doesn't return it.
  *
- * @param target {PIXI.RenderTarget}
- * @param maskData {any[]}
  */
 MaskManager.prototype.popStencilMask = function ()
 {

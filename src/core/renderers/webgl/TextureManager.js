@@ -139,6 +139,7 @@ TextureManager.prototype.updateTexture = function(texture)
  * Deletes the texture from WebGL
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
+ * @param [_skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
  */
 TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 {

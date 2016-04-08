@@ -406,7 +406,6 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @param event
  * @private
  */
 Mesh.prototype._onTextureUpdate = function ()

@@ -84,7 +84,7 @@ function WebGLRenderer(width, height, options)
     /**
      * Manages the stencil buffer.
      *
-     * @member {PIXI.StencilManager}
+     * @member {StencilManager}
      */
     this.stencilManager = new StencilManager(this);
 
@@ -111,13 +111,13 @@ function WebGLRenderer(width, height, options)
      */
     // initialize the context so it is ready for the managers.
     this.gl = options.context || createContext(this.view, this._contextOptions);
-   
+
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
      * The currently active ObjectRenderer.
      *
-     * @member {PIXI.WebGLState}
+     * @member {WebGLState}
      */
     this.state = new WebGLState(this.gl);
 
@@ -155,7 +155,7 @@ function WebGLRenderer(width, height, options)
 
     this.setBlendMode(0);
 
-    
+
 }
 
 // constructor
@@ -181,7 +181,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-    
+
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -194,8 +194,8 @@ WebGLRenderer.prototype._initContext = function ()
 /**
  * Renders the object to its webGL view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
- * @param renderTexture {PIXI.renderTexture}
+ * @param displayObject {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.RenderTexture}
  * @param clear {Boolean}
  * @param transform {PIXI.Transform}
  * @param skipUpdateTransform {Boolean}
@@ -203,7 +203,7 @@ WebGLRenderer.prototype._initContext = function ()
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    
+
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
@@ -239,7 +239,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         renderTarget.clear();
     }
 
-   
+
 
     displayObject.renderWebGL(this);
 
@@ -449,7 +449,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-       
+
     }
     else
     {

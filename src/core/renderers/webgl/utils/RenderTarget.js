@@ -33,7 +33,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * A frame buffer
      *
-     * @member {WebGLFrameBuffer}
+     * @member {glCore.GLFramebuffer}
      */
     this.frameBuffer = null;
 
@@ -89,7 +89,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
     this.defaultFrame = new PIXI.Rectangle();
     this.destinationFrame = null;
@@ -98,14 +98,14 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
     this.stencilBuffer = null;
 
     /**
      * The data structure for the stencil masks
      *
-     * @member {PIXI.StencilMaskStack}
+     * @member {array}
      */
     this.stencilMaskStack = [];
 
@@ -180,7 +180,7 @@ module.exports = RenderTarget;
 /**
  * Clears the filter texture.
  *
- * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
+ * @param [clearColor=this.clearColor] {array} Array of [r,g,b,a] to clear the framebuffer
  */
 RenderTarget.prototype.clear = function(clearColor)
 {

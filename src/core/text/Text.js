@@ -19,6 +19,7 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
+ * @param resolution {number} The resolution of the canvas
  * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
  * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
@@ -229,7 +230,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;

@@ -141,7 +141,6 @@ Object.defineProperties(Ticker.prototype, {
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
@@ -160,7 +159,6 @@ Object.defineProperties(Ticker.prototype, {
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.TARGET_FPMS * 1000`.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @default 10
      */

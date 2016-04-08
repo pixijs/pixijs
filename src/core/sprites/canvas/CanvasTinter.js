@@ -206,21 +206,21 @@ CanvasTinter.roundColor = function (color)
 /**
  * Number of steps which will be used as a cap when rounding colors.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.cacheStepsPerColorChannel = 8;
 
 /**
  * Tint cache boolean flag.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.convertTintToImage = false;
 
 /**
  * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
 

@@ -21,7 +21,7 @@ module.exports = WebGLExtract;
  * Will return a HTML Image of the target
  *
  * @return {Image}
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  */
 WebGLExtract.prototype.image = function ( target )
 {
@@ -32,7 +32,7 @@ WebGLExtract.prototype.image = function ( target )
 
 /**
  * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {string} A base64 encoded string of the texture.
  */
 WebGLExtract.prototype.base64 = function ( target )
@@ -42,7 +42,7 @@ WebGLExtract.prototype.base64 = function ( target )
 
 /**
  * Creates a Canvas element, renders this target to it and then returns it.
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
 WebGLExtract.prototype.canvas = function ( target )
@@ -61,7 +61,7 @@ WebGLExtract.prototype.canvas = function ( target )
         }
         else
         {
-            renderTexture = this.renderer.generateTexture(target);    
+            renderTexture = this.renderer.generateTexture(target);
         }
     }
 
@@ -84,7 +84,7 @@ WebGLExtract.prototype.canvas = function ( target )
     var width = frame.width * resolution;
     var height = frame.height * resolution;
 
-   	var canvasBuffer = new core.CanvasRenderTarget(width, height);  
+   	var canvasBuffer = new core.CanvasRenderTarget(width, height);
     var canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
     canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -95,7 +95,7 @@ WebGLExtract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
 WebGLExtract.prototype.pixels = function ( renderTexture )

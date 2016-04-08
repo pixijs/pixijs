@@ -4,7 +4,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
+ * @param gl {Shader} TODO: Find a good explanation for this.
  */
 function MeshShader(gl)
 {

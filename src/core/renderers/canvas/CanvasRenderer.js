@@ -102,7 +102,11 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
+ * @param [clear=false] {boolean} Whether to clear the canvas before drawing
+ * @param [transform] {PIXI.Transform} A transformation to be applied
+ * @param skipUpdateTransform {boolean} Whether to skip the update transform
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -119,7 +123,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     if(renderTexture)
     {
         renderTexture = renderTexture.baseTexture || renderTexture;
-        
+
         if(!renderTexture._canvasRenderTarget)
         {
 

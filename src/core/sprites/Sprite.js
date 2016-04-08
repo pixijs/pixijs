@@ -22,7 +22,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-  
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -448,8 +448,6 @@ Sprite.from = function (source)
  *
  * @static
  * @param frameId {string} The frame Id of the texture in the cache
- * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 Sprite.fromFrame = function (frameId)
@@ -470,6 +468,8 @@ Sprite.fromFrame = function (frameId)
  *
  * @static
  * @param imageId {string} The image url of the texture
+ * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 Sprite.fromImage = function (imageId, crossorigin, scaleMode)
