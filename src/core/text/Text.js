@@ -143,7 +143,7 @@ Object.defineProperties(Text.prototype, {
         set: function (style)
         {
             if (this._style) {
-                this._style.removeListener(this._styleListener);
+                this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
             }
 
             style = style || {};
@@ -154,10 +154,7 @@ Object.defineProperties(Text.prototype, {
             {
                 this._style = new TextStyle(style);
             }
-            this._styleListener = this._style.on(CONST.TEXT_STYLE_CHANGED, function ()
-            {
-                this.dirty = true;
-            }.bind(this));
+            this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
         }
     },
 
@@ -548,6 +545,14 @@ Text.prototype.getBounds = function (matrix)
 };
 
 /**
+ * Method to be called upon a TextStyle change.
+ */
+Text.prototype._onStyleChange = function ()
+{
+    this.dirty = true;
+};
+
+/**
  * Destroys this text object.
  *
  * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
@@ -558,7 +563,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this.context = null;
     this.canvas = null;
 
-    this._style.removeListener(this._styleListener);
+    this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
