@@ -92,10 +92,7 @@ Object.defineProperties(Text.prototype, {
     width: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
+            this.updateText(true);
 
             return this.scale.x * this._texture._frame.width;
         },
@@ -115,10 +112,7 @@ Object.defineProperties(Text.prototype, {
     height: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
+            this.updateText(true);
 
             return  this.scale.y * this._texture._frame.height;
         },
@@ -187,11 +181,14 @@ Object.defineProperties(Text.prototype, {
 
 /**
  * Renders text and updates it when needed
- *
+ * @param respectDirty {boolean} Whether to abort updating the text if the Text isn't dirty and the function is called.
  * @private
  */
-Text.prototype.updateText = function ()
+Text.prototype.updateText = function (respectDirty)
 {
+    if (!this.dirty && respectDirty) {
+        return;
+    }
     var style = this._style;
     this.context.font = style.font;
 
@@ -353,12 +350,7 @@ Text.prototype.updateTexture = function ()
  */
 Text.prototype.renderWebGL = function (renderer)
 {
-    if (this.dirty)
-    {
-        //this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype.renderWebGL.call(this, renderer);
 };
@@ -371,10 +363,7 @@ Text.prototype.renderWebGL = function (renderer)
  */
 Text.prototype._renderCanvas = function (renderer)
 {
-    if (this.dirty)
-    {
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype._renderCanvas.call(this, renderer);
 };
@@ -537,10 +526,7 @@ Text.prototype.wordWrap = function (text)
  */
 Text.prototype.getBounds = function (matrix)
 {
-    if (this.dirty)
-    {
-        this.updateText();
-    }
+    this.updateText(true);
 
     return Sprite.prototype.getBounds.call(this, matrix);
 };
