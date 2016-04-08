@@ -11,9 +11,9 @@ var EventEmitter = require('eventemitter3'),
  * @memberof PIXI
  * @param [style] {object} The style parameters
  * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke='black'] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
+ * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
@@ -34,11 +34,7 @@ var EventEmitter = require('eventemitter3'),
 function TextStyle(style)
 {
     EventEmitter.call(this);
-    var properties = Object.assign({}, this._defaults, style);
-    for (var property in properties)
-    {
-        this[property] = properties[property];
-    }
+    Object.assign(this, this._defaults, style);
 }
 
 TextStyle.prototype = Object.create(EventEmitter.prototype);
