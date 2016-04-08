@@ -54,6 +54,13 @@ function InteractionManager(renderer, options)
     this.mouse = new InteractionData();
 
     /**
+     * The pointer data
+     *
+     * @member {PIXI.interaction.InteractionData}
+     */
+    this.pointer = new InteractionData();
+
+    /**
      * An event data object to handle all the event tracking/dispatching
      *
      * @member {object}
@@ -101,6 +108,55 @@ function InteractionManager(renderer, options)
      */
     this.eventsAdded = false;
 
+    /**
+     * Does the device support touch events
+     * https://www.w3.org/TR/touch-events/
+     
+     * @member {boolean}
+     * @private
+     */
+    this.supportsTouchEvents = 'ontouchstart' in window;
+    
+    /**
+     * Does the device support pointer events
+     * https://www.w3.org/Submission/pointer-events/
+     *
+     * @member {boolean}
+     * @private
+     */
+    this.supportsPointerEvents = !!window.PointerEvent;
+
+    /**
+     * A list of  mouse events that the Interaction Manager can invoke to Display Objects
+     *
+     * @member {Array}
+     */
+    this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','moveover','mouseout','mouseupoutside','rightupoutside'];
+    
+    /**
+     * A list of the touch events that the Interaction Manager can invoke to Display Objects
+     *
+     * @member {Array}
+     */
+    this.touchEvents = ['touchstart','touchend','tap','touchmove','touchendoutside'];
+    
+    /**
+     * A list of the pointer events that the Interaction Manager can invoke to Display Objects
+     *
+     * @member {Array}
+     */
+    this.pointerEvents = ['pointerdown','pointerup','pointerclick','pointermove','pointermoveover','pointermoveout','pointerupoutside'];
+    
+    /**
+     * Should mouse & touch events be 'normalized' and converted into pointer events if pointer events are not supported
+     * On a non touch screen device, a mousedown would be converted to pointerdown
+     * On a touch screen device, mousedown would be ignored, and a touchstart would be converted to a pointerdown
+     *
+     * @member {boolean}
+     */
+    this.normalizeEvents = false;
+    
+    
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -108,7 +164,6 @@ function InteractionManager(renderer, options)
      */
     this.onMouseUp = this.onMouseUp.bind(this);
     this.processMouseUp = this.processMouseUp.bind( this );
-
 
     /**
      * @member {Function}
@@ -129,6 +184,31 @@ function InteractionManager(renderer, options)
     this.processMouseOverOut = this.processMouseOverOut.bind( this );
 
 
+    /**
+    * @member {Function}
+    */
+    this.onPointerUp = this.onPointerUp.bind(this);
+    this.processPointerUp = this.processPointerUp.bind( this );
+    
+    /**
+    * @member {Function}
+    */
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.processPointerDown = this.processPointerDown.bind( this );
+    
+    /**
+    * @member {Function}
+    */
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.processPointerMove = this.processPointerMove.bind( this );
+
+    /**
+    * @member {Function}
+    */
+    this.onPointerOut = this.onPointerOut.bind(this);
+    this.processPointerOverOut = this.processPointerOverOut.bind( this );
+    
+    
     /**
      * @member {Function}
      */
@@ -224,16 +304,30 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
+    else if (this.supportsPointerEvents)
+    {
+        this.interactionDOMElement.style['touch-action'] = 'none';
+    }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
-    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
-    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    window.document.addEventListener('mousemove', this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousedown', this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('mouseout', this.onMouseOut, true);
+	window.addEventListener('mouseup', this.onMouseUp, true);
 
-    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
-    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
-    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
-
-    window.addEventListener('mouseup',  this.onMouseUp, true);
+	if (this.supportsTouchEvents)
+    {
+        this.interactionDOMElement.addEventListener('touchstart', this.onTouchStart, true);
+        this.interactionDOMElement.addEventListener('touchend', this.onTouchEnd, true);
+        this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
+    }
+    
+    if (this.supportsPointerEvents)
+    {
+        window.document.addEventListener('pointermove', this.onPointerMove, true);
+        this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+        this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
+        window.addEventListener('pointerup', this.onPointerUp, true);    
+    }
 
     this.eventsAdded = true;
 };
@@ -257,18 +351,32 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-content-zooming'] = '';
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
+    else if (this.supportsPointerEvents)
+    {
+        this.interactionDOMElement.style['touch-action'] = '';
+    }
 
     window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mouseout', this.onMouseOut, true);
+	window.removeEventListener('mouseup', this.onMouseUp, true);
 
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+	if (this.supportsTouchEvents)
+    {
+        this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+        this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+        this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    }
+    
+    if (this.supportsPointerEvents)
+    {
+        window.document.removeEventListener('pointermove', this.onPointerMove, true);
+        this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
+        this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
+        window.removeEventListener('pointerup', this.onPointerUp, true);    
+    }
 
     this.interactionDOMElement = null;
-
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
 
     this.eventsAdded = false;
 };
@@ -326,6 +434,15 @@ InteractionManager.prototype.update = function (deltaTime)
  */
 InteractionManager.prototype.dispatchEvent = function ( displayObject, eventString, eventData )
 {
+    if (this.normalizeEvents)
+    {
+        eventString = this.normalizeEventString( eventString );
+        if (!eventString)
+        {
+            return;
+        }
+    }
+
     if(!eventData.stopped)
     {
         eventData.target = displayObject;
@@ -338,6 +455,56 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
             displayObject[eventString]( eventData );
         }
     }
+};
+
+/**
+ * If pointer events aren't available on a device, this will turn either the touch or mouse events into pointer events
+ * This allows a developer to just listen for emitted pointer events on interactive sprites
+ *
+ * @param eventString {string} the name of the event (e.g, mousedown)
+ * @private
+ */
+InteractionManager.prototype.normalizeEventString = function ( eventString )
+{
+    if (!this.supportsPointerEvents)
+    {
+        if (this.supportsTouchEvents)
+        {
+            switch (eventString)
+            {
+                case 'touchstart': return 'pointerdown';
+                case 'touchend': return 'pointerup';
+                case 'tap': return 'pointerclick';
+                case 'touchmove': return 'pointermove';
+                case 'touchendoutside': return 'pointerupoutside';
+            }
+        }
+        else
+        {
+            switch (eventString)
+            {
+                case 'mousedown': return 'pointerdown';
+                case 'mouseup': return 'pointerup';
+                case 'rightdown': return 'pointerdown';
+                case 'rightup': return 'pointerup';
+                case 'click': return 'pointerclick';
+                case 'rightclick': return 'pointerclick';
+                case 'mousemove': return 'pointermove';
+                case 'mouseover': return 'pointerover';
+                case 'mouseout': return 'pointerout';
+                case 'mouseupoutside': return 'pointerupoutside';
+                case 'rightupoutside': return 'pointerupoutside';
+            }
+        }
+    }
+    
+    // make sure only pointer events get emitted
+    if (this.pointerEvents.indexOf(eventString) === -1)
+    {
+        return '';
+    }
+
+    return eventString;
 };
 
 /**
@@ -511,7 +678,7 @@ InteractionManager.prototype.onMouseDown = function (event)
  * Processes the result of the mouse down check and dispatches the event if need be
  *
  * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
- * @param hit {boolean} the result of the hit test on the dispay object
+ * @param hit {boolean} the result of the hit test on the display object
  * @private
  */
 InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
@@ -526,7 +693,6 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
         this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
     }
 };
-
 
 
 
@@ -681,6 +847,174 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         {
             displayObject._over = false;
             this.dispatchEvent( displayObject, 'mouseout', this.eventData);
+        }
+    }
+};
+
+
+/**
+ * Is called when the pointer button is pressed down on the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer button being pressed down
+ * @private
+ */
+InteractionManager.prototype.onPointerDown = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    if (this.autoPreventDefault)
+    {
+        this.pointer.originalEvent.preventDefault();
+    }
+
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerDown, true );
+};
+
+/**
+ * Processes the result of the pointer down check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerDown = function ( displayObject, hit )
+{
+    if(hit)
+    {
+        displayObject._pointerDown = true;
+        this.dispatchEvent( displayObject, 'pointerdown', this.eventData );
+    }
+};
+
+/**
+ * Is called when the pointer button is released on the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer button being released
+ * @private
+ */
+InteractionManager.prototype.onPointerUp = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerUp, true );
+};
+
+/**
+ * Processes the result of the pointer up check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerUp = function ( displayObject, hit )
+{
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, 'pointerup', this.eventData );
+
+        if( displayObject._pointerDown )
+        {
+            displayObject._pointerDown = false;
+            this.dispatchEvent( displayObject, 'pointerclick', this.eventData );
+        }
+    }
+    else
+    {
+        if( displayObject._pointerDown )
+        {
+            displayObject._pointerDown = false;
+            this.dispatchEvent( displayObject, 'pointerupoutside', this.eventData );
+        }
+    }
+};
+
+/**
+ * Is called when the pointer moves across the renderer element
+ *
+ * @param event {Event} The DOM event of the pointer moving
+ * @private
+ */
+InteractionManager.prototype.onPointerMove = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.didMove = true;
+    
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerMove, true );
+};
+
+/**
+ * Processes the result of the pointer move check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerMove = function ( displayObject, hit )
+{
+    this.processPointerOverOut(displayObject, hit);
+    
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'pointermove', this.eventData);
+    }
+};
+
+
+/**
+ * Is called when the pointer is moved out of the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer being moved out
+ * @private
+ */
+InteractionManager.prototype.onPointerOut = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.processInteractive( this.pointer.global, this.renderer._lastObjectRendered, this.processPointerOverOut, false );
+};
+
+/**
+ * Processes the result of the pointer over/out check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerOverOut = function ( displayObject, hit )
+{
+    if(hit)
+    {
+        if(!displayObject._over)
+        {
+            displayObject._over = true;
+            this.dispatchEvent( displayObject, 'pointerover', this.eventData );
+        }
+    }
+    else
+    {
+        if(displayObject._over)
+        {
+            displayObject._over = false;
+            this.dispatchEvent( displayObject, 'pointerout', this.eventData);
         }
     }
 };
@@ -907,19 +1241,29 @@ InteractionManager.prototype.destroy = function () {
 
     this.interactionDOMElement = null;
 
-    this.onMouseUp = null;
-    this.processMouseUp = null;
-
-
     this.onMouseDown = null;
     this.processMouseDown = null;
 
+    this.onMouseUp = null;
+    this.processMouseUp = null;
+    
     this.onMouseMove = null;
     this.processMouseMove = null;
 
     this.onMouseOut = null;
     this.processMouseOverOut = null;
 
+    this.onPointerDown = null;
+    this.processPointerDown = null;
+
+    this.onPointerUp = null;
+    this.processPointerUp = null;
+
+    this.onPointerMove = null;
+    this.processPointerMove = null;
+
+    this.onPointerOut = null;
+    this.processPointerOverOut = null;
 
     this.onTouchStart = null;
     this.processTouchStart = null;
