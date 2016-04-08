@@ -291,6 +291,10 @@ Sprite.prototype.calculateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
+    if (!this._sharedFrame) {
+        //don't do that if we share the frame with other particle sprites
+        this._frame.update();
+    }
     if(this.transform.updated || this._frameVersion !== this._frame.version)
     {
         // set the vertex data
@@ -309,6 +313,10 @@ Sprite.prototype._renderWebGL = function (renderer)
 */
 Sprite.prototype._renderCanvas = function (renderer)
 {
+    if (!this._sharedFrame) {
+        //don't do that if we share the frame with other particle sprites
+        this._frame.update();
+    }
     renderer.plugins.sprite.render(this);
 };
 

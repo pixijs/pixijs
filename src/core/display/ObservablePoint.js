@@ -4,7 +4,8 @@
  *
  * @class
  * @memberof PIXI
- * @param transform {PIXI.Transform} the transform object @mat
+ * @param cb {Function} callback when changed
+ * @param scope {Object} owner of callback
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -73,7 +74,7 @@ Object.defineProperties(ObservablePoint.prototype, {
 ObservablePoint.prototype.set = function (x, y)
 {
     var _x = x || 0;
-    var _y = y || ( (y !== 0) ? this._x : 0 );
+    var _y = y || ( (y !== 0) ? _x : 0 );
     if (this._x !== _x || this._y !== _y)
     {
         this._x = _x;

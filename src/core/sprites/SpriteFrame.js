@@ -1,48 +1,73 @@
-var math = require('../math/index'),
-    ObservablePoint = require('../display/ObservablePoint'),
-    DoubleRect = require('../textures/DoubleRect');
+var math = require('../math'),
+    ObservablePoint = require('../display/ObservablePoint');
 
 /**
- * Rectangle with one inside of its
+ * Pair of rects that depend on textureFrame
  * @class
- * @extends PIXI.DoubleRect
+ * @extends PIXI.Rectangle
  * @memberof PIXI
- * @param {PIXI.DoubleRect} outer optional, will be copied from
+ * @param {PIXI.DoubleRect} texture frame we will depend upon
  */
 function SpriteFrame(textureFrame) {
-    DoubleRect.call(this);
+    math.Rectangle.call(this);
 
+    this.inner = null;
     /**
      * Original texture frame (not the texture)
      * @member {PIXI.DoubleRect}
+     * @private
      */
-    this.textureFrame = textureFrame;
+    this._textureFrame = textureFrame;
 
     /**
      * Sprite anchor. read-only
      * @member {PIXI.ObservablePoint}
      */
-    this.anchor = new ObservablePoint(this.update, this, 0, 0);
+    this.anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
 
     /**
      * Sprite size, overrides texture dimensions
      * @type {PIXI.ObservablePoint}
      */
-    this.size = new ObservablePoint(this.update, this, 0, 0);
+    this.size = new ObservablePoint(this.makeDirty, this, 0, 0);
 
     /**
-     * version, changes every time update() is called
+     * dirty version, increased when anchor or size is changing
      * @type {number}
+     * @private
      */
-    this.version = 0;
+    this._dirtyVersion = 0;
+
+    /**
+     * texture frame version
+     * @type {number}
+     * @private
+     */
+    this._textureVersion = 0;
 }
 
-SpriteFrame.prototype = Object.create(DoubleRect.prototype);
+SpriteFrame.prototype = Object.create(math.Rectangle.prototype);
 SpriteFrame.prototype.constructor = SpriteFrame;
 module.exports = SpriteFrame;
 
-SpriteFrame.prototype.update = function() {
-    this.version++;
+Object.defineProperties(SpriteFrame.prototype, {
+    /**
+     * Original texture frame (not the texture)
+     * @member {PIXI.DoubleRect}
+     * @memberof PIXI.SpriteFrame#
+     */
+    textureFrame: {
+        get: function() {
+            return this._textureFrame;
+        },
+        set: function(value) {
+            this._textureFrame = value;
+            this._dirtyVersion++;
+        }
+    }
+});
+
+SpriteFrame.prototype._update = function() {
     var s = this.size;
     var sizeX = s._x, sizeY = s._y;
     var orig = this.textureFrame;
@@ -66,12 +91,29 @@ SpriteFrame.prototype.update = function() {
 
     var trim = orig.inner;
     if (trim) {
-        var inner = this.inner = this.inner || new math.Rectangle(0, 0, 1, 1);
+        var inner = this._inner = this._inner || new math.Rectangle(0, 0, 1, 1);
         inner.width = trim.width * scaleX;
         inner.height = trim.height * scaleY;
         inner.x = this.x + trim.x * scaleX;
         inner.y = this.y + trim.y * scaleY;
     } else {
         this.inner = null;
+    }
+};
+
+/**
+ * Invalidate
+ */
+SpriteFrame.prototype.makeDirty = function() {
+    this._dirtyVersion++;
+};
+
+SpriteFrame.prototype.update = function() {
+    if (this.version !== this._dirtyVersion ||
+        this._textureVersion !== this._textureFrame.version) {
+        this.version = this._dirtyVersion;
+        this._textureVersion = this.textureFrame.version;
+
+        this._update();
     }
 };

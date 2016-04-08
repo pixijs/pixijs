@@ -16,6 +16,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
+    ObservablePoint:        require('./display/ObservablePoint'),
     Container:              require('./display/Container'),
     Transform:              require('./display/Transform'),
     TransformStatic:        require('./display/TransformStatic'),
@@ -38,6 +39,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // textures
     Texture:                require('./textures/Texture'),
+    ObservableRect:         require('./textures/ObservableRect'),
     DoubleRect:             require('./textures/DoubleRect'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
