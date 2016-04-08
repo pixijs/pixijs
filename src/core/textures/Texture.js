@@ -268,13 +268,13 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 /**
  * Destroys this texture
  *
- * @param [destroyBase=false] {boolean} Whether to destroy the base texture as well
+ * @param [destroyBaseTexture=false] {boolean} Whether to destroy the base texture as well
  */
-Texture.prototype.destroy = function (destroyBase)
+Texture.prototype.destroy = function (destroyBaseTexture)
 {
     if (this.baseTexture)
     {
-        if (destroyBase)
+        if (destroyBaseTexture)
         {
             this.baseTexture.destroy();
         }
