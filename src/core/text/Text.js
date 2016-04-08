@@ -142,6 +142,10 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
+            if (this._style) {
+                this._style.removeListener(this._styleListener);
+            }
+
             style = style || {};
             if (style instanceof TextStyle)
             {
@@ -150,7 +154,7 @@ Object.defineProperties(Text.prototype, {
             {
                 this._style = new TextStyle(style);
             }
-            this._styleListener = this._style.on('styleChanged', function ()
+            this._styleListener = this._style.on(CONST.TEXT_STYLE_CHANGED, function ()
             {
                 this.dirty = true;
             }.bind(this));
