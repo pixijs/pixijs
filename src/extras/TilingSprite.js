@@ -9,7 +9,7 @@ var core = require('../core'),
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param texture {Texture} the texture of the tiling sprite
+ * @param texture {core.Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */

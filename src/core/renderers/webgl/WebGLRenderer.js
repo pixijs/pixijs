@@ -194,10 +194,10 @@ WebGLRenderer.prototype._initContext = function ()
 /**
  * Renders the object to its webGL view
  *
- * @param displayObject {PIXI.DisplayObject} the object to be rendered
- * @param renderTexture {PIXI.RenderTexture}
+ * @param displayObject {core.DisplayObject} the object to be rendered
+ * @param renderTexture {core.RenderTexture}
  * @param clear {Boolean}
- * @param transform {PIXI.Transform}
+ * @param transform {core.Matrix}
  * @param skipUpdateTransform {Boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
@@ -314,7 +314,7 @@ WebGLRenderer.prototype.setBlendMode = function (blendMode)
 /**
  * Erases the active render target and fills the drawing area with a colour
  *
- * @param clearColor {number} The colour
+ * @param [clearColor] {number} The colour
  */
 WebGLRenderer.prototype.clear = function (clearColor)
 {
@@ -335,8 +335,8 @@ WebGLRenderer.prototype.setTransform = function (matrix)
 /**
  * Binds a render texture for rendering
  *
- * @param renderTexture {PIXI.RenderTexture} The render texture to render
- * @param transform     {PIXI.Transform}     The transform to be applied to the render texture
+ * @param renderTexture {core.RenderTexture} The render texture to render
+ * @param transform     {core.Matrix}     The transform to be applied to the render texture
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {

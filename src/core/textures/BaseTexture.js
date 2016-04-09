@@ -9,9 +9,9 @@ var utils = require('../utils'),
  *
  * @class
  * @memberof PIXI
- * @param source {Image|HTMLCanvasElement} the source object of the texture.
+ * @param [source ]{Image|HTMLCanvasElement} the source object of the texture.
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param resolution {number} the resolution of the texture for devices with different pixel ratios
+ * @param [resolution=CONST.resolution] {number} the resolution of the texture for devices with different pixel ratios
  */
 function BaseTexture(source, scaleMode, resolution)
 {
@@ -26,7 +26,7 @@ function BaseTexture(source, scaleMode, resolution)
      *
      * @member {number}
      */
-    this.resolution = resolution || 1;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     /**
      * The width of the base texture set when the image has loaded

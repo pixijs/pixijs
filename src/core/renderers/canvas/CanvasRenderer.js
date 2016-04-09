@@ -102,7 +102,7 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param displayObject {core.DisplayObject} The object to be rendered
  * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
  * @param [clear=false] {boolean} Whether to clear the canvas before drawing
  * @param [transform] {PIXI.Transform} A transformation to be applied
