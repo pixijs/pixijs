@@ -3,6 +3,58 @@ var earcut = require('earcut'),
     utils = require('../../../utils');
 
 /**
+ * Calculate the points for a quadratic bezier curve. (helper function..)
+ * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+ *
+ * @private
+ * @param fromX {number} Origin point x
+ * @param fromY {number} Origin point x
+ * @param cpX {number} Control point x
+ * @param cpY {number} Control point y
+ * @param toX {number} Destination point x
+ * @param toY {number} Destination point y
+ * @param [out] {number[]} The output array to add points into. If not passed, a new array is created.
+ * @return {number[]} an array of points
+ */
+var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
+{
+    var xa,
+        ya,
+        xb,
+        yb,
+        x,
+        y,
+        n = 20,
+        points = out || [];
+
+    function getPt(n1 , n2, perc) {
+        var diff = n2 - n1;
+
+        return n1 + ( diff * perc );
+    }
+
+    var j = 0;
+    for (var i = 0; i <= n; i++ ) {
+        j = i / n;
+
+        // The Green Line
+        xa = getPt( fromX , cpX , j );
+        ya = getPt( fromY , cpY , j );
+        xb = getPt( cpX , toX , j );
+        yb = getPt( cpY , toY , j );
+
+        // The Black Dot
+        x = getPt( xa , xb , j );
+        y = getPt( ya , yb , j );
+
+        points.push(x, y);
+    }
+
+    return points;
+};
+
+
+/**
  * Builds a rounded rectangle to draw
  *
  * @private
@@ -72,57 +124,5 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
         graphicsData.points = tempPoints;
     }
 };
-
-/**
- * Calculate the points for a quadratic bezier curve. (helper function..)
- * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
- *
- * @private
- * @param fromX {number} Origin point x
- * @param fromY {number} Origin point x
- * @param cpX {number} Control point x
- * @param cpY {number} Control point y
- * @param toX {number} Destination point x
- * @param toY {number} Destination point y
- * @param [out] {number[]} The output array to add points into. If not passed, a new array is created.
- * @return {number[]} an array of points
- */
-var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)
-{
-    var xa,
-        ya,
-        xb,
-        yb,
-        x,
-        y,
-        n = 20,
-        points = out || [];
-
-    function getPt(n1 , n2, perc) {
-        var diff = n2 - n1;
-
-        return n1 + ( diff * perc );
-    }
-
-    var j = 0;
-    for (var i = 0; i <= n; i++ ) {
-        j = i / n;
-
-        // The Green Line
-        xa = getPt( fromX , cpX , j );
-        ya = getPt( fromY , cpY , j );
-        xb = getPt( cpX , toX , j );
-        yb = getPt( cpY , toY , j );
-
-        // The Black Dot
-        x = getPt( xa , xb , j );
-        y = getPt( ya , yb , j );
-
-        points.push(x, y);
-    }
-
-    return points;
-};
-
 
 module.exports = buildRoundedRectangle;

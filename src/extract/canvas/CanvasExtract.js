@@ -1,5 +1,5 @@
 var core = require('../../core');
-tempRect = new core.Rectangle();
+var tempRect = new core.Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers
@@ -28,7 +28,7 @@ WebGLExtract.prototype.image = function ( target )
 	var image = new Image();
     image.src = this.base64( target );
     return image;
-}
+};
 
 /**
  * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
@@ -47,7 +47,6 @@ WebGLExtract.prototype.base64 = function ( target )
  */
 WebGLExtract.prototype.canvas = function ( target )
 {
-	var renderer = this.renderer;
 	var context;
 	var resolution;
     var frame;
@@ -100,10 +99,10 @@ WebGLExtract.prototype.canvas = function ( target )
  */
 WebGLExtract.prototype.pixels = function ( renderTexture )
 {
-    var renderer = this.renderer;
     var context;
     var resolution;
-
+    var frame;
+    
     if(renderTexture)
     {
         context = renderTexture.baseTexture._canvasRenderTarget.context;

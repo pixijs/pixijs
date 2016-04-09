@@ -54,10 +54,10 @@ function Transform()
     this._rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-    this._cy  = Math.cos(0)//skewY);
-    this._sy  = Math.sin(0)//skewY);
-    this._nsx = Math.sin(0)//skewX);
-    this._cx  = Math.cos(0)//skewX);
+    this._cy  = Math.cos(0);
+    this._sy  = Math.sin(0);
+    this._nsx = Math.sin(0);
+    this._cx  = Math.cos(0);
 
     this._dirty = false;
     this.updated = true;
@@ -71,7 +71,7 @@ Transform.prototype.updateSkew = function ()
     this._sy  = Math.sin(this.skew.y);
     this._nsx = Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
-}
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.

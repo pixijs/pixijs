@@ -2,7 +2,7 @@ var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader')
+    TilingShader = require('./webgl/TilingShader');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -139,7 +139,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         glData = {
             shader:new TilingShader(gl),
             quad:new core.Quad(gl)
-        }
+        };
 
         this._glDatas[renderer.CONTEXT_UID] = glData;
         

@@ -14,6 +14,7 @@ var SystemRenderer = require('../SystemRenderer'),
     CONST = require('../../const');
 
 var CONTEXT_UID = 0;
+var renderTarget;
 
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
@@ -111,7 +112,7 @@ function WebGLRenderer(width, height, options)
      */
     // initialize the context so it is ready for the managers.
     this.gl = options.context || createContext(this.view, this._contextOptions);
-   
+
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
@@ -155,7 +156,7 @@ function WebGLRenderer(width, height, options)
 
     this.setBlendMode(0);
 
-    
+
 }
 
 // constructor
@@ -181,7 +182,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-    
+
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -203,7 +204,7 @@ WebGLRenderer.prototype._initContext = function ()
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    
+
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
@@ -216,7 +217,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    var gl = this.gl;
 
     this._lastObjectRendered = displayObject;
 
@@ -239,7 +239,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         renderTarget.clear();
     }
 
-   
+
 
     displayObject.renderWebGL(this);
 
@@ -363,7 +363,7 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
         }
 
 
-        renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
+        renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
         renderTarget.setFrame(renderTexture.frame);
     }
     else
@@ -449,7 +449,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-       
+
     }
     else
     {
@@ -464,7 +464,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);
-}
+};
 
 /**
  * Resets the WebGL state so you can render things however you fancy!
