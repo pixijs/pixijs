@@ -83,25 +83,14 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
         {
             context.beginPath();
 
-            var points = shape.points;
+            this.renderPolygon(shape.points, shape.closed, context);
 
-            context.moveTo(points[0], points[1]);
-
-            for (var j=1; j < points.length/2; j++)
+            for (var j = 0; j < data.holes.length; j++)
             {
-                context.lineTo(points[j * 2], points[j * 2 + 1]);
+                var hole = data.holes[j];
+                this.renderPolygon(hole.points, true, context);
             }
 
-            if (shape.closed)
-            {
-                context.lineTo(points[0], points[1]);
-            }
-
-            // if the first and last point are the same close the path - much neater :)
-            if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
-            {
-                context.closePath();
-            }
 
             if (data.fill)
             {
@@ -264,6 +253,21 @@ CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
         // super inline cos im an optimization NAZI :)
         data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
         data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+    }
+};
+
+CanvasGraphicsRenderer.prototype.renderPolygon = function (points, close, context)
+{
+    context.moveTo(points[0], points[1]);
+
+    for (var j=1; j < points.length/2; j++)
+    {
+        context.lineTo(points[j * 2], points[j * 2 + 1]);
+    }
+
+    if (close)
+    {
+        context.closePath();
     }
 };
 

@@ -53,7 +53,7 @@ function RenderTexture(baseRenderTexture, frame)
         var resolution = arguments[4] || 1;
 
         // we have an old render texture..
-        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');
+        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line
         this.legacyRenderer = arguments[0];
 
         frame = null;
@@ -96,8 +96,8 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
     //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
-    this._frame.width = this.crop.width = width;
-    this._frame.height = this.crop.height = height;
+    this._frame.width = this.orig.width = width;
+    this._frame.height = this.orig.height = height;
 
     if (!doNotResizeBaseTexture)
     {

@@ -38,25 +38,6 @@ describe('PIXI.utils', function () {
         it('should properly convert rgb array to hex color string');
     });
 
-    describe('.getNextPowerOfTwo', function () {
-        it('should exist', function () {
-            expect(PIXI.utils.getNextPowerOfTwo)
-                .to.be.a('function');
-        });
-
-        it('should return the next POT for a number');
-    });
-
-    describe('.isPowerOfTwo', function () {
-        it('should exist', function () {
-            expect(PIXI.utils.isPowerOfTwo)
-                .to.be.a('function');
-        });
-
-        it('should return true if a number is a POT');
-        it('should return false if a number is not a POT');
-    });
-
     describe('.getResolutionOfUrl', function () {
         it('should exist', function () {
             expect(PIXI.utils.getResolutionOfUrl)
@@ -64,13 +45,6 @@ describe('PIXI.utils', function () {
         });
 
         it('should return the correct resolution based on a URL');
-    });
-
-    describe('.canUseNewCanvasBlendModes', function () {
-        it('should exist', function () {
-            expect(PIXI.utils.canUseNewCanvasBlendModes)
-                .to.be.a('function');
-        });
     });
 
     describe('.sayHello', function () {

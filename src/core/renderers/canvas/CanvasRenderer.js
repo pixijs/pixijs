@@ -182,16 +182,18 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
         context.clear();
     }
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        if (this.transparent)
-        {
-            context.clearRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            context.fillStyle = this._backgroundColorString;
-            context.fillRect(0, 0, this.width , this.height);
+        if (this.renderingToScreen) {
+            if (this.transparent) {
+                context.clearRect(0, 0, this.width, this.height);
+            }
+            else {
+                context.fillStyle = this._backgroundColorString;
+                context.fillRect(0, 0, this.width, this.height);
+            }
+        } else {
+            //TODO: implement background for CanvasRenderTarget or RenderTexture?
         }
     }
 

@@ -1,5 +1,4 @@
 var BaseTexture = require('./BaseTexture'),
-    math = require('../math'),
     CONST = require('../const');
 
 /**

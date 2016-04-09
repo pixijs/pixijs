@@ -216,8 +216,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    var gl = this.gl;
-
     this._lastObjectRendered = displayObject;
 
     if(!skipUpdateTransform)
@@ -234,17 +232,16 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.currentRenderer.start();
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        renderTarget.clear();
+        this._activeRenderTarget.clear();
     }
-
-
 
     displayObject.renderWebGL(this);
 
     // apply transform..
     this.currentRenderer.flush();
+
     //this.setObjectRenderer(this.emptyRenderer);
 
     this.textureGC.update();
@@ -343,6 +340,8 @@ WebGLRenderer.prototype.setTransform = function (matrix)
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
+    var renderTarget;
+
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
@@ -464,17 +463,17 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);
-}
+};
 
 /**
  * Resets the WebGL state so you can render things however you fancy!
  */
 WebGLRenderer.prototype.reset = function ()
 {
-    this.currentRenderer.stop();
+    this.setObjectRenderer(this.emptyRenderer);
 
     this._activeShader = null;
-    this._activeRenderTarget = null;
+    this._activeRenderTarget = this.rootRenderTarget;
     this._activeTextureLocation = 999;
     this._activeTexture = null;
 
@@ -482,7 +481,6 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.resetToDefault();
-
 
     return this;
 };
@@ -543,7 +541,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-    this.gl.getExtension('WEBGL_lose_context').loseContext();
+
+    if(this.gl.getExtension('WEBGL_lose_context'))
+    {
+        this.gl.getExtension('WEBGL_lose_context').loseContext();
+    }
+
     this.gl = null;
 
     // this = null;

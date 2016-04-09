@@ -1,8 +1,6 @@
 var math = require('../math'),
     utils = require('../utils'),
-    DisplayObject = require('./DisplayObject'),
-    RenderTexture = require('../textures/RenderTexture'),
-    _tempMatrix = new math.Matrix();
+    DisplayObject = require('./DisplayObject');
 
 /**
  * A Container represents a collection of display objects.
@@ -440,7 +438,8 @@ Container.prototype.getBounds = function ()
 
         if (!childVisible)
         {
-            return this._currentBounds = math.Rectangle.EMPTY;
+             this._currentBounds = math.Rectangle.EMPTY;
+             return this._currentBounds;
         }
 
         var bounds = this._bounds;

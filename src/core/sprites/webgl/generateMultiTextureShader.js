@@ -26,7 +26,7 @@ function generateMultiTextureShader(gl, maxTextures)
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
 
     var sampleValues = [];
-    for (var i = 0; i < maxTextures; i++) 
+    for (var i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
     }
@@ -43,8 +43,8 @@ function generateSampleSrc(maxTextures)
 
     src += '\n';
     src += '\n';
-    
-    for (var i = 0; i < maxTextures; i++) 
+
+    for (var i = 0; i < maxTextures; i++)
     {
         if(i > 0)
         {

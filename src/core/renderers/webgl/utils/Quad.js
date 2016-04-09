@@ -69,7 +69,7 @@ function Quad(gl, state)
     /*
      * @member {glCore.VertexArrayObject} The index buffer
      */
-    this.vao = new glCore.VertexArrayObject(gl, state)
+    this.vao = new glCore.VertexArrayObject(gl, state);
 
 }
 

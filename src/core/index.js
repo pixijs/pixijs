@@ -17,10 +17,13 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
+    Transform:              require('./display/Transform'),
+    TransformStatic:        require('./display/TransformStatic'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
     // text

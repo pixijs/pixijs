@@ -188,8 +188,8 @@ module.exports = BaseTexture;
  */
 BaseTexture.prototype.update = function ()
 {
-    this.realWidth = this.source.naturalWidth || this.source.width;
-    this.realHeight = this.source.naturalHeight || this.source.height;
+    this.realWidth = this.source.naturalWidth || this.source.videoWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.videoHeight || this.source.height;
 
     this.width = this.realWidth / this.resolution;
     this.height = this.realHeight / this.resolution;
