@@ -440,7 +440,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 Sprite.from = function (source)
 {
     return new Sprite(Texture.from(source));
-}
+};
 
 /**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId

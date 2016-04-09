@@ -50,14 +50,13 @@ var WebGLState = function(gl)
 
 	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
-	this.attribState = {tempAttribState:new Array(this.maxAttribs)
-                       ,attribState:new Array(this.maxAttribs)};
+    this.attribState = {tempAttribState: new Array(this.maxAttribs), attribState: new Array(this.maxAttribs)};
 
 
 
 	this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-	
+
 	// check we have vao..
 	this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||
@@ -252,8 +251,7 @@ WebGLState.prototype.resetToDefault = function()
 		this.nativeVaoExtension.bindVertexArrayOES(null);
 	}
 
-	var gl = this.gl;
-	// reset all attributs..
+	// reset all attributes..
 	this.resetAttributes();
 
 	// set active state so we can force overrides of gl state

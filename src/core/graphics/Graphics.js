@@ -6,7 +6,6 @@ var Container = require('../display/Container'),
     math = require('../math'),
     CONST = require('../const'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
-    CanvasRenderTarget = require('../renderers/canvas/utils/CanvasRenderTarget'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
     tempMatrix = new math.Matrix(),
@@ -1035,7 +1034,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
     texture.baseTexture.resolution = resolution;
 
     return texture;
-}
+};
 
 /**
  * Destroys the Graphics object.

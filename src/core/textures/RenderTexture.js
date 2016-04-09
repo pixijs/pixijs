@@ -1,3 +1,5 @@
+/*global console */
+
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture');
 

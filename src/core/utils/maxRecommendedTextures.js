@@ -15,6 +15,6 @@ var maxRecommendedTextures = function(max)
 		// desktop should be ok
 		return max;
 	}
-}
+};
 
 module.exports = maxRecommendedTextures;

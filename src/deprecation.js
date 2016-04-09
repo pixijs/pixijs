@@ -245,8 +245,8 @@ Object.defineProperties(core, {
 
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
-    return renderer.generateTexture(renderer, scaleMode, resolution)
     console.warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
+    return renderer.generateTexture(renderer, scaleMode, resolution);
 };
 
 
@@ -254,13 +254,12 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
 {
     console.warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
 
-    return this.generateCanvasTexture(scaleMode, resolution)
-}
+    return this.generateCanvasTexture(scaleMode, resolution);
+};
 
 core.RenderTexture.prototype.render = function(displayObject)
 {
-    this.legacyRenderer.render(displayObject, this)
-    //displayObject, matrix, clear, updateTransform
+    this.legacyRenderer.render(displayObject, this);
     console.warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
 
