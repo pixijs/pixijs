@@ -6,7 +6,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param gl {Shader} The webgl shader manager this shader works for.
+ * @param gl {WebGLRenderingContext} The webgl shader manager this shader works for.
  */
 function PrimitiveShader(gl)
 {

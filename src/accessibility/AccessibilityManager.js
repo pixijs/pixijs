@@ -142,7 +142,7 @@ AccessibilityManager.prototype.deactivate = function()
 
 /**
  * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
- * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @param displayObject {PIXI.Container} the DisplayObject to check.
  * @private
  */
 AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)

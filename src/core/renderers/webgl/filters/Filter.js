@@ -8,7 +8,6 @@ var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @memberof PIXI
  * @extends PIXI.Shader
  * @param [vertexSrc] {string} The source of the vertex shader.
- * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */

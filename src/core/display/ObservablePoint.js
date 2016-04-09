@@ -5,7 +5,7 @@
  * @memberof PIXI
  *
  * @param cb {function} The function to be called when the point changes
- * @param scope {object} The scope to be applied to the cb
+ * @param scope {any} The scope to be applied to the cb
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */

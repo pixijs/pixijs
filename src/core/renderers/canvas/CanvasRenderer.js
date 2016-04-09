@@ -106,7 +106,7 @@ utils.pluginTarget.mixin(CanvasRenderer);
  * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
  * @param [clear=false] {boolean} Whether to clear the canvas before drawing
  * @param [transform] {PIXI.Transform} A transformation to be applied
- * @param skipUpdateTransform {boolean} Whether to skip the update transform
+ * @param [skipUpdateTransform=false] {boolean} Whether to skip the update transform
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {

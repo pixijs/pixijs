@@ -10,7 +10,7 @@
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @param [path=[]] {array} Path array to push points into
+ * @param [path=number[]] {array} Path array to push points into
  * @return {PIXI.Graphics}
  */
 var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path)
