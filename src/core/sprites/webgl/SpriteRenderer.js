@@ -246,9 +246,7 @@ SpriteRenderer.prototype.flush = function ()
 
         //TODO this sum does not need to be set each frame..
         tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
-        /* jshint -W106 */ // Disable JSHint camel case warnings.
         uvs = sprite._texture._uvs.uvs_uint32;
-        /* jshint +W106 */
         textureId = nextTexture._id;
 
         //xy

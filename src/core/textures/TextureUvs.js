@@ -8,7 +8,6 @@
  */
 function TextureUvs()
 {
-    /* jshint -W106 */  // Disable JSHint camel case warnings.
     this.x0 = 0;
     this.y0 = 0;
 
