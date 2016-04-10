@@ -73,13 +73,6 @@ function DisplayObject()
     this.filterArea = null;
 
     /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-     */
-    this.hitArea = null;
-
-    /**
      * The original, cached bounds of the object
      *
      * @member {PIXI.Rectangle}
