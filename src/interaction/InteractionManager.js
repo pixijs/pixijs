@@ -129,21 +129,21 @@ function InteractionManager(renderer, options)
     /**
      * A list of  mouse events that the Interaction Manager can invoke to Display Objects
      *
-     * @member {Array}
+     * @member {string[]}
      */
     this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','moveover','mouseout','mouseupoutside','rightupoutside'];
     
     /**
      * A list of the touch events that the Interaction Manager can invoke to Display Objects
      *
-     * @member {Array}
+     * @member {string[]}
      */
     this.touchEvents = ['touchstart','touchend','tap','touchmove','touchendoutside'];
     
     /**
      * A list of the pointer events that the Interaction Manager can invoke to Display Objects
      *
-     * @member {Array}
+     * @member {string[]}
      */
     this.pointerEvents = ['pointerdown','pointerup','pointerclick','pointermove','pointermoveover','pointermoveout','pointerupoutside'];
     
