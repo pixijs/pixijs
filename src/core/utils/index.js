@@ -175,7 +175,14 @@ var utils = module.exports = {
             var canvas = document.createElement('canvas'),
                 gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
-            return !!(gl && gl.getContextAttributes().stencil);
+            var success = !!(gl && gl.getContextAttributes().stencil);
+            if (gl)
+            {
+                gl.getExtension('WEBGL_lose_context').loseContext();
+            }
+            gl = null;
+
+            return success;
         }
         catch (e)
         {
