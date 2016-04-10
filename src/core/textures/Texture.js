@@ -493,3 +493,7 @@ Texture.removeTextureFromCache = function (id)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 Texture.EMPTY.destroy = function() {}
+Texture.EMPTY.on = function() {};
+Texture.EMPTY.once = function() {};
+Texture.EMPTY.emit = function() {};
+
