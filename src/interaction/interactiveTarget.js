@@ -33,7 +33,7 @@ var interactiveTarget = {
      *
      * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
-    hitArea = null,
+    hitArea: null,
     
     /**
      * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive 
@@ -81,7 +81,7 @@ var interactiveTarget = {
      * @member {boolean}
      * @private
      */
-    _touchDown: false,
+    _touchDown: false
  };
 
 module.exports = interactiveTarget;
