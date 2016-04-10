@@ -41,7 +41,12 @@ var interactiveTarget = {
      * @todo Needs docs.
      * @private
      */
-    _touchDown: false
+    _touchDown: false,
+    /**
+     * @todo Needs docs.
+     * @private
+     */
+    _pointerDown: false
 };
 
 module.exports = interactiveTarget;
