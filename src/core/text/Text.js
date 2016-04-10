@@ -450,9 +450,9 @@ Text.prototype.updateTexture = function ()
     this._height = this.canvas.height / this.resolution;
 
     texture.baseTexture.emit('update',  texture.baseTexture);
+    //this._onTextureUpdate();
 
     this.makeDirty();
-    this.checkVertices();
     this.dirty = false;
 };
 

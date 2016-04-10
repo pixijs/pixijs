@@ -2,6 +2,7 @@ var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
     EventEmitter = require('eventemitter3'),
+    DoubleRect = require('./DoubleRect'),
     math = require('../math'),
     utils = require('../utils');
 
@@ -63,13 +64,6 @@ function Texture(baseTexture, frame, orig, trim, rotate)
     this._frame = frame;
 
     /**
-     * This is the trimmed area of original texture, before it was put in atlas
-     *
-     * @member {PIXI.Rectangle}
-     */
-    this.trim = trim;
-
-    /**
      * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
      *
      * @member {boolean}
@@ -92,11 +86,12 @@ function Texture(baseTexture, frame, orig, trim, rotate)
     this._uvs = null;
 
     /**
-     * This is the area of original texture, before it was put in atlas
+     * This is the area of original texture, trimmed part is orig.inner
      *
-     * @member {PIXI.Rectangle}
+     * @member {PIXI.DoubleRect}
+     * @private
      */
-    this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
+    this._orig = new DoubleRect(orig || frame, trim);
 
     this._rotate = +(rotate || 0);
 
@@ -164,9 +159,9 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim)
+            if (!this._orig.inner)
             {
-                this.orig = frame;
+                this._orig.copy(frame);
             }
 
             if (this.valid)
@@ -175,6 +170,38 @@ Object.defineProperties(Texture.prototype, {
             }
         }
     },
+
+    /**
+     * This is the area of original texture, before it was put in atlas
+     *
+     * @member {PIXI.Rectangle}
+     * @memberof PIXI.Texture#
+     * @private
+     */
+    orig: {
+        get: function() {
+            return this._orig;
+        },
+        set: function(value) {
+            this._orig.copy(value);
+        }
+    },
+
+    /**
+     * This is the trimmed area of original texture, before it was put in atlas
+     *
+     * @member {PIXI.Rectangle}
+     * @memberof PIXI.Texture#
+     */
+    trim: {
+        get: function() {
+            return this._orig.inner;
+        },
+        set: function(value) {
+            this._orig.inner = value;
+        }
+    },
+
     /**
      * Indicates whether the texture is rotated inside the atlas
      * set to 2 to compensate for texture packer rotation
@@ -206,7 +233,7 @@ Object.defineProperties(Texture.prototype, {
      */
     width: {
         get: function() {
-            return this.orig ? this.orig.width : 0;
+            return this._orig.width;
         }
     },
 
@@ -217,7 +244,7 @@ Object.defineProperties(Texture.prototype, {
      */
     height: {
         get: function() {
-            return this.orig ? this.orig.height : 0;
+            return this._orig.height;
         }
     }
 });
@@ -492,7 +519,7 @@ Texture.removeTextureFromCache = function (id)
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function() {}
+Texture.EMPTY.destroy = function() {};
 Texture.EMPTY.on = function() {};
 Texture.EMPTY.once = function() {};
 Texture.EMPTY.emit = function() {};

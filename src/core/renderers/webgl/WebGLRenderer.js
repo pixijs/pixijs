@@ -243,7 +243,10 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     this.currentRenderer.flush();
     //this.setObjectRenderer(this.emptyRenderer);
 
-    this.textureGC.update();
+    if (this.renderingToScreen) {
+        this.textureGC.update();
+    }
+
     this.emit('postrender');
 };
 

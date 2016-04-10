@@ -5,6 +5,8 @@
  * @class
  * @memberof PIXI
  * @param transform {PIXI.Transform} the transform object @mat
+ * @param cb {Function} callback when changed
+ * @param scope {Object} owner of callback
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -80,6 +82,13 @@ ObservablePoint2d.prototype.set = function (x, y)
         this.cb.call(this.scope);
     }
 };
+
+
+/**
+ * Copies the data from another point
+ *
+ * @param point {PIXI.Point|{PIXI.ObservablePoint} point to copy from
+ */
 
 ObservablePoint2d.prototype.copy = function (p)
 {

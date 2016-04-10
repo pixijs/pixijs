@@ -149,7 +149,9 @@ ParticleRenderer.prototype.render = function (container)
 
     var gl = this.renderer.gl;
 
-    this.renderer.bindProjection(container.updateProjectedTransform());
+    var m = container.worldTransform.copy( this.tempMatrix );
+    m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
+    this.shader.uniforms.projectionMatrix = m.toArray(true);
     this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
@@ -225,7 +227,7 @@ ParticleRenderer.prototype.generateBuffers = function (container)
 ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amount, array, stride, offset)
 {
     var sprite,
-        texture,
+        frame,
         sx,
         sy,
         w0, w1, h0, h1;
@@ -233,16 +235,14 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
     for (var i = 0; i < amount; i++) {
 
         sprite = children[startIndex + i];
-        texture = sprite._texture;
+        frame = sprite._frame.inner || sprite._frame;
         sx = sprite.scale.x;
         sy = sprite.scale.y;
 
-        sprite.checkVertices();
-        var vertices = sprite.geometry.vertices;
-        w0 = vertices[2];
-        h0 = vertices[5];
-        w1 = vertices[0];
-        h1 = vertices[1];
+        w1 = frame.x;
+        h1 = frame.y;
+        w0 = w1 + frame.width;
+        h0 = h1 + frame.height;
 
         array[offset] = w1 * sx;
         array[offset + 1] = h1 * sy;
@@ -307,6 +307,7 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
     for (var i = 0; i < amount; i++)
     {
         var spriteRotation = children[startIndex + i].rotation;
+
 
         array[offset] = spriteRotation;
         array[offset + stride] = spriteRotation;

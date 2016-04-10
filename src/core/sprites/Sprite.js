@@ -2,6 +2,7 @@ var Texture = require('../textures/Texture'),
     ObservablePoint2d = require('../c2d/ObservablePoint2d'),
     Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),
+    SpriteFrame = require('./SpriteFrame'),
     utils = require('../utils'),
     CONST = require('../const');
 
@@ -19,24 +20,31 @@ var Texture = require('../textures/Texture'),
  * @memberof PIXI
  * @param texture {PIXI.Texture} The texture for this sprite
  */
-function Sprite(texture)
+function Sprite(texture, sharedFrame)
 {
     Container.call(this);
-    /**
-     * Private anchor
-     *
-     * @member {PIXI.ObservablePoint2d}
-     * @private
-     */
-    this._anchor = new ObservablePoint2d(this.makeDirty, this, 0, 0);
 
     /**
-     * Private size
+     * Frame that sprite is using, read-only
      *
      * @member {PIXI.ObservablePoint2d}
      * @private
      */
-    this._size = new ObservablePoint2d(this.makeDirty, this, 0, 0);
+    this._frame = sharedFrame || new SpriteFrame();
+
+    /**
+     * Frame that was passed in constructor - less objects, less memory use
+     *
+     * @member {PIXI.SpriteFrame}
+     * @private
+     */
+    this._sharedFrame = sharedFrame;
+
+    this._frameVersion = -1;
+
+    this._width = 0;
+
+    this._height = 0;
 
     /**
      * The texture that the sprite is using
@@ -103,11 +111,13 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return this._size.x || this.texture.width;
+            return Math.abs(this.scale.x) * this._frame.width;
         },
         set: function (value)
         {
-            this._size.x = value;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this._frame.width;
+            this._width = value;
         }
     },
 
@@ -120,11 +130,13 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return this._size.y || this.texture.height;
+            return  Math.abs(this.scale.y) * this.texture.orig.height;
         },
         set: function (value)
         {
-            this._size.y = value;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture.orig.height;
+            this._height = value;
         }
     },
 
@@ -153,14 +165,17 @@ Object.defineProperties(Sprite.prototype, {
 
             if (value)
             {
+                if (!this._sharedFrame) {
+                    this._frame.textureFrame = value.orig;
+                }
                 // wait for the texture to load
                 if (value.baseTexture.hasLoaded)
                 {
-                    this.makeDirty();
+                    this._onTextureUpdate();
                 }
                 else
                 {
-                    value.once('update', this.makeDirty, this);
+                    value.once('update', this._onTextureUpdate, this);
                 }
             }
         }
@@ -172,80 +187,63 @@ Object.defineProperties(Sprite.prototype, {
      * Setting the anchor to 0.5,0.5 means the texture's origin is centered
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
-     * @member {PIXI.ObservablePoint2d}
-     * @memberof PIXI.Sprite#
+     * @member {PIXI.Point | number}
      */
-    anchor: {
-        get: function() {
-            return this._anchor;
+    anchor : {
+        get : function() {
+            return this._frame.anchor;
         },
         set: function(value) {
-            this._anchor.copy(value);
+            if (typeof value === 'number'){
+                this._frame.anchor.set(value);
+            }
+            else {
+                this._frame.anchor.copy(value);
+            }
         }
     },
 
     /**
-     * If both size.x and size.y is not zero, it will override texture dimensions
-     * size does not affect scale
+     * Size overrides texture dimensions.
      *
-     * @member {PIXI.ObservablePoint2d}
-     * @memberof PIXI.Sprite#
+     * @member {PIXI.Point | number}
      */
-    size: {
-        get: function() {
-            return this._size;
+    size : {
+        get : function() {
+            return this._frame.size;
         },
         set: function(value) {
-            this._size.copy(value);
+            if (typeof value === 'number'){
+                this._frame.size.set(value);
+            }
+            else {
+                this._frame.size.copy(value);
+            }
         }
     }
 });
 
-Sprite.prototype.calculateVertices = function ()
+Sprite.prototype.calculateVertices = function (dontForce)
 {
-    var texture = this._texture,
-        w0, w1, h0, h1,
-        trim = texture.trim,
-        orig = texture.orig;
-
-    if (trim)
-    {
-        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * orig.width;
-        w0 = w1 + trim.width;
-
-        h1 = trim.y - this.anchor.y * orig.height;
-        h0 = h1 + trim.height;
-
+    var _frame = this._frame;
+    _frame.update();
+    if (!dontForce || this._frameVersion !== _frame.version) {
+        this._frameVersion = _frame.version;
+        this.geometry.setRectCoords(0, _frame.x, _frame.y, _frame.x + _frame.width, _frame.y + _frame.height);
     }
-    else
-    {
-        w0 = (orig.width ) * (1-this.anchor.x);
-        w1 = (orig.width ) * -this.anchor.x;
-
-        h0 = orig.height * (1-this.anchor.y);
-        h1 = orig.height * -this.anchor.y;
-    }
-
-    var sizeX = this._size._x;
-    if (sizeX ) {
-        sizeX /= orig.width;
-        w0 *= sizeX;
-        w1 *= sizeX;
-    }
-    var sizeY = this._size._y;
-    if (sizeY) {
-        sizeY /= orig.height;
-        h0 *= sizeY;
-        h1 *= sizeY;
-    }
-    this.geometry.setRectCoords(0, w1, h1, w0, h0);
 };
 
-Sprite.prototype.makeDirty = function() {
-    this.textureDirty = true;
+Sprite.prototype._onTextureUpdate = function () {
+    if (!this._sharedFrame) {
+        this.calculateVertices();
+    }
+    if (this._width) {
+        this.scale.x = utils.sign(this.scale.x) * this._width / this._frame.width;
+    }
+    if (this._height) {
+        this.scale.y = utils.sign(this.scale.y) * this._height / this._frame.height;
+    }
 };
-
 /**
 *
 * Renders the object using the WebGL renderer
@@ -260,17 +258,8 @@ Sprite.prototype._renderWebGL = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-Sprite.prototype.checkVertices = function() {
-    if(this.textureDirty)
-    {
-        this.textureDirty = false;
-        // set the vertex data
-        this.calculateVertices();
-    }
-};
-
 Sprite.prototype.updateTransform = function() {
-    this.checkVertices();
+    this.calculateVertices();
     this.containerUpdateTransform();
 };
 
