@@ -81,7 +81,15 @@ var interactiveTarget = {
      * @inner {boolean}
      * @private
      */
-    _touchDown: false
+    _touchDown: false,
+    
+    /**
+     * Internal check to detect if a pointer is down on the displayObject
+     * 
+     * @inner {boolean}
+     * @private
+     */
+    _pointerDown: false
  };
 
 module.exports = interactiveTarget;
