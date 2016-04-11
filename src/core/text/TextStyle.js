@@ -20,7 +20,7 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
+ * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
  * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
