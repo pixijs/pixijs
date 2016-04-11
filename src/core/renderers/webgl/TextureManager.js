@@ -29,7 +29,7 @@ var TextureManager = function(renderer)
 	/**
      * Track textures in the renderer so we can no longer listen to them on destruction.
      *
-     * @member {array}
+     * @member {*[]}
      * @private
      */
 	this._managedTextures = [];

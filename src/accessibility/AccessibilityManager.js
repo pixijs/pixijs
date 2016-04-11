@@ -39,7 +39,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * A simple pool for storing divs.
    	 *
-   	 * @type {Array}
+   	 * @type {*}
    	 * @private
    	 */
  	this.pool = [];
@@ -69,7 +69,7 @@ function AccessibilityManager(renderer)
    	/**
      * The array of currently active accessible items.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.children = [];
@@ -83,7 +83,7 @@ function AccessibilityManager(renderer)
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.isActive = false;
@@ -305,20 +305,20 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
-	if(displayObject.accessibleTitle) 
+	if(displayObject.accessibleTitle)
 	{
 		div.title = displayObject.accessibleTitle;
-	} 
-	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) 
+	}
+	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
 	{
 		div.title = 'displayObject ' + this.tabIndex;
 	}
 
-	if(displayObject.accessibleHint) 
+	if(displayObject.accessibleHint)
 	{
-		div.setAttribute('aria-label', displayObject.accessibleHint);	
+		div.setAttribute('aria-label', displayObject.accessibleHint);
 	}
-	
+
 
 	//
 

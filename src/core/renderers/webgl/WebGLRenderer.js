@@ -197,7 +197,7 @@ WebGLRenderer.prototype._initContext = function ()
  * @param displayObject {core.DisplayObject} the object to be rendered
  * @param renderTexture {core.RenderTexture}
  * @param clear {Boolean}
- * @param transform {core.Matrix}
+ * @param transform {PIXI.Transform}
  * @param skipUpdateTransform {Boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
@@ -335,8 +335,8 @@ WebGLRenderer.prototype.setTransform = function (matrix)
 /**
  * Binds a render texture for rendering
  *
- * @param renderTexture {core.RenderTexture} The render texture to render
- * @param transform     {core.Matrix}     The transform to be applied to the render texture
+ * @param renderTexture {PIXI.RenderTexture} The render texture to render
+ * @param transform     {PIXI.Transform}     The transform to be applied to the render texture
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
