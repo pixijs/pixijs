@@ -347,27 +347,28 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    for (var i = 0; i < this.vaoMax; i++) {
+    for (var i = 0; i < this.vertexCount; i++) {
         this.vertexBuffers[i].destroy();
         this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
 
+    this.renderer.off('prerender', this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
     this.shader.destroy();
 
-    this.renderer = null;
-
-    this.vertexBuffer = null;
+    this.vertexBuffers = null;
+    this.vaos = null;
     this.indexBuffer = null;
+    this.indices = null;
 
     this.sprites = null;
     this.shader = null;
 
     for (i = 0; i < this.buffers.length; i++) {
-      this.buffers[i].destroy();
+        this.buffers[i].destroy();
     }
 
 };
