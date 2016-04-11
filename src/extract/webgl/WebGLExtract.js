@@ -1,5 +1,5 @@
-var core = require('../../core');
-tempRect = new core.Rectangle();
+var core = require('../../core'),
+    tempRect = new core.Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers
@@ -21,18 +21,18 @@ module.exports = Extract;
  * Will return a HTML Image of the target
  *
  * @return {Image}
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  */
 Extract.prototype.image = function ( target )
 {
 	var image = new Image();
     image.src = this.base64( target );
     return image;
-}
+};
 
 /**
  * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {string} A base64 encoded string of the texture.
  */
 Extract.prototype.base64 = function ( target )
@@ -42,7 +42,7 @@ Extract.prototype.base64 = function ( target )
 
 /**
  * Creates a Canvas element, renders this target to it and then returns it.
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
 Extract.prototype.canvas = function ( target )
@@ -63,7 +63,7 @@ Extract.prototype.canvas = function ( target )
         else
         {
             renderTexture = this.renderer.generateTexture(target);
-            
+
         }
     }
 
@@ -83,16 +83,16 @@ Extract.prototype.canvas = function ( target )
         frame = tempRect;
         frame.width = textureBuffer.size.width;
         frame.height = textureBuffer.size.height;
-        
+
 	}
 
-   
+
 
     var width = frame.width * resolution;
     var height = frame.height * resolution;
 
    	var canvasBuffer = new core.CanvasRenderTarget(width, height);
-    
+
     if(textureBuffer)
     {
         // bind the buffer
@@ -100,7 +100,7 @@ Extract.prototype.canvas = function ( target )
 
         // set up an array of pixels
         var webGLPixels = new Uint8Array(4 * width * height);
- 
+
         // read pixels to the array
         var gl = renderer.gl;
         gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
@@ -125,14 +125,15 @@ Extract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer 
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
-Extract.prototype.pixels = function ( renderTexture, area )
+Extract.prototype.pixels = function ( renderTexture )
 {
     var renderer = this.renderer;
     var textureBuffer;
     var resolution;
+    var frame;
 
     if(renderTexture)
     {
@@ -154,10 +155,8 @@ Extract.prototype.pixels = function ( renderTexture, area )
     var width = frame.width * resolution;
     var height = frame.height * resolution;
 
-    var gl = this.renderer.gl;
-
     var webGLPixels = new Uint8Array(4 * width * height);
-    
+
     if(textureBuffer)
     {
         // bind the buffer

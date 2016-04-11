@@ -4,6 +4,7 @@ var math = require('../math'),
 
 /**
  * Generic class to deal with traditional 2D matrix transforms
+ * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
  *
  * @class
  * @memberof PIXI
@@ -54,10 +55,10 @@ function Transform()
     this._rotation = 0;
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
-    this._cy  = Math.cos(0)//skewY);
-    this._sy  = Math.sin(0)//skewY);
-    this._nsx = Math.sin(0)//skewX);
-    this._cx  = Math.cos(0)//skewX);
+    this._cy  = Math.cos(0);//skewY);
+    this._sy  = Math.sin(0);//skewY);
+    this._nsx = Math.sin(0);//skewX);
+    this._cx  = Math.cos(0);//skewX);
 
     this._dirty = false;
     this.updated = true;
@@ -71,7 +72,7 @@ Transform.prototype.updateSkew = function ()
     this._sy  = Math.sin(this.skew.y);
     this._nsx = Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
-}
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.

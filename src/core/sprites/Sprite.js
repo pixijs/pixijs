@@ -22,7 +22,7 @@ var math = require('../math'),
 function Sprite(texture)
 {
     Container.call(this);
-  
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -110,12 +110,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.crop.width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.crop.width;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -129,12 +129,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.crop.height;
+            return  Math.abs(this.scale.y) * this.texture.orig.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.crop.height;
+            this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
         }
     },
@@ -190,16 +190,16 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.crop.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.crop.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
     }
 };
 
-Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
         wt = this.transform.worldTransform,
@@ -207,25 +207,25 @@ Sprite.prototype.caclulateVertices = function ()
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim,
-        crop = texture.crop;
+        orig = texture.orig;
 
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * crop.width;
+        w1 = trim.x - this.anchor.x * orig.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * crop.height;
+        h1 = trim.y - this.anchor.y * orig.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (crop.width ) * (1-this.anchor.x);
-        w1 = (crop.width ) * -this.anchor.x;
+        w0 = (orig.width ) * (1-this.anchor.x);
+        w1 = (orig.width ) * -this.anchor.x;
 
-        h0 = crop.height * (1-this.anchor.y);
-        h1 = crop.height * -this.anchor.y;
+        h0 = orig.height * (1-this.anchor.y);
+        h1 = orig.height * -this.anchor.y;
     }
 
     // xy
@@ -258,7 +258,7 @@ Sprite.prototype._renderWebGL = function (renderer)
     {
         this.textureDirty = false;
         // set the vertex data
-        this.caclulateVertices();
+        this.calculateVertices();
     }
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
@@ -292,7 +292,7 @@ Sprite.prototype.getBounds = function ()
             this.vertexDirty = false;
 
             // set the vertex data
-            this.caclulateVertices();
+            this.calculateVertices();
 
         }
 
@@ -370,10 +370,10 @@ Sprite.prototype.getBounds = function ()
  */
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture.crop.width * this.anchor.x;
-    this._bounds.y = -this._texture.crop.height * this.anchor.y;
-    this._bounds.width = this._texture.crop.width;
-    this._bounds.height = this._texture.crop.height;
+    this._bounds.x = -this._texture.orig.width * this.anchor.x;
+    this._bounds.y = -this._texture.orig.height * this.anchor.y;
+    this._bounds.width = this._texture.orig.width;
+    this._bounds.height = this._texture.orig.height;
     return this._bounds;
 };
 
@@ -387,8 +387,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture.crop.width;
-    var height = this._texture.crop.height;
+    var width = this._texture.orig.width;
+    var height = this._texture.orig.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -440,7 +440,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 Sprite.from = function (source)
 {
     return new Sprite(Texture.from(source));
-}
+};
 
 /**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
