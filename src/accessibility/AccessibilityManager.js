@@ -55,7 +55,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * Setting this to true will visually show the divs
    	 *
-   	 * @type {Boolean}
+   	 * @type {boolean}
    	 */
    	this.debug = false;
 

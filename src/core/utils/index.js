@@ -172,7 +172,7 @@ var utils = module.exports = {
     /**
      * removeItems
      *
-     * @param {array} arr The target array
+     * @param {*[]} arr The target array
      * @param {number} startIdx The index to begin removing from (inclusive)
      * @param {number} removeCount How many items to remove
      */

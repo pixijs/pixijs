@@ -18,7 +18,7 @@ module.exports = StencilMaskManager;
 /**
  * Changes the mask stack that is used by this manager.
  *
- * @param stencilMaskStack {*[]} The mask stack
+ * @param stencilMaskStack {PIXI.Graphics[]} The mask stack
  */
 StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 {

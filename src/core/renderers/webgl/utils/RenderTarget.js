@@ -46,7 +46,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The background colour of this render target, as an array of [r,g,b,a] values
      *
-     * @member {array}
+     * @member {number[]}
      */
     this.clearColor = [0, 0, 0, 0];
 
@@ -104,7 +104,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The data structure for the stencil masks
      *
-     * @member {array}
+     * @member {PIXI.Graphics[]}
      */
     this.stencilMaskStack = [];
 
@@ -179,7 +179,7 @@ module.exports = RenderTarget;
 /**
  * Clears the filter texture.
  *
- * @param [clearColor=this.clearColor] {array} Array of [r,g,b,a] to clear the framebuffer
+ * @param [clearColor=this.clearColor] {number[]} Array of [r,g,b,a] to clear the framebuffer
  */
 RenderTarget.prototype.clear = function(clearColor)
 {

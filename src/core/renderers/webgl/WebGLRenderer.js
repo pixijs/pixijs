@@ -194,11 +194,11 @@ WebGLRenderer.prototype._initContext = function ()
 /**
  * Renders the object to its webGL view
  *
- * @param displayObject {core.DisplayObject} the object to be rendered
- * @param renderTexture {core.RenderTexture}
- * @param clear {Boolean}
+ * @param displayObject {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.RenderTexture}
+ * @param clear {boolean}
  * @param transform {PIXI.Transform}
- * @param skipUpdateTransform {Boolean}
+ * @param skipUpdateTransform {boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
