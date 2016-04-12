@@ -24,4 +24,4 @@ core.extract  		= require('./extract');
 core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
+require('./deprecation');
