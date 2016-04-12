@@ -11,6 +11,7 @@ var math = require('../math'),
  *
  * @class
  * @extends EventEmitter
+ * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 function DisplayObject()
@@ -123,13 +124,6 @@ function DisplayObject()
      * @member {PIXI.Rectangle}
      */
     this.filterArea = null;
-
-    /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-     */
-    this.hitArea = null;
 
     /**
      * The original, cached computed bounds of the object
