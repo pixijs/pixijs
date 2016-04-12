@@ -188,9 +188,9 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
                 context.fillStyle = this._backgroundColorString;
                 context.fillRect(0, 0, this.width, this.height);
             }
-        } else {
+        } //else {
             //TODO: implement background for CanvasRenderTarget or RenderTexture?
-        }
+        //}
     }
 
     // TODO RENDER TARGET STUFF HERE..
