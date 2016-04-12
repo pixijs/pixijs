@@ -9,7 +9,8 @@ var glslify  = require('glslify');
  * @class
  * @extends PIXI.Filter
  * @memberof PIXI.filters
- * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
+ * @param sprite {PIXI.Sprite} The sprite used for the displacement map. (make sure its added to the scene!)
+ * @param scale {number} The scale of the displacement
  */
 function DisplacementFilter(sprite, scale)
 {

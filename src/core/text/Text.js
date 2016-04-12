@@ -410,7 +410,7 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
     while (index < text.length)
     {
         current = characters[index++];
-        if (isStroke) 
+        if (isStroke)
         {
             this.context.strokeText(current, currentPosition, y);
         }
@@ -612,21 +612,21 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            if (this._style.breakWords && wordWidth > wordWrapWidth) 
+            if (this._style.breakWords && wordWidth > wordWrapWidth)
             {
                 // Word should be split in the middle
                 var characters = words[j].split('');
-                for (var c = 0; c < characters.length; c++) 
+                for (var c = 0; c < characters.length; c++)
                 {
                   var characterWidth = this.context.measureText(characters[c]).width;
-                  if (characterWidth > spaceLeft) 
+                  if (characterWidth > spaceLeft)
                   {
                     result += '\n' + characters[c];
                     spaceLeft = wordWrapWidth - characterWidth;
-                  } 
-                  else 
+                  }
+                  else
                   {
-                    if (c === 0) 
+                    if (c === 0)
                     {
                       result += ' ';
                     }
@@ -635,7 +635,7 @@ Text.prototype.wordWrap = function (text)
                   }
                 }
             }
-            else 
+            else
             {
                 var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                 if (j === 0 || wordWidthWithSpace > spaceLeft)

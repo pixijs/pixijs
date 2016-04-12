@@ -38,6 +38,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * @extends PIXI.Texture
  * @memberof PIXI
  * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
+ * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  */
 function RenderTexture(baseRenderTexture, frame)
 {
@@ -87,7 +88,7 @@ module.exports = RenderTexture;
  *
  * @param width {number} The width to resize to.
  * @param height {number} The height to resize to.
- * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
+ * @param doNotResizeBaseTexture {boolean} Should the baseTexture.width and height values be resized as well?
  */
 RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
 {

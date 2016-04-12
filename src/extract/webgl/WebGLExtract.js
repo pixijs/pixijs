@@ -125,7 +125,7 @@ Extract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
 Extract.prototype.pixels = function ( renderTexture )

@@ -94,7 +94,7 @@ function CanvasRenderer(width, height, options)
 
 // constructor
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
-CanvasRenderer.prototype.constructor = CanvasRenderer;
+CanvasRenderer.prototype.constructor =  CanvasRenderer;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
 
@@ -102,7 +102,11 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
+ * @param [clear=false] {boolean} Whether to clear the canvas before drawing
+ * @param [transform] {PIXI.Transform} A transformation to be applied
+ * @param [skipUpdateTransform=false] {boolean} Whether to skip the update transform
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {

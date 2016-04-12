@@ -233,8 +233,8 @@ ColorMatrixFilter.prototype.contrast = function (amount, multiply)
  * Set the saturation matrix, increase the separation between colors
  * Increase saturation : increase contrast, brightness, and sharpness
  *
- * @param amount {number}
- * @param multiply {boolean} refer to ._loadMatrix() method
+ * @param [amount=0] {number}
+ * @param [multiply] {boolean} refer to ._loadMatrix() method
  */
 ColorMatrixFilter.prototype.saturate = function (amount, multiply)
 {
@@ -256,9 +256,8 @@ ColorMatrixFilter.prototype.saturate = function (amount, multiply)
  *
  * Call the saturate function
  *
- * @param multiply {boolean} refer to ._loadMatrix() method
  */
-ColorMatrixFilter.prototype.desaturate = function (multiply) // jshint unused:false
+ColorMatrixFilter.prototype.desaturate = function () // jshint unused:false
 {
     this.saturate(-1);
 };

@@ -162,7 +162,7 @@ Object.defineProperties(BitmapText.prototype, {
     /**
      * The font descriptor of the BitmapText object
      *
-     * @member {Font}
+     * @member {string|object}
      * @memberof PIXI.extras.BitmapText#
      */
     font: {

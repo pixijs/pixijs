@@ -2,9 +2,9 @@ var Shader = require('pixi-gl-core').GLShader;
 
 /**
  * @class
- * @extends PIXI.TextureShader
+ * @extends PIXI.Shader
  * @memberof PIXI
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param gl {PIXI.Shader} The webgl shader manager this shader works for.
  */
 function ParticleShader(gl)
 {

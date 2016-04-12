@@ -359,10 +359,11 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
  *
- * @param  {PIXI.Point} point the point that is tested for collision
- * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
- * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @param point {PIXI.Point} the point that is tested for collision
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param [func] {Function} the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param [hitTest] {boolean} this indicates if the objects inside should be hit test against the point
+ * @param [interactive] {boolean} Whether the displayObject is interactive
  * @return {boolean} returns true if the displayObject hit the point
  */
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
@@ -850,7 +851,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 /**
  * Grabs an interaction data object from the internal pool
  *
- * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
+ * @param touchEvent {object} The touch event we need to pair with an interactionData object
  *
  * @private
  */

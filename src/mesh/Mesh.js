@@ -408,7 +408,6 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @param event
  * @private
  */
 Mesh.prototype._onTextureUpdate = function ()
@@ -419,7 +418,7 @@ Mesh.prototype._onTextureUpdate = function ()
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
 Mesh.prototype.getBounds = function (matrix)

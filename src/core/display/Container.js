@@ -316,8 +316,8 @@ Container.prototype.removeChildAt = function (index)
 /**
  * Removes all children from this container that are within the begin and end indexes.
  *
- * @param beginIndex {number} The beginning position. Default value is 0.
- * @param endIndex {number} The ending position. Default value is size of the container.
+ * @param [beginIndex=0] {number} The beginning position.
+ * @param [endIndex=this.children.length] {number} The ending position. Default value is size of the container.
  */
 Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
@@ -478,7 +478,7 @@ Container.prototype.getLocalBounds = function ()
 
     this._currentBounds = null;
 
-    return this.getBounds( math.Matrix.IDENTITY );
+    return this.getBounds();
 };
 
 /**
@@ -589,7 +589,7 @@ Container.prototype.renderCanvas = function (renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask, renderer);
+        renderer.maskManager.pushMask(this._mask);
     }
 
     this._renderCanvas(renderer);
