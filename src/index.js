@@ -25,6 +25,3 @@ core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
-
-// Always export pixi globally.
-global.PIXI = core;
