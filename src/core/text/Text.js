@@ -18,7 +18,7 @@ var Sprite = require('../sprites/Sprite'),
  * @extends PIXI.Sprite
  * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
- * @param [style] {object|TextStyle} The style parameters
+ * @param [style] {object|PIXI.TextStyle} The style parameters
  * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
  */
 function Text(text, style, resolution)
@@ -608,6 +608,7 @@ Text.prototype.getBounds = function (matrix)
 
 /**
  * Method to be called upon a TextStyle change.
+ * @private
  */
 Text.prototype._onStyleChange = function ()
 {
