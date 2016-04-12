@@ -8980,6 +8980,8 @@ var CONST = {
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
      * Handy for mobile devices!
+     * This property only affects WebGL
+     * Handy for mobile devices!
      * This property only affects WebGL.
      * 
      * @static
@@ -9087,12 +9089,13 @@ var CONST = {
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32) //this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32), //this is the MAXIMUM - various gpus will have there own limits.
+    TEXT_STYLE_CHANGED: 'changed' //Name of the event that fires when a text style is changed 
 };
 
 module.exports = CONST;
 
-},{"./utils/maxRecommendedTextures":109}],40:[function(require,module,exports){
+},{"./utils/maxRecommendedTextures":110}],40:[function(require,module,exports){
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject');
@@ -9720,7 +9723,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":61,"../utils":108,"./DisplayObject":41}],41:[function(require,module,exports){
+},{"../math":61,"../utils":109,"./DisplayObject":41}],41:[function(require,module,exports){
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
@@ -9733,6 +9736,7 @@ var math = require('../math'),
  *
  * @class
  * @extends EventEmitter
+ * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 function DisplayObject()
@@ -9794,13 +9798,6 @@ function DisplayObject()
      * @member {PIXI.Rectangle}
      */
     this.filterArea = null;
-
-    /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-     */
-    this.hitArea = null;
 
     /**
      * The original, cached bounds of the object
@@ -11607,6 +11604,30 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
     return texture;
 };
 
+Graphics.prototype.closePath = function ()
+{
+    // ok so close path assumes next one is a hole!
+    var currentPath = this.currentPath;
+    if (currentPath && currentPath.shape)
+    {
+        currentPath.shape.close();
+    }
+    return this;
+};
+
+Graphics.prototype.addHole = function()
+{
+    // this is a hole!
+    var hole = this.graphicsData.pop();
+
+    this.currentPath = this.graphicsData[this.graphicsData.length-1];
+
+    this.currentPath.addHole(hole.shape);
+    this.currentPath = null;
+
+    return this;
+};
+
 /**
  * Destroys the Graphics object.
  */
@@ -11633,7 +11654,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../renderers/canvas/CanvasRenderer":68,"../sprites/Sprite":91,"../textures/RenderTexture":100,"../textures/Texture":101,"./GraphicsData":46,"./utils/bezierCurveTo":48}],46:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":61,"../renderers/canvas/CanvasRenderer":68,"../sprites/Sprite":91,"../textures/RenderTexture":101,"../textures/Texture":102,"./GraphicsData":46,"./utils/bezierCurveTo":48}],46:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -11687,6 +11708,9 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      */
     this.fill = fill;
 
+
+    this.holes = [];
+
     /*
      * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
      */
@@ -11719,11 +11743,17 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
+GraphicsData.prototype.addHole = function (shape)
+{
+    this.holes.push(shape);
+};
+
 /**
  * Destroys the Graphics data.
  */
 GraphicsData.prototype.destroy = function () {
     this.shape = null;
+    this.holes = null;
 };
 
 },{}],47:[function(require,module,exports){
@@ -11812,25 +11842,14 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
         {
             context.beginPath();
 
-            var points = shape.points;
+            this.renderPolygon(shape.points, shape.closed, context);
 
-            context.moveTo(points[0], points[1]);
-
-            for (var j=1; j < points.length/2; j++)
+            for (var j = 0; j < data.holes.length; j++)
             {
-                context.lineTo(points[j * 2], points[j * 2 + 1]);
+                var hole = data.holes[j];
+                this.renderPolygon(hole.points, true, context);
             }
 
-            if (shape.closed)
-            {
-                context.lineTo(points[0], points[1]);
-            }
-
-            // if the first and last point are the same close the path - much neater :)
-            if (points[0] === points[points.length-2] && points[1] === points[points.length-1])
-            {
-                context.closePath();
-            }
 
             if (data.fill)
             {
@@ -11993,6 +12012,21 @@ CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
         // super inline cos im an optimization NAZI :)
         data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
         data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+    }
+};
+
+CanvasGraphicsRenderer.prototype.renderPolygon = function (points, close, context)
+{
+    context.moveTo(points[0], points[1]);
+
+    for (var j=1; j < points.length/2; j++)
+    {
+        context.lineTo(points[j * 2], points[j * 2 + 1]);
+    }
+
+    if (close)
+    {
+        context.closePath();
     }
 };
 
@@ -12274,7 +12308,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
     return webGLData;
 };
 
-},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../utils":108,"./WebGLGraphicsData":50,"./shaders/PrimitiveShader":51,"./utils/buildCircle":52,"./utils/buildPoly":54,"./utils/buildRectangle":55,"./utils/buildRoundedRectangle":56}],50:[function(require,module,exports){
+},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../utils":109,"./WebGLGraphicsData":50,"./shaders/PrimitiveShader":51,"./utils/buildCircle":52,"./utils/buildPoly":54,"./utils/buildRectangle":55,"./utils/buildRoundedRectangle":56}],50:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 
@@ -12539,7 +12573,7 @@ var buildCircle = function (graphicsData, webGLData)
 
 module.exports = buildCircle;
 
-},{"../../../const":39,"../../../utils":108,"./buildLine":53}],53:[function(require,module,exports){
+},{"../../../const":39,"../../../utils":109,"./buildLine":53}],53:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils');
 
@@ -12759,7 +12793,7 @@ var buildLine = function (graphicsData, webGLData)
 };
 
 module.exports = buildLine;
-},{"../../../math":61,"../../../utils":108}],54:[function(require,module,exports){
+},{"../../../math":61,"../../../utils":109}],54:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
     earcut = require('earcut');
@@ -12777,19 +12811,20 @@ var buildPoly = function (graphicsData, webGLData)
 
     var points = graphicsData.points;
 
-    // need to add the points the the graphics object..
-    if (graphicsData.shape.closed)
-    {
-        // close the poly if the value is true!
-        if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
-        {
-            points.push(points[0], points[1]);
-        }
-    }
-
-
     if(graphicsData.fill && points.length > 6)
     {
+
+        var holeArray = [];
+             // Process holes..
+        var holes = graphicsData.holes;
+
+        for (var i = 0; i < holes.length; i++) {
+            var hole = holes[i];
+
+            holeArray.push(points.length/2);
+
+            points = points.concat(hole.points);
+        }
 
         // get first and last point.. figure out the middle!
         var verts = webGLData.points;
@@ -12804,7 +12839,7 @@ var buildPoly = function (graphicsData, webGLData)
         var g = color[1] * alpha;
         var b = color[2] * alpha;
 
-        var triangles = earcut(points, null, 2);
+        var triangles = earcut(points, holeArray, 2);
 
         if (!triangles) {
             return;
@@ -12839,7 +12874,7 @@ var buildPoly = function (graphicsData, webGLData)
 
 module.exports = buildPoly;
 
-},{"../../../utils":108,"./buildLine":53,"earcut":25}],55:[function(require,module,exports){
+},{"../../../utils":109,"./buildLine":53,"earcut":25}],55:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -12910,7 +12945,7 @@ var buildRectangle = function (graphicsData, webGLData)
 };
 
 module.exports = buildRectangle;
-},{"../../../utils":108,"./buildLine":53}],56:[function(require,module,exports){
+},{"../../../utils":109,"./buildLine":53}],56:[function(require,module,exports){
 var earcut = require('earcut'),
     buildLine = require('./buildLine'),
     utils = require('../../../utils');
@@ -13040,7 +13075,7 @@ var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// js
 
 module.exports = buildRoundedRectangle;
 
-},{"../../../utils":108,"./buildLine":53,"earcut":25}],57:[function(require,module,exports){
+},{"../../../utils":109,"./buildLine":53,"earcut":25}],57:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -13071,7 +13106,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // text
     Text:                   require('./text/Text'),
-
+    TextStyle:              require('./text/TextStyle'),
     // primitives
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
@@ -13136,7 +13171,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./display/Transform":43,"./display/TransformStatic":44,"./graphics/Graphics":45,"./graphics/GraphicsData":46,"./graphics/canvas/CanvasGraphicsRenderer":47,"./graphics/webgl/GraphicsRenderer":49,"./math":61,"./renderers/canvas/CanvasRenderer":68,"./renderers/canvas/utils/CanvasRenderTarget":70,"./renderers/webgl/WebGLRenderer":75,"./renderers/webgl/filters/Filter":77,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":80,"./renderers/webgl/managers/WebGLManager":84,"./renderers/webgl/utils/ObjectRenderer":85,"./renderers/webgl/utils/Quad":86,"./renderers/webgl/utils/RenderTarget":87,"./sprites/Sprite":91,"./sprites/canvas/CanvasSpriteRenderer":92,"./sprites/canvas/CanvasTinter":93,"./sprites/webgl/SpriteRenderer":95,"./text/Text":97,"./textures/BaseRenderTexture":98,"./textures/BaseTexture":99,"./textures/RenderTexture":100,"./textures/Texture":101,"./textures/TextureUvs":102,"./textures/VideoBaseTexture":103,"./ticker":105,"./utils":108,"pixi-gl-core":1}],58:[function(require,module,exports){
+},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./display/Transform":43,"./display/TransformStatic":44,"./graphics/Graphics":45,"./graphics/GraphicsData":46,"./graphics/canvas/CanvasGraphicsRenderer":47,"./graphics/webgl/GraphicsRenderer":49,"./math":61,"./renderers/canvas/CanvasRenderer":68,"./renderers/canvas/utils/CanvasRenderTarget":70,"./renderers/webgl/WebGLRenderer":75,"./renderers/webgl/filters/Filter":77,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":80,"./renderers/webgl/managers/WebGLManager":84,"./renderers/webgl/utils/ObjectRenderer":85,"./renderers/webgl/utils/Quad":86,"./renderers/webgl/utils/RenderTarget":87,"./sprites/Sprite":91,"./sprites/canvas/CanvasSpriteRenderer":92,"./sprites/canvas/CanvasTinter":93,"./sprites/webgl/SpriteRenderer":95,"./text/Text":97,"./text/TextStyle":98,"./textures/BaseRenderTexture":99,"./textures/BaseTexture":100,"./textures/RenderTexture":101,"./textures/Texture":102,"./textures/TextureUvs":103,"./textures/VideoBaseTexture":104,"./ticker":106,"./utils":109,"pixi-gl-core":1}],58:[function(require,module,exports){
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
@@ -14090,6 +14125,18 @@ Polygon.prototype.clone = function ()
     return new Polygon(this.points.slice());
 };
 
+
+Polygon.prototype.close = function ()
+{
+    var points = this.points;
+
+    // close the poly if the value is true!
+    if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
+    {
+        points.push(points[0], points[1]);
+    }
+};
+
 /**
  * Checks whether the x and y coordinates passed to this function are contained within this polygon
  *
@@ -14674,7 +14721,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._lastObjectRendered = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../textures/RenderTexture":100,"../utils":108,"eventemitter3":26}],68:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":61,"../textures/RenderTexture":101,"../utils":109,"eventemitter3":26}],68:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
@@ -14796,7 +14843,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     if(renderTexture)
     {
         renderTexture = renderTexture.baseTexture || renderTexture;
-        
+
         if(!renderTexture._canvasRenderTarget)
         {
 
@@ -14855,16 +14902,18 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
         context.clear();
     }
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        if (this.transparent)
-        {
-            context.clearRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            context.fillStyle = this._backgroundColorString;
-            context.fillRect(0, 0, this.width , this.height);
+        if (this.renderingToScreen) {
+            if (this.transparent) {
+                context.clearRect(0, 0, this.width, this.height);
+            }
+            else {
+                context.fillStyle = this._backgroundColorString;
+                context.fillRect(0, 0, this.width, this.height);
+            }
+        } else {
+            //TODO: implement background for CanvasRenderTarget or RenderTexture?
         }
     }
 
@@ -14929,7 +14978,7 @@ CanvasRenderer.prototype.resize = function (w, h)
 
 };
 
-},{"../../const":39,"../../utils":108,"../SystemRenderer":67,"./utils/CanvasMaskManager":69,"./utils/CanvasRenderTarget":70,"./utils/mapCanvasBlendModesToPixi":72}],69:[function(require,module,exports){
+},{"../../const":39,"../../utils":109,"../SystemRenderer":67,"./utils/CanvasMaskManager":69,"./utils/CanvasRenderTarget":70,"./utils/mapCanvasBlendModesToPixi":72}],69:[function(require,module,exports){
 var CONST = require('../../../const');
 /**
  * A set of functions used to handle masking.
@@ -15612,7 +15661,7 @@ TextureManager.prototype.destroy = function()
 
 module.exports = TextureManager;
 
-},{"../../const":39,"../../utils":108,"./utils/RenderTarget":87,"pixi-gl-core":1}],75:[function(require,module,exports){
+},{"../../const":39,"../../utils":109,"./utils/RenderTarget":87,"pixi-gl-core":1}],75:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
@@ -16167,7 +16216,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     // this = null;
 };
 
-},{"../../const":39,"../../utils":108,"../SystemRenderer":67,"./TextureGarbageCollector":73,"./TextureManager":74,"./WebGLState":76,"./managers/FilterManager":81,"./managers/MaskManager":82,"./managers/StencilManager":83,"./utils/ObjectRenderer":85,"./utils/RenderTarget":87,"./utils/mapWebGLDrawModesToPixi":90,"pixi-gl-core":1}],76:[function(require,module,exports){
+},{"../../const":39,"../../utils":109,"../SystemRenderer":67,"./TextureGarbageCollector":73,"./TextureManager":74,"./WebGLState":76,"./managers/FilterManager":81,"./managers/MaskManager":82,"./managers/StencilManager":83,"./utils/ObjectRenderer":85,"./utils/RenderTarget":87,"./utils/mapWebGLDrawModesToPixi":90,"pixi-gl-core":1}],76:[function(require,module,exports){
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
 /**
@@ -16575,7 +16624,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../utils":108,"./extractUniformsFromSrc":78}],78:[function(require,module,exports){
+},{"../../../utils":109,"./extractUniformsFromSrc":78}],78:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
 var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
@@ -17702,7 +17751,7 @@ Quad.prototype.destroy = function()
 
 module.exports = Quad;
 
-},{"../../../utils/createIndicesForQuads":106,"pixi-gl-core":1}],87:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":107,"pixi-gl-core":1}],87:[function(require,module,exports){
 var math = require('../../../math'),
     CONST = require('../../../const'),
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
@@ -18372,7 +18421,7 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
-Sprite.prototype.caclulateVertices = function ()
+Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
         wt = this.transform.worldTransform,
@@ -18431,7 +18480,7 @@ Sprite.prototype._renderWebGL = function (renderer)
     {
         this.textureDirty = false;
         // set the vertex data
-        this.caclulateVertices();
+        this.calculateVertices();
     }
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
@@ -18465,7 +18514,7 @@ Sprite.prototype.getBounds = function ()
             this.vertexDirty = false;
 
             // set the vertex data
-            this.caclulateVertices();
+            this.calculateVertices();
 
         }
 
@@ -18650,7 +18699,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../textures/Texture":101,"../utils":108}],92:[function(require,module,exports){
+},{"../const":39,"../display/Container":40,"../math":61,"../textures/Texture":102,"../utils":109}],92:[function(require,module,exports){
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
@@ -19049,7 +19098,7 @@ CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":71,"../../utils":108}],94:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":71,"../../utils":109}],94:[function(require,module,exports){
 
 
  var Buffer = function(size)
@@ -19430,32 +19479,33 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    for (var i = 0; i < this.vaoMax; i++) {
+    for (var i = 0; i < this.vertexCount; i++) {
         this.vertexBuffers[i].destroy();
         this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
 
+    this.renderer.off('prerender', this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
     this.shader.destroy();
 
-    this.renderer = null;
-
-    this.vertexBuffer = null;
+    this.vertexBuffers = null;
+    this.vaos = null;
     this.indexBuffer = null;
+    this.indices = null;
 
     this.sprites = null;
     this.shader = null;
 
     for (i = 0; i < this.buffers.length; i++) {
-      this.buffers[i].destroy();
+        this.buffers[i].destroy();
     }
 
 };
 
-},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":88,"../../utils/createIndicesForQuads":106,"./BatchBuffer":94,"./generateMultiTextureShader":96,"bit-twiddle":17,"pixi-gl-core":1}],96:[function(require,module,exports){
+},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":88,"../../utils/createIndicesForQuads":107,"./BatchBuffer":94,"./generateMultiTextureShader":96,"bit-twiddle":17,"pixi-gl-core":1}],96:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader; 
 
 var fragTemplate = [
@@ -20229,7 +20279,343 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":39,"../math":61,"../sprites/Sprite":91,"../textures/Texture":101,"../utils":108}],98:[function(require,module,exports){
+},{"../const":39,"../math":61,"../sprites/Sprite":91,"../textures/Texture":102,"../utils":109}],98:[function(require,module,exports){
+var EventEmitter = require('eventemitter3'),
+    CONST = require('../const'),
+    utils = require('../utils');
+
+/**
+ * A TextStyle Object decorates a Text Object. It acts as an event emitter, and can be shared between
+ * multiple Text objects.
+ *
+ * @class
+ * @extends EventEmitter
+ * @memberof PIXI
+ * @param [style] {object} The style parameters
+ * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+ * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
+ * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
+ * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+ *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+ *      or increase the spikiness of rendered text.
+ */
+function TextStyle(style)
+{
+    EventEmitter.call(this);
+    Object.assign(this, this._defaults, style);
+}
+
+TextStyle.prototype = Object.create(EventEmitter.prototype);
+TextStyle.prototype.constructor = TextStyle;
+module.exports = TextStyle;
+
+// Default settings. Explained in the constructor.
+TextStyle.prototype._defaults = {
+    align: 'left',
+    dropShadow: false,
+    dropShadowAngle: Math.PI / 6,
+    dropShadowBlur: 0,
+    dropShadowColor: '#000000',
+    dropShadowDistance: 5,
+    lineHeight: null,
+    lineJoin: 'miter',
+    fill: 'black',
+    font: 'bold 20pt Arial',
+    miterLimit: 10,
+    padding: 0,
+    stroke: 'black',
+    strokeThickness: 0,
+    textBaseline: 'alphabetic',
+    wordWrap: false,
+    wordWrapWidth: 100
+};
+
+/**
+ * Creates a new TextStyle object with the same values as this one.
+ * Note that the only the properties of the object are cloned, not its event emitter.
+ *
+ * @return {PIXI.TextStyle}
+ */
+TextStyle.prototype.clone = function ()
+{
+    var clonedProperties = {};
+    for (var key in this._defaults)
+    {
+        clonedProperties[key] = this[key];
+    }
+    return new TextStyle(clonedProperties);
+};
+
+/**
+ * Resets all properties to the defaults specified in TextStyle.prototype._default
+ */
+TextStyle.prototype.reset = function ()
+{
+    Object.assign(this, this._defaults);
+};
+
+/**
+ * Create setters and getters for each of the style properties. Converts colors where necessary.
+ * Any set operation will emit a styleChanged event.
+ */
+Object.defineProperties(TextStyle.prototype, {
+    font: {
+        get: function ()
+        {
+            return this._font;
+        }, set: function (font)
+        {
+            if (this._font !== font)
+            {
+                this._font = font;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    fill: {
+        get: function ()
+        {
+            return this._fill;
+        }, set: function (fill)
+        {
+            var outputColor = getColor(fill);
+            if (this._fill !== outputColor)
+            {
+                this._fill = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    align: {
+        get: function ()
+        {
+            return this._align;
+        }, set: function (align)
+        {
+            if (this._align !== align)
+            {
+                this._align = align;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    stroke: {
+        get: function ()
+        {
+            return this._stroke;
+        }, set: function (stroke)
+        {
+            var outputColor = getColor(stroke);
+            if (this._stroke !== outputColor)
+            {
+                this._stroke = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    strokeThickness: {
+        get: function ()
+        {
+            return this._strokeThickness;
+        }, set: function (strokeThickness)
+        {
+            if (this._strokeThickness !== strokeThickness)
+            {
+                this._strokeThickness = strokeThickness;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    wordWrap: {
+        get: function ()
+        {
+            return this._wordWrap;
+        }, set: function (wordWrap)
+        {
+            if (this._wordWrap !== wordWrap)
+            {
+                this._wordWrap = wordWrap;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    wordWrapWidth: {
+        get: function ()
+        {
+            return this._wordWrapWidth;
+        }, set: function (wordWrapWidth)
+        {
+            if (this._wordWrapWidth !== wordWrapWidth)
+            {
+                this._wordWrapWidth = wordWrapWidth;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    dropShadow: {
+        get: function ()
+        {
+            return this._dropShadow;
+        }, set: function (dropShadow)
+        {
+            if (this._dropShadow !== dropShadow)
+            {
+                this._dropShadow = dropShadow;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    dropShadowColor: {
+        get: function ()
+        {
+            return this._dropShadowColor;
+        }, set: function (dropShadowColor)
+        {
+            var outputColor = getColor(dropShadowColor);
+            if (this._dropShadowColor !== outputColor)
+            {
+                this._dropShadowColor = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    dropShadowAngle: {
+        get: function ()
+        {
+            return this._dropShadowAngle;
+        }, set: function (dropShadowAngle)
+        {
+            if (this._dropShadowAngle !== dropShadowAngle)
+            {
+                this._dropShadowAngle = dropShadowAngle;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    dropShadowDistance: {
+        get: function ()
+        {
+            return this._dropShadowDistance;
+        }, set: function (dropShadowDistance)
+        {
+            if (this._dropShadowDistance !== dropShadowDistance)
+            {
+                this._dropShadowDistance = dropShadowDistance;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    dropShadowBlur: {
+        get: function ()
+        {
+            return this._dropShadowBlur;
+        }, set: function (dropShadowBlur)
+        {
+            if (this._dropShadowBlur !== dropShadowBlur)
+            {
+                this._dropShadowBlur = dropShadowBlur;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    padding: {
+        get: function ()
+        {
+            return this._padding;
+        }, set: function (padding)
+        {
+            if (this._padding !== padding)
+            {
+                this._padding = padding;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    textBaseline: {
+        get: function ()
+        {
+            return this._textBaseline;
+        }, set: function (textBaseline)
+        {
+            if (this._textBaseline !== textBaseline)
+            {
+                this._textBaseline = textBaseline;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    lineJoin: {
+        get: function ()
+        {
+            return this._lineJoin;
+        }, set: function (lineJoin)
+        {
+            if (this._lineJoin !== lineJoin)
+            {
+                this._lineJoin = lineJoin;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    lineHeight: {
+        get: function ()
+        {
+            return this._lineHeight;
+        }, set: function (lineHeight)
+        {
+            if (this._lineHeight !== lineHeight)
+            {
+                this._lineHeight = lineHeight;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    miterLimit: {
+        get: function ()
+        {
+            return this._miterLimit;
+        }, set: function (miterLimit)
+        {
+            if (this._miterLimit !== miterLimit)
+            {
+                this._miterLimit = miterLimit;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    }
+});
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ *
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (typeof color === 'number')
+    {
+        return utils.hex2string(color);
+    } else
+    {
+        return color;
+    }
+}
+
+},{"../const":39,"../utils":109,"eventemitter3":26}],99:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     CONST = require('../const');
 
@@ -20367,7 +20753,7 @@ BaseRenderTexture.prototype.destroy = function ()
 };
 
 
-},{"../const":39,"./BaseTexture":99}],99:[function(require,module,exports){
+},{"../const":39,"./BaseTexture":100}],100:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
@@ -20816,7 +21202,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":39,"../utils":108,"../utils/determineCrossOrigin":107,"bit-twiddle":17,"eventemitter3":26}],100:[function(require,module,exports){
+},{"../const":39,"../utils":109,"../utils/determineCrossOrigin":108,"bit-twiddle":17,"eventemitter3":26}],101:[function(require,module,exports){
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture');
 
@@ -20937,7 +21323,7 @@ RenderTexture.create = function(width, height, scaleMode, resolution)
     return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
 };
 
-},{"./BaseRenderTexture":98,"./Texture":101}],101:[function(require,module,exports){
+},{"./BaseRenderTexture":99,"./Texture":102}],102:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -21426,13 +21812,19 @@ Texture.removeTextureFromCache = function (id)
 
 /**
  * An empty texture, used often to not have to create multiple empty textures.
+ * Can not be destroyed.
  *
  * @static
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
+Texture.EMPTY.destroy = function() {}
+Texture.EMPTY.on = function() {};
+Texture.EMPTY.once = function() {};
+Texture.EMPTY.emit = function() {};
 
-},{"../math":61,"../utils":108,"./BaseTexture":99,"./TextureUvs":102,"./VideoBaseTexture":103,"eventemitter3":26}],102:[function(require,module,exports){
+
+},{"../math":61,"../utils":109,"./BaseTexture":100,"./TextureUvs":103,"./VideoBaseTexture":104,"eventemitter3":26}],103:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -21517,7 +21909,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
 
-},{"../math/GroupD8":58}],103:[function(require,module,exports){
+},{"../math/GroupD8":58}],104:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -21754,7 +22146,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":108,"./BaseTexture":99}],104:[function(require,module,exports){
+},{"../utils":109,"./BaseTexture":100}],105:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -22091,7 +22483,7 @@ Ticker.prototype.update = function update(currentTime)
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
     // Save uncapped elapsedMS for measurement
-    elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+    Math.max(0, elapsedMS = this.elapsedMS = currentTime - this.lastTime);
 
     // cap the milliseconds elapsed used for deltaTime
     if (elapsedMS > this._maxElapsedMS)
@@ -22109,7 +22501,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":39,"eventemitter3":26}],105:[function(require,module,exports){
+},{"../const":39,"eventemitter3":26}],106:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -22165,7 +22557,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":104}],106:[function(require,module,exports){
+},{"./Ticker":105}],107:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -22196,7 +22588,7 @@ var createIndicesForQuads = function (size)
 
 module.exports = createIndicesForQuads;
 
-},{}],107:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 var tempAnchor;
 var _url = require('url');
 
@@ -22240,7 +22632,7 @@ var determineCrossOrigin = function (url, loc) {
 };
 
 module.exports = determineCrossOrigin;
-},{"url":24}],108:[function(require,module,exports){
+},{"url":24}],109:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -22386,7 +22778,14 @@ var utils = module.exports = {
             var canvas = document.createElement('canvas'),
                 gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
-            return !!(gl && gl.getContextAttributes().stencil);
+            var success = !!(gl && gl.getContextAttributes().stencil);
+            if (gl)
+            {
+                gl.getExtension('WEBGL_lose_context').loseContext();
+            }
+            gl = null;
+
+            return success;
         }
         catch (e)
         {
@@ -22443,7 +22842,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":39,"./pluginTarget":110,"eventemitter3":26}],109:[function(require,module,exports){
+},{"../const":39,"./pluginTarget":111,"eventemitter3":26}],110:[function(require,module,exports){
 
 
 var  Device = require('ismobilejs');
@@ -22464,7 +22863,7 @@ var maxRecommendedTextures = function(max)
 };
 
 module.exports = maxRecommendedTextures;
-},{"ismobilejs":27}],110:[function(require,module,exports){
+},{"ismobilejs":27}],111:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -22534,7 +22933,7 @@ module.exports = {
     }
 };
 
-},{}],111:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -22834,9 +23233,9 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
     return this.generateCanvasTexture(scaleMode, resolution);
 };
 
-core.RenderTexture.prototype.render = function(displayObject)
+core.RenderTexture.prototype.render = function(displayObject, matrix, clear, updateTransform)
 {
-    this.legacyRenderer.render(displayObject, this);
+    this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);
     warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
 
@@ -22995,7 +23394,7 @@ core.utils.canUseNewCanvasBlendModes = function() {
 };
 
 
-},{"./core":57,"./extras":121,"./filters":133,"./mesh":148,"./particles":151}],112:[function(require,module,exports){
+},{"./core":57,"./extras":122,"./filters":134,"./mesh":149,"./particles":152}],113:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -23134,13 +23533,13 @@ WebGLExtract.prototype.destroy = function ()
 
 core.CanvasRenderer.registerPlugin('extract', WebGLExtract);
 
-},{"../../core":57}],113:[function(require,module,exports){
+},{"../../core":57}],114:[function(require,module,exports){
 
 module.exports = {
     webGL: require('./webgl/WebGLExtract'),
     canvas: require('./canvas/CanvasExtract')
 };
-},{"./canvas/CanvasExtract":112,"./webgl/WebGLExtract":114}],114:[function(require,module,exports){
+},{"./canvas/CanvasExtract":113,"./webgl/WebGLExtract":115}],115:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -23324,7 +23723,7 @@ Extract.prototype.destroy = function ()
 
 core.WebGLRenderer.registerPlugin('extract', Extract);
 
-},{"../../core":57}],115:[function(require,module,exports){
+},{"../../core":57}],116:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -23712,7 +24111,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":57}],116:[function(require,module,exports){
+},{"../core":57}],117:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24032,7 +24431,7 @@ MovieClip.fromImages = function (images)
 
     return new MovieClip(textures);
 };
-},{"../core":57}],117:[function(require,module,exports){
+},{"../core":57}],118:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
@@ -24463,7 +24862,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":57,"../core/sprites/canvas/CanvasTinter":93,"./webgl/TilingShader":122}],118:[function(require,module,exports){
+},{"../core":57,"../core/sprites/canvas/CanvasTinter":93,"./webgl/TilingShader":123}],119:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -24739,7 +25138,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":57}],119:[function(require,module,exports){
+},{"../core":57}],120:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24769,7 +25168,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":57}],120:[function(require,module,exports){
+},{"../core":57}],121:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24799,7 +25198,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":57}],121:[function(require,module,exports){
+},{"../core":57}],122:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24820,7 +25219,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":115,"./MovieClip":116,"./TilingSprite":117,"./cacheAsBitmap":118,"./getChildByName":119,"./getGlobalPosition":120}],122:[function(require,module,exports){
+},{"./BitmapText":116,"./MovieClip":117,"./TilingSprite":118,"./cacheAsBitmap":119,"./getChildByName":120,"./getGlobalPosition":121}],123:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 
@@ -24844,7 +25243,7 @@ TilingShader.prototype.constructor = TilingShader;
 module.exports = TilingShader;
 
 
-},{"pixi-gl-core":1}],123:[function(require,module,exports){
+},{"pixi-gl-core":1}],124:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -24964,7 +25363,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./BlurXFilter":124,"./BlurYFilter":125}],124:[function(require,module,exports){
+},{"../../core":57,"./BlurXFilter":125,"./BlurYFilter":126}],125:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -25072,7 +25471,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./generateBlurFragSource":126,"./generateBlurVertSource":127,"./getMaxBlurKernelSize":128}],125:[function(require,module,exports){
+},{"../../core":57,"./generateBlurFragSource":127,"./generateBlurVertSource":128,"./getMaxBlurKernelSize":129}],126:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -25170,7 +25569,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./generateBlurFragSource":126,"./generateBlurVertSource":127,"./getMaxBlurKernelSize":128}],126:[function(require,module,exports){
+},{"../../core":57,"./generateBlurFragSource":127,"./generateBlurVertSource":128,"./getMaxBlurKernelSize":129}],127:[function(require,module,exports){
 var GAUSSIAN_VALUES = {
 	5:[0.153388, 0.221461, 0.250301],
 	7:[0.071303, 0.131514, 0.189879, 0.214607],
@@ -25235,7 +25634,7 @@ var generateFragBlurSource = function(kernelSize)
 
 module.exports = generateFragBlurSource;
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 
 var vertTemplate = [
 	'attribute vec2 aVertexPosition;',
@@ -25265,11 +25664,11 @@ var generateVertBlurSource = function(kernelSize, x)
 
     if(x)
     {
-    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(%samlpeIndex% * strength, 0.0);';
+    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(%sampleIndex% * strength, 0.0);';
     }
     else
     {
-    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(0.0, %samlpeIndex% * strength);';
+    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(0.0, %sampleIndex% * strength);';
 
     }
 
@@ -25285,7 +25684,7 @@ var generateVertBlurSource = function(kernelSize, x)
     		value = kernelSize - i - 1;
     	}
 
-    	blur = blur.replace('%samlpeIndex%', (i - (halfLength-1)) + '.0');
+    	blur = blur.replace('%sampleIndex%', (i - (halfLength-1)) + '.0');
 
     	blurLoop += blur;
     	blurLoop += '\n';
@@ -25301,7 +25700,7 @@ var generateVertBlurSource = function(kernelSize, x)
 
 module.exports = generateVertBlurSource;
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 
 
 var getMaxKernelSize = function(gl)
@@ -25319,7 +25718,7 @@ var getMaxKernelSize = function(gl)
 
 module.exports = getMaxKernelSize;
 
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25853,7 +26252,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":57}],130:[function(require,module,exports){
+},{"../../core":57}],131:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -25932,7 +26331,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":57}],131:[function(require,module,exports){
+},{"../../core":57}],132:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -26025,7 +26424,7 @@ Object.defineProperties(GodrayFilter.prototype, {
     }
 });
 
-},{"../../core":57}],132:[function(require,module,exports){
+},{"../../core":57}],133:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -26074,7 +26473,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":57}],133:[function(require,module,exports){
+},{"../../core":57}],134:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26115,7 +26514,7 @@ module.exports = {
     GodrayFilter:         require('./godray/GodrayFilter')
 };
 
-},{"./blur/BlurFilter":123,"./blur/BlurXFilter":124,"./blur/BlurYFilter":125,"./colormatrix/ColorMatrixFilter":129,"./displacement/DisplacementFilter":130,"./godray/GodrayFilter":131,"./gray/GrayFilter":132,"./twist/TwistFilter":134}],134:[function(require,module,exports){
+},{"./blur/BlurFilter":124,"./blur/BlurXFilter":125,"./blur/BlurYFilter":126,"./colormatrix/ColorMatrixFilter":130,"./displacement/DisplacementFilter":131,"./godray/GodrayFilter":132,"./gray/GrayFilter":133,"./twist/TwistFilter":135}],135:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -26213,7 +26612,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":57}],135:[function(require,module,exports){
+},{"../../core":57}],136:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -26247,7 +26646,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":38,"./core":57,"./deprecation":111,"./extract":113,"./extras":121,"./filters":133,"./interaction":138,"./loaders":141,"./mesh":148,"./particles":151,"./polyfill":157}],136:[function(require,module,exports){
+},{"./accessibility":38,"./core":57,"./deprecation":112,"./extract":114,"./extras":122,"./filters":134,"./interaction":139,"./loaders":142,"./mesh":149,"./particles":152,"./polyfill":158}],137:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -26296,7 +26695,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":57}],137:[function(require,module,exports){
+},{"../core":57}],138:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -27235,7 +27634,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":57,"./InteractionData":136,"./interactiveTarget":139}],138:[function(require,module,exports){
+},{"../core":57,"./InteractionData":137,"./interactiveTarget":140}],139:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27252,10 +27651,10 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":136,"./InteractionManager":137,"./interactiveTarget":139}],139:[function(require,module,exports){
+},{"./InteractionData":137,"./InteractionManager":138,"./interactiveTarget":140}],140:[function(require,module,exports){
 /**
  * Default property values of interactive objects
- * used by {@link PIXI.interaction.InteractionManager}.
+ * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
  *
  * @mixin
  * @memberof PIXI.interaction
@@ -27269,39 +27668,79 @@ module.exports = {
  */
 var interactiveTarget = {
     /**
-     * @todo Needs docs.
+     * Determines if the displayObject be clicked/touched
+     * 
+     * @inner {boolean}
      */
     interactive: false,
+    
     /**
-     * @todo Needs docs.
-     */
-    buttonMode: false,
-    /**
-     * @todo Needs docs.
+     * Determines if the children to the displayObject can be clicked/touched
+     * Setting this to false allows pixi to bypass a recursive hitTest function 
+     * 
+     * @inner {boolean}
      */
     interactiveChildren: true,
+    
     /**
-     * @todo Needs docs.
+     * Interaction shape. Children will be hit first, then this shape will be checked.
+     *
+     * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     */
+    hitArea: null,
+    
+    /**
+     * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive 
+     *
+     * @inner {boolean}
+     */
+    buttonMode: false,
+    
+    /**
+     * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor is hovered over the displayObject
+     * https://developer.mozilla.org/en/docs/Web/CSS/cursor
+     *  
+     * @inner {string}
      */
     defaultCursor: 'pointer',
 
     // some internal checks..
-
     /**
-     * @todo Needs docs.
+     * Internal check to detect if the mouse cursor is hovered over the displayObject
+     * 
+     * @inner {boolean}
      * @private
      */
     _over: false,
+        
     /**
-     * @todo Needs docs.
+     * Internal check to detect if the left mouse button is pressed on the displayObject
+     * 
+     * @inner {boolean}
+     * @private
+     */
+    _isLeftDown: false,
+    
+    /**
+     * Internal check to detect if the right mouse button is pressed on the displayObject
+     * 
+     * @inner {boolean}
+     * @private
+     */
+    _isRightDown: false,
+    
+    /**
+     * Internal check to detect if a user has touched the displayObject
+     * 
+     * @inner {boolean}
      * @private
      */
     _touchDown: false
-};
+ };
 
 module.exports = interactiveTarget;
 
-},{}],140:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -27425,7 +27864,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57,"../extras":121,"path":18,"resource-loader":33}],141:[function(require,module,exports){
+},{"../core":57,"../extras":122,"path":18,"resource-loader":33}],142:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27446,7 +27885,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":140,"./loader":142,"./spritesheetParser":143,"./textureParser":144,"resource-loader":33}],142:[function(require,module,exports){
+},{"./bitmapFontParser":141,"./loader":143,"./spritesheetParser":144,"./textureParser":145,"resource-loader":33}],143:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -27508,7 +27947,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":140,"./spritesheetParser":143,"./textureParser":144,"resource-loader":33}],143:[function(require,module,exports){
+},{"./bitmapFontParser":141,"./spritesheetParser":144,"./textureParser":145,"resource-loader":33}],144:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core'),
@@ -27625,7 +28064,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57,"async":16,"path":18,"resource-loader":33}],144:[function(require,module,exports){
+},{"../core":57,"async":16,"path":18,"resource-loader":33}],145:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -27647,7 +28086,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57}],145:[function(require,module,exports){
+},{"../core":57}],146:[function(require,module,exports){
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
     Shader = require('./webgl/MeshShader'),
@@ -28185,7 +28624,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":57,"./webgl/MeshShader":149,"pixi-gl-core":1}],146:[function(require,module,exports){
+},{"../core":57,"./webgl/MeshShader":150,"pixi-gl-core":1}],147:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -28310,7 +28749,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":145}],147:[function(require,module,exports){
+},{"./Mesh":146}],148:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -28525,7 +28964,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":57,"./Mesh":145}],148:[function(require,module,exports){
+},{"../core":57,"./Mesh":146}],149:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28543,7 +28982,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":145,"./Plane":146,"./Rope":147,"./webgl/MeshShader":149}],149:[function(require,module,exports){
+},{"./Mesh":146,"./Plane":147,"./Rope":148,"./webgl/MeshShader":150}],150:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 /**
@@ -28593,7 +29032,7 @@ MeshShader.prototype.constructor = MeshShader;
 module.exports = MeshShader;
 
 
-},{"pixi-gl-core":1}],150:[function(require,module,exports){
+},{"pixi-gl-core":1}],151:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -28926,7 +29365,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../core":57}],151:[function(require,module,exports){
+},{"../core":57}],152:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28942,7 +29381,7 @@ module.exports = {
     ParticleRenderer: 			 require('./webgl/ParticleRenderer')
 };
 
-},{"./ParticleContainer":150,"./webgl/ParticleRenderer":153}],152:[function(require,module,exports){
+},{"./ParticleContainer":151,"./webgl/ParticleRenderer":154}],153:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
 
@@ -29163,7 +29602,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.staticBuffer.destroy();
 };
 
-},{"../../core/utils/createIndicesForQuads":106,"pixi-gl-core":1}],153:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":107,"pixi-gl-core":1}],154:[function(require,module,exports){
 var core = require('../../core'),
     ParticleShader = require('./ParticleShader'),
     ParticleBuffer = require('./ParticleBuffer');
@@ -29595,7 +30034,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../core":57,"./ParticleBuffer":152,"./ParticleShader":154}],154:[function(require,module,exports){
+},{"../../core":57,"./ParticleBuffer":153,"./ParticleShader":155}],155:[function(require,module,exports){
 var Shader = require('pixi-gl-core').GLShader;
 
 /**
@@ -29663,7 +30102,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"pixi-gl-core":1}],155:[function(require,module,exports){
+},{"pixi-gl-core":1}],156:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -29679,7 +30118,7 @@ if (!Math.sign)
     };
 }
 
-},{}],156:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -29689,7 +30128,7 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":28}],157:[function(require,module,exports){
+},{"object-assign":28}],158:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
@@ -29707,7 +30146,7 @@ if(!window.Uint16Array){
   window.Uint16Array = Array;
 }
 
-},{"./Math.sign":155,"./Object.assign":156,"./requestAnimationFrame":158}],158:[function(require,module,exports){
+},{"./Math.sign":156,"./Object.assign":157,"./requestAnimationFrame":159}],159:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -29777,6 +30216,6 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[135])(135)
+},{}]},{},[136])(136)
 });
 //# sourceMappingURL=pixi.js.map
