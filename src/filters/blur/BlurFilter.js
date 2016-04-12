@@ -30,6 +30,7 @@ module.exports = BlurFilter;
 
 BlurFilter.prototype.apply = function (filterManager, input, output)
 {
+
     var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.apply(filterManager, input, renderTarget, true);
@@ -53,7 +54,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
@@ -72,6 +73,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+
             this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
@@ -90,6 +92,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = value;
         }
     },
@@ -108,6 +111,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurYFilter.blur = value;
         }
     }

@@ -1,8 +1,6 @@
 var math = require('../math'),
-    RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
-    _tempMatrix = new math.Matrix(),
     _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
 
 
@@ -12,6 +10,7 @@ var math = require('../math'),
  *
  * @class
  * @extends EventEmitter
+ * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 function DisplayObject()
@@ -19,6 +18,10 @@ function DisplayObject()
     EventEmitter.call(this);
 
     //TODO: need to create Transform from factory
+    /**
+     * World transform and local transform of this object.
+     * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+     */
     this.transform = new Transform();
 
     /**
@@ -69,13 +72,6 @@ function DisplayObject()
      * @member {PIXI.Rectangle}
      */
     this.filterArea = null;
-
-    /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-     */
-    this.hitArea = null;
 
     /**
      * The original, cached bounds of the object
@@ -339,10 +335,9 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
- * @param matrix {PIXI.Matrix}
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
+DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };

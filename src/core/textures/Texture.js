@@ -21,11 +21,11 @@ var BaseTexture = require('./BaseTexture'),
  * @memberof PIXI
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
- * @param [crop] {PIXI.Rectangle} The area of original texture
+ * @param [orig] {PIXI.Rectangle} The area of original texture
  * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
  * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
-function Texture(baseTexture, frame, crop, trim, rotate)
+function Texture(baseTexture, frame, orig, trim, rotate)
 {
     EventEmitter.call(this);
 
@@ -96,7 +96,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      *
      * @member {PIXI.Rectangle}
      */
-    this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
+    this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
 
     this._rotate = +(rotate || 0);
 
@@ -166,7 +166,7 @@ Object.defineProperties(Texture.prototype, {
 
             if (!this.trim)
             {
-                this.crop = frame;
+                this.orig = frame;
             }
 
             if (this.valid)
@@ -206,7 +206,7 @@ Object.defineProperties(Texture.prototype, {
      */
     width: {
         get: function() {
-            return this.crop ? this.crop.width : 0;
+            return this.orig ? this.orig.width : 0;
         }
     },
 
@@ -217,7 +217,7 @@ Object.defineProperties(Texture.prototype, {
      */
     height: {
         get: function() {
-            return this.crop ? this.crop.height : 0;
+            return this.orig ? this.orig.height : 0;
         }
     }
 });
@@ -288,7 +288,7 @@ Texture.prototype.destroy = function (destroyBase)
     this._frame = null;
     this._uvs = null;
     this.trim = null;
-    this.crop = null;
+    this.orig = null;
 
     this.valid = false;
 
@@ -303,13 +303,13 @@ Texture.prototype.destroy = function (destroyBase)
  */
 Texture.prototype.clone = function ()
 {
-    return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
+    return new Texture(this.baseTexture, this.frame, this.orig, this.trim, this.rotate);
 };
 
 /**
  * Updates the internal WebGL UV cache.
  *
- * @private
+ * @protected
  */
 Texture.prototype._updateUvs = function ()
 {
@@ -327,8 +327,8 @@ Texture.prototype._updateUvs = function ()
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param crossorigin {boolean} Whether requests should be treated as crossorigin
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
@@ -368,8 +368,8 @@ Texture.fromFrame = function (frameId)
  * Helper function that creates a new Texture based on the given canvas element.
  *
  * @static
- * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param canvas {HTMLCanvasElement} The canvas element source of the texture
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture}
  */
 Texture.fromCanvas = function (canvas, scaleMode)
@@ -381,8 +381,8 @@ Texture.fromCanvas = function (canvas, scaleMode)
  * Helper function that creates a new Texture based on the given video element.
  *
  * @static
- * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param video {HTMLVideoElement|string} The URL or actual element of the video
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideo = function (video, scaleMode)
@@ -402,7 +402,7 @@ Texture.fromVideo = function (video, scaleMode)
  *
  * @static
  * @param videoUrl {string}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
@@ -438,7 +438,7 @@ Texture.from = function (source)
             return Texture.fromImage(source);
         }
 
-        return texture
+        return texture;
     }
     else if(source instanceof HTMLCanvasElement)
     {
@@ -452,7 +452,7 @@ Texture.from = function (source)
     {
         return new Texture(BaseTexture);
     }
-}
+};
 
 
 /**
@@ -486,8 +486,14 @@ Texture.removeTextureFromCache = function (id)
 
 /**
  * An empty texture, used often to not have to create multiple empty textures.
+ * Can not be destroyed.
  *
  * @static
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
+Texture.EMPTY.destroy = function() {};
+Texture.EMPTY.on = function() {};
+Texture.EMPTY.once = function() {};
+Texture.EMPTY.emit = function() {};
+

@@ -84,7 +84,7 @@ function WebGLRenderer(width, height, options)
     /**
      * Manages the stencil buffer.
      *
-     * @member {PIXI.StencilManager}
+     * @member {StencilManager}
      */
     this.stencilManager = new StencilManager(this);
 
@@ -111,13 +111,13 @@ function WebGLRenderer(width, height, options)
      */
     // initialize the context so it is ready for the managers.
     this.gl = options.context || createContext(this.view, this._contextOptions);
-   
+
     this.CONTEXT_UID = CONTEXT_UID++;
 
     /**
      * The currently active ObjectRenderer.
      *
-     * @member {PIXI.WebGLState}
+     * @member {WebGLState}
      */
     this.state = new WebGLState(this.gl);
 
@@ -155,7 +155,7 @@ function WebGLRenderer(width, height, options)
 
     this.setBlendMode(0);
 
-    
+
 }
 
 // constructor
@@ -181,7 +181,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
     this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-    
+
 
     this.bindRenderTarget(this.rootRenderTarget);
 
@@ -194,16 +194,16 @@ WebGLRenderer.prototype._initContext = function ()
 /**
  * Renders the object to its webGL view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
- * @param renderTexture {PIXI.renderTexture}
- * @param clear {Boolean}
+ * @param displayObject {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.RenderTexture}
+ * @param clear {boolean}
  * @param transform {PIXI.Transform}
- * @param skipUpdateTransform {Boolean}
+ * @param skipUpdateTransform {boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
 
-    
+
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
@@ -215,8 +215,6 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     {
         return;
     }
-
-    var gl = this.gl;
 
     this._lastObjectRendered = displayObject;
 
@@ -234,17 +232,16 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.currentRenderer.start();
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        renderTarget.clear();
+        this._activeRenderTarget.clear();
     }
-
-   
 
     displayObject.renderWebGL(this);
 
     // apply transform..
     this.currentRenderer.flush();
+
     //this.setObjectRenderer(this.emptyRenderer);
 
     this.textureGC.update();
@@ -317,7 +314,7 @@ WebGLRenderer.prototype.setBlendMode = function (blendMode)
 /**
  * Erases the active render target and fills the drawing area with a colour
  *
- * @param clearColor {number} The colour
+ * @param [clearColor] {number} The colour
  */
 WebGLRenderer.prototype.clear = function (clearColor)
 {
@@ -343,6 +340,8 @@ WebGLRenderer.prototype.setTransform = function (matrix)
  */
 WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 {
+    var renderTarget;
+
     if(renderTexture)
     {
         var baseTexture = renderTexture.baseTexture;
@@ -449,7 +448,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-       
+
     }
     else
     {
@@ -464,17 +463,17 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 WebGLRenderer.prototype.createVao = function ()
 {
     return new glCore.VertexArrayObject(this.gl, this.state.attribState);
-}
+};
 
 /**
  * Resets the WebGL state so you can render things however you fancy!
  */
 WebGLRenderer.prototype.reset = function ()
 {
-    this.currentRenderer.stop();
+    this.setObjectRenderer(this.emptyRenderer);
 
     this._activeShader = null;
-    this._activeRenderTarget = null;
+    this._activeRenderTarget = this.rootRenderTarget;
     this._activeTextureLocation = 999;
     this._activeTexture = null;
 
@@ -482,7 +481,6 @@ WebGLRenderer.prototype.reset = function ()
     this.rootRenderTarget.activate();
 
     this.state.resetToDefault();
-
 
     return this;
 };
@@ -543,7 +541,12 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
     this.gl.useProgram(null);
-    this.gl.getExtension('WEBGL_lose_context').loseContext();
+
+    if(this.gl.getExtension('WEBGL_lose_context'))
+    {
+        this.gl.getExtension('WEBGL_lose_context').loseContext();
+    }
+
     this.gl = null;
 
     // this = null;

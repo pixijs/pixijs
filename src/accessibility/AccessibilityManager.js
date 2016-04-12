@@ -39,7 +39,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * A simple pool for storing divs.
    	 *
-   	 * @type {Array}
+   	 * @type {*}
    	 * @private
    	 */
  	this.pool = [];
@@ -55,7 +55,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * Setting this to true will visually show the divs
    	 *
-   	 * @type {Boolean}
+   	 * @type {boolean}
    	 */
    	this.debug = false;
 
@@ -69,7 +69,7 @@ function AccessibilityManager(renderer)
    	/**
      * The array of currently active accessible items.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.children = [];
@@ -83,7 +83,7 @@ function AccessibilityManager(renderer)
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.isActive = false;
@@ -142,7 +142,7 @@ AccessibilityManager.prototype.deactivate = function()
 
 /**
  * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
- * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @param displayObject {PIXI.Container} the DisplayObject to check.
  * @private
  */
 AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
@@ -305,9 +305,20 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
+	if(displayObject.accessibleTitle)
+	{
+		div.title = displayObject.accessibleTitle;
+	}
+	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
+	{
+		div.title = 'displayObject ' + this.tabIndex;
+	}
 
+	if(displayObject.accessibleHint)
+	{
+		div.setAttribute('aria-label', displayObject.accessibleHint);
+	}
 
-	div.title = displayObject.accessibleTitle || 'displayObject ' + this.tabIndex;
 
 	//
 

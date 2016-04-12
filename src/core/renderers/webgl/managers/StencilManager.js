@@ -18,7 +18,7 @@ module.exports = StencilMaskManager;
 /**
  * Changes the mask stack that is used by this manager.
  *
- * @param stencilMaskStack {PIXI.StencilMaskStack} The mask stack
+ * @param stencilMaskStack {PIXI.Graphics[]} The mask stack
  */
 StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 {
@@ -40,7 +40,6 @@ StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
  * Applies the Mask and adds it to the current filter stack. @alvin
  *
  * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
  */
 StencilMaskManager.prototype.pushStencil = function (graphics)
 {
@@ -72,8 +71,6 @@ StencilMaskManager.prototype.pushStencil = function (graphics)
 
 /**
  * TODO @alvin
- * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
  */
 StencilMaskManager.prototype.popStencil = function ()
 {

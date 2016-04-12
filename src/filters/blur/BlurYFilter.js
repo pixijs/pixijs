@@ -34,10 +34,10 @@ module.exports = BlurYFilter;
 BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
 {
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
-        
+
         this.vertexSrc = generateBlurVertSource(kernelSize, false);
         this.fragmentSrc = generateBlurFragSource(kernelSize);
 
@@ -89,7 +89,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.abs(value) * 2;
             this.strength = value;
         }
     }

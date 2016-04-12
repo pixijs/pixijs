@@ -8,7 +8,7 @@ var _url = require('url');
  * Nipped from the resource loader!
  * @private
  * @param url {string} The url to test.
- * @param [location=window.location] {object} The location object to test against.
+ * @param loc [location=window.location] {object} The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
 var determineCrossOrigin = function (url, loc) {

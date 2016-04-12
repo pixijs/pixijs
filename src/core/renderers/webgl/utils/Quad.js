@@ -7,6 +7,7 @@ var glCore = require('pixi-gl-core'),
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
+ * @param state {object} TODO: Description
  */
 function Quad(gl, state)
 {
@@ -68,7 +69,7 @@ function Quad(gl, state)
     /*
      * @member {glCore.VertexArrayObject} The index buffer
      */
-    this.vao = new glCore.VertexArrayObject(gl, state)
+    this.vao = new glCore.VertexArrayObject(gl, state);
 
 }
 
@@ -88,8 +89,8 @@ Quad.prototype.initVao = function(shader)
 
 /**
  * Maps two Rectangle to the quad
- * @param rect {PIXI.Rectangle} the first rectangle
- * @param rect2 {PIXI.Rectangle} the second rectangle
+ * @param targetTextureFrame {PIXI.Rectangle} the first rectangle
+ * @param destinationFrame {PIXI.Rectangle} the second rectangle
  */
 Quad.prototype.map = function(targetTextureFrame, destinationFrame)
 {

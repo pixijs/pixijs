@@ -7,10 +7,8 @@ var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param shaderManager {PIXI.ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
- * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
+ * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
 function Filter(vertexSrc, fragmentSrc, uniforms)

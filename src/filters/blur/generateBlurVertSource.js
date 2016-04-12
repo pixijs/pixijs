@@ -27,11 +27,11 @@ var generateVertBlurSource = function(kernelSize, x)
 
     if(x)
     {
-    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(%samlpeIndex% * strength, 0.0);';
+    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(%sampleIndex% * strength, 0.0);';
     }
     else
     {
-    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(0.0, %samlpeIndex% * strength);';
+    	template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(0.0, %sampleIndex% * strength);';
 
     }
 
@@ -47,7 +47,7 @@ var generateVertBlurSource = function(kernelSize, x)
     		value = kernelSize - i - 1;
     	}
 
-    	blur = blur.replace('%samlpeIndex%', (i - (halfLength-1)) + '.0');
+    	blur = blur.replace('%sampleIndex%', (i - (halfLength-1)) + '.0');
 
     	blurLoop += blur;
     	blurLoop += '\n';

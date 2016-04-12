@@ -38,6 +38,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * @extends PIXI.Texture
  * @memberof PIXI
  * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
+ * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  */
 function RenderTexture(baseRenderTexture, frame)
 {
@@ -52,7 +53,7 @@ function RenderTexture(baseRenderTexture, frame)
         var resolution = arguments[4] || 1;
 
         // we have an old render texture..
-        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');
+        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line
         this.legacyRenderer = arguments[0];
 
         frame = null;
@@ -87,7 +88,7 @@ module.exports = RenderTexture;
  *
  * @param width {number} The width to resize to.
  * @param height {number} The height to resize to.
- * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
+ * @param doNotResizeBaseTexture {boolean} Should the baseTexture.width and height values be resized as well?
  */
 RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
 {
@@ -95,8 +96,8 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
     //TODO - could be not required..
     this.valid = (width > 0 && height > 0);
 
-    this._frame.width = this.crop.width = width;
-    this._frame.height = this.crop.height = height;
+    this._frame.width = this.orig.width = width;
+    this._frame.height = this.orig.height = height;
 
     if (!doNotResizeBaseTexture)
     {

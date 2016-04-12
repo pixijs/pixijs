@@ -11,7 +11,7 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
-core.extract  = require('./extract');
+core.extract  		= require('./extract');
 
 // export a premade loader instance
 /**

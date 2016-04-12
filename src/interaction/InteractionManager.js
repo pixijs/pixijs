@@ -87,7 +87,8 @@ function InteractionManager(renderer, options)
      * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
      * Setting to true will make things work more in line with how the DOM verison works.
      * Setting to false can make things easier for things like dragging
-     * @member {HTMLElement}
+     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
+     * @member {boolean}
      * @private
      */
     this.moveWhenInside = false;
@@ -358,10 +359,11 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
  *
- * @param  {PIXI.Point} point the point that is tested for collision
- * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
- * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @param point {PIXI.Point} the point that is tested for collision
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param [func] {Function} the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param [hitTest] {boolean} this indicates if the objects inside should be hit test against the point
+ * @param [interactive] {boolean} Whether the displayObject is interactive
  * @return {boolean} returns true if the displayObject hit the point
  */
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
@@ -406,7 +408,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     // it has a filterArea! Same as mask but easier, its a rectangle
     if(hitTest && displayObject.filterArea)
     {
-        if(!displayObject.filterArea.contains(point))
+        if(!displayObject.filterArea.contains(point.x, point.y))
         {
             hitTest = false;
         }
@@ -439,13 +441,12 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
                 // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                //  if(child.interactive)
+
                 //{
                 hitTest = false;
                 //}
 
                 // we can break now as we have hit an object.
-
             }
         }
     }
@@ -850,7 +851,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 /**
  * Grabs an interaction data object from the internal pool
  *
- * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
+ * @param touchEvent {object} The touch event we need to pair with an interactionData object
  *
  * @private
  */

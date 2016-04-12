@@ -1,8 +1,7 @@
 var core = require('../core'),
-    // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader')
+    TilingShader = require('./webgl/TilingShader');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -10,7 +9,7 @@ var core = require('../core'),
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param texture {Texture} the texture of the tiling sprite
+ * @param texture {PIXI.Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
@@ -119,7 +118,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-    
+
     // tweak our texture temporarily..
     var texture = this._texture;
 
@@ -135,14 +134,14 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     var glData = this._glDatas[renderer.CONTEXT_UID];
 
     if(!glData)
-    { 
+    {
         glData = {
             shader:new TilingShader(gl),
             quad:new core.Quad(gl)
-        }
+        };
 
         this._glDatas[renderer.CONTEXT_UID] = glData;
-        
+
         glData.quad.initVao(glData.shader);
     }
 
@@ -156,7 +155,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     vertices[5] = vertices[7] = this._height * (1-this.anchor.y);
 
     glData.quad.upload();
-    
+
     renderer.bindShader(glData.shader);
 
     var textureUvs = texture._uvs,

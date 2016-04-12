@@ -1,6 +1,5 @@
 var math = require('../../../math'),
     CONST = require('../../../const'),
-    GLTexture = require('pixi-gl-core').GLTexture,
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
 /**
@@ -11,11 +10,11 @@ var math = require('../../../math'),
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
- * @param width {number} the horizontal range of the filter
- * @param height {number} the vertical range of the filter
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param resolution {number} the current resolution
- * @param root {boolean} Whether this object is the root element or not
+ * @param [width=0] {number} the horizontal range of the filter
+ * @param [height=0] {number} the vertical range of the filter
+ * @param [scaleMode=CONST.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [resolution=CONST.RESOLUTION] {number} the current resolution
+ * @param [root=false] {boolean} Whether this object is the root element or not
  */
 var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 {
@@ -33,7 +32,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * A frame buffer
      *
-     * @member {WebGLFrameBuffer}
+     * @member {glCore.GLFramebuffer}
      */
     this.frameBuffer = null;
 
@@ -47,7 +46,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The background colour of this render target, as an array of [r,g,b,a] values
      *
-     * @member {array}
+     * @member {number[]}
      */
     this.clearColor = [0, 0, 0, 0];
 
@@ -89,23 +88,23 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
-    this.defaultFrame = new PIXI.Rectangle();
+    this.defaultFrame = new math.Rectangle();
     this.destinationFrame = null;
     this.sourceFrame = null;
 
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
     this.stencilBuffer = null;
 
     /**
      * The data structure for the stencil masks
      *
-     * @member {PIXI.StencilMaskStack}
+     * @member {PIXI.Graphics[]}
      */
     this.stencilMaskStack = [];
 
@@ -180,7 +179,7 @@ module.exports = RenderTarget;
 /**
  * Clears the filter texture.
  *
- * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
+ * @param [clearColor=this.clearColor] {number[]} Array of [r,g,b,a] to clear the framebuffer
  */
 RenderTarget.prototype.clear = function(clearColor)
 {
