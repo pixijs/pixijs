@@ -8339,7 +8339,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * A simple pool for storing divs.
    	 *
-   	 * @type {Array}
+   	 * @type {*}
    	 * @private
    	 */
  	this.pool = [];
@@ -8355,7 +8355,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * Setting this to true will visually show the divs
    	 *
-   	 * @type {Boolean}
+   	 * @type {boolean}
    	 */
    	this.debug = false;
 
@@ -8369,7 +8369,7 @@ function AccessibilityManager(renderer)
    	/**
      * The array of currently active accessible items.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.children = [];
@@ -8383,7 +8383,7 @@ function AccessibilityManager(renderer)
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.isActive = false;
@@ -8442,7 +8442,7 @@ AccessibilityManager.prototype.deactivate = function()
 
 /**
  * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
- * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @param displayObject {PIXI.Container} the DisplayObject to check.
  * @private
  */
 AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
@@ -8605,20 +8605,20 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
-	if(displayObject.accessibleTitle) 
+	if(displayObject.accessibleTitle)
 	{
 		div.title = displayObject.accessibleTitle;
-	} 
-	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) 
+	}
+	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
 	{
 		div.title = 'displayObject ' + this.tabIndex;
 	}
 
-	if(displayObject.accessibleHint) 
+	if(displayObject.accessibleHint)
 	{
-		div.setAttribute('aria-label', displayObject.accessibleHint);	
+		div.setAttribute('aria-label', displayObject.accessibleHint);
 	}
-	
+
 
 	//
 
@@ -9414,8 +9414,8 @@ Container.prototype.removeChildAt = function (index)
 /**
  * Removes all children from this container that are within the begin and end indexes.
  *
- * @param beginIndex {number} The beginning position. Default value is 0.
- * @param endIndex {number} The ending position. Default value is size of the container.
+ * @param [beginIndex=0] {number} The beginning position.
+ * @param [endIndex=this.children.length] {number} The ending position. Default value is size of the container.
  */
 Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
@@ -9576,7 +9576,7 @@ Container.prototype.getLocalBounds = function ()
 
     this._currentBounds = null;
 
-    return this.getBounds( math.Matrix.IDENTITY );
+    return this.getBounds();
 };
 
 /**
@@ -9687,7 +9687,7 @@ Container.prototype.renderCanvas = function (renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask, renderer);
+        renderer.maskManager.pushMask(this._mask);
     }
 
     this._renderCanvas(renderer);
@@ -10061,10 +10061,9 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
- * @param matrix {PIXI.Matrix}
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
+DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };
@@ -10229,12 +10228,13 @@ DisplayObject.prototype.destroy = function ()
 
 },{"../math":61,"./Transform":43,"eventemitter3":26}],42:[function(require,module,exports){
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * An observable point is a point that triggers a callback when the point's position is changed.
  *
  * @class
  * @memberof PIXI
- * @param transform {PIXI.Transform} the transform object @mat
+ *
+ * @param cb {function} The function to be called when the point changes
+ * @param scope {*} The scope to be applied to the cb
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -10301,7 +10301,7 @@ ObservablePoint.prototype.set = function (x, y)
     this._x = x || 0;
     this._y = y || ( (y !== 0) ? this._x : 0 );
 
-    this.transform._versionLocal++;
+    this.transform._versionLocal++; // TODO: Pretty sure this doesn't exist.
 };
 
 },{}],43:[function(require,module,exports){
@@ -10315,8 +10315,6 @@ var math = require('../math'),
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
 function Transform()
 {
@@ -10452,8 +10450,6 @@ var ObservablePoint = require('./ObservablePoint');
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
 function TransformStatic()
 {
@@ -11549,7 +11545,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+ * @param shape {PIXI.math.Circle|PIXI.math.Ellipse|PIXI.math.Polygon|PIXI.math.Rectangle|PIXI.math.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)
@@ -11666,7 +11662,7 @@ Graphics.prototype.destroy = function ()
  * @param fillColor {number} the color of the fill
  * @param fillAlpha {number} the alpha of the fill
  * @param fill      {boolean} whether or not the shape is filled with a colour
- * @param shape     {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
+ * @param shape     {PIXI.math.Circle|PIXI.math.Rectangle|PIXI.math.Ellipse|PIXI.math.Polygon} The shape object to draw.
  */
 function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
 {
@@ -12044,12 +12040,15 @@ CanvasGraphicsRenderer.prototype.destroy = function ()
 /**
  * Calculate the points for a bezier curve and then draws it.
  *
+ * @param fromX {number} Starting point x
+ * @param fromY {number} Starting point y
  * @param cpX {number} Control point x
  * @param cpY {number} Control point y
  * @param cpX2 {number} Second Control point x
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
+ * @param [path=number[]] Path array to push points into
  * @return {PIXI.Graphics}
  */
 var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
@@ -12317,7 +12316,9 @@ var glCore = require('pixi-gl-core');
  *
  * @class
  * @memberof PIXI
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} The current WebGL drawing context
+ * @param shader {PIXI.Shader} The shader
+ * @param attribsState {object} The state for the VAO
  * @private
  */
 function WebGLGraphicsData(gl, shader, attribsState)
@@ -12379,7 +12380,7 @@ function WebGLGraphicsData(gl, shader, attribsState)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
     .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
-    
+
 
 }
 
@@ -12442,7 +12443,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param gl {WebGLRenderingContext} The webgl shader manager this shader works for.
  */
 function PrimitiveShader(gl)
 {
@@ -12493,7 +12494,7 @@ var buildLine = require('./buildLine'),
  * Builds a circle to draw
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object to draw
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object to draw
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 var buildCircle = function (graphicsData, webGLData)
@@ -12581,7 +12582,7 @@ var math = require('../../../math'),
  * Builds a line to draw
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 var buildLine = function (graphicsData, webGLData)
@@ -12793,6 +12794,7 @@ var buildLine = function (graphicsData, webGLData)
 };
 
 module.exports = buildLine;
+
 },{"../../../math":61,"../../../utils":109}],54:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
@@ -12847,8 +12849,6 @@ var buildPoly = function (graphicsData, webGLData)
 
         var vertPos = verts.length / 6;
 
-        var i = 0;
-
         for (i = 0; i < triangles.length; i+=3)
         {
             indices.push(triangles[i] + vertPos);
@@ -12882,7 +12882,7 @@ var buildLine = require('./buildLine'),
  * Builds a rectangle to draw
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 var buildRectangle = function (graphicsData, webGLData)
@@ -12945,6 +12945,7 @@ var buildRectangle = function (graphicsData, webGLData)
 };
 
 module.exports = buildRectangle;
+
 },{"../../../utils":109,"./buildLine":53}],56:[function(require,module,exports){
 var earcut = require('earcut'),
     buildLine = require('./buildLine'),
@@ -12954,7 +12955,7 @@ var earcut = require('earcut'),
  * Builds a rounded rectangle to draw
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 var buildRoundedRectangle = function (graphicsData, webGLData)
@@ -13447,7 +13448,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
- * @param [out] {Array} If provided the array will be assigned to out
+ * @param [out=Float32Array[]} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -14059,7 +14060,7 @@ var Point = require('../Point'),
 /**
  * @class
  * @memberof PIXI
- * @param points {PIXI.Point[]|number[]|...PIXI.Point|...number} This can be an array of Points that form the polygon,
+ * @param points_ {PIXI.Point[]|number[]|...PIXI.Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
  *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
@@ -14818,7 +14819,7 @@ function CanvasRenderer(width, height, options)
 
 // constructor
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
-CanvasRenderer.prototype.constructor = CanvasRenderer;
+CanvasRenderer.prototype.constructor =  CanvasRenderer;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
 
@@ -14826,7 +14827,11 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
+ * @param [clear=false] {boolean} Whether to clear the canvas before drawing
+ * @param [transform] {PIXI.Transform} A transformation to be applied
+ * @param [skipUpdateTransform=false] {boolean} Whether to skip the update transform
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -14912,9 +14917,9 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
                 context.fillStyle = this._backgroundColorString;
                 context.fillRect(0, 0, this.width, this.height);
             }
-        } else {
+        } //else {
             //TODO: implement background for CanvasRenderTarget or RenderTexture?
-        }
+        //}
     }
 
     // TODO RENDER TARGET STUFF HERE..
@@ -14998,7 +15003,6 @@ module.exports = CanvasMaskManager;
  * This method adds it to the current stack of masks.
  *
  * @param maskData {object} the maskData that will be pushed
- * @param renderer {PIXI.WebGLRenderer|PIXI.CanvasRenderer} The renderer context to use.
  */
 CanvasMaskManager.prototype.pushMask = function (maskData)
 {
@@ -15151,6 +15155,7 @@ var CONST = require('../../../const');
  * @memberof PIXI
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
+ * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
  */
 function CanvasRenderTarget(width, height, resolution)
 {
@@ -15487,7 +15492,7 @@ var TextureManager = function(renderer)
 	/**
      * Track textures in the renderer so we can no longer listen to them on destruction.
      *
-     * @member {array}
+     * @member {*[]}
      * @private
      */
 	this._managedTextures = [];
@@ -15597,6 +15602,7 @@ TextureManager.prototype.updateTexture = function(texture)
  * Deletes the texture from WebGL
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
+ * @param [_skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
  */
 TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 {
@@ -15748,7 +15754,7 @@ function WebGLRenderer(width, height, options)
     /**
      * Manages the stencil buffer.
      *
-     * @member {PIXI.StencilManager}
+     * @member {StencilManager}
      */
     this.stencilManager = new StencilManager(this);
 
@@ -15781,7 +15787,7 @@ function WebGLRenderer(width, height, options)
     /**
      * The currently active ObjectRenderer.
      *
-     * @member {PIXI.WebGLState}
+     * @member {WebGLState}
      */
     this.state = new WebGLState(this.gl);
 
@@ -15858,11 +15864,11 @@ WebGLRenderer.prototype._initContext = function ()
 /**
  * Renders the object to its webGL view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
- * @param renderTexture {PIXI.renderTexture}
- * @param clear {Boolean}
+ * @param displayObject {PIXI.DisplayObject} the object to be rendered
+ * @param renderTexture {PIXI.RenderTexture}
+ * @param clear {boolean}
  * @param transform {PIXI.Transform}
- * @param skipUpdateTransform {Boolean}
+ * @param skipUpdateTransform {boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -15978,7 +15984,7 @@ WebGLRenderer.prototype.setBlendMode = function (blendMode)
 /**
  * Erases the active render target and fills the drawing area with a colour
  *
- * @param clearColor {number} The colour
+ * @param [clearColor] {number} The colour
  */
 WebGLRenderer.prototype.clear = function (clearColor)
 {
@@ -16254,7 +16260,7 @@ var WebGLState = function(gl)
     /**
      * The stack holding all the different states
      *
-     * @member {array}
+     * @member {*[]}
      * @private
      */
 	this.stack = [];
@@ -16499,10 +16505,8 @@ var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param shaderManager {PIXI.ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
- * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
+ * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
 function Filter(vertexSrc, fragmentSrc, uniforms)
@@ -16820,7 +16824,7 @@ function SpriteMaskFilter(sprite)
     );
 
     sprite.renderable = false;
-    
+
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
 }
@@ -16832,14 +16836,14 @@ module.exports = SpriteMaskFilter;
 /**
  * Applies the filter
  *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
+ * @param filterManager {PIXI.FilterManager} The renderer to retrieve the filter from
  * @param input {PIXI.RenderTarget}
  * @param output {PIXI.RenderTarget}
  */
 SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
 {
     var maskSprite = this.maskSprite;
- 
+
     this.uniforms.mask = maskSprite._texture;
     this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
     this.uniforms.alpha = maskSprite.worldAlpha;
@@ -17063,7 +17067,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'mat3')
         {
             // check if its pixi matrix..
-            if(uniforms[i].a)
+            if(uniforms[i].a !== undefined)
             {
                 shader.uniforms[i] = uniforms[i].toArray(true);
             }
@@ -17075,7 +17079,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'vec2')
         {
             //check if its a point..
-           if(uniforms[i].x)
+           if(uniforms[i].x !== undefined)
            {
                 val = shader.uniforms[i];
                 val[0] = uniforms[i].x;
@@ -17213,8 +17217,8 @@ module.exports = MaskManager;
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
+ * @param target {PIXI.DisplayObject}
+ * @param maskData {*[]}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
 {
@@ -17253,8 +17257,8 @@ MaskManager.prototype.pushMask = function (target, maskData)
 /**
  * Removes the last mask from the mask stack and doesn't return it.
  *
- * @param target {PIXI.RenderTarget}
- * @param maskData {any[]}
+ * @param target {PIXI.DisplayObject}
+ * @param maskData {*[]}
  */
 MaskManager.prototype.popMask = function (target, maskData)
 {
@@ -17280,7 +17284,7 @@ MaskManager.prototype.popMask = function (target, maskData)
  * Applies the Mask and adds it to the current filter stack.
  *
  * @param target {PIXI.RenderTarget}
- * @param maskData {any[]}
+ * @param maskData {PIXI.Sprite}
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
@@ -17315,8 +17319,7 @@ MaskManager.prototype.popSpriteMask = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {PIXI.RenderTarget}
- * @param maskData {any[]}
+ * @param maskData {*[]}
  */
 MaskManager.prototype.pushStencilMask = function (maskData)
 {
@@ -17327,8 +17330,6 @@ MaskManager.prototype.pushStencilMask = function (maskData)
 /**
  * Removes the last filter from the filter stack and doesn't return it.
  *
- * @param target {PIXI.RenderTarget}
- * @param maskData {any[]}
  */
 MaskManager.prototype.popStencilMask = function ()
 {
@@ -17385,7 +17386,7 @@ module.exports = StencilMaskManager;
 /**
  * Changes the mask stack that is used by this manager.
  *
- * @param stencilMaskStack {PIXI.StencilMaskStack} The mask stack
+ * @param stencilMaskStack {PIXI.Graphics[]} The mask stack
  */
 StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 {
@@ -17407,7 +17408,6 @@ StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
  * Applies the Mask and adds it to the current filter stack. @alvin
  *
  * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
  */
 StencilMaskManager.prototype.pushStencil = function (graphics)
 {
@@ -17439,8 +17439,6 @@ StencilMaskManager.prototype.pushStencil = function (graphics)
 
 /**
  * TODO @alvin
- * @param graphics {PIXI.Graphics}
- * @param webGLData {any[]}
  */
 StencilMaskManager.prototype.popStencil = function ()
 {
@@ -17589,6 +17587,7 @@ var glCore = require('pixi-gl-core'),
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
+ * @param state {object} TODO: Description
  */
 function Quad(gl, state)
 {
@@ -17670,8 +17669,8 @@ Quad.prototype.initVao = function(shader)
 
 /**
  * Maps two Rectangle to the quad
- * @param rect {PIXI.Rectangle} the first rectangle
- * @param rect2 {PIXI.Rectangle} the second rectangle
+ * @param targetTextureFrame {PIXI.Rectangle} the first rectangle
+ * @param destinationFrame {PIXI.Rectangle} the second rectangle
  */
 Quad.prototype.map = function(targetTextureFrame, destinationFrame)
 {
@@ -17764,11 +17763,11 @@ var math = require('../../../math'),
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
- * @param width {number} the horizontal range of the filter
- * @param height {number} the vertical range of the filter
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param resolution {number} the current resolution
- * @param root {boolean} Whether this object is the root element or not
+ * @param [width=0] {number} the horizontal range of the filter
+ * @param [height=0] {number} the vertical range of the filter
+ * @param [scaleMode=CONST.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [resolution=CONST.RESOLUTION] {number} the current resolution
+ * @param [root=false] {boolean} Whether this object is the root element or not
  */
 var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 {
@@ -17786,7 +17785,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * A frame buffer
      *
-     * @member {WebGLFrameBuffer}
+     * @member {glCore.GLFramebuffer}
      */
     this.frameBuffer = null;
 
@@ -17800,7 +17799,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The background colour of this render target, as an array of [r,g,b,a] values
      *
-     * @member {array}
+     * @member {number[]}
      */
     this.clearColor = [0, 0, 0, 0];
 
@@ -17842,7 +17841,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
     this.defaultFrame = new math.Rectangle();
     this.destinationFrame = null;
@@ -17851,14 +17850,14 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * The stencil buffer stores masking data for the render target
      *
-     * @member {WebGLRenderBuffer}
+     * @member {glCore.GLBuffer}
      */
     this.stencilBuffer = null;
 
     /**
      * The data structure for the stencil masks
      *
-     * @member {PIXI.StencilMaskStack}
+     * @member {PIXI.Graphics[]}
      */
     this.stencilMaskStack = [];
 
@@ -17933,7 +17932,7 @@ module.exports = RenderTarget;
 /**
  * Clears the filter texture.
  *
- * @param [bind=false] {boolean} Should we bind our framebuffer before clearing?
+ * @param [clearColor=this.clearColor] {number[]} Array of [r,g,b,a] to clear the framebuffer
  */
 RenderTarget.prototype.clear = function(clearColor)
 {
@@ -18670,8 +18669,6 @@ Sprite.from = function (source)
  *
  * @static
  * @param frameId {string} The frame Id of the texture in the cache
- * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 Sprite.fromFrame = function (frameId)
@@ -18692,6 +18689,8 @@ Sprite.fromFrame = function (frameId)
  *
  * @static
  * @param imageId {string} The image url of the texture
+ * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 Sprite.fromImage = function (imageId, crossorigin, scaleMode)
@@ -19074,21 +19073,21 @@ CanvasTinter.roundColor = function (color)
 /**
  * Number of steps which will be used as a cap when rounding colors.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.cacheStepsPerColorChannel = 8;
 
 /**
  * Tint cache boolean flag.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.convertTintToImage = false;
 
 /**
  * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
  *
- * @member
+ * @member CanvasTinter
  */
 CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
 
@@ -19231,7 +19230,6 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.onContextChange = function ()
 {
@@ -19992,7 +19990,7 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
     while (index < text.length)
     {
         current = characters[index++];
-        if (isStroke) 
+        if (isStroke)
         {
             this.context.strokeText(current, currentPosition, y);
         }
@@ -20194,21 +20192,21 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            if (this._style.breakWords && wordWidth > wordWrapWidth) 
+            if (this._style.breakWords && wordWidth > wordWrapWidth)
             {
                 // Word should be split in the middle
                 var characters = words[j].split('');
-                for (var c = 0; c < characters.length; c++) 
+                for (var c = 0; c < characters.length; c++)
                 {
                   var characterWidth = this.context.measureText(characters[c]).width;
-                  if (characterWidth > spaceLeft) 
+                  if (characterWidth > spaceLeft)
                   {
                     result += '\n' + characters[c];
                     spaceLeft = wordWrapWidth - characterWidth;
-                  } 
-                  else 
+                  }
+                  else
                   {
-                    if (c === 0) 
+                    if (c === 0)
                     {
                       result += ' ';
                     }
@@ -20217,7 +20215,7 @@ Text.prototype.wordWrap = function (text)
                   }
                 }
             }
-            else 
+            else
             {
                 var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                 if (j === 0 || wordWidthWithSpace > spaceLeft)
@@ -20705,7 +20703,6 @@ module.exports = BaseRenderTexture;
  *
  * @param width {number} The width to resize to.
  * @param height {number} The height to resize to.
- * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
  */
 BaseRenderTexture.prototype.resize = function (width, height)
 {
@@ -20737,7 +20734,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 /**
  * Destroys this texture
  *
- * @param destroyBase {boolean} Whether to destroy the base texture as well
  */
 BaseRenderTexture.prototype.destroy = function ()
 {
@@ -20765,9 +20761,9 @@ var utils = require('../utils'),
  *
  * @class
  * @memberof PIXI
- * @param source {Image|Canvas} the source object of the texture.
+ * @param [source ]{Image|HTMLCanvasElement} the source object of the texture.
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param resolution {number} the resolution of the texture for devices with different pixel ratios
+ * @param [resolution=CONST.resolution] {number} the resolution of the texture for devices with different pixel ratios
  */
 function BaseTexture(source, scaleMode, resolution)
 {
@@ -20782,7 +20778,7 @@ function BaseTexture(source, scaleMode, resolution)
      *
      * @member {number}
      */
-    this.resolution = resolution || 1;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     /**
      * The width of the base texture set when the image has loaded
@@ -20853,7 +20849,7 @@ function BaseTexture(source, scaleMode, resolution)
      *
      * TODO: Make this a setter that calls loadSource();
      *
-     * @member {Image|Canvas}
+     * @member {Image|HTMLCanvasElement}
      * @readonly
      */
     this.source = null; // set in loadSource, if at all
@@ -20976,7 +20972,7 @@ BaseTexture.prototype.update = function ()
  *     }
  *
  * @protected
- * @param source {Image|Canvas} the source object of the texture.
+ * @param source {Image|HTMLCanvasElement} the source object of the texture.
  */
 BaseTexture.prototype.loadSource = function (source)
 {
@@ -21180,7 +21176,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
  * Helper function that creates a base texture from the given canvas element.
  *
  * @static
- * @param canvas {Canvas} The canvas element source of the texture
+ * @param canvas {HTMLCanvasElement} The canvas element source of the texture
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return PIXI.BaseTexture
  */
@@ -21243,6 +21239,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * @extends PIXI.Texture
  * @memberof PIXI
  * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
+ * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  */
 function RenderTexture(baseRenderTexture, frame)
 {
@@ -21292,7 +21289,7 @@ module.exports = RenderTexture;
  *
  * @param width {number} The width to resize to.
  * @param height {number} The height to resize to.
- * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
+ * @param doNotResizeBaseTexture {boolean} Should the baseTexture.width and height values be resized as well?
  */
 RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
 {
@@ -21635,7 +21632,7 @@ Texture.prototype.clone = function ()
 /**
  * Updates the internal WebGL UV cache.
  *
- * @private
+ * @protected
  */
 Texture.prototype._updateUvs = function ()
 {
@@ -21653,8 +21650,8 @@ Texture.prototype._updateUvs = function ()
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param crossorigin {boolean} Whether requests should be treated as crossorigin
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
@@ -21694,8 +21691,8 @@ Texture.fromFrame = function (frameId)
  * Helper function that creates a new Texture based on the given canvas element.
  *
  * @static
- * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param canvas {HTMLCanvasElement} The canvas element source of the texture
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture}
  */
 Texture.fromCanvas = function (canvas, scaleMode)
@@ -21707,8 +21704,8 @@ Texture.fromCanvas = function (canvas, scaleMode)
  * Helper function that creates a new Texture based on the given video element.
  *
  * @static
- * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param video {HTMLVideoElement|string} The URL or actual element of the video
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideo = function (video, scaleMode)
@@ -21728,7 +21725,7 @@ Texture.fromVideo = function (video, scaleMode)
  *
  * @static
  * @param videoUrl {string}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
@@ -21818,7 +21815,7 @@ Texture.removeTextureFromCache = function (id)
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function() {}
+Texture.EMPTY.destroy = function() {};
 Texture.EMPTY.on = function() {};
 Texture.EMPTY.once = function() {};
 Texture.EMPTY.emit = function() {};
@@ -22290,7 +22287,6 @@ Object.defineProperties(Ticker.prototype, {
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
@@ -22309,7 +22305,6 @@ Object.defineProperties(Ticker.prototype, {
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.TARGET_FPMS * 1000`.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @default 10
      */
@@ -22599,7 +22594,7 @@ var _url = require('url');
  * Nipped from the resource loader!
  * @private
  * @param url {string} The url to test.
- * @param [location=window.location] {object} The location object to test against.
+ * @param loc [location=window.location] {object} The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
 var determineCrossOrigin = function (url, loc) {
@@ -22632,6 +22627,7 @@ var determineCrossOrigin = function (url, loc) {
 };
 
 module.exports = determineCrossOrigin;
+
 },{"url":24}],109:[function(require,module,exports){
 var CONST = require('../const');
 
@@ -22807,7 +22803,7 @@ var utils = module.exports = {
     /**
      * removeItems
      *
-     * @param {array} arr The target array
+     * @param {*[]} arr The target array
      * @param {number} startIdx The index to begin removing from (inclusive)
      * @param {number} removeCount How many items to remove
      */
@@ -22925,7 +22921,7 @@ module.exports = {
     /**
      * Mixes in the properties of the pluginTarget into another object
      *
-     * @param object {object} The obj to mix into
+     * @param obj {object} The obj to mix into
      */
     mixin: function mixin(obj)
     {
@@ -23492,7 +23488,7 @@ WebGLExtract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
 WebGLExtract.prototype.pixels = function ( renderTexture )
@@ -23667,7 +23663,7 @@ Extract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
 Extract.prototype.pixels = function ( renderTexture )
@@ -23888,7 +23884,7 @@ Object.defineProperties(BitmapText.prototype, {
     /**
      * The font descriptor of the BitmapText object
      *
-     * @member {Font}
+     * @member {string|object}
      * @memberof PIXI.extras.BitmapText#
      */
     font: {
@@ -24113,7 +24109,6 @@ BitmapText.fonts = {};
 
 },{"../core":57}],117:[function(require,module,exports){
 var core = require('../core');
-
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
@@ -24130,12 +24125,15 @@ var core = require('../core');
  * var mc = new PIXI.MovieClip(textureArray);
  * ```
  *
+ * @typedef FrameObject
+ * @type {object}
+ * @property texture {PIXI.Texture} The {@link PIXI.Texture} of the frame
+ * @property time {number} the duration of the frame in ms
+ *
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {PIXI.Texture[]|Object[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
- * @param textures[].texture {PIXI.Texture} the {@link PIXI.Texture} of the frame
- * @param textures[].time {number} the duration of the frame in ms
+ * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
 function MovieClip(textures)
 {
@@ -24431,6 +24429,7 @@ MovieClip.fromImages = function (images)
 
     return new MovieClip(textures);
 };
+
 },{"../core":57}],118:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
@@ -24443,7 +24442,7 @@ var core = require('../core'),
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param texture {Texture} the texture of the tiling sprite
+ * @param texture {PIXI.Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
@@ -24998,7 +24997,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // this renderTexture will be used to store the cached DisplayObject
     
-    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -25227,7 +25226,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
+ * @param gl {PIXI.Shader} The WebGL shader manager this shader works for.
  */
 function TilingShader(gl)
 {
@@ -25954,8 +25953,8 @@ ColorMatrixFilter.prototype.contrast = function (amount, multiply)
  * Set the saturation matrix, increase the separation between colors
  * Increase saturation : increase contrast, brightness, and sharpness
  *
- * @param amount {number}
- * @param multiply {boolean} refer to ._loadMatrix() method
+ * @param [amount=0] {number}
+ * @param [multiply] {boolean} refer to ._loadMatrix() method
  */
 ColorMatrixFilter.prototype.saturate = function (amount, multiply)
 {
@@ -25977,9 +25976,8 @@ ColorMatrixFilter.prototype.saturate = function (amount, multiply)
  *
  * Call the saturate function
  *
- * @param multiply {boolean} refer to ._loadMatrix() method
  */
-ColorMatrixFilter.prototype.desaturate = function (multiply) // jshint unused:false
+ColorMatrixFilter.prototype.desaturate = function () // jshint unused:false
 {
     this.saturate(-1);
 };
@@ -26264,7 +26262,8 @@ var core = require('../../core');
  * @class
  * @extends PIXI.Filter
  * @memberof PIXI.filters
- * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
+ * @param sprite {PIXI.Sprite} The sprite used for the displacement map. (make sure its added to the scene!)
+ * @param scale {number} The scale of the displacement
  */
 function DisplacementFilter(sprite, scale)
 {
@@ -27057,10 +27056,11 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
  *
- * @param  {PIXI.Point} point the point that is tested for collision
- * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
- * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @param point {PIXI.Point} the point that is tested for collision
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param [func] {Function} the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param [hitTest] {boolean} this indicates if the objects inside should be hit test against the point
+ * @param [interactive] {boolean} Whether the displayObject is interactive
  * @return {boolean} returns true if the displayObject hit the point
  */
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
@@ -27162,6 +27162,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             {
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                 hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
+
             }
             else if(displayObject.containsPoint)
             {
@@ -27548,7 +27549,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 /**
  * Grabs an interaction data object from the internal pool
  *
- * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
+ * @param touchEvent {object} The touch event we need to pair with an interactionData object
  *
  * @private
  */
@@ -27908,7 +27909,7 @@ var ResourceLoader = require('resource-loader'),
  * ```
  *
  * @class
- * @extends PIXI.ResourceLoader
+ * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
  * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
  * @param [concurrency=10] {number} The number of resources to load concurrently.
@@ -28497,7 +28498,6 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @param event
  * @private
  */
 Mesh.prototype._onTextureUpdate = function ()
@@ -28508,7 +28508,7 @@ Mesh.prototype._onTextureUpdate = function ()
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
 Mesh.prototype.getBounds = function (matrix)
@@ -28989,7 +28989,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
+ * @param gl {Shader} TODO: Find a good explanation for this.
  */
 function MeshShader(gl)
 {
@@ -29350,7 +29350,6 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 /**
  * Destroys the container
  *
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
  */
 ParticleContainer.prototype.destroy = function () {
     core.Container.prototype.destroy.apply(this, arguments);
@@ -30039,9 +30038,9 @@ var Shader = require('pixi-gl-core').GLShader;
 
 /**
  * @class
- * @extends PIXI.TextureShader
+ * @extends PIXI.Shader
  * @memberof PIXI
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param gl {PIXI.Shader} The webgl shader manager this shader works for.
  */
 function ParticleShader(gl)
 {
