@@ -213,7 +213,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'mat3')
         {
             // check if its pixi matrix..
-            if(uniforms[i].a)
+            if(uniforms[i].a !== undefined)
             {
                 shader.uniforms[i] = uniforms[i].toArray(true);
             }
@@ -225,7 +225,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'vec2')
         {
             //check if its a point..
-           if(uniforms[i].x)
+           if(uniforms[i].x !== undefined)
            {
                 val = shader.uniforms[i];
                 val[0] = uniforms[i].x;
