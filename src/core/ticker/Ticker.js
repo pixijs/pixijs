@@ -141,7 +141,6 @@ Object.defineProperties(Ticker.prototype, {
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
@@ -160,7 +159,6 @@ Object.defineProperties(Ticker.prototype, {
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.TARGET_FPMS * 1000`.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @default 10
      */
@@ -334,7 +332,7 @@ Ticker.prototype.update = function update(currentTime)
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
     // Save uncapped elapsedMS for measurement
-    elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+    Math.max(0, elapsedMS = this.elapsedMS = currentTime - this.lastTime);
 
     // cap the milliseconds elapsed used for deltaTime
     if (elapsedMS > this._maxElapsedMS)
