@@ -62,7 +62,7 @@ function createBundler(args) {
     args = args || {};
     args.debug = false;
     args.standalone = 'PIXI';
-    args.builtins = ['_process'];
+    args.builtins = ['_process', 'fs', 'path'];
 
     var bundle = browserify(paths.jsEntry, args),
         argv = require('minimist')(process.argv.slice(2)),
