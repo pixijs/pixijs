@@ -5,7 +5,7 @@ attribute vec2 aVertexPosition;
 attribute vec2 aTextureCoord;
 attribute vec4 aColor;
 
-uniform mat3 projectionMatrix;
+uniform mat4 projectionMatrix;
 uniform vec2 resolution;
 
 varying vec2 vTextureCoord;
@@ -35,7 +35,7 @@ void texcoords(vec2 fragCoord, vec2 resolution,
 }
 
 void main(void){
-   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+   gl_Position = projectionMatrix * vec4(aVertexPosition, 0.0, 1.0);
    vTextureCoord = aTextureCoord;
    vColor = vec4(aColor.rgb * aColor.a, aColor.a);
    vResolution = resolution;

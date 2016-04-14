@@ -221,6 +221,18 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
             {
                 shader.uniforms[i] = uniforms[i];
             }
+        } 
+		else if(uniformData[i].type === 'mat4')
+        {
+            // check if its pixi matrix..
+            if(uniforms[i].a !== undefined)
+            {
+                shader.uniforms[i] = uniforms[i].toMat4(true);
+            }
+            else
+            {
+                shader.uniforms[i] = uniforms[i];
+            }
         }
         else if(uniformData[i].type === 'vec2')
         {

@@ -296,7 +296,7 @@ WebGLRenderer.prototype.resize = function (width, height)
 
         if(this._activeShader)
         {
-            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
+            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toMat4();
         }
     }
 };
@@ -390,7 +390,7 @@ WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 
         if(this._activeShader)
         {
-            this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
+            this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toMat4();
         }
 
 
@@ -414,7 +414,7 @@ WebGLRenderer.prototype.bindShader = function (shader)
         shader.bind();
 
         // automatically set the projection matrix
-        shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+        shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toMat4();
     }
 
     return this;

@@ -11,6 +11,7 @@ module.exports = {
 
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
+    glMat:      { mat4: require('../../../node_modules/gl-matrix/src/gl-matrix/mat4') },
     GroupD8:    require('./GroupD8'),
 
     Circle:     require('./shapes/Circle'),

@@ -20,7 +20,7 @@ function ParticleShader(gl)
             'attribute vec2 aScale;',
             'attribute float aRotation;',
 
-            'uniform mat3 projectionMatrix;',
+            'uniform mat4 projectionMatrix;',
 
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
@@ -32,7 +32,7 @@ function ParticleShader(gl)
             '   v.y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);',
             '   v = v + aPositionCoord;',
 
-            '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);',
+            '   gl_Position = projectionMatrix * vec4(v, 0.0, 1.0);',
 
             '   vTextureCoord = aTextureCoord;',
             '   vColor = aColor;',

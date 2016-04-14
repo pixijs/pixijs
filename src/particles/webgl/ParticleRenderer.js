@@ -151,7 +151,7 @@ ParticleRenderer.prototype.render = function (container)
 
     var m = container.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
-    this.shader.uniforms.projectionMatrix = m.toArray(true);
+    this.shader.uniforms.projectionMatrix = m.toMat4();
     this.shader.uniforms.uAlpha = container.worldAlpha;
 
 

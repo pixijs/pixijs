@@ -29,7 +29,7 @@ function DisplacementFilter(sprite, scale)
     this.maskMatrix = maskMatrix;
 
     this.uniforms.mapSampler = sprite.texture;
-    this.uniforms.otherMatrix = maskMatrix.toArray(true);
+    this.uniforms.otherMatrix = maskMatrix;
     this.uniforms.scale = { x: 1, y: 1 };
 
     if (scale === null || scale === undefined)

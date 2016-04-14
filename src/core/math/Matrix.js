@@ -2,7 +2,8 @@
 // should either fix it or change the jshint config
 // jshint -W072
 
-var Point = require('./Point');
+var Point = require('./Point'),
+    mat4 = require('../../../node_modules/gl-matrix/src/gl-matrix/mat4');
 
 /**
  * The pixi Matrix class as an object, which makes it a lot faster,
@@ -11,51 +12,117 @@ var Point = require('./Point');
  * | c | d | ty|
  * | 0 | 0 | 1 |
  *
+ * Underlying matrix is mat4 to make experiments with 2.5d easier.
+ *
  * @class
  * @memberof PIXI
  */
 function Matrix()
 {
     /**
-     * @member {number}
-     * @default 1
+     * Internal glMat
+     * @type {mat4}
+     * @private
      */
-    this.a = 1;
+    this._mat4 = mat4.create();
 
     /**
-     * @member {number}
-     * @default 0
+     * Can we use 2d optimization?
+     * @member {boolean}
+     * @default true;
      */
-    this.b = 0;
+    this.is2d = true;
 
     /**
-     * @member {number}
-     * @default 0
+     * Did someone change it?
+     * @type {number}
      */
-    this.c = 0;
-
-    /**
-     * @member {number}
-     * @default 1
-     */
-    this.d = 1;
-
-    /**
-     * @member {number}
-     * @default 0
-     */
-    this.tx = 0;
-
-    /**
-     * @member {number}
-     * @default 0
-     */
-    this.ty = 0;
-
+    this.version = 0;
 }
 
 Matrix.prototype.constructor = Matrix;
 module.exports = Matrix;
+
+Object.defineProperties(Matrix.prototype, {
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 1
+     */
+    a: {
+        get: function() {
+            return this._mat4[0];
+        },
+        set: function(value) {
+            this._mat4[0] = value;
+        }
+    },
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 0
+     */
+    b: {
+        get: function() {
+            return this._mat4[4];
+        },
+        set: function(value) {
+            this._mat4[4] = value;
+        }
+    },
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 0
+     */
+    c: {
+        get: function() {
+            return this._mat4[1];
+        },
+        set: function(value) {
+            this._mat4[1] = value;
+        }
+    },
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 1
+     */
+    d: {
+        get: function() {
+            return this._mat4[5];
+        },
+        set: function(value) {
+            this._mat4[5] = value;
+        }
+    },
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 0
+     */
+    tx: {
+        get: function() {
+            return this._mat4[12];
+        },
+        set: function(value) {
+            this._mat4[12] = value;
+        }
+    },
+    /**
+     * @member {number}
+     * @memberof PIXI.Matrix
+     * @default 0
+     */
+    ty: {
+        get: function() {
+            return this._mat4[13];
+        },
+        set: function(value) {
+            this._mat4[13] = value;
+        }
+    }
+});
 
 /**
  * Creates a Matrix object based on the given array. The Element to Matrix mapping order is as follows:
@@ -147,6 +214,14 @@ Matrix.prototype.toArray = function (transpose, out)
     }
 
     return array;
+};
+
+/**
+ * Exposes underlying mat4
+ * @return {Float32Array}
+ */
+Matrix.prototype.toMat4 = function () {
+    return this._mat4;
 };
 
 /**
@@ -377,13 +452,7 @@ Matrix.prototype.invert = function()
  */
 Matrix.prototype.identity = function ()
 {
-    this.a = 1;
-    this.b = 0;
-    this.c = 0;
-    this.d = 1;
-    this.tx = 0;
-    this.ty = 0;
-
+    mat4.identity(this._mat4);
     return this;
 };
 
@@ -394,15 +463,7 @@ Matrix.prototype.identity = function ()
  */
 Matrix.prototype.clone = function ()
 {
-    var matrix = new Matrix();
-    matrix.a = this.a;
-    matrix.b = this.b;
-    matrix.c = this.c;
-    matrix.d = this.d;
-    matrix.tx = this.tx;
-    matrix.ty = this.ty;
-
-    return matrix;
+    return this.copy(new Matrix());
 };
 
 /**
@@ -412,13 +473,8 @@ Matrix.prototype.clone = function ()
  */
 Matrix.prototype.copy = function (matrix)
 {
-    matrix.a = this.a;
-    matrix.b = this.b;
-    matrix.c = this.c;
-    matrix.d = this.d;
-    matrix.tx = this.tx;
-    matrix.ty = this.ty;
-
+    mat4.copy(matrix._mat4, this._mat4);
+    matrix.is3d = this.is2d;
     return matrix;
 };
 
