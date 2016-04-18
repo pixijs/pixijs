@@ -28,6 +28,7 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.letterSpacing=0] {number} The amount of spacing between letters
  * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
  *      or increase the spikiness of rendered text.
  */
@@ -49,6 +50,7 @@ TextStyle.prototype._defaults = {
     dropShadowBlur: 0,
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
+    letterSpacing: 0,
     lineHeight: null,
     lineJoin: 'miter',
     fill: 'black',
@@ -141,6 +143,19 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._stroke !== outputColor)
             {
                 this._stroke = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    letterSpacing: {
+        get: function ()
+        {
+            return this._letterSpacing;
+        }, set: function (spacing)
+        {
+            if (this._letterSpacing !== spacing)
+            {
+                this._letterSpacing = spacing;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }

@@ -233,7 +233,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -271,7 +271,6 @@ Text.prototype.updateText = function ()
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
-
     var width = maxLineWidth + style.strokeThickness;
     if (style.dropShadow)
     {
@@ -450,7 +449,6 @@ Text.prototype.updateTexture = function ()
     this._height = this.canvas.height / this.resolution;
 
     texture.baseTexture.emit('update',  texture.baseTexture);
-
     this.dirty = false;
 };
 
