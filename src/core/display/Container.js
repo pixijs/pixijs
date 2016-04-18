@@ -622,7 +622,7 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called recursive as well 
  */
 Container.prototype.destroy = function (destroyChildren)
 {
