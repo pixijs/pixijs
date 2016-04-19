@@ -1,6 +1,5 @@
 var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
     utils = require('../../../utils'),
-    Const = require('../../../const'),
     SOURCE_KEY_MAP = {};
 
 // var math = require('../../../math');
@@ -28,10 +27,6 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
      * @member {string}
      */
     this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
-
-    this.vertexSrc = this.vertexSrc.replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT);
-
-    this.fragmentSrc = this.fragmentSrc.replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT);
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
@@ -85,7 +80,6 @@ Filter.prototype.apply = function(filterManager, input, output, clear)
  * @constant
  */
 Filter.defaultVertexSrc = [
-    'precision %PRECISION% float;',
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
 
@@ -109,8 +103,6 @@ Filter.defaultVertexSrc = [
  * @constant
  */
 Filter.defaultFragmentSrc = [
-    'precision %PRECISION% float;',
-
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',
 

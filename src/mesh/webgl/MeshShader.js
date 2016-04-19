@@ -1,5 +1,4 @@
-var Shader = require('pixi-gl-core').GLShader,
-    Const = require('../../core/const');
+var Shader = require('../../core/Shader');
 
 /**
  * @class
@@ -13,7 +12,6 @@ function MeshShader(gl)
         gl,
         // vertex shader
         [
-            'precision %PRECISION% float;',
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
 
@@ -26,10 +24,8 @@ function MeshShader(gl)
             '   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
             '   vTextureCoord = aTextureCoord;',
             '}'
-        ].join('\n').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT),
+        ].join('\n'),
         [
-            'precision %PRECISION% float;',
-
             'varying vec2 vTextureCoord;',
             'uniform float alpha;',
 
@@ -39,7 +35,7 @@ function MeshShader(gl)
             '   gl_FragColor = texture2D(uSampler, vTextureCoord) * alpha ;',
            // '   gl_FragColor = vec4(1.0);',
             '}'
-        ].join('\n').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT)
+        ].join('\n')
     );
 }
 
