@@ -26,7 +26,7 @@ var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     while(true)
     {
-        var fragmentSrc = fragTemplate.replace(/\%forloop\%/gi, generateIfTestSrc(maxIfs));
+        var fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);

@@ -1,4 +1,4 @@
-precision lowp float;
+precision %PRECISION% float;
 
 
 /**
