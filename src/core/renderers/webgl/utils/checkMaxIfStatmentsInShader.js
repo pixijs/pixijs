@@ -1,7 +1,7 @@
 var glCore = require('pixi-gl-core');
 
 var fragTemplate = [
-    'precision lowp float;',
+    'precision mediump float;',
     'void main(void){',
         'float test = 0.1;',
         '%forloop%',

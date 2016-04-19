@@ -1,5 +1,6 @@
 var Shader = require('pixi-gl-core').GLShader;
 var glslify  = require('glslify');
+var Const = require('../../core/const');
 
 /**
  * @class
@@ -11,8 +12,8 @@ function TilingShader(gl)
 {
     Shader.call(this,
         gl,
-        glslify('./tilingSprite.vert'),
-        glslify('./tilingSprite.frag')
+        glslify('./tilingSprite.vert').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT),
+        glslify('./tilingSprite.frag').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT)
     );
 }
 

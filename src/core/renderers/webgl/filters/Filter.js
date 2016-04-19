@@ -85,7 +85,7 @@ Filter.prototype.apply = function(filterManager, input, output, clear)
  * @constant
  */
 Filter.defaultVertexSrc = [
-    'precision lowp float;',
+    'precision %PRECISION% float;',
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
 
@@ -109,7 +109,7 @@ Filter.defaultVertexSrc = [
  * @constant
  */
 Filter.defaultFragmentSrc = [
-    'precision lowp float;',
+    'precision %PRECISION% float;',
 
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',

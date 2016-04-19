@@ -1,4 +1,5 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('pixi-gl-core').GLShader,
+    Const = require('../../core/const');
 
 /**
  * @class
@@ -37,10 +38,10 @@ function ParticleShader(gl)
             '   vTextureCoord = aTextureCoord;',
             '   vColor = aColor;',
             '}'
-        ].join('\n'),
+        ].join('\n').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT),
         // hello
          [
-            'precision lowp float;',
+            'precision %PRECISION% float;',
 
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
@@ -53,7 +54,7 @@ function ParticleShader(gl)
             '  if (color.a == 0.0) discard;',
             '  gl_FragColor = color;',
             '}'
-        ].join('\n')
+        ].join('\n').replace(/%PRECISION%/gi, Const.PRECISION.DEFAULT)
     );
 
     // TEMP HACK
