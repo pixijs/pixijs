@@ -323,7 +323,7 @@ SpriteRenderer.prototype.flush = function ()
         if(!shader)
         {
             shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
-            console.log("SHADER generated for " + textureCount + " textures")
+            //console.log("SHADER generated for " + textureCount + " textures")
         }
 
         this.renderer.bindShader(shader);
