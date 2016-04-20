@@ -201,6 +201,7 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+    var shader;
 
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
@@ -298,7 +299,7 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
-        var shader = this.shaders[0];
+        shader = this.shaders[0];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
@@ -316,18 +317,18 @@ SpriteRenderer.prototype.flush = function ()
     for (i = 0; i < groupCount; i++) {
 
         var group = groups[i];
-        var textureCount = group.textureCount;
-        var shader = this.shaders[textureCount-1];
+        var groupTextureCount = group.textureCount;
+        shader = this.shaders[groupTextureCount-1];
 
         if(!shader)
         {
-            shader = this.shaders[textureCount-1] = generateMultiTextureShader(gl, textureCount);
-          //  console.log("SHADER generated for " + textureCount + " textures")
+            shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+            console.log("SHADER generated for " + textureCount + " textures")
         }
 
-        renderer.bindShader(shader);
+        this.renderer.bindShader(shader);
 
-        for (var j = 0; j < textureCount; j++)
+        for (var j = 0; j < groupTextureCount; j++)
         {
             this.renderer.bindTexture(group.textures[j], j);
         }
