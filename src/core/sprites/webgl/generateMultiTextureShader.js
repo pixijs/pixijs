@@ -1,8 +1,7 @@
-var Shader = require('pixi-gl-core').GLShader; var glslify  = require('glslify');
+var Shader = require('../../Shader');
+var glslify  = require('glslify');
 
 var fragTemplate = [
-
-    'precision lowp float;',
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
@@ -20,8 +19,8 @@ function generateMultiTextureShader(gl, maxTextures)
     var vertexSrc = glslify('./texture.vert');
     var fragmentSrc = fragTemplate;
 
-    fragmentSrc = fragmentSrc.replace(/\%count\%/gi, maxTextures);
-    fragmentSrc = fragmentSrc.replace(/\%forloop\%/gi, generateSampleSrc(maxTextures));
+    fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
+    fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
 

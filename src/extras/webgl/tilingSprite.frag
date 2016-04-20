@@ -1,5 +1,3 @@
-precision lowp float;
-
 varying vec2 vTextureCoord;
 varying vec4 vColor;
 

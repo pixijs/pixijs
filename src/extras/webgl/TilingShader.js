@@ -1,4 +1,4 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../core/Shader');
 var glslify  = require('glslify');
 
 /**
