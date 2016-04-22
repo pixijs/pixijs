@@ -202,13 +202,12 @@ Sprite.prototype._onTextureUpdate = function ()
 Sprite.prototype.calculateVertices = function ()
 {
     var texture = this._texture,
-        wt = this.transform.worldTransform,
-        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        m = this.transform.worldTransform._mat4,
         vertexData = this.vertexData,
         w0, w1, h0, h1,
         trim = texture.trim,
         orig = texture.orig;
-
+    var a = m[0], b = m[1], c = m[4], d = m[5], tx = m[12], ty = m[13];
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
