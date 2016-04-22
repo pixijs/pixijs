@@ -64,10 +64,10 @@ Object.defineProperties(Matrix.prototype, {
      */
     b: {
         get: function() {
-            return this._mat4[4];
+            return this._mat4[1];
         },
         set: function(value) {
-            this._mat4[4] = value;
+            this._mat4[1] = value;
         }
     },
     /**
@@ -77,10 +77,10 @@ Object.defineProperties(Matrix.prototype, {
      */
     c: {
         get: function() {
-            return this._mat4[1];
+            return this._mat4[4];
         },
         set: function(value) {
-            this._mat4[1] = value;
+            this._mat4[4] = value;
         }
     },
     /**
@@ -187,27 +187,28 @@ Matrix.prototype.toArray = function (transpose, out)
     }
 
     var array = out || this.array;
+    var m = this._mat4;
 
     if (transpose)
     {
-        array[0] = this.a;
-        array[1] = this.b;
+        array[0] = m[0];
+        array[1] = m[4];
         array[2] = 0;
-        array[3] = this.c;
-        array[4] = this.d;
+        array[3] = m[1];
+        array[4] = m[5];
         array[5] = 0;
-        array[6] = this.tx;
-        array[7] = this.ty;
+        array[6] = m[12];
+        array[7] = m[13];
         array[8] = 1;
     }
     else
     {
-        array[0] = this.a;
-        array[1] = this.c;
-        array[2] = this.tx;
-        array[3] = this.b;
-        array[4] = this.d;
-        array[5] = this.ty;
+        array[0] = m[0];
+        array[1] = m[1];
+        array[2] = m[12];
+        array[3] = m[4];
+        array[4] = m[5];
+        array[5] = m[13];
         array[6] = 0;
         array[7] = 0;
         array[8] = 1;
@@ -336,24 +337,56 @@ Matrix.prototype.rotate = function (angle)
  */
 Matrix.prototype.append = function (matrix)
 {
-    var a1 = this.a;
-    var b1 = this.b;
-    var c1 = this.c;
-    var d1 = this.d;
-
-    this.a  = matrix.a * a1 + matrix.b * c1;
-    this.b  = matrix.a * b1 + matrix.b * d1;
-    this.c  = matrix.c * a1 + matrix.d * c1;
-    this.d  = matrix.c * b1 + matrix.d * d1;
-
-    this.tx = matrix.tx * a1 + matrix.ty * c1 + this.tx;
-    this.ty = matrix.tx * b1 + matrix.ty * d1 + this.ty;
+    var m = this._mat4;
+    var m2 = matrix._mat4;
+    var a = m[0], b = m[1], c = m[4], d = m[5];
+    if (m2[0] !== 1 || m2[4] !== 0 || m2[1] !== 0 || m2[5] !== 1) {
+        m[0] = m2[0] * a + m2[4] * c;
+        m[1] = m2[0] * b + m2[4] * d;
+        m[4] = m2[1] * a + m2[5] * c;
+        m[5] = m2[1] * b + m2[5] * d;
+    }
+    m[12] = m2[12] * a + m2[13] * c + m[12];
+    m[13] = m2[12] * b + m2[13] * d + m[13];
 
     return this;
 };
 
 /**
- * Sets the matrix based on all the available properties
+ * Appends second Matrix to first Matrix and saves in this Matrix.
+ *
+ * @param {PIXI.Matrix} matrix
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.copyAppend = function (matrix1, matrix2)
+{
+    var m = this._mat4;
+    var m1 = matrix1._mat4;
+    var m2 = matrix2._mat4;
+    m[0] = m2[0] * m1[0] + m2[4] * m1[4];
+    m[1] = m2[0] * m1[1] + m2[4] * m1[5];
+    m[4] = m2[1] * m1[0] + m2[5] * m1[4];
+    m[5] = m2[1] * m1[1] + m2[5] * m1[5];
+    m[12] = m2[12] * m1[0] + m2[13] * m1[2] + m1[12];
+    m[13] = m2[12] * m1[1] + m2[13] * m1[3] + m1[13];
+    if (!this.is2d) {
+        m[2] = 0;
+        m[3] = 0;
+        m[6] = 0;
+        m[7] = 0;
+        m[8] = 0;
+        m[9] = 0;
+        m[10] = 1;
+        m[11] = 0;
+        m[14] = 0;
+        m[15] = 1;
+        this.is2d = true;
+    }
+    return this;
+};
+
+/**
+ * Sets the 2d matrix based on all the available properties
  *
  * @param {number} x
  * @param {number} y
@@ -361,36 +394,44 @@ Matrix.prototype.append = function (matrix)
  * @param {number} pivotY
  * @param {number} scaleX
  * @param {number} scaleY
- * @param {number} rotation
- * @param {number} skewX
- * @param {number} skewY
+ * @param {number} cr cos(rotation)
+ * @param {number} sr sin(rotation)
+ * @param {number} cx cos(skewX)
+ * @param {number} nsx -sin(skewX)
+ * @param {number} cy cos(skewY)
+ * @param {number} sy sin(skewY)
  *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, cr, sr, cx, nsx, cy, sy)
 {
-    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
-
-    sr  = Math.sin(rotation);
-    cr  = Math.cos(rotation);
-    cy  = Math.cos(skewY);
-    sy  = Math.sin(skewY);
-    nsx = -Math.sin(skewX);
-    cx  =  Math.cos(skewX);
-
+    this.is2d = true;
+    var a, b, c, d;
     a  =  cr * scaleX;
     b  =  sr * scaleX;
     c  = -sr * scaleY;
     d  =  cr * scaleY;
 
-    this.a  = cy * a + sy * c;
-    this.b  = cy * b + sy * d;
-    this.c  = nsx * a + cx * c;
-    this.d  = nsx * b + cx * d;
-
-    this.tx = x + ( pivotX * a + pivotY * c );
-    this.ty = y + ( pivotX * b + pivotY * d );
-
+    var m = this._mat4;
+    m[0]  = cy * a + sy * c;
+    m[1]  = cy * b + sy * d;
+    m[4]  = nsx * a + cx * c;
+    m[5]  = nsx * b + cx * d;
+    m[12] = x - ( pivotX * m[0] + pivotY * m[4] );
+    m[13] = y - ( pivotX * m[1] + pivotY * m[5] );
+    if (!this.is2d) {
+        m[2] = 0;
+        m[3] = 0;
+        m[6] = 0;
+        m[7] = 0;
+        m[8] = 0;
+        m[9] = 0;
+        m[10] = 1;
+        m[11] = 0;
+        m[14] = 0;
+        m[15] = 1;
+        this.is2d = true;
+    }
     return this;
 };
 
@@ -402,21 +443,18 @@ Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, 
  */
 Matrix.prototype.prepend = function(matrix)
 {
-    var tx1 = this.tx;
+    var m = this._mat4;
+    var m2 = matrix._mat4;
 
-    if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1)
-    {
-        var a1 = this.a;
-        var c1 = this.c;
-        this.a  = a1*matrix.a+this.b*matrix.c;
-        this.b  = a1*matrix.b+this.b*matrix.d;
-        this.c  = c1*matrix.a+this.d*matrix.c;
-        this.d  = c1*matrix.b+this.d*matrix.d;
-    }
-
-    this.tx = tx1*matrix.a+this.ty*matrix.c+matrix.tx;
-    this.ty = tx1*matrix.b+this.ty*matrix.d+matrix.ty;
-
+    var tx1 = m[12];
+    var a1 = m[0];
+    var c1 = m[4];
+    m[0] = a1 * m2[0] + m[1] * m2[1];
+    m[1] = a1 * m2[4] + m[1] * m2[5];
+    m[4] = c1 * m2[0] + m[5] * m2[1];
+    m[5] = c1 * m2[4] + m[5] * m2[5];
+    m[12] = tx1 * m2[0] + m[13] * m2[1] + m2[12];
+    m[13] = tx1 * m2[4] + m[13] * m2[5] + m2[13];
     return this;
 };
 
@@ -427,20 +465,19 @@ Matrix.prototype.prepend = function(matrix)
  */
 Matrix.prototype.invert = function()
 {
-    var a1 = this.a;
-    var b1 = this.b;
-    var c1 = this.c;
-    var d1 = this.d;
-    var tx1 = this.tx;
+    var m  = this._mat4;
+    var a1 = m[0];
+    var b1 = m[1];
+    var c1 = m[4];
+    var d1 = m[5];
+    var tx1 = m[12];
     var n = a1*d1-b1*c1;
-
-    this.a = d1/n;
-    this.b = -b1/n;
-    this.c = -c1/n;
-    this.d = a1/n;
-    this.tx = (c1*this.ty-d1*tx1)/n;
-    this.ty = -(a1*this.ty-b1*tx1)/n;
-
+    m[0] = d1/n;
+    m[1] = -b1/n;
+    m[4] = -c1/n;
+    m[5] = a1/n;
+    m[12] = (c1*m[12]-d1*tx1)/n;
+    m[13] = -(a1*m[13]-b1*tx1)/n;
     return this;
 };
 
@@ -463,18 +500,37 @@ Matrix.prototype.identity = function ()
  */
 Matrix.prototype.clone = function ()
 {
-    return this.copy(new Matrix());
+    return new Matrix().copy(this);
+};
+
+/**
+ * Changes the values of this matrix to be the same as the ones in the given matrix
+ *
+ * @return {PIXI.Matrix} The matrix given in parameter
+ */
+Matrix.prototype.copyFrom = function (matrix)
+{
+    mat4.copy(this._mat4, matrix._mat4);
+    this.is2d = matrix.is2d;
+    return this;
+};
+
+Matrix.prototype.copy = function (matrix)
+{
+    mat4.copy(this._mat4, matrix._mat4);
+    this.is2d = matrix.is2d;
+    return this;
 };
 
 /**
  * Changes the values of the given matrix to be the same as the ones in this matrix
  *
- * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
+ * @return {PIXI.Matrix} The matrix given in parameter
  */
-Matrix.prototype.copy = function (matrix)
+Matrix.prototype.copyTo = function (matrix)
 {
     mat4.copy(matrix._mat4, this._mat4);
-    matrix.is3d = this.is2d;
+    matrix.is2d = this.is2d;
     return matrix;
 };
 

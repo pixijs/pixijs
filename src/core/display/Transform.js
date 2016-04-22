@@ -68,7 +68,7 @@ Transform.prototype.updateSkew = function ()
 {
     this._cy  = Math.cos(this.skew.y);
     this._sy  = Math.sin(this.skew.y);
-    this._nsx = Math.sin(this.skew.x);
+    this._nsx = -Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
 };
 
@@ -79,34 +79,19 @@ Transform.prototype.updateSkew = function ()
  */
 Transform.prototype.updateTransform = function (parentTransform)
 {
-
-    var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
+    var pt = parentTransform.worldTransform;
     var lt = this.localTransform;
-    var a, b, c, d;
-
-    a  =  this._cr * this.scale.x;
-    b  =  this._sr * this.scale.x;
-    c  = -this._sr * this.scale.y;
-    d  =  this._cr * this.scale.y;
-
-    lt.a  = this._cy * a + this._sy * c;
-    lt.b  = this._cy * b + this._sy * d;
-    lt.c  = this._nsx * a + this._cx * c;
-    lt.d  = this._nsx * b + this._cx * d;
-
-    lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
-    lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
-
-    // concat the parent matrix with the objects transform.
-    wt.a  = lt.a  * pt.a + lt.b  * pt.c;
-    wt.b  = lt.a  * pt.b + lt.b  * pt.d;
-    wt.c  = lt.c  * pt.a + lt.d  * pt.c;
-    wt.d  = lt.c  * pt.b + lt.d  * pt.d;
-    wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+    lt.setTransform(this.position.x, this.position.y, this.pivot.x, this.pivot.y, this.scale.x, this.scale.y,
+        this._cr, this._sr, this._cx, this._nsx, this._cy, this._sy);
+    wt.copyAppend(lt, pt);
 };
 
+/**
+ * This method can be overriden if user wants its own transform type
+ * @param childTransform
+ * @returns {*}
+ */
 Transform.prototype.updateChildTransform = function (childTransform)
 {
     childTransform.updateTransform(this);

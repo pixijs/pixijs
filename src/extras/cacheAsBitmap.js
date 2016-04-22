@@ -132,7 +132,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     var stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    
+
     var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
@@ -146,9 +146,9 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
-    
+
     renderer.bindRenderTarget(cachedRenderTarget);
-    
+
     renderer.filterManager.filterStack = stack;
 
     this.renderWebGL     = this._renderCachedWebGL;
@@ -212,7 +212,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     // need to set //
     var m = _tempMatrix;
-    this.transform.worldTransform.copy(m);
+    this.transform.worldTransform.copyTo(m);
     m.invert();
 
     m.tx -= bounds.x;

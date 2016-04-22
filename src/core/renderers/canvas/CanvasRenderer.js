@@ -158,7 +158,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
         if(transform)
         {
-            transform.copy(tempWt);
+            transform.copyTo(tempWt);
         }
         else
         {

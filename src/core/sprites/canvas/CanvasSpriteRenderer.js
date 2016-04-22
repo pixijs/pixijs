@@ -77,7 +77,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
             dy = (0.5 - sprite.anchor.y) * texture.orig.height;
         }
         if(texture.rotate) {
-            wt.copy(canvasRenderWorldTransform);
+            wt.copyTo(canvasRenderWorldTransform);
             wt = canvasRenderWorldTransform;
             math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
             // the anchor has already been applied above, so lets set it to zero

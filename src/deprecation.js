@@ -284,6 +284,15 @@ Object.defineProperties(core, {
     },
 });
 
+var matrixCopyReady = false;
+core.Matrix.prototype.copy = function(matrix) {
+    if (!matrixCopyReady) {
+        warn('One beautiful day matrix copy will be changed from copyTo to copyFrom. Be prepared. - Your pixi.js');
+        matrixCopyReady = true;
+    }
+    return this.copyTo(matrix);
+};
+
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');

@@ -10,7 +10,7 @@ var math = require('../../../math');
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
 var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+     //var worldTransform = sprite.worldTransform.copyTo(math.Matrix.TEMP_MATRIX),
     // var texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
@@ -26,7 +26,7 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
 var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-    //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    //var worldTransform = sprite.worldTransform.copyTo(math.Matrix.TEMP_MATRIX),
     var texture = {width:800, height:600};//sprite._texture.baseTexture;
 
     // TODO unwrap?
@@ -65,7 +65,7 @@ var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    var worldTransform = sprite.worldTransform.copyTo(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
 
     // TODO unwrap?
