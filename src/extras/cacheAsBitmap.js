@@ -253,7 +253,7 @@ DisplayObject.prototype._getCachedBounds = function ()
 {
     this._cachedSprite._currentBounds = null;
 
-    return this._cachedSprite.getBounds();
+    return this._cachedSprite.getBounds(core.math.Matrix.IDENTITY);
 };
 
 /**
