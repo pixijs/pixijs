@@ -1,6 +1,3 @@
-
-precision mediump float;
-
 attribute vec2 aVertexPosition;
 attribute vec2 aTextureCoord;
 attribute vec4 aColor;

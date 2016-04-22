@@ -1,4 +1,4 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../core/Shader');
 
 /**
  * @class
@@ -12,7 +12,6 @@ function MeshShader(gl)
         gl,
         // vertex shader
         [
-            'precision lowp float;',
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
 
@@ -27,8 +26,6 @@ function MeshShader(gl)
             '}'
         ].join('\n'),
         [
-            'precision lowp float;',
-
             'varying vec2 vTextureCoord;',
             'uniform float alpha;',
 

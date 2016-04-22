@@ -3,7 +3,7 @@ var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math'),
-    Shader = require('pixi-gl-core').GLShader,
+    Shader = require('../../../Shader'),
     filterTransforms = require('../filters/filterTransforms'),
     bitTwiddle = require('bit-twiddle');
 

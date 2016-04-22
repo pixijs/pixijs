@@ -1,4 +1,4 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../core/Shader');
 
 /**
  * @class
@@ -40,8 +40,6 @@ function ParticleShader(gl)
         ].join('\n'),
         // hello
          [
-            'precision lowp float;',
-
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
 
