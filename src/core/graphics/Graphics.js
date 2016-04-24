@@ -728,8 +728,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
     this._spriteRect.worldAlpha = this.worldAlpha;
 
-    Graphics._SPRITE_TEXTURE.frame.width = rect.width;
-    Graphics._SPRITE_TEXTURE.frame.height = rect.height;
+    Graphics._SPRITE_TEXTURE._frame.width = rect.width;
+    Graphics._SPRITE_TEXTURE._frame.height = rect.height;
 
     this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
@@ -1079,6 +1079,10 @@ Graphics.prototype.destroy = function ()
         }
     }
 
+    if(this._spriteRect)
+    {
+        this._spriteRect.destroy();
+    }
     this.graphicsData = null;
 
     this.currentPath = null;
