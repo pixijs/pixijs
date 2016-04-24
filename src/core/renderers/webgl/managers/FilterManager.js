@@ -340,12 +340,12 @@ FilterManager.emptyPool = function()
             for (var j = 0; j < textures.length; j++)
             {
                 textures[j].destroy(true);
-            };
+            }
         }
-    };
+    }
 
     FilterManager.pool = {};
-}
+};
 
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
