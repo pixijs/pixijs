@@ -5430,7 +5430,7 @@ module.exports = setVertexAttribArrays;
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  * @return {WebGLProgram} the shader program
  */
-compileProgram = function(gl, vertexSrc, fragmentSrc)
+var compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
     var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
@@ -8831,7 +8831,7 @@ AccessibilityManager.prototype.destroy = function ()
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
-},{"../core":57,"./accessibleTarget":37}],37:[function(require,module,exports){
+},{"../core":58,"./accessibleTarget":37}],37:[function(require,module,exports){
 /**
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
@@ -8907,6 +8907,43 @@ module.exports = {
 };
 
 },{"./AccessibilityManager":36,"./accessibleTarget":37}],39:[function(require,module,exports){
+var GLShader = require('pixi-gl-core').GLShader;
+var Const = require('./const');
+
+function checkPrecision(src) {
+    if (src instanceof Array) {
+        if (src[0].substring(0,9) !== 'precision') {
+            var copy = src.slice(0);
+            copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
+            return copy;
+        }
+    } else {
+        if (src.substring(0,9) !== 'precision') {
+            return 'precision ' + Const.PRECISION.DEFAULT + ' float;\n' + src;
+        }
+    }
+    return src;
+}
+
+/**
+ * Wrapper class, webGL Shader for Pixi.
+ * Adds precision string if vertexSrc or fragmentSrc have no mention of it.
+ *
+ * @class
+ * @memberof PIXI
+ * @param gl {WebGLRenderingContext}
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ */
+var Shader = function(gl, vertexSrc, fragmentSrc) {
+    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+};
+
+Shader.prototype = Object.create(GLShader.prototype);
+Shader.prototype.constructor = Shader;
+module.exports = Shader;
+
+},{"./const":40,"pixi-gl-core":14}],40:[function(require,module,exports){
 
 /**
  * Constant values used in pixi
@@ -8925,7 +8962,7 @@ var CONST = {
 
     /**
      * Two Pi.
-     * 
+     *
      * @property {number} PI_2
      * @constant
      * @static
@@ -8934,7 +8971,7 @@ var CONST = {
 
     /**
      * Conversion factor for converting radians to degrees.
-     * 
+     *
      * @property {number} RAD_TO_DEG
      * @constant
      * @static
@@ -8943,7 +8980,7 @@ var CONST = {
 
     /**
      * Conversion factor for converting degrees to radians.
-     * 
+     *
      * @property {number} DEG_TO_RAD
      * @constant
      * @static
@@ -8977,7 +9014,7 @@ var CONST = {
 
     /**
      * Various blend modes supported by PIXI.
-     * 
+     *
      * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
      * Anything else will silently act like NORMAL.
      *
@@ -9073,7 +9110,7 @@ var CONST = {
      * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
      * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2.
      * This property only affects WebGL.
-     * 
+     *
      * @static
      * @constant
      * @property {object} WRAP_MODES
@@ -9099,7 +9136,7 @@ var CONST = {
      * This property only affects WebGL
      * Handy for mobile devices!
      * This property only affects WebGL.
-     * 
+     *
      * @static
      * @constant
      * @property {object} GC_MODES
@@ -9116,7 +9153,7 @@ var CONST = {
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
-     * 
+     *
      * @static
      * @constant
      * @property {bool} MIPMAP_TEXTURES
@@ -9135,7 +9172,7 @@ var CONST = {
 
     /**
      * Default resolution of the renderer.
-     * 
+     *
      * @property {number} RESOLUTION
      * @constant
      * @static
@@ -9144,7 +9181,7 @@ var CONST = {
 
     /**
      * Default filter resolution.
-     * 
+     *
      * @property {number} FILTER_RESOLUTION
      * @constant
      * @static
@@ -9202,16 +9239,34 @@ var CONST = {
         RREC: 4
     },
 
+    /**
+     * Constants that specify float precision in shaders.
+     *
+     * @static
+     * @constant
+     * @property {object} PRECISION
+     * @property {number} PRECISION.DEFAULT='mediump'
+     * @property {number} PRECISION.LOW='lowp'
+     * @property {number} PRECISION.MEDIUM='mediump'
+     * @property {number} PRECISION.HIGH='highp'
+     */
+    PRECISION: {
+        DEFAULT: 'mediump',
+        LOW: 'lowp',
+        MEDIUM: 'mediump',
+        HIGH: 'highp'
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
     SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32), //this is the MAXIMUM - various gpus will have there own limits.
-    TEXT_STYLE_CHANGED: 'changed' //Name of the event that fires when a text style is changed 
+    TEXT_STYLE_CHANGED: 'changed' //Name of the event that fires when a text style is changed
 };
 
 module.exports = CONST;
 
-},{"./utils/maxRecommendedTextures":110}],40:[function(require,module,exports){
+},{"./utils/maxRecommendedTextures":111}],41:[function(require,module,exports){
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject');
@@ -9839,7 +9894,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":61,"../utils":109,"./DisplayObject":41}],41:[function(require,module,exports){
+},{"../math":62,"../utils":110,"./DisplayObject":42}],42:[function(require,module,exports){
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
@@ -10342,7 +10397,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../math":61,"./Transform":43,"eventemitter3":11}],42:[function(require,module,exports){
+},{"../math":62,"./Transform":44,"eventemitter3":11}],43:[function(require,module,exports){
 /**
  * An observable point is a point that triggers a callback when the point's position is changed.
  *
@@ -10420,7 +10475,7 @@ ObservablePoint.prototype.set = function (x, y)
     this.transform._versionLocal++; // TODO: Pretty sure this doesn't exist.
 };
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var math = require('../math'),
     ObservablePoint = require('./ObservablePoint');
 
@@ -10556,7 +10611,7 @@ Object.defineProperties(Transform.prototype, {
 
 module.exports = Transform;
 
-},{"../math":61,"./ObservablePoint":42}],44:[function(require,module,exports){
+},{"../math":62,"./ObservablePoint":43}],45:[function(require,module,exports){
 var math = require('../math');
 var ObservablePoint = require('./ObservablePoint');
 
@@ -10677,7 +10732,7 @@ Object.defineProperties(TransformStatic.prototype, {
 
 module.exports = TransformStatic;
 
-},{"../math":61,"./ObservablePoint":42}],45:[function(require,module,exports){
+},{"../math":62,"./ObservablePoint":43}],46:[function(require,module,exports){
 var Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
@@ -11408,8 +11463,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
     this._spriteRect.worldAlpha = this.worldAlpha;
 
-    Graphics._SPRITE_TEXTURE.frame.width = rect.width;
-    Graphics._SPRITE_TEXTURE.frame.height = rect.height;
+    Graphics._SPRITE_TEXTURE._frame.width = rect.width;
+    Graphics._SPRITE_TEXTURE._frame.height = rect.height;
 
     this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
@@ -11759,6 +11814,10 @@ Graphics.prototype.destroy = function ()
         }
     }
 
+    if(this._spriteRect)
+    {
+        this._spriteRect.destroy();
+    }
     this.graphicsData = null;
 
     this.currentPath = null;
@@ -11766,7 +11825,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../renderers/canvas/CanvasRenderer":68,"../sprites/Sprite":91,"../textures/RenderTexture":101,"../textures/Texture":102,"./GraphicsData":46,"./utils/bezierCurveTo":48}],46:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":62,"../renderers/canvas/CanvasRenderer":69,"../sprites/Sprite":92,"../textures/RenderTexture":102,"../textures/Texture":103,"./GraphicsData":47,"./utils/bezierCurveTo":49}],47:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -11868,7 +11927,7 @@ GraphicsData.prototype.destroy = function () {
     this.holes = null;
 };
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const');
 
@@ -12151,7 +12210,7 @@ CanvasGraphicsRenderer.prototype.destroy = function ()
   this.renderer = null;
 };
 
-},{"../../const":39,"../../renderers/canvas/CanvasRenderer":68}],48:[function(require,module,exports){
+},{"../../const":40,"../../renderers/canvas/CanvasRenderer":69}],49:[function(require,module,exports){
 
 /**
  * Calculate the points for a bezier curve and then draws it.
@@ -12202,7 +12261,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
 
 module.exports = bezierCurveTo;
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var utils = require('../../utils'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
@@ -12423,7 +12482,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
     return webGLData;
 };
 
-},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../utils":109,"./WebGLGraphicsData":50,"./shaders/PrimitiveShader":51,"./utils/buildCircle":52,"./utils/buildPoly":54,"./utils/buildRectangle":55,"./utils/buildRoundedRectangle":56}],50:[function(require,module,exports){
+},{"../../const":40,"../../renderers/webgl/WebGLRenderer":76,"../../renderers/webgl/utils/ObjectRenderer":86,"../../utils":110,"./WebGLGraphicsData":51,"./shaders/PrimitiveShader":52,"./utils/buildCircle":53,"./utils/buildPoly":55,"./utils/buildRectangle":56,"./utils/buildRoundedRectangle":57}],51:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 
@@ -12550,8 +12609,8 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.glIndices = null;
 };
 
-},{"pixi-gl-core":14}],51:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader;
+},{"pixi-gl-core":14}],52:[function(require,module,exports){
+var Shader = require('../../../Shader');
 
 /**
  * This shader is used to draw simple primitive shapes for {@link PIXI.Graphics}.
@@ -12585,8 +12644,6 @@ function PrimitiveShader(gl)
         ].join('\n'),
         // fragment shader
         [
-            'precision mediump float;',
-
             'varying vec4 vColor;',
 
             'void main(void){',
@@ -12601,7 +12658,7 @@ PrimitiveShader.prototype.constructor = PrimitiveShader;
 
 module.exports = PrimitiveShader;
 
-},{"pixi-gl-core":14}],52:[function(require,module,exports){
+},{"../../../Shader":39}],53:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     CONST = require('../../../const'),
     utils = require('../../../utils');
@@ -12690,7 +12747,7 @@ var buildCircle = function (graphicsData, webGLData)
 
 module.exports = buildCircle;
 
-},{"../../../const":39,"../../../utils":109,"./buildLine":53}],53:[function(require,module,exports){
+},{"../../../const":40,"../../../utils":110,"./buildLine":54}],54:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils');
 
@@ -12911,7 +12968,7 @@ var buildLine = function (graphicsData, webGLData)
 
 module.exports = buildLine;
 
-},{"../../../math":61,"../../../utils":109}],54:[function(require,module,exports){
+},{"../../../math":62,"../../../utils":110}],55:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
     earcut = require('earcut');
@@ -12990,7 +13047,7 @@ var buildPoly = function (graphicsData, webGLData)
 
 module.exports = buildPoly;
 
-},{"../../../utils":109,"./buildLine":53,"earcut":10}],55:[function(require,module,exports){
+},{"../../../utils":110,"./buildLine":54,"earcut":10}],56:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -13062,7 +13119,7 @@ var buildRectangle = function (graphicsData, webGLData)
 
 module.exports = buildRectangle;
 
-},{"../../../utils":109,"./buildLine":53}],56:[function(require,module,exports){
+},{"../../../utils":110,"./buildLine":54}],57:[function(require,module,exports){
 var earcut = require('earcut'),
     buildLine = require('./buildLine'),
     utils = require('../../../utils');
@@ -13192,7 +13249,7 @@ var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// js
 
 module.exports = buildRoundedRectangle;
 
-},{"../../../utils":109,"./buildLine":53,"earcut":10}],57:[function(require,module,exports){
+},{"../../../utils":110,"./buildLine":54,"earcut":10}],58:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -13243,6 +13300,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
+    Shader:                 require('./Shader'),
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
     WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
@@ -13288,7 +13346,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":39,"./display/Container":40,"./display/DisplayObject":41,"./display/Transform":43,"./display/TransformStatic":44,"./graphics/Graphics":45,"./graphics/GraphicsData":46,"./graphics/canvas/CanvasGraphicsRenderer":47,"./graphics/webgl/GraphicsRenderer":49,"./math":61,"./renderers/canvas/CanvasRenderer":68,"./renderers/canvas/utils/CanvasRenderTarget":70,"./renderers/webgl/WebGLRenderer":75,"./renderers/webgl/filters/Filter":77,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":80,"./renderers/webgl/managers/WebGLManager":84,"./renderers/webgl/utils/ObjectRenderer":85,"./renderers/webgl/utils/Quad":86,"./renderers/webgl/utils/RenderTarget":87,"./sprites/Sprite":91,"./sprites/canvas/CanvasSpriteRenderer":92,"./sprites/canvas/CanvasTinter":93,"./sprites/webgl/SpriteRenderer":95,"./text/Text":97,"./text/TextStyle":98,"./textures/BaseRenderTexture":99,"./textures/BaseTexture":100,"./textures/RenderTexture":101,"./textures/Texture":102,"./textures/TextureUvs":103,"./textures/VideoBaseTexture":104,"./ticker":106,"./utils":109,"pixi-gl-core":14}],58:[function(require,module,exports){
+},{"./Shader":39,"./const":40,"./display/Container":41,"./display/DisplayObject":42,"./display/Transform":44,"./display/TransformStatic":45,"./graphics/Graphics":46,"./graphics/GraphicsData":47,"./graphics/canvas/CanvasGraphicsRenderer":48,"./graphics/webgl/GraphicsRenderer":50,"./math":62,"./renderers/canvas/CanvasRenderer":69,"./renderers/canvas/utils/CanvasRenderTarget":71,"./renderers/webgl/WebGLRenderer":76,"./renderers/webgl/filters/Filter":78,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":81,"./renderers/webgl/managers/WebGLManager":85,"./renderers/webgl/utils/ObjectRenderer":86,"./renderers/webgl/utils/Quad":87,"./renderers/webgl/utils/RenderTarget":88,"./sprites/Sprite":92,"./sprites/canvas/CanvasSpriteRenderer":93,"./sprites/canvas/CanvasTinter":94,"./sprites/webgl/SpriteRenderer":96,"./text/Text":98,"./text/TextStyle":99,"./textures/BaseRenderTexture":100,"./textures/BaseTexture":101,"./textures/RenderTexture":102,"./textures/Texture":103,"./textures/TextureUvs":104,"./textures/VideoBaseTexture":105,"./ticker":107,"./utils":110,"pixi-gl-core":14}],59:[function(require,module,exports){
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
@@ -13452,7 +13510,7 @@ var GroupD8 = {
 
 module.exports = GroupD8;
 
-},{"./Matrix":59}],59:[function(require,module,exports){
+},{"./Matrix":60}],60:[function(require,module,exports){
 // @todo - ignore the too many parameters warning for now
 // should either fix it or change the jshint config
 // jshint -W072
@@ -13893,7 +13951,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":60}],60:[function(require,module,exports){
+},{"./Point":61}],61:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -13963,7 +14021,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -13986,7 +14044,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./GroupD8":58,"./Matrix":59,"./Point":60,"./shapes/Circle":62,"./shapes/Ellipse":63,"./shapes/Polygon":64,"./shapes/Rectangle":65,"./shapes/RoundedRectangle":66}],62:[function(require,module,exports){
+},{"./GroupD8":59,"./Matrix":60,"./Point":61,"./shapes/Circle":63,"./shapes/Ellipse":64,"./shapes/Polygon":65,"./shapes/Rectangle":66,"./shapes/RoundedRectangle":67}],63:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -14074,7 +14132,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":39,"./Rectangle":65}],63:[function(require,module,exports){
+},{"../../const":40,"./Rectangle":66}],64:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -14169,7 +14227,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":39,"./Rectangle":65}],64:[function(require,module,exports){
+},{"../../const":40,"./Rectangle":66}],65:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -14284,7 +14342,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":39,"../Point":60}],65:[function(require,module,exports){
+},{"../../const":40,"../Point":61}],66:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -14456,7 +14514,7 @@ Rectangle.prototype.enlarge = function (rect)
     this.height = y2 - y1;
 };
 
-},{"../../const":39}],66:[function(require,module,exports){
+},{"../../const":40}],67:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -14548,7 +14606,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":39}],67:[function(require,module,exports){
+},{"../../const":40}],68:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -14838,7 +14896,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._lastObjectRendered = null;
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../textures/RenderTexture":101,"../utils":109,"eventemitter3":11}],68:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":62,"../textures/RenderTexture":102,"../utils":110,"eventemitter3":11}],69:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
@@ -15099,7 +15157,7 @@ CanvasRenderer.prototype.resize = function (w, h)
 
 };
 
-},{"../../const":39,"../../utils":109,"../SystemRenderer":67,"./utils/CanvasMaskManager":69,"./utils/CanvasRenderTarget":70,"./utils/mapCanvasBlendModesToPixi":72}],69:[function(require,module,exports){
+},{"../../const":40,"../../utils":110,"../SystemRenderer":68,"./utils/CanvasMaskManager":70,"./utils/CanvasRenderTarget":71,"./utils/mapCanvasBlendModesToPixi":73}],70:[function(require,module,exports){
 var CONST = require('../../../const');
 /**
  * A set of functions used to handle masking.
@@ -15261,7 +15319,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"../../../const":39}],70:[function(require,module,exports){
+},{"../../../const":40}],71:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -15366,7 +15424,7 @@ CanvasRenderTarget.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{"../../../const":39}],71:[function(require,module,exports){
+},{"../../../const":40}],72:[function(require,module,exports){
 
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
@@ -15405,7 +15463,7 @@ var canUseNewCanvasBlendModes = function ()
 
 module.exports = canUseNewCanvasBlendModes;
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var CONST = require('../../../const'),
 canUseNewCanvasBlendModes = require('./canUseNewCanvasBlendModes');
 
@@ -15465,7 +15523,7 @@ function mapWebGLBlendModesToPixi(array)
 
 module.exports = mapWebGLBlendModesToPixi;
 
-},{"../../../const":39,"./canUseNewCanvasBlendModes":71}],73:[function(require,module,exports){
+},{"../../../const":40,"./canUseNewCanvasBlendModes":72}],74:[function(require,module,exports){
 
 var CONST = require('../../const');
 
@@ -15576,7 +15634,7 @@ TextureGarbageCollector.prototype.unload = function( displayObject )
     }
 };
 
-},{"../../const":39}],74:[function(require,module,exports){
+},{"../../const":40}],75:[function(require,module,exports){
 var GLTexture = require('pixi-gl-core').GLTexture,
     CONST = require('../../const'),
     RenderTarget = require('./utils/RenderTarget'),
@@ -15783,7 +15841,7 @@ TextureManager.prototype.destroy = function()
 
 module.exports = TextureManager;
 
-},{"../../const":39,"../../utils":109,"./utils/RenderTarget":87,"pixi-gl-core":14}],75:[function(require,module,exports){
+},{"../../const":40,"../../utils":110,"./utils/RenderTarget":88,"pixi-gl-core":14}],76:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
@@ -16338,7 +16396,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     // this = null;
 };
 
-},{"../../const":39,"../../utils":109,"../SystemRenderer":67,"./TextureGarbageCollector":73,"./TextureManager":74,"./WebGLState":76,"./managers/FilterManager":81,"./managers/MaskManager":82,"./managers/StencilManager":83,"./utils/ObjectRenderer":85,"./utils/RenderTarget":87,"./utils/mapWebGLDrawModesToPixi":90,"pixi-gl-core":14}],76:[function(require,module,exports){
+},{"../../const":40,"../../utils":110,"../SystemRenderer":68,"./TextureGarbageCollector":74,"./TextureManager":75,"./WebGLState":77,"./managers/FilterManager":82,"./managers/MaskManager":83,"./managers/StencilManager":84,"./utils/ObjectRenderer":86,"./utils/RenderTarget":88,"./utils/mapWebGLDrawModesToPixi":91,"pixi-gl-core":14}],77:[function(require,module,exports){
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
 /**
@@ -16611,7 +16669,7 @@ WebGLState.prototype.resetToDefault = function()
 
 module.exports = WebGLState;
 
-},{"./utils/mapWebGLBlendModesToPixi":89}],77:[function(require,module,exports){
+},{"./utils/mapWebGLBlendModesToPixi":90}],78:[function(require,module,exports){
 var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
     utils = require('../../../utils'),
     SOURCE_KEY_MAP = {};
@@ -16694,7 +16752,6 @@ Filter.prototype.apply = function(filterManager, input, output, clear)
  * @constant
  */
 Filter.defaultVertexSrc = [
-    'precision lowp float;',
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
 
@@ -16718,8 +16775,6 @@ Filter.defaultVertexSrc = [
  * @constant
  */
 Filter.defaultFragmentSrc = [
-    'precision lowp float;',
-
     'varying vec2 vTextureCoord;',
     'varying vec2 vFilterCoord;',
 
@@ -16744,7 +16799,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../utils":109,"./extractUniformsFromSrc":78}],78:[function(require,module,exports){
+},{"../../../utils":110,"./extractUniformsFromSrc":79}],79:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
 var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
@@ -16807,7 +16862,7 @@ function extractUniformsFromString(string)
 
 module.exports = extractUniformsFromSrc;
 
-},{"pixi-gl-core/lib/shader/defaultValue":23,"pixi-gl-core/lib/shader/mapSize":27}],79:[function(require,module,exports){
+},{"pixi-gl-core/lib/shader/defaultValue":23,"pixi-gl-core/lib/shader/mapSize":27}],80:[function(require,module,exports){
 var math = require('../../../math');
 
 /*
@@ -16916,7 +16971,7 @@ module.exports = {
     calculateSpriteMatrix:calculateSpriteMatrix
 };
 
-},{"../../../math":61}],80:[function(require,module,exports){
+},{"../../../math":62}],81:[function(require,module,exports){
 var Filter = require('../Filter'),
     math =  require('../../../../math');
 
@@ -16936,7 +16991,7 @@ function SpriteMaskFilter(sprite)
 
     Filter.call(this,
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n    vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n}\n",
-        "precision lowp float;\n#define GLSLIFY 1\n\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float alpha;\nuniform sampler2D mask;\n\nvoid main(void)\n{\n    // check clip! this will stop the mask bleeding out from the edges\n    vec2 text = abs( vMaskCoord - 0.5 );\n    text = step(0.5, text);\n    float clip = 1.0 - max(text.y, text.x);\n    vec4 original = texture2D(uSampler, vTextureCoord);\n    vec4 masky = texture2D(mask, vMaskCoord);\n    original *= (masky.r * masky.a * alpha * clip);\n    gl_FragColor = original;\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vMaskCoord;\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float alpha;\nuniform sampler2D mask;\n\nvoid main(void)\n{\n    // check clip! this will stop the mask bleeding out from the edges\n    vec2 text = abs( vMaskCoord - 0.5 );\n    text = step(0.5, text);\n    float clip = 1.0 - max(text.y, text.x);\n    vec4 original = texture2D(uSampler, vTextureCoord);\n    vec4 masky = texture2D(mask, vMaskCoord);\n    original *= (masky.r * masky.a * alpha * clip);\n    gl_FragColor = original;\n}\n"
     );
 
     sprite.renderable = false;
@@ -16967,13 +17022,13 @@ SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
     filterManager.applyFilter(this, input, output);
 };
 
-},{"../../../../math":61,"../Filter":77}],81:[function(require,module,exports){
+},{"../../../../math":62,"../Filter":78}],82:[function(require,module,exports){
 
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math'),
-    Shader = require('pixi-gl-core').GLShader,
+    Shader = require('../../../Shader'),
     filterTransforms = require('../filters/filterTransforms'),
     bitTwiddle = require('bit-twiddle');
 
@@ -17268,7 +17323,11 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 
 FilterManager.prototype.destroy = function()
 {
+     this.shaderCache = [];
+     FilterManager.emptyPool();
 };
+
+
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
@@ -17296,6 +17355,23 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     return renderTarget;
 };
 
+FilterManager.emptyPool = function()
+{
+    for (var i in FilterManager.pool)
+    {
+        var textures = FilterManager.pool[i];
+        if(textures)
+        {
+            for (var j = 0; j < textures.length; j++)
+            {
+                textures[j].destroy(true);
+            }
+        }
+    }
+
+    FilterManager.pool = {};
+};
+
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
     var minWidth = renderTarget.size.width * renderTarget.resolution;
@@ -17305,7 +17381,7 @@ FilterManager.freePotRenderTarget = function(renderTarget)
     FilterManager.pool[key].push(renderTarget);
 };
 
-},{"../../../math":61,"../filters/filterTransforms":79,"../utils/Quad":86,"../utils/RenderTarget":87,"./WebGLManager":84,"bit-twiddle":2,"pixi-gl-core":14}],82:[function(require,module,exports){
+},{"../../../Shader":39,"../../../math":62,"../filters/filterTransforms":80,"../utils/Quad":87,"../utils/RenderTarget":88,"./WebGLManager":85,"bit-twiddle":2}],83:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
 
@@ -17481,7 +17557,7 @@ MaskManager.prototype.popScissorMask = function ()
     gl.disable(gl.SCISSOR_TEST);
 };
 
-},{"../filters/spriteMask/SpriteMaskFilter":80,"./WebGLManager":84}],83:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":81,"./WebGLManager":85}],84:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -17594,7 +17670,7 @@ StencilMaskManager.prototype.destroy = function ()
     this.stencilMaskStack.stencilStack = null;
 };
 
-},{"./WebGLManager":84}],84:[function(require,module,exports){
+},{"./WebGLManager":85}],85:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -17635,7 +17711,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -17693,7 +17769,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":84}],86:[function(require,module,exports){
+},{"../managers/WebGLManager":85}],87:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../../utils/createIndicesForQuads');
 
@@ -17866,7 +17942,7 @@ Quad.prototype.destroy = function()
 
 module.exports = Quad;
 
-},{"../../../utils/createIndicesForQuads":107,"pixi-gl-core":14}],87:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":108,"pixi-gl-core":14}],88:[function(require,module,exports){
 var math = require('../../../math'),
     CONST = require('../../../const'),
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
@@ -18192,11 +18268,11 @@ RenderTarget.prototype.destroy = function ()
     this.texture = null;
 };
 
-},{"../../../const":39,"../../../math":61,"pixi-gl-core":14}],88:[function(require,module,exports){
+},{"../../../const":40,"../../../math":62,"pixi-gl-core":14}],89:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 var fragTemplate = [
-    'precision lowp float;',
+    'precision mediump float;',
     'void main(void){',
         'float test = 0.1;',
         '%forloop%',
@@ -18221,7 +18297,7 @@ var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     while(true)
     {
-        var fragmentSrc = fragTemplate.replace(/\%forloop\%/gi, generateIfTestSrc(maxIfs));
+        var fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);
@@ -18273,7 +18349,7 @@ function generateIfTestSrc(maxIfs)
 
 module.exports = checkMaxIfStatmentsInShader;
 
-},{"pixi-gl-core":14}],89:[function(require,module,exports){
+},{"pixi-gl-core":14}],90:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -18310,7 +18386,7 @@ function mapWebGLBlendModesToPixi(gl, array)
 
 module.exports = mapWebGLBlendModesToPixi;
 
-},{"../../../const":39}],90:[function(require,module,exports){
+},{"../../../const":40}],91:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -18334,7 +18410,7 @@ function mapWebGLDrawModesToPixi(gl, object)
 
 module.exports = mapWebGLDrawModesToPixi;
 
-},{"../../../const":39}],91:[function(require,module,exports){
+},{"../../../const":40}],92:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -18814,7 +18890,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":39,"../display/Container":40,"../math":61,"../textures/Texture":102,"../utils":109}],92:[function(require,module,exports){
+},{"../const":40,"../display/Container":41,"../math":62,"../textures/Texture":103,"../utils":110}],93:[function(require,module,exports){
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
@@ -18980,7 +19056,7 @@ CanvasSpriteRenderer.prototype.destroy = function (){
   this.renderer = null;
 };
 
-},{"../../const":39,"../../math":61,"../../renderers/canvas/CanvasRenderer":68,"./CanvasTinter":93}],93:[function(require,module,exports){
+},{"../../const":40,"../../math":62,"../../renderers/canvas/CanvasRenderer":69,"./CanvasTinter":94}],94:[function(require,module,exports){
 var utils = require('../../utils'),
 canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 /**
@@ -19213,7 +19289,7 @@ CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":71,"../../utils":109}],94:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":72,"../../utils":110}],95:[function(require,module,exports){
 
 
  var Buffer = function(size)
@@ -19244,7 +19320,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
    this.uvs = null;
    this.colors  = null;
  };
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
@@ -19308,11 +19384,12 @@ function SpriteRenderer(renderer)
     this.indices = createIndicesForQuads(this.size);
 
     /**
-     * The default shader that is used if a sprite doesn't have a more specific one.
-     *
+     * The default shaders that is used if a sprite doesn't have a more specific one.
+     * there is a shader for each number of textures that can be rendererd.
+     * These shaders will also be generated on the fly as required.
      * @member {PIXI.Shader}
      */
-    this.shader = null;
+    this.shaders = null;
 
     this.textureCount = 0;
     this.currentIndex = 0;
@@ -19357,19 +19434,23 @@ SpriteRenderer.prototype.onContextChange = function ()
     // step 2: check the maximum number of if statements the shader can have too..
     this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
 
-    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
+    this.shaders = new Array(this.MAX_TEXTURES);
+    this.shaders[0] = generateMultiTextureShader(gl, 1);
+
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+
+    var shader = this.shaders[0];
 
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[i] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vao = this.vaos[0];
@@ -19443,6 +19524,7 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+    var shader;
 
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
@@ -19540,14 +19622,15 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
+        shader = this.shaders[0];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
@@ -19557,8 +19640,19 @@ SpriteRenderer.prototype.flush = function ()
     for (i = 0; i < groupCount; i++) {
 
         var group = groups[i];
+        var groupTextureCount = group.textureCount;
+        shader = this.shaders[groupTextureCount-1];
 
-        for (var j = 0; j < group.textureCount; j++) {
+        if(!shader)
+        {
+            shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+            //console.log("SHADER generated for " + textureCount + " textures")
+        }
+
+        this.renderer.bindShader(shader);
+
+        for (var j = 0; j < groupTextureCount; j++)
+        {
             this.renderer.bindTexture(group.textures[j], j);
         }
 
@@ -19578,7 +19672,7 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
-    this.renderer.bindShader(this.shader);
+ //   this.renderer.bindShader(this.shader);
     this.tick %= 1000;
 };
 
@@ -19603,7 +19697,13 @@ SpriteRenderer.prototype.destroy = function ()
     this.renderer.off('prerender', this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
-    this.shader.destroy();
+    for (i = 0; i < this.shaders.length; i++) {
+
+        if(this.shaders[i])
+        {
+            this.shaders[i].destroy();
+        }
+    }
 
     this.vertexBuffers = null;
     this.vaos = null;
@@ -19611,7 +19711,6 @@ SpriteRenderer.prototype.destroy = function ()
     this.indices = null;
 
     this.sprites = null;
-    this.shader = null;
 
     for (i = 0; i < this.buffers.length; i++) {
         this.buffers[i].destroy();
@@ -19619,12 +19718,11 @@ SpriteRenderer.prototype.destroy = function ()
 
 };
 
-},{"../../const":39,"../../renderers/webgl/WebGLRenderer":75,"../../renderers/webgl/utils/ObjectRenderer":85,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":88,"../../utils/createIndicesForQuads":107,"./BatchBuffer":94,"./generateMultiTextureShader":96,"bit-twiddle":2,"pixi-gl-core":14}],96:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader; 
+},{"../../const":40,"../../renderers/webgl/WebGLRenderer":76,"../../renderers/webgl/utils/ObjectRenderer":86,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":89,"../../utils/createIndicesForQuads":108,"./BatchBuffer":95,"./generateMultiTextureShader":97,"bit-twiddle":2,"pixi-gl-core":14}],97:[function(require,module,exports){
+var Shader = require('../../Shader');
+
 
 var fragTemplate = [
-
-    'precision lowp float;',
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
@@ -19639,11 +19737,11 @@ var fragTemplate = [
 
 function generateMultiTextureShader(gl, maxTextures)
 {
-    var vertexSrc = "precision lowp float;\n#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vTextureId = aTextureId;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}";
+    var vertexSrc = "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vTextureId = aTextureId;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n";
     var fragmentSrc = fragTemplate;
 
-    fragmentSrc = fragmentSrc.replace(/\%count\%/gi, maxTextures);
-    fragmentSrc = fragmentSrc.replace(/\%forloop\%/gi, generateSampleSrc(maxTextures));
+    fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
+    fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
     var shader = new Shader(gl, vertexSrc, fragmentSrc);
 
@@ -19693,7 +19791,7 @@ function generateSampleSrc(maxTextures)
 
 module.exports = generateMultiTextureShader;
 
-},{"pixi-gl-core":14}],97:[function(require,module,exports){
+},{"../../Shader":39}],98:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -20393,7 +20491,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":39,"../math":61,"../sprites/Sprite":91,"../textures/Texture":102,"../utils":109}],98:[function(require,module,exports){
+},{"../const":40,"../math":62,"../sprites/Sprite":92,"../textures/Texture":103,"../utils":110}],99:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     utils = require('../utils');
@@ -20729,7 +20827,7 @@ function getColor(color)
     }
 }
 
-},{"../const":39,"../utils":109,"eventemitter3":11}],99:[function(require,module,exports){
+},{"../const":40,"../utils":110,"eventemitter3":11}],100:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     CONST = require('../const');
 
@@ -20865,7 +20963,7 @@ BaseRenderTexture.prototype.destroy = function ()
 };
 
 
-},{"../const":39,"./BaseTexture":100}],100:[function(require,module,exports){
+},{"../const":40,"./BaseTexture":101}],101:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
@@ -21314,7 +21412,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":39,"../utils":109,"../utils/determineCrossOrigin":108,"bit-twiddle":2,"eventemitter3":11}],101:[function(require,module,exports){
+},{"../const":40,"../utils":110,"../utils/determineCrossOrigin":109,"bit-twiddle":2,"eventemitter3":11}],102:[function(require,module,exports){
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture');
 
@@ -21436,7 +21534,7 @@ RenderTexture.create = function(width, height, scaleMode, resolution)
     return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
 };
 
-},{"./BaseRenderTexture":99,"./Texture":102}],102:[function(require,module,exports){
+},{"./BaseRenderTexture":100,"./Texture":103}],103:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -21937,7 +22035,7 @@ Texture.EMPTY.once = function() {};
 Texture.EMPTY.emit = function() {};
 
 
-},{"../math":61,"../utils":109,"./BaseTexture":100,"./TextureUvs":103,"./VideoBaseTexture":104,"eventemitter3":11}],103:[function(require,module,exports){
+},{"../math":62,"../utils":110,"./BaseTexture":101,"./TextureUvs":104,"./VideoBaseTexture":105,"eventemitter3":11}],104:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -22022,7 +22120,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
 
-},{"../math/GroupD8":58}],104:[function(require,module,exports){
+},{"../math/GroupD8":59}],105:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -22259,7 +22357,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":109,"./BaseTexture":100}],105:[function(require,module,exports){
+},{"../utils":110,"./BaseTexture":101}],106:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -22612,7 +22710,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":39,"eventemitter3":11}],106:[function(require,module,exports){
+},{"../const":40,"eventemitter3":11}],107:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -22668,7 +22766,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":105}],107:[function(require,module,exports){
+},{"./Ticker":106}],108:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -22699,7 +22797,7 @@ var createIndicesForQuads = function (size)
 
 module.exports = createIndicesForQuads;
 
-},{}],108:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 var tempAnchor;
 var _url = require('url');
 
@@ -22744,7 +22842,7 @@ var determineCrossOrigin = function (url, loc) {
 
 module.exports = determineCrossOrigin;
 
-},{"url":9}],109:[function(require,module,exports){
+},{"url":9}],110:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -22954,7 +23052,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":39,"./pluginTarget":111,"eventemitter3":11}],110:[function(require,module,exports){
+},{"../const":40,"./pluginTarget":112,"eventemitter3":11}],111:[function(require,module,exports){
 
 
 var  Device = require('ismobilejs');
@@ -22975,7 +23073,7 @@ var maxRecommendedTextures = function(max)
 };
 
 module.exports = maxRecommendedTextures;
-},{"ismobilejs":12}],111:[function(require,module,exports){
+},{"ismobilejs":12}],112:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -23045,7 +23143,7 @@ module.exports = {
     }
 };
 
-},{}],112:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -23506,7 +23604,7 @@ core.utils.canUseNewCanvasBlendModes = function() {
 };
 
 
-},{"./core":57,"./extras":122,"./filters":134,"./mesh":149,"./particles":152}],113:[function(require,module,exports){
+},{"./core":58,"./extras":123,"./filters":135,"./mesh":150,"./particles":153}],114:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -23645,13 +23743,13 @@ WebGLExtract.prototype.destroy = function ()
 
 core.CanvasRenderer.registerPlugin('extract', WebGLExtract);
 
-},{"../../core":57}],114:[function(require,module,exports){
+},{"../../core":58}],115:[function(require,module,exports){
 
 module.exports = {
     webGL: require('./webgl/WebGLExtract'),
     canvas: require('./canvas/CanvasExtract')
 };
-},{"./canvas/CanvasExtract":113,"./webgl/WebGLExtract":115}],115:[function(require,module,exports){
+},{"./canvas/CanvasExtract":114,"./webgl/WebGLExtract":116}],116:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -23835,7 +23933,7 @@ Extract.prototype.destroy = function ()
 
 core.WebGLRenderer.registerPlugin('extract', Extract);
 
-},{"../../core":57}],116:[function(require,module,exports){
+},{"../../core":58}],117:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24223,7 +24321,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":57}],117:[function(require,module,exports){
+},{"../core":58}],118:[function(require,module,exports){
 var core = require('../core');
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -24546,7 +24644,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":57}],118:[function(require,module,exports){
+},{"../core":58}],119:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
@@ -24977,7 +25075,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":57,"../core/sprites/canvas/CanvasTinter":93,"./webgl/TilingShader":123}],119:[function(require,module,exports){
+},{"../core":58,"../core/sprites/canvas/CanvasTinter":94,"./webgl/TilingShader":124}],120:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -25112,7 +25210,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     var stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    
+
     var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
@@ -25126,9 +25224,9 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
-    
+
     renderer.bindRenderTarget(cachedRenderTarget);
-    
+
     renderer.filterManager.filterStack = stack;
 
     this.renderWebGL     = this._renderCachedWebGL;
@@ -25233,7 +25331,7 @@ DisplayObject.prototype._getCachedBounds = function ()
 {
     this._cachedSprite._currentBounds = null;
 
-    return this._cachedSprite.getBounds();
+    return this._cachedSprite.getBounds(core.math.Matrix.IDENTITY);
 };
 
 /**
@@ -25253,7 +25351,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":57}],120:[function(require,module,exports){
+},{"../core":58}],121:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25283,7 +25381,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":57}],121:[function(require,module,exports){
+},{"../core":58}],122:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25313,7 +25411,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":57}],122:[function(require,module,exports){
+},{"../core":58}],123:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25334,8 +25432,8 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":116,"./MovieClip":117,"./TilingSprite":118,"./cacheAsBitmap":119,"./getChildByName":120,"./getGlobalPosition":121}],123:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader;
+},{"./BitmapText":117,"./MovieClip":118,"./TilingSprite":119,"./cacheAsBitmap":120,"./getChildByName":121,"./getGlobalPosition":122}],124:[function(require,module,exports){
+var Shader = require('../../core/Shader');
 
 
 /**
@@ -25348,8 +25446,8 @@ function TilingShader(gl)
 {
     Shader.call(this,
         gl,
-        "precision lowp float;\n#define GLSLIFY 1\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\n\nuniform vec4 uFrame;\nuniform vec4 uTransform;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    \n    vec2 coord = aTextureCoord;\n    coord -= uTransform.xy;\n    coord /= uTransform.zw;\n    vTextureCoord = coord;\n    \n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}",
-        "precision lowp float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   vec2 coord = mod(vTextureCoord, uFrame.zw);\n   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   coord += uFrame.xy;\n\n   gl_FragColor =  texture2D(uSampler, coord) ;\n}"
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\n\nuniform vec4 uFrame;\nuniform vec4 uTransform;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vec2 coord = aTextureCoord;\n    coord -= uTransform.xy;\n    coord /= uTransform.zw;\n    vTextureCoord = coord;\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   vec2 coord = mod(vTextureCoord, uFrame.zw);\n   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   coord += uFrame.xy;\n\n   gl_FragColor =  texture2D(uSampler, coord) ;\n}\n"
     );
 }
 
@@ -25358,7 +25456,7 @@ TilingShader.prototype.constructor = TilingShader;
 module.exports = TilingShader;
 
 
-},{"pixi-gl-core":14}],124:[function(require,module,exports){
+},{"../../core/Shader":39}],125:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -25478,7 +25576,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./BlurXFilter":125,"./BlurYFilter":126}],125:[function(require,module,exports){
+},{"../../core":58,"./BlurXFilter":126,"./BlurYFilter":127}],126:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -25586,7 +25684,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./generateBlurFragSource":127,"./generateBlurVertSource":128,"./getMaxBlurKernelSize":129}],126:[function(require,module,exports){
+},{"../../core":58,"./generateBlurFragSource":128,"./generateBlurVertSource":129,"./getMaxBlurKernelSize":130}],127:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -25684,7 +25782,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":57,"./generateBlurFragSource":127,"./generateBlurVertSource":128,"./getMaxBlurKernelSize":129}],127:[function(require,module,exports){
+},{"../../core":58,"./generateBlurFragSource":128,"./generateBlurVertSource":129,"./getMaxBlurKernelSize":130}],128:[function(require,module,exports){
 var GAUSSIAN_VALUES = {
 	5:[0.153388, 0.221461, 0.250301],
 	7:[0.071303, 0.131514, 0.189879, 0.214607],
@@ -25695,9 +25793,6 @@ var GAUSSIAN_VALUES = {
 };
 
 var fragTemplate = [
-
-	'precision mediump float;',
-
 	'varying vec2 vBlurTexCoords[%size%];',
 	'uniform sampler2D uSampler;',
 
@@ -25749,7 +25844,7 @@ var generateFragBlurSource = function(kernelSize)
 
 module.exports = generateFragBlurSource;
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 
 var vertTemplate = [
 	'attribute vec2 aVertexPosition;',
@@ -25815,7 +25910,7 @@ var generateVertBlurSource = function(kernelSize, x)
 
 module.exports = generateVertBlurSource;
 
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 
 
 var getMaxKernelSize = function(gl)
@@ -25833,7 +25928,7 @@ var getMaxKernelSize = function(gl)
 
 module.exports = getMaxKernelSize;
 
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25857,9 +25952,9 @@ function ColorMatrixFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}",
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n",
         // fragment shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[20];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4] * c.a;\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9] * c.a;\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14] * c.a;\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19] * c.a;\n\n//    gl_FragColor = vec4(m[0]);\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[20];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4] * c.a;\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9] * c.a;\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14] * c.a;\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19] * c.a;\n\n//    gl_FragColor = vec4(m[0]);\n}\n"
     );
 
     this.uniforms.m = [
@@ -26366,7 +26461,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":57}],131:[function(require,module,exports){
+},{"../../core":58}],132:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -26390,7 +26485,7 @@ function DisplacementFilter(sprite, scale)
         // vertex shader
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
         // fragment shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n"
 
     );
 
@@ -26446,7 +26541,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":57}],132:[function(require,module,exports){
+},{"../../core":58}],133:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -26464,7 +26559,7 @@ function GodrayFilter()
 
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n\n",
         // fragment shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nuniform float exposure;\nuniform float decay;\nuniform float density;\nuniform float weight;\nuniform vec2 lightPositionOnScreen;\nuniform sampler2D uSampler;\n\nconst int NUM_SAMPLES = 100;\n\nvoid main()\n{\n    vec2 deltaTextCoord = vec2( vTextureCoord - lightPositionOnScreen.xy );\n    vec2 textCoo = vTextureCoord;\n    deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;\n    float illuminationDecay = 1.0;\n   \n    for(int i=0; i < NUM_SAMPLES ; i++)\n    {\n             textCoo -= deltaTextCoord;\n             vec4 sample = texture2D(uSampler, textCoo );\n\n             sample *= illuminationDecay * weight;\n\n             gl_FragColor += sample;\n\n             illuminationDecay *= decay;\n     }\n    \n     gl_FragColor *= exposure;\n}"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nuniform float exposure;\nuniform float decay;\nuniform float density;\nuniform float weight;\nuniform vec2 lightPositionOnScreen;\nuniform sampler2D uSampler;\n\nconst int NUM_SAMPLES = 100;\n\nvoid main()\n{\n    vec2 deltaTextCoord = vec2( vTextureCoord - lightPositionOnScreen.xy );\n    vec2 textCoo = vTextureCoord;\n    deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;\n    float illuminationDecay = 1.0;\n\n    for(int i=0; i < NUM_SAMPLES ; i++)\n    {\n             textCoo -= deltaTextCoord;\n             vec4 sample = texture2D(uSampler, textCoo );\n\n             sample *= illuminationDecay * weight;\n\n             gl_FragColor += sample;\n\n             illuminationDecay *= decay;\n     }\n\n     gl_FragColor *= exposure;\n}\n"
     );
 
     this.uniforms.exposure = 0.0034;
@@ -26539,7 +26634,7 @@ Object.defineProperties(GodrayFilter.prototype, {
     }
 });
 
-},{"../../core":57}],133:[function(require,module,exports){
+},{"../../core":58}],134:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -26555,9 +26650,9 @@ function GrayFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        "precision lowp float;\n#define GLSLIFY 1\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}",
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n",
         // fragment shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float gray;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float gray;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);\n}\n"
     );
 
     this.uniforms.gray = 1;
@@ -26588,7 +26683,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":57}],134:[function(require,module,exports){
+},{"../../core":58}],135:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26629,7 +26724,7 @@ module.exports = {
     GodrayFilter:         require('./godray/GodrayFilter')
 };
 
-},{"./blur/BlurFilter":124,"./blur/BlurXFilter":125,"./blur/BlurYFilter":126,"./colormatrix/ColorMatrixFilter":130,"./displacement/DisplacementFilter":131,"./godray/GodrayFilter":132,"./gray/GrayFilter":133,"./twist/TwistFilter":135}],135:[function(require,module,exports){
+},{"./blur/BlurFilter":125,"./blur/BlurXFilter":126,"./blur/BlurYFilter":127,"./colormatrix/ColorMatrixFilter":131,"./displacement/DisplacementFilter":132,"./godray/GodrayFilter":133,"./gray/GrayFilter":134,"./twist/TwistFilter":136}],136:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -26647,7 +26742,7 @@ function TwistFilter()
 
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n\n",
         // fragment shader
-        "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"
     );
 
     this.uniforms.radius = 400;
@@ -26727,7 +26822,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":57}],136:[function(require,module,exports){
+},{"../../core":58}],137:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -26761,7 +26856,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":38,"./core":57,"./deprecation":112,"./extract":114,"./extras":122,"./filters":134,"./interaction":139,"./loaders":142,"./mesh":149,"./particles":152,"./polyfill":158}],137:[function(require,module,exports){
+},{"./accessibility":38,"./core":58,"./deprecation":113,"./extract":115,"./extras":123,"./filters":135,"./interaction":140,"./loaders":143,"./mesh":150,"./particles":153,"./polyfill":159}],138:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -26810,7 +26905,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":57}],138:[function(require,module,exports){
+},{"../core":58}],139:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -27750,7 +27845,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":57,"./InteractionData":137,"./interactiveTarget":140}],139:[function(require,module,exports){
+},{"../core":58,"./InteractionData":138,"./interactiveTarget":141}],140:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27767,7 +27862,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":137,"./InteractionManager":138,"./interactiveTarget":140}],140:[function(require,module,exports){
+},{"./InteractionData":138,"./InteractionManager":139,"./interactiveTarget":141}],141:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
@@ -27856,7 +27951,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],141:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -27980,7 +28075,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57,"../extras":122,"path":3,"resource-loader":33}],142:[function(require,module,exports){
+},{"../core":58,"../extras":123,"path":3,"resource-loader":33}],143:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28001,7 +28096,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":141,"./loader":143,"./spritesheetParser":144,"./textureParser":145,"resource-loader":33}],143:[function(require,module,exports){
+},{"./bitmapFontParser":142,"./loader":144,"./spritesheetParser":145,"./textureParser":146,"resource-loader":33}],144:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -28063,7 +28158,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":141,"./spritesheetParser":144,"./textureParser":145,"resource-loader":33}],144:[function(require,module,exports){
+},{"./bitmapFontParser":142,"./spritesheetParser":145,"./textureParser":146,"resource-loader":33}],145:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core'),
@@ -28180,7 +28275,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57,"async":1,"path":3,"resource-loader":33}],145:[function(require,module,exports){
+},{"../core":58,"async":1,"path":3,"resource-loader":33}],146:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -28202,7 +28297,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":57}],146:[function(require,module,exports){
+},{"../core":58}],147:[function(require,module,exports){
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
     Shader = require('./webgl/MeshShader'),
@@ -28739,7 +28834,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":57,"./webgl/MeshShader":150,"pixi-gl-core":14}],147:[function(require,module,exports){
+},{"../core":58,"./webgl/MeshShader":151,"pixi-gl-core":14}],148:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -28864,7 +28959,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":146}],148:[function(require,module,exports){
+},{"./Mesh":147}],149:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -29079,7 +29174,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":57,"./Mesh":146}],149:[function(require,module,exports){
+},{"../core":58,"./Mesh":147}],150:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -29097,8 +29192,8 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":146,"./Plane":147,"./Rope":148,"./webgl/MeshShader":150}],150:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader;
+},{"./Mesh":147,"./Plane":148,"./Rope":149,"./webgl/MeshShader":151}],151:[function(require,module,exports){
+var Shader = require('../../core/Shader');
 
 /**
  * @class
@@ -29112,7 +29207,6 @@ function MeshShader(gl)
         gl,
         // vertex shader
         [
-            'precision lowp float;',
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
 
@@ -29127,8 +29221,6 @@ function MeshShader(gl)
             '}'
         ].join('\n'),
         [
-            'precision lowp float;',
-
             'varying vec2 vTextureCoord;',
             'uniform float alpha;',
 
@@ -29147,7 +29239,7 @@ MeshShader.prototype.constructor = MeshShader;
 module.exports = MeshShader;
 
 
-},{"pixi-gl-core":14}],151:[function(require,module,exports){
+},{"../../core/Shader":39}],152:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -29479,7 +29571,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../core":57}],152:[function(require,module,exports){
+},{"../core":58}],153:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -29495,7 +29587,7 @@ module.exports = {
     ParticleRenderer: 			 require('./webgl/ParticleRenderer')
 };
 
-},{"./ParticleContainer":151,"./webgl/ParticleRenderer":154}],153:[function(require,module,exports){
+},{"./ParticleContainer":152,"./webgl/ParticleRenderer":155}],154:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
 
@@ -29716,7 +29808,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.staticBuffer.destroy();
 };
 
-},{"../../core/utils/createIndicesForQuads":107,"pixi-gl-core":14}],154:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":108,"pixi-gl-core":14}],155:[function(require,module,exports){
 var core = require('../../core'),
     ParticleShader = require('./ParticleShader'),
     ParticleBuffer = require('./ParticleBuffer');
@@ -30148,8 +30240,8 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../core":57,"./ParticleBuffer":153,"./ParticleShader":155}],155:[function(require,module,exports){
-var Shader = require('pixi-gl-core').GLShader;
+},{"../../core":58,"./ParticleBuffer":154,"./ParticleShader":156}],156:[function(require,module,exports){
+var Shader = require('../../core/Shader');
 
 /**
  * @class
@@ -30191,8 +30283,6 @@ function ParticleShader(gl)
         ].join('\n'),
         // hello
          [
-            'precision lowp float;',
-
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
 
@@ -30216,7 +30306,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"pixi-gl-core":14}],156:[function(require,module,exports){
+},{"../../core/Shader":39}],157:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -30232,7 +30322,7 @@ if (!Math.sign)
     };
 }
 
-},{}],157:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -30242,7 +30332,7 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":13}],158:[function(require,module,exports){
+},{"object-assign":13}],159:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
@@ -30260,7 +30350,7 @@ if(!window.Uint16Array){
   window.Uint16Array = Array;
 }
 
-},{"./Math.sign":156,"./Object.assign":157,"./requestAnimationFrame":159}],159:[function(require,module,exports){
+},{"./Math.sign":157,"./Object.assign":158,"./requestAnimationFrame":160}],160:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -30330,6 +30420,6 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[136])(136)
+},{}]},{},[137])(137)
 });
 //# sourceMappingURL=pixi.js.map
