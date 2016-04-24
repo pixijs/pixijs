@@ -298,7 +298,11 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 
 FilterManager.prototype.destroy = function()
 {
+     this.shaderCache = [];
+     FilterManager.emptyPool();
 };
+
+
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
@@ -325,6 +329,23 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 
     return renderTarget;
 };
+
+FilterManager.emptyPool = function()
+{
+    for (var i in FilterManager.pool)
+    {
+        var textures = FilterManager.pool[i];
+        if(textures)
+        {
+            for (var j = 0; j < textures.length; j++)
+            {
+                textures[j].destroy(true);
+            };
+        }
+    };
+
+    FilterManager.pool = {};
+}
 
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
