@@ -11,7 +11,8 @@ var EventEmitter = require('eventemitter3'),
  * @memberof PIXI
  * @param [style] {object} The style parameters
  * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.fill='black'] {string|string[]|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF']
+ * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
@@ -52,6 +53,7 @@ TextStyle.prototype._defaults = {
     lineHeight: null,
     lineJoin: 'miter',
     fill: 'black',
+    fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
     font: 'bold 20pt Arial',
     miterLimit: 10,
     padding: 0,
@@ -114,6 +116,19 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._fill !== outputColor)
             {
                 this._fill = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+    fillGradientType: {
+        get: function ()
+        {
+            return this._fillGradientType;
+        }, set: function (fillGradientType)
+        {
+            if (this._fillGradientType !== fillGradientType)
+            {
+                this._fillGradientType = fillGradientType;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }

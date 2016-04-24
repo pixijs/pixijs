@@ -20,7 +20,8 @@ var Sprite = require('../sprites/Sprite'),
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
  * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
- * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.fill='black'] {string|string[]|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF']
+ * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
@@ -31,7 +32,7 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
+ * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
  * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
@@ -148,7 +149,8 @@ Object.defineProperties(Text.prototype, {
      *
      * @param [style] {object} The style parameters
      * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+     * @param [style.fill='black'] {string|string[]|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF']
+     * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
      * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
      * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
      * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
@@ -192,6 +194,7 @@ Object.defineProperties(Text.prototype, {
 
             style.font = style.font || 'bold 20pt Arial';
             style.fill = style.fill || 'black';
+            style.fillGradientType = style.fillGradientType || CONST.TEXT_GRADIENT.LINEAR_VERTICAL;
             style.align = style.align || 'left';
             style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/pixijs/pixi.js/issues/136
             style.strokeThickness = style.strokeThickness || 0;
@@ -233,7 +236,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -265,7 +268,9 @@ Text.prototype.updateText = function ()
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
+
+    var i;
+    for (i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
         lineWidths[i] = lineWidth;
@@ -346,7 +351,59 @@ Text.prototype.updateText = function ()
     }
 
     //set canvas text styles
-    this.context.fillStyle = style.fill;
+    if (!Array.isArray(style.fill))
+    {
+        this.context.fillStyle = style.fill;
+    }
+    else
+    {
+        // the gradient will be evenly spaced out according to how large the array is.
+        // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
+
+        var gradient;
+        var totalIterations;
+        var currentIteration;
+        var stop;
+
+        if (style.fillGradientType === CONST.TEXT_GRADIENT.LINEAR_VERTICAL)
+        {
+            // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
+            gradient = this.context.createLinearGradient(this.canvas.width / 2, 0, this.canvas.width / 2, this.canvas.height);
+
+            // we need to repeat the gradient so that each invididual line of text has the same vertical gradient effect
+            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
+            totalIterations = ( style.fill.length + 1 ) * lines.length;
+            currentIteration = 0;
+            for (i = 0; i < lines.length; i++)
+            {
+                currentIteration += 1;
+                for (var j = 0; j < style.fill.length; j++)
+                {
+                    stop = (currentIteration / totalIterations);
+                    gradient.addColorStop(stop, style.fill[j]);
+                    currentIteration++;
+                }
+            }
+        }
+        else
+        {
+            // start the gradient at the center left of the canvas, and end at the center right of the canvas
+            gradient = this.context.createLinearGradient(0, this.canvas.height / 2, this.canvas.width, this.canvas.height / 2);
+
+            // can just evenly space out the gradients in this case, as multiple lines makes no difference to an even left to right gradient
+            totalIterations = style.fill.length + 1;
+            currentIteration = 1;
+
+            for (i = 0; i < style.fill.length; i++)
+            {
+                stop = currentIteration / totalIterations;
+                gradient.addColorStop(stop, style.fill[i]);
+                currentIteration++;
+            }
+        }
+
+        this.context.fillStyle = gradient;
+    }
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)

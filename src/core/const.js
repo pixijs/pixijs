@@ -311,6 +311,20 @@ var CONST = {
         HIGH: 'highp'
     },
 
+    /**
+     * Constants that define the type of gradient on text.
+     *
+     * @static
+     * @constant
+     * @property {object} TEXT_GRADIENT
+     * @property {number} TEXT_GRADIENT.LINEAR_VERTICAL=0
+     * @property {number} TEXT_GRADIENT.LINEAR_HORIZONTAL=1
+     */
+    TEXT_GRADIENT: {
+        LINEAR_VERTICAL: 0,
+        LINEAR_HORIZONTAL: 1
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
