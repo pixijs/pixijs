@@ -17,7 +17,6 @@ var FilterState = function()
     this.resolution = 1;
 };
 
-FilterManager.pool = {};
 
 /**
  * @class
@@ -43,6 +42,7 @@ function FilterManager(renderer)
 
     this.shaderCache = {};
     // todo add default!
+    this.pool = {};
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -78,7 +78,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
 
-    var renderTarget = FilterManager.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+    var renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
     currentState.target = target;
     currentState.filters = filters;
@@ -107,12 +107,12 @@ FilterManager.prototype.popFilter = function()
     if(filters.length === 1)
     {
         filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
-        FilterManager.freePotRenderTarget(currentState.renderTarget);
+        this.freePotRenderTarget(currentState.renderTarget);
     }
     else
     {
         var flip = currentState.renderTarget;
-        var flop = FilterManager.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+        var flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
         flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
         for (var i = 0; i < filters.length-1; i++)
@@ -126,8 +126,8 @@ FilterManager.prototype.popFilter = function()
 
         filters[i].apply(this, flip, lastState.renderTarget, false);
 
-        FilterManager.freePotRenderTarget(flip);
-        FilterManager.freePotRenderTarget(flop);
+        this.freePotRenderTarget(flip);
+        this.freePotRenderTarget(flop);
     }
 
     this.stackIndex--;
@@ -255,7 +255,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 FilterManager.prototype.getRenderTarget = function()
 {
     var currentState = this.stack[this.stackIndex];
-    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
+    var renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
     renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
     return renderTarget;
@@ -263,7 +263,7 @@ FilterManager.prototype.getRenderTarget = function()
 
 FilterManager.prototype.returnRenderTarget = function(renderTarget)
 {
-    return FilterManager.freePotRenderTarget(renderTarget);
+    return this.freePotRenderTarget(renderTarget);
 };
 
 /*
@@ -299,14 +299,14 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 FilterManager.prototype.destroy = function()
 {
      this.shaderCache = [];
-     FilterManager.emptyPool();
+     this.emptyPool();
 };
 
 
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
-FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
+FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
     minWidth = bitTwiddle.nextPow2(minWidth * resolution);
@@ -315,11 +315,11 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
  //   console.log(minWidth + "  " + minHeight)
-    if(!FilterManager.pool[key]) {
-      FilterManager.pool[key] = [];
+    if(!this.pool[key]) {
+      this.pool[key] = [];
     }
 
-    var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+    var renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
 
     //manually tweak the resolution...
     //this will not modify the size of the frame buffer, just its resolution.
@@ -330,11 +330,11 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     return renderTarget;
 };
 
-FilterManager.emptyPool = function()
+FilterManager.prototype.emptyPool = function()
 {
-    for (var i in FilterManager.pool)
+    for (var i in this.pool)
     {
-        var textures = FilterManager.pool[i];
+        var textures = this.pool[i];
         if(textures)
         {
             for (var j = 0; j < textures.length; j++)
@@ -344,14 +344,14 @@ FilterManager.emptyPool = function()
         }
     }
 
-    FilterManager.pool = {};
+    this.pool = {};
 };
 
-FilterManager.freePotRenderTarget = function(renderTarget)
+FilterManager.prototype.freePotRenderTarget = function(renderTarget)
 {
     var minWidth = renderTarget.size.width * renderTarget.resolution;
     var minHeight = renderTarget.size.height * renderTarget.resolution;
 
     var key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-    FilterManager.pool[key].push(renderTarget);
+    this.pool[key].push(renderTarget);
 };
