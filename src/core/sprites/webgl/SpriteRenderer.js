@@ -113,14 +113,18 @@ SpriteRenderer.prototype.onContextChange = function ()
 
     this.shaders = new Array(this.MAX_TEXTURES);
     this.shaders[0] = generateMultiTextureShader(gl, 1);
+    this.shaders[1] = generateMultiTextureShader(gl, 2);
 
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    var shader = this.shaders[0];
+    var shader = this.shaders[1];
 
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+
+        console.log(shader);
+
         // build the vao object that will render..
         this.vaos[i] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
@@ -299,7 +303,7 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
-        shader = this.shaders[0];
+        shader = this.shaders[1];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
