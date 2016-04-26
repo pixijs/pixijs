@@ -65,6 +65,14 @@ function Text(text, style, resolution)
      */
     this._styleListener = null;
 
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {string}
+     * @private
+     */
+    this._font = '';
+
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
@@ -192,7 +200,11 @@ Text.prototype.updateText = function (respectDirty)
         return;
     }
     var style = this._style;
-    this.context.font = style.font;
+
+    // build canvas api font setting from invididual components
+    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily;
+
+    this.context.font = this._font;
 
     // word wrap
     // preserve original text
@@ -204,7 +216,7 @@ Text.prototype.updateText = function (respectDirty)
     // calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(style.font);
+    var fontProperties = this.determineFontProperties(this._font);
 
     var i;
     for (i = 0; i < lines.length; i++)
@@ -244,7 +256,7 @@ Text.prototype.updateText = function (respectDirty)
     //this.context.fillStyle="#FF0000";
     //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.context.font = style.font;
+    this.context.font = this._font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = style.textBaseline;
