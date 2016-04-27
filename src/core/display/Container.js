@@ -606,9 +606,11 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ * @param [destroyChildren=false] {boolean} Should it destroy any children?
+ * @param [destroyTexture=false] {boolean} Should it destroy the current texture of any children?
+ * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture?
  */
-Container.prototype.destroy = function (destroyChildren)
+Container.prototype.destroy = function (destroyChildren, destroyTexture, destroyBaseTexture)
 {
     DisplayObject.prototype.destroy.call(this);
 
@@ -616,7 +618,7 @@ Container.prototype.destroy = function (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
-            this.children[i].destroy(destroyChildren);
+            this.children[i].destroy(destroyChildren, destroyTexture, destroyBaseTexture);
         }
     }
 

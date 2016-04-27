@@ -233,7 +233,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -684,15 +684,15 @@ Text.prototype.getBounds = function (matrix)
 /**
  * Destroys this text object.
  *
- * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
+ * @param [destroyChildren=false] {boolean} Should it destroy any children?
+ * @param [destroyTexture=false] {boolean} Should it destroy the current texture of any children?
+ * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture?
  */
-Text.prototype.destroy = function (destroyBaseTexture)
+Text.prototype.destroy = function (destroyChildren, destroyTexture, destroyBaseTexture)
 {
-    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+    Sprite.prototype.destroy.call(this, destroyChildren, destroyTexture, destroyBaseTexture);
+
+    // make sure to reset the the context and canvas.. don't want this hanging around in memory!
     this.context = null;
     this.canvas = null;
-
-    this._style = null;
-
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
