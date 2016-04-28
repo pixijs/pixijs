@@ -11,7 +11,7 @@ var EventEmitter = require('eventemitter3'),
  * @memberof PIXI
  * @param [style] {object} The style parameters
  * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.fill='black'] {string|number|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'. @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
