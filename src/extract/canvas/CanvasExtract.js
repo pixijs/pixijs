@@ -5,17 +5,17 @@ var core = require('../../core'),
  * The extract manager provides functionality to export content from the renderers
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
+ * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-function WebGLExtract(renderer)
+function CanvasExtract(renderer)
 {
     this.renderer = renderer;
     renderer.extract = this;
 }
 
 
-WebGLExtract.prototype.constructor = WebGLExtract;
-module.exports = WebGLExtract;
+CanvasExtract.prototype.constructor = CanvasExtract;
+module.exports = CanvasExtract;
 
 /**
  * Will return a HTML Image of the target
@@ -23,7 +23,7 @@ module.exports = WebGLExtract;
  * @return {Image}
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  */
-WebGLExtract.prototype.image = function ( target )
+CanvasExtract.prototype.image = function ( target )
 {
 	var image = new Image();
     image.src = this.base64( target );
@@ -31,11 +31,11 @@ WebGLExtract.prototype.image = function ( target )
 };
 
 /**
- * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
+ * Will return a a base64 encoded string of this target. It works by calling CanvasExtract.getCanvas and then running toDataURL on that.
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {string} A base64 encoded string of the texture.
  */
-WebGLExtract.prototype.base64 = function ( target )
+CanvasExtract.prototype.base64 = function ( target )
 {
     return this.canvas( target ).toDataURL();
 };
@@ -45,7 +45,7 @@ WebGLExtract.prototype.base64 = function ( target )
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
-WebGLExtract.prototype.canvas = function ( target )
+CanvasExtract.prototype.canvas = function ( target )
 {
 	var renderer = this.renderer;
 	var context;
@@ -98,7 +98,7 @@ WebGLExtract.prototype.canvas = function ( target )
  * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
-WebGLExtract.prototype.pixels = function ( renderTexture )
+CanvasExtract.prototype.pixels = function ( renderTexture )
 {
     var renderer = this.renderer;
     var context;
@@ -128,10 +128,10 @@ WebGLExtract.prototype.pixels = function ( renderTexture )
  * Destroys the extract
  *
  */
-WebGLExtract.prototype.destroy = function ()
+CanvasExtract.prototype.destroy = function ()
 {
     this.renderer.extract = null;
     this.renderer = null;
 };
 
-core.CanvasRenderer.registerPlugin('extract', WebGLExtract);
+core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
