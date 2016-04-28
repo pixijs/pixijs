@@ -174,6 +174,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     // bind the input texture..
     input.texture.bind(0);
 
+    renderer.state.setBlendMode( filter.blendMode );
+
     this.quad.draw();
 };
 
