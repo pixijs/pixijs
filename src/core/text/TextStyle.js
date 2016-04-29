@@ -19,10 +19,10 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.fill='black'] {string|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
  * @param [style.fontFamily='Arial'] {string} The font family
- * @param [style.fontSize='20pt'] {string} The font size and line height (can be in px or pt)
+ * @param [style.fontSize=26] {number|string} The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
  * @param [style.fontStyle='normal'] {string} The font style ('normal', 'italic' or 'oblique')
  * @param [style.fontVariant='normal'] {string} The font variant ('normal' or 'small-caps')
- * @param [style.fontWeight='bold'] {string} The font weight ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
+ * @param [style.fontWeight='normal'] {string} The font weight ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
  * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
@@ -58,10 +58,10 @@ TextStyle.prototype._defaults = {
     dropShadowDistance: 5,
     fill: 'black',
     fontFamily: 'Arial',
-    fontSize: '20pt',
+    fontSize: 26,
     fontStyle: 'normal',
     fontVariant: 'normal',
-    fontWeight: 'bold',
+    fontWeight: 'normal',
     letterSpacing: 0,
     lineHeight: 0,
     lineJoin: 'miter',

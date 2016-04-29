@@ -201,8 +201,9 @@ Text.prototype.updateText = function (respectDirty)
     }
     var style = this._style;
 
-    // build canvas api font setting from invididual components
-    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily;
+    // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
+    var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
+    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
 
     this.context.font = this._font;
 
