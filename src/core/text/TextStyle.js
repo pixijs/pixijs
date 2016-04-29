@@ -10,27 +10,29 @@ var EventEmitter = require('eventemitter3'),
  * @extends EventEmitter
  * @memberof PIXI
  * @param [style] {object} The style parameters
- * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
+ * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+ * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
+ * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
+ * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.fill='black'] {string|string[]|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF']
  * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+ * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
  * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
  *      or increase the spikiness of rendered text.
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
+ * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
+ * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
  */
 function TextStyle(style)
 {
@@ -45,16 +47,18 @@ module.exports = TextStyle;
 // Default settings. Explained in the constructor.
 TextStyle.prototype._defaults = {
     align: 'left',
+    breakWords: false,
     dropShadow: false,
     dropShadowAngle: Math.PI / 6,
     dropShadowBlur: 0,
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
-    lineHeight: null,
-    lineJoin: 'miter',
     fill: 'black',
     fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
     font: 'bold 20pt Arial',
+    letterSpacing: 0,
+    lineHeight: 0,
+    lineJoin: 'miter',
     miterLimit: 10,
     padding: 0,
     stroke: 'black',
@@ -93,24 +97,118 @@ TextStyle.prototype.reset = function ()
  * Any set operation will emit a styleChanged event.
  */
 Object.defineProperties(TextStyle.prototype, {
-    font: {
+     align: {
         get: function ()
         {
-            return this._font;
-        }, set: function (font)
+            return this._align;
+        },
+        set: function (align)
         {
-            if (this._font !== font)
+            if (this._align !== align)
             {
-                this._font = font;
+                this._align = align;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
+
+    breakWords: {
+        get: function ()
+        {
+            return this._breakWords;
+        },
+        set: function (breakWords)
+        {
+            if (this._breakWords !== breakWords)
+            {
+                this._breakWords = breakWords;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadow: {
+        get: function ()
+        {
+            return this._dropShadow;
+        },
+        set: function (dropShadow)
+        {
+            if (this._dropShadow !== dropShadow)
+            {
+                this._dropShadow = dropShadow;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadowAngle: {
+        get: function ()
+        {
+            return this._dropShadowAngle;
+        },
+        set: function (dropShadowAngle)
+        {
+            if (this._dropShadowAngle !== dropShadowAngle)
+            {
+                this._dropShadowAngle = dropShadowAngle;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadowBlur: {
+        get: function ()
+        {
+            return this._dropShadowBlur;
+        },
+        set: function (dropShadowBlur)
+        {
+            if (this._dropShadowBlur !== dropShadowBlur)
+            {
+                this._dropShadowBlur = dropShadowBlur;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadowColor: {
+        get: function ()
+        {
+            return this._dropShadowColor;
+        },
+        set: function (dropShadowColor)
+        {
+            var outputColor = getColor(dropShadowColor);
+            if (this._dropShadowColor !== outputColor)
+            {
+                this._dropShadowColor = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadowDistance: {
+        get: function ()
+        {
+            return this._dropShadowDistance;
+        },
+        set: function (dropShadowDistance)
+        {
+            if (this._dropShadowDistance !== dropShadowDistance)
+            {
+                this._dropShadowDistance = dropShadowDistance;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
     fill: {
         get: function ()
         {
             return this._fill;
-        }, set: function (fill)
+        },
+        set: function (fill)
         {
             var outputColor = getColor(fill);
             if (this._fill !== outputColor)
@@ -120,6 +218,7 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
+
     fillGradientType: {
         get: function ()
         {
@@ -133,24 +232,103 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    align: {
+
+    font: {
         get: function ()
         {
-            return this._align;
-        }, set: function (align)
+            return this._font;
+        },
+        set: function (font)
         {
-            if (this._align !== align)
+            if (this._font !== font)
             {
-                this._align = align;
+                this._font = font;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
+
+    letterSpacing: {
+        get: function ()
+        {
+            return this._letterSpacing;
+        },
+        set: function (letterSpacing)
+        {
+            if (this._letterSpacing !== letterSpacing)
+            {
+                this._letterSpacing = letterSpacing;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    lineHeight: {
+        get: function ()
+        {
+            return this._lineHeight;
+        },
+        set: function (lineHeight)
+        {
+            if (this._lineHeight !== lineHeight)
+            {
+                this._lineHeight = lineHeight;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    lineJoin: {
+        get: function ()
+        {
+            return this._lineJoin;
+        },
+        set: function (lineJoin)
+        {
+            if (this._lineJoin !== lineJoin)
+            {
+                this._lineJoin = lineJoin;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    miterLimit: {
+        get: function ()
+        {
+            return this._miterLimit;
+        },
+        set: function (miterLimit)
+        {
+            if (this._miterLimit !== miterLimit)
+            {
+                this._miterLimit = miterLimit;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    padding: {
+        get: function ()
+        {
+            return this._padding;
+        },
+        set: function (padding)
+        {
+            if (this._padding !== padding)
+            {
+                this._padding = padding;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
     stroke: {
         get: function ()
         {
             return this._stroke;
-        }, set: function (stroke)
+        },
+        set: function (stroke)
         {
             var outputColor = getColor(stroke);
             if (this._stroke !== outputColor)
@@ -160,11 +338,13 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
+
     strokeThickness: {
         get: function ()
         {
             return this._strokeThickness;
-        }, set: function (strokeThickness)
+        },
+        set: function (strokeThickness)
         {
             if (this._strokeThickness !== strokeThickness)
             {
@@ -173,116 +353,13 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    wordWrap: {
-        get: function ()
-        {
-            return this._wordWrap;
-        }, set: function (wordWrap)
-        {
-            if (this._wordWrap !== wordWrap)
-            {
-                this._wordWrap = wordWrap;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    wordWrapWidth: {
-        get: function ()
-        {
-            return this._wordWrapWidth;
-        }, set: function (wordWrapWidth)
-        {
-            if (this._wordWrapWidth !== wordWrapWidth)
-            {
-                this._wordWrapWidth = wordWrapWidth;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    dropShadow: {
-        get: function ()
-        {
-            return this._dropShadow;
-        }, set: function (dropShadow)
-        {
-            if (this._dropShadow !== dropShadow)
-            {
-                this._dropShadow = dropShadow;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    dropShadowColor: {
-        get: function ()
-        {
-            return this._dropShadowColor;
-        }, set: function (dropShadowColor)
-        {
-            var outputColor = getColor(dropShadowColor);
-            if (this._dropShadowColor !== outputColor)
-            {
-                this._dropShadowColor = outputColor;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    dropShadowAngle: {
-        get: function ()
-        {
-            return this._dropShadowAngle;
-        }, set: function (dropShadowAngle)
-        {
-            if (this._dropShadowAngle !== dropShadowAngle)
-            {
-                this._dropShadowAngle = dropShadowAngle;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    dropShadowDistance: {
-        get: function ()
-        {
-            return this._dropShadowDistance;
-        }, set: function (dropShadowDistance)
-        {
-            if (this._dropShadowDistance !== dropShadowDistance)
-            {
-                this._dropShadowDistance = dropShadowDistance;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    dropShadowBlur: {
-        get: function ()
-        {
-            return this._dropShadowBlur;
-        }, set: function (dropShadowBlur)
-        {
-            if (this._dropShadowBlur !== dropShadowBlur)
-            {
-                this._dropShadowBlur = dropShadowBlur;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    padding: {
-        get: function ()
-        {
-            return this._padding;
-        }, set: function (padding)
-        {
-            if (this._padding !== padding)
-            {
-                this._padding = padding;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
+
     textBaseline: {
         get: function ()
         {
             return this._textBaseline;
-        }, set: function (textBaseline)
+        },
+        set: function (textBaseline)
         {
             if (this._textBaseline !== textBaseline)
             {
@@ -291,41 +368,32 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    lineJoin: {
+
+    wordWrap: {
         get: function ()
         {
-            return this._lineJoin;
-        }, set: function (lineJoin)
+            return this._wordWrap;
+        },
+        set: function (wordWrap)
         {
-            if (this._lineJoin !== lineJoin)
+            if (this._wordWrap !== wordWrap)
             {
-                this._lineJoin = lineJoin;
+                this._wordWrap = wordWrap;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
-    lineHeight: {
+
+    wordWrapWidth: {
         get: function ()
         {
-            return this._lineHeight;
-        }, set: function (lineHeight)
+            return this._wordWrapWidth;
+        },
+        set: function (wordWrapWidth)
         {
-            if (this._lineHeight !== lineHeight)
+            if (this._wordWrapWidth !== wordWrapWidth)
             {
-                this._lineHeight = lineHeight;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    miterLimit: {
-        get: function ()
-        {
-            return this._miterLimit;
-        }, set: function (miterLimit)
-        {
-            if (this._miterLimit !== miterLimit)
-            {
-                this._miterLimit = miterLimit;
+                this._wordWrapWidth = wordWrapWidth;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
