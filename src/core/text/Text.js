@@ -288,7 +288,7 @@ Text.prototype.updateText = function (respectDirty)
     }
 
     //set canvas text styles
-    this.context.fillStyle = this.generateFillStyle(style, lines);
+    this.context.fillStyle = this._generateFillStyle(style, lines);
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
