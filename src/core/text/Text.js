@@ -288,59 +288,7 @@ Text.prototype.updateText = function (respectDirty)
     }
 
     //set canvas text styles
-    if (!Array.isArray(style.fill))
-    {
-        this.context.fillStyle = style.fill;
-    }
-    else
-    {
-        // the gradient will be evenly spaced out according to how large the array is.
-        // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-
-        var gradient;
-        var totalIterations;
-        var currentIteration;
-        var stop;
-
-        if (style.fillGradientType === CONST.TEXT_GRADIENT.LINEAR_VERTICAL)
-        {
-            // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
-            gradient = this.context.createLinearGradient(this.canvas.width / 2, 0, this.canvas.width / 2, this.canvas.height);
-
-            // we need to repeat the gradient so that each invididual line of text has the same vertical gradient effect
-            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
-            totalIterations = ( style.fill.length + 1 ) * lines.length;
-            currentIteration = 0;
-            for (i = 0; i < lines.length; i++)
-            {
-                currentIteration += 1;
-                for (var j = 0; j < style.fill.length; j++)
-                {
-                    stop = (currentIteration / totalIterations);
-                    gradient.addColorStop(stop, style.fill[j]);
-                    currentIteration++;
-                }
-            }
-        }
-        else
-        {
-            // start the gradient at the center left of the canvas, and end at the center right of the canvas
-            gradient = this.context.createLinearGradient(0, this.canvas.height / 2, this.canvas.width, this.canvas.height / 2);
-
-            // can just evenly space out the gradients in this case, as multiple lines makes no difference to an even left to right gradient
-            totalIterations = style.fill.length + 1;
-            currentIteration = 1;
-
-            for (i = 0; i < style.fill.length; i++)
-            {
-                stop = currentIteration / totalIterations;
-                gradient.addColorStop(stop, style.fill[i]);
-                currentIteration++;
-            }
-        }
-
-        this.context.fillStyle = gradient;
-    }
+    this.context.fillStyle = this.generateFillStyle(style, lines);
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
@@ -669,6 +617,68 @@ Text.prototype.getBounds = function (matrix)
 Text.prototype._onStyleChange = function ()
 {
     this.dirty = true;
+};
+
+/**
+ * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
+ * @return string|Number|CanvasGradient
+ * @private
+ */
+Text.prototype._generateFillStyle = function (style, lines)
+{
+    if (!Array.isArray(style.fill))
+    {
+        return style.fill;
+    }
+    else
+    {
+        // the gradient will be evenly spaced out according to how large the array is.
+        // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
+        var i;
+        var gradient;
+        var totalIterations;
+        var currentIteration;
+        var stop;
+
+        if (style.fillGradientType === CONST.TEXT_GRADIENT.LINEAR_VERTICAL)
+        {
+            // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
+            gradient = this.context.createLinearGradient(this.canvas.width / 2, 0, this.canvas.width / 2, this.canvas.height);
+
+            // we need to repeat the gradient so that each invididual line of text has the same vertical gradient effect
+            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
+            totalIterations = ( style.fill.length + 1 ) * lines.length;
+            currentIteration = 0;
+            for (i = 0; i < lines.length; i++)
+            {
+                currentIteration += 1;
+                for (var j = 0; j < style.fill.length; j++)
+                {
+                    stop = (currentIteration / totalIterations);
+                    gradient.addColorStop(stop, style.fill[j]);
+                    currentIteration++;
+                }
+            }
+        }
+        else
+        {
+            // start the gradient at the center left of the canvas, and end at the center right of the canvas
+            gradient = this.context.createLinearGradient(0, this.canvas.height / 2, this.canvas.width, this.canvas.height / 2);
+
+            // can just evenly space out the gradients in this case, as multiple lines makes no difference to an even left to right gradient
+            totalIterations = style.fill.length + 1;
+            currentIteration = 1;
+
+            for (i = 0; i < style.fill.length; i++)
+            {
+                stop = currentIteration / totalIterations;
+                gradient.addColorStop(stop, style.fill[i]);
+                currentIteration++;
+            }
+        }
+
+        return gradient;
+    }
 };
 
 /**
