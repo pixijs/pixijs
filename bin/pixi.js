@@ -24717,8 +24717,8 @@ MovieClip.fromImages = function (images)
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader');
-
+    TilingShader = require('./webgl/TilingShader'),
+    tempArray = new Float32Array(4);
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -24900,7 +24900,13 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     glData.shader.uniforms.uTransform = uTransform;
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
-    glData.shader.uniforms.alpha = this.worldAlpha;
+
+    var color = tempArray;
+
+    core.utils.hex2rgb(this.tint, color);
+    color[3] = this.worldAlpha;
+
+    glData.shader.uniforms.uColor = color;
 
     renderer.bindTexture(this._texture, 0);
     glData.quad.draw();
@@ -25516,7 +25522,7 @@ function TilingShader(gl)
     Shader.call(this,
         gl,
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\n\nuniform vec4 uFrame;\nuniform vec4 uTransform;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vec2 coord = aTextureCoord;\n    coord -= uTransform.xy;\n    coord /= uTransform.zw;\n    vTextureCoord = coord;\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   vec2 coord = mod(vTextureCoord, uFrame.zw);\n   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   coord += uFrame.xy;\n\n   gl_FragColor =  texture2D(uSampler, coord) ;\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uColor;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   \tvec2 coord = mod(vTextureCoord, uFrame.zw);\n   \tcoord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   \tcoord += uFrame.xy;\n\n   \tvec4 sample = texture2D(uSampler, coord);\n  \tvec4 color = vec4(uColor.rgb * uColor.a, uColor.a);\n\n   \tgl_FragColor = sample * color ;\n}\n"
     );
 }
 
