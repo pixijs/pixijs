@@ -172,10 +172,10 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
         gl.enable(gl.SCISSOR_TEST);
     }
 
-    // incase the render target is being masked using a scissor rect
+    // in case the render target is being masked using a scissor rect
     if(output === renderer.maskManager.scissorRenderTarget)
     {
-        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData)
+        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
     }
 
     renderer.bindShader(shader);
