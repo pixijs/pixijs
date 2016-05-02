@@ -10,7 +10,10 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
+    //TODO - we don't need both!
     this.scissor = false;
+    this.scissorData = null;
+    this.scissorRenderTarget = null;
 
     this.enableScissor = true;
 
@@ -36,7 +39,6 @@ MaskManager.prototype.pushMask = function (target, maskData)
     }
     else
     {
-       // console.log( maskData.graphicsData[0].shape.type)
         if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
         {
             var matrix = maskData.worldTransform;
@@ -152,22 +154,28 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     var renderTarget = this.renderer._activeRenderTarget;
 
     var bounds = maskData.getBounds();
+
     bounds.fit(renderTarget.size);
     maskData.renderable = false;
 
     this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
     this.renderer.gl.scissor(bounds.x,
-               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
-               bounds.width ,
-               bounds.height);
+                           renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
+                           bounds.width ,
+                           bounds.height);
 
+    this.scissorRenderTarget = renderTarget;
+    this.scissorData = maskData;
     this.scissor = true;
 };
 
 MaskManager.prototype.popScissorMask = function ()
 {
+    this.scissorRenderTarget = null;
+    this.scissorData = null;
     this.scissor = false;
+
     // must be scissor!
     var gl = this.renderer.gl;
     gl.disable(gl.SCISSOR_TEST);
