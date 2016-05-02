@@ -106,7 +106,7 @@ FilterManager.prototype.popFilter = function()
 
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
         this.freePotRenderTarget(currentState.renderTarget);
     }
     else
