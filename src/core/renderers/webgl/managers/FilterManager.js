@@ -161,6 +161,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     renderer.bindRenderTarget(output);
 
+
+
     if(clear)
     {
         var gl = renderer.gl;
@@ -168,6 +170,12 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
         gl.disable(gl.SCISSOR_TEST);
         renderer.clear();//[1, 1, 1, 1]);
         gl.enable(gl.SCISSOR_TEST);
+    }
+
+    // incase the render target is being masked using a scissor rect
+    if(output === renderer.maskManager.scissorRenderTarget)
+    {
+        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData)
     }
 
     renderer.bindShader(shader);
