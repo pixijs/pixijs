@@ -34,7 +34,7 @@ BlurFilter.prototype.apply = function (filterManager, input, output)
     var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output, true);
+    this.blurYFilter.apply(filterManager, renderTarget, output, false);
 
     filterManager.returnRenderTarget(renderTarget);
 };
