@@ -106,7 +106,7 @@ FilterManager.prototype.popFilter = function()
 
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
         FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
@@ -124,7 +124,7 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         }
 
-        filters[i].apply(this, flip, lastState.renderTarget, false);
+        filters[i].apply(this, flip, lastState.renderTarget, true);
 
         FilterManager.freePotRenderTarget(flip);
         FilterManager.freePotRenderTarget(flop);
@@ -163,7 +163,11 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     if(clear)
     {
+        var gl = renderer.gl;
+
+        gl.disable(gl.SCISSOR_TEST);
         renderer.clear();//[1, 1, 1, 1]);
+        gl.enable(gl.SCISSOR_TEST);
     }
 
     renderer.bindShader(shader);
