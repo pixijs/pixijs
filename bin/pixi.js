@@ -69,7 +69,7 @@ var Buffer = function(gl, type, data, drawType)
 	{
 		this.upload(data);
 	}
-}
+};
 
 /**
  * Uploads the buffer to the GPU
@@ -97,7 +97,7 @@ Buffer.prototype.upload = function(data, offset, dontBind)
 	}
 
 	this.data = data;
-}
+};
 /**
  * Binds the buffer
  *
@@ -106,22 +106,22 @@ Buffer.prototype.bind = function()
 {
 	var gl = this.gl;
 	gl.bindBuffer(this.type, this.buffer);
-}
+};
 
 Buffer.createVertexBuffer = function(gl, data, drawType)
 {
 	return new Buffer(gl, gl.ARRAY_BUFFER, data, drawType);
-}
+};
 
 Buffer.createIndexBuffer = function(gl, data, drawType)
 {
 	return new Buffer(gl, gl.ELEMENT_ARRAY_BUFFER, data, drawType);
-}
+};
 
 Buffer.create = function(gl, type, data, drawType)
 {
 	return new Buffer(gl, type, drawType);
-}
+};
 
 /**
  * Destroys the buffer
@@ -129,7 +129,7 @@ Buffer.create = function(gl, type, data, drawType)
  */
 Buffer.prototype.destroy = function(){
 	this.gl.deleteBuffer(this.buffer);
-}
+};
 
 module.exports = Buffer;
 
@@ -188,7 +188,7 @@ var Framebuffer = function(gl, width, height)
      * @member {Number}
      */
 	this.height = height || 100;
-}
+};
 
 /**
  * Adds a texture to the frame buffer
@@ -207,7 +207,7 @@ Framebuffer.prototype.enableTexture = function(texture)
 	this.bind();
 
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
-}
+};
 
 /**
  * Initialises the stencil buffer
@@ -226,7 +226,7 @@ Framebuffer.prototype.enableStencil = function()
     // TODO.. this is depth AND stencil?
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencil);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
-}
+};
 
 /**
  * Erases the drawing area and fills it with a colour
@@ -243,7 +243,7 @@ Framebuffer.prototype.clear = function( r, g, b, a )
 
     gl.clearColor(r, g, b, a);
     gl.clear(gl.COLOR_BUFFER_BIT);
-}
+};
 
 /**
  * Binds the frame buffer to the WebGL context
@@ -258,7 +258,7 @@ Framebuffer.prototype.bind = function()
 	}
 
 	gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
-}
+};
 
 /**
  * Unbinds the frame buffer to the WebGL context
@@ -267,7 +267,7 @@ Framebuffer.prototype.unbind = function()
 {
 	var gl = this.gl;
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null );	
-}
+};
 /**
  * Resizes the drawing area of the buffer to the given width and height
  * @param  width  {Number} the new width
@@ -291,7 +291,7 @@ Framebuffer.prototype.resize = function(width, height)
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
     }
-}
+};
 
 /**
  * Destroys this buffer
@@ -312,7 +312,7 @@ Framebuffer.prototype.destroy = function()
 
 	this.stencil = null;
 	this.texture = null;
-}
+};
 
 /**
  * Creates a frame buffer with a texture containing the given data
@@ -336,7 +336,7 @@ Framebuffer.createRGBA = function(gl, width, height, data)
     fbo.unbind();
 
     return fbo;
-}
+};
 
 /**
  * Creates a frame buffer with a texture containing the given data
@@ -356,12 +356,12 @@ Framebuffer.createFloat32 = function(gl, width, height, data)
 
     //now create the framebuffer object and attach the texture to it.
     var fbo = new Framebuffer(gl, width, height);
-    fbo.enableTexture(texture)
+    fbo.enableTexture(texture);
 
     fbo.unbind();
 
     return fbo;
-}
+};
 
 module.exports = Framebuffer;
 
@@ -398,6 +398,7 @@ var Shader = function(gl, vertexSrc, fragmentSrc)
 	// First compile the program..
 	this.program = compileProgram(gl, vertexSrc, fragmentSrc);
 
+
 	/**
 	 * The attributes of the shader as an object containing the following properties
 	 * {
@@ -422,14 +423,14 @@ var Shader = function(gl, vertexSrc, fragmentSrc)
 	 * @member {Object}
 	 */
     this.uniforms = generateUniformAccessObject( gl, uniformData );
-}
+};
 /**
  * Uses this shader
  */
 Shader.prototype.bind = function()
 {
 	this.gl.useProgram(this.program);
-}
+};
 
 /**
  * Destroys this shader
@@ -438,7 +439,7 @@ Shader.prototype.bind = function()
 Shader.prototype.destroy = function()
 {
 	var gl = this.gl;
-}
+};
 
 module.exports = Shader;
 
@@ -516,7 +517,7 @@ var Texture = function(gl, width, height, format, type)
 	this.type = type || gl.UNSIGNED_BYTE;
 
 
-}
+};
 
 /**
  * Uploads this texture to the GPU
@@ -534,7 +535,7 @@ Texture.prototype.upload = function(source)
 
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
     gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, source);
-}
+};
 
 var FLOATING_POINT_AVAILABLE = false;
 
@@ -577,13 +578,13 @@ Texture.prototype.uploadData = function(data, width, height)
 		this.type = gl.UNSIGNED_BYTE;
 	}
 
-
+	
 
 	// what type of data?
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
 	gl.texImage2D(gl.TEXTURE_2D, 0, this.format,  this.width, this.height, 0, this.format, this.type, data || null);
 
-}
+};
 
 /**
  * Binds the texture
@@ -599,7 +600,7 @@ Texture.prototype.bind = function(location)
 	}
 
 	gl.bindTexture(gl.TEXTURE_2D, this.texture);
-}
+};
 
 /**
  * Unbinds the texture
@@ -608,7 +609,7 @@ Texture.prototype.unbind = function()
 {
 	var gl = this.gl;
 	gl.bindTexture(gl.TEXTURE_2D, null);
-}
+};
 
 /**
  * @mat
@@ -628,7 +629,7 @@ Texture.prototype.minFilter = function( linear )
 	{
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR : gl.NEAREST);
 	}
-}
+};
 
 /**
  * @mat
@@ -641,7 +642,7 @@ Texture.prototype.magFilter = function( linear )
 	this.bind();
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-}
+};
 
 /**
  * Enables mipmapping
@@ -655,7 +656,7 @@ Texture.prototype.enableMipmap = function()
 	this.mipmap = true;
 
 	gl.generateMipmap(gl.TEXTURE_2D);
-}
+};
 
 /**
  * Enables linear filtering
@@ -664,7 +665,7 @@ Texture.prototype.enableLinearScaling = function()
 {
 	this.minFilter(true);
 	this.magFilter(true);
-}
+};
 
 /**
  * Enables nearest neighbour interpolation
@@ -673,7 +674,7 @@ Texture.prototype.enableNearestScaling = function()
 {
 	this.minFilter(false);
 	this.magFilter(false);
-}
+};
 
 /**
  * Enables clamping on the texture so WebGL will not repeat it
@@ -686,7 +687,7 @@ Texture.prototype.enableWrapClamp = function()
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-}
+};
 
 /**
  * Enable tiling on the texture
@@ -699,7 +700,7 @@ Texture.prototype.enableWrapRepeat = function()
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-}
+};
 
 /**
  * @mat
@@ -712,7 +713,7 @@ Texture.prototype.enableWrapMirrorRepeat = function()
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
-}
+};
 
 
 /**
@@ -723,7 +724,7 @@ Texture.prototype.destroy = function()
 	var gl = this.gl;
 	//TODO
 	gl.deleteTexture(this.texture);
-}
+};
 
 /**
  * @static
@@ -738,7 +739,7 @@ Texture.fromSource = function(gl, source, premultiplyAlpha)
 	texture.upload(source);
 
 	return texture;
-}
+};
 
 /**
  * @static
@@ -754,7 +755,7 @@ Texture.fromData = function(gl, data, width, height)
 	texture.uploadData(data, width, height);
 
 	return texture;
-}
+};
 
 
 module.exports = Texture;
@@ -790,8 +791,10 @@ function VertexArrayObject(gl, state)
 		var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 		
 		// VAO - overwrite the state..
-		this.nativeState = {tempAttribState:new Array(maxAttribs)
-							,attribState:new Array(maxAttribs)};
+		this.nativeState = {
+            tempAttribState: new Array(maxAttribs),
+			attribState: new Array(maxAttribs)
+        };
 	}
 
 	/**
@@ -849,7 +852,7 @@ VertexArrayObject.prototype.bind = function()
 	}
 
 	return this;
-}
+};
 
 /**
  * Unbinds the buffer
@@ -862,7 +865,7 @@ VertexArrayObject.prototype.unbind = function()
 	}
 
 	return this;
-}
+};
 
 /**
  * Uses this vao
@@ -891,14 +894,14 @@ VertexArrayObject.prototype.activate = function()
 							   attrib.start || 0);
 
 
-	};
+	}
 
 	setVertexAttribArrays(gl, this.attributes, this.nativeState);
 	
 	this.indexBuffer.bind();
 
 	return this;
-}
+};
 
 /**
  *
@@ -920,12 +923,12 @@ VertexArrayObject.prototype.addAttribute = function(buffer, attribute, type, nor
 	 	normalized: normalized || false,
 	 	stride: 	stride || 0,
 	 	start: 		start || 0
-	})
+	});
 
 	this.dirty = true;
 
 	return this;
-}
+};
 
 /**
  *
@@ -939,7 +942,7 @@ VertexArrayObject.prototype.addIndex = function(buffer, options)
     this.dirty = true;
 
     return this;
-}
+};
 
 /**
  * Unbinds this vao and disables it
@@ -959,7 +962,7 @@ VertexArrayObject.prototype.clear = function()
 	this.indexBuffer = null;
 
 	return this;
-}
+};
 
 /**
  * @mat
@@ -973,7 +976,27 @@ VertexArrayObject.prototype.draw = function(type, size, start)
 	gl.drawElements(type, size, gl.UNSIGNED_SHORT, start || 0);
 
 	return this;
-}
+};
+
+/**
+ * Destroy this vao
+ */
+VertexArrayObject.prototype.destroy = function()
+{
+	// lose references
+	this.gl = null;
+	this.indexBuffer = null;
+	this.attributes = null;
+	this.nativeState = null;
+
+	if(this.nativeVao)
+	{
+		this.nativeVaoExtension.deleteVertexArrayOES(this.nativeVao);
+	}
+
+	this.nativeVaoExtension = null;
+	this.nativeVao = null;
+};
 
 },{"./setVertexAttribArrays":8}],7:[function(require,module,exports){
 
@@ -999,7 +1022,7 @@ var createContext = function(canvas, options)
     }
 
     return gl;
-}
+};
 
 module.exports = createContext;
 
@@ -1013,12 +1036,10 @@ var GL_MAP = {};
  */
 var setVertexAttribArrays = function (gl, attribs, state)
 {
-
+    var i;
     if(state)
     {
-
-        var i,
-            tempAttribState = state.tempAttribState,
+        var tempAttribState = state.tempAttribState,
             attribState = state.attribState;
 
         for (i = 0; i < tempAttribState.length; i++)
@@ -1027,7 +1048,7 @@ var setVertexAttribArrays = function (gl, attribs, state)
         }
 
         // set the new attribs
-        for (i in attribs)
+        for (i = 0; i < attribs.length; i++)
         {
             tempAttribState[attribs[i].attribute.location] = true;
         }
@@ -1052,7 +1073,7 @@ var setVertexAttribArrays = function (gl, attribs, state)
     }
     else
     {
-        for (var i = 0; i < attribs.length; i++)
+        for (i = 0; i < attribs.length; i++)
         {
             var attrib = attribs[i];
             gl.enableVertexAttribArray(attrib.attribute.location);
@@ -1071,7 +1092,7 @@ module.exports = setVertexAttribArrays;
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  * @return {WebGLProgram} the shader program
  */
-compileProgram = function(gl, vertexSrc, fragmentSrc)
+var compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
     var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
@@ -1104,7 +1125,7 @@ compileProgram = function(gl, vertexSrc, fragmentSrc)
     gl.deleteShader(glFragShader);
 
     return program;
-}
+};
 
 /**
  *
@@ -1177,21 +1198,21 @@ var defaultValue = function(type, size)
             return booleanArray(4 * size);
 
         case 'mat2':
-            return new Float32Array([1, 0
-                                    ,0, 1]);
+            return new Float32Array([1, 0,
+                                     0, 1]);
 
         case 'mat3': 
-            return new Float32Array([1, 0, 0
-                                    ,0, 1, 0
-                                    ,0, 0, 1]);
+            return new Float32Array([1, 0, 0,
+                                     0, 1, 0,
+                                     0, 0, 1]);
 
         case 'mat4':
-            return new Float32Array([1, 0, 0, 0
-                                    ,0, 1, 0, 0
-                                    ,0, 0, 1, 0
-                                    ,0, 0, 0, 1]);
+            return new Float32Array([1, 0, 0, 0,
+                                     0, 1, 0, 0,
+                                     0, 0, 1, 0,
+                                     0, 0, 0, 1]);
     }
-}
+};
 
 var booleanArray = function(size)
 {
@@ -1200,10 +1221,10 @@ var booleanArray = function(size)
     for (var i = 0; i < array.length; i++) 
     {
         array[i] = false;
-    };
+    }
 
     return array;
-}
+};
 
 module.exports = defaultValue;
 
@@ -1222,7 +1243,7 @@ var extractAttributes = function(gl, program)
 {
     var attributes = {};
 
-    var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
+    var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 
     for (var i = 0; i < totalAttributes; i++)
     {
@@ -1234,17 +1255,17 @@ var extractAttributes = function(gl, program)
             size:mapSize(type),
             location:gl.getAttribLocation(program, attribData.name),
             //TODO - make an attribute object
-            pointer:function(type, normalized, stride, start){
-
-             //   console.log(this.location)
-                gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
-
-            }
-        }
-    };
+            pointer: pointer
+        };
+    }
 
     return attributes;
-}
+};
+
+var pointer = function(type, normalized, stride, start){
+    // console.log(this.location)
+    gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
+};
 
 module.exports = extractAttributes;
 
@@ -1262,7 +1283,7 @@ var extractUniforms = function(gl, program)
 {
 	var uniforms = {};
 
-    var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+    var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
     for (var i = 0; i < totalUniforms; i++)
     {
@@ -1275,11 +1296,11 @@ var extractUniforms = function(gl, program)
     		size:uniformData.size,
     		location:gl.getUniformLocation(program, name),
     		value:defaultValue(type, uniformData.size)
-    	}
-    };
+    	};
+    }
 
 	return uniforms;
-}
+};
 
 module.exports = extractUniforms;
 
@@ -1302,7 +1323,7 @@ var generateUniformAccessObject = function(gl, uniformData)
 
     for (var i = 0; i < uniformKeys.length; i++)
     {
-        var fullName = uniformKeys[i]
+        var fullName = uniformKeys[i];
 
         var nameTokens = fullName.split('.');
         var name = nameTokens[nameTokens.length - 1];
@@ -1317,22 +1338,22 @@ var generateUniformAccessObject = function(gl, uniformData)
         Object.defineProperty(uniformGroup, name, {
             get: generateGetter(name),
             set: generateSetter(name, uniform)
-        })
-    };
+        });
+    }
 
     return uniforms;
-}
+};
 
 var generateGetter = function(name)
 {
 	var template = getterTemplate.replace('%%', name);
-	return new Function(template);
-}
+	return new Function(template); // jshint ignore:line
+};
 
 var generateSetter = function(name, uniform)
 {
     var template = setterTemplate.replace(/%%/g, name);
-    var setTemplate
+    var setTemplate;
 
     if(uniform.size === 1)
     {
@@ -1348,8 +1369,8 @@ var generateSetter = function(name, uniform)
         template += "\nthis.gl." + setTemplate + ";";
     }
 
-  	return new Function('value', template);
-}
+  	return new Function('value', template); // jshint ignore:line
+};
 
 var getUniformGroup = function(nameTokens, uniform)
 {
@@ -1360,10 +1381,10 @@ var getUniformGroup = function(nameTokens, uniform)
         var o = cur[nameTokens[i]] || {data:{}};
         cur[nameTokens[i]] = o;
         cur = o;
-    };
+    }
 
-    return cur
-}
+    return cur;
+};
 
 var getterTemplate = [
     'return this.data.%%.value;',
@@ -1398,7 +1419,7 @@ var GLSL_TO_SINGLE_SETTERS = {
     'mat4':     'uniformMatrix4fv(location, false, value)',
 
     'sampler2D':'uniform1i(location, value)'
-}
+};
 
 var GLSL_TO_ARRAY_SETTERS = {
 
@@ -1419,7 +1440,7 @@ var GLSL_TO_ARRAY_SETTERS = {
     'bvec4':    'uniform4iv(location, value)',
 
     'sampler2D':'uniform1iv(location, value)'
-}
+};
 
 module.exports = generateUniformAccessObject;
 
@@ -1429,7 +1450,7 @@ module.exports = generateUniformAccessObject;
 var mapSize = function(type) 
 { 
     return GLSL_TO_SIZE[type];
-}
+};
 
 
 var GLSL_TO_SIZE = {
@@ -1453,7 +1474,7 @@ var GLSL_TO_SIZE = {
     'mat4':     16,
 
     'sampler2D':  1
-}
+};
 
 module.exports = mapSize;
 
@@ -1476,7 +1497,7 @@ var mapSize = function(gl, type)
     }
 
   return GL_TABLE[type];
-}
+};
 
 var GL_TABLE = null;
 
@@ -1501,7 +1522,7 @@ var GL_TO_GLSL_TYPES = {
   'FLOAT_MAT4':  'mat4',
   
   'SAMPLER_2D':  'sampler2D'  
-}
+};
 
 module.exports = mapSize;
 
@@ -4771,20 +4792,17 @@ function earcut(data, holeIndices, dim) {
 
 // create a circular doubly linked list from polygon points in the specified winding order
 function linkedList(data, start, end, dim, clockwise) {
-    var sum = 0,
-        i, j, last;
+    var i, last;
 
-    // calculate original winding order of a polygon ring
-    for (i = start, j = end - dim; i < end; i += dim) {
-        sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
-        j = i;
-    }
-
-    // link points into circular doubly-linked list in the specified winding order
-    if (clockwise === (sum > 0)) {
+    if (clockwise === (signedArea(data, start, end, dim) > 0)) {
         for (i = start; i < end; i += dim) last = insertNode(i, data[i], data[i + 1], last);
     } else {
         for (i = end - dim; i >= start; i -= dim) last = insertNode(i, data[i], data[i + 1], last);
+    }
+
+    if (last && equals(last, last.next)) {
+        removeNode(last);
+        last = last.next;
     }
 
     return last;
@@ -4934,8 +4952,7 @@ function cureLocalIntersections(start, triangles, dim) {
         var a = p.prev,
             b = p.next.next;
 
-        // a self-intersection where edge (v[i-1],v[i]) intersects (v[i+1],v[i+2])
-        if (intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+        if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
 
             triangles.push(a.i / dim);
             triangles.push(p.i / dim);
@@ -5031,6 +5048,10 @@ function findHoleBridge(hole, outerNode) {
             var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
             if (x <= hx && x > qx) {
                 qx = x;
+                if (x === hx) {
+                    if (hy === p.y) return p;
+                    if (hy === p.next.y) return p.next;
+                }
                 m = p.x < p.next.x ? p : p.next;
             }
         }
@@ -5039,21 +5060,23 @@ function findHoleBridge(hole, outerNode) {
 
     if (!m) return null;
 
-    if (hole.x === m.x) return m.prev; // hole touches outer segment; pick lower endpoint
+    if (hx === qx) return m.prev; // hole touches outer segment; pick lower endpoint
 
     // look for points inside the triangle of hole point, segment intersection and endpoint;
     // if there are no points found, we have a valid connection;
     // otherwise choose the point of the minimum angle with the ray as connection point
 
     var stop = m,
+        mx = m.x,
+        my = m.y,
         tanMin = Infinity,
         tan;
 
     p = m.next;
 
     while (p !== stop) {
-        if (hx >= p.x && p.x >= m.x &&
-                pointInTriangle(hy < m.y ? hx : qx, hy, m.x, m.y, hy < m.y ? qx : hx, hy, p.x, p.y)) {
+        if (hx >= p.x && p.x >= mx &&
+                pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
 
             tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
 
@@ -5187,7 +5210,7 @@ function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
 
 // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 function isValidDiagonal(a, b) {
-    return equals(a, b) || a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
+    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
            locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b);
 }
 
@@ -5203,6 +5226,8 @@ function equals(p1, p2) {
 
 // check if two segments intersect
 function intersects(p1, q1, p2, q2) {
+    if ((equals(p1, q1) && equals(p2, q2)) ||
+        (equals(p1, q2) && equals(p2, q1))) return true;
     return area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 &&
            area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0;
 }
@@ -5312,8 +5337,66 @@ function Node(i, x, y) {
     this.steiner = false;
 }
 
+// return a percentage difference between the polygon area and its triangulation area;
+// used to verify correctness of triangulation
+earcut.deviation = function (data, holeIndices, dim, triangles) {
+    var hasHoles = holeIndices && holeIndices.length;
+    var outerLen = hasHoles ? holeIndices[0] * dim : data.length;
+
+    var polygonArea = Math.abs(signedArea(data, 0, outerLen, dim));
+    if (hasHoles) {
+        for (var i = 0, len = holeIndices.length; i < len; i++) {
+            var start = holeIndices[i] * dim;
+            var end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
+            polygonArea -= Math.abs(signedArea(data, start, end, dim));
+        }
+    }
+
+    var trianglesArea = 0;
+    for (i = 0; i < triangles.length; i += 3) {
+        var a = triangles[i] * dim;
+        var b = triangles[i + 1] * dim;
+        var c = triangles[i + 2] * dim;
+        trianglesArea += Math.abs(
+            (data[a] - data[c]) * (data[b + 1] - data[a + 1]) -
+            (data[a] - data[b]) * (data[c + 1] - data[a + 1]));
+    }
+
+    return polygonArea === 0 && trianglesArea === 0 ? 0 :
+        Math.abs((trianglesArea - polygonArea) / polygonArea);
+};
+
+function signedArea(data, start, end, dim) {
+    var sum = 0;
+    for (var i = start, j = end - dim; i < end; i += dim) {
+        sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
+        j = i;
+    }
+    return sum;
+}
+
+// turn a polygon in a multi-dimensional array form (e.g. as in GeoJSON) into a form Earcut accepts
+earcut.flatten = function (data) {
+    var dim = data[0][0].length,
+        result = {vertices: [], holes: [], dimensions: dim},
+        holeIndex = 0;
+
+    for (var i = 0; i < data.length; i++) {
+        for (var j = 0; j < data[i].length; j++) {
+            for (var d = 0; d < dim; d++) result.vertices.push(data[i][j][d]);
+        }
+        if (i > 0) {
+            holeIndex += data[i - 1].length;
+            result.holes.push(holeIndex);
+        }
+    }
+    return result;
+};
+
 },{}],26:[function(require,module,exports){
 'use strict';
+
+var has = Object.prototype.hasOwnProperty;
 
 //
 // We store our EE objects in a plain object whose properties are event names.
@@ -5330,7 +5413,7 @@ var prefix = typeof Object.create !== 'function' ? '~' : false;
  *
  * @param {Function} fn Event handler to be called.
  * @param {Mixed} context Context for function execution.
- * @param {Boolean} once Only emit once
+ * @param {Boolean} [once=false] Only emit once
  * @api private
  */
 function EE(fn, context, once) {
@@ -5349,12 +5432,37 @@ function EE(fn, context, once) {
 function EventEmitter() { /* Nothing to set */ }
 
 /**
- * Holds the assigned EventEmitters by name.
+ * Hold the assigned EventEmitters by name.
  *
  * @type {Object}
  * @private
  */
 EventEmitter.prototype._events = undefined;
+
+/**
+ * Return an array listing the events for which the emitter has registered
+ * listeners.
+ *
+ * @returns {Array}
+ * @api public
+ */
+EventEmitter.prototype.eventNames = function eventNames() {
+  var events = this._events
+    , names = []
+    , name;
+
+  if (!events) return names;
+
+  for (name in events) {
+    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  }
+
+  if (Object.getOwnPropertySymbols) {
+    return names.concat(Object.getOwnPropertySymbols(events));
+  }
+
+  return names;
+};
 
 /**
  * Return a list of assigned event listeners.
@@ -5441,8 +5549,8 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
  * Register a new EventListener for the given event.
  *
  * @param {String} event Name of the event.
- * @param {Functon} fn Callback function.
- * @param {Mixed} context The context of the function.
+ * @param {Function} fn Callback function.
+ * @param {Mixed} [context=this] The context of the function.
  * @api public
  */
 EventEmitter.prototype.on = function on(event, fn, context) {
@@ -5466,7 +5574,7 @@ EventEmitter.prototype.on = function on(event, fn, context) {
  *
  * @param {String} event Name of the event.
  * @param {Function} fn Callback function.
- * @param {Mixed} context The context of the function.
+ * @param {Mixed} [context=this] The context of the function.
  * @api public
  */
 EventEmitter.prototype.once = function once(event, fn, context) {
@@ -5578,7 +5686,7 @@ if ('undefined' !== typeof module) {
 
 },{}],27:[function(require,module,exports){
 /**
- * isMobile.js v0.3.9
+ * isMobile.js v0.4.0
  *
  * A simple library to detect Apple phones and tablets,
  * Android phones and tablets, other mobile devices (like blackberry, mini-opera and windows phone),
@@ -5639,6 +5747,14 @@ if ('undefined' !== typeof module) {
         // Facebook mobile app's integrated browser adds a bunch of strings that
         // match everything. Strip it out if it exists.
         var tmp = ua.split('[FBAN');
+        if (typeof tmp[1] !== 'undefined') {
+            ua = tmp[0];
+        }
+
+        // Twitter mobile app's integrated browser on iPad adds a "Twitter for
+        // iPhone" string. Same probable happens on other tablet platforms.
+        // This will confuse detection so strip it out if it exists.
+        tmp = ua.split('Twitter');
         if (typeof tmp[1] !== 'undefined') {
             ua = tmp[0];
         }
@@ -9782,7 +9898,7 @@ Container.prototype.destroy = function (destroyChildren)
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
-    _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
+    _tempDisplayObjectParent = new DisplayObject();
 
 
 /**
@@ -15944,7 +16060,10 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    this._lastObjectRendered = displayObject;
+    if(!renderTexture)
+    {
+        this._lastObjectRendered = displayObject;
+    }
 
     if(!skipUpdateTransform)
     {
@@ -16556,6 +16675,7 @@ module.exports = WebGLState;
 },{"./utils/mapWebGLBlendModesToPixi":90}],78:[function(require,module,exports){
 var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
     utils = require('../../../utils'),
+    CONST = require('../../../const'),
     SOURCE_KEY_MAP = {};
 
 // var math = require('../../../math');
@@ -16583,6 +16703,8 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
      * @member {string}
      */
     this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
+
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
@@ -16683,7 +16805,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../utils":110,"./extractUniformsFromSrc":79}],79:[function(require,module,exports){
+},{"../../../const":40,"../../../utils":110,"./extractUniformsFromSrc":79}],79:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
 var mapSize = require('pixi-gl-core/lib/shader/mapSize');
 
@@ -17015,7 +17137,7 @@ FilterManager.prototype.popFilter = function()
 
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
         FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
@@ -17033,7 +17155,7 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         }
 
-        filters[i].apply(this, flip, lastState.renderTarget, false);
+        filters[i].apply(this, flip, lastState.renderTarget, true);
 
         FilterManager.freePotRenderTarget(flip);
         FilterManager.freePotRenderTarget(flop);
@@ -17070,9 +17192,21 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     renderer.bindRenderTarget(output);
 
+
+
     if(clear)
     {
+        var gl = renderer.gl;
+
+        gl.disable(gl.SCISSOR_TEST);
         renderer.clear();//[1, 1, 1, 1]);
+        gl.enable(gl.SCISSOR_TEST);
+    }
+
+    // in case the render target is being masked using a scissor rect
+    if(output === renderer.maskManager.scissorRenderTarget)
+    {
+        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
     }
 
     renderer.bindShader(shader);
@@ -17082,6 +17216,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     // bind the input texture..
     input.texture.bind(0);
+
+    renderer.state.setBlendMode( filter.blendMode );
 
     this.quad.draw();
 };
@@ -17207,7 +17343,11 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 
 FilterManager.prototype.destroy = function()
 {
+     this.shaderCache = [];
+     FilterManager.emptyPool();
 };
+
+
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
@@ -17235,6 +17375,23 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     return renderTarget;
 };
 
+FilterManager.emptyPool = function()
+{
+    for (var i in FilterManager.pool)
+    {
+        var textures = FilterManager.pool[i];
+        if(textures)
+        {
+            for (var j = 0; j < textures.length; j++)
+            {
+                textures[j].destroy(true);
+            }
+        }
+    }
+
+    FilterManager.pool = {};
+};
+
 FilterManager.freePotRenderTarget = function(renderTarget)
 {
     var minWidth = renderTarget.size.width * renderTarget.resolution;
@@ -17257,7 +17414,10 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
+    //TODO - we don't need both!
     this.scissor = false;
+    this.scissorData = null;
+    this.scissorRenderTarget = null;
 
     this.enableScissor = true;
 
@@ -17283,7 +17443,6 @@ MaskManager.prototype.pushMask = function (target, maskData)
     }
     else
     {
-       // console.log( maskData.graphicsData[0].shape.type)
         if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
         {
             var matrix = maskData.worldTransform;
@@ -17399,22 +17558,28 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     var renderTarget = this.renderer._activeRenderTarget;
 
     var bounds = maskData.getBounds();
+
     bounds.fit(renderTarget.size);
     maskData.renderable = false;
 
     this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
     this.renderer.gl.scissor(bounds.x,
-               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
-               bounds.width ,
-               bounds.height);
+                           renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
+                           bounds.width ,
+                           bounds.height);
 
+    this.scissorRenderTarget = renderTarget;
+    this.scissorData = maskData;
     this.scissor = true;
 };
 
 MaskManager.prototype.popScissorMask = function ()
 {
+    this.scissorRenderTarget = null;
+    this.scissorData = null;
     this.scissor = false;
+
     // must be scissor!
     var gl = this.renderer.gl;
     gl.disable(gl.SCISSOR_TEST);
@@ -19299,14 +19464,18 @@ SpriteRenderer.prototype.onContextChange = function ()
 
     this.shaders = new Array(this.MAX_TEXTURES);
     this.shaders[0] = generateMultiTextureShader(gl, 1);
+    this.shaders[1] = generateMultiTextureShader(gl, 2);
 
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-    var shader = this.shaders[0];
+    // we use the second shader as the first one depending on your browser may omit aTextureId
+    // as it is not used by the shader so is optimized out.
+    var shader = this.shaders[1];
 
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+
         // build the vao object that will render..
         this.vaos[i] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
@@ -19485,7 +19654,7 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
-        shader = this.shaders[0];
+        shader = this.shaders[1];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
@@ -19658,8 +19827,8 @@ module.exports = generateMultiTextureShader;
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
-    utils = require('../utils'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    TextStyle = require('./TextStyle');
 
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
@@ -19674,30 +19843,9 @@ var Sprite = require('../sprites/Sprite'),
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI
- * @param text {string} The copy that you would like the text to display
- * @param [style] {object} The style parameters
- * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
- * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
- * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
- * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
- * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
- * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
- *      spiked text issues. Default is 'miter' (creates a sharp corner).
- * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
- *      or increase the spikiness of rendered text.
+ * @param text {string} The string that you would like the text to display
+ * @param [style] {object|PIXI.TextStyle} The style parameters
+ * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
  */
 function Text(text, style, resolution)
 {
@@ -19735,6 +19883,13 @@ function Text(text, style, resolution)
      * @private
      */
     this._style = null;
+    /**
+     * Private listener to track style changes.
+     *
+     * @member {Function}
+     * @private
+     */
+    this._styleListener = null;
 
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
@@ -19763,15 +19918,14 @@ Object.defineProperties(Text.prototype, {
     width: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
+            this.updateText(true);
 
             return this.scale.x * this._texture._frame.width;
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
@@ -19786,44 +19940,23 @@ Object.defineProperties(Text.prototype, {
     height: {
         get: function ()
         {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
+            this.updateText(true);
 
             return  this.scale.y * this._texture._frame.height;
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.y = value / this._texture._frame.height;
             this._height = value;
         }
     },
 
     /**
-     * Set the style of the text
+     * Set the style of the text. Set up an event listener to listen for changes on the style object and mark the text as dirty.
      *
-     * @param [style] {object} The style parameters
-     * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
-     * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-     * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
-     * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
-     * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
-     * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
-     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
-     * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-     * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
-     * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
-     *      prevent this from happening by adding padding to the top and bottom of text height.
-     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
-     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
-     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
-     *      or increase the spikiness of rendered text.
+     * @param [style] {object|PIXI.TextStyle} The style parameters
      * @memberof PIXI.Text#
      */
     style: {
@@ -19833,44 +19966,21 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
+            if (this._style)
+            {
+                this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
+            }
+
             style = style || {};
-
-            if (typeof style.fill === 'number') {
-                style.fill = utils.hex2string(style.fill);
+            if (style instanceof TextStyle)
+            {
+                this._style = style;
             }
-
-            if (typeof style.stroke === 'number') {
-                style.stroke = utils.hex2string(style.stroke);
+            else
+            {
+                this._style = new TextStyle(style);
             }
-
-            if (typeof style.dropShadowColor === 'number') {
-                style.dropShadowColor = utils.hex2string(style.dropShadowColor);
-            }
-
-            style.font = style.font || 'bold 20pt Arial';
-            style.fill = style.fill || 'black';
-            style.align = style.align || 'left';
-            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/pixijs/pixi.js/issues/136
-            style.strokeThickness = style.strokeThickness || 0;
-            style.wordWrap = style.wordWrap || false;
-            style.wordWrapWidth = style.wordWrapWidth || 100;
-            style.breakWords = style.breakWords || false;
-            style.letterSpacing = style.letterSpacing || 0;
-
-            style.dropShadow = style.dropShadow || false;
-            style.dropShadowColor = style.dropShadowColor || '#000000';
-            style.dropShadowAngle = style.dropShadowAngle !== undefined ? style.dropShadowAngle : Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance !== undefined ? style.dropShadowDistance : 5;
-            style.dropShadowBlur = style.dropShadowBlur !== undefined ? style.dropShadowBlur : 0; //shadowBlur is '0' by default according to HTML
-
-            style.padding = style.padding || 0;
-
-            style.textBaseline = style.textBaseline || 'alphabetic';
-
-            style.lineJoin = style.lineJoin || 'miter';
-            style.miterLimit = style.miterLimit || 10;
-
-            this._style = style;
+            this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
             this.dirty = true;
         }
     },
@@ -19890,7 +20000,7 @@ Object.defineProperties(Text.prototype, {
 
             text = text || ' ';
             text = text.toString();
-            
+
             if (this._text === text)
             {
                 return;
@@ -19903,11 +20013,14 @@ Object.defineProperties(Text.prototype, {
 
 /**
  * Renders text and updates it when needed
- *
+ * @param respectDirty {boolean} Whether to abort updating the text if the Text isn't dirty and the function is called.
  * @private
  */
-Text.prototype.updateText = function ()
+Text.prototype.updateText = function (respectDirty)
 {
+    if (!this.dirty && respectDirty) {
+        return;
+    }
     var style = this._style;
     this.context.font = style.font;
 
@@ -19922,7 +20035,9 @@ Text.prototype.updateText = function ()
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
+
+    var i;
+    for (i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
         lineWidths[i] = lineWidth;
@@ -20118,12 +20233,7 @@ Text.prototype.updateTexture = function ()
  */
 Text.prototype.renderWebGL = function (renderer)
 {
-    if (this.dirty)
-    {
-        //this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype.renderWebGL.call(this, renderer);
 };
@@ -20136,12 +20246,7 @@ Text.prototype.renderWebGL = function (renderer)
  */
 Text.prototype._renderCanvas = function (renderer)
 {
-    if (this.dirty)
-    {
-     //   this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
+    this.updateText(true);
 
     Sprite.prototype._renderCanvas.call(this, renderer);
 };
@@ -20330,12 +20435,18 @@ Text.prototype.wordWrap = function (text)
  */
 Text.prototype.getBounds = function (matrix)
 {
-    if (this.dirty)
-    {
-        this.updateText();
-    }
+    this.updateText(true);
 
     return Sprite.prototype.getBounds.call(this, matrix);
+};
+
+/**
+ * Method to be called upon a TextStyle change.
+ * @private
+ */
+Text.prototype._onStyleChange = function ()
+{
+    this.dirty = true;
 };
 
 /**
@@ -20349,12 +20460,13 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this.context = null;
     this.canvas = null;
 
+    this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":40,"../math":62,"../sprites/Sprite":92,"../textures/Texture":103,"../utils":110}],99:[function(require,module,exports){
+},{"../const":40,"../math":62,"../sprites/Sprite":92,"../textures/Texture":103,"./TextStyle":99}],99:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     utils = require('../utils');
@@ -20367,26 +20479,29 @@ var EventEmitter = require('eventemitter3'),
  * @extends EventEmitter
  * @memberof PIXI
  * @param [style] {object} The style parameters
- * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
- * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
+ * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.fill='black'] {string|number|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
+ *      text e.g 'red', '#00FF00'. @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+ * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+ * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
+ * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
  * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
  *      or increase the spikiness of rendered text.
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
+ * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
+ * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
  */
 function TextStyle(style)
 {
@@ -20401,15 +20516,17 @@ module.exports = TextStyle;
 // Default settings. Explained in the constructor.
 TextStyle.prototype._defaults = {
     align: 'left',
+    breakWords: false,
     dropShadow: false,
     dropShadowAngle: Math.PI / 6,
     dropShadowBlur: 0,
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
-    lineHeight: null,
-    lineJoin: 'miter',
     fill: 'black',
     font: 'bold 20pt Arial',
+    letterSpacing: 0,
+    lineHeight: 0,
+    lineJoin: 'miter',
     miterLimit: 10,
     padding: 0,
     stroke: 'black',
@@ -20448,38 +20565,12 @@ TextStyle.prototype.reset = function ()
  * Any set operation will emit a styleChanged event.
  */
 Object.defineProperties(TextStyle.prototype, {
-    font: {
-        get: function ()
-        {
-            return this._font;
-        }, set: function (font)
-        {
-            if (this._font !== font)
-            {
-                this._font = font;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    fill: {
-        get: function ()
-        {
-            return this._fill;
-        }, set: function (fill)
-        {
-            var outputColor = getColor(fill);
-            if (this._fill !== outputColor)
-            {
-                this._fill = outputColor;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    align: {
+     align: {
         get: function ()
         {
             return this._align;
-        }, set: function (align)
+        },
+        set: function (align)
         {
             if (this._align !== align)
             {
@@ -20488,64 +20579,28 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    stroke: {
+
+    breakWords: {
         get: function ()
         {
-            return this._stroke;
-        }, set: function (stroke)
+            return this._breakWords;
+        },
+        set: function (breakWords)
         {
-            var outputColor = getColor(stroke);
-            if (this._stroke !== outputColor)
+            if (this._breakWords !== breakWords)
             {
-                this._stroke = outputColor;
+                this._breakWords = breakWords;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
-    strokeThickness: {
-        get: function ()
-        {
-            return this._strokeThickness;
-        }, set: function (strokeThickness)
-        {
-            if (this._strokeThickness !== strokeThickness)
-            {
-                this._strokeThickness = strokeThickness;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    wordWrap: {
-        get: function ()
-        {
-            return this._wordWrap;
-        }, set: function (wordWrap)
-        {
-            if (this._wordWrap !== wordWrap)
-            {
-                this._wordWrap = wordWrap;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
-    wordWrapWidth: {
-        get: function ()
-        {
-            return this._wordWrapWidth;
-        }, set: function (wordWrapWidth)
-        {
-            if (this._wordWrapWidth !== wordWrapWidth)
-            {
-                this._wordWrapWidth = wordWrapWidth;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
+
     dropShadow: {
         get: function ()
         {
             return this._dropShadow;
-        }, set: function (dropShadow)
+        },
+        set: function (dropShadow)
         {
             if (this._dropShadow !== dropShadow)
             {
@@ -20554,11 +20609,43 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
+
+    dropShadowAngle: {
+        get: function ()
+        {
+            return this._dropShadowAngle;
+        },
+        set: function (dropShadowAngle)
+        {
+            if (this._dropShadowAngle !== dropShadowAngle)
+            {
+                this._dropShadowAngle = dropShadowAngle;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    dropShadowBlur: {
+        get: function ()
+        {
+            return this._dropShadowBlur;
+        },
+        set: function (dropShadowBlur)
+        {
+            if (this._dropShadowBlur !== dropShadowBlur)
+            {
+                this._dropShadowBlur = dropShadowBlur;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
     dropShadowColor: {
         get: function ()
         {
             return this._dropShadowColor;
-        }, set: function (dropShadowColor)
+        },
+        set: function (dropShadowColor)
         {
             var outputColor = getColor(dropShadowColor);
             if (this._dropShadowColor !== outputColor)
@@ -20568,24 +20655,13 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    dropShadowAngle: {
-        get: function ()
-        {
-            return this._dropShadowAngle;
-        }, set: function (dropShadowAngle)
-        {
-            if (this._dropShadowAngle !== dropShadowAngle)
-            {
-                this._dropShadowAngle = dropShadowAngle;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
+
     dropShadowDistance: {
         get: function ()
         {
             return this._dropShadowDistance;
-        }, set: function (dropShadowDistance)
+        },
+        set: function (dropShadowDistance)
         {
             if (this._dropShadowDistance !== dropShadowDistance)
             {
@@ -20594,63 +20670,59 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
-    dropShadowBlur: {
+
+    fill: {
         get: function ()
         {
-            return this._dropShadowBlur;
-        }, set: function (dropShadowBlur)
+            return this._fill;
+        },
+        set: function (fill)
         {
-            if (this._dropShadowBlur !== dropShadowBlur)
+            var outputColor = getColor(fill);
+            if (this._fill !== outputColor)
             {
-                this._dropShadowBlur = dropShadowBlur;
+                this._fill = outputColor;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
-    padding: {
+
+    font: {
         get: function ()
         {
-            return this._padding;
-        }, set: function (padding)
+            return this._font;
+        },
+        set: function (font)
         {
-            if (this._padding !== padding)
+            if (this._font !== font)
             {
-                this._padding = padding;
+                this._font = font;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
-    textBaseline: {
+
+    letterSpacing: {
         get: function ()
         {
-            return this._textBaseline;
-        }, set: function (textBaseline)
+            return this._letterSpacing;
+        },
+        set: function (letterSpacing)
         {
-            if (this._textBaseline !== textBaseline)
+            if (this._letterSpacing !== letterSpacing)
             {
-                this._textBaseline = textBaseline;
+                this._letterSpacing = letterSpacing;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
     },
-    lineJoin: {
-        get: function ()
-        {
-            return this._lineJoin;
-        }, set: function (lineJoin)
-        {
-            if (this._lineJoin !== lineJoin)
-            {
-                this._lineJoin = lineJoin;
-                this.emit(CONST.TEXT_STYLE_CHANGED);
-            }
-        }
-    },
+
     lineHeight: {
         get: function ()
         {
             return this._lineHeight;
-        }, set: function (lineHeight)
+        },
+        set: function (lineHeight)
         {
             if (this._lineHeight !== lineHeight)
             {
@@ -20659,15 +20731,123 @@ Object.defineProperties(TextStyle.prototype, {
             }
         }
     },
+
+    lineJoin: {
+        get: function ()
+        {
+            return this._lineJoin;
+        },
+        set: function (lineJoin)
+        {
+            if (this._lineJoin !== lineJoin)
+            {
+                this._lineJoin = lineJoin;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
     miterLimit: {
         get: function ()
         {
             return this._miterLimit;
-        }, set: function (miterLimit)
+        },
+        set: function (miterLimit)
         {
             if (this._miterLimit !== miterLimit)
             {
                 this._miterLimit = miterLimit;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    padding: {
+        get: function ()
+        {
+            return this._padding;
+        },
+        set: function (padding)
+        {
+            if (this._padding !== padding)
+            {
+                this._padding = padding;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    stroke: {
+        get: function ()
+        {
+            return this._stroke;
+        },
+        set: function (stroke)
+        {
+            var outputColor = getColor(stroke);
+            if (this._stroke !== outputColor)
+            {
+                this._stroke = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    strokeThickness: {
+        get: function ()
+        {
+            return this._strokeThickness;
+        },
+        set: function (strokeThickness)
+        {
+            if (this._strokeThickness !== strokeThickness)
+            {
+                this._strokeThickness = strokeThickness;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    textBaseline: {
+        get: function ()
+        {
+            return this._textBaseline;
+        },
+        set: function (textBaseline)
+        {
+            if (this._textBaseline !== textBaseline)
+            {
+                this._textBaseline = textBaseline;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    wordWrap: {
+        get: function ()
+        {
+            return this._wordWrap;
+        },
+        set: function (wordWrap)
+        {
+            if (this._wordWrap !== wordWrap)
+            {
+                this._wordWrap = wordWrap;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    wordWrapWidth: {
+        get: function ()
+        {
+            return this._wordWrapWidth;
+        },
+        set: function (wordWrapWidth)
+        {
+            if (this._wordWrapWidth !== wordWrapWidth)
+            {
+                this._wordWrapWidth = wordWrapWidth;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
@@ -23475,17 +23655,17 @@ var core = require('../../core'),
  * The extract manager provides functionality to export content from the renderers
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
+ * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-function WebGLExtract(renderer)
+function CanvasExtract(renderer)
 {
     this.renderer = renderer;
     renderer.extract = this;
 }
 
 
-WebGLExtract.prototype.constructor = WebGLExtract;
-module.exports = WebGLExtract;
+CanvasExtract.prototype.constructor = CanvasExtract;
+module.exports = CanvasExtract;
 
 /**
  * Will return a HTML Image of the target
@@ -23493,7 +23673,7 @@ module.exports = WebGLExtract;
  * @return {Image}
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  */
-WebGLExtract.prototype.image = function ( target )
+CanvasExtract.prototype.image = function ( target )
 {
 	var image = new Image();
     image.src = this.base64( target );
@@ -23501,11 +23681,11 @@ WebGLExtract.prototype.image = function ( target )
 };
 
 /**
- * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
+ * Will return a a base64 encoded string of this target. It works by calling CanvasExtract.getCanvas and then running toDataURL on that.
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {string} A base64 encoded string of the texture.
  */
-WebGLExtract.prototype.base64 = function ( target )
+CanvasExtract.prototype.base64 = function ( target )
 {
     return this.canvas( target ).toDataURL();
 };
@@ -23515,7 +23695,7 @@ WebGLExtract.prototype.base64 = function ( target )
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
-WebGLExtract.prototype.canvas = function ( target )
+CanvasExtract.prototype.canvas = function ( target )
 {
 	var renderer = this.renderer;
 	var context;
@@ -23565,15 +23745,28 @@ WebGLExtract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
-WebGLExtract.prototype.pixels = function ( renderTexture )
+CanvasExtract.prototype.pixels = function ( target )
 {
     var renderer = this.renderer;
     var context;
     var resolution;
     var frame;
+    var renderTexture;
+
+    if(target)
+    {
+        if(target instanceof core.RenderTexture)
+        {
+            renderTexture = target;
+        }
+        else
+        {
+            renderTexture = renderer.generateTexture(target);
+        }
+    }
 
     if(renderTexture)
     {
@@ -23598,13 +23791,13 @@ WebGLExtract.prototype.pixels = function ( renderTexture )
  * Destroys the extract
  *
  */
-WebGLExtract.prototype.destroy = function ()
+CanvasExtract.prototype.destroy = function ()
 {
     this.renderer.extract = null;
     this.renderer = null;
 };
 
-core.CanvasRenderer.registerPlugin('extract', WebGLExtract);
+core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
 
 },{"../../core":58}],115:[function(require,module,exports){
 
@@ -23740,15 +23933,28 @@ Extract.prototype.canvas = function ( target )
 
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
- * @param renderTexture {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
-Extract.prototype.pixels = function ( renderTexture )
+Extract.prototype.pixels = function ( target )
 {
     var renderer = this.renderer;
     var textureBuffer;
     var resolution;
     var frame;
+    var renderTexture;
+
+    if(target)
+    {
+        if(target instanceof core.RenderTexture)
+        {
+            renderTexture = target;
+        }
+        else
+        {
+            renderTexture = this.renderer.generateTexture(target);
+        }
+    }
 
     if(renderTexture)
     {
@@ -24511,8 +24717,8 @@ MovieClip.fromImages = function (images)
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader');
-
+    TilingShader = require('./webgl/TilingShader'),
+    tempArray = new Float32Array(4);
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -24694,7 +24900,13 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     glData.shader.uniforms.uTransform = uTransform;
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
-    glData.shader.uniforms.alpha = this.worldAlpha;
+
+    var color = tempArray;
+
+    core.utils.hex2rgb(this.tint, color);
+    color[3] = this.worldAlpha;
+
+    glData.shader.uniforms.uColor = color;
 
     renderer.bindTexture(this._texture, 0);
     glData.quad.draw();
@@ -25310,7 +25522,7 @@ function TilingShader(gl)
     Shader.call(this,
         gl,
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\n\nuniform vec4 uFrame;\nuniform vec4 uTransform;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vec2 coord = aTextureCoord;\n    coord -= uTransform.xy;\n    coord /= uTransform.zw;\n    vTextureCoord = coord;\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
-        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   vec2 coord = mod(vTextureCoord, uFrame.zw);\n   coord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   coord += uFrame.xy;\n\n   gl_FragColor =  texture2D(uSampler, coord) ;\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\nuniform vec4 uColor;\nuniform vec4 uFrame;\nuniform vec2 uPixelSize;\n\nvoid main(void)\n{\n\n   \tvec2 coord = mod(vTextureCoord, uFrame.zw);\n   \tcoord = clamp(coord, uPixelSize, uFrame.zw - uPixelSize);\n   \tcoord += uFrame.xy;\n\n   \tvec4 sample = texture2D(uSampler, coord);\n  \tvec4 color = vec4(uColor.rgb * uColor.a, uColor.a);\n\n   \tgl_FragColor = sample * color ;\n}\n"
     );
 }
 
@@ -25338,12 +25550,12 @@ function BlurFilter()
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
-    this.resolution = 0.25;//0.25;//0.25//1//01.26;
+    this.resolution = 0.5;//0.25;//0.25//1//01.26;
     this.blurYFilter.passes = this.blurXFilter.passes = 1;
     this.blurYFilter.strength = this.blurXFilter.strength = 4;//4// 4
 
-    this.padding = 20;
-
+    this.padding = 40;
+    this.passes = 2;
 }
 
 BlurFilter.prototype = Object.create(core.Filter.prototype);
@@ -25356,7 +25568,7 @@ BlurFilter.prototype.apply = function (filterManager, input, output)
     var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output);
+    this.blurYFilter.apply(filterManager, renderTarget, output, false);
 
     filterManager.returnRenderTarget(renderTarget);
 };
@@ -25414,8 +25626,8 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     },
 
@@ -25433,8 +25645,8 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurYFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     }
 });
@@ -25473,7 +25685,6 @@ function BlurXFilter()
     this.passes = 1;
     this.resolution = 1;//0.25;//0.5;//0.1//5;
     this.strength = 4;
-
     this.firstRun = true;
 }
 
@@ -25494,12 +25705,11 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-
-
-    this.uniforms.strength = (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength = (1/output.size.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     // screen space!
     this.uniforms.strength *= this.strength;
+
     if(this.passes === 1)
     {
         filterManager.applyFilter(this, input, output, clear);
@@ -25575,6 +25785,7 @@ function BlurYFilter()
     this.passes = 1;
     this.resolution = 1;//0.25;//0.5;//0.1//5;
     this.strength = 4;
+    this.firstRun = true;
 }
 
 BlurYFilter.prototype = Object.create(core.Filter.prototype);
@@ -25594,7 +25805,7 @@ BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-    this.uniforms.strength = (1/output.destinationFrame.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength = (1/output.size.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.strength *= this.strength;
 
@@ -26346,9 +26557,9 @@ function DisplacementFilter(sprite, scale)
 
     core.Filter.call(this,
         // vertex shader
-        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 otherMatrix;\n\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n   vMapCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n}\n",
         // fragment shader
-        "#define GLSLIFY 1\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vMapCoord;\nvarying vec2 vTextureCoord;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vMapCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y));\n}\n"
 
     );
 

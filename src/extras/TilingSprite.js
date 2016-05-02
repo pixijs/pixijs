@@ -1,8 +1,8 @@
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader');
-
+    TilingShader = require('./webgl/TilingShader'),
+    tempArray = new Float32Array(4);
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -184,7 +184,13 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     glData.shader.uniforms.uTransform = uTransform;
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
-    glData.shader.uniforms.alpha = this.worldAlpha;
+
+    var color = tempArray;
+
+    core.utils.hex2rgb(this.tint, color);
+    color[3] = this.worldAlpha;
+
+    glData.shader.uniforms.uColor = color;
 
     renderer.bindTexture(this._texture, 0);
     glData.quad.draw();

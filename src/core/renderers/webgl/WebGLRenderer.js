@@ -216,7 +216,10 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
         return;
     }
 
-    this._lastObjectRendered = displayObject;
+    if(!renderTexture)
+    {
+        this._lastObjectRendered = displayObject;
+    }
 
     if(!skipUpdateTransform)
     {

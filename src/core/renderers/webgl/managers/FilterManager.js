@@ -124,7 +124,7 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         }
 
-        filters[i].apply(this, flip, lastState.renderTarget, false);
+        filters[i].apply(this, flip, lastState.renderTarget, true);
 
         this.freePotRenderTarget(flip);
         this.freePotRenderTarget(flop);
@@ -161,9 +161,21 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     renderer.bindRenderTarget(output);
 
+
+
     if(clear)
     {
+        var gl = renderer.gl;
+
+        gl.disable(gl.SCISSOR_TEST);
         renderer.clear();//[1, 1, 1, 1]);
+        gl.enable(gl.SCISSOR_TEST);
+    }
+
+    // in case the render target is being masked using a scissor rect
+    if(output === renderer.maskManager.scissorRenderTarget)
+    {
+        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
     }
 
     renderer.bindShader(shader);
@@ -173,6 +185,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     // bind the input texture..
     input.texture.bind(0);
+
+    renderer.state.setBlendMode( filter.blendMode );
 
     this.quad.draw();
 };
