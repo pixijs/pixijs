@@ -17,7 +17,8 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.fill='black'] {string|Number|CanvasGradient} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.fill='black'] {string|number|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
+ *      text e.g 'red', '#00FF00'. @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
  * @param [style.fontFamily='Arial'] {string} The font family
  * @param [style.fontSize=26] {number|string} The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
  * @param [style.fontStyle='normal'] {string} The font style ('normal', 'italic' or 'oblique')

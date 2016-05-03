@@ -106,6 +106,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
@@ -126,6 +128,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.y = value / this._texture._frame.height;
             this._height = value;
         }

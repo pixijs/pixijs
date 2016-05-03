@@ -1,7 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
     Transform = require('./Transform'),
-    _tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
+    _tempDisplayObjectParent = new DisplayObject();
 
 
 /**
