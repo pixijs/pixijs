@@ -420,7 +420,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
             var splits = font.split(' ');
             var i;
-            var fontSizeIndex = 0;
+            var fontSizeIndex = -1;
 
             this._fontSize = 26;            
             for ( i = 0; i < splits.length; ++i )
@@ -445,13 +445,20 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
             
             // and finally join everything together after the fontSize in case the font family has multiple words    
-            this._fontFamily = '';
-            for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+            if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
             {
-                this._fontFamily += splits[i] + ' ';
+                this._fontFamily = '';
+                for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+                {
+                    this._fontFamily += splits[i] + ' ';
+                }
+                
+                this._fontFamily = this._fontFamily.slice(0, -1);
             }
-            
-            this._fontFamily = this._fontFamily.slice(0, -1);
+            else
+            {
+                this._fontFamily = 'Arial';
+            }
             
             this.emit(CONST.TEXT_STYLE_CHANGED);
         }
