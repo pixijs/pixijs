@@ -87,7 +87,6 @@ module.exports = BaseRenderTexture;
  *
  * @param width {number} The width to resize to.
  * @param height {number} The height to resize to.
- * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
  */
 BaseRenderTexture.prototype.resize = function (width, height)
 {
@@ -119,7 +118,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 /**
  * Destroys this texture
  *
- * @param destroyBase {boolean} Whether to destroy the base texture as well
  */
 BaseRenderTexture.prototype.destroy = function ()
 {

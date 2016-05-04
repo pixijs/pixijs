@@ -16,7 +16,7 @@ var CONST = {
 
     /**
      * Two Pi.
-     * 
+     *
      * @property {number} PI_2
      * @constant
      * @static
@@ -25,7 +25,7 @@ var CONST = {
 
     /**
      * Conversion factor for converting radians to degrees.
-     * 
+     *
      * @property {number} RAD_TO_DEG
      * @constant
      * @static
@@ -34,7 +34,7 @@ var CONST = {
 
     /**
      * Conversion factor for converting degrees to radians.
-     * 
+     *
      * @property {number} DEG_TO_RAD
      * @constant
      * @static
@@ -68,7 +68,7 @@ var CONST = {
 
     /**
      * Various blend modes supported by PIXI.
-     * 
+     *
      * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
      * Anything else will silently act like NORMAL.
      *
@@ -164,7 +164,7 @@ var CONST = {
      * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
      * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2.
      * This property only affects WebGL.
-     * 
+     *
      * @static
      * @constant
      * @property {object} WRAP_MODES
@@ -187,8 +187,10 @@ var CONST = {
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
      * Handy for mobile devices!
+     * This property only affects WebGL
+     * Handy for mobile devices!
      * This property only affects WebGL.
-     * 
+     *
      * @static
      * @constant
      * @property {object} GC_MODES
@@ -205,7 +207,7 @@ var CONST = {
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
-     * 
+     *
      * @static
      * @constant
      * @property {bool} MIPMAP_TEXTURES
@@ -224,7 +226,7 @@ var CONST = {
 
     /**
      * Default resolution of the renderer.
-     * 
+     *
      * @property {number} RESOLUTION
      * @constant
      * @static
@@ -233,7 +235,7 @@ var CONST = {
 
     /**
      * Default filter resolution.
-     * 
+     *
      * @property {number} FILTER_RESOLUTION
      * @constant
      * @static
@@ -291,10 +293,29 @@ var CONST = {
         RREC: 4
     },
 
+    /**
+     * Constants that specify float precision in shaders.
+     *
+     * @static
+     * @constant
+     * @property {object} PRECISION
+     * @property {number} PRECISION.DEFAULT='mediump'
+     * @property {number} PRECISION.LOW='lowp'
+     * @property {number} PRECISION.MEDIUM='mediump'
+     * @property {number} PRECISION.HIGH='highp'
+     */
+    PRECISION: {
+        DEFAULT: 'mediump',
+        LOW: 'lowp',
+        MEDIUM: 'mediump',
+        HIGH: 'highp'
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32) //this is the MAXIMUM - various gpus will have there own limits.
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32), //this is the MAXIMUM - various gpus will have there own limits.
+    TEXT_STYLE_CHANGED: 'changed' //Name of the event that fires when a text style is changed
 };
 
 module.exports = CONST;

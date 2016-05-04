@@ -3,7 +3,7 @@ var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math'),
-    Shader = require('pixi-gl-core').GLShader,
+    Shader = require('../../../Shader'),
     filterTransforms = require('../filters/filterTransforms'),
     bitTwiddle = require('bit-twiddle');
 
@@ -106,7 +106,7 @@ FilterManager.prototype.popFilter = function()
 
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
         FilterManager.freePotRenderTarget(currentState.renderTarget);
     }
     else
@@ -124,7 +124,7 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         }
 
-        filters[i].apply(this, flip, lastState.renderTarget, false);
+        filters[i].apply(this, flip, lastState.renderTarget, true);
 
         FilterManager.freePotRenderTarget(flip);
         FilterManager.freePotRenderTarget(flop);
@@ -161,9 +161,21 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     renderer.bindRenderTarget(output);
 
+
+
     if(clear)
     {
+        var gl = renderer.gl;
+
+        gl.disable(gl.SCISSOR_TEST);
         renderer.clear();//[1, 1, 1, 1]);
+        gl.enable(gl.SCISSOR_TEST);
+    }
+
+    // in case the render target is being masked using a scissor rect
+    if(output === renderer.maskManager.scissorRenderTarget)
+    {
+        renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
     }
 
     renderer.bindShader(shader);
@@ -173,6 +185,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     // bind the input texture..
     input.texture.bind(0);
+
+    renderer.state.setBlendMode( filter.blendMode );
 
     this.quad.draw();
 };
@@ -213,7 +227,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'mat3')
         {
             // check if its pixi matrix..
-            if(uniforms[i].a)
+            if(uniforms[i].a !== undefined)
             {
                 shader.uniforms[i] = uniforms[i].toArray(true);
             }
@@ -225,7 +239,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         else if(uniformData[i].type === 'vec2')
         {
             //check if its a point..
-           if(uniforms[i].x)
+           if(uniforms[i].x !== undefined)
            {
                 val = shader.uniforms[i];
                 val[0] = uniforms[i].x;
@@ -298,7 +312,11 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 
 FilterManager.prototype.destroy = function()
 {
+     this.shaderCache = [];
+     FilterManager.emptyPool();
 };
+
+
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
@@ -324,6 +342,23 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
 
     return renderTarget;
+};
+
+FilterManager.emptyPool = function()
+{
+    for (var i in FilterManager.pool)
+    {
+        var textures = FilterManager.pool[i];
+        if(textures)
+        {
+            for (var j = 0; j < textures.length; j++)
+            {
+                textures[j].destroy(true);
+            }
+        }
+    }
+
+    FilterManager.pool = {};
 };
 
 FilterManager.freePotRenderTarget = function(renderTarget)

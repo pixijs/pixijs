@@ -51,8 +51,6 @@ var buildPoly = function (graphicsData, webGLData)
 
         var vertPos = verts.length / 6;
 
-        var i = 0;
-
         for (i = 0; i < triangles.length; i+=3)
         {
             indices.push(triangles[i] + vertPos);

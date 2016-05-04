@@ -1,10 +1,11 @@
 /**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
+ * An observable point is a point that triggers a callback when the point's position is changed.
  *
  * @class
  * @memberof PIXI
- * @param transform {PIXI.Transform} the transform object @mat
+ *
+ * @param cb {function} The function to be called when the point changes
+ * @param scope {*} The scope to be applied to the cb
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -71,5 +72,5 @@ ObservablePoint.prototype.set = function (x, y)
     this._x = x || 0;
     this._y = y || ( (y !== 0) ? this._x : 0 );
 
-    this.transform._versionLocal++;
+    this.transform._versionLocal++; // TODO: Pretty sure this doesn't exist.
 };

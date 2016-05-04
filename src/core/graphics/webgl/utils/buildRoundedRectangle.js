@@ -6,7 +6,7 @@ var earcut = require('earcut'),
  * Builds a rounded rectangle to draw
  *
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 var buildRoundedRectangle = function (graphicsData, webGLData)

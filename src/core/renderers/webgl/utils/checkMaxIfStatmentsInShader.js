@@ -1,7 +1,7 @@
 var glCore = require('pixi-gl-core');
 
 var fragTemplate = [
-    'precision lowp float;',
+    'precision mediump float;',
     'void main(void){',
         'float test = 0.1;',
         '%forloop%',
@@ -26,7 +26,7 @@ var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     while(true)
     {
-        var fragmentSrc = fragTemplate.replace(/\%forloop\%/gi, generateIfTestSrc(maxIfs));
+        var fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);

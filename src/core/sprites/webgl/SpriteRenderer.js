@@ -61,11 +61,12 @@ function SpriteRenderer(renderer)
     this.indices = createIndicesForQuads(this.size);
 
     /**
-     * The default shader that is used if a sprite doesn't have a more specific one.
-     *
+     * The default shaders that is used if a sprite doesn't have a more specific one.
+     * there is a shader for each number of textures that can be rendererd.
+     * These shaders will also be generated on the fly as required.
      * @member {PIXI.Shader}
      */
-    this.shader = null;
+    this.shaders = null;
 
     this.textureCount = 0;
     this.currentIndex = 0;
@@ -99,7 +100,6 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.onContextChange = function ()
 {
@@ -111,19 +111,27 @@ SpriteRenderer.prototype.onContextChange = function ()
     // step 2: check the maximum number of if statements the shader can have too..
     this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
 
-    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
+    this.shaders = new Array(this.MAX_TEXTURES);
+    this.shaders[0] = generateMultiTextureShader(gl, 1);
+    this.shaders[1] = generateMultiTextureShader(gl, 2);
+
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
+    // we use the second shader as the first one depending on your browser may omit aTextureId
+    // as it is not used by the shader so is optimized out.
+    var shader = this.shaders[1];
+
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+
         // build the vao object that will render..
         this.vaos[i] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vao = this.vaos[0];
@@ -197,6 +205,7 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+    var shader;
 
     currentGroup.textureCount = 0;
     currentGroup.start = 0;
@@ -294,14 +303,15 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
+        shader = this.shaders[1];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
@@ -311,8 +321,19 @@ SpriteRenderer.prototype.flush = function ()
     for (i = 0; i < groupCount; i++) {
 
         var group = groups[i];
+        var groupTextureCount = group.textureCount;
+        shader = this.shaders[groupTextureCount-1];
 
-        for (var j = 0; j < group.textureCount; j++) {
+        if(!shader)
+        {
+            shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+            //console.log("SHADER generated for " + textureCount + " textures")
+        }
+
+        this.renderer.bindShader(shader);
+
+        for (var j = 0; j < groupTextureCount; j++)
+        {
             this.renderer.bindTexture(group.textures[j], j);
         }
 
@@ -332,7 +353,7 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
-    this.renderer.bindShader(this.shader);
+ //   this.renderer.bindShader(this.shader);
     this.tick %= 1000;
 };
 
@@ -347,27 +368,33 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    for (var i = 0; i < this.vaoMax; i++) {
+    for (var i = 0; i < this.vertexCount; i++) {
         this.vertexBuffers[i].destroy();
         this.vaos[i].destroy();
     }
 
     this.indexBuffer.destroy();
 
+    this.renderer.off('prerender', this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
-    this.shader.destroy();
+    for (i = 0; i < this.shaders.length; i++) {
 
-    this.renderer = null;
+        if(this.shaders[i])
+        {
+            this.shaders[i].destroy();
+        }
+    }
 
-    this.vertexBuffer = null;
+    this.vertexBuffers = null;
+    this.vaos = null;
     this.indexBuffer = null;
+    this.indices = null;
 
     this.sprites = null;
-    this.shader = null;
 
     for (i = 0; i < this.buffers.length; i++) {
-      this.buffers[i].destroy();
+        this.buffers[i].destroy();
     }
 
 };
