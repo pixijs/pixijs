@@ -111,12 +111,12 @@ function InteractionManager(renderer, options)
     /**
      * Does the device support touch events
      * https://www.w3.org/TR/touch-events/
-     
+
      * @member {boolean}
      * @private
      */
     this.supportsTouchEvents = 'ontouchstart' in window;
-    
+
     /**
      * Does the device support pointer events
      * https://www.w3.org/Submission/pointer-events/
@@ -132,21 +132,21 @@ function InteractionManager(renderer, options)
      * @member {string[]}
      */
     this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','moveover','mouseout','mouseupoutside','rightupoutside'];
-    
+
     /**
      * A list of the touch events that the Interaction Manager can invoke to Display Objects
      *
      * @member {string[]}
      */
     this.touchEvents = ['touchstart','touchend','tap','touchmove','touchendoutside'];
-    
+
     /**
      * A list of the pointer events that the Interaction Manager can invoke to Display Objects
      *
      * @member {string[]}
      */
     this.pointerEvents = ['pointerdown','pointerup','pointerclick','pointermove','pointermoveover','pointermoveout','pointerupoutside'];
-    
+
     /**
      * Should mouse & touch events be 'normalized' and converted into pointer events if pointer events are not supported
      * On a non touch screen device, a mousedown would be converted to pointerdown
@@ -155,8 +155,8 @@ function InteractionManager(renderer, options)
      * @member {boolean}
      */
     this.normalizeEvents = false;
-    
-    
+
+
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -189,13 +189,13 @@ function InteractionManager(renderer, options)
     */
     this.onPointerUp = this.onPointerUp.bind(this);
     this.processPointerUp = this.processPointerUp.bind( this );
-    
+
     /**
     * @member {Function}
     */
     this.onPointerDown = this.onPointerDown.bind(this);
     this.processPointerDown = this.processPointerDown.bind( this );
-    
+
     /**
     * @member {Function}
     */
@@ -207,8 +207,8 @@ function InteractionManager(renderer, options)
     */
     this.onPointerOut = this.onPointerOut.bind(this);
     this.processPointerOverOut = this.processPointerOverOut.bind( this );
-    
-    
+
+
     /**
      * @member {Function}
      */
@@ -320,13 +320,13 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.addEventListener('touchend', this.onTouchEnd, true);
         this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
     }
-    
+
     if (this.supportsPointerEvents)
     {
         window.document.addEventListener('pointermove', this.onPointerMove, true);
         this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
         this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
-        window.addEventListener('pointerup', this.onPointerUp, true);    
+        window.addEventListener('pointerup', this.onPointerUp, true);
     }
 
     this.eventsAdded = true;
@@ -367,13 +367,13 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
         this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
     }
-    
+
     if (this.supportsPointerEvents)
     {
         window.document.removeEventListener('pointermove', this.onPointerMove, true);
         this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
         this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
-        window.removeEventListener('pointerup', this.onPointerUp, true);    
+        window.removeEventListener('pointerup', this.onPointerUp, true);
     }
 
     this.interactionDOMElement = null;
@@ -497,7 +497,7 @@ InteractionManager.prototype.normalizeEventString = function ( eventString )
             }
         }
     }
-    
+
     // make sure only pointer events get emitted
     if (this.pointerEvents.indexOf(eventString) === -1)
     {
@@ -954,7 +954,7 @@ InteractionManager.prototype.onPointerMove = function (event)
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
 
     this.didMove = true;
-    
+
     this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerMove, true );
 };
 
@@ -968,7 +968,7 @@ InteractionManager.prototype.onPointerMove = function (event)
 InteractionManager.prototype.processPointerMove = function ( displayObject, hit )
 {
     this.processPointerOverOut(displayObject, hit);
-    
+
     if(!this.moveWhenInside || hit)
     {
         this.dispatchEvent( displayObject, 'pointermove', this.eventData);
@@ -1247,7 +1247,7 @@ InteractionManager.prototype.destroy = function () {
 
     this.onMouseUp = null;
     this.processMouseUp = null;
-    
+
     this.onMouseMove = null;
     this.processMouseMove = null;
 
