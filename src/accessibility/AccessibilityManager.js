@@ -93,6 +93,7 @@ function AccessibilityManager(renderer)
      * @private
      */
    	this.isActive = false;
+   	this.isMobileAccessabillity = false;
 
    	// let listen for tab.. once pressed we can fire up and show the accessibility layer
    	window.addEventListener('keydown', this._onKeyDown, false);
@@ -116,6 +117,7 @@ AccessibilityManager.prototype.createTouchHook = function()
 
     hookDiv.addEventListener('focus', function(){
 
+    	this.isMobileAccessabillity = true;
     	this.activate();
     	document.body.removeChild(hookDiv);
 
@@ -131,7 +133,7 @@ AccessibilityManager.prototype.createTouchHook = function()
  */
 AccessibilityManager.prototype.activate = function()
 {
-	if(this.isActive)
+	if(this.isActive )
 	{
 		return;
 	}
@@ -152,8 +154,8 @@ AccessibilityManager.prototype.activate = function()
  */
 AccessibilityManager.prototype.deactivate = function()
 {
-	return;
-	if(!this.isActive)
+
+	if(!this.isActive || this.isMobileAccessabillity)
 	{
 		return;
 	}
@@ -207,8 +209,8 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 AccessibilityManager.prototype.update = function()
 {
 	if(!this.renderer.renderingToScreen) {
-    return;
-  }
+    	return;
+  	}
 
 	// update children...
 	this.updateAccessibleObjects(this.renderer._lastObjectRendered);
