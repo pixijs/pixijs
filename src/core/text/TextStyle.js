@@ -19,7 +19,11 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.fill='black'] {string|number|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
  *      text e.g 'red', '#00FF00'. @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
- * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+ * @param [style.fontFamily='Arial'] {string} The font family
+ * @param [style.fontSize=26] {number|string} The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
+ * @param [style.fontStyle='normal'] {string} The font style ('normal', 'italic' or 'oblique')
+ * @param [style.fontVariant='normal'] {string} The font variant ('normal' or 'small-caps')
+ * @param [style.fontWeight='normal'] {string} The font weight ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
  * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
@@ -54,7 +58,11 @@ TextStyle.prototype._defaults = {
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
     fill: 'black',
-    font: 'bold 20pt Arial',
+    fontFamily: 'Arial',
+    fontSize: 26,
+    fontStyle: 'normal',
+    fontVariant: 'normal',
+    fontWeight: 'normal',
     letterSpacing: 0,
     lineHeight: 0,
     lineJoin: 'miter',
@@ -218,16 +226,76 @@ Object.defineProperties(TextStyle.prototype, {
         }
     },
 
-    font: {
+    fontFamily: {
         get: function ()
         {
-            return this._font;
+            return this._fontFamily;
         },
-        set: function (font)
+        set: function (fontFamily)
         {
-            if (this._font !== font)
+            if (this.fontFamily !== fontFamily)
             {
-                this._font = font;
+                this._fontFamily = fontFamily;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    fontSize: {
+        get: function ()
+        {
+            return this._fontSize;
+        },
+        set: function (fontSize)
+        {
+            if (this._fontSize !== fontSize)
+            {
+                this._fontSize = fontSize;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    fontStyle: {
+        get: function ()
+        {
+            return this._fontStyle;
+        },
+        set: function (fontStyle)
+        {
+            if (this._fontStyle !== fontStyle)
+            {
+                this._fontStyle = fontStyle;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    fontVariant: {
+        get: function ()
+        {
+            return this._fontVariant;
+        },
+        set: function (fontVariant)
+        {
+            if (this._fontVariant !== fontVariant)
+            {
+                this._fontVariant = fontVariant;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    fontWeight: {
+        get: function ()
+        {
+            return this._fontWeight;
+        },
+        set: function (fontWeight)
+        {
+            if (this._fontWeight !== fontWeight)
+            {
+                this._fontWeight = fontWeight;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
