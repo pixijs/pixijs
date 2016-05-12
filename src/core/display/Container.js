@@ -274,9 +274,9 @@ Container.prototype.removeChild = function (child)
         {
             this.removeChild( arguments[i] );
         }
-    }     
+    }
     else
-    {   
+    {
         var index = this.children.indexOf(child);
 
         if (index === -1)
@@ -440,9 +440,11 @@ Container.prototype.getBounds = function ()
                 continue;
             }
 
-            childVisible = true;
-
             childBounds = this.children[i].getBounds();
+            if (childBounds === math.Rectangle.EMPTY) {
+                continue;
+            }
+            childVisible = true;
 
             minX = minX < childBounds.x ? minX : childBounds.x;
             minY = minY < childBounds.y ? minY : childBounds.y;
@@ -456,7 +458,8 @@ Container.prototype.getBounds = function ()
 
         if (!childVisible)
         {
-            return math.Rectangle.EMPTY;
+            this._currentBounds = math.Rectangle.EMPTY;
+            return this._currentBounds;
         }
 
         var bounds = this._bounds;
