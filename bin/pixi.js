@@ -5157,21 +5157,23 @@ var setVertexAttribArrays = require( './setVertexAttribArrays' );
  */
 function VertexArrayObject(gl, state)
 {
+	this.nativeVaoExtension = null;
 
-	this.nativeVaoExtension = (
-      gl.getExtension('OES_vertex_array_object') ||
-      gl.getExtension('MOZ_OES_vertex_array_object') ||
-      gl.getExtension('WEBKIT_OES_vertex_array_object')
-    );
+	if(!VertexArrayObject.FORCE_NATIVE)
+	{
+		this.nativeVaoExtension = gl.getExtension('OES_vertex_array_object') ||
+	      						  gl.getExtension('MOZ_OES_vertex_array_object') ||
+	      						  gl.getExtension('WEBKIT_OES_vertex_array_object');
+	}
 
 	this.nativeState = state;
 
 	if(this.nativeVaoExtension)
 	{
 		this.nativeVao = this.nativeVaoExtension.createVertexArrayOES();
-		
+
 		var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
-		
+
 		// VAO - overwrite the state..
 		this.nativeState = {
             tempAttribState: new Array(maxAttribs),
@@ -5211,6 +5213,18 @@ function VertexArrayObject(gl, state)
 VertexArrayObject.prototype.constructor = VertexArrayObject;
 module.exports = VertexArrayObject;
 
+/**
+* Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
+* If you find on older devices that things have gone a bit weird then set this to true.
+*/
+/**
+ * Lets the VAO know if you should use the WebGL extension or the native methods.
+ * Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
+ * If you find on older devices that things have gone a bit weird then set this to true.
+ * @static
+ * @property {Boolean} FORCE_NATIVE
+ */
+VertexArrayObject.FORCE_NATIVE = false;
 
 /**
  * Binds the buffer
@@ -5229,7 +5243,7 @@ VertexArrayObject.prototype.bind = function()
 	}
 	else
 	{
-		
+
 		this.activate();
 	}
 
@@ -5254,7 +5268,7 @@ VertexArrayObject.prototype.unbind = function()
  */
 VertexArrayObject.prototype.activate = function()
 {
-	
+
 	var gl = this.gl;
 	var lastBuffer = null;
 
@@ -5279,7 +5293,7 @@ VertexArrayObject.prototype.activate = function()
 	}
 
 	setVertexAttribArrays(gl, this.attributes, this.nativeState);
-	
+
 	this.indexBuffer.bind();
 
 	return this;
@@ -7304,7 +7318,7 @@ Loader.prototype._handleBaseUrl = function (url) {
     var parsedUrl = urlParser.parse(url);
 
     // absolute url, just use it as is.
-    if (parsedUrl.protocol || parsedUrl.pathname.indexOf('//') === 0) {
+    if (parsedUrl.protocol || !parsedUrl.pathname || parsedUrl.pathname.indexOf('//') === 0) {
         return url;
     }
 
@@ -7456,17 +7470,17 @@ Loader.prototype._onLoad = function (resource) {
 
         this._numToLoad--;
 
-        // do completion check
-        if (this._numToLoad === 0) {
-            this.progress = 100;
-            this._onComplete();
-        }
-        
         if (resource.error) {
             this.emit('error', resource.error, this, resource);
         }
         else {
             this.emit('load', this, resource);
+        }
+
+        // do completion check
+        if (this._numToLoad === 0) {
+            this.progress = 100;
+            this._onComplete();
         }
     });
     
@@ -8127,7 +8141,7 @@ Resource.prototype._getExtension = function () {
         ext = url.substring(url.lastIndexOf('.') + 1);
     }
 
-    return ext;
+    return ext.toLowerCase();
 };
 
 /**
@@ -8229,7 +8243,8 @@ Resource._loadTypeMap = {
     'tif':      Resource.LOAD_TYPE.IMAGE,
     'tiff':     Resource.LOAD_TYPE.IMAGE,
     'webp':     Resource.LOAD_TYPE.IMAGE,
-    'tga':      Resource.LOAD_TYPE.IMAGE
+    'tga':      Resource.LOAD_TYPE.IMAGE,
+    'svg+xml':  Resource.LOAD_TYPE.IMAGE
 };
 
 Resource._xhrTypeMap = {
@@ -8401,7 +8416,7 @@ module.exports = function () {
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
-window.URL = window.URL || window.webkitURL;
+var Url = window.URL || window.webkitURL;
 
 // a middleware for transforming XHR loaded Blobs into more useful objects
 
@@ -8434,7 +8449,7 @@ module.exports = function () {
             }
             // if content type says this is an image, then we should transform the blob into an Image object
             else if (resource.data.type.indexOf('image') === 0) {
-                var src = URL.createObjectURL(resource.data);
+                var src = Url.createObjectURL(resource.data);
 
                 resource.blob = resource.data;
                 resource.data = new Image();
@@ -8444,7 +8459,7 @@ module.exports = function () {
 
                 // cleanup the no longer used blob after the image loads
                 resource.data.onload = function () {
-                    URL.revokeObjectURL(src);
+                    Url.revokeObjectURL(src);
                     resource.data.onload = null;
 
                     next();
@@ -17107,14 +17122,6 @@ function FilterManager(renderer)
     // know about sprites!
     this.quad = new Quad(this.gl, renderer.state.attribState);
 
-    var rootState = new FilterState();
-    rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;
-    rootState.renderTarget = renderer.rootRenderTarget;
-
-    this.stack = [rootState];
-
-    this.stackIndex = 0;
-
     this.shaderCache = {};
     // todo add default!
     this.pool = {};
@@ -17128,11 +17135,28 @@ FilterManager.prototype.pushFilter = function(target, filters)
 {
     var renderer = this.renderer;
 
+    var filterData = this.renderer._activeRenderTarget.filterStack;
+
+    if(!filterData)
+    {
+        // add new stack
+        var filterState = new FilterState();
+        filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
+        filterState.renderTarget = renderer._activeRenderTarget;
+
+        this.renderer._activeRenderTarget.filterData = filterData = {
+            index:0,
+            stack:[filterState]
+        };
+    }
+
+    this.filterData = filterData;
+
     // get the current filter state..
-    var currentState = this.stack[++this.stackIndex];
+    var currentState = filterData.stack[++filterData.index];
     if(!currentState)
     {
-        currentState = this.stack[this.stackIndex] = new FilterState();
+        currentState = filterData.stack[filterData.index] = new FilterState();
     }
 
     // for now we go off the filter of the first resolution..
@@ -17148,7 +17172,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
-    sourceFrame.fit(this.stack[0].destinationFrame);
+    sourceFrame.fit(filterData.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
@@ -17172,8 +17196,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
 
 FilterManager.prototype.popFilter = function()
 {
-    var lastState = this.stack[this.stackIndex-1];
-    var currentState = this.stack[this.stackIndex];
+    var filterData = this.filterData;
+
+    var lastState = filterData.stack[filterData.index-1];
+    var currentState = filterData.stack[filterData.index];
 
     this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
 
@@ -17205,7 +17231,7 @@ FilterManager.prototype.popFilter = function()
         this.freePotRenderTarget(flop);
     }
 
-    this.stackIndex--;
+    filterData.index--;
 };
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
@@ -17277,7 +17303,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
     if(shader.uniforms.data.filterArea)
     {
-        var currentState = this.stack[this.stackIndex];
+        var currentState = this.filterData.stack[this.filterData.index];
         var filterArea = shader.uniforms.filterArea;
 
         filterArea[0] = currentState.renderTarget.size.width;
@@ -17343,7 +17369,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
 FilterManager.prototype.getRenderTarget = function()
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
     var renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
     renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
@@ -17365,13 +17391,13 @@ FilterManager.prototype.returnRenderTarget = function(renderTarget)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
 };
 
 FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
 
 
 
@@ -17381,7 +17407,7 @@ FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputM
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
     return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, sprite);
 };
 
@@ -18131,14 +18157,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {object[]}
      */
-    this.filterStack = [
-        {
-            renderTarget:this,
-            filter:[],
-            bounds:this.size
-        }
-    ];
-
+    this.filterData = null;
 
     /**
      * The scale mode.
@@ -23160,7 +23179,12 @@ var utils = module.exports = {
             var success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                gl.getExtension('WEBGL_lose_context').loseContext();
+                var loseContext = gl.getExtension('WEBGL_lose_context');
+
+                if(loseContext)
+                {
+                    loseContext.loseContext();
+                }
             }
             gl = null;
 
