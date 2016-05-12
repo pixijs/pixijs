@@ -14,7 +14,7 @@ var glslify  = require('glslify');
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 function ColorMatrixFilter()
