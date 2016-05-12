@@ -113,14 +113,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
      *
      * @member {object[]}
      */
-    this.filterStack = [
-        {
-            renderTarget:this,
-            filter:[],
-            bounds:this.size
-        }
-    ];
-
+    this.filterData = null;
 
     /**
      * The scale mode.
