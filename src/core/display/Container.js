@@ -383,7 +383,7 @@ Container.prototype.updateTransform = function ()
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 /**
-* RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
