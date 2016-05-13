@@ -17,7 +17,6 @@ var FilterState = function()
     this.resolution = 1;
 };
 
-FilterManager.pool = {};
 
 /**
  * @class
@@ -33,16 +32,9 @@ function FilterManager(renderer)
     // know about sprites!
     this.quad = new Quad(this.gl, renderer.state.attribState);
 
-    var rootState = new FilterState();
-    rootState.sourceFrame = rootState.destinationFrame = this.renderer.rootRenderTarget.size;
-    rootState.renderTarget = renderer.rootRenderTarget;
-
-    this.stack = [rootState];
-
-    this.stackIndex = 0;
-
     this.shaderCache = {};
     // todo add default!
+    this.pool = {};
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -53,11 +45,28 @@ FilterManager.prototype.pushFilter = function(target, filters)
 {
     var renderer = this.renderer;
 
+    var filterData = this.renderer._activeRenderTarget.filterStack;
+
+    if(!filterData)
+    {
+        // add new stack
+        var filterState = new FilterState();
+        filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
+        filterState.renderTarget = renderer._activeRenderTarget;
+
+        this.renderer._activeRenderTarget.filterData = filterData = {
+            index:0,
+            stack:[filterState]
+        };
+    }
+
+    this.filterData = filterData;
+
     // get the current filter state..
-    var currentState = this.stack[++this.stackIndex];
+    var currentState = filterData.stack[++filterData.index];
     if(!currentState)
     {
-        currentState = this.stack[this.stackIndex] = new FilterState();
+        currentState = filterData.stack[filterData.index] = new FilterState();
     }
 
     // for now we go off the filter of the first resolution..
@@ -73,12 +82,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
-    sourceFrame.fit(this.stack[0].destinationFrame);
+    sourceFrame.fit(filterData.stack[0].destinationFrame);
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
 
-    var renderTarget = FilterManager.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+    var renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
     currentState.target = target;
     currentState.filters = filters;
@@ -97,8 +106,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
 
 FilterManager.prototype.popFilter = function()
 {
-    var lastState = this.stack[this.stackIndex-1];
-    var currentState = this.stack[this.stackIndex];
+    var filterData = this.filterData;
+
+    var lastState = filterData.stack[filterData.index-1];
+    var currentState = filterData.stack[filterData.index];
 
     this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
 
@@ -106,13 +117,13 @@ FilterManager.prototype.popFilter = function()
 
     if(filters.length === 1)
     {
-        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, true);
-        FilterManager.freePotRenderTarget(currentState.renderTarget);
+        filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+        this.freePotRenderTarget(currentState.renderTarget);
     }
     else
     {
         var flip = currentState.renderTarget;
-        var flop = FilterManager.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+        var flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
         flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
         for (var i = 0; i < filters.length-1; i++)
@@ -124,13 +135,13 @@ FilterManager.prototype.popFilter = function()
             flop = t;
         }
 
-        filters[i].apply(this, flip, lastState.renderTarget, true);
+        filters[i].apply(this, flip, lastState.renderTarget, false);
 
-        FilterManager.freePotRenderTarget(flip);
-        FilterManager.freePotRenderTarget(flop);
+        this.freePotRenderTarget(flip);
+        this.freePotRenderTarget(flop);
     }
 
-    this.stackIndex--;
+    filterData.index--;
 };
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
@@ -202,7 +213,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
     if(shader.uniforms.data.filterArea)
     {
-        var currentState = this.stack[this.stackIndex];
+        var currentState = this.filterData.stack[this.filterData.index];
         var filterArea = shader.uniforms.filterArea;
 
         filterArea[0] = currentState.renderTarget.size.width;
@@ -268,8 +279,8 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
 FilterManager.prototype.getRenderTarget = function()
 {
-    var currentState = this.stack[this.stackIndex];
-    var renderTarget = FilterManager.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
+    var currentState = this.filterData.stack[this.filterData.index];
+    var renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
     renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
     return renderTarget;
@@ -277,7 +288,7 @@ FilterManager.prototype.getRenderTarget = function()
 
 FilterManager.prototype.returnRenderTarget = function(renderTarget)
 {
-    return FilterManager.freePotRenderTarget(renderTarget);
+    return this.freePotRenderTarget(renderTarget);
 };
 
 /*
@@ -290,13 +301,13 @@ FilterManager.prototype.returnRenderTarget = function(renderTarget)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
 };
 
 FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
 
 
 
@@ -306,21 +317,21 @@ FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputM
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 {
-    var currentState = this.stack[this.stackIndex];
+    var currentState = this.filterData.stack[this.filterData.index];
     return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, sprite);
 };
 
 FilterManager.prototype.destroy = function()
 {
      this.shaderCache = [];
-     FilterManager.emptyPool();
+     this.emptyPool();
 };
 
 
 
 //TODO move to a seperate class could be on renderer?
 //also - could cause issue with multiple contexts?
-FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
+FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
 {
     //TODO you coud return a bigger texture if there is not one in the pool?
     minWidth = bitTwiddle.nextPow2(minWidth * resolution);
@@ -329,11 +340,11 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
  //   console.log(minWidth + "  " + minHeight)
-    if(!FilterManager.pool[key]) {
-      FilterManager.pool[key] = [];
+    if(!this.pool[key]) {
+      this.pool[key] = [];
     }
 
-    var renderTarget = FilterManager.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+    var renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
 
     //manually tweak the resolution...
     //this will not modify the size of the frame buffer, just its resolution.
@@ -344,11 +355,11 @@ FilterManager.getPotRenderTarget = function(gl, minWidth, minHeight, resolution)
     return renderTarget;
 };
 
-FilterManager.emptyPool = function()
+FilterManager.prototype.emptyPool = function()
 {
-    for (var i in FilterManager.pool)
+    for (var i in this.pool)
     {
-        var textures = FilterManager.pool[i];
+        var textures = this.pool[i];
         if(textures)
         {
             for (var j = 0; j < textures.length; j++)
@@ -358,14 +369,14 @@ FilterManager.emptyPool = function()
         }
     }
 
-    FilterManager.pool = {};
+    this.pool = {};
 };
 
-FilterManager.freePotRenderTarget = function(renderTarget)
+FilterManager.prototype.freePotRenderTarget = function(renderTarget)
 {
     var minWidth = renderTarget.size.width * renderTarget.resolution;
     var minHeight = renderTarget.size.height * renderTarget.resolution;
 
     var key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
-    FilterManager.pool[key].push(renderTarget);
+    this.pool[key].push(renderTarget);
 };

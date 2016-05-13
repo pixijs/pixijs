@@ -146,7 +146,12 @@ var utils = module.exports = {
             var success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                gl.getExtension('WEBGL_lose_context').loseContext();
+                var loseContext = gl.getExtension('WEBGL_lose_context');
+
+                if(loseContext)
+                {
+                    loseContext.loseContext();
+                }
             }
             gl = null;
 
