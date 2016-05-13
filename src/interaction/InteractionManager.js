@@ -1,5 +1,6 @@
 var core = require('../core'),
-    InteractionData = require('./InteractionData');
+    InteractionData = require('./InteractionData'),
+    Device = require('ismobilejs');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -468,7 +469,7 @@ InteractionManager.prototype.normalizeEventString = function ( eventString )
 {
     if (!this.supportsPointerEvents)
     {
-        if (this.supportsTouchEvents)
+        if (this.supportsTouchEvents && Device.any)
         {
             switch (eventString)
             {
