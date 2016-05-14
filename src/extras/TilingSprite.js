@@ -193,6 +193,8 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     glData.shader.uniforms.uColor = color;
 
     renderer.bindTexture(this._texture, 0);
+
+    renderer.state.setBlendMode( this.blendMode );
     glData.quad.draw();
 };
 
