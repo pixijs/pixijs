@@ -313,19 +313,19 @@ core.RenderTexture.prototype.getImage = function(target)
 core.RenderTexture.prototype.getBase64 = function(target)
 {
     warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
-    this.legacyRenderer.extract.base64(target);
+    return this.legacyRenderer.extract.base64(target);
 };
 
 core.RenderTexture.prototype.getCanvas = function(target)
 {
     warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
-    this.legacyRenderer.extract.canvas(target);
+    return this.legacyRenderer.extract.canvas(target);
 };
 
 core.RenderTexture.prototype.getPixels = function(target)
 {
     warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
-    this.legacyRenderer.pixels(target);
+    return this.legacyRenderer.pixels(target);
 };
 
 
