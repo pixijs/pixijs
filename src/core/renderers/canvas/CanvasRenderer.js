@@ -144,9 +144,11 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
     var context = this.context;
 
+    if(!renderTexture)
+    {
+        this._lastObjectRendered = displayObject;
+    }
 
-
-    this._lastObjectRendered = displayObject;
 
 
 
