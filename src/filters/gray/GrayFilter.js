@@ -6,7 +6,7 @@ var glslify  = require('glslify');
  * This greyscales the palette of your Display Objects.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 function GrayFilter()
@@ -19,7 +19,7 @@ function GrayFilter()
     );
 
     this.uniforms.gray = 1;
-    
+
     this.glShaderKey = 'gray';
 }
 
