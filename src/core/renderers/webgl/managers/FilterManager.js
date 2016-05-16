@@ -202,7 +202,7 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     this.quad.draw();
 };
 
-// thia returns a matrix that will normalise map filter cords in the filter to screen space
+// this returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.syncUniforms = function (shader, filter)
 {
     var uniformData = filter.uniformData;
@@ -225,6 +225,8 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         shader.uniforms.filterArea = filterArea;
     }
 
+    // use this to clamp displaced texture coords so they belong to filterArea
+    // see displacementFilter fragment shader for an example
     if(shader.uniforms.data.filterClamp)
     {
         currentState = this.filterData.stack[this.filterData.index];
