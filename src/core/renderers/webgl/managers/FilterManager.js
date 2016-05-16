@@ -202,7 +202,7 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
     this.quad.draw();
 };
 
-// thia returns a matrix that will normalise map filter cords in the filter to screen space
+// this returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.syncUniforms = function (shader, filter)
 {
     var uniformData = filter.uniformData;
@@ -210,10 +210,11 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
     // 0 is reserverd for the pixi texture so we start at 1!
     var textureCount = 1;
+    var currentState;
 
     if(shader.uniforms.data.filterArea)
     {
-        var currentState = this.filterData.stack[this.filterData.index];
+        currentState = this.filterData.stack[this.filterData.index];
         var filterArea = shader.uniforms.filterArea;
 
         filterArea[0] = currentState.renderTarget.size.width;
@@ -222,6 +223,21 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         filterArea[3] = currentState.sourceFrame.y;
 
         shader.uniforms.filterArea = filterArea;
+    }
+
+    // use this to clamp displaced texture coords so they belong to filterArea
+    // see displacementFilter fragment shader for an example
+    if(shader.uniforms.data.filterClamp)
+    {
+        currentState = this.filterData.stack[this.filterData.index];
+        var filterClamp = shader.uniforms.filterClamp;
+
+        filterClamp[0] = 0.5 / currentState.renderTarget.size.width;
+        filterClamp[1] = 0.5 / currentState.renderTarget.size.height;
+        filterClamp[2] = (currentState.sourceFrame.width - 0.5) / currentState.renderTarget.size.width;
+        filterClamp[3] = (currentState.sourceFrame.height - 0.5) / currentState.renderTarget.size.height;
+
+        shader.uniforms.filterClamp = filterClamp;
     }
 
     var val;
