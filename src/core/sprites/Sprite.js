@@ -110,12 +110,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture.orig.width;
+            return Math.abs(this.scale.x) * (this.texture.trim || this.texture.orig).width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
+            this.scale.x = sign * value / (this.texture.trim || this.texture.orig).width;
             this._width = value;
         }
     },
@@ -129,12 +129,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture.orig.height;
+            return  Math.abs(this.scale.y) * (this.texture.trim || this.texture.orig).height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
+            this.scale.y = sign * value / (this.texture.trim || this.texture.orig).height;
             this._height = value;
         }
     },
@@ -190,12 +190,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / (this.texture.trim || this.texture.orig).width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / (this.texture.trim || this.texture.orig).height;
     }
 };
 
