@@ -1,11 +1,12 @@
 /**
+ * The Point object represents a location in a two-dimensional coordinate system, where x represents
+ * the horizontal axis and y represents the vertical axis.
  * An observable point is a point that triggers a callback when the point's position is changed.
  *
  * @class
  * @memberof PIXI
- *
- * @param cb {function} The function to be called when the point changes
- * @param scope {*} The scope to be applied to the cb
+ * @param cb {Function} callback when changed
+ * @param scope {Object} owner of callback
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -37,8 +38,10 @@ Object.defineProperties(ObservablePoint.prototype, {
         },
         set: function (value)
         {
-            this._x = value;
-            this.cb.call(this.scope);
+            if (this._x !== value) {
+                this._x = value;
+                this.cb.call(this.scope);
+            }
         }
     },
     /**
@@ -54,8 +57,10 @@ Object.defineProperties(ObservablePoint.prototype, {
         },
         set: function (value)
         {
-            this._y = value;
-            this.cb.call(this.scope);
+            if (this._y !== value) {
+                this._y = value;
+                this.cb.call(this.scope);
+            }
         }
     }
 });
@@ -69,8 +74,27 @@ Object.defineProperties(ObservablePoint.prototype, {
  */
 ObservablePoint.prototype.set = function (x, y)
 {
-    this._x = x || 0;
-    this._y = y || ( (y !== 0) ? this._x : 0 );
+    var _x = x || 0;
+    var _y = y || ( (y !== 0) ? _x : 0 );
+    if (this._x !== _x || this._y !== _y)
+    {
+        this._x = _x;
+        this._y = _y;
+        this.cb.call(this.scope);
+    }
+};
 
-    this.transform._versionLocal++; // TODO: Pretty sure this doesn't exist.
+/**
+ * Copies the data from another point
+ *
+ * @param point {PIXI.Point|{PIXI.ObservablePoint} point to copy from
+ */
+ObservablePoint.prototype.copy = function (point)
+{
+    if (this._x !== point.x || this._y !== point.y)
+    {
+        this._x = point.x;
+        this._y = point.y;
+        this.cb.call(this.scope);
+    }
 };

@@ -1,5 +1,5 @@
 var core = require('../core'),
-    math = require('../core/math');
+    ObservablePoint = require('../core/display/ObservablePoint');
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -106,22 +106,12 @@ function BitmapText(text, style)
     this.maxLineHeight = 0;
 
     /**
-     * The anchor sets the origin point of the text.
-     * The default is 0,0 this means the text's origin is the top left
-     * Setting the anchor to 0.5,0.5 means the text's origin is centered
-     * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
-     *
-     * @member {PIXI.Point}
-     */
-    this.anchor = new math.Point();
-
-    /**
-     * Private tracker for the anchor. This allows us to check whether there has been a change
+     * Text anchor. read-only
      *
      * @member {PIXI.Point}
      * @private
      */
-    this._anchor = this.anchor.clone();
+    this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
 
     /**
      * The dirty state of this object.
@@ -175,6 +165,28 @@ Object.defineProperties(BitmapText.prototype, {
             this._font.align = value || 'left';
 
             this.dirty = true;
+        }
+    },
+
+    /**
+     * The anchor sets the origin point of the text.
+     * The default is 0,0 this means the text's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the text's origin is centered
+     * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
+     *
+     * @member {PIXI.Point | number}
+     */
+    anchor: {
+        get : function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            if (typeof value === 'number'){
+                 this._anchor.set(value);
+            }
+            else {
+                this._anchor.copy(value);
+            }
         }
     },
 
@@ -405,18 +417,15 @@ BitmapText.prototype.getLocalBounds = function()
  */
 BitmapText.prototype.validate = function()
 {
-    // Detect whether the anchor has been updated
-    if (!this.anchor.equals(this._anchor))
-    {
-        this.dirty = true;
-        this._anchor.copy(this.anchor);
-    }
-
     if (this.dirty)
     {
         this.updateText();
         this.dirty = false;
     }
+};
+
+BitmapText.prototype.makeDirty = function() {
+    this.dirty = true;
 };
 
 BitmapText.fonts = {};
