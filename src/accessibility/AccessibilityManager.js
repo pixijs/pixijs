@@ -112,7 +112,7 @@ AccessibilityManager.prototype.createTouchHook = function()
     hookDiv.style.top = -1000+'px';
     hookDiv.style.left = -1000+'px';
     hookDiv.style.zIndex = 2;
-    hookDiv.style.backgroundColor = '#FF0000'
+    hookDiv.style.backgroundColor = '#FF0000';
     hookDiv.title = 'HOOK DIV';
 
     hookDiv.addEventListener('focus', function(){
@@ -125,7 +125,7 @@ AccessibilityManager.prototype.createTouchHook = function()
 
     document.body.appendChild(hookDiv);
 
-}
+};
 
 /**
  * Activating will cause the Accessibility layer to be shown. This is called when a user preses the tab key
