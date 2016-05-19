@@ -37,7 +37,7 @@ var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
-    mappedMatrix.scale(1 , ratio);
+    // mappedMatrix.scale(1 , ratio);
 
     var translateScaleX = (textureSize.width / texture.width);
     var translateScaleY = (textureSize.height / texture.height);
@@ -52,7 +52,7 @@ var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
    // mappedMatrix.prepend(worldTransform);
 
     // apply inverse scale..
-    mappedMatrix.scale(1 , 1/ratio);
+    // mappedMatrix.scale(1 , 1/ratio);
 
     mappedMatrix.scale( translateScaleX , translateScaleY );
 
