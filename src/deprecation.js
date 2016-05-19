@@ -288,7 +288,7 @@ Object.defineProperties(core, {
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
-    return renderer.generateTexture(renderer, scaleMode, resolution);
+    return renderer.generateTexture(this, scaleMode, resolution);
 };
 
 
@@ -392,7 +392,7 @@ Object.defineProperties(core.TextStyle.prototype, {
         set: function (font)
         {
             warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
-            
+
             // can work out fontStyle from search of whole string
             if ( font.indexOf('italic') > 1 )
             {
@@ -400,14 +400,14 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
             else if ( font.indexOf('oblique') > -1 )
             {
-                this._fontStyle = 'oblique';                
+                this._fontStyle = 'oblique';
             }
             else
             {
                 this._fontStyle = 'normal';
             }
 
-            // can work out fontVariant from search of whole string            
+            // can work out fontVariant from search of whole string
             if ( font.indexOf('small-caps') > -1 )
             {
                 this._fontVariant = 'small-caps';
@@ -416,13 +416,13 @@ Object.defineProperties(core.TextStyle.prototype, {
             {
                 this._fontVariant = 'normal';
             }
-            
+
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
             var splits = font.split(' ');
             var i;
             var fontSizeIndex = -1;
 
-            this._fontSize = 26;            
+            this._fontSize = 26;
             for ( i = 0; i < splits.length; ++i )
             {
                 if ( splits[i].match( /(px|pt|em|%)/ ) )
@@ -432,7 +432,7 @@ Object.defineProperties(core.TextStyle.prototype, {
                     break;
                 }
             }
-            
+
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
             for ( i = 0; i < fontSizeIndex; ++i )
@@ -443,8 +443,8 @@ Object.defineProperties(core.TextStyle.prototype, {
                     break;
                 }
             }
-            
-            // and finally join everything together after the fontSize in case the font family has multiple words    
+
+            // and finally join everything together after the fontSize in case the font family has multiple words
             if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
             {
                 this._fontFamily = '';
@@ -452,17 +452,17 @@ Object.defineProperties(core.TextStyle.prototype, {
                 {
                     this._fontFamily += splits[i] + ' ';
                 }
-                
+
                 this._fontFamily = this._fontFamily.slice(0, -1);
             }
             else
             {
                 this._fontFamily = 'Arial';
             }
-            
+
             this.emit(CONST.TEXT_STYLE_CHANGED);
         }
-    }    
+    }
 } );
 
 /**
