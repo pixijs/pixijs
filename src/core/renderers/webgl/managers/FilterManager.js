@@ -321,11 +321,14 @@ FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
 };
 
+/**
+ * Multiply vTextureCoord to this matrix to achieve (0,0,1,1) for filterArea
+ *
+ * @param outputMatrix {PIXI.Matrix}
+ */
 FilterManager.prototype.calculateNormalizedScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.filterData.stack[this.filterData.index];
-
-
 
     return filterTransforms.calculateNormalizedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
 };
