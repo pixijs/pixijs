@@ -164,7 +164,7 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim)
+            if (!this.trim && !this.rotate)
             {
                 this.orig = frame;
             }
