@@ -321,13 +321,16 @@ FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
 };
 
-FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
+/**
+ * Multiply vTextureCoord to this matrix to achieve (0,0,1,1) for filterArea
+ *
+ * @param outputMatrix {PIXI.Matrix}
+ */
+FilterManager.prototype.calculateNormalizedScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.filterData.stack[this.filterData.index];
 
-
-
-    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
+    return filterTransforms.calculateNormalizedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
 };
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
