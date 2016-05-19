@@ -24,7 +24,7 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
 };
 
-var calculateNormalisedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     var texture = {width:800, height:600};//sprite._texture.baseTexture;
@@ -102,6 +102,6 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
 
 module.exports = {
     calculateScreenSpaceMatrix:calculateScreenSpaceMatrix,
-    calculateNormalisedScreenSpaceMatrix:calculateNormalisedScreenSpaceMatrix,
+    calculateNormalizedScreenSpaceMatrix:calculateNormalizedScreenSpaceMatrix,
     calculateSpriteMatrix:calculateSpriteMatrix
 };
