@@ -407,20 +407,25 @@ Sprite.prototype.containsPoint = function( point )
 
 
 /**
- * Destroys this sprite and optionally its texture
+ * Destroys this sprite and optionally its texture and children
  *
- * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
- * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
+ * @param [options] {object} Options parameter
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+Sprite.prototype.destroy = function (options)
 {
-    Container.prototype.destroy.call(this);
+    options = options || {};
+
+    Container.prototype.destroy.call(this, options);
 
     this.anchor = null;
 
-    if (destroyTexture)
+    if (options.texture)
     {
-        this._texture.destroy(destroyBaseTexture);
+        this._texture.destroy(!!options.baseTexture);
     }
 
     this._texture = null;
