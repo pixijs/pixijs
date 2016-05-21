@@ -91,6 +91,89 @@ const utils = {
     },
 
     /**
+     * Typedef for decomposeDataUri return object.
+     *
+     * @typedef {object} DecomposedDataUri
+     * @property {mediaType} Media type, eg. `image`
+     * @property {subType} Sub type, eg. `png`
+     * @property {encoding} Data encoding, eg. `base64`
+     * @property {data} The actual data
+     */
+
+    /**
+     * Split a data URI into components. Returns undefined if
+     * parameter `dataUri` is not a valid data URI.
+     *
+     * @memberof PIXI.utils
+     * @param dataUri {string} the data URI to check
+     * @return {DecomposedDataUri|undefined} The decomposed data uri or undefined
+     */
+    decomposeDataUri (dataUri)
+    {
+        const dataUriMatch = CONST.DATA_URI.exec(dataUri);
+
+        if (dataUriMatch)
+        {
+            return {
+                mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
+                subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
+                encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+                data: dataUriMatch[4]
+            };
+        }
+
+        return undefined;
+    },
+
+    /**
+     * Get type of the image by regexp for extension. Returns undefined for unknown extensions.
+     *
+     * @memberof PIXI.utils
+     * @param url {string} the image path
+     * @return {string|undefined} image extension
+     */
+    getImageTypeOfUrl (url)
+    {
+        const extension = CONST.IMAGE_TYPE.exec(url);
+
+        if (extension)
+        {
+            return extension[1].toLowerCase();
+        }
+
+        return undefined;
+    },
+
+    /**
+     * Typedef for Size object.
+     *
+     * @typedef {object} Size
+     * @property {width} Width component
+     * @property {height} Height component
+     */
+
+    /**
+     * Get size from an svg string using regexp.
+     *
+     * @memberof PIXI.utils
+     * @param svgString {string} a serialized svg element
+     * @return {Size|undefined} image extension
+     */
+    getSvgSize (svgString)
+    {
+        const sizeMatch = CONST.SVG_SIZE.exec(svgString);
+        const size = {};
+
+        if (sizeMatch)
+        {
+            size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[2]));
+            size[sizeMatch[3]] = Math.round(parseFloat(sizeMatch[4]));
+        }
+
+        return size;
+    },
+
+    /**
      * Logs out the version and renderer information for this running instance of PIXI.
      * If you don't want to see this message you can set `PIXI.utils._saidHello = true;`
      * so the library thinks it already said it. Keep in mind that doing that will forever

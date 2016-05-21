@@ -266,15 +266,16 @@ class Texture extends EventEmitter
      * @param imageUrl {string} The image url of the texture
      * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
      * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param [sourceScale=(auto)] {number} Scale for the original image, used with SVG images.
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromImage(imageUrl, crossorigin, scaleMode)
+    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
     {
         let texture = utils.TextureCache[imageUrl];
 
         if (!texture)
         {
-            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
+            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
             utils.TextureCache[imageUrl] = texture;
         }
 
