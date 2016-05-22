@@ -113,6 +113,17 @@ Transform.prototype.updateChildTransform = function (childTransform)
     return childTransform;
 };
 
+
+/**
+ * Decomposes a matrix and sets the transforms properties based on it.
+ * @param {Matrix}
+ */
+Transform.prototype.setFromMatrix = function (matrix)
+{
+    matrix.decompose(this);
+};
+
+
 Object.defineProperties(Transform.prototype, {
     /**
      * The rotation of the object in radians.
