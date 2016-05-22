@@ -356,7 +356,7 @@ Matrix.prototype.decompose = function(transform)
     var a = this.a,
         b = this.b,
         c = this.c,
-        d = this.d
+        d = this.d;
 
     var skewX = Math.atan2(-c, d);
     var skewY = Math.atan2(b, a);
@@ -365,11 +365,11 @@ Matrix.prototype.decompose = function(transform)
 
     if (delta < 0.00001)
     {
-        target.rotation = skewY;
+        transform.rotation = skewY;
 
         if (a < 0 && d >= 0)
         {
-            target.rotation += (target.rotation <= 0) ? Math.PI : -Math.PI;
+            transform.rotation += (transform.rotation <= 0) ? Math.PI : -Math.PI;
         }
 
         transform.skew.x = transform.skew.y = 0;
