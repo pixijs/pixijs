@@ -45,10 +45,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
 {
     var renderer = this.renderer;
 
-    var filterData = this.renderer._activeRenderTarget.filterStack;
+    var filterData = this.filterData;
 
     if(!filterData)
     {
+        filterData = this.renderer._activeRenderTarget.filterStack;
+
         // add new stack
         var filterState = new FilterState();
         filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
@@ -58,9 +60,9 @@ FilterManager.prototype.pushFilter = function(target, filters)
             index:0,
             stack:[filterState]
         };
-    }
 
-    this.filterData = filterData;
+        this.filterData = filterData;
+    }
 
     // get the current filter state..
     var currentState = filterData.stack[++filterData.index];
@@ -142,6 +144,11 @@ FilterManager.prototype.popFilter = function()
     }
 
     filterData.index--;
+
+    if(filterData.index === 0)
+    {
+        this.filterData = null;
+    }
 };
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
