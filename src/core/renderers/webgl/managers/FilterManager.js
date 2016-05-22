@@ -203,6 +203,8 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     // bind the input texture..
     input.texture.bind(0);
+    // when you manually bind a texture, please switch active texture location to it
+    renderer._activeTextureLocation = 0;
 
     renderer.state.setBlendMode( filter.blendMode );
 
