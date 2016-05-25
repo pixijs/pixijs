@@ -101,11 +101,11 @@ Object.defineProperties(Container.prototype, {
 Container.prototype.onChildrenChange = function () {};
 
 /**
- * Adds a child to the container.
+ * Adds a child or multiple children to the container.
  *
- * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
- * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
- * @return {PIXI.DisplayObject} The child that was added.
+ * Multple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
+ * @param child {...PIXI.DisplayObject} The DisplayObject(s) to add to the container
+ * @return {PIXI.DisplayObject} The first child that was added.
  */
 Container.prototype.addChild = function (child)
 {
