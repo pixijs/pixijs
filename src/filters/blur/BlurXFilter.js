@@ -31,7 +31,6 @@ function BlurXFilter()
     this.passes = 1;
     this.resolution = 1;//0.25;//0.5;//0.1//5;
     this.strength = 4;
-
     this.firstRun = true;
 }
 
@@ -40,9 +39,9 @@ BlurXFilter.prototype.constructor = BlurXFilter;
 module.exports = BlurXFilter;
 
 BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
-{   
+{
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
 
@@ -52,12 +51,11 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-   
-
-    this.uniforms.strength = (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength = (1/output.size.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     // screen space!
     this.uniforms.strength *= this.strength;
+
     if(this.passes === 1)
     {
         filterManager.applyFilter(this, input, output, clear);
@@ -99,7 +97,7 @@ Object.defineProperties(BlurXFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding =  Math.abs(value) * 0.5;
+            this.padding =  Math.abs(value) * 2;
             this.strength = value;
         }
     }

@@ -1,10 +1,10 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../core/Shader');
 
 /**
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
+ * @param gl {Shader} TODO: Find a good explanation for this.
  */
 function MeshShader(gl)
 {
@@ -12,7 +12,6 @@ function MeshShader(gl)
         gl,
         // vertex shader
         [
-            'precision lowp float;',
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
 
@@ -27,8 +26,6 @@ function MeshShader(gl)
             '}'
         ].join('\n'),
         [
-            'precision lowp float;',
-
             'varying vec2 vTextureCoord;',
             'uniform float alpha;',
 

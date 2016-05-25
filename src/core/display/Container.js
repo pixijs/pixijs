@@ -440,8 +440,64 @@ Container.prototype._getChildBounds = function() {
     return bounds;
 };
 
+Container.prototype._getChildComputedBounds = function() {
+    if (this.children.length === 0)
+    {
+        return math.Rectangle.EMPTY;
+    }
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var childVisible = false;
+    var bounds = this._computedBounds;
+
+    var childBounds;
+    var childMaxX;
+    var childMaxY;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        var child = this.children[i];
+
+        if (!child.visible)
+        {
+            continue;
+        }
+
+        childBounds = this.children[i].getComputedBounds();
+        if (childBounds === math.Rectangle.EMPTY) {
+            continue;
+        }
+        childVisible = true;
+
+        minX = minX < childBounds.x ? minX : childBounds.x;
+        minY = minY < childBounds.y ? minY : childBounds.y;
+
+        childMaxX = childBounds.width + childBounds.x;
+        childMaxY = childBounds.height + childBounds.y;
+
+        maxX = maxX > childMaxX ? maxX : childMaxX;
+        maxY = maxY > childMaxY ? maxY : childMaxY;
+    }
+
+    bounds.x = minX;
+    bounds.y = minY;
+    bounds.width = maxX - minX;
+    bounds.height = maxY - minY;
+
+    if (!childVisible)
+    {
+        return math.Rectangle.EMPTY;
+    }
+    return bounds;
+};
+
 /**
-* RetrieveDs the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @param matrix {PIXI.Matrix} just a legacy
  * @return {PIXI.Rectangle} The rectangular bounding area
@@ -465,6 +521,33 @@ Container.prototype.getBounds = function ()
         }
     }
     return this._currentBounds;
+};
+
+/**
+ *
+ * Retrieves the computed bounds of the Container as a rectangle object
+ *
+ * @param matrix {PIXI.Matrix}
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+Container.prototype.getComputedBounds = function () // jshint unused:false
+{
+    if (this._localBounds) {
+        return this._localBounds.getComputedBounds(this.computedTransform);
+    }
+    if(!this._currentComputedBounds)
+    {
+        var geom = this.updateGeometry();
+        if (!geom)
+        {
+            this._currentComputedBounds = this._getChildComputedBounds();
+        } else
+        {
+            this._currentComputedBounds = geom.getBounds();
+            this._currentComputedBounds.enlarge(this._getChildComputedBounds());
+        }
+    }
+    return this._currentComputedBounds;
 };
 
 Container.prototype.containerGetBounds = Container.prototype.getBounds;

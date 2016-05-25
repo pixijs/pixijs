@@ -11,6 +11,7 @@ var math = require('../math'),
  *
  * @class
  * @extends EventEmitter
+ * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 function DisplayObject()
@@ -125,11 +126,12 @@ function DisplayObject()
     this.filterArea = null;
 
     /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
+     * The original, cached computed bounds of the object
      *
-     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     * @member {PIXI.Rectangle}
+     * @private
      */
-    this.hitArea = null;
+    this._computedBounds = new math.Rectangle(0, 0, 1, 1);
 
     /**
      * The original, cached bounds of the object
@@ -140,12 +142,20 @@ function DisplayObject()
     this._bounds = new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The most up-to-date bounds of the object
+     * The most up-to-date projected bounds of the object
      *
      * @member {PIXI.Rectangle}
      * @private
      */
     this._currentBounds = null;
+
+    /**
+     * The most up-to-date computed bounds of the object
+     *
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._currentComputedBounds = null;
 
     /**
      * Whether we have to check our bounds before raycasting this thing
@@ -480,6 +490,7 @@ DisplayObject.prototype.updateTransform = function ()
     this.updateOrder = utils.incUpdateOrder();
     this.displayOrder = 0;
     this._currentBounds = null;
+    this._currentComputedBounds = null;
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
     this.worldProjection = this.parent.worldProjection;
@@ -533,7 +544,29 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 
 /**
  *
- * Retrieves the bounds of the displayObject as a rectangle object
+ * Retrieves the computed bounds of the displayObject as a rectangle object
+ *
+ * @param matrix {PIXI.Matrix}
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+DisplayObject.prototype.getComputedBounds = function () // jshint unused:false
+{
+    if (this._localBounds) {
+        return this._localBounds.getComputedBounds(this.computedTransform);
+    }
+    if (!this._currentComputedBounds) {
+        var geom = this.updateGeometry();
+        if (!geom || !geom.valid) {
+            return math.Rectangle.EMPTY;
+        }
+        this._currentComputedBounds = geom.getBounds();
+    }
+    return this._currentComputedBounds;
+};
+
+/**
+ *
+ * Retrieves the projected bounds of the displayObject as a rectangle object
  *
  * @param matrix {PIXI.Matrix}
  * @return {PIXI.Rectangle} the rectangular bounding area

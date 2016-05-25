@@ -13,11 +13,11 @@
  *      );
  */
 var accessibleTarget = {
-    
+
     /**
-     *  Flag for if the object is accessible. If true AccessibilityManager will overlay a 
+     *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
      *   shadow div with attributes set
-     * 
+     *
      * @member {boolean}
      */
     accessible:false,
@@ -25,14 +25,14 @@ var accessibleTarget = {
     /**
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'displayObject [tabIndex]'
-     * 
+     *
      * @member {string}
      */
     accessibleTitle:null,
 
     /**
      * Sets the aria-label attribute of the shadow div
-     * 
+     *
      * @member {string}
      */
     accessibleHint:null,

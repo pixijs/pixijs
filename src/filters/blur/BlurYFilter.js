@@ -25,6 +25,7 @@ function BlurYFilter()
     this.passes = 1;
     this.resolution = 1;//0.25;//0.5;//0.1//5;
     this.strength = 4;
+    this.firstRun = true;
 }
 
 BlurYFilter.prototype = Object.create(core.Filter.prototype);
@@ -34,17 +35,17 @@ module.exports = BlurYFilter;
 BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
 {
     if(this.firstRun)
-    {    
+    {
         var gl = filterManager.renderer.gl;
         var kernelSize = getMaxBlurKernelSize(gl);
-        
+
         this.vertexSrc = generateBlurVertSource(kernelSize, false);
         this.fragmentSrc = generateBlurFragSource(kernelSize);
 
         this.firstRun = false;
     }
 
-    this.uniforms.strength = (1/output.destinationFrame.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength = (1/output.size.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.strength *= this.strength;
 
@@ -89,7 +90,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.abs(value) * 2;
             this.strength = value;
         }
     }

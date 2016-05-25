@@ -16,12 +16,12 @@ function BlurFilter()
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
-    this.resolution = 0.25;//0.25;//0.25//1//01.26;
+    this.resolution = 0.5;//0.25;//0.25//1//01.26;
     this.blurYFilter.passes = this.blurXFilter.passes = 1;
     this.blurYFilter.strength = this.blurXFilter.strength = 4;//4// 4
 
-    this.padding = 20;
-
+    this.padding = 40;
+    this.passes = 2;
 }
 
 BlurFilter.prototype = Object.create(core.Filter.prototype);
@@ -30,10 +30,11 @@ module.exports = BlurFilter;
 
 BlurFilter.prototype.apply = function (filterManager, input, output)
 {
+
     var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output);
+    this.blurYFilter.apply(filterManager, renderTarget, output, false);
 
     filterManager.returnRenderTarget(renderTarget);
 };
@@ -53,7 +54,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
@@ -72,6 +73,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+
             this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
@@ -91,6 +93,7 @@ Object.defineProperties(BlurFilter.prototype, {
         set: function (value)
         {
             this.blurXFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     },
 
@@ -109,6 +112,7 @@ Object.defineProperties(BlurFilter.prototype, {
         set: function (value)
         {
             this.blurYFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     }
 });

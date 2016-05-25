@@ -1,5 +1,3 @@
-precision mediump float;
-
 varying vec2 vTextureCoord;
 uniform float exposure;
 uniform float decay;
@@ -16,7 +14,7 @@ void main()
     vec2 textCoo = vTextureCoord;
     deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;
     float illuminationDecay = 1.0;
-   
+
     for(int i=0; i < NUM_SAMPLES ; i++)
     {
              textCoo -= deltaTextCoord;
@@ -28,6 +26,6 @@ void main()
 
              illuminationDecay *= decay;
      }
-    
+
      gl_FragColor *= exposure;
 }

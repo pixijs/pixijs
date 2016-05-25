@@ -315,7 +315,6 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 /**
  * Destroys the container
  *
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
  */
 ParticleContainer.prototype.destroy = function () {
     core.Container.prototype.destroy.apply(this, arguments);

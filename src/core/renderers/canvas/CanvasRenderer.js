@@ -94,7 +94,7 @@ function CanvasRenderer(width, height, options)
 
 // constructor
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
-CanvasRenderer.prototype.constructor = CanvasRenderer;
+CanvasRenderer.prototype.constructor =  CanvasRenderer;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
 
@@ -102,7 +102,11 @@ utils.pluginTarget.mixin(CanvasRenderer);
 /**
  * Renders the object to this canvas view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
+ * @param [clear=false] {boolean} Whether to clear the canvas before drawing
+ * @param [transform] {PIXI.Transform} A transformation to be applied
+ * @param [skipUpdateTransform=false] {boolean} Whether to skip the update transform
  */
 CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
@@ -140,9 +144,11 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
     var context = this.context;
 
+    if(!renderTexture)
+    {
+        this._lastObjectRendered = displayObject;
+    }
 
-
-    this._lastObjectRendered = displayObject;
 
 
 
@@ -178,17 +184,20 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
         context.clear();
     }
 
-    if( clear || this.clearBeforeRender)
+    if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        if (this.transparent)
-        {
-            context.clearRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            context.fillStyle = this._backgroundColorString;
-            context.fillRect(0, 0, this.width , this.height);
-        }
+        if (this.renderingToScreen) {
+            if (this.transparent) {
+                context.clearRect(0, 0, this.width, this.height);
+            }
+            else {
+                context.fillStyle = this._backgroundColorString;
+                context.fillRect(0, 0, this.width, this.height);
+            }
+        } //else {
+            //TODO: implement background for CanvasRenderTarget or RenderTexture?
+        //}
+        //TODO: implement background for CanvasRenderTarget or RenderTexture?
     }
 
     // TODO RENDER TARGET STUFF HERE..

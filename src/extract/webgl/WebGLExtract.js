@@ -128,12 +128,25 @@ Extract.prototype.canvas = function ( target )
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {Uint8ClampedArray}
  */
-Extract.prototype.pixels = function ( renderTexture )
+Extract.prototype.pixels = function ( target )
 {
     var renderer = this.renderer;
     var textureBuffer;
     var resolution;
     var frame;
+    var renderTexture;
+
+    if(target)
+    {
+        if(target instanceof core.RenderTexture)
+        {
+            renderTexture = target;
+        }
+        else
+        {
+            renderTexture = this.renderer.generateTexture(target);
+        }
+    }
 
     if(renderTexture)
     {

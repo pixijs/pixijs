@@ -16,6 +16,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
+    ObservablePoint:        require('./display/ObservablePoint'),
     Container:              require('./display/Container'),
     Camera2d:               require('./display/Camera2d'),
     DisplayObjectProxy:     require('./display/DisplayObjectProxy'),
@@ -24,13 +25,14 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:      require('./sprites/canvas/CanvasSpriteRenderer'),
+    SpriteFrame:            require('./sprites/SpriteFrame'),
+    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
     CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
     // text
     Text:                   require('./text/Text'),
-
+    TextStyle:              require('./text/TextStyle'),
     // primitives
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
@@ -39,6 +41,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // textures
     Texture:                require('./textures/Texture'),
+    ObservableRect:         require('./textures/ObservableRect'),
+    DoubleRect:             require('./textures/DoubleRect'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
     BaseRenderTexture:      require('./textures/BaseRenderTexture'),
@@ -50,6 +54,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
+    Shader:                 require('./Shader'),
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
     WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),

@@ -35,7 +35,7 @@ var WebGLState = function(gl)
     /**
      * The stack holding all the different states
      *
-     * @member {array}
+     * @member {*[]}
      * @private
      */
 	this.stack = [];
@@ -230,10 +230,20 @@ WebGLState.prototype.setFrontFace = function(value)
  */
 WebGLState.prototype.resetAttributes = function()
 {
+	var i;
+
+    for ( i = 0; i < this.attribState.tempAttribState.length; i++) {
+    	this.attribState.tempAttribState[i] = 0;
+    }
+
+    for ( i = 0; i < this.attribState.attribState.length; i++) {
+    	this.attribState.attribState[i] = 0;
+    }
+
 	var gl = this.gl;
 
 	// im going to assume one is always active for performance reasons.
-	for (var i = 1; i < this.maxAttribs; i++)
+	for (i = 1; i < this.maxAttribs; i++)
   	{
 		gl.disableVertexAttribArray(i);
   	}
@@ -245,11 +255,13 @@ WebGLState.prototype.resetAttributes = function()
  */
 WebGLState.prototype.resetToDefault = function()
 {
+
 	// unbind any VAO if they exist..
 	if(this.nativeVaoExtension)
 	{
 		this.nativeVaoExtension.bindVertexArrayOES(null);
 	}
+
 
 	// reset all attributs..
 	this.resetAttributes();
@@ -259,6 +271,10 @@ WebGLState.prototype.resetToDefault = function()
 	{
 		this.activeState[i] = 2;
 	}
+
+	var gl = this.gl;
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
 
 	this.setState(this.defaultState);
 };

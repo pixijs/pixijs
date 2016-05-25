@@ -2,6 +2,7 @@ var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
     EventEmitter = require('eventemitter3'),
+    DoubleRect = require('./DoubleRect'),
     math = require('../math'),
     utils = require('../utils');
 
@@ -63,13 +64,6 @@ function Texture(baseTexture, frame, orig, trim, rotate)
     this._frame = frame;
 
     /**
-     * This is the trimmed area of original texture, before it was put in atlas
-     *
-     * @member {PIXI.Rectangle}
-     */
-    this.trim = trim;
-
-    /**
      * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
      *
      * @member {boolean}
@@ -92,11 +86,12 @@ function Texture(baseTexture, frame, orig, trim, rotate)
     this._uvs = null;
 
     /**
-     * This is the area of original texture, before it was put in atlas
+     * This is the area of original texture, trimmed part is orig.inner
      *
-     * @member {PIXI.Rectangle}
+     * @member {PIXI.DoubleRect}
+     * @private
      */
-    this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
+    this._orig = new DoubleRect(orig || frame, trim);
 
     this._rotate = +(rotate || 0);
 
@@ -164,9 +159,9 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim)
+            if (!this._orig.inner && !this.rotate)
             {
-                this.orig = frame;
+                this._orig.copy(frame);
             }
 
             if (this.valid)
@@ -175,6 +170,38 @@ Object.defineProperties(Texture.prototype, {
             }
         }
     },
+
+    /**
+     * This is the area of original texture, before it was put in atlas
+     *
+     * @member {PIXI.Rectangle}
+     * @memberof PIXI.Texture#
+     * @private
+     */
+    orig: {
+        get: function() {
+            return this._orig;
+        },
+        set: function(value) {
+            this._orig.copy(value);
+        }
+    },
+
+    /**
+     * This is the trimmed area of original texture, before it was put in atlas
+     *
+     * @member {PIXI.Rectangle}
+     * @memberof PIXI.Texture#
+     */
+    trim: {
+        get: function() {
+            return this._orig.inner;
+        },
+        set: function(value) {
+            this._orig.inner = value;
+        }
+    },
+
     /**
      * Indicates whether the texture is rotated inside the atlas
      * set to 2 to compensate for texture packer rotation
@@ -206,7 +233,7 @@ Object.defineProperties(Texture.prototype, {
      */
     width: {
         get: function() {
-            return this.orig ? this.orig.width : 0;
+            return this._orig.width;
         }
     },
 
@@ -217,7 +244,7 @@ Object.defineProperties(Texture.prototype, {
      */
     height: {
         get: function() {
-            return this.orig ? this.orig.height : 0;
+            return this._orig.height;
         }
     }
 });
@@ -309,7 +336,7 @@ Texture.prototype.clone = function ()
 /**
  * Updates the internal WebGL UV cache.
  *
- * @private
+ * @protected
  */
 Texture.prototype._updateUvs = function ()
 {
@@ -327,8 +354,8 @@ Texture.prototype._updateUvs = function ()
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param crossorigin {boolean} Whether requests should be treated as crossorigin
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
@@ -368,8 +395,8 @@ Texture.fromFrame = function (frameId)
  * Helper function that creates a new Texture based on the given canvas element.
  *
  * @static
- * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param canvas {HTMLCanvasElement} The canvas element source of the texture
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture}
  */
 Texture.fromCanvas = function (canvas, scaleMode)
@@ -381,8 +408,8 @@ Texture.fromCanvas = function (canvas, scaleMode)
  * Helper function that creates a new Texture based on the given video element.
  *
  * @static
- * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param video {HTMLVideoElement|string} The URL or actual element of the video
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideo = function (video, scaleMode)
@@ -402,7 +429,7 @@ Texture.fromVideo = function (video, scaleMode)
  *
  * @static
  * @param videoUrl {string}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
@@ -486,8 +513,14 @@ Texture.removeTextureFromCache = function (id)
 
 /**
  * An empty texture, used often to not have to create multiple empty textures.
+ * Can not be destroyed.
  *
  * @static
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
+Texture.EMPTY.destroy = function() {};
+Texture.EMPTY.on = function() {};
+Texture.EMPTY.once = function() {};
+Texture.EMPTY.emit = function() {};
+

@@ -15,19 +15,20 @@ var buildPoly = function (graphicsData, webGLData)
 
     var points = graphicsData.points;
 
-    // need to add the points the the graphics object..
-    if (graphicsData.shape.closed)
-    {
-        // close the poly if the value is true!
-        if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
-        {
-            points.push(points[0], points[1]);
-        }
-    }
-
-
     if(graphicsData.fill && points.length > 6)
     {
+
+        var holeArray = [];
+             // Process holes..
+        var holes = graphicsData.holes;
+
+        for (var i = 0; i < holes.length; i++) {
+            var hole = holes[i];
+
+            holeArray.push(points.length/2);
+
+            points = points.concat(hole.points);
+        }
 
         // get first and last point.. figure out the middle!
         var verts = webGLData.points;
@@ -42,15 +43,13 @@ var buildPoly = function (graphicsData, webGLData)
         var g = color[1] * alpha;
         var b = color[2] * alpha;
 
-        var triangles = earcut(points, null, 2);
+        var triangles = earcut(points, holeArray, 2);
 
         if (!triangles) {
             return;
         }
 
         var vertPos = verts.length / 6;
-
-        var i = 0;
 
         for (i = 0; i < triangles.length; i+=3)
         {

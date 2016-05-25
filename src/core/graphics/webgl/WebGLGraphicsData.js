@@ -6,7 +6,9 @@ var glCore = require('pixi-gl-core');
  *
  * @class
  * @memberof PIXI
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} The current WebGL drawing context
+ * @param shader {PIXI.Shader} The shader
+ * @param attribsState {object} The state for the VAO
  * @private
  */
 function WebGLGraphicsData(gl, shader, attribsState)
@@ -68,7 +70,7 @@ function WebGLGraphicsData(gl, shader, attribsState)
     .addIndex(this.indexBuffer)
     .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
     .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
-    
+
 
 }
 
