@@ -22193,7 +22193,6 @@ Text.prototype.updateTexture = function ()
     texture.baseTexture.emit('update',  texture.baseTexture);
     //this._onTextureUpdate();
 
-    this.makeDirty();
     this.dirty = false;
 };
 
