@@ -1,5 +1,4 @@
 var Texture = require('../textures/Texture'),
-    ObservablePoint2d = require('../c2d/ObservablePoint2d'),
     Geometry2d = require('../c2d/Geometry2d'),
     Container = require('../display/Container'),
     SpriteFrame = require('./SpriteFrame'),
@@ -27,7 +26,7 @@ function Sprite(texture, sharedFrame)
     /**
      * Frame that sprite is using, read-only
      *
-     * @member {PIXI.ObservablePoint2d}
+     * @member {PIXI.ObservablePoint}
      * @private
      */
     this._frame = sharedFrame || new SpriteFrame();
@@ -86,12 +85,11 @@ function Sprite(texture, sharedFrame)
      */
     this.cachedTint = 0xFFFFFF;
 
+    this.geometry = new Geometry2d();
+    this.geometry.size = 4;
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-
-    this.geometry = new Geometry2d();
-    this.geometry.size = 4;
 
     this.isRaycastPossible = true;
 }
@@ -229,7 +227,8 @@ Sprite.prototype.calculateVertices = function (dontForce)
     _frame.update();
     if (!dontForce || this._frameVersion !== _frame.version) {
         this._frameVersion = _frame.version;
-        this.geometry.setRectCoords(0, _frame.x, _frame.y, _frame.x + _frame.width, _frame.y + _frame.height);
+        var inner = _frame.inner || _frame;
+        this.geometry.setRectCoords(0, inner.x, inner.y, inner.x + inner.width, inner.y + inner.height);
     }
 };
 

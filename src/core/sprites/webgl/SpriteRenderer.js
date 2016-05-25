@@ -61,11 +61,12 @@ function SpriteRenderer(renderer)
     this.indices = createIndicesForQuads(this.size);
 
     /**
-     * The default shader that is used if a sprite doesn't have a more specific one.
-     *
+     * The default shaders that are used if a sprite doesn't have a more specific one.
+     * there is a shader for each number of textures that can be rendererd.
+     * These shaders will also be generated on the fly as required.
      * @member {PIXI.Shader}
      */
-    this.shader = null;
+    this.shaders = null;
 
     this.textureCount = 0;
     this.currentIndex = 0;
@@ -111,19 +112,26 @@ SpriteRenderer.prototype.onContextChange = function ()
     // step 2: check the maximum number of if statements the shader can have too..
     this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
 
-    this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
+    this.shaders = new Array(this.MAX_TEXTURES);
+    this.shaders[0] = generateMultiTextureShader(gl, 1);
+    this.shaders[1] = generateMultiTextureShader(gl, 2);
+
     // create a couple of buffers
     this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+
+    // we use the second shader as the first one depending on your browser may omit aTextureId
+    // as it is not used by the shader so is optimized out.
+    var shader = this.shaders[1];
 
     for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[i] = this.renderer.createVao()
-        .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[i], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+            .addIndex(this.indexBuffer)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vao = this.vaos[0];
@@ -317,6 +325,8 @@ SpriteRenderer.prototype.flush = function ()
     for (i = 0; i < groupCount; i++) {
 
         var group = groups[i];
+        var groupTextureCount = group.textureCount;
+        shader = this.shaders[groupTextureCount-1];
         this.renderer.bindProjection(group.worldProjection);
 
         if(!shader)
@@ -348,7 +358,7 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
-    this.renderer.bindShader(this.shader);
+    //   this.renderer.bindShader(this.shader);
     this.tick %= 1000;
 };
 

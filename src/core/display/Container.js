@@ -384,7 +384,6 @@ Container.prototype.updateTransform = function ()
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
 Container.prototype._getChildBounds = function() {
     if (this.children.length === 0)
     {

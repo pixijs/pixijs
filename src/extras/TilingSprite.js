@@ -1,6 +1,7 @@
 var core = require('../core'),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader');
+    TilingShader = require('./webgl/TilingShader'),
+    tempArray = new Float32Array(4);
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image

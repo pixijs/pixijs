@@ -198,7 +198,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this._currentTime = frameNumber;
 
-    this._texture = this._textures[this.currentFrame];
+    this.texture = this._textures[this.currentFrame];
 };
 
 /**
@@ -269,7 +269,7 @@ MovieClip.prototype.update = function (deltaTime)
     }
     else
     {
-        this._texture = this._textures[this.currentFrame];
+        this.texture = this._textures[this.currentFrame];
     }
 
 };

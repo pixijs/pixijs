@@ -71,7 +71,7 @@ Object.defineProperties(SpriteFrame.prototype, {
         }
     },
     spriteHeight: {
-        set: function() {
+        get: function() {
             return (this.inner || this).height;
         }
     }
@@ -101,7 +101,7 @@ SpriteFrame.prototype._update = function() {
 
     var trim = orig.inner;
     if (trim) {
-        var inner = this._inner = this._inner || new math.Rectangle(0, 0, 1, 1);
+        var inner = this.inner = this.inner || new math.Rectangle(0, 0, 1, 1);
         inner.width = trim.width * scaleX;
         inner.height = trim.height * scaleY;
         inner.x = this.x + trim.x * scaleX;
