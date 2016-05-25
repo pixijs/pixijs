@@ -1,11 +1,11 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../core/Shader');
 var glslify  = require('glslify');
 
 /**
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param shaderManager {PIXI.ShaderManager} The WebGL shader manager this shader works for.
+ * @param gl {PIXI.Shader} The WebGL shader manager this shader works for.
  */
 function TilingShader(gl)
 {

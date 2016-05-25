@@ -1,4 +1,5 @@
 var core = require('../core');
+var  Device = require('ismobilejs');
 
 // add some extra variables to the container..
 Object.assign(
@@ -17,6 +18,11 @@ Object.assign(
  */
 function AccessibilityManager(renderer)
 {
+	if(Device.tablet || Device.phone)
+	{
+		this.createTouchHook();
+	}
+
 	// first we create a div that will sit over the pixi element. This is where the div overlays will go.
     var div = document.createElement('div');
 
@@ -39,7 +45,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * A simple pool for storing divs.
    	 *
-   	 * @type {Array}
+   	 * @type {*}
    	 * @private
    	 */
  	this.pool = [];
@@ -55,7 +61,7 @@ function AccessibilityManager(renderer)
    	/**
    	 * Setting this to true will visually show the divs
    	 *
-   	 * @type {Boolean}
+   	 * @type {boolean}
    	 */
    	this.debug = false;
 
@@ -69,7 +75,7 @@ function AccessibilityManager(renderer)
    	/**
      * The array of currently active accessible items.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.children = [];
@@ -83,11 +89,11 @@ function AccessibilityManager(renderer)
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
-     * @member {Array}
+     * @member {*[]}
      * @private
      */
    	this.isActive = false;
-
+   	this.isMobileAccessabillity = false;
 
    	// let listen for tab.. once pressed we can fire up and show the accessibility layer
    	window.addEventListener('keydown', this._onKeyDown, false);
@@ -97,13 +103,37 @@ function AccessibilityManager(renderer)
 AccessibilityManager.prototype.constructor = AccessibilityManager;
 module.exports = AccessibilityManager;
 
+AccessibilityManager.prototype.createTouchHook = function()
+{
+	var hookDiv = document.createElement('button');
+	hookDiv.style.width = 1 + 'px';
+    hookDiv.style.height = 1 + 'px';
+    hookDiv.style.position = 'absolute';
+    hookDiv.style.top = -1000+'px';
+    hookDiv.style.left = -1000+'px';
+    hookDiv.style.zIndex = 2;
+    hookDiv.style.backgroundColor = '#FF0000';
+    hookDiv.title = 'HOOK DIV';
+
+    hookDiv.addEventListener('focus', function(){
+
+    	this.isMobileAccessabillity = true;
+    	this.activate();
+    	document.body.removeChild(hookDiv);
+
+    }.bind(this));
+
+    document.body.appendChild(hookDiv);
+
+};
+
 /**
  * Activating will cause the Accessibility layer to be shown. This is called when a user preses the tab key
  * @private
  */
 AccessibilityManager.prototype.activate = function()
 {
-	if(this.isActive)
+	if(this.isActive )
 	{
 		return;
 	}
@@ -124,7 +154,8 @@ AccessibilityManager.prototype.activate = function()
  */
 AccessibilityManager.prototype.deactivate = function()
 {
-	if(!this.isActive)
+
+	if(!this.isActive || this.isMobileAccessabillity)
 	{
 		return;
 	}
@@ -142,7 +173,7 @@ AccessibilityManager.prototype.deactivate = function()
 
 /**
  * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
- * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @param displayObject {PIXI.Container} the DisplayObject to check.
  * @private
  */
 AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
@@ -178,8 +209,8 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 AccessibilityManager.prototype.update = function()
 {
 	if(!this.renderer.renderingToScreen) {
-    return;
-  }
+    	return;
+  	}
 
 	// update children...
 	this.updateAccessibleObjects(this.renderer._lastObjectRendered);
@@ -305,20 +336,20 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	}
 
 
-	if(displayObject.accessibleTitle) 
+	if(displayObject.accessibleTitle)
 	{
 		div.title = displayObject.accessibleTitle;
-	} 
-	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint) 
+	}
+	else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
 	{
 		div.title = 'displayObject ' + this.tabIndex;
 	}
 
-	if(displayObject.accessibleHint) 
+	if(displayObject.accessibleHint)
 	{
-		div.setAttribute('aria-label', displayObject.accessibleHint);	
+		div.setAttribute('aria-label', displayObject.accessibleHint);
 	}
-	
+
 
 	//
 

@@ -8,9 +8,6 @@ var GAUSSIAN_VALUES = {
 };
 
 var fragTemplate = [
-
-	'precision mediump float;',
-
 	'varying vec2 vBlurTexCoords[%size%];',
 	'uniform sampler2D uSampler;',
 

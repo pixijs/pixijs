@@ -732,8 +732,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
     this._spriteRect.worldAlpha = this.worldAlpha;
 
-    Graphics._SPRITE_TEXTURE.frame.width = rect.width;
-    Graphics._SPRITE_TEXTURE.frame.height = rect.height;
+    Graphics._SPRITE_TEXTURE._frame.width = rect.width;
+    Graphics._SPRITE_TEXTURE._frame.height = rect.height;
 
     this._spriteRect.computedTransform = this.computedTransform;
 
@@ -934,7 +934,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+ * @param shape {PIXI.math.Circle|PIXI.math.Ellipse|PIXI.math.Polygon|PIXI.math.Rectangle|PIXI.math.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)
@@ -1032,6 +1032,10 @@ Graphics.prototype.destroy = function ()
         }
     }
 
+    if(this._spriteRect)
+    {
+        this._spriteRect.destroy();
+    }
     this.graphicsData = null;
 
     this.currentPath = null;

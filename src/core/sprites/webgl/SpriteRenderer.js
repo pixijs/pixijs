@@ -197,6 +197,7 @@ SpriteRenderer.prototype.flush = function ()
     var uvs;
     var textureId;
     var blendMode = sprites[0].blendMode;
+    var shader;
     var worldProjection = sprites[0].worldProjection;
 
     currentGroup.textureCount = 0;
@@ -298,14 +299,15 @@ SpriteRenderer.prototype.flush = function ()
     if(this.vaoMax <= this.vertexCount)
     {
         this.vaoMax++;
+        shader = this.shaders[1];
         this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
         // build the vao object that will render..
         this.vaos[this.vertexCount] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
     }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
@@ -317,7 +319,16 @@ SpriteRenderer.prototype.flush = function ()
         var group = groups[i];
         this.renderer.bindProjection(group.worldProjection);
 
-        for (var j = 0; j < group.textureCount; j++) {
+        if(!shader)
+        {
+            shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+            //console.log("SHADER generated for " + textureCount + " textures")
+        }
+
+        this.renderer.bindShader(shader);
+
+        for (var j = 0; j < groupTextureCount; j++)
+        {
             this.renderer.bindTexture(group.textures[j], j);
         }
 
@@ -362,7 +373,13 @@ SpriteRenderer.prototype.destroy = function ()
     this.renderer.off('prerender', this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
-    this.shader.destroy();
+    for (i = 0; i < this.shaders.length; i++) {
+
+        if(this.shaders[i])
+        {
+            this.shaders[i].destroy();
+        }
+    }
 
     this.vertexBuffers = null;
     this.vaos = null;
@@ -370,7 +387,6 @@ SpriteRenderer.prototype.destroy = function ()
     this.indices = null;
 
     this.sprites = null;
-    this.shader = null;
 
     for (i = 0; i < this.buffers.length; i++) {
         this.buffers[i].destroy();

@@ -52,7 +52,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         width = dest.width,
         height = dest.height;
 
-    if (width <= 0 || height <= 0)
+    if (width <= 0 || height <= 0 || !texture.baseTexture.source)
     {
         return;
     }

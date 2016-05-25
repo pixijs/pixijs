@@ -113,6 +113,15 @@ Transform2d.prototype.update = function ()
     return true;
 };
 
+/**
+ * Decomposes a matrix and sets the transforms properties based on it.
+ * @param {Matrix}
+ */
+Transform.prototype.setFromMatrix = function (matrix)
+{
+    matrix.decompose(this);
+};
+
 Transform2d.prototype.makeComputedTransform = function(computedTransform) {
     if (!computedTransform || computedTransform._dirtyLocalUid !== this.uid) {
         computedTransform = new ComputedTransform2d();

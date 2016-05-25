@@ -13,7 +13,7 @@ var fs = require('fs');
  * https://github.com/mitsuhiko/webgl-meincraft
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI
  *
  */

@@ -3,7 +3,7 @@ var WebGLManager = require('./WebGLManager');
 /**
  * @class
  * @memberof PIXI
- * @extends PIXI.WebGlManager
+ * @extends PIXI.WebGLManager
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
 function BlendModeManager(renderer)

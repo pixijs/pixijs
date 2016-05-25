@@ -132,7 +132,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;

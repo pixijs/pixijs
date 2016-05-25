@@ -64,6 +64,16 @@ Object.defineProperties(SpriteFrame.prototype, {
             this._textureFrame = value;
             this._dirtyVersion++;
         }
+    },
+    spriteWidth: {
+        get: function() {
+            return (this.inner || this).width;
+        }
+    },
+    spriteHeight: {
+        set: function() {
+            return (this.inner || this).height;
+        }
     }
 });
 

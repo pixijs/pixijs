@@ -3,7 +3,8 @@ var core = require('./core'),
     mesh = require('./mesh'),
     particles = require('./particles'),
     extras = require('./extras'),
-    filters = require('./filters');
+    filters = require('./filters'),
+    CONST = require('./core/const');
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -304,7 +305,7 @@ Object.defineProperties(core.DisplayObject, {
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
-    return renderer.generateTexture(renderer, scaleMode, resolution);
+    return renderer.generateTexture(this, scaleMode, resolution);
 };
 
 
@@ -329,19 +330,19 @@ core.RenderTexture.prototype.getImage = function(target)
 core.RenderTexture.prototype.getBase64 = function(target)
 {
     warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
-    this.legacyRenderer.extract.base64(target);
+    return this.legacyRenderer.extract.base64(target);
 };
 
 core.RenderTexture.prototype.getCanvas = function(target)
 {
     warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
-    this.legacyRenderer.extract.canvas(target);
+    return this.legacyRenderer.extract.canvas(target);
 };
 
 core.RenderTexture.prototype.getPixels = function(target)
 {
     warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
-    this.legacyRenderer.pixels(target);
+    return this.legacyRenderer.pixels(target);
 };
 
 
@@ -396,6 +397,90 @@ core.Text.prototype.setStyle = function(style)
     this.style = style;
     warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
+
+Object.defineProperties(core.TextStyle.prototype, {
+    font: {
+        get: function ()
+        {
+            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            var fontSizeString = (typeof this._fontSize === 'number') ? this._fontSize + 'px' : this._fontSize;
+            return this._fontStyle + ' ' + this._fontVariant + ' ' + this._fontWeight + ' ' + fontSizeString + ' ' + this._fontFamily;
+        },
+        set: function (font)
+        {
+            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+
+            // can work out fontStyle from search of whole string
+            if ( font.indexOf('italic') > 1 )
+            {
+                this._fontStyle = 'italic';
+            }
+            else if ( font.indexOf('oblique') > -1 )
+            {
+                this._fontStyle = 'oblique';
+            }
+            else
+            {
+                this._fontStyle = 'normal';
+            }
+
+            // can work out fontVariant from search of whole string
+            if ( font.indexOf('small-caps') > -1 )
+            {
+                this._fontVariant = 'small-caps';
+            }
+            else
+            {
+                this._fontVariant = 'normal';
+            }
+
+            // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
+            var splits = font.split(' ');
+            var i;
+            var fontSizeIndex = -1;
+
+            this._fontSize = 26;
+            for ( i = 0; i < splits.length; ++i )
+            {
+                if ( splits[i].match( /(px|pt|em|%)/ ) )
+                {
+                    fontSizeIndex = i;
+                    this._fontSize = splits[i];
+                    break;
+                }
+            }
+
+            // we can now search for fontWeight as we know it must occur before the fontSize
+            this._fontWeight = 'normal';
+            for ( i = 0; i < fontSizeIndex; ++i )
+            {
+                if ( splits[i].match( /(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/ ) )
+                {
+                    this._fontWeight = splits[i];
+                    break;
+                }
+            }
+
+            // and finally join everything together after the fontSize in case the font family has multiple words
+            if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
+            {
+                this._fontFamily = '';
+                for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+                {
+                    this._fontFamily += splits[i] + ' ';
+                }
+
+                this._fontFamily = this._fontFamily.slice(0, -1);
+            }
+            else
+            {
+                this._fontFamily = 'Arial';
+            }
+
+            this.emit(CONST.TEXT_STYLE_CHANGED);
+        }
+    }
+} );
 
 /**
  * @method

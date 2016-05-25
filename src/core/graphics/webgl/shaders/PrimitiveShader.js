@@ -1,4 +1,4 @@
-var Shader = require('pixi-gl-core').GLShader;
+var Shader = require('../../../Shader');
 
 /**
  * This shader is used to draw simple primitive shapes for {@link PIXI.Graphics}.
@@ -6,7 +6,7 @@ var Shader = require('pixi-gl-core').GLShader;
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param gl {WebGLRenderingContext} The webgl shader manager this shader works for.
  */
 function PrimitiveShader(gl)
 {
@@ -32,8 +32,6 @@ function PrimitiveShader(gl)
         ].join('\n'),
         // fragment shader
         [
-            'precision mediump float;',
-
             'varying vec4 vColor;',
 
             'void main(void){',

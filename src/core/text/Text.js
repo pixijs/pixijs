@@ -17,7 +17,7 @@ var Sprite = require('../sprites/Sprite'),
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI
- * @param text {string} The copy that you would like the text to display
+ * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
  * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
  */
@@ -65,6 +65,14 @@ function Text(text, style, resolution)
      */
     this._styleListener = null;
 
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {string}
+     * @private
+     */
+    this._font = '';
+
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
@@ -98,6 +106,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
@@ -118,6 +128,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.y = value / this._texture._frame.height;
             this._height = value;
         }
@@ -126,7 +138,7 @@ Object.defineProperties(Text.prototype, {
     /**
      * Set the style of the text. Set up an event listener to listen for changes on the style object and mark the text as dirty.
      *
-     * @param [style] {object|TextStyle} The style parameters
+     * @param [style] {object|PIXI.TextStyle} The style parameters
      * @memberof PIXI.Text#
      */
     style: {
@@ -136,7 +148,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
-            if (this._style) {
+            if (this._style)
+            {
                 this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
             }
 
@@ -144,7 +157,8 @@ Object.defineProperties(Text.prototype, {
             if (style instanceof TextStyle)
             {
                 this._style = style;
-            } else
+            }
+            else
             {
                 this._style = new TextStyle(style);
             }
@@ -190,7 +204,12 @@ Text.prototype.updateText = function (respectDirty)
         return;
     }
     var style = this._style;
-    this.context.font = style.font;
+
+    // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
+    var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
+    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
+
+    this.context.font = this._font;
 
     // word wrap
     // preserve original text
@@ -202,8 +221,10 @@ Text.prototype.updateText = function (respectDirty)
     // calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
+    var fontProperties = this.determineFontProperties(this._font);
+
+    var i;
+    for (i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
         lineWidths[i] = lineWidth;
@@ -240,7 +261,7 @@ Text.prototype.updateText = function (respectDirty)
     //this.context.fillStyle="#FF0000";
     //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.context.font = style.font;
+    this.context.font = this._font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = style.textBaseline;
@@ -632,5 +653,4 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._style = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
-
 };

@@ -7,6 +7,7 @@ var CONST = require('../../../const');
  * @memberof PIXI
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
+ * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
  */
 function CanvasRenderTarget(width, height, resolution)
 {

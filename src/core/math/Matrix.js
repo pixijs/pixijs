@@ -109,7 +109,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
- * @param [out] {Array} If provided the array will be assigned to out
+ * @param [out=Float32Array[]} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -344,6 +344,54 @@ Matrix.prototype.prepend = function(matrix)
 
     return this;
 };
+
+/**
+ * Decomposes the matrix (x, y, scaleX, scaleY, and rotation) and sets the properties on to a transform.
+ * @param {Transform} the transform to apply the properties to.
+ * @return {Transform} The transform with the newly applied properies
+*/
+Matrix.prototype.decompose = function(transform)
+{
+    // sort out rotation / skew..
+    var a = this.a,
+        b = this.b,
+        c = this.c,
+        d = this.d;
+
+    var skewX = Math.atan2(-c, d);
+    var skewY = Math.atan2(b, a);
+
+    var delta = Math.abs(1-skewX/skewY);
+
+    if (delta < 0.00001)
+    {
+        transform.rotation = skewY;
+
+        if (a < 0 && d >= 0)
+        {
+            transform.rotation += (transform.rotation <= 0) ? Math.PI : -Math.PI;
+        }
+
+        transform.skew.x = transform.skew.y = 0;
+
+    }
+    else
+    {
+        transform.skew.x = skewX;
+        transform.skew.y = skewY;
+    }
+
+    // next set scale
+    transform.scale.x = Math.sqrt(a * a + b * b);
+    transform.scale.y = Math.sqrt(c * c + d * d);
+
+    // next set position
+    transform.position.x = this.tx;
+    transform.position.y = this.ty;
+
+    return transform;
+};
+
 
 /**
  * Inverts this matrix
