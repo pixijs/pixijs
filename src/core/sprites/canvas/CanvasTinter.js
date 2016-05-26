@@ -2,9 +2,7 @@ var utils = require('../../utils'),
 canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 /**
  * Utility methods for Sprite/Texture tinting.
- * @static
- * @class
- * @memberof PIXI
+ * @namespace PIXI.CanvasTinter
  */
 var CanvasTinter = {};
 module.exports = CanvasTinter;
