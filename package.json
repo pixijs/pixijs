@@ -35,9 +35,9 @@
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
     "glslify": "^5.0.2",
-    "ismobilejs": "git+https://github.com/kaimallea/isMobile.git",
+    "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
-    "pixi-gl-core": "git+https://github.com/GoodBoyDigital/pixi-gl-core.git",
+    "pixi-gl-core": "^1.0.2",
     "resource-loader": "^1.6.4"
   },
   "devDependencies": {
