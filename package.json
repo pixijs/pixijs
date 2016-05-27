@@ -34,6 +34,7 @@
     "bit-twiddle": "^1.0.2",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
+    "gl-matrix": "^2.1.0",
     "glslify": "^5.0.2",
     "ismobilejs": "git+https://github.com/kaimallea/isMobile.git",
     "object-assign": "^4.0.1",

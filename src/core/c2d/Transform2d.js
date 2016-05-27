@@ -63,6 +63,13 @@ function Transform2d(isStatic)
     this._dirtyVersion = 0;
     this.version = 0;
 
+    /**
+     * whether or not this matrix has only position & pivot
+     * 0 for everything, 1 for translation, 2 for identity
+     * @type {boolean}
+     */
+    this.operType = 0;
+
     this.uid = utils.incTransform();
 }
 
@@ -108,6 +115,16 @@ Transform2d.prototype.update = function ()
 
     lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
     lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
+
+    if (lt.a === 1.0 && lt.b === 0.0 && lt.c === 0.0 && lt.d === 1.0) {
+        if (lt.tx === 0.0 && lt.ty === 0.0) {
+            this.operType = 2;
+        } else {
+            this.operType = 1;
+        }
+    } else {
+        this.operType = 0;
+    }
 
     this.version = ++this._dirtyVersion;
     return true;

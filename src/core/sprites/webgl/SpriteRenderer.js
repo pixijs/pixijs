@@ -24,11 +24,11 @@ function SpriteRenderer(renderer)
 
     /**
      * Number of values sent in the vertex buffer.
-     * positionX, positionY, colorR, colorG, colorB = 5
+     * positionX, positionY, positionZ, colorR, colorG, colorB = 6
      *
      * @member {number}
      */
-    this.vertSize = 5;
+    this.vertSize = 6;
 
     /**
      * The size of the vertex information in bytes.
@@ -129,9 +129,9 @@ SpriteRenderer.prototype.onContextChange = function ()
         this.vaos[i] = this.renderer.createVao()
             .addIndex(this.indexBuffer)
             .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 3 * 4)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 4 * 4)
+            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 5 * 4);
     }
 
     this.vao = this.vaos[0];
@@ -271,30 +271,35 @@ SpriteRenderer.prototype.flush = function ()
         uvs = sprite._texture._uvs.uvsUint32;
         textureId = nextTexture._id;
 
+        var num = 0, is3d = sprite.computedGeometry.is3d;
         //xy
-        float32View[index++] = vertexData[0];
-        float32View[index++] = vertexData[1];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = is3d ? vertexData[num++] : 0;
         uint32View[index++] = uvs[0];
         uint32View[index++] = tint;
         float32View[index++] = textureId;
 
         // xy
-        float32View[index++] = vertexData[2];
-        float32View[index++] = vertexData[3];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = is3d ? vertexData[num++] : 0;
         uint32View[index++] = uvs[1];
         uint32View[index++] = tint;
         float32View[index++] = textureId;
 
          // xy
-        float32View[index++] = vertexData[4];
-        float32View[index++] = vertexData[5];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = is3d ? vertexData[num++] : 0;
         uint32View[index++] = uvs[2];
         uint32View[index++] = tint;
         float32View[index++] = textureId;
 
         // xy
-        float32View[index++] = vertexData[6];
-        float32View[index++] = vertexData[7];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = vertexData[num++];
+        float32View[index++] = is3d ? vertexData[num++] : 0;
         uint32View[index++] = uvs[3];
         uint32View[index++] = tint;
         float32View[index++] = textureId;
@@ -313,9 +318,9 @@ SpriteRenderer.prototype.flush = function ()
         this.vaos[this.vertexCount] = this.renderer.createVao()
         .addIndex(this.indexBuffer)
         .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 3 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 4 * 4)
+        .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 5 * 4);
     }
 
     this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);

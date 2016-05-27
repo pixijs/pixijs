@@ -149,6 +149,27 @@ Matrix.prototype.toArray = function (transpose, out)
     return array;
 };
 
+Matrix.prototype.toMat4 = function(out) {
+    out = out || new Float32Array(16);
+    out[0] = this.a;
+    out[1] = this.b;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = this.c;
+    out[5] = this.d;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 1;
+    out[11] = 0;
+    out[12] = this.tx;
+    out[13] = this.ty;
+    out[14] = 0;
+    out[15] = 1;
+    return out;
+};
+
 /**
  * Get a new position with the current transformation applied.
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)

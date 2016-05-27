@@ -390,7 +390,7 @@ WebGLRenderer.prototype.bindProjection = function(worldProjection) {
     if (aRT && aRT.checkWorldProjection(worldProjection)) {
         aRT.setWorldProjection(worldProjection);
         if (aS) {
-            aS.uniforms.projectionMatrix = aRT.projectionMatrix.toArray(true);
+            aS.setUniformMatrix('projectionMatrix', aRT.projectionMatrix);
         }
         return true;
     }
@@ -404,16 +404,16 @@ WebGLRenderer.prototype.bindProjection = function(worldProjection) {
  */
 WebGLRenderer.prototype.bindRenderTarget = function (renderTarget)
 {
+    var aS = this._activeShader;
     if(renderTarget !== this._activeRenderTarget)
     {
         this._activeRenderTarget = renderTarget;
         renderTarget.activate();
 
-        if(this._activeShader)
+        if(aS)
         {
-            this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
+            aS.setUniformMatrix('projectionMatrix', renderTarget.projectionMatrix);
         }
-
 
         this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
     }
@@ -435,7 +435,7 @@ WebGLRenderer.prototype.bindShader = function (shader)
         shader.bind();
 
         // automatically set the projection matrix
-        shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+        shader.setUniformMatrix('projectionMatrix', this._activeRenderTarget.projectionMatrix);
     }
 
     return this;
