@@ -15,9 +15,16 @@ function Geometry() {
     this.stride = 2;
     this.is3d = false;
     this.uid = utils.incGeometry();
+
+    /**
+     * version number of geometry vertices
+     * @type {number}
+     */
     this.version = 0;
+
     this._bounds = new math.Rectangle();
     this._dirtyBounds = -1;
+    this.currentBounds = null;
 }
 
 Geometry.prototype.getBounds = function () {
@@ -54,8 +61,10 @@ Geometry.prototype.getBounds = function () {
         bounds.y = minY;
         bounds.width = maxX - minX;
         bounds.height = maxY - minY;
+
+        this.currentBounds = bounds;
     }
-    return this._bounds;
+    return this.currentBounds;
 };
 
 Object.defineProperties(Geometry.prototype, {

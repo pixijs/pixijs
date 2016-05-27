@@ -31,6 +31,8 @@ function Euler(x, y, z) {
     this.quaternion = quat.create();
     this.version = 0;
     this._dirtyVersion = 1;
+
+    this.update();
 }
 
 Object.defineProperties(Euler.prototype, {
@@ -73,7 +75,55 @@ Object.defineProperties(Euler.prototype, {
      */
     roll: {
         get: function () {
-            return this.z;
+            return this._z;
+        },
+        set: function (value) {
+            if (this._z !== value) {
+                this._z = value;
+                this._dirtyVersion++;
+            }
+        }
+    },
+    /**
+     * Yaw angle
+     * @member {number}
+     * @memberof PIXI.Euler#
+     */
+    y: {
+        get: function () {
+            return this._y;
+        },
+        set: function (value) {
+            if (this._y !== value) {
+                this._y = value;
+                this._dirtyVersion++;
+            }
+        }
+    },
+    /**
+     * Pitch angle
+     * @member {number}
+     * @memberof PIXI.Euler#
+     */
+    x: {
+        get: function () {
+            return this._x;
+        },
+        set: function (value) {
+            if (this._x !== value) {
+                this._x = value;
+                this._dirtyVersion++;
+            }
+        }
+    },
+    /**
+     * Roll angle
+     * @member {number}
+     * @memberof PIXI.Euler#
+     */
+    z: {
+        get: function () {
+            return this._z;
         },
         set: function (value) {
             if (this._z !== value) {

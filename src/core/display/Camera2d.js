@@ -292,8 +292,8 @@ Camera2d.prototype.renderWebGL = function(renderer) {
     if (this.autoUpdateViewport) {
         this.viewport.x = 0;
         this.viewport.y = 0;
-        this.viewport.width = renderer.width;
-        this.viewport.height = renderer.height;
+        this.viewport.width = renderer.width / renderer.resolution;
+        this.viewport.height = renderer.height / renderer.resolution;
     }
     if (this.enableDisplayList) {
         var list = this._displayList;

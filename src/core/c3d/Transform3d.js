@@ -1,7 +1,6 @@
 /*global console */
 
-var math = require('../math'),
-    ObservablePoint3d = require('./ObservablePoint3d'),
+var ObservablePoint3d = require('./ObservablePoint3d'),
     Point3d = require('./Point3d'),
     Euler = require('./Euler'),
     ComputedTransform3d = require('./ComputedTransform3d'),
@@ -55,17 +54,13 @@ function Transform3d(isStatic)
      *
      * @member {PIXI.Point}
      */
-    this.pivot = isStatic ? new ObservablePoint3d(this.makeDirty, this, 0,0,0) : new math.Point3d(0,0,0);
+    this.pivot = isStatic ? new ObservablePoint3d(this.makeDirty, this, 0,0,0) : new Point3d(0,0,0);
 
     this._dirtyVersion = 0;
     this.version = 0;
     this._eulerVersion = 0;
-
-    /**
-     * whether or not this matrix has only position & pivot
-     * @type {boolean}
-     */
-    this.isTranslation = true;
+    this.is3d = true;
+    this.operType = 0;
 
     this.uid = utils.incTransform();
 }
@@ -91,7 +86,7 @@ Transform3d.prototype.update = function ()
     }
     this.version = ++this._dirtyVersion;
     this._eulerVersion = this.euler.version;
-    this.isTranslation = true;
+    var isTranslation = true;
 
     var matrix = this.matrix3d;
 
@@ -103,7 +98,7 @@ Transform3d.prototype.update = function ()
     tempMatrix[1] = this.position.y;
     tempMatrix[2] = this.position.z;
     if (rx !== 0 || ry !== 0 || rz !== 0) {
-        this.isTranslation = false;
+        isTranslation = false;
         mat4.fromRotationTranslation(matrix, this.euler.quaternion, tempMatrix);
     } else
     {
@@ -112,7 +107,7 @@ Transform3d.prototype.update = function ()
 
     rx = this.scale.x; ry = this.scale.y; rz = this.scale.z;
     if (rx !== 1 || ry !== 1 || rz !== 1) {
-        this.isTranslation = false;
+        isTranslation = false;
         tempMatrix[0] = rx;
         tempMatrix[1] = ry;
         tempMatrix[2] = rz;
@@ -127,6 +122,8 @@ Transform3d.prototype.update = function ()
         tempMatrix[2] = -rz;
         mat4.translate(matrix, matrix, tempMatrix);
     }
+
+    this.operType = isTranslation ? 1 : 0;
     return true;
 };
 

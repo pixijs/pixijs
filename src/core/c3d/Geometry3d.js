@@ -8,11 +8,13 @@ var Geometry = require('../c2d/Geometry');
  * Renderers can use it to upload data to vertex buffer or to copy data to other buffers
  *
  * @class
+ * @extends PIXI.Geometry
  * @memberof PIXI
  */
 function Geometry3d() {
     Geometry.call(this);
     this.stride = 3;
+    this.is3d = true;
 }
 
 Geometry3d.prototype = Object.create(Geometry.prototype);

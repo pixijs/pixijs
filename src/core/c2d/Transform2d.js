@@ -62,6 +62,7 @@ function Transform2d(isStatic)
 
     this._dirtyVersion = 0;
     this.version = 0;
+    this.is3d = false;
 
     /**
      * whether or not this matrix has only position & pivot

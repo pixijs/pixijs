@@ -101,6 +101,9 @@ ComputedTransform3d.prototype.updateRaycast = function (parentRaycast) {
 };
 
 ComputedTransform3d.prototype.updateChildTransform = function (childTransform, localTransform) {
+    if (!childTransform.is3d) {
+        childTransform = new ComputedTransform3d();
+    }
     childTransform.updateTransform(this, localTransform);
     return childTransform;
 };

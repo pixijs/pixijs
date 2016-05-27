@@ -8,4 +8,6 @@ module.exports = {
     Point3d:                require('./Point3d'),
     Euler:                  require('./Euler'),
     glMat:                  require('gl-matrix'),
+
+    Camera3d:               require('./Camera3d')
 };

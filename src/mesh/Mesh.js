@@ -215,7 +215,7 @@ Mesh.prototype._renderWebGL = function (renderer)
     renderer.bindProjection(this.worldProjection);
     renderer.bindTexture(this._texture, 0);
 
-    glData.shader.uniforms.translationMatrix = this.projectionMatrix2d.toArray(true);
+    glData.shader.uniforms.translationMatrix = this.computedTransform.is3d ? this.computedTransform.matrix3d : this.computedTransform.matrix2d.toMat4();
     glData.shader.uniforms.alpha = this.worldAlpha;
 
     var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;

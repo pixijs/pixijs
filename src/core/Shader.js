@@ -36,7 +36,9 @@ module.exports = Shader;
 
 Shader.prototype.setUniformMatrix = function(name, value) {
     if (this.uniforms[name].length === 9) {
-        this.uniforms[name] = value.toArray(true);
+        if (!value.length) {
+            this.uniforms[name] = value.toArray(true);
+        }
     } else {
         if (value.length) {
             this.uniforms[name] = value;

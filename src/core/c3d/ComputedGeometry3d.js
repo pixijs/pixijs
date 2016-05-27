@@ -1,7 +1,8 @@
 var Geometry3d = require('./Geometry3d'),
     glMat = require('gl-matrix'),
     mat4 = glMat.vec4,
-    vec3 = glMat.vec3;
+    vec3 = glMat.vec3,
+    math = require('../math');
 
 var tempMatrix = mat4.create(), tempVec3 = vec3.create();
 
@@ -13,6 +14,7 @@ var tempMatrix = mat4.create(), tempVec3 = vec3.create();
  * Renderers can use it to upload data to vertex buffer or to copy data to other buffers
  *
  * @class
+ * @extends Geometry3d
  * @memberof PIXI
  */
 function ComputedGeometry3d() {
@@ -24,7 +26,7 @@ function ComputedGeometry3d() {
 }
 
 ComputedGeometry3d.prototype = Object.create(Geometry3d.prototype);
-ComputedGeometry3d.prototype.constructor = Geometry3d;
+ComputedGeometry3d.prototype.constructor = ComputedGeometry3d;
 module.exports = ComputedGeometry3d;
 
 ComputedGeometry3d.prototype.applyTransformStatic = function (geometry, transform) {
@@ -44,7 +46,6 @@ ComputedGeometry3d.prototype.applyTransformStatic = function (geometry, transfor
 };
 
 ComputedGeometry3d.prototype.applyTransform = function(geometry, transform) {
-    this.stride = geometry.stride;
     if (!this.vertices || this.size !== geometry.size) {
         this.size = geometry.size;
     }
@@ -58,7 +59,8 @@ ComputedGeometry3d.prototype.applyMatrix = function(geometry, matrix) {
     var stride = geometry.stride;
     var vertices = geometry.vertices;
     var is3d = geometry.is3d;
-    for (var i = 0, j = 0, n = vertices.length; i < n; i += 3, j += stride) {
+    this.version++;
+    for (var i = 0, j = 0, n = vertices.length; j < n; i += 3, j += stride) {
         vec[0] = vertices[j];
         vec[1] = vertices[j+1];
         vec[2] = is3d ? vertices[j+2] : 0;
@@ -66,6 +68,9 @@ ComputedGeometry3d.prototype.applyMatrix = function(geometry, matrix) {
         out[i] = vec[0];
         out[i+1] = vec[1];
         out[i+2] = vec[2];
+        if (vec[2] < 0 || vec[2] > 1.0) {
+            this._dirtyBounds = this.version;
+            this.currentBounds = math.Rectangle.EMPTY;
+        }
     }
-    this.version++;
 };
