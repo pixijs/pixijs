@@ -16545,10 +16545,8 @@ var tempMatrix1 = mat4.create(), tempMatrix2 = mat4.create(), tempVec = vec3.cre
  * @param [y=0] {number} position of the point on the y axis
  */
 function ComputedTransform3d() {
-    /**
-     * @member {PIXI.Matrix} The global matrix transform
-     */
     this.matrix3d = new mat4.create();
+    this.inverse3d = null;
 
     this.version = 0;
     this.uid = utils.incTransform();
@@ -16563,6 +16561,7 @@ function ComputedTransform3d() {
     this._dirtyRaycastUid = -1;
     this._dirtyRaycastVersion = -1;
     this._dirtyRaycastMyVersion = -1;
+    this._dirtyInverse = -1;
 }
 
 ComputedTransform3d.prototype.constructor = ComputedTransform3d;
@@ -16688,6 +16687,18 @@ ComputedTransform3d.prototype.updateChildRaycast = function (computedRaycast, pa
     }
     computedRaycast.applyTransformStatic(parentRaycast, this);
     return computedRaycast;
+};
+
+ComputedTransform3d.prototype.getInverse = function() {
+    if (this._dirtyInverse === this.version) {
+        return this.inverse3d;
+    }
+    this._dirtyInverse = this.version;
+    if (!this.inverse3d) {
+        this.inverse3d = mat4.create();
+    }
+    mat4.invert(this.inverse3d, this.matrix3d);
+    return this.inverse3d;
 };
 
 Object.defineProperties(ComputedTransform3d.prototype, {
@@ -17181,19 +17192,19 @@ Raycast3d.prototype.childApplyTransform = function(child, transform) {
 Raycast3d.prototype.applyTransform = function(raycast, transform) {
     this.intersects = false;
 
-    var ray0 = raycast.is3d ? raycast.ray[0] : vec3.set(tempVec1, raycast.x, raycast.y, 0);
-    var ray1 = raycast.is3d ? raycast.ray[1] : vec3.set(tempVec2, raycast.x, raycast.y, 1);
+    var ray0 = raycast.is3d ? raycast.ray[0] : vec3.set(tempVec1, raycast.x, raycast.y, 1);
+    var ray1 = raycast.is3d ? raycast.ray[1] : vec3.set(tempVec2, raycast.x, raycast.y, 0);
 
-    var wt = transform.is3d ? transform.matrix3d : transform.matrix2d.toMat4(tempMatrix);
+    var wt = transform.is3d ? transform.getInverse() : transform.matrix2d.invertMat4(tempMatrix);
     vec3.transformMat4(this.ray[0], ray0, wt);
     vec3.transformMat4(this.ray[1], ray1, wt);
-    var eps = glMat.EPSILON;
+    var eps = glMat.glMatrix.EPSILON;
     var dz = this.ray[0][2] - this.ray[1][2];
-    if (dz > -eps || dz < eps) {
+    if (dz > -eps && dz < eps) {
         this.valid = false;
     } else {
         var t = - this.ray[0][2] / (this.ray[1][2] - this.ray[0][2]);
-        if (t < -eps || t > 1 + eps) {
+        if (t < -eps) {
             this.valid = false;
         } else {
             this.valid = true;
@@ -23228,6 +23239,36 @@ Matrix.prototype.toMat4 = function(out) {
     out[14] = 0;
     out[15] = 1;
     return out;
+};
+
+Matrix.prototype.invertMat4 = function(out)
+{
+    out = out || new Float32Array(16);
+    var a1 = this.a;
+    var b1 = this.b;
+    var c1 = this.c;
+    var d1 = this.d;
+    var tx1 = this.tx;
+    var n = a1*d1-b1*c1;
+
+    out[0] = d1/n;
+    out[1] = -b1/n;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = -c1/n;
+    out[5] = a1/n;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 1;
+    out[11] = 0;
+    out[12] = (c1*this.ty-d1*tx1)/n;
+    out[13] = -(a1*this.ty-b1*tx1)/n;
+    out[14] = 0;
+    out[15] = 1;
+
+    return this;
 };
 
 /**
