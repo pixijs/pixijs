@@ -17,18 +17,25 @@ function Prepare(renderer)
     this.renderer = renderer;
 
     /**
-     * Collection of textures to do multiple uploads at once.
-     * @type {Array<PIXI.Texture>}
+     * Collection of items to uploads at once.
+     * @type {Array<*>}
      * @private
      */
-    this.textures = [];
+    this.queue = [];
 
     /**
-     * Collection of graphics to do multiple uploads at once.
-     * @type {Array<PIXI.Graphics>}
+     * Collection of additional hooks for finding assets.
+     * @type {Array<Function>}
      * @private
      */
-    this.graphics = [];
+    this.addHooks = [];
+
+    /**
+     * Collection of additional hooks for processing assets.
+     * @type {Array<Function>}
+     * @private
+     */
+    this.uploadHooks = [];
 
     /**
      * Callback to call after completed.
@@ -36,8 +43,11 @@ function Prepare(renderer)
      * @private
      */
     this.complete = null;
-}
 
+    // Add textures and graphics to upload
+    this.register(findBaseTextures, uploadBaseTextures)
+        .register(findGraphics, uploadGraphics);
+}
 
 /**
  * The number of graphics or textures to upload to the GPU
@@ -53,15 +63,28 @@ module.exports = Prepare;
 /** 
  * Upload all the textures and graphics to the GPU. 
  * @method upload
- * @static
- * @param {PIXI.WebGLRenderer} renderer Render to upload to
- * @param {PIXI.DisplayObject|PIXI.Container} clip MovieClip to upload
+ * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
+ *        the container or display object to search for items to upload or
+ *        the callback function, if items have been added using `prepare.add`.
  * @param {Function} done When completed
  */
-Prepare.prototype.upload = function(displayObject, done) {
+Prepare.prototype.upload = function(item, done)
+{
+    if (typeof item === 'function')
+    {
+        done = item;
+        item = null;
+    }
+
+    // If a display object, search for items
+    // that we could upload
+    if (item)
+    {
+        this.add(item);
+    }
 
     // Get the items for upload from the display
-    if (this.find(displayObject))
+    if (this.queue.length)
     {
         this.numLeft = Prepare.UPLOADS_PER_FRAME;
         this.complete = done;
@@ -78,25 +101,31 @@ Prepare.prototype.upload = function(displayObject, done) {
  * @method tick
  * @private
  */
-Prepare.prototype.tick = function() {
-
-
+Prepare.prototype.tick = function()
+{
     // Upload the graphics
-    while(this.graphics.length && this.numLeft)
+    while(this.queue.length && this.numLeft > 0)
     {
-        this.renderer.plugins.graphics.updateGraphics(this.graphics.pop());
-        this.numLeft--;
-    }
-
-    // Upload the textures
-    while(this.textures.length && this.numLeft)
-    {
-        this.renderer.textureManager.updateTexture(this.textures.pop());
-        this.numLeft--;
+        var item = this.queue[0];
+        var uploaded = false;
+        for (var i = 0, len = this.uploadHooks.length; i < len; i++)
+        {
+            if (this.uploadHooks[i](this.renderer, item))
+            {
+                this.numLeft--;
+                this.queue.shift();
+                uploaded = true;
+                break;
+            }
+        }
+        if (!uploaded)
+        {
+            this.queue.shift();
+        }
     }
 
     // We're finished
-    if (this.textures.length || this.graphics.length)
+    if (this.queue.length)
     {
         this.numLeft = Prepare.UPLOADS_PER_FRAME;
     } 
@@ -110,38 +139,139 @@ Prepare.prototype.tick = function() {
 };
 
 /**
- * Scan for uploadable items.
- * @method uploadable
- * @private
- * @param {PIXI.DisplayObject|PIXI.Container} displayObject 
- * @return {Boolean} `true` if items were found and we should proceed.
+ * Adds hooks for finding and uploading items.
+ * @method register
+ * @param {Function} [addHook] Function call that takes two parameters: `item:*, queue:Array`
+          function must return `true` if it was able to add item to the queue.
+ * @param {Function} [uploadHook] Function call that takes two parameters: `renderer:WebGLRenderer, item:*` and
+ *        function must return `true` if it was able to handle upload of item.
+ * @return {PIXI.webgl.Prepare} Instance of plugin for chaining.
  */
-Prepare.prototype.find = function(displayObject) {
-    
-    // Objects with textures, like Sprites/Text
-    if (displayObject._texture && displayObject._texture instanceof core.Texture)
+Prepare.prototype.register = function(addHook, uploadHook)
+{
+    if (addHook)
     {
-        var texture = displayObject._texture.baseTexture;
-
-        if (this.textures.indexOf(texture) === -1)
-        {
-            this.textures.push(texture);
-        }
+        this.addHooks.push(addHook);
     }
-    else if (displayObject instanceof core.Graphics)
+    if (uploadHook) 
     {
-        this.graphics.push(displayObject);
+        this.uploadHooks.push(uploadHook);
+    }
+    return this;
+};
+
+/**
+ * Manually add an item to the uploading queue.
+ * @method add
+ * @param {PIXI.DisplayObject|PIXI.Container|*} item 
+ * @return {PIXI.webgl.Prepare} Instance of plugin for chaining.
+ */
+Prepare.prototype.add = function(item)
+{
+    var i, len; 
+
+    // Add additional hooks for finding elements on special
+    // types of objects that 
+    for (i = 0, len = this.addHooks.length; i < len; i++)
+    {
+        if (this.addHooks[i](item, this.queue))
+        {
+            break;
+        }
     }
 
     // Get childen recursively
-    if (displayObject instanceof core.Container)
+    if (item instanceof core.Container)
     {
-        for (var i = displayObject.children.length - 1; i >= 0; i--)
+        for (i = item.children.length - 1; i >= 0; i--)
         {
-            this.find(displayObject.children[i]);
+            this.add(item.children[i]);
         }
     }
-    return this.textures.length + this.graphics.length;
+    return this;
 };
+
+/**
+ * Built-in hook to upload PIXI.Texture objects to the GPU
+ * @method uploadBaseTextures
+ * @private
+ * @param {*} item Item to check
+ * @return {Boolean} If item was uploaded.
+ */
+function uploadBaseTextures(renderer, item)
+{
+    if (item instanceof core.BaseTexture)
+    {
+        renderer.textureManager.updateTexture(item);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Built-in hook to upload PIXI.Graphics to the GPU
+ * @method uploadGraphics
+ * @private
+ * @param {*} item Item to check
+ * @return {Boolean} If item was uploaded.
+ */
+function uploadGraphics(renderer, item)
+{
+    if (item instanceof core.Graphics)
+    {
+        renderer.plugins.graphics.updateGraphics(item);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Built-in hook to find textures from Sprites
+ * @method findTextures
+ * @private
+ * @param {PIXI.DisplayObject} item Display object to check
+ * @param {Array<*>} queue Collection of items to upload
+ * @return {Boolean} if a PIXI.Texture object was found.
+ */
+function findBaseTextures(item, queue)
+{
+    // Objects with textures, like Sprites/Text
+    if (item instanceof core.BaseTexture)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+        return true;
+    }
+    else if (item._texture && item._texture instanceof core.Texture)
+    {
+        var texture = item._texture.baseTexture;
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Built-in hook to find graphics
+ * @method findGraphics
+ * @private
+ * @param {PIXI.DisplayObject} item Display object to check
+ * @param {Array<*>} queue Collection of items to upload
+ * @return {Boolean} if a PIXI.Graphics object was found.
+ */
+function findGraphics(item, queue)
+{
+    if (item instanceof core.Graphics)
+    {
+        queue.push(item);
+        return true;
+    }
+    return false;
+}
 
 core.WebGLRenderer.registerPlugin('prepare', Prepare);
