@@ -606,18 +606,16 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- * @param [options] {object} Options parameter
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
  *      method called as well. 'options' will be passed on to those calls.
- *
  */
 Container.prototype.destroy = function (options)
 {
-    options = options || {};
-
     DisplayObject.prototype.destroy.call(this);
 
-    if (options.children)
+    var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+    if (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
         {

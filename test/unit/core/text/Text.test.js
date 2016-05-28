@@ -26,6 +26,16 @@ describe('PIXI.Text', function () {
             expect(child.position).to.equal(null);
         });
 
+        it('should accept boolean correctly', function () {
+            var text = new PIXI.Text("foo"),
+                child = new PIXI.DisplayObject();
+
+            text.addChild(child);
+            text.destroy(true);
+            expect(text.position).to.equal(null);
+            expect(child.position).to.equal(null);
+        });
+
         it('should pass opts on to children if children flag is set', function () {
             var text = new PIXI.Text("foo"),
                 child = new PIXI.DisplayObject(),

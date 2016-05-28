@@ -112,6 +112,16 @@ describe('PIXI.Sprite', function () {
             expect(textureDestroyArg).to.equal(true);
         });
 
+        it('should correctly handle boolean', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyArg;
+
+            sprite.texture.destroy = function(arg) { textureDestroyArg = arg; };
+
+            sprite.destroy(true);
+            expect(textureDestroyArg).to.equal(true);
+        });
+
         it('should pass opts on to children if children flag is set', function () {
             var sprite = new PIXI.Sprite(),
                 child = new PIXI.DisplayObject(),
@@ -124,6 +134,20 @@ describe('PIXI.Sprite', function () {
             sprite.addChild(child);
             sprite.destroy({children: true, texture: true});
             expect(childDestroyOpts).to.deep.equal({children: true, texture: true});
+        });
+
+        it('should pass bool on to children', function () {
+            var sprite = new PIXI.Sprite(),
+                child = new PIXI.DisplayObject(),
+                childDestroyOpts;
+
+            child.destroy = function(opts) {
+                childDestroyOpts = opts;
+            };
+
+            sprite.addChild(child);
+            sprite.destroy(true);
+            expect(childDestroyOpts).to.deep.equal(true);
         });
     });
 });

@@ -639,7 +639,7 @@ Text.prototype._onStyleChange = function ()
 /**
  * Destroys this text
  *
- * @param [options] {object} Options parameter
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
  *      method called as well. 'options' will be passed on to those calls.
  * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well

@@ -90,5 +90,19 @@ describe('PIXI.Container', function () {
             container.destroy({children: true, texture: true});
             expect(childDestroyOpts).to.deep.equal({children: true, texture: true});
         });
+
+        it('should accept boolean and pass it on to children', function () {
+            var container = new PIXI.Container(),
+                child = new PIXI.DisplayObject(),
+                childDestroyOpts;
+
+            child.destroy = function(opts) {
+                childDestroyOpts = opts;
+            };
+
+            container.addChild(child);
+            container.destroy(true);
+            expect(childDestroyOpts).to.deep.equal(true);
+        });
     });
 });
