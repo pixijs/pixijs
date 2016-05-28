@@ -45,8 +45,6 @@ function Camera2d()
      */
     this._displayList = [];
 
-    this._displayListFlag = [];
-
     /**
      * Enable display list, sort elements by z-index, z-order and updateOrder
      * @type {boolean}
@@ -77,12 +75,18 @@ function Camera2d()
      */
     this.autoUpdateViewport = true;
 
-
     /**
      * Enables culling by rectangle bounds
      * @type {boolean}
      */
     this.enableBoundsCulling = false;
+
+    /**
+     * which container is used for culling, may be its something inside camera
+     * if null, camera will apply culling to all childrens
+     * @type {Container}
+     */
+    this.boundsCullingContainer = null;
 
     this._viewportGeom = new Geometry2d();
     this._viewportGeom.size = 4;
@@ -297,9 +301,8 @@ Camera2d.prototype.renderWebGL = function(renderer) {
     }
     if (this.enableDisplayList) {
         var list = this._displayList;
-        var flags = this._displayListFlag;
         for (var i=0;i<list.length;i++) {
-            if (flags[i]) {
+            if (list[i].displayFlag) {
                 list[i].renderWebGL(renderer);
             } else {
                 list[i].displayOrder = utils.incDisplayOrder();
@@ -320,9 +323,8 @@ Camera2d.prototype.renderCanvas = function(renderer) {
     }
     if (this.enableDisplayList) {
         var list = this._displayList;
-        var flags = this._displayListFlag;
         for (var i=0;i<list.length;i++) {
-            if (flags[i]) {
+            if (list[i].displayFlag) {
                 list[i].renderCanvas(renderer);
             } else {
                 list[i].displayOrder = utils.incDisplayOrder();
@@ -339,7 +341,6 @@ Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) 
         return;
     }
     var list = this._displayList;
-    var flags = this._displayListFlag;
     container.displayOrder = list.length;
     if (container.inheritZIndex) {
         container._zIndex = parentZIndex;
@@ -350,34 +351,27 @@ Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) 
         }
     }
     list.push(container);
-    if (container._mask || container._filters && !container._filters.length) {
-        flags.push(1);
+    if (container._mask || container._filters && container._filters.length) {
+        container.displayFlag = 1;
     } else {
         var children = container.children;
         if (children) {
-            flags.push(0);
+            container.displayFlag = 0;
             for (var i = 0; i < children.length; i++) {
                 this._addInList(children[i], container.zIndex, container.zOrder);
             }
         } else {
-            flags.push(2);
+            container.displayFlag = 2;
         }
     }
 };
 
 Camera2d.prototype.updateDisplayList = function() {
     var list = this._displayList;
-    var flags = this._displayListFlag;
     list.length = 0;
-    flags.length = 0;
     var children = this.children;
     for (var i=0;i<children.length;i++) {
-        this._addInList(children[i], 0);
-    }
-    if (this.onZOrder) {
-        for (i = 0; i < list.length; i++) {
-            this.onZOrder(list[i]);
-        }
+        this._addInList(children[i], 0, 0);
     }
     list.sort(this.displayListSort);
 };
@@ -410,7 +404,7 @@ Camera2d.prototype.updateBoundsCulling = function (viewportBounds, container) {
         return true;
     }
 
-    culler(container || this);
+    culler(container || this.boundsCullingContainer || this);
 };
 
 Camera2d.prototype.updateViewportCulling = function (viewport, container) {

@@ -456,7 +456,7 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
     //TODO test perf of cache?
     location = location || 0;
 
-    if(this._activeTextureLocation !== location)//
+    if(this._activeTextureLocation !== location)
     {
         this._activeTextureLocation = location;
         gl.activeTexture(gl.TEXTURE0 + location );

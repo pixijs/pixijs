@@ -184,7 +184,7 @@ Object.defineProperties(RenderTarget.prototype, {
      */
     projectionMatrix: {
         get: function() {
-            return this.worldProjection ? this.worldProjection.matrix : this.projection2d.matrix;
+            return this.worldProjection ? this.worldProjection.matrix : this.projection2d.matrix2d;
         }
     }
 });

@@ -9,5 +9,7 @@ module.exports = {
     Euler:                  require('./Euler'),
     glMat:                  require('gl-matrix'),
 
-    Camera3d:               require('./Camera3d')
+    Camera3d:               require('./Camera3d'),
+    Container3d:            require('./Container3d'),
+    Sprite3d:               require('./Sprite3d')
 };

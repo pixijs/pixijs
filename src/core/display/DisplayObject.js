@@ -196,6 +196,12 @@ function DisplayObject()
     this.displayOrder = 0;
 
     /**
+     * Temporary variable used by camera
+     * @type {number}
+     */
+    this.displayFlag = 0;
+
+    /**
      * if object has zIndex, it will be used for display ordering
      * @member {boolean}
      */

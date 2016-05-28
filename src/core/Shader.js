@@ -22,6 +22,7 @@ function checkPrecision(src) {
  *
  * @class
  * @memberof PIXI
+ * @extends pixi.gl.Shader
  * @param gl {WebGLRenderingContext}
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.

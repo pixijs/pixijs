@@ -66,7 +66,7 @@ Object.defineProperties(Camera3d.prototype, {
         },
         set: function (value)
         {
-            this.projection.euler = value;
+            this.projection.euler.copy(value);
         }
     }
 });
@@ -139,7 +139,7 @@ Camera3d.prototype.updateBoundsCulling = function (viewportBounds, container) {
         return true;
     }
 
-    culler(container || this);
+    culler(container || this.boundsCullingContainer || this);
 };
 
 Camera3d.prototype.updateViewportCulling = function (viewport, container) {
