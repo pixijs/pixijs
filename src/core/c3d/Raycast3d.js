@@ -28,19 +28,19 @@ Raycast3d.prototype.childApplyTransform = function(child, transform) {
 Raycast3d.prototype.applyTransform = function(raycast, transform) {
     this.intersects = false;
 
-    var ray0 = raycast.is3d ? raycast.ray[0] : vec3.set(tempVec1, raycast.x, raycast.y, 0);
-    var ray1 = raycast.is3d ? raycast.ray[1] : vec3.set(tempVec2, raycast.x, raycast.y, 1);
+    var ray0 = raycast.is3d ? raycast.ray[0] : vec3.set(tempVec1, raycast.x, raycast.y, 1);
+    var ray1 = raycast.is3d ? raycast.ray[1] : vec3.set(tempVec2, raycast.x, raycast.y, 0);
 
-    var wt = transform.is3d ? transform.matrix3d : transform.matrix2d.toMat4(tempMatrix);
+    var wt = transform.is3d ? transform.getInverse() : transform.matrix2d.invertMat4(tempMatrix);
     vec3.transformMat4(this.ray[0], ray0, wt);
     vec3.transformMat4(this.ray[1], ray1, wt);
-    var eps = glMat.EPSILON;
+    var eps = glMat.glMatrix.EPSILON;
     var dz = this.ray[0][2] - this.ray[1][2];
-    if (dz > -eps || dz < eps) {
+    if (dz > -eps && dz < eps) {
         this.valid = false;
     } else {
         var t = - this.ray[0][2] / (this.ray[1][2] - this.ray[0][2]);
-        if (t < -eps || t > 1 + eps) {
+        if (t < -eps) {
             this.valid = false;
         } else {
             this.valid = true;

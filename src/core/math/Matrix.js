@@ -170,6 +170,36 @@ Matrix.prototype.toMat4 = function(out) {
     return out;
 };
 
+Matrix.prototype.invertMat4 = function(out)
+{
+    out = out || new Float32Array(16);
+    var a1 = this.a;
+    var b1 = this.b;
+    var c1 = this.c;
+    var d1 = this.d;
+    var tx1 = this.tx;
+    var n = a1*d1-b1*c1;
+
+    out[0] = d1/n;
+    out[1] = -b1/n;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = -c1/n;
+    out[5] = a1/n;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 1;
+    out[11] = 0;
+    out[12] = (c1*this.ty-d1*tx1)/n;
+    out[13] = -(a1*this.ty-b1*tx1)/n;
+    out[14] = 0;
+    out[15] = 1;
+
+    return this;
+};
+
 /**
  * Get a new position with the current transformation applied.
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)

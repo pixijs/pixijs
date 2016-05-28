@@ -16,10 +16,8 @@ var tempMatrix1 = mat4.create(), tempMatrix2 = mat4.create(), tempVec = vec3.cre
  * @param [y=0] {number} position of the point on the y axis
  */
 function ComputedTransform3d() {
-    /**
-     * @member {PIXI.Matrix} The global matrix transform
-     */
     this.matrix3d = new mat4.create();
+    this.inverse3d = null;
 
     this.version = 0;
     this.uid = utils.incTransform();
@@ -34,6 +32,7 @@ function ComputedTransform3d() {
     this._dirtyRaycastUid = -1;
     this._dirtyRaycastVersion = -1;
     this._dirtyRaycastMyVersion = -1;
+    this._dirtyInverse = -1;
 }
 
 ComputedTransform3d.prototype.constructor = ComputedTransform3d;
@@ -159,6 +158,18 @@ ComputedTransform3d.prototype.updateChildRaycast = function (computedRaycast, pa
     }
     computedRaycast.applyTransformStatic(parentRaycast, this);
     return computedRaycast;
+};
+
+ComputedTransform3d.prototype.getInverse = function() {
+    if (this._dirtyInverse === this.version) {
+        return this.inverse3d;
+    }
+    this._dirtyInverse = this.version;
+    if (!this.inverse3d) {
+        this.inverse3d = mat4.create();
+    }
+    mat4.invert(this.inverse3d, this.matrix3d);
+    return this.inverse3d;
 };
 
 Object.defineProperties(ComputedTransform3d.prototype, {
