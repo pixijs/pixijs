@@ -101,12 +101,12 @@ function Camera2d() {
 
 Object.defineProperties(Camera2d.prototype, {
     /**
-     * origin is something like pivot of container
+     * look position is something like pivot of container
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
      */
-    origin: {
+    lookPosition: {
         get: function () {
             return this.projection.pivot;
         },
@@ -114,7 +114,7 @@ Object.defineProperties(Camera2d.prototype, {
             this.projection.pivot.set(value);
         }
     },
-    originRotation: {
+    lookRotation: {
         get: function () {
             return this.projection.rotation;
         },

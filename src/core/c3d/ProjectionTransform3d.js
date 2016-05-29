@@ -41,7 +41,7 @@ ProjectionTransform3d.prototype.update = function ()
     tempMatrix[1] = this.position.y;
     tempMatrix[2] = this.position.z;
 
-    mat4.fromRotationTranslation(matrix, this.euler.quaternion, tempMatrix);
+    mat4.fromTranslation(matrix, tempMatrix);
 
     var focus = this.frustrum._focus;
     var near = this.frustrum._near;
@@ -53,6 +53,10 @@ ProjectionTransform3d.prototype.update = function ()
         tempMatrix[11] = 1.0 / focus;
         mat4.multiply(matrix, matrix, tempMatrix);
     }
+
+
+    mat4.fromQuat(tempMatrix, this.euler.quaternion);
+    mat4.multiply(matrix, matrix, tempMatrix);
 
     tempMatrix[0] = this.scale.x;
     tempMatrix[1] = this.scale.y;

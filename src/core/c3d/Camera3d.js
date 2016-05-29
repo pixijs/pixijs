@@ -55,7 +55,7 @@ Object.defineProperties(Camera3d.prototype, {
      *
      * @member {number}
      */
-    originEuler: {
+    lookEuler: {
         get: function ()
         {
             return this.projection.euler;
