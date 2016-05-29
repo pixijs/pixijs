@@ -35,7 +35,7 @@ Object.defineProperties(CameraProxy.prototype, {
     }
 });
 
-CameraProxy.prototype.displayObjectUpdateTransform = Camera2d.prototype.displayObjectUpdateTransform;
+CameraProxy.prototype.updateTransform = Camera2d.prototype.updateTransform;
 
 CameraProxy.prototype.containerRenderWebGL = Camera2d.prototype.containerRenderWebGL;
 CameraProxy.prototype.containerRenderCanvas = Camera2d.prototype.containerRenderCanvas;

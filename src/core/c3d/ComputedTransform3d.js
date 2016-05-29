@@ -87,6 +87,40 @@ ComputedTransform3d.prototype.updateTransform = function (parentTransform, local
     return true;
 };
 
+ComputedTransform3d.prototype.updateSingleChild = function(computedTransform) {
+    if (!computedTransform || !computedTransform.is3d) {
+        computedTransform = new ComputedTransform3d();
+    }
+    computedTransform.updateSingle(this);
+    return computedTransform;
+};
+
+ComputedTransform3d.prototype.updateSingle = function(parentTransform) {
+    if (this._dirtyLocalUid === parentTransform.uid &&
+        this._dirtyLocalVersion === parentTransform.version &&
+        this._dirtyParentUid === parentTransform.uid &&
+        this._dirtyParentVersion === parentTransform.version) {
+        this.updated = false;
+        return false;
+    }
+
+    this._dirtyLocalUid = parentTransform.uid;
+    this._dirtyLocalVersion = parentTransform.version;
+    this._dirtyParentUid = parentTransform.uid;
+    this._dirtyParentVersion = parentTransform.version;
+
+    var wt = this.matrix3d;
+    if (parentTransform.is3d) {
+        mat4.copy(wt, parentTransform.matrix3d);
+    } else {
+        parentTransform.matrix2d.toMat4(wt);
+    }
+
+    this.updated = true;
+    this.version++;
+    return true;
+};
+
 ComputedTransform3d.prototype.updateRaycast = function (parentRaycast) {
     if (this._dirtyRaycastMyVersion === this.version &&
         this._dirtyRaycastUid === parentRaycast.uid &&
@@ -100,7 +134,7 @@ ComputedTransform3d.prototype.updateRaycast = function (parentRaycast) {
 };
 
 ComputedTransform3d.prototype.updateChildTransform = function (childTransform, localTransform) {
-    if (!childTransform.is3d) {
+    if (!childTransform || !childTransform.is3d) {
         childTransform = new ComputedTransform3d();
     }
     childTransform.updateTransform(this, localTransform);

@@ -3,6 +3,7 @@ module.exports = {
     ComputedGeometry3d:     require('./ComputedGeometry3d'),
     ObservablePoint3d:      require('./ObservablePoint3d'),
     Transform3d:            require('./Transform3d'),
+    ProjectionTransform3d:  require('./ProjectionTransform3d'),
     ComputedTransform3d:    require('./ComputedTransform3d'),
     Raycast3d:              require('./Raycast3d'),
     Point3d:                require('./Point3d'),

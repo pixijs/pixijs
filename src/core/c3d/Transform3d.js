@@ -16,8 +16,6 @@ var tempMatrix = mat4.create();
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
 function Transform3d(isStatic)
 {
@@ -137,14 +135,7 @@ Transform3d.prototype.setFromMatrix = function ()
     //3d matrix decomposition, to be implemented
 };
 
-Transform3d.prototype.makeComputedTransform = function(computedTransform) {
-    if (!computedTransform || !computedTransform.is3d || computedTransform._dirtyLocalUid !== this.uid) {
-        computedTransform = new ComputedTransform3d();
-    }
-    computedTransform.matrix3d = this.matrix3d;
-    computedTransform.version = this.version;
-    return computedTransform;
-};
+Transform3d.prototype.updateSingleChild = ComputedTransform3d.prototype.updateSingleChild;
 
 Transform3d.prototype.destroy = function() {
     if (this.isStatic) {
@@ -157,7 +148,7 @@ Transform3d.prototype.destroy = function() {
     this.position = null;
     this.scale = null;
     this.pivot = null;
-    this.skew = null;
+    this.euler = null;
 };
 
 Object.defineProperties(Transform3d.prototype, {

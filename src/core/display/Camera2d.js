@@ -14,8 +14,7 @@ var Container = require('./Container'),
  * @extends PIXI.Container
  * @memberof PIXI
  */
-function Camera2d()
-{
+function Camera2d() {
     Container.call(this);
 
     /**
@@ -23,6 +22,12 @@ function Camera2d()
      * @type {PIXI.Transform2d}
      */
     this.projection = null;
+
+    /**
+     * based on projection and computedTransform
+     * @type {null}
+     */
+    this.computedProjection = null;
 
     /**
      * List of proxies, hashmap
@@ -51,7 +56,7 @@ function Camera2d()
      */
     this.enableDisplayList = false;
 
-    this.displayListSort = function(a, b) {
+    this.displayListSort = function (a, b) {
         if (a.zIndex !== b.zIndex) {
             return a.zIndex - b.zIndex;
         }
@@ -94,151 +99,91 @@ function Camera2d()
     this._invProjectedViewport.size = 4;
 }
 
-// constructor
-Camera2d.prototype = Object.create(Container.prototype);
-Camera2d.prototype.constructor = Camera2d;
-module.exports = Camera2d;
-
-Camera2d.prototype.initTransform = function() {
-    this.displayObjectInitTransform(true);
-};
-
-Camera2d.prototype.initProjection = function() {
-    this.projection = new Transform2d(true);
-    this.worldProjection = new ComputedTransform2d(true);
-};
-
 Object.defineProperties(Camera2d.prototype, {
     /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     * origin is something like pivot of container
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
      */
-    x: {
-        get: function ()
-        {
-            return this.projection.position.x;
-        },
-        set: function (value)
-        {
-            this.projection.position.x = value;
-        }
-    },
-
-    /**
-     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.DisplayObject#
-     */
-    y: {
-        get: function ()
-        {
-            return this.projection.position.y;
-        },
-        set: function (value)
-        {
-            this.projection.position.y = value;
-        }
-    },
-
-    /**
-     * The coordinate of the object relative to the local coordinates of the parent.
-     *
-     * @member {PIXI.Point}
-     */
-    position: {
-        get: function()
-        {
-            return this.projection.position;
-        },
-        set: function(value) {
-            this.projection.position.copy(value);
-        }
-    },
-
-    /**
-     * The scale factor of the object.
-     *
-     * @member {PIXI.Point}
-     */
-    scale: {
-        get: function() {
-            return this.projection.scale;
-        },
-        set: function(value) {
-            this.projection.scale.copy(value);
-        }
-    },
-
-    /**
-     * The pivot point of the displayObject that it rotates around
-     *
-     * @member {PIXI.Point}
-     */
-    pivot: {
-        get: function() {
+    origin: {
+        get: function () {
             return this.projection.pivot;
         },
-        set: function(value) {
-            this.projection.pivot.copy(value);
+        set: function (value) {
+            this.projection.pivot.set(value);
         }
     },
-
-    /**
-     * The skew factor for the object in radians.
-     *
-     * @member {PIXI.Point}
-     */
-    skew: {
-        get: function() {
-            return this.projection.skew;
-        },
-        set: function(value) {
-            this.projection.skew.copy(value);
-        }
-    },
-
-    /**
-     * The rotation of the object in radians.
-     *
-     * @member {number}
-     */
-    rotation: {
-        get: function ()
-        {
+    originRotation: {
+        get: function () {
             return this.projection.rotation;
         },
-        set: function (value)
-        {
+        set: function (value) {
             this.projection.rotation = value;
         }
     }
 });
 
+// constructor
+Camera2d.prototype = Object.create(Container.prototype);
+Camera2d.prototype.constructor = Camera2d;
+module.exports = Camera2d;
 
-Camera2d.prototype.displayObjectUpdateTransform = function() {
-    this._currentBounds = null;
-    // multiply the alphas..
-    this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    //Transform will be Identity in most cases, and we really can remove these two lines. I leave it because there will be only a few cameras
-    this.transform.update();
-    this.computedTransform = this.transform.makeComputedTransform(this.computedTransform);
-
-    //Projection combines parent transform and its worldProjection
-    this.projection.update();
-    if (!this.parent) {
-        this.worldProjection = this.projection.makeComputedTransform(this.worldProjection);
-    } else {
-        this.worldProjection = this.parent.updateProjectedTransform().updateChildTransform(this.worldProjection, this.projection);
-    }
-    return this.computedTransform;
+Camera2d.prototype.initTransform = function () {
+    this.displayObjectInitTransform(true);
 };
 
-Camera2d.prototype.updateTransform = function() {
-    this.containerUpdateTransform();
+Camera2d.prototype.initProjection = function () {
+    this.projection = new Transform2d(true);
+    this.worldProjection = new ComputedTransform2d(true);
+};
+
+Camera2d.prototype.updateTransform = function () {
+    if (!this.visible) {
+        return;
+    }
+
+    this.updateOrder = utils.incUpdateOrder();
+    this.displayOrder = 0;
+    this._currentBounds = null;
+
+    var parentWorldProjection = null;
+
+    this.transform.update();
+    if (this.dontInheritTransform) {
+        this.dontInheritTransform = false;
+        this.computedTransform = this.transform.updateSingleChild(this.computedTransform);
+    } else {
+        this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
+    }
+
+    this.projection.update();
+    this.computedProjection = this.computedTransform.updateChildTransform(this.computedProjection, this.projection);
+
+    // multiply the alphas..
+    if (this.parent) {
+        //projection attributes
+        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        parentWorldProjection = this.parent.worldProjection;
+    } else {
+        this.worldAlpha = this.alpha;
+        parentWorldProjection = null;
+    }
+
+    if (parentWorldProjection) {
+        this.worldProjection = parentWorldProjection.updateChildTransform(this.worldProjection, this.computedProjection);
+    } else {
+        this.worldProjection = this.computedProjection.updateSingleChild(this.worldProjection);
+    }
+
+    for (var i = 0, j = this.children.length; i < j; ++i) {
+        if (this.children[i].visible) {
+            this.children[i].dontInheritTransform = true;
+            this.children[i].updateTransform();
+        }
+    }
+    this.updatePostOrder = utils.incUpdateOrder();
+
     if (this.enableBoundsCulling) {
         this.updateViewportCulling();
     }
@@ -248,14 +193,14 @@ Camera2d.prototype.updateTransform = function() {
     }
 };
 
-Camera2d.prototype._proxyContainer = function(containerFrom, containerTo) {
+Camera2d.prototype._proxyContainer = function (containerFrom, containerTo) {
     var proxyCache = this.proxyCache[0];
     var newProxyCache = this.proxyCache[1];
 
     var ch1 = containerFrom.children;
     var ch2 = containerTo.children;
     ch2.length = 0;
-    for (var i=0;i<ch1.length;i++) {
+    for (var i = 0; i < ch1.length; i++) {
         var c1 = ch1[i];
         var c2 = proxyCache[c1.uid] || c1.createProxy();
         newProxyCache[c1.uid] = c2;
@@ -268,12 +213,12 @@ Camera2d.prototype._proxyContainer = function(containerFrom, containerTo) {
     }
 };
 
-Camera2d.prototype._proxySwapBuffer = function() {
+Camera2d.prototype._proxySwapBuffer = function () {
     this.proxyCache[0] = this.proxyCache[1];
     this.proxyCache[1] = {};
 };
 
-Camera2d.prototype.proxyContainer = function(containerFrom, containerTo) {
+Camera2d.prototype.proxyContainer = function (containerFrom, containerTo) {
     if (!containerTo) {
         containerTo = this;
     }
@@ -282,17 +227,17 @@ Camera2d.prototype.proxyContainer = function(containerFrom, containerTo) {
 };
 
 /*Camera2d.prototype.proxySwapContext = function() {
-    var pc = this.proxyCache[0];
-    for (var key in pc) {
-        var val = pc[key];
-        val.swapContext();
-    }
-};*/
+ var pc = this.proxyCache[0];
+ for (var key in pc) {
+ var val = pc[key];
+ val.swapContext();
+ }
+ };*/
 
 Camera2d.prototype.containerRenderWebGL = Container.prototype.renderWebGL;
 Camera2d.prototype.containerRenderCanvas = Container.prototype.renderCanvas;
 
-Camera2d.prototype.renderWebGL = function(renderer) {
+Camera2d.prototype.renderWebGL = function (renderer) {
     if (this.autoUpdateViewport) {
         this.viewport.x = 0;
         this.viewport.y = 0;
@@ -301,7 +246,7 @@ Camera2d.prototype.renderWebGL = function(renderer) {
     }
     if (this.enableDisplayList) {
         var list = this._displayList;
-        for (var i=0;i<list.length;i++) {
+        for (var i = 0; i < list.length; i++) {
             if (list[i].displayFlag) {
                 list[i].renderWebGL(renderer);
             } else {
@@ -314,7 +259,7 @@ Camera2d.prototype.renderWebGL = function(renderer) {
     }
 };
 
-Camera2d.prototype.renderCanvas = function(renderer) {
+Camera2d.prototype.renderCanvas = function (renderer) {
     if (this.autoUpdateViewport) {
         this.viewport.x = 0;
         this.viewport.y = 0;
@@ -323,7 +268,7 @@ Camera2d.prototype.renderCanvas = function(renderer) {
     }
     if (this.enableDisplayList) {
         var list = this._displayList;
-        for (var i=0;i<list.length;i++) {
+        for (var i = 0; i < list.length; i++) {
             if (list[i].displayFlag) {
                 list[i].renderCanvas(renderer);
             } else {
@@ -336,7 +281,7 @@ Camera2d.prototype.renderCanvas = function(renderer) {
     }
 };
 
-Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) {
+Camera2d.prototype._addInList = function (container, parentZIndex, parentZOrder) {
     if (!container.visible || !container.renderable) {
         return;
     }
@@ -366,11 +311,11 @@ Camera2d.prototype._addInList = function(container, parentZIndex, parentZOrder) 
     }
 };
 
-Camera2d.prototype.updateDisplayList = function() {
+Camera2d.prototype.updateDisplayList = function () {
     var list = this._displayList;
     list.length = 0;
     var children = this.children;
-    for (var i=0;i<children.length;i++) {
+    for (var i = 0; i < children.length; i++) {
         this._addInList(children[i], 0, 0);
     }
     list.sort(this.displayListSort);
@@ -382,6 +327,7 @@ Camera2d.prototype.updateBoundsCulling = function (viewportBounds, container) {
     var EMPTY = math.Rectangle.EMPTY;
 
     var self = this;
+
     function culler(element) {
         var s = element.getComputedBounds();
         var b = element.renderable =

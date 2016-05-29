@@ -222,10 +222,8 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     {
         utils.resetUpdateOrder();
         // update the scene graph
-        var cacheParent = displayObject.parent;
-        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.dontInheritTransform = true;
         displayObject.updateTransform();
-        displayObject.parent = cacheParent;
         // displayObject.hitArea = //TODO add a temp hit area
     }
 

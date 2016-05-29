@@ -208,6 +208,13 @@ function DisplayObject()
     this.inheritZIndex = true;
 
     /**
+     * one time flag for reading transform from parent
+     * need for Cameras and stuff
+     * @type {boolean}
+     */
+    this.dontInheritTransform = false;
+
+    /**
      * z-index is used for display ordering
      * You MUST specify camera.enableDisplayList=true for this to work
      * Two objects with same z-index will be sorted in zOrder and then in display order
@@ -498,10 +505,21 @@ DisplayObject.prototype.updateTransform = function ()
     this._currentBounds = null;
     this._currentComputedBounds = null;
     // multiply the alphas..
-    this.worldAlpha = this.alpha * this.parent.worldAlpha;
-    this.worldProjection = this.parent.worldProjection;
+    if (this.parent) {
+        //projection attributes
+        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        this.worldProjection = this.parent.worldProjection;
+    } else {
+        this.worldAlpha = this.alpha;
+        this.worldProjection = null;
+    }
     this.transform.update();
-    this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
+    if (this.dontInheritTransform) {
+        this.dontInheritTransform = false;
+        this.computedTransform = this.transform.updateSingleChild(this.computedTransform);
+    } else {
+        this.computedTransform = this.parent.computedTransform.updateChildTransform(this.computedTransform, this.transform);
+    }
     return this.computedTransform;
 };
 

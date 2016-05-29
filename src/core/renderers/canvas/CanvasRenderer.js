@@ -154,22 +154,10 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
     if(!skipUpdateTransform)
     {
+        utils.resetUpdateOrder();
         // update the scene graph
-        var cacheParent = displayObject.parent;
-        var tempWt = this._tempDisplayObjectParent.projectionMatrix2d;
-
-        if(transform)
-        {
-            transform.copy(tempWt);
-        }
-        else
-        {
-            tempWt.identity();
-        }
-
-        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.dontInheritTransform = true;
         displayObject.updateTransform();
-        displayObject.parent = cacheParent;
        // displayObject.hitArea = //TODO add a temp hit area
     }
 

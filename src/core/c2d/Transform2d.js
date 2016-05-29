@@ -9,8 +9,6 @@ var math = require('../math'),
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
 function Transform2d(isStatic)
 {
@@ -141,14 +139,8 @@ Transform2d.prototype.setFromMatrix = function (matrix)
     this.updateSkew();
 };
 
-Transform2d.prototype.makeComputedTransform = function(computedTransform) {
-    if (!computedTransform || computedTransform._dirtyLocalUid !== this.uid) {
-        computedTransform = new ComputedTransform2d();
-    }
-    computedTransform.matrix2d = this.matrix2d;
-    computedTransform.version = this.version;
-    return computedTransform;
-};
+
+Transform2d.prototype.updateSingleChild = ComputedTransform2d.prototype.updateSingleChild;
 
 Transform2d.prototype.destroy = function() {
     this.skew.destroy();

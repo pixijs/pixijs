@@ -82,6 +82,36 @@ ComputedTransform2d.prototype.updateTransform = function (parentTransform, local
     return true;
 };
 
+ComputedTransform2d.prototype.updateSingleChild = function(computedTransform) {
+    if (!computedTransform) {
+        computedTransform = new ComputedTransform2d();
+    }
+    computedTransform.updateSingle(this);
+    return computedTransform;
+};
+
+
+ComputedTransform2d.prototype.updateSingle = function(parentTransform) {
+    if (this._dirtyLocalUid === parentTransform.uid &&
+        this._dirtyLocalVersion === parentTransform.version &&
+        this._dirtyParentUid === parentTransform.uid &&
+        this._dirtyParentVersion === parentTransform.version) {
+        this.updated = false;
+        return false;
+    }
+
+    this._dirtyLocalUid = parentTransform.uid;
+    this._dirtyLocalVersion = parentTransform.version;
+    this._dirtyParentUid = parentTransform.uid;
+    this._dirtyParentVersion = parentTransform.version;
+
+    parentTransform.matrix2d.copy(this.matrix2d);
+
+    this.updated = true;
+    this.version++;
+    return true;
+};
+
 ComputedTransform2d.prototype.updateRaycast = function(parentRaycast) {
     if (this._dirtyRaycastMyVersion === this.version &&
         this._dirtyRaycastUid === parentRaycast.uid &&
@@ -96,6 +126,7 @@ ComputedTransform2d.prototype.updateRaycast = function(parentRaycast) {
 
 ComputedTransform2d.prototype.updateChildTransform = function (childTransform, localTransform)
 {
+    childTransform = childTransform || new ComputedTransform2d();
     childTransform.updateTransform(this, localTransform);
     return childTransform;
 };

@@ -1,12 +1,8 @@
 var Camera2d = require('../display/Camera2d'),
     Transform3d = require('./Transform3d'),
     ComputedTransform3d = require('./ComputedTransform3d'),
-    glMat = require('gl-matrix'),
-    vec3 = glMat.vec3,
-    mat4 = glMat.mat4,
+    ProjectionTransform3d = require('./ProjectionTransform3d'),
     math = require('../math');
-
-var tempPoint3d = vec3.create(), temp3dTransform = mat4.create();
 
 /**
  * Camera object, stores everything in `projection` instead of `transform`
@@ -32,7 +28,7 @@ Camera3d.prototype.initTransform = function() {
 };
 
 Camera3d.prototype.initProjection = function() {
-    this.projection = new Transform3d(true);
+    this.projection = new ProjectionTransform3d(true);
     this.worldProjection = new ComputedTransform3d(true);
 };
 
@@ -55,11 +51,11 @@ Object.defineProperties(Camera3d.prototype, {
     },
 
     /**
-     * The rotation of the object in radians.
+     * The euler angles of projection
      *
      * @member {number}
      */
-    euler: {
+    originEuler: {
         get: function ()
         {
             return this.projection.euler;
@@ -68,13 +64,16 @@ Object.defineProperties(Camera3d.prototype, {
         {
             this.projection.euler.copy(value);
         }
+    },
+    frustrum: {
+        get: function() {
+            return this.projection.frustrum;
+        }
     }
 });
 
 Camera3d.prototype.easyPerspective = function(renderer, focus, near, far) {
     var w = renderer.width / renderer.resolution, h = renderer.height / renderer.resolution;
-    this.position.x = w/2;
-    this.position.y = h/2;
     this.centralPerspective(0, w, 0, h, focus, near, far);
 };
 
@@ -83,32 +82,11 @@ Camera3d.prototype.centralPerspective = function(left, right, top, bottom, focus
     this.viewport.width = right-left;
     this.viewport.y = top;
     this.viewport.height = bottom-top;
+
     var cx = (right+left)/2;
     var cy = (top+bottom)/2;
-    this._near = near;
-    this._far = far;
-    this._focus = focus;
-
-    var transform = this.projection;
-    transform.operMode = 0;
-    transform._dirtyVersion++;
-    transform.version = transform._dirtyVersion;
-    transform._eulerVersion = transform.euler.version;
-
-    var out = transform.matrix3d;
-    mat4.identity(out);
-    tempPoint3d[0] = cx;
-    tempPoint3d[1] = cy;
-    tempPoint3d[2] = 0;
-    mat4.translate(out, out, tempPoint3d);
-    mat4.identity(temp3dTransform);
-    temp3dTransform[10] = 1.0 / (far - near);
-    temp3dTransform[14] = (focus - near) / (far - near);
-    temp3dTransform[11] = 1.0 / focus;
-    mat4.multiply(out, out, temp3dTransform);
-    tempPoint3d[0] = -cx;
-    tempPoint3d[1] = -cy;
-    mat4.translate(out, out, tempPoint3d);
+    this.projection.position.set(cx, cy);
+    this.projection.frustrum.set(focus || 0, near || 0, far || 0);
 };
 
 Camera3d.prototype.updateBoundsCulling = function (viewportBounds, container) {
