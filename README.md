@@ -28,9 +28,9 @@ Follow [Pixi.JS Contributing Guide](https://github.com/pixijs/pixi.js/blob/maste
 
 ### Authors ###
 
-Fork was made by ([@ivanpopelyshev](https://twitter.com/ivanpopelyshev)
+Fork was made by [@ivanpopelyshev](https://twitter.com/ivanpopelyshev)
 
-Original library by ([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba)) and many others.
+Original library by [@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba) and many others.
 
 ### License ###
 
