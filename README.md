@@ -1,4 +1,4 @@
-Pixi-gob.js — Fork that unleashes true power of PIXI!
+Fork that unleashes true power of Pixi.JS
 =============
 
 ![pixi.js logo](Pixi_gob.jpg)
@@ -7,13 +7,13 @@ The aim of this fork is to experiment with [pixi.js](https://github.com/pixijs/p
 
 ### List of features ###
 
-0. static transforms - No point of re-calculating matrices every frame if most of the scene is static.
+0. static transforms &mdash; No point of re-calculating matrices every frame if most of the scene is static.
 
-1. Camera with z-index/z-order and culling --- Ordering was pain in PIXI and Phaser. Now its gone!
+1. Camera with z-index/z-order and culling &mdash; Ordering was pain in PIXI and Phaser. Now its gone!
 
-2. Multiple cameras, proxy containers --- Wanna make repeating world, make it like Thorus? Proxies FTW!
+2. Multiple cameras, proxy containers &mdash; Wanna make repeating world, make it like Thorus? Proxies FTW!
 
-3. 2.5D transforms --- Best of both worlds!
+3. 2.5D transforms &mdash; Best of both worlds!
 
 Test new APIs in [examples](https://gameofbombs.github.io/pixi-examples/index.html)
 
@@ -21,7 +21,7 @@ Binaries are located in [examples repository](https://github.com/gameofbombs/pix
 
 ### Contribute ###
 
-Follow [PIXI.JS Contributing Guide](https://github.com/pixijs/pixi.js/blob/master/CONTRIBUTING.md) with a few exceptions:
+Follow [Pixi.JS Contributing Guide](https://github.com/pixijs/pixi.js/blob/master/CONTRIBUTING.md) with a few exceptions:
 
 1. Please do not commit binary files
 2. All Pull Requests must be made for 'master' branch
