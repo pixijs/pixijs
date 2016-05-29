@@ -16098,6 +16098,7 @@ Raycast2d.prototype.applyTransformStatic = function(raycast, transform) {
     this._raycastUid = raycast.uid;
     this._raycastVersion = raycast.version;
 
+    this.version++;
     this.applyTransform(raycast, transform);
     return true;
 };
@@ -17384,13 +17385,13 @@ Raycast3d.prototype.applyTransform = function(raycast, transform) {
         this.valid = false;
     } else {
         var t = - this.ray[0][2] / (this.ray[1][2] - this.ray[0][2]);
-        if (t < -eps) {
-            this.valid = false;
-        } else {
+        // if (t < -eps) {
+        //     this.valid = false;
+        // } else {
             this.valid = true;
             this._point.x = t * (this.ray[1][0] - this.ray[0][0]) + this.ray[0][0];
             this._point.y = t * (this.ray[1][1] - this.ray[0][1]) + this.ray[0][1];
-        }
+        // }
     }
 };
 
