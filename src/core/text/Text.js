@@ -638,18 +638,22 @@ Text.prototype._onStyleChange = function ()
 };
 
 /**
- * Destroys this text object.
+ * Destroys this text
  *
- * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Text.prototype.destroy = function (destroyBaseTexture)
+Text.prototype.destroy = function (options)
 {
+    Sprite.prototype.destroy.call(this, options);
+
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;
 
     this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
-
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };

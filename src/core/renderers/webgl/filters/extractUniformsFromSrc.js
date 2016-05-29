@@ -1,5 +1,5 @@
-var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
-var mapSize = require('pixi-gl-core/lib/shader/mapSize');
+var defaultValue = require('pixi-gl-core').shader.defaultValue;
+var mapSize = require('pixi-gl-core').shader.mapSize;
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {

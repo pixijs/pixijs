@@ -228,7 +228,7 @@ SystemRenderer.prototype.resize = function (width, height) {
  * Useful function that returns a texture of the display object that can then be used to create sprites
  * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
  *
- * @param displayObject {number} The displayObject the object will be generated from
+ * @param displayObject {PIXI.DisplayObject} The displayObject the object will be generated from
  * @param scaleMode {number} Should be one of the scaleMode consts
  * @param resolution {number} The resolution of the texture being generated
  * @return {PIXI.Texture} a texture of the graphics object

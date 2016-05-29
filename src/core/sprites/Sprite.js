@@ -294,23 +294,28 @@ Sprite.prototype.containsLocalPoint = function( point )
 };
 
 /**
- * Destroys this sprite and optionally its texture
+ * Destroys this sprite and optionally its texture and children
  *
- * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
- * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+Sprite.prototype.destroy = function (options)
 {
-    Container.prototype.destroy.call(this);
+    Container.prototype.destroy.call(this, options);
 
     this._anchor.destroy();
     this._size.destroy();
     this._anchor = null;
     this._size = null;
 
+    var destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
     if (destroyTexture)
     {
-        this._texture.destroy(destroyBaseTexture);
+        var destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+        this._texture.destroy(!!destroyBaseTexture);
     }
 
     this._texture = null;
