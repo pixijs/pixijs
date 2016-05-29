@@ -16393,6 +16393,9 @@ Object.defineProperties(Camera3d.prototype, {
     frustrum: {
         get: function() {
             return this.projection.frustrum;
+        },
+        set: function(value) {
+            this.projection.frustrum.copy(value);
         }
     }
 });
@@ -17080,6 +17083,18 @@ Frustrum.prototype.set = function (focus, near, far) {
     }
 };
 
+Frustrum.prototype.copy = function (frustrum) {
+    var focus = frustrum.focus;
+    var near = frustrum.near;
+    var far = frustrum.far;
+    if (this._focus !== focus || this._near !== near || this._far !== far) {
+        this._focus = focus;
+        this._near = near;
+        this._far = far;
+        this.version++;
+    }
+};
+
 },{}],66:[function(require,module,exports){
 var Geometry = require('../c2d/Geometry');
 
@@ -17260,10 +17275,11 @@ Point3d.prototype.clone = function ()
  * @param [x=0] {number} position of the point3d on the x axis
  * @param [y=0] {number} position of the point3d on the y axis
  */
-Point3d.prototype.set = function (x, y)
+Point3d.prototype.set = function (x, y, z)
 {
     this.x = x || 0;
-    this.y = y || ( (y !== 0) ? this.x : 0 ) ;
+    this.y = y || ( (y !== 0) ? this.x : 0);
+    this.z = z || 0;
 };
 
 },{}],69:[function(require,module,exports){
@@ -18133,6 +18149,14 @@ Object.defineProperties(Camera2d.prototype, {
         },
         set: function (value) {
             this.projection.pivot.set(value);
+        }
+    },
+    lookScale: {
+        get: function () {
+            return this.projection.scale;
+        },
+        set: function (value) {
+            this.projection.scale.set(value);
         }
     },
     lookRotation: {
@@ -21276,7 +21300,7 @@ Graphics.prototype.getLocalBounds = function ()
         this.boundsDirty = false;
     }
 
-    this._currentBounds = this._localBounds.local.getBounds();
+    return this._localBounds.local.getBounds();
 };
 
 /**
@@ -21397,7 +21421,7 @@ Graphics.prototype.updateLocalBounds = function ()
         }
     }
     var padding = this.boundsPadding;
-    this._localBounds.local.setRectCoords(minX - padding, maxX - padding, minY + padding, maxY + padding);
+    this._localBounds.local.setRectCoords(0, minX - padding, minY + padding, maxX - padding, maxY + padding);
 };
 
 
@@ -22053,7 +22077,7 @@ GraphicsRenderer.prototype.render = function(graphics)
         var shaderTemp = webGLData.shader;
 
         renderer.bindShader(shaderTemp);
-        shaderTemp.uniforms.translationMatrix = graphics.projectionMatrix.toArray(true);
+        shaderTemp.setUniformMatrix('translationMatrix', graphics.computedTransform.matrix);
         shaderTemp.uniforms.tint = utils.hex2rgb(graphics.tint);
         shaderTemp.uniforms.alpha = graphics.worldAlpha;
 
@@ -22318,8 +22342,8 @@ function PrimitiveShader(gl)
             'attribute vec2 aVertexPosition;',
             'attribute vec4 aColor;',
 
-            'uniform mat3 translationMatrix;',
-            'uniform mat3 projectionMatrix;',
+            'uniform mat4 translationMatrix;',
+            'uniform mat4 projectionMatrix;',
 
             'uniform float alpha;',
             'uniform vec3 tint;',
@@ -22327,7 +22351,7 @@ function PrimitiveShader(gl)
             'varying vec4 vColor;',
 
             'void main(void){',
-            '   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+            '   gl_Position = projectionMatrix * translationMatrix * vec4(aVertexPosition, 0.0, 1.0);',
             '   vColor = aColor * vec4(tint * alpha, alpha);',
             '}'
         ].join('\n'),
@@ -25923,7 +25947,7 @@ WebGLRenderer.prototype.resize = function (width, height)
 
         if(this._activeShader)
         {
-            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
+            this._activeShader.setUniformMatrix('projectionMatrix', this.rootRenderTarget.projectionMatrix);
         }
     }
 };
@@ -28054,7 +28078,6 @@ RenderTarget.prototype.activate = function(worldProjection)
     if(this.transform)
     {
         this.projection2d.matrix2d.append(this.transform);
-        this.projection2d.version++;
     }
     this.setWorldProjection(worldProjection);
 
@@ -28086,6 +28109,7 @@ RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceF
 {
     var p = this.projection2d;
     var pm = p.matrix2d;
+    p.version++;
 
     sourceFrame = sourceFrame || destinationFrame;
 
