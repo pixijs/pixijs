@@ -259,7 +259,6 @@ RenderTarget.prototype.activate = function(worldProjection)
     if(this.transform)
     {
         this.projection2d.matrix2d.append(this.transform);
-        this.projection2d.version++;
     }
     this.setWorldProjection(worldProjection);
 
@@ -291,6 +290,7 @@ RenderTarget.prototype.calculateProjection = function (destinationFrame, sourceF
 {
     var p = this.projection2d;
     var pm = p.matrix2d;
+    p.version++;
 
     sourceFrame = sourceFrame || destinationFrame;
 

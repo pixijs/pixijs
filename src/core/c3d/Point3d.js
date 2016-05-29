@@ -48,8 +48,9 @@ Point3d.prototype.clone = function ()
  * @param [x=0] {number} position of the point3d on the x axis
  * @param [y=0] {number} position of the point3d on the y axis
  */
-Point3d.prototype.set = function (x, y)
+Point3d.prototype.set = function (x, y, z)
 {
     this.x = x || 0;
-    this.y = y || ( (y !== 0) ? this.x : 0 ) ;
+    this.y = y || ( (y !== 0) ? this.x : 0);
+    this.z = z || 0;
 };

@@ -65,3 +65,15 @@ Frustrum.prototype.set = function (focus, near, far) {
         this.version++;
     }
 };
+
+Frustrum.prototype.copy = function (frustrum) {
+    var focus = frustrum._focus;
+    var near = frustrum._near;
+    var far = frustrum._far;
+    if (this._focus !== focus || this._near !== near || this._far !== far) {
+        this._focus = focus;
+        this._near = near;
+        this._far = far;
+        this.version++;
+    }
+};

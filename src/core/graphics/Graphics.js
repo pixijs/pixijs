@@ -806,7 +806,7 @@ Graphics.prototype.getLocalBounds = function ()
         this.boundsDirty = false;
     }
 
-    this._currentBounds = this._localBounds.local.getBounds();
+    return this._localBounds.local.getBounds();
 };
 
 /**
@@ -927,7 +927,7 @@ Graphics.prototype.updateLocalBounds = function ()
         }
     }
     var padding = this.boundsPadding;
-    this._localBounds.local.setRectCoords(minX - padding, maxX - padding, minY + padding, maxY + padding);
+    this._localBounds.local.setRectCoords(0, minX - padding, minY + padding, maxX - padding, maxY + padding);
 };
 
 

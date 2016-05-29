@@ -101,7 +101,7 @@ GraphicsRenderer.prototype.render = function(graphics)
         var shaderTemp = webGLData.shader;
 
         renderer.bindShader(shaderTemp);
-        shaderTemp.uniforms.translationMatrix = graphics.projectionMatrix.toArray(true);
+        shaderTemp.setUniformMatrix('translationMatrix', graphics.computedTransform.matrix);
         shaderTemp.uniforms.tint = utils.hex2rgb(graphics.tint);
         shaderTemp.uniforms.alpha = graphics.worldAlpha;
 

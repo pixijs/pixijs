@@ -298,7 +298,7 @@ WebGLRenderer.prototype.resize = function (width, height)
 
         if(this._activeShader)
         {
-            this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
+            this._activeShader.setUniformMatrix('projectionMatrix', this.rootRenderTarget.projectionMatrix);
         }
     }
 };

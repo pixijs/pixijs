@@ -68,6 +68,9 @@ Object.defineProperties(Camera3d.prototype, {
     frustrum: {
         get: function() {
             return this.projection.frustrum;
+        },
+        set: function(value) {
+            this.projection.frustrum.copy(value);
         }
     }
 });

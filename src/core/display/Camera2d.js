@@ -114,6 +114,14 @@ Object.defineProperties(Camera2d.prototype, {
             this.projection.pivot.set(value);
         }
     },
+    lookScale: {
+        get: function () {
+            return this.projection.scale;
+        },
+        set: function (value) {
+            this.projection.scale.set(value);
+        }
+    },
     lookRotation: {
         get: function () {
             return this.projection.rotation;
