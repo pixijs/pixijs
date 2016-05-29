@@ -43,6 +43,7 @@ Raycast2d.prototype.applyTransformStatic = function(raycast, transform) {
     this._raycastUid = raycast.uid;
     this._raycastVersion = raycast.version;
 
+    this.version++;
     this.applyTransform(raycast, transform);
     return true;
 };
