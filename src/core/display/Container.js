@@ -591,13 +591,17 @@ Container.prototype.getLocalBounds = function ()
 Container.prototype.renderWebGL = function (renderer)
 {
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-    {
+    if (!this.visible) {
         this.displayOrder = 0;
         return;
     }
 
     this.displayOrder = utils.incDisplayOrder();
+
+    if (this.worldAlpha <= 0 || !this.renderable)
+    {
+        return;
+    }
 
     var i, j;
 
