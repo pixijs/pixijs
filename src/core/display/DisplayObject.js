@@ -431,6 +431,20 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
+     * Legacy 2d matrix
+     *
+     * @member {boolean}
+     * @memberof PIXI.DisplayObject#
+     * @readonly
+     */
+    worldTransform: {
+        get: function ()
+        {
+            return this.transform.matrix2d;
+        }
+    },
+
+    /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
      * To remove a mask, set this property to null.

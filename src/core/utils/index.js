@@ -135,7 +135,7 @@ var utils = module.exports = {
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
             var args = [
-                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
+                '\n %c %c %c Pixi.js gameofbombs fork ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/ https://github.com/gameofbombs/pixi.js %c %c ♥%c♥%c♥ \n\n',
                 'background: #ff66a5; padding:5px 0;',
                 'background: #ff66a5; padding:5px 0;',
                 'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -151,7 +151,7 @@ var utils = module.exports = {
         }
         else if (window.console)
         {
-            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log('Pixi.js gameofbombs fork ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/ https://github.com/gameofbombs/pixi.js'); //jshint ignore:line
         }
 
         utils._saidHello = true;

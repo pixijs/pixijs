@@ -15,9 +15,9 @@ The aim of this fork is to experiment with [pixi.js](https://github.com/pixijs/p
 
 3. 2.5D transforms &mdash; Best of both worlds!
 
-Test new APIs in [examples](https://gameofbombs.github.io/pixi-examples/index.html)
+Test new APIs in [examples](https://gameofbombs.github.io/pixi-bin/index.html)
 
-Binaries are located in [examples repository](https://github.com/gameofbombs/pixi-examples/)
+Binaries are located in [pixi-bin repository](https://github.com/gameofbombs/pixi-bin/bin/)
 
 ### Contribute ###
 
