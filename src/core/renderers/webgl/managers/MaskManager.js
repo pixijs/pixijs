@@ -29,7 +29,7 @@ module.exports = MaskManager;
  * Applies the Mask and adds it to the current filter stack.
  *
  * @param target {PIXI.DisplayObject}
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
 {
@@ -68,7 +68,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
  * Removes the last mask from the mask stack and doesn't return it.
  *
  * @param target {PIXI.DisplayObject}
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.popMask = function (target, maskData)
 {
@@ -129,7 +129,7 @@ MaskManager.prototype.popSpriteMask = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.pushStencilMask = function (maskData)
 {
