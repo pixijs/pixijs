@@ -39,10 +39,10 @@ function Prepare(renderer)
 
     /**
      * Callback to call after completed.
-     * @type {Function}
+     * @type {Array<Function>}
      * @private
      */
-    this.complete = null;
+    this.completes = [];
 
     // Add textures and graphics to upload
     this.register(findBaseTextures, uploadBaseTextures)
@@ -87,8 +87,12 @@ Prepare.prototype.upload = function(item, done)
     if (this.queue.length)
     {
         this.numLeft = Prepare.UPLOADS_PER_FRAME;
-        this.complete = done;
-        SharedTicker.add(this.tick, this);
+        this.completes.push(done);
+        if (!this.ticking)
+        {
+            this.ticking = true;
+            SharedTicker.add(this.tick, this);
+        }
     }
     else
     {
@@ -103,12 +107,14 @@ Prepare.prototype.upload = function(item, done)
  */
 Prepare.prototype.tick = function()
 {
+    var i, len;
+
     // Upload the graphics
     while(this.queue.length && this.numLeft > 0)
     {
         var item = this.queue[0];
         var uploaded = false;
-        for (var i = 0, len = this.uploadHooks.length; i < len; i++)
+        for (i = 0, len = this.uploadHooks.length; i < len; i++)
         {
             if (this.uploadHooks[i](this.renderer, item))
             {
@@ -131,10 +137,14 @@ Prepare.prototype.tick = function()
     } 
     else 
     {
+        this.ticking = false;
         SharedTicker.remove(this.tick, this);
-        var done = this.complete;
-        this.complete = null;
-        done();
+        var completes = this.completes.slice(0);
+        this.completes.length = 0;
+        for (i = 0, len = completes.length; i < len; i++)
+        {
+            completes[i]();
+        }
     }
 };
 
@@ -189,6 +199,24 @@ Prepare.prototype.add = function(item)
         }
     }
     return this;
+};
+
+/**
+ * Destroys the plugin, don't use after this.
+ * @method destroy
+ */
+Prepare.prototype.destroy = function()
+{
+    if (this.ticking)
+    {
+        SharedTicker.remove(this.tick, this);
+    }
+    this.ticking = false;
+    this.addHooks = null;
+    this.uploadHooks = null;
+    this.renderer = null;
+    this.completes = null;
+    this.queue = null;
 };
 
 /**
