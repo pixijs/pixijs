@@ -46,4 +46,13 @@ Prepare.prototype.add = function()
     return this;
 };
 
+/**
+ * Stub method for destroying plugin.
+ * @method destroy
+ */
+Prepare.prototype.destroy = function()
+{
+
+};
+
 core.CanvasRenderer.registerPlugin('prepare', Prepare);
