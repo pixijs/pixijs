@@ -44,6 +44,13 @@ function Prepare(renderer)
      */
     this.completes = [];
 
+    /**
+     * If prepare is ticking (running).
+     * @type {Boolean}
+     * @private
+     */
+    this.ticking = false;
+
     // Add textures and graphics to upload
     this.register(findBaseTextures, uploadBaseTextures)
         .register(findGraphics, uploadGraphics);
