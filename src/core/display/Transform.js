@@ -60,6 +60,8 @@ function Transform()
 
     this._dirty = false;
     this.updated = true;
+
+    this._worldID = 0;
 }
 
 Transform.prototype.constructor = Transform;
@@ -105,6 +107,8 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+    this._worldID ++;
 };
 
 Transform.prototype.updateChildTransform = function (childTransform)

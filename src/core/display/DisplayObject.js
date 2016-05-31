@@ -1,6 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
-    Transform = require('./Transform'),
+    Transform = require('./TransformStatic'),
+   // Transform = require('./Transform'),
     _tempDisplayObjectParent = new DisplayObject();
 
 
