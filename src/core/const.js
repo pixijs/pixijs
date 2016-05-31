@@ -309,6 +309,12 @@ var CONST = {
         HIGH: 'highp'
     },
 
+    TRANSFORM_MODE:{
+        STATIC:0,
+        DYNAMIC:1,
+        DEFAULT:0
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines

@@ -31,7 +31,7 @@ function Sprite(texture)
      *
      * @member {PIXI.Point}
      */
-    this.anchor = new math.Point();
+    this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
      * The texture that the sprite is using
@@ -93,6 +93,7 @@ function Sprite(texture)
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
     this.vertexData = new Float32Array(8);
+    this._transformID = -1;
 }
 
 // constructor
@@ -199,8 +200,23 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
+Sprite.prototype.onAnchorUpdate = function()
+{
+    this._transformID = -1;
+};
+
 Sprite.prototype.calculateVertices = function ()
 {
+    if(this._transformID === this.transform._worldID && !this.textureDirty)
+    {
+        return;
+    }
+
+    this._transformID = this.transform._worldID;
+    this.textureDirty = false;
+
+    // set the vertex data
+
     var texture = this._texture,
         wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
@@ -254,12 +270,7 @@ Sprite.prototype.calculateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
-    {
-        this.textureDirty = false;
-        // set the vertex data
-        this.calculateVertices();
-    }
+    this.calculateVertices();
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -287,14 +298,8 @@ Sprite.prototype.getBounds = function ()
     //TODO lookinto caching..
     if(!this._currentBounds)
     {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
-
-            // set the vertex data
-            this.calculateVertices();
-
-        }
+        // set the vertex data
+        this.calculateVertices();
 
         var minX, maxX, minY, maxY,
             w0, w1, h0, h1,
