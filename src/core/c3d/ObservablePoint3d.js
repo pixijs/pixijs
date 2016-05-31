@@ -51,13 +51,14 @@ Object.defineProperties(ObservablePoint3d.prototype, {
  * If y is omitted, both x and y will be set to x.
  *
  * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
+ * @param [y=0] {number} position of the point3d on the y axis. Default value is same as 'x'
+ * @param [z=0] {number} position of the point3d on the z axis. Default value is 'this.z'
  */
 ObservablePoint.prototype.set = function (x, y, z)
 {
     var _x = x || 0;
     var _y = y || ( (y !== 0) ? _x : 0 );
-    var _z = z || 0;
+    var _z = z || ( (z !== 0) ? this._z : 0 );
     if (this._x !== _x || this._y !== _y || this._z !== z) {
         this._x = _x;
         this._y = _y;

@@ -1,9 +1,12 @@
 var Frustrum = require('./Frustrum'),
     Transform3d = require('./Transform3d'),
     glMat = require('gl-matrix'),
-    mat4 = glMat.mat4;
+    mat4 = glMat.mat4,
+    vec3 = glMat.vec3,
+    quat = glMat.quat;
 
-var tempMatrix = mat4.create();
+var tempMatrix = mat4.create(),
+    tempVec = vec3.create();
 
 
 /**
@@ -17,7 +20,9 @@ function ProjectionTransform3d()
 {
     Transform3d.call(this, true);
     this.frustrum = new Frustrum();
+    this.euler._sign = -1;
     this._frustrumVersion = 0;
+    this.eyeVec = vec3.create();
 }
 
 ProjectionTransform3d.prototype = Object.create(Transform3d.prototype);
@@ -36,12 +41,10 @@ ProjectionTransform3d.prototype.update = function ()
     this._frustrumVersion = this.frustrum.version;
 
     var matrix = this.matrix3d;
-
-    tempMatrix[0] = this.position.x;
-    tempMatrix[1] = this.position.y;
-    tempMatrix[2] = this.position.z;
-
-    mat4.fromTranslation(matrix, tempMatrix);
+    mat4.identity(matrix);
+    matrix[12] = this.pivot.x;
+    matrix[13] = this.pivot.y;
+    matrix[14] = this.pivot.z;
 
     var focus = this.frustrum._focus;
     var near = this.frustrum._near;
@@ -54,19 +57,26 @@ ProjectionTransform3d.prototype.update = function ()
         mat4.multiply(matrix, matrix, tempMatrix);
     }
 
-
     mat4.fromQuat(tempMatrix, this.euler.quaternion);
     mat4.multiply(matrix, matrix, tempMatrix);
 
-    tempMatrix[0] = this.scale.x;
-    tempMatrix[1] = this.scale.y;
-    tempMatrix[2] = this.scale.z;
-    mat4.scale(matrix, matrix, tempMatrix);
+    var eyeVec = this.eyeVec;
+    vec3.set(eyeVec, 0, 0, -focus);
+    quat.invert(tempMatrix, this.euler.quaternion);
+    mat4.fromQuat(tempMatrix, tempMatrix);
+    vec3.transformMat4(eyeVec, eyeVec, tempMatrix);
 
-    tempMatrix[0] = -this.pivot.x;
-    tempMatrix[1] = -this.pivot.y;
-    tempMatrix[2] = -this.pivot.z;
-    mat4.translate(matrix, matrix, tempMatrix);
+    tempVec[0] = 1.0 / this.scale.x;
+    tempVec[1] = 1.0 / this.scale.y;
+    tempVec[2] = 1.0 / this.scale.z;
+    mat4.scale(matrix, matrix, tempVec);
+    vec3.multiply(eyeVec, eyeVec, tempVec);
+
+    tempVec[0] = -this.position.x;
+    tempVec[1] = -this.position.y;
+    tempVec[2] = -this.position.z;
+    mat4.translate(matrix, matrix, tempVec);
+    vec3.subtract(eyeVec, eyeVec, tempVec);
 
     return true;
 };

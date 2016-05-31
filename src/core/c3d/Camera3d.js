@@ -65,6 +65,11 @@ Object.defineProperties(Camera3d.prototype, {
             this.projection.euler.copy(value);
         }
     },
+    eyeVec: {
+        get: function() {
+            return this.projection.eyeVec;
+        }
+    },
     frustrum: {
         get: function() {
             return this.projection.frustrum;
@@ -88,7 +93,7 @@ Camera3d.prototype.centralPerspective = function(left, right, top, bottom, focus
 
     var cx = (right+left)/2;
     var cy = (top+bottom)/2;
-    this.projection.position.set(cx, cy);
+    this.projection.pivot.set(cx, cy);
     this.projection.frustrum.set(focus || 0, near || 0, far || 0);
 };
 

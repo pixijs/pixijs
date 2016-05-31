@@ -46,11 +46,12 @@ Point3d.prototype.clone = function ()
  * If y is omitted, both x and y will be set to x.
  *
  * @param [x=0] {number} position of the point3d on the x axis
- * @param [y=0] {number} position of the point3d on the y axis
+ * @param [y=0] {number} position of the point3d on the y axis. Default value is same as 'x'
+ * @param [z=0] {number} position of the point3d on the z axis. Default value is 'this.z'
  */
 Point3d.prototype.set = function (x, y, z)
 {
     this.x = x || 0;
-    this.y = y || ( (y !== 0) ? this.x : 0);
-    this.z = z || 0;
+    this.y = y || ( (y !== 0) ? this.x : 0 );
+    this.z = z || ( (z !== 0) ? this.z : 0 );
 };

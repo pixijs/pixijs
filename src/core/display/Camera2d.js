@@ -1,5 +1,5 @@
 var Container = require('./Container'),
-    Transform2d = require('../c2d/Transform2d'),
+    ProjectionTransform2d = require('../c2d/ProjectionTransform2d'),
     Geometry2d = require('../c2d/Geometry2d'),
     ComputedGeometry2d = require('../c2d/ComputedGeometry2d'),
     ComputedTransform2d = require('../c2d/ComputedTransform2d'),
@@ -108,10 +108,10 @@ Object.defineProperties(Camera2d.prototype, {
      */
     lookPosition: {
         get: function () {
-            return this.projection.pivot;
+            return this.projection.position;
         },
         set: function (value) {
-            this.projection.pivot.set(value);
+            this.projection.position.set(value);
         }
     },
     lookScale: {
@@ -142,7 +142,7 @@ Camera2d.prototype.initTransform = function () {
 };
 
 Camera2d.prototype.initProjection = function () {
-    this.projection = new Transform2d(true);
+    this.projection = new ProjectionTransform2d(true);
     this.worldProjection = new ComputedTransform2d(true);
 };
 

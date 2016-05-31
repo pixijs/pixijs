@@ -33,6 +33,7 @@ function ComputedTransform3d() {
     this._dirtyRaycastVersion = -1;
     this._dirtyRaycastMyVersion = -1;
     this._dirtyInverse = -1;
+    this.eyeVec = null;
 }
 
 ComputedTransform3d.prototype.constructor = ComputedTransform3d;
@@ -82,6 +83,7 @@ ComputedTransform3d.prototype.updateTransform = function (parentTransform, local
         }
     }
 
+    this.eyeVec = parentTransform.eyeVec || localTransform.eyeVec;
     this.updated = true;
     this.version++;
     return true;
@@ -115,7 +117,8 @@ ComputedTransform3d.prototype.updateSingle = function(parentTransform) {
     } else {
         parentTransform.matrix2d.toMat4(wt);
     }
-
+    
+    this.eyeVec = parentTransform.eyeVec;
     this.updated = true;
     this.version++;
     return true;
@@ -164,6 +167,15 @@ ComputedTransform3d.prototype.checkChildReverseTransform = function (childTransf
     return true;
 };
 
+/**
+ * which side is visible to the camera
+ * @param eyeVec
+ */
+ComputedTransform3d.prototype.getVisibleSide = function(eyeVec) {
+    var inverse = this.getInverse();
+    vec3.transformMat4(tempVec, eyeVec, inverse);
+    return tempVec[2] > 0 ? 1 : -1;
+};
 
 /**
  * Get bounds of geometry based on its stride

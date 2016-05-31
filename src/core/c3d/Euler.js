@@ -1,7 +1,7 @@
 var quat = require('gl-matrix').quat;
 
 /**
- * The Euler angles, order is YZX
+ * The Euler angles, order is YZX. Except for projections (camera.lookEuler), its reversed XZY
  * @class
  * @namespace PIXI
  * @param x pitch
@@ -31,6 +31,7 @@ function Euler(x, y, z) {
     this.quaternion = quat.create();
     this.version = 0;
     this._dirtyVersion = 1;
+    this._sign = 1;
 
     this.update();
 }
@@ -191,9 +192,10 @@ Euler.prototype.update = function() {
     var c2 = Math.cos(this._y / 2);
     var c3 = Math.cos(this._z / 2);
 
-    var s1 = Math.sin(this._x / 2);
-    var s2 = Math.sin(this._y / 2);
-    var s3 = Math.sin(this._z / 2);
+    var s = this._sign;
+    var s1 = s * Math.sin(this._x / 2);
+    var s2 = s * Math.sin(this._y / 2);
+    var s3 = s * Math.sin(this._z / 2);
 
     var q = this.quaternion;
     q[0] = s1 * c2 * c3 + c1 * s2 * s3;
