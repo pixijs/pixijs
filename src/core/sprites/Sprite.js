@@ -203,7 +203,7 @@ Sprite.prototype._onTextureUpdate = function ()
 Sprite.prototype.onAnchorUpdate = function()
 {
     this._transformID = -1;
-}
+};
 
 Sprite.prototype.calculateVertices = function ()
 {

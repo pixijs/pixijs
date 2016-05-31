@@ -1,5 +1,4 @@
-var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint');
+var math = require('../math');
 
 
 /**
@@ -35,7 +34,7 @@ function Transform()
     this.scale = new math.Point(1,1);
 
 
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
