@@ -35,7 +35,7 @@ var WebGLState = function(gl)
     /**
      * The stack holding all the different states
      *
-     * @member {*[]}
+     * @member {Array<*>}
      * @private
      */
 	this.stack = [];

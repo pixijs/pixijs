@@ -75,7 +75,7 @@ function AccessibilityManager(renderer)
    	/**
      * The array of currently active accessible items.
      *
-     * @member {*[]}
+     * @member {Array<*>}
      * @private
      */
    	this.children = [];
@@ -89,7 +89,7 @@ function AccessibilityManager(renderer)
    	/**
      * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
      *
-     * @member {*[]}
+     * @member {Array<*>}
      * @private
      */
    	this.isActive = false;
