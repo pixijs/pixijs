@@ -31,7 +31,7 @@ function Sprite(texture)
      *
      * @member {PIXI.Point}
      */
-    this.anchor = new math.Point();
+    this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
      * The texture that the sprite is using
@@ -199,6 +199,11 @@ Sprite.prototype._onTextureUpdate = function ()
         this.scale.y = utils.sign(this.scale.y) * this._height / (this.texture.trim || this.texture.orig).height;
     }
 };
+
+Sprite.prototype.onAnchorUpdate = function()
+{
+    this._transformID = -1;
+}
 
 Sprite.prototype.calculateVertices = function ()
 {
