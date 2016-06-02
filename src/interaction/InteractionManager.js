@@ -358,7 +358,14 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
  */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
-    var rect = this.interactionDOMElement.getBoundingClientRect();
+    var rect;
+    // IE 11 fix
+    if(!this.interactionDOMElement.parentElement)
+    {
+        rect = { x: 0, y: 0, width: 0, height: 0 };
+    } else {
+        rect = this.interactionDOMElement.getBoundingClientRect();
+    }
     point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
 };

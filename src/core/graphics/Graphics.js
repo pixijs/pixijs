@@ -728,17 +728,18 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
         this._spriteRect.tint = this.graphicsData[0].fillColor;
+        this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     }
 
-    this._spriteRect.worldAlpha = this.worldAlpha;
-
-    Graphics._SPRITE_TEXTURE._frame.width = rect.width;
-    Graphics._SPRITE_TEXTURE._frame.height = rect.height;
+    this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
     this._spriteRect.computedTransform = this.computedTransform;
 
     this._spriteRect.anchor.x = -rect.x / rect.width;
     this._spriteRect.anchor.y = -rect.y / rect.height;
+    this._spriteRect.size.x = rect.width;
+    this._spriteRect.size.y = rect.height;
+    this._spriteRect.calculateVertices();
 
     this._spriteRect._renderWebGL(renderer);
 };
