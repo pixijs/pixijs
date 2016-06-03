@@ -258,7 +258,7 @@ Sprite.prototype.calculateBoundsVertices = function ()
         vertexData = this.vertexData,
         orig = texture.orig;
 
-    if (!trim || trim.width == orig.width && trim.height == orig.height) {
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
         vertexData[8] = vertexData[0];
         vertexData[9] = vertexData[1];
         vertexData[10] = vertexData[2];
