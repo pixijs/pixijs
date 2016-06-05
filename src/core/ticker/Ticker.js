@@ -332,7 +332,7 @@ Ticker.prototype.update = function update(currentTime)
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
     // Save uncapped elapsedMS for measurement
-    Math.max(0, elapsedMS = this.elapsedMS = currentTime - this.lastTime);
+    elapsedMS = this.elapsedMS = Math.max(0, currentTime - this.lastTime);
 
     // cap the milliseconds elapsed used for deltaTime
     if (elapsedMS > this._maxElapsedMS)
