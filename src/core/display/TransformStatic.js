@@ -136,6 +136,17 @@ TransformStatic.prototype.updateChildTransform = function (childTransform)
     return childTransform;
 };
 
+/**
+ * Decomposes a matrix and sets the transforms properties based on it.
+ * @param {Matrix}
+ */
+TransformStatic.prototype.setFromMatrix = function (matrix)
+{
+    matrix.decompose(this);
+};
+
+
+
 Object.defineProperties(TransformStatic.prototype, {
     /**
      * The rotation of the object in radians.
