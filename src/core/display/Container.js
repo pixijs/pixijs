@@ -51,7 +51,7 @@ Object.defineProperties(Container.prototype, {
 
             if (width !== 0)
             {
-                this.scale.x = value / width;
+                this.scale.x = value * this.scale.x / width;
             }
             else
             {
@@ -81,7 +81,7 @@ Object.defineProperties(Container.prototype, {
 
             if (height !== 0)
             {
-                this.scale.y = value / height ;
+                this.scale.y = value * this.scale.y / height ;
             }
             else
             {
