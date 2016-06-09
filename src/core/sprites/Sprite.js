@@ -89,10 +89,11 @@ function Sprite(texture)
      */
     this.cachedTint = 0xFFFFFF;
 
+    // make sure the vertexData is present before setting the texture
+    this.vertexData = new Float32Array(16);
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.vertexData = new Float32Array(16);
 }
 
 // constructor
@@ -186,7 +187,7 @@ Object.defineProperties(Sprite.prototype, {
 Sprite.prototype._onTextureUpdate = function ()
 {
     this.textureDirty = true;
-
+    this.calculateVertices();
     // so if _width is 0 then width was not set..
     if (this._width)
     {
