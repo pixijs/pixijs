@@ -37,18 +37,24 @@ function TransformStatic()
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.pivot = new math.ObservablePoint(this.onChange, this,0.0);
+    this.pivot = new math.ObservablePoint(this.onChange, this,0, 0);
 
     /**
      * The skew amount, on the x and y axis.
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.skew = new math.ObservablePoint(this.updateSkew, this,0.0);
+    this.skew = new math.ObservablePoint(this.updateSkew, this,0, 0);
 
     this._rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
+    this._cy  = Math.cos(0);//skewY);
+    this._sy  = Math.sin(0);//skewY);
+    this._nsx = Math.sin(0);//skewX);
+    this._cx  = Math.cos(0);//skewX);
+
 
     this._localID = 0;
     this._currentLocalID = 0;
@@ -87,10 +93,18 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     if(this._localID !== this._currentLocalID)
     {
         // get the matrix values of the displayobject based on its transform properties..
-        lt.a  =  this._cr * this.scale._x;
-        lt.b  =  this._sr * this.scale._x;
-        lt.c  = -this._sr * this.scale._y;
-        lt.d  =  this._cr * this.scale._y;
+        var a,b,c,d;
+
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+
+        lt.a  = this._cy * a + this._sy * c;
+        lt.b  = this._cy * b + this._sy * d;
+        lt.c  = this._nsx * a + this._cx * c;
+        lt.d  = this._nsx * b + this._cx * d;
+
         lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
         lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
         this._currentLocalID = this._localID;
