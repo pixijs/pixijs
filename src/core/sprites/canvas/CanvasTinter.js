@@ -68,7 +68,7 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 
     crop.x *= resolution;
     crop.y *= resolution;
-    crop.width *= resolution
+    crop.width *= resolution;
     crop.height *= resolution;
      
     canvas.width = crop.width;
@@ -122,7 +122,7 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 
     crop.x *= resolution;
     crop.y *= resolution;
-    crop.width *= resolution
+    crop.width *= resolution;
     crop.height *= resolution;
 
     canvas.width = crop.width;
@@ -163,7 +163,7 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
 
     crop.x *= resolution;
     crop.y *= resolution;
-    crop.width *= resolution
+    crop.width *= resolution;
     crop.height *= resolution;
 
     canvas.width = crop.width;
