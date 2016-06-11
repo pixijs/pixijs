@@ -410,6 +410,9 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.emit('update',  texture.baseTexture);
 
+    // make sure to flag the texture as dirty..
+    this.textureDirty = true;
+
     this.dirty = false;
 };
 
