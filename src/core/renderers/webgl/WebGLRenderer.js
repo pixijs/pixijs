@@ -9,6 +9,7 @@ var SystemRenderer = require('../SystemRenderer'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
+    validateContext = require('./utils/validateContext'),
     utils = require('../../utils'),
     glCore = require('pixi-gl-core'),
     CONST = require('../../const');
@@ -110,6 +111,12 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLRenderingContext}
      */
     // initialize the context so it is ready for the managers.
+    if(options.context)
+    {
+        // checks to see if a context is valid..
+        validateContext(options.context);
+    }
+
     this.gl = options.context || createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
