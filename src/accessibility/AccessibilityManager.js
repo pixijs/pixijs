@@ -145,7 +145,10 @@ AccessibilityManager.prototype.activate = function()
 
 	this.renderer.on('postrender', this.update, this);
 
-	this.renderer.view.parentNode.appendChild(this.div);
+	if(this.renderer.view.parentNode)
+	{
+		this.renderer.view.parentNode.appendChild(this.div);
+	}
 };
 
 /**
@@ -167,7 +170,10 @@ AccessibilityManager.prototype.deactivate = function()
 
 	this.renderer.off('postrender', this.update);
 
-	this.div.parentNode.removeChild(this.div);
+	if(this.div.parentNode)
+	{
+		this.div.parentNode.removeChild(this.div);
+	}
 
 };
 
