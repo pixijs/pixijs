@@ -130,12 +130,6 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     }
 };
 
-TransformStatic.prototype.updateChildTransform = function (childTransform)
-{
-    childTransform.updateTransform(this);
-    return childTransform;
-};
-
 /**
  * Decomposes a matrix and sets the transforms properties based on it.
  * @param {Matrix}
