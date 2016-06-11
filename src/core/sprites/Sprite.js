@@ -91,9 +91,9 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.textureDirty = true;
     this.vertexData = new Float32Array(16);
     this._transformID = -1;
+    this._textureID = -1;
 }
 
 // constructor
@@ -161,7 +161,7 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
-            this.textureDirty = true;
+            this._textureID = -1;
 
             if (value)
             {
@@ -186,7 +186,7 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
-    this.textureDirty = true;
+    this._textureID = -1;
 
     // so if _width is 0 then width was not set..
     if (this._width)
@@ -210,13 +210,13 @@ Sprite.prototype.onAnchorUpdate = function()
  */
 Sprite.prototype.calculateVertices = function ()
 {
-    if(this._transformID === this.transform._worldID && !this.textureDirty)
+    if(this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
     {
         return;
     }
 
     this._transformID = this.transform._worldID;
-    this.textureDirty = false;
+    this._textureID = this._texture._updateID;
 
     // set the vertex data
 
