@@ -471,6 +471,7 @@ Container.prototype.getLocalBounds = function ()
     var matrixCache = this.transform.worldTransform;
 
     this.transform.worldTransform = math.Matrix.IDENTITY;
+    this.transform._worldID++;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -478,6 +479,7 @@ Container.prototype.getLocalBounds = function ()
     }
 
     this.transform.worldTransform = matrixCache;
+    this.transform._worldID++;
 
     this._currentBounds = null;
 

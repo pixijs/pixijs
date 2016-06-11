@@ -87,7 +87,7 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
 
     this._initCachedDisplayObject( renderer );
 
-    this._cachedSprite.transform.updated = true;
+    this._cachedSprite._transformID = -1;
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
     this._cachedSprite._renderWebGL(renderer);
