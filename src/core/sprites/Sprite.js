@@ -92,7 +92,7 @@ function Sprite(texture)
     // call texture setter
     this.texture = texture || Texture.EMPTY;
     this.textureDirty = true;
-    this.vertexData = new Float32Array(8);
+    this.vertexData = new Float32Array(16);
     this._transformID = -1;
 }
 
@@ -111,12 +111,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * (this.texture.trim || this.texture.orig).width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / (this.texture.trim || this.texture.orig).width;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -130,12 +130,12 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * (this.texture.trim || this.texture.orig).height;
+            return  Math.abs(this.scale.y) * this.texture.orig.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / (this.texture.trim || this.texture.orig).height;
+            this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
         }
     },
@@ -191,12 +191,12 @@ Sprite.prototype._onTextureUpdate = function ()
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / (this.texture.trim || this.texture.orig).width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / (this.texture.trim || this.texture.orig).height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
     }
 };
 
@@ -205,6 +205,9 @@ Sprite.prototype.onAnchorUpdate = function()
     this._transformID = -1;
 };
 
+/**
+ * calculates worldTransform * vertices, store it in vertexData
+ */
 Sprite.prototype.calculateVertices = function ()
 {
     if(this._transformID === this.transform._worldID && !this.textureDirty)
@@ -262,6 +265,56 @@ Sprite.prototype.calculateVertices = function ()
 };
 
 /**
+ * we need this method to be compatible with pixiv3. v3 does calculate bounds of original texture are, not trimmed one
+ */
+Sprite.prototype.calculateBoundsVertices = function ()
+{
+    var texture = this._texture,
+        trim = texture.trim,
+        vertexData = this.vertexData,
+        orig = texture.orig;
+
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
+        vertexData[8] = vertexData[0];
+        vertexData[9] = vertexData[1];
+        vertexData[10] = vertexData[2];
+        vertexData[11] = vertexData[3];
+        vertexData[12] = vertexData[4];
+        vertexData[13] = vertexData[5];
+        vertexData[14] = vertexData[6];
+        vertexData[15] = vertexData[7];
+        return;
+    }
+
+    var wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        w0, w1, h0, h1;
+
+
+    w0 = (orig.width ) * (1-this.anchor.x);
+    w1 = (orig.width ) * -this.anchor.x;
+
+    h0 = orig.height * (1-this.anchor.y);
+    h1 = orig.height * -this.anchor.y;
+
+    // xy
+    vertexData[8] = a * w1 + c * h1 + tx;
+    vertexData[9] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[10] = a * w0 + c * h1 + tx;
+    vertexData[11] = d * h1 + b * w0 + ty;
+
+    // xy
+    vertexData[12] = a * w0 + c * h0 + tx;
+    vertexData[13] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[14] = a * w1 + c * h0 + tx;
+    vertexData[15] = d * h0 + b * w1 + ty;
+};
+
+/**
 *
 * Renders the object using the WebGL renderer
 *
@@ -301,21 +354,24 @@ Sprite.prototype.getBounds = function ()
         // set the vertex data
         this.calculateVertices();
 
+        // set the vertex data
+        this.calculateBoundsVertices();
+
         var minX, maxX, minY, maxY,
             w0, w1, h0, h1,
             vertexData = this.vertexData;
 
-        var x1 = vertexData[0];
-        var y1 = vertexData[1];
+        var x1 = vertexData[8];
+        var y1 = vertexData[9];
 
-        var x2 = vertexData[2];
-        var y2 = vertexData[3];
+        var x2 = vertexData[10];
+        var y2 = vertexData[11];
 
-        var x3 = vertexData[4];
-        var y3 = vertexData[5];
+        var x3 = vertexData[12];
+        var y3 = vertexData[13];
 
-        var x4 = vertexData[6];
-        var y4 = vertexData[7];
+        var x4 = vertexData[14];
+        var y4 = vertexData[15];
 
         minX = x1;
         minX = x2 < minX ? x2 : minX;

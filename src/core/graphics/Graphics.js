@@ -724,9 +724,10 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
         this._spriteRect.tint = this.graphicsData[0].fillColor;
+        this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     }
 
-    this._spriteRect.worldAlpha = this.worldAlpha;
+    this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
     Graphics._SPRITE_TEXTURE._frame.width = rect.width;
     Graphics._SPRITE_TEXTURE._frame.height = rect.height;
