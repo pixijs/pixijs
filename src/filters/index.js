@@ -10,7 +10,7 @@
  */
 module.exports = {
     // AsciiFilter:        require('./ascii/AsciiFilter'),
-    // BloomFilter:        require('./bloom/BloomFilter'),
+    BloomFilter:        require('./bloom/BloomFilter'),
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
     // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
