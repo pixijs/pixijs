@@ -20,5 +20,7 @@ void main(void)
 
 	color.rgb = vec3((color.r + color.g + color.b) / 3.0);
 
-	gl_FragColor = vec4(color.rgb, 1);
+	float alpha = texture2D(uSampler, vTextureCoord).a;
+
+	gl_FragColor = vec4(color.rgb * alpha, alpha);
 }
