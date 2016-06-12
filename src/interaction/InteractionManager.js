@@ -178,7 +178,7 @@ function InteractionManager(renderer, options)
      * @member {number}
      * @default
      */
-    this.resolution = 1;
+    this.resolution = core.RESOLUTION;
 
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 }
