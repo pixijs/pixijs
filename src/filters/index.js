@@ -14,7 +14,7 @@ module.exports = {
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
     // ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
-    // CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
+    CrossHatchFilter:   require('./crosshatch/CrossHatchFilter'),
     // DotScreenFilter:    require('./dot/DotScreenFilter'),
     // DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
     // InvertFilter:       require('./invert/InvertFilter'),
