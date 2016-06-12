@@ -20,7 +20,7 @@ module.exports = {
     // InvertFilter:       require('./invert/InvertFilter'),
     // NoiseFilter:        require('./noise/NoiseFilter'),
     PixelateFilter:     require('./pixelate/PixelateFilter'),
-    // RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
+    RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
     // ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
     // SepiaFilter:        require('./sepia/SepiaFilter'),
     // SmartBlurFilter:    require('./blur/SmartBlurFilter'),
