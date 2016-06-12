@@ -95,7 +95,7 @@ document.body.appendChild(renderer.view);
 
 // You need to create a root container that will hold the scene you want to draw.
 var stage = new PIXI.Container();
-var bunny;
+
 
 // Declare a global variable for our sprite so that the animate function can access it.
 var bunny = null;
