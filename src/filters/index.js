@@ -9,7 +9,7 @@
  * @namespace PIXI.filters
  */
 module.exports = {
-    // AsciiFilter:        require('./ascii/AsciiFilter'),
+    AsciiFilter:        require('./ascii/AsciiFilter'),
     BloomFilter:        require('./bloom/BloomFilter'),
     // BlurDirFilter:      require('./blur/BlurDirFilter'),
     // ColorStepFilter:    require('./color/ColorStepFilter'),
