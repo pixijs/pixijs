@@ -19,7 +19,7 @@ var utils = require('../utils'),
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
- * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+ * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer. The resolution of the renderer retina would be 2.
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
  * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
@@ -80,7 +80,7 @@ function SystemRenderer(system, width, height, options)
     this.view = options.view || document.createElement('canvas');
 
     /**
-     * The resolution of the renderer
+     * The resolution / device pixel ratio of the renderer
      *
      * @member {number}
      * @default 1
@@ -230,7 +230,7 @@ SystemRenderer.prototype.resize = function (width, height) {
  *
  * @param displayObject {PIXI.DisplayObject} The displayObject the object will be generated from
  * @param scaleMode {number} Should be one of the scaleMode consts
- * @param resolution {number} The resolution of the texture being generated
+ * @param resolution {number} The resolution / device pixel ratio of the texture being generated
  * @return {PIXI.Texture} a texture of the graphics object
  */
 SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {

@@ -19,7 +19,7 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
- * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
+ * @param [resolution=1] {number} The current resolution / device pixel ratio of the canvas
  */
 function Text(text, style, resolution)
 {
@@ -37,8 +37,9 @@ function Text(text, style, resolution)
     this.context = this.canvas.getContext('2d');
 
     /**
-     * The resolution of the canvas.
+     * The resolution / device pixel ratio of the canvas
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 

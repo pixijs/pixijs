@@ -65,7 +65,7 @@ var utils = module.exports = {
 
 
     /**
-     * get the resolution of an asset by looking for the prefix
+     * get the resolution / device pixel ratio of an asset by looking for the prefix
      * used by spritesheets and image urls
      *
      * @param url {string} the image path
