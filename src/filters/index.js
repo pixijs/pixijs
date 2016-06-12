@@ -21,6 +21,7 @@ module.exports = {
     // NoiseFilter:        require('./noise/NoiseFilter'),
     PixelateFilter:     require('./pixelate/PixelateFilter'),
     RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
+    EmbossFilter:       require('./emboss/EmbossFilter'),
     // ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
     // SepiaFilter:        require('./sepia/SepiaFilter'),
     // SmartBlurFilter:    require('./blur/SmartBlurFilter'),
