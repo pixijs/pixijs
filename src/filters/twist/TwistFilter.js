@@ -12,35 +12,19 @@ function TwistFilter()
 {
     core.Filter.call(this,
         // vertex shader
-
-        glslify('./twist.vert', 'utf8'),
+        glslify('../fragments/default.vert'),
         // fragment shader
-        glslify('./twist.frag', 'utf8')
+        glslify('./twist.frag')
     );
 
-    this.uniforms.radius = 400;
-    this.uniforms.angle = 3;
-    this.uniforms.offset = [400,300];
-    //this.uniforms.dimensions = [100, 100, 100, 100];
-    this.transform = new core.math.Matrix();
-    this.padding = 200;
+    this.radius = 200;
+    this.angle = 4;
+    this.padding = 20;
 }
 
 TwistFilter.prototype = Object.create(core.Filter.prototype);
 TwistFilter.prototype.constructor = TwistFilter;
 module.exports = TwistFilter;
-
-TwistFilter.prototype.apply = function (filterManager, input, output, clear)
-{
-    /*
-    this.uniforms.filterArea[0] = input.size.width;
-    this.uniforms.filterArea[1] = input.size.height;
-    this.uniforms.filterArea[2] = currentState.sourceFrame.x;
-    this.uniforms.filterArea[3] = currentState.sourceFrame.y;
-    */
-
-    filterManager.applyFilter(this, input, output, clear);
-};
 
 Object.defineProperties(TwistFilter.prototype, {
     /**

@@ -1,4 +1,4 @@
-varying vec2 vMapCoord;
+varying vec2 vFilterCoord;
 varying vec2 vTextureCoord;
 
 uniform vec2 scale;
@@ -10,7 +10,7 @@ uniform vec4 filterClamp;
 
 void main(void)
 {
-   vec4 map =  texture2D(mapSampler, vMapCoord);
+   vec4 map =  texture2D(mapSampler, vFilterCoord);
 
    map -= 0.5;
    map.xy *= scale;

@@ -19,7 +19,8 @@ function DisplacementFilter(sprite, scale)
 
     core.Filter.call(this,
         // vertex shader
-        glslify('./displacement.vert'),
+//        glslify('./displacement.vert'),
+        glslify('../fragments/default-filter-matrix.vert'),
         // fragment shader
         glslify('./displacement.frag')
 
@@ -29,7 +30,7 @@ function DisplacementFilter(sprite, scale)
     this.maskMatrix = maskMatrix;
 
     this.uniforms.mapSampler = sprite.texture;
-    this.uniforms.otherMatrix = maskMatrix.toArray(true);
+    this.uniforms.filterMatrix = maskMatrix.toArray(true);
     this.uniforms.scale = { x: 1, y: 1 };
 
     if (scale === null || scale === undefined)
@@ -48,7 +49,7 @@ DisplacementFilter.prototype.apply = function (filterManager, input, output)
 {
     var ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
-    this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
+    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
     this.uniforms.scale.x = this.scale.x * ratio;
     this.uniforms.scale.y = this.scale.y * ratio;
 

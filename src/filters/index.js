@@ -19,7 +19,7 @@ module.exports = {
     // DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
     // InvertFilter:       require('./invert/InvertFilter'),
     // NoiseFilter:        require('./noise/NoiseFilter'),
-    // PixelateFilter:     require('./pixelate/PixelateFilter'),
+    PixelateFilter:     require('./pixelate/PixelateFilter'),
     // RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
     // ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
     // SepiaFilter:        require('./sepia/SepiaFilter'),
@@ -34,7 +34,6 @@ module.exports = {
 
     ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
     TwistFilter:        require('./twist/TwistFilter'),
-    GrayFilter:         require('./gray/GrayFilter'),
-    GodrayFilter:       require('./godray/GodrayFilter'),
+    //GrayFilter:         require('./gray/GrayFilter'),
     VoidFilter:         require('./void/VoidFilter')
 };
