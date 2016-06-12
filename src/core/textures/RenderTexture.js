@@ -112,7 +112,7 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
  * @param [width=100] {number} The width of the render texture
  * @param [height=100] {number} The height of the render texture
  * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution of the texture being generated
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
 RenderTexture.create = function(width, height, scaleMode, resolution)
 {

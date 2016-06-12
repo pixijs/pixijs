@@ -174,8 +174,9 @@ function InteractionManager(renderer, options)
 
 
     /**
-     * The current resolution
+     * The current resolution / device pixel ratio.
      * @member {number}
+     * @default
      */
     this.resolution = 1;
 
@@ -191,7 +192,7 @@ module.exports = InteractionManager;
  * another DOM element to receive those events.
  *
  * @param element {HTMLElement} the DOM element which will receive mouse and touch events.
- * @param [resolution=1] {number} THe resolution of the new element (relative to the canvas).
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the new element (relative to the canvas).
  * @private
  */
 InteractionManager.prototype.setTargetElement = function (element, resolution)

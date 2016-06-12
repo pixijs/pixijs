@@ -43,7 +43,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [width=100] {number} The width of the base render texture
  * @param [height=100] {number} The height of the base render texture
  * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution of the texture being generated
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
 function BaseRenderTexture(width, height, scaleMode, resolution)
 {
