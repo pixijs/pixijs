@@ -223,7 +223,7 @@ var CONST = {
     RETINA_PREFIX: /@(.+)x/,
 
     /**
-     * Default resolution of the renderer.
+     * Default resolution / device pixel ratio of the renderer.
      *
      * @property {number} RESOLUTION
      * @constant

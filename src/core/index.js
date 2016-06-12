@@ -75,7 +75,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
      * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
      * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
-     * @param [options.resolution=1] {number} the resolution of the renderer, retina would be 2
+     * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer, retina would be 2
      * @param [noWebGL=false] {boolean} prevents selection of WebGL renderer, even if such is present
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
