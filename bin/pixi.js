@@ -1,7 +1,7 @@
 /**
  * @license
- * pixi.js - v3.0.8
- * Compiled 2015-10-14T14:21:20.183Z
+ * pixi.js - v3.0.10
+ * Compiled 2016-03-31T20:39:38.722Z
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -110,12 +110,6 @@
             arr.length >= 0 &&
             arr.length % 1 === 0
         );
-    }
-
-    function _each(coll, iterator) {
-        return _isArrayLike(coll) ?
-            _arrayEach(coll, iterator) :
-            _forEachOf(coll, iterator);
     }
 
     function _arrayEach(arr, iterator) {
@@ -265,23 +259,26 @@
     async.eachOf = function (object, iterator, callback) {
         callback = _once(callback || noop);
         object = object || [];
-        var size = _isArrayLike(object) ? object.length : _keys(object).length;
-        var completed = 0;
-        if (!size) {
-            return callback(null);
-        }
-        _each(object, function (value, key) {
+
+        var iter = _keyIterator(object);
+        var key, completed = 0;
+
+        while ((key = iter()) != null) {
+            completed += 1;
             iterator(object[key], key, only_once(done));
-        });
+        }
+
+        if (completed === 0) callback(null);
+
         function done(err) {
+            completed--;
             if (err) {
                 callback(err);
             }
-            else {
-                completed += 1;
-                if (completed >= size) {
-                    callback(null);
-                }
+            // Check key is null in case iterator isn't exhausted
+            // and done resolved synchronously.
+            else if (key === null && completed <= 0) {
+                callback(null);
             }
         }
     };
@@ -307,7 +304,7 @@
                         return callback(null);
                     } else {
                         if (sync) {
-                            async.nextTick(iterate);
+                            async.setImmediate(iterate);
                         } else {
                             iterate();
                         }
@@ -388,7 +385,8 @@
 
     function _asyncMap(eachfn, arr, iterator, callback) {
         callback = _once(callback || noop);
-        var results = [];
+        arr = arr || [];
+        var results = _isArrayLike(arr) ? [] : {};
         eachfn(arr, function (value, index, callback) {
             iterator(value, function (err, v) {
                 results[index] = v;
@@ -414,7 +412,7 @@
                 callback(err);
             });
         }, function (err) {
-            callback(err || null, memo);
+            callback(err, memo);
         });
     };
 
@@ -422,6 +420,20 @@
     async.reduceRight = function (arr, memo, iterator, callback) {
         var reversed = _map(arr, identity).reverse();
         async.reduce(reversed, memo, iterator, callback);
+    };
+
+    async.transform = function (arr, memo, iterator, callback) {
+        if (arguments.length === 3) {
+            callback = iterator;
+            iterator = memo;
+            memo = _isArray(arr) ? [] : {};
+        }
+
+        async.eachOf(arr, function(v, k, cb) {
+            iterator(memo, v, k, cb);
+        }, function(err) {
+            callback(err, memo);
+        });
     };
 
     function _filter(eachfn, arr, iterator, callback) {
@@ -532,15 +544,26 @@
         }
     };
 
-    async.auto = function (tasks, callback) {
+    async.auto = function (tasks, concurrency, callback) {
+        if (typeof arguments[1] === 'function') {
+            // concurrency is optional, shift the args.
+            callback = concurrency;
+            concurrency = null;
+        }
         callback = _once(callback || noop);
         var keys = _keys(tasks);
         var remainingTasks = keys.length;
         if (!remainingTasks) {
             return callback(null);
         }
+        if (!concurrency) {
+            concurrency = remainingTasks;
+        }
 
         var results = {};
+        var runningTasks = 0;
+
+        var hasError = false;
 
         var listeners = [];
         function addListener(fn) {
@@ -564,8 +587,10 @@
         });
 
         _arrayEach(keys, function (k) {
+            if (hasError) return;
             var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
             var taskCallback = _restParam(function(err, args) {
+                runningTasks--;
                 if (args.length <= 1) {
                     args = args[0];
                 }
@@ -575,6 +600,8 @@
                         safeResults[rkey] = val;
                     });
                     safeResults[k] = args;
+                    hasError = true;
+
                     callback(err, safeResults);
                 }
                 else {
@@ -588,18 +615,19 @@
             var dep;
             while (len--) {
                 if (!(dep = tasks[requires[len]])) {
-                    throw new Error('Has inexistant dependency');
+                    throw new Error('Has nonexistent dependency in ' + requires.join(', '));
                 }
                 if (_isArray(dep) && _indexOf(dep, k) >= 0) {
                     throw new Error('Has cyclic dependencies');
                 }
             }
             function ready() {
-                return _reduce(requires, function (a, x) {
+                return runningTasks < concurrency && _reduce(requires, function (a, x) {
                     return (a && results.hasOwnProperty(x));
                 }, true) && !results.hasOwnProperty(k);
             }
             if (ready()) {
+                runningTasks++;
                 task[task.length - 1](taskCallback, results);
             }
             else {
@@ -607,6 +635,7 @@
             }
             function listener() {
                 if (ready()) {
+                    runningTasks++;
                     removeListener(listener);
                     task[task.length - 1](taskCallback, results);
                 }
@@ -792,7 +821,7 @@
                 } else if (test.apply(this, args)) {
                     iterator(next);
                 } else {
-                    callback(null);
+                    callback.apply(null, [null].concat(args));
                 }
             });
             iterator(next);
@@ -898,8 +927,17 @@
         function _next(q, tasks) {
             return function(){
                 workers -= 1;
+
+                var removed = false;
                 var args = arguments;
                 _arrayEach(tasks, function (task) {
+                    _arrayEach(workersList, function (worker, index) {
+                        if (worker === task && !removed) {
+                            workersList.splice(index, 1);
+                            removed = true;
+                        }
+                    });
+
                     task.callback.apply(task, args);
                 });
                 if (q.tasks.length + workers === 0) {
@@ -910,6 +948,7 @@
         }
 
         var workers = 0;
+        var workersList = [];
         var q = {
             tasks: [],
             concurrency: concurrency,
@@ -930,23 +969,23 @@
                 _insert(q, data, true, callback);
             },
             process: function () {
-                if (!q.paused && workers < q.concurrency && q.tasks.length) {
-                    while(workers < q.concurrency && q.tasks.length){
-                        var tasks = q.payload ?
-                            q.tasks.splice(0, q.payload) :
-                            q.tasks.splice(0, q.tasks.length);
+                while(!q.paused && workers < q.concurrency && q.tasks.length){
 
-                        var data = _map(tasks, function (task) {
-                            return task.data;
-                        });
+                    var tasks = q.payload ?
+                        q.tasks.splice(0, q.payload) :
+                        q.tasks.splice(0, q.tasks.length);
 
-                        if (q.tasks.length === 0) {
-                            q.empty();
-                        }
-                        workers += 1;
-                        var cb = only_once(_next(q, tasks));
-                        worker(data, cb);
+                    var data = _map(tasks, function (task) {
+                        return task.data;
+                    });
+
+                    if (q.tasks.length === 0) {
+                        q.empty();
                     }
+                    workers += 1;
+                    workersList.push(tasks[0]);
+                    var cb = only_once(_next(q, tasks));
+                    worker(data, cb);
                 }
             },
             length: function () {
@@ -954,6 +993,9 @@
             },
             running: function () {
                 return workers;
+            },
+            workersList: function () {
+                return workersList;
             },
             idle: function() {
                 return q.tasks.length + workers === 0;
@@ -1078,16 +1120,17 @@
     async.memoize = function (fn, hasher) {
         var memo = {};
         var queues = {};
+        var has = Object.prototype.hasOwnProperty;
         hasher = hasher || identity;
         var memoized = _restParam(function memoized(args) {
             var callback = args.pop();
             var key = hasher.apply(null, args);
-            if (key in memo) {
-                async.nextTick(function () {
+            if (has.call(memo, key)) {   
+                async.setImmediate(function () {
                     callback.apply(null, memo[key]);
                 });
             }
-            else if (key in queues) {
+            else if (has.call(queues, key)) {
                 queues[key].push(callback);
             }
             else {
@@ -1257,7 +1300,6 @@
 }());
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"_process":3}],2:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
@@ -1486,7 +1528,6 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-
 },{"_process":3}],3:[function(require,module,exports){
 // shim for using process in browser
 
@@ -1582,7 +1623,7 @@ process.umask = function() { return 0; };
 
 },{}],4:[function(require,module,exports){
 (function (global){
-/*! https://mths.be/punycode v1.3.2 by @mathias */
+/*! https://mths.be/punycode v1.4.0 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
@@ -1648,7 +1689,7 @@ process.umask = function() { return 0; };
 	 * @returns {Error} Throws a `RangeError` with the applicable error message.
 	 */
 	function error(type) {
-		throw RangeError(errors[type]);
+		throw new RangeError(errors[type]);
 	}
 
 	/**
@@ -1795,7 +1836,7 @@ process.umask = function() { return 0; };
 
 	/**
 	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
 	 * @private
 	 */
 	function adapt(delta, numPoints, firstTime) {
@@ -2100,21 +2141,23 @@ process.umask = function() { return 0; };
 			return punycode;
 		});
 	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
 			freeModule.exports = punycode;
-		} else { // in Narwhal or RingoJS v0.7.0-
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
 				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
 			}
 		}
-	} else { // in Rhino or a web browser
+	} else {
+		// in Rhino or a web browser
 		root.punycode = punycode;
 	}
 
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3014,7 +3057,7 @@ function earcut(data, holeIndices, dim) {
 
     var hasHoles = holeIndices && holeIndices.length,
         outerLen = hasHoles ? holeIndices[0] * dim : data.length,
-        outerNode = filterPoints(data, linkedList(data, 0, outerLen, dim, true)),
+        outerNode = linkedList(data, 0, outerLen, dim, true),
         triangles = [];
 
     if (!outerNode) return triangles;
@@ -3041,7 +3084,7 @@ function earcut(data, holeIndices, dim) {
         size = Math.max(maxX - minX, maxY - minY);
     }
 
-    earcutLinked(data, outerNode, triangles, dim, minX, minY, size);
+    earcutLinked(outerNode, triangles, dim, minX, minY, size);
 
     return triangles;
 }
@@ -3059,51 +3102,44 @@ function linkedList(data, start, end, dim, clockwise) {
 
     // link points into circular doubly-linked list in the specified winding order
     if (clockwise === (sum > 0)) {
-        for (i = start; i < end; i += dim) last = insertNode(i, last);
+        for (i = start; i < end; i += dim) last = insertNode(i, data[i], data[i + 1], last);
     } else {
-        for (i = end - dim; i >= start; i -= dim) last = insertNode(i, last);
+        for (i = end - dim; i >= start; i -= dim) last = insertNode(i, data[i], data[i + 1], last);
     }
 
     return last;
 }
 
 // eliminate colinear or duplicate points
-function filterPoints(data, start, end) {
+function filterPoints(start, end) {
+    if (!start) return start;
     if (!end) end = start;
 
-    var node = start,
+    var p = start,
         again;
     do {
         again = false;
 
-        if (!node.steiner && (equals(data, node.i, node.next.i) || orient(data, node.prev.i, node.i, node.next.i) === 0)) {
-
-            // remove node
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
-
-            if (node.prevZ) node.prevZ.nextZ = node.nextZ;
-            if (node.nextZ) node.nextZ.prevZ = node.prevZ;
-
-            node = end = node.prev;
-
-            if (node === node.next) return null;
+        if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
+            removeNode(p);
+            p = end = p.prev;
+            if (p === p.next) return null;
             again = true;
 
         } else {
-            node = node.next;
+            p = p.next;
         }
-    } while (again || node !== end);
+    } while (again || p !== end);
 
     return end;
 }
 
 // main ear slicing loop which triangulates a polygon (given as a linked list)
-function earcutLinked(data, ear, triangles, dim, minX, minY, size, pass) {
+function earcutLinked(ear, triangles, dim, minX, minY, size, pass) {
     if (!ear) return;
 
     // interlink polygon nodes in z-order
-    if (!pass && minX !== undefined) indexCurve(data, ear, minX, minY, size);
+    if (!pass && size) indexCurve(ear, minX, minY, size);
 
     var stop = ear,
         prev, next;
@@ -3113,18 +3149,13 @@ function earcutLinked(data, ear, triangles, dim, minX, minY, size, pass) {
         prev = ear.prev;
         next = ear.next;
 
-        if (isEar(data, ear, minX, minY, size)) {
+        if (size ? isEarHashed(ear, minX, minY, size) : isEar(ear)) {
             // cut off the triangle
             triangles.push(prev.i / dim);
             triangles.push(ear.i / dim);
             triangles.push(next.i / dim);
 
-            // remove ear node
-            next.prev = prev;
-            prev.next = next;
-
-            if (ear.prevZ) ear.prevZ.nextZ = ear.nextZ;
-            if (ear.nextZ) ear.nextZ.prevZ = ear.prevZ;
+            removeNode(ear);
 
             // skipping the next vertice leads to less sliver triangles
             ear = next.next;
@@ -3139,16 +3170,16 @@ function earcutLinked(data, ear, triangles, dim, minX, minY, size, pass) {
         if (ear === stop) {
             // try filtering points and slicing again
             if (!pass) {
-                earcutLinked(data, filterPoints(data, ear), triangles, dim, minX, minY, size, 1);
+                earcutLinked(filterPoints(ear), triangles, dim, minX, minY, size, 1);
 
             // if this didn't work, try curing all small self-intersections locally
             } else if (pass === 1) {
-                ear = cureLocalIntersections(data, ear, triangles, dim);
-                earcutLinked(data, ear, triangles, dim, minX, minY, size, 2);
+                ear = cureLocalIntersections(ear, triangles, dim);
+                earcutLinked(ear, triangles, dim, minX, minY, size, 2);
 
             // as a last resort, try splitting the remaining polygon into two
             } else if (pass === 2) {
-                splitEarcut(data, ear, triangles, dim, minX, minY, size);
+                splitEarcut(ear, triangles, dim, minX, minY, size);
             }
 
             break;
@@ -3157,163 +3188,109 @@ function earcutLinked(data, ear, triangles, dim, minX, minY, size, pass) {
 }
 
 // check whether a polygon node forms a valid ear with adjacent nodes
-function isEar(data, ear, minX, minY, size) {
+function isEar(ear) {
+    var a = ear.prev,
+        b = ear,
+        c = ear.next;
 
-    var a = ear.prev.i,
-        b = ear.i,
-        c = ear.next.i,
+    if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
 
-        ax = data[a], ay = data[a + 1],
-        bx = data[b], by = data[b + 1],
-        cx = data[c], cy = data[c + 1],
+    // now make sure we don't have other points inside the potential ear
+    var p = ear.next.next;
 
-        abd = ax * by - ay * bx,
-        acd = ax * cy - ay * cx,
-        cbd = cx * by - cy * bx,
-        A = abd - acd - cbd;
+    while (p !== ear.prev) {
+        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.next;
+    }
 
-    if (A <= 0) return false; // reflex, can't be an ear
+    return true;
+}
 
-    // now make sure we don't have other points inside the potential ear;
-    // the code below is a bit verbose and repetitive but this is done for performance
+function isEarHashed(ear, minX, minY, size) {
+    var a = ear.prev,
+        b = ear,
+        c = ear.next;
 
-    var cay = cy - ay,
-        acx = ax - cx,
-        aby = ay - by,
-        bax = bx - ax,
-        i, px, py, s, t, k, node;
+    if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
 
-    // if we use z-order curve hashing, iterate through the curve
-    if (minX !== undefined) {
+    // triangle bbox; min & max are calculated like this for speed
+    var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x),
+        minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y),
+        maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x),
+        maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
 
-        // triangle bbox; min & max are calculated like this for speed
-        var minTX = ax < bx ? (ax < cx ? ax : cx) : (bx < cx ? bx : cx),
-            minTY = ay < by ? (ay < cy ? ay : cy) : (by < cy ? by : cy),
-            maxTX = ax > bx ? (ax > cx ? ax : cx) : (bx > cx ? bx : cx),
-            maxTY = ay > by ? (ay > cy ? ay : cy) : (by > cy ? by : cy),
+    // z-order range for the current triangle bbox;
+    var minZ = zOrder(minTX, minTY, minX, minY, size),
+        maxZ = zOrder(maxTX, maxTY, minX, minY, size);
 
-            // z-order range for the current triangle bbox;
-            minZ = zOrder(minTX, minTY, minX, minY, size),
-            maxZ = zOrder(maxTX, maxTY, minX, minY, size);
+    // first look for points inside the triangle in increasing z-order
+    var p = ear.nextZ;
 
-        // first look for points inside the triangle in increasing z-order
-        node = ear.nextZ;
+    while (p && p.z <= maxZ) {
+        if (p !== ear.prev && p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.nextZ;
+    }
 
-        while (node && node.z <= maxZ) {
-            i = node.i;
-            node = node.nextZ;
-            if (i === a || i === c) continue;
+    // then look for points in decreasing z-order
+    p = ear.prevZ;
 
-            px = data[i];
-            py = data[i + 1];
-
-            s = cay * px + acx * py - acd;
-            if (s >= 0) {
-                t = aby * px + bax * py + abd;
-                if (t >= 0) {
-                    k = A - s - t;
-                    if ((k >= 0) && ((s && t) || (s && k) || (t && k))) return false;
-                }
-            }
-        }
-
-        // then look for points in decreasing z-order
-        node = ear.prevZ;
-
-        while (node && node.z >= minZ) {
-            i = node.i;
-            node = node.prevZ;
-            if (i === a || i === c) continue;
-
-            px = data[i];
-            py = data[i + 1];
-
-            s = cay * px + acx * py - acd;
-            if (s >= 0) {
-                t = aby * px + bax * py + abd;
-                if (t >= 0) {
-                    k = A - s - t;
-                    if ((k >= 0) && ((s && t) || (s && k) || (t && k))) return false;
-                }
-            }
-        }
-
-    // if we don't use z-order curve hash, simply iterate through all other points
-    } else {
-        node = ear.next.next;
-
-        while (node !== ear.prev) {
-            i = node.i;
-            node = node.next;
-
-            px = data[i];
-            py = data[i + 1];
-
-            s = cay * px + acx * py - acd;
-            if (s >= 0) {
-                t = aby * px + bax * py + abd;
-                if (t >= 0) {
-                    k = A - s - t;
-                    if ((k >= 0) && ((s && t) || (s && k) || (t && k))) return false;
-                }
-            }
-        }
+    while (p && p.z >= minZ) {
+        if (p !== ear.prev && p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.prevZ;
     }
 
     return true;
 }
 
 // go through all polygon nodes and cure small local self-intersections
-function cureLocalIntersections(data, start, triangles, dim) {
-    var node = start;
+function cureLocalIntersections(start, triangles, dim) {
+    var p = start;
     do {
-        var a = node.prev,
-            b = node.next.next;
+        var a = p.prev,
+            b = p.next.next;
 
         // a self-intersection where edge (v[i-1],v[i]) intersects (v[i+1],v[i+2])
-        if (a.i !== b.i && intersects(data, a.i, node.i, node.next.i, b.i) &&
-                locallyInside(data, a, b) && locallyInside(data, b, a)) {
+        if (intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
 
             triangles.push(a.i / dim);
-            triangles.push(node.i / dim);
+            triangles.push(p.i / dim);
             triangles.push(b.i / dim);
 
             // remove two nodes involved
-            a.next = b;
-            b.prev = a;
+            removeNode(p);
+            removeNode(p.next);
 
-            var az = node.prevZ,
-                bz = node.nextZ && node.nextZ.nextZ;
-
-            if (az) az.nextZ = bz;
-            if (bz) bz.prevZ = az;
-
-            node = start = b;
+            p = start = b;
         }
-        node = node.next;
-    } while (node !== start);
+        p = p.next;
+    } while (p !== start);
 
-    return node;
+    return p;
 }
 
 // try splitting polygon into two and triangulate them independently
-function splitEarcut(data, start, triangles, dim, minX, minY, size) {
+function splitEarcut(start, triangles, dim, minX, minY, size) {
     // look for a valid diagonal that divides the polygon into two
     var a = start;
     do {
         var b = a.next.next;
         while (b !== a.prev) {
-            if (a.i !== b.i && isValidDiagonal(data, a, b)) {
+            if (a.i !== b.i && isValidDiagonal(a, b)) {
                 // split the polygon in two by the diagonal
                 var c = splitPolygon(a, b);
 
                 // filter colinear points around the cuts
-                a = filterPoints(data, a, a.next);
-                c = filterPoints(data, c, c.next);
+                a = filterPoints(a, a.next);
+                c = filterPoints(c, c.next);
 
                 // run earcut on each half
-                earcutLinked(data, a, triangles, dim, minX, minY, size);
-                earcutLinked(data, c, triangles, dim, minX, minY, size);
+                earcutLinked(a, triangles, dim, minX, minY, size);
+                earcutLinked(c, triangles, dim, minX, minY, size);
                 return;
             }
             b = b.next;
@@ -3332,121 +3309,100 @@ function eliminateHoles(data, holeIndices, outerNode, dim) {
         end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
         list = linkedList(data, start, end, dim, false);
         if (list === list.next) list.steiner = true;
-        list = filterPoints(data, list);
-        if (list) queue.push(getLeftmost(data, list));
+        queue.push(getLeftmost(list));
     }
 
-    queue.sort(function (a, b) {
-        return data[a.i] - data[b.i];
-    });
+    queue.sort(compareX);
 
     // process holes from left to right
     for (i = 0; i < queue.length; i++) {
-        eliminateHole(data, queue[i], outerNode);
-        outerNode = filterPoints(data, outerNode, outerNode.next);
+        eliminateHole(queue[i], outerNode);
+        outerNode = filterPoints(outerNode, outerNode.next);
     }
 
     return outerNode;
 }
 
+function compareX(a, b) {
+    return a.x - b.x;
+}
+
 // find a bridge between vertices that connects hole with an outer ring and and link it
-function eliminateHole(data, holeNode, outerNode) {
-    outerNode = findHoleBridge(data, holeNode, outerNode);
+function eliminateHole(hole, outerNode) {
+    outerNode = findHoleBridge(hole, outerNode);
     if (outerNode) {
-        var b = splitPolygon(outerNode, holeNode);
-        filterPoints(data, b, b.next);
+        var b = splitPolygon(outerNode, hole);
+        filterPoints(b, b.next);
     }
 }
 
 // David Eberly's algorithm for finding a bridge between hole and outer polygon
-function findHoleBridge(data, holeNode, outerNode) {
-    var node = outerNode,
-        i = holeNode.i,
-        px = data[i],
-        py = data[i + 1],
-        qMax = -Infinity,
-        mNode, a, b;
+function findHoleBridge(hole, outerNode) {
+    var p = outerNode,
+        hx = hole.x,
+        hy = hole.y,
+        qx = -Infinity,
+        m;
 
     // find a segment intersected by a ray from the hole's leftmost point to the left;
     // segment's endpoint with lesser x will be potential connection point
     do {
-        a = node.i;
-        b = node.next.i;
-
-        if (py <= data[a + 1] && py >= data[b + 1]) {
-            var qx = data[a] + (py - data[a + 1]) * (data[b] - data[a]) / (data[b + 1] - data[a + 1]);
-            if (qx <= px && qx > qMax) {
-                qMax = qx;
-                mNode = data[a] < data[b] ? node : node.next;
+        if (hy <= p.y && hy >= p.next.y) {
+            var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
+            if (x <= hx && x > qx) {
+                qx = x;
+                m = p.x < p.next.x ? p : p.next;
             }
         }
-        node = node.next;
-    } while (node !== outerNode);
+        p = p.next;
+    } while (p !== outerNode);
 
-    if (!mNode) return null;
+    if (!m) return null;
 
-    // look for points strictly inside the triangle of hole point, segment intersection and endpoint;
+    if (hole.x === m.x) return m.prev; // hole touches outer segment; pick lower endpoint
+
+    // look for points inside the triangle of hole point, segment intersection and endpoint;
     // if there are no points found, we have a valid connection;
     // otherwise choose the point of the minimum angle with the ray as connection point
 
-    var bx = data[mNode.i],
-        by = data[mNode.i + 1],
-        pbd = px * by - py * bx,
-        pcd = px * py - py * qMax,
-        cpy = py - py,
-        pcx = px - qMax,
-        pby = py - by,
-        bpx = bx - px,
-        A = pbd - pcd - (qMax * by - py * bx),
-        sign = A <= 0 ? -1 : 1,
-        stop = mNode,
+    var stop = m,
         tanMin = Infinity,
-        mx, my, amx, s, t, tan;
+        tan;
 
-    node = mNode.next;
+    p = m.next;
 
-    while (node !== stop) {
+    while (p !== stop) {
+        if (hx >= p.x && p.x >= m.x &&
+                pointInTriangle(hy < m.y ? hx : qx, hy, m.x, m.y, hy < m.y ? qx : hx, hy, p.x, p.y)) {
 
-        mx = data[node.i];
-        my = data[node.i + 1];
-        amx = px - mx;
+            tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
 
-        if (amx >= 0 && mx >= bx) {
-            s = (cpy * mx + pcx * my - pcd) * sign;
-            if (s >= 0) {
-                t = (pby * mx + bpx * my + pbd) * sign;
-
-                if (t >= 0 && A * sign - s - t >= 0) {
-                    tan = Math.abs(py - my) / amx; // tangential
-                    if (tan < tanMin && locallyInside(data, node, holeNode)) {
-                        mNode = node;
-                        tanMin = tan;
-                    }
-                }
+            if ((tan < tanMin || (tan === tanMin && p.x > m.x)) && locallyInside(p, hole)) {
+                m = p;
+                tanMin = tan;
             }
         }
 
-        node = node.next;
+        p = p.next;
     }
 
-    return mNode;
+    return m;
 }
 
 // interlink polygon nodes in z-order
-function indexCurve(data, start, minX, minY, size) {
-    var node = start;
-
+function indexCurve(start, minX, minY, size) {
+    var p = start;
     do {
-        if (node.z === null) node.z = zOrder(data[node.i], data[node.i + 1], minX, minY, size);
-        node.prevZ = node.prev;
-        node.nextZ = node.next;
-        node = node.next;
-    } while (node !== start);
+        if (p.z === null) p.z = zOrder(p.x, p.y, minX, minY, size);
+        p.prevZ = p.prev;
+        p.nextZ = p.next;
+        p = p.next;
+    } while (p !== start);
 
-    node.prevZ.nextZ = null;
-    node.prevZ = null;
+    p.prevZ.nextZ = null;
+    p.prevZ = null;
 
-    sortLinked(node);
+    sortLinked(p);
 }
 
 // Simon Tatham's linked list merge sort algorithm
@@ -3513,14 +3469,15 @@ function sortLinked(list) {
 
 // z-order of a point given coords and size of the data bounding box
 function zOrder(x, y, minX, minY, size) {
-    // coords are transformed into (0..1000) integer range
-    x = 1000 * (x - minX) / size;
+    // coords are transformed into non-negative 15-bit integer range
+    x = 32767 * (x - minX) / size;
+    y = 32767 * (y - minY) / size;
+
     x = (x | (x << 8)) & 0x00FF00FF;
     x = (x | (x << 4)) & 0x0F0F0F0F;
     x = (x | (x << 2)) & 0x33333333;
     x = (x | (x << 1)) & 0x55555555;
 
-    y = 1000 * (y - minY) / size;
     y = (y | (y << 8)) & 0x00FF00FF;
     y = (y | (y << 4)) & 0x0F0F0F0F;
     y = (y | (y << 2)) & 0x33333333;
@@ -3530,81 +3487,76 @@ function zOrder(x, y, minX, minY, size) {
 }
 
 // find the leftmost node of a polygon ring
-function getLeftmost(data, start) {
-    var node = start,
+function getLeftmost(start) {
+    var p = start,
         leftmost = start;
     do {
-        if (data[node.i] < data[leftmost.i]) leftmost = node;
-        node = node.next;
-    } while (node !== start);
+        if (p.x < leftmost.x) leftmost = p;
+        p = p.next;
+    } while (p !== start);
 
     return leftmost;
 }
 
-// check if a diagonal between two polygon nodes is valid (lies in polygon interior)
-function isValidDiagonal(data, a, b) {
-    return a.next.i !== b.i && a.prev.i !== b.i &&
-           !intersectsPolygon(data, a, a.i, b.i) &&
-           locallyInside(data, a, b) && locallyInside(data, b, a) &&
-           middleInside(data, a, a.i, b.i);
+// check if a point lies within a convex triangle
+function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
+    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
+           (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
+           (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
 }
 
-// winding order of triangle formed by 3 given points
-function orient(data, p, q, r) {
-    var o = (data[q + 1] - data[p + 1]) * (data[r] - data[q]) - (data[q] - data[p]) * (data[r + 1] - data[q + 1]);
-    return o > 0 ? 1 :
-           o < 0 ? -1 : 0;
+// check if a diagonal between two polygon nodes is valid (lies in polygon interior)
+function isValidDiagonal(a, b) {
+    return equals(a, b) || a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
+           locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b);
+}
+
+// signed area of a triangle
+function area(p, q, r) {
+    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }
 
 // check if two points are equal
-function equals(data, p1, p2) {
-    return data[p1] === data[p2] && data[p1 + 1] === data[p2 + 1];
+function equals(p1, p2) {
+    return p1.x === p2.x && p1.y === p2.y;
 }
 
 // check if two segments intersect
-function intersects(data, p1, q1, p2, q2) {
-    return orient(data, p1, q1, p2) !== orient(data, p1, q1, q2) &&
-           orient(data, p2, q2, p1) !== orient(data, p2, q2, q1);
+function intersects(p1, q1, p2, q2) {
+    return area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 &&
+           area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0;
 }
 
 // check if a polygon diagonal intersects any polygon segments
-function intersectsPolygon(data, start, a, b) {
-    var node = start;
+function intersectsPolygon(a, b) {
+    var p = a;
     do {
-        var p1 = node.i,
-            p2 = node.next.i;
-
-        if (p1 !== a && p2 !== a && p1 !== b && p2 !== b && intersects(data, p1, p2, a, b)) return true;
-
-        node = node.next;
-    } while (node !== start);
+        if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i &&
+                intersects(p, p.next, a, b)) return true;
+        p = p.next;
+    } while (p !== a);
 
     return false;
 }
 
 // check if a polygon diagonal is locally inside the polygon
-function locallyInside(data, a, b) {
-    return orient(data, a.prev.i, a.i, a.next.i) === -1 ?
-        orient(data, a.i, b.i, a.next.i) !== -1 && orient(data, a.i, a.prev.i, b.i) !== -1 :
-        orient(data, a.i, b.i, a.prev.i) === -1 || orient(data, a.i, a.next.i, b.i) === -1;
+function locallyInside(a, b) {
+    return area(a.prev, a, a.next) < 0 ?
+        area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0 :
+        area(a, b, a.prev) < 0 || area(a, a.next, b) < 0;
 }
 
 // check if the middle point of a polygon diagonal is inside the polygon
-function middleInside(data, start, a, b) {
-    var node = start,
+function middleInside(a, b) {
+    var p = a,
         inside = false,
-        px = (data[a] + data[b]) / 2,
-        py = (data[a + 1] + data[b + 1]) / 2;
+        px = (a.x + b.x) / 2,
+        py = (a.y + b.y) / 2;
     do {
-        var p1 = node.i,
-            p2 = node.next.i;
-
-        if (((data[p1 + 1] > py) !== (data[p2 + 1] > py)) &&
-            (px < (data[p2] - data[p1]) * (py - data[p1 + 1]) / (data[p2 + 1] - data[p1 + 1]) + data[p1]))
-                inside = !inside;
-
-        node = node.next;
-    } while (node !== start);
+        if (((p.y > py) !== (p.next.y > py)) && (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
+            inside = !inside;
+        p = p.next;
+    } while (p !== a);
 
     return inside;
 }
@@ -3612,8 +3564,8 @@ function middleInside(data, start, a, b) {
 // link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
 // if one belongs to the outer ring and another to a hole, it merges it into a single ring
 function splitPolygon(a, b) {
-    var a2 = new Node(a.i),
-        b2 = new Node(b.i),
+    var a2 = new Node(a.i, a.x, a.y),
+        b2 = new Node(b.i, b.x, b.y),
         an = a.next,
         bp = b.prev;
 
@@ -3633,25 +3585,37 @@ function splitPolygon(a, b) {
 }
 
 // create a node and optionally link it with previous one (in a circular doubly linked list)
-function insertNode(i, last) {
-    var node = new Node(i);
+function insertNode(i, x, y, last) {
+    var p = new Node(i, x, y);
 
     if (!last) {
-        node.prev = node;
-        node.next = node;
+        p.prev = p;
+        p.next = p;
 
     } else {
-        node.next = last.next;
-        node.prev = last;
-        last.next.prev = node;
-        last.next = node;
+        p.next = last.next;
+        p.prev = last;
+        last.next.prev = p;
+        last.next = p;
     }
-    return node;
+    return p;
 }
 
-function Node(i) {
-    // vertex coordinates
+function removeNode(p) {
+    p.next.prev = p.prev;
+    p.prev.next = p.next;
+
+    if (p.prevZ) p.prevZ.nextZ = p.nextZ;
+    if (p.nextZ) p.nextZ.prevZ = p.prevZ;
+}
+
+function Node(i, x, y) {
+    // vertice index in coordinates array
     this.i = i;
+
+    // vertex coordinates
+    this.x = x;
+    this.y = y;
 
     // previous and next vertice nodes in a polygon ring
     this.prev = null;
@@ -3974,81 +3938,3027 @@ module.exports = Object.assign || function (target, source) {
 };
 
 },{}],12:[function(require,module,exports){
-module.exports={
-  "name": "pixi.js",
-  "version": "3.0.8",
-  "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
-  "author": "Mat Groves",
-  "contributors": [
-    "Chad Engler <chad@pantherdev.com>",
-    "Richard Davey <rdavey@gmail.com>"
-  ],
-  "main": "./src/index.js",
-  "homepage": "http://goodboydigital.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
-  },
-  "scripts": {
-    "start": "gulp && gulp watch",
-    "test": "gulp && testem ci",
-    "build": "gulp",
-    "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
-  },
-  "files": [
-    "bin/",
-    "src/",
-    "CONTRIBUTING.md",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
-  "dependencies": {
-    "async": "^1.4.2",
-    "brfs": "^1.4.1",
-    "earcut": "^2.0.2",
-    "eventemitter3": "^1.1.1",
-    "gulp-header": "^1.7.1",
-    "object-assign": "^4.0.1",
-    "resource-loader": "^1.6.2"
-  },
-  "devDependencies": {
-    "browserify": "^11.1.0",
-    "chai": "^3.2.0",
-    "del": "^2.0.2",
-    "gulp": "^3.9.0",
-    "gulp-cached": "^1.1.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-debug": "^2.1.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-mirror": "^0.4.0",
-    "gulp-plumber": "^1.0.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-uglify": "^1.4.1",
-    "gulp-util": "^3.0.6",
-    "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
-    "jsdoc": "^3.3.2",
-    "jshint-summary": "^0.4.0",
-    "minimist": "^1.2.0",
-    "mocha": "^2.3.2",
-    "require-dir": "^0.3.0",
-    "run-sequence": "^1.1.2",
-    "testem": "^0.9.4",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.4.0"
-  },
-  "browserify": {
-    "transform": [
-      "brfs"
-    ]
-  }
+(function (process){
+/*!
+ * async
+ * https://github.com/caolan/async
+ *
+ * Copyright 2010-2014 Caolan McMahon
+ * Released under the MIT license
+ */
+/*jshint onevar: false, indent:4 */
+/*global setImmediate: false, setTimeout: false, console: false */
+(function () {
+
+    var async = {};
+
+    // global on the server, window in the browser
+    var root, previous_async;
+
+    root = this;
+    if (root != null) {
+      previous_async = root.async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    function only_once(fn) {
+        var called = false;
+        return function() {
+            if (called) throw new Error("Callback was already called.");
+            called = true;
+            fn.apply(root, arguments);
+        }
+    }
+
+    //// cross-browser compatiblity functions ////
+
+    var _toString = Object.prototype.toString;
+
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
+
+    var _each = function (arr, iterator) {
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _each(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _each(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        if (typeof setImmediate === 'function') {
+            async.nextTick = function (fn) {
+                // not a direct alias for IE10 compatibility
+                setImmediate(fn);
+            };
+            async.setImmediate = async.nextTick;
+        }
+        else {
+            async.nextTick = function (fn) {
+                setTimeout(fn, 0);
+            };
+            async.setImmediate = async.nextTick;
+        }
+    }
+    else {
+        async.nextTick = process.nextTick;
+        if (typeof setImmediate !== 'undefined') {
+            async.setImmediate = function (fn) {
+              // not a direct alias for IE10 compatibility
+              setImmediate(fn);
+            };
+        }
+        else {
+            async.setImmediate = async.nextTick;
+        }
+    }
+
+    async.each = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        _each(arr, function (x) {
+            iterator(x, only_once(done) );
+        });
+        function done(err) {
+          if (err) {
+              callback(err);
+              callback = function () {};
+          }
+          else {
+              completed += 1;
+              if (completed >= arr.length) {
+                  callback();
+              }
+          }
+        }
+    };
+    async.forEach = async.each;
+
+    async.eachSeries = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed >= arr.length) {
+                        callback();
+                    }
+                    else {
+                        iterate();
+                    }
+                }
+            });
+        };
+        iterate();
+    };
+    async.forEachSeries = async.eachSeries;
+
+    async.eachLimit = function (arr, limit, iterator, callback) {
+        var fn = _eachLimit(limit);
+        fn.apply(null, [arr, iterator, callback]);
+    };
+    async.forEachLimit = async.eachLimit;
+
+    var _eachLimit = function (limit) {
+
+        return function (arr, iterator, callback) {
+            callback = callback || function () {};
+            if (!arr.length || limit <= 0) {
+                return callback();
+            }
+            var completed = 0;
+            var started = 0;
+            var running = 0;
+
+            (function replenish () {
+                if (completed >= arr.length) {
+                    return callback();
+                }
+
+                while (running < limit && started < arr.length) {
+                    started += 1;
+                    running += 1;
+                    iterator(arr[started - 1], function (err) {
+                        if (err) {
+                            callback(err);
+                            callback = function () {};
+                        }
+                        else {
+                            completed += 1;
+                            running -= 1;
+                            if (completed >= arr.length) {
+                                callback();
+                            }
+                            else {
+                                replenish();
+                            }
+                        }
+                    });
+                }
+            })();
+        };
+    };
+
+
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.each].concat(args));
+        };
+    };
+    var doParallelLimit = function(limit, fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [_eachLimit(limit)].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.eachSeries].concat(args));
+        };
+    };
+
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        if (!callback) {
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err) {
+                    callback(err);
+                });
+            });
+        } else {
+            var results = [];
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err, v) {
+                    results[x.index] = v;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+    async.mapLimit = function (arr, limit, iterator, callback) {
+        return _mapLimit(limit)(arr, iterator, callback);
+    };
+
+    var _mapLimit = function(limit) {
+        return doParallelLimit(limit, _asyncMap);
+    };
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.eachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
+
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
+
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
+
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
+            }
+        });
+    };
+
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        var remainingTasks = keys.length
+        if (!remainingTasks) {
+            return callback();
+        }
+
+        var results = {};
+
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
+                }
+            }
+        };
+        var taskComplete = function () {
+            remainingTasks--
+            _each(listeners.slice(0), function (fn) {
+                fn();
+            });
+        };
+
+        addListener(function () {
+            if (!remainingTasks) {
+                var theCallback = callback;
+                // prevent final callback from calling itself if it errors
+                callback = function () {};
+
+                theCallback(null, results);
+            }
+        });
+
+        _each(keys, function (k) {
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+            var taskCallback = function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                if (err) {
+                    var safeResults = {};
+                    _each(_keys(results), function(rkey) {
+                        safeResults[rkey] = results[rkey];
+                    });
+                    safeResults[k] = args;
+                    callback(err, safeResults);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    results[k] = args;
+                    async.setImmediate(taskComplete);
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true) && !results.hasOwnProperty(k);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
+
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var attempts = [];
+        // Use defaults if times not passed
+        if (typeof times === 'function') {
+            callback = task;
+            task = times;
+            times = DEFAULT_TIMES;
+        }
+        // Make sure times is a number
+        times = parseInt(times, 10) || DEFAULT_TIMES;
+        var wrappedTask = function(wrappedCallback, wrappedResults) {
+            var retryAttempt = function(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            };
+            while (times) {
+                attempts.push(retryAttempt(task, !(times-=1)));
+            }
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || callback)(data.err, data.result);
+            });
+        }
+        // If a callback is passed, run this as a controll flow
+        return callback ? wrappedTask() : wrappedTask
+    };
+
+    async.waterfall = function (tasks, callback) {
+        callback = callback || function () {};
+        if (!_isArray(tasks)) {
+          var err = new Error('First argument to waterfall must be an array of functions');
+          return callback(err);
+        }
+        if (!tasks.length) {
+            return callback();
+        }
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback.apply(null, arguments);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.setImmediate(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    var _parallel = function(eachfn, tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            eachfn.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            eachfn.each(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.parallel = function (tasks, callback) {
+        _parallel({ map: async.map, each: async.each }, tasks, callback);
+    };
+
+    async.parallelLimit = function(tasks, limit, callback) {
+        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.eachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doWhilst = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (test.apply(null, args)) {
+                async.doWhilst(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doUntil = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (!test.apply(null, args)) {
+                async.doUntil(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.queue = function (worker, concurrency) {
+        if (concurrency === undefined) {
+            concurrency = 1;
+        }
+        function _insert(q, data, pos, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+
+              if (pos) {
+                q.tasks.unshift(item);
+              } else {
+                q.tasks.push(item);
+              }
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            started: false,
+            paused: false,
+            push: function (data, callback) {
+              _insert(q, data, false, callback);
+            },
+            kill: function () {
+              q.drain = null;
+              q.tasks = [];
+            },
+            unshift: function (data, callback) {
+              _insert(q, data, true, callback);
+            },
+            process: function () {
+                if (!q.paused && workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if (q.empty && q.tasks.length === 0) {
+                        q.empty();
+                    }
+                    workers += 1;
+                    var next = function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if (q.drain && q.tasks.length + workers === 0) {
+                            q.drain();
+                        }
+                        q.process();
+                    };
+                    var cb = only_once(next);
+                    worker(task.data, cb);
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                if (q.paused === true) { return; }
+                q.paused = true;
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                // Need to call q.process once per concurrent
+                // worker to preserve full concurrency after pause
+                for (var w = 1; w <= q.concurrency; w++) {
+                    async.setImmediate(q.process);
+                }
+            }
+        };
+        return q;
+    };
+
+    async.priorityQueue = function (worker, concurrency) {
+
+        function _compareTasks(a, b){
+          return a.priority - b.priority;
+        };
+
+        function _binarySearch(sequence, item, compare) {
+          var beg = -1,
+              end = sequence.length - 1;
+          while (beg < end) {
+            var mid = beg + ((end - beg + 1) >>> 1);
+            if (compare(item, sequence[mid]) >= 0) {
+              beg = mid;
+            } else {
+              end = mid - 1;
+            }
+          }
+          return beg;
+        }
+
+        function _insert(q, data, priority, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  priority: priority,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+
+              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+
+        // Start with a normal queue
+        var q = async.queue(worker, concurrency);
+
+        // Override push to accept second parameter representing priority
+        q.push = function (data, priority, callback) {
+          _insert(q, data, priority, callback);
+        };
+
+        // Remove unshift function
+        delete q.unshift;
+
+        return q;
+    };
+
+    async.cargo = function (worker, payload) {
+        var working     = false,
+            tasks       = [];
+
+        var cargo = {
+            tasks: tasks,
+            payload: payload,
+            saturated: null,
+            empty: null,
+            drain: null,
+            drained: true,
+            push: function (data, callback) {
+                if (!_isArray(data)) {
+                    data = [data];
+                }
+                _each(data, function(task) {
+                    tasks.push({
+                        data: task,
+                        callback: typeof callback === 'function' ? callback : null
+                    });
+                    cargo.drained = false;
+                    if (cargo.saturated && tasks.length === payload) {
+                        cargo.saturated();
+                    }
+                });
+                async.setImmediate(cargo.process);
+            },
+            process: function process() {
+                if (working) return;
+                if (tasks.length === 0) {
+                    if(cargo.drain && !cargo.drained) cargo.drain();
+                    cargo.drained = true;
+                    return;
+                }
+
+                var ts = typeof payload === 'number'
+                            ? tasks.splice(0, payload)
+                            : tasks.splice(0, tasks.length);
+
+                var ds = _map(ts, function (task) {
+                    return task.data;
+                });
+
+                if(cargo.empty) cargo.empty();
+                working = true;
+                worker(ds, function () {
+                    working = false;
+
+                    var args = arguments;
+                    _each(ts, function (data) {
+                        if (data.callback) {
+                            data.callback.apply(null, args);
+                        }
+                    });
+
+                    process();
+                });
+            },
+            length: function () {
+                return tasks.length;
+            },
+            running: function () {
+                return working;
+            }
+        };
+        return cargo;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _each(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                async.nextTick(function () {
+                    callback.apply(null, memo[key]);
+                });
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.memo = memo;
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      };
+    };
+
+    async.times = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.map(counter, iterator, callback);
+    };
+
+    async.timesSeries = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.mapSeries(counter, iterator, callback);
+    };
+
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
+        return function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            async.reduce(fns, args, function (newargs, fn, cb) {
+                fn.apply(that, newargs.concat([function () {
+                    var err = arguments[0];
+                    var nextargs = Array.prototype.slice.call(arguments, 1);
+                    cb(err, nextargs);
+                }]))
+            },
+            function (err, results) {
+                callback.apply(that, [err].concat(results));
+            });
+        };
+    };
+
+    async.compose = function (/* functions... */) {
+      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+    };
+
+    var _applyEach = function (eachfn, fns /*args...*/) {
+        var go = function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            return eachfn(fns, function (fn, cb) {
+                fn.apply(that, args.concat([cb]));
+            },
+            callback);
+        };
+        if (arguments.length > 2) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            return go.apply(this, args);
+        }
+        else {
+            return go;
+        }
+    };
+    async.applyEach = doParallel(_applyEach);
+    async.applyEachSeries = doSeries(_applyEach);
+
+    async.forever = function (fn, callback) {
+        function next(err) {
+            if (err) {
+                if (callback) {
+                    return callback(err);
+                }
+                throw err;
+            }
+            fn(next);
+        }
+        next();
+    };
+
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
+    // AMD / RequireJS
+    else if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return async;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.async = async;
+    }
+
+}());
+
+}).call(this,require('_process'))
+},{"_process":3}],13:[function(require,module,exports){
+var async       = require('async'),
+    urlParser   = require('url'),
+    Resource    = require('./Resource'),
+    EventEmitter = require('eventemitter3');
+
+/**
+ * Manages the state and loading of multiple resources to load.
+ *
+ * @class
+ * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
+ * @param [concurrency=10] {number} The number of resources to load concurrently.
+ */
+function Loader(baseUrl, concurrency) {
+    EventEmitter.call(this);
+
+    concurrency = concurrency || 10;
+
+    /**
+     * The base url for all resources loaded by this loader.
+     *
+     * @member {string}
+     */
+    this.baseUrl = baseUrl || '';
+
+    /**
+     * The progress percent of the loader going through the queue.
+     *
+     * @member {number}
+     */
+    this.progress = 0;
+
+    /**
+     * Loading state of the loader, true if it is currently loading resources.
+     *
+     * @member {boolean}
+     */
+    this.loading = false;
+
+    /**
+     * The percentage of total progress that a single resource represents.
+     *
+     * @member {number}
+     */
+    this._progressChunk = 0;
+
+    /**
+     * The middleware to run before loading each resource.
+     *
+     * @member {function[]}
+     */
+    this._beforeMiddleware = [];
+
+    /**
+     * The middleware to run after loading each resource.
+     *
+     * @member {function[]}
+     */
+    this._afterMiddleware = [];
+
+    /**
+     * The `_loadResource` function bound with this object context.
+     *
+     * @private
+     * @member {function}
+     */
+    this._boundLoadResource = this._loadResource.bind(this);
+
+    /**
+     * The `_onLoad` function bound with this object context.
+     *
+     * @private
+     * @member {function}
+     */
+    this._boundOnLoad = this._onLoad.bind(this);
+
+    /**
+     * The resource buffer that fills until `load` is called to start loading resources.
+     *
+     * @private
+     * @member {Resource[]}
+     */
+    this._buffer = [];
+
+    /**
+     * Used to track load completion.
+     *
+     * @private
+     * @member {number}
+     */
+    this._numToLoad = 0;
+
+    /**
+     * The resources waiting to be loaded.
+     *
+     * @private
+     * @member {Resource[]}
+     */
+    this._queue = async.queue(this._boundLoadResource, concurrency);
+
+    /**
+     * All the resources for this loader keyed by name.
+     *
+     * @member {object<string, Resource>}
+     */
+    this.resources = {};
+
+    /**
+     * Emitted once per loaded or errored resource.
+     *
+     * @event progress
+     * @memberof Loader#
+     */
+
+    /**
+     * Emitted once per errored resource.
+     *
+     * @event error
+     * @memberof Loader#
+     */
+
+    /**
+     * Emitted once per loaded resource.
+     *
+     * @event load
+     * @memberof Loader#
+     */
+
+    /**
+     * Emitted when the loader begins to process the queue.
+     *
+     * @event start
+     * @memberof Loader#
+     */
+
+    /**
+     * Emitted when the queued resources all load.
+     *
+     * @event complete
+     * @memberof Loader#
+     */
 }
 
-},{}],13:[function(require,module,exports){
+Loader.prototype = Object.create(EventEmitter.prototype);
+Loader.prototype.constructor = Loader;
+module.exports = Loader;
+
+/**
+ * Adds a resource (or multiple resources) to the loader queue.
+ *
+ * This function can take a wide variety of different parameters. The only thing that is always
+ * required the url to load. All the following will work:
+ *
+ * ```js
+ * loader
+ *     // normal param syntax
+ *     .add('key', 'http://...', function () {})
+ *     .add('http://...', function () {})
+ *     .add('http://...')
+ *
+ *     // object syntax
+ *     .add({
+ *         name: 'key2',
+ *         url: 'http://...'
+ *     }, function () {})
+ *     .add({
+ *         url: 'http://...'
+ *     }, function () {})
+ *     .add({
+ *         name: 'key3',
+ *         url: 'http://...'
+ *         onComplete: function () {}
+ *     })
+ *     .add({
+ *         url: 'https://...',
+ *         onComplete: function () {},
+ *         crossOrigin: true
+ *     })
+ *
+ *     // you can also pass an array of objects or urls or both
+ *     .add([
+ *         { name: 'key4', url: 'http://...', onComplete: function () {} },
+ *         { url: 'http://...', onComplete: function () {} },
+ *         'http://...'
+ *     ]);
+ * ```
+ *
+ * @alias enqueue
+ * @param [name] {string} The name of the resource to load, if not passed the url is used.
+ * @param url {string} The url for this resource, relative to the baseUrl of this loader.
+ * @param [options] {object} The options for the load.
+ * @param [options.crossOrigin] {boolean} Is this request cross-origin? Default is to determine automatically.
+ * @param [options.loadType=Resource.LOAD_TYPE.XHR] {Resource.XHR_LOAD_TYPE} How should this resource be loaded?
+ * @param [options.xhrType=Resource.XHR_RESPONSE_TYPE.DEFAULT] {Resource.XHR_RESPONSE_TYPE} How should the data being
+ *      loaded be interpreted when using XHR?
+ * @param [callback] {function} Function to call when this specific resource completes loading.
+ * @return {Loader}
+ */
+Loader.prototype.add = Loader.prototype.enqueue = function (name, url, options, cb) {
+    // special case of an array of objects or urls
+    if (Array.isArray(name)) {
+        for (var i = 0; i < name.length; ++i) {
+            this.add(name[i]);
+        }
+
+        return this;
+    }
+
+    // if an object is passed instead of params
+    if (typeof name === 'object') {
+        cb = url || name.callback || name.onComplete;
+        options = name;
+        url = name.url;
+        name = name.name || name.key || name.url;
+    }
+
+    // case where no name is passed shift all args over by one.
+    if (typeof url !== 'string') {
+        cb = options;
+        options = url;
+        url = name;
+    }
+
+    // now that we shifted make sure we have a proper url.
+    if (typeof url !== 'string') {
+        throw new Error('No url passed to add resource to loader.');
+    }
+
+    // options are optional so people might pass a function and no options
+    if (typeof options === 'function') {
+        cb = options;
+        options = null;
+    }
+
+    // check if resource already exists.
+    if (this.resources[name]) {
+        throw new Error('Resource with name "' + name + '" already exists.');
+    }
+
+    // add base url if this isn't an absolute url
+    url = this._handleBaseUrl(url);
+
+    // create the store the resource
+    this.resources[name] = new Resource(name, url, options);
+
+    if (typeof cb === 'function') {
+        this.resources[name].once('afterMiddleware', cb);
+    }
+
+    this._numToLoad++;
+
+    // if already loading add it to the worker queue
+    if (this._queue.started) {
+        this._queue.push(this.resources[name]);
+        this._progressChunk = (100 - this.progress) / (this._queue.length() + this._queue.running());
+    }
+    // otherwise buffer it to be added to the queue later
+    else {
+        this._buffer.push(this.resources[name]);
+        this._progressChunk = 100 / this._buffer.length;
+    }
+
+    return this;
+};
+
+Loader.prototype._handleBaseUrl = function (url) {
+    var parsedUrl = urlParser.parse(url);
+
+    // absolute url, just use it as is.
+    if (parsedUrl.protocol || parsedUrl.pathname.indexOf('//') === 0) {
+        return url;
+    }
+
+    // if baseUrl doesn't end in slash and url doesn't start with slash, then add a slash inbetween
+    if (
+        this.baseUrl.length &&
+        this.baseUrl.lastIndexOf('/') !== this.baseUrl.length - 1 &&
+        url.charAt(0) !== '/'
+    ) {
+        return this.baseUrl + '/' + url;
+    }
+    else {
+        return this.baseUrl + url;
+    }
+};
+
+
+/**
+ * Sets up a middleware function that will run *before* the
+ * resource is loaded.
+ *
+ * @alias pre
+ * @param middleware {function} The middleware function to register.
+ * @return {Loader}
+ */
+Loader.prototype.before = Loader.prototype.pre = function (fn) {
+    this._beforeMiddleware.push(fn);
+
+    return this;
+};
+
+/**
+ * Sets up a middleware function that will run *after* the
+ * resource is loaded.
+ *
+ * @alias use
+ * @param middleware {function} The middleware function to register.
+ * @return {Loader}
+ */
+Loader.prototype.after = Loader.prototype.use = function (fn) {
+    this._afterMiddleware.push(fn);
+
+    return this;
+};
+
+/**
+ * Resets the queue of the loader to prepare for a new load.
+ *
+ * @return {Loader}
+ */
+Loader.prototype.reset = function () {
+    // this.baseUrl = baseUrl || '';
+
+    this.progress = 0;
+
+    this.loading = false;
+
+    this._progressChunk = 0;
+
+    // this._beforeMiddleware.length = 0;
+    // this._afterMiddleware.length = 0;
+
+    this._buffer.length = 0;
+
+    this._numToLoad = 0;
+
+    this._queue.kill();
+    this._queue.started = false;
+
+    this.resources = {};
+};
+
+/**
+ * Starts loading the queued resources.
+ *
+ * @fires start
+ * @param [callback] {function} Optional callback that will be bound to the `complete` event.
+ * @return {Loader}
+ */
+Loader.prototype.load = function (cb) {
+    // register complete callback if they pass one
+    if (typeof cb === 'function') {
+        this.once('complete', cb);
+    }
+
+    // if the queue has already started we are done here
+    if (this._queue.started) {
+        return this;
+    }
+
+    // notify of start
+    this.emit('start', this);
+
+    // start the internal queue
+    for (var i = 0; i < this._buffer.length; ++i) {
+        this._queue.push(this._buffer[i]);
+    }
+
+    // empty the buffer
+    this._buffer.length = 0;
+
+    return this;
+};
+
+/**
+ * Loads a single resource.
+ *
+ * @fires progress
+ * @private
+ */
+Loader.prototype._loadResource = function (resource, dequeue) {
+    var self = this;
+
+    resource._dequeue = dequeue;
+
+    this._runMiddleware(resource, this._beforeMiddleware, function () {
+        // resource.on('progress', self.emit.bind(self, 'progress'));
+
+        resource.load(self._boundOnLoad);
+    });
+};
+
+/**
+ * Called once each resource has loaded.
+ *
+ * @fires complete
+ * @private
+ */
+Loader.prototype._onComplete = function () {
+    this.emit('complete', this, this.resources);
+};
+
+/**
+ * Called each time a resources is loaded.
+ *
+ * @fires progress
+ * @fires error
+ * @fires load
+ * @private
+ */
+Loader.prototype._onLoad = function (resource) {
+    this.progress += this._progressChunk;
+
+    this.emit('progress', this, resource);
+
+    // run middleware, this *must* happen before dequeue so sub-assets get added properly
+    this._runMiddleware(resource, this._afterMiddleware, function () {
+        resource.emit('afterMiddleware', resource);
+
+        this._numToLoad--;
+
+        // do completion check
+        if (this._numToLoad === 0) {
+            this.progress = 100;
+            this._onComplete();
+        }
+        
+        if (resource.error) {
+            this.emit('error', resource.error, this, resource);
+        }
+        else {
+            this.emit('load', this, resource);
+        }
+    });
+    
+
+
+    // remove this resource from the async queue
+    resource._dequeue();
+};
+
+/**
+ * Run middleware functions on a resource.
+ *
+ * @private
+ */
+Loader.prototype._runMiddleware = function (resource, fns, cb) {
+    var self = this;
+
+    async.eachSeries(fns, function (fn, next) {
+        fn.call(self, resource, next);
+    }, cb.bind(this, resource));
+};
+
+Loader.LOAD_TYPE = Resource.LOAD_TYPE;
+Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
+Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
+
+},{"./Resource":14,"async":12,"eventemitter3":10,"url":8}],14:[function(require,module,exports){
+var EventEmitter = require('eventemitter3'),
+    _url = require('url'),
+    // tests is CORS is supported in XHR, if not we need to use XDR
+    useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest()))),
+    tempAnchor = null;
+
+/**
+ * Manages the state and loading of a single resource represented by
+ * a single URL.
+ *
+ * @class
+ * @param name {string} The name of the resource to load.
+ * @param url {string|string[]} The url for this resource, for audio/video loads you can pass an array of sources.
+ * @param [options] {object} The options for the load.
+ * @param [options.crossOrigin] {string|boolean} Is this request cross-origin? Default is to determine automatically.
+ * @param [options.loadType=Resource.LOAD_TYPE.XHR] {Resource.LOAD_TYPE} How should this resource be loaded?
+ * @param [options.xhrType=Resource.XHR_RESPONSE_TYPE.DEFAULT] {Resource.XHR_RESPONSE_TYPE} How should the data being
+ *      loaded be interpreted when using XHR?
+ * @param [options.metadata] {object} Extra info for middleware.
+ */
+function Resource(name, url, options) {
+    EventEmitter.call(this);
+
+    options = options || {};
+
+    if (typeof name !== 'string' || typeof url !== 'string') {
+        throw new Error('Both name and url are required for constructing a resource.');
+    }
+
+    /**
+     * The name of this resource.
+     *
+     * @member {string}
+     * @readonly
+     */
+    this.name = name;
+
+    /**
+     * The url used to load this resource.
+     *
+     * @member {string}
+     * @readonly
+     */
+    this.url = url;
+
+    /**
+     * Stores whether or not this url is a data url.
+     *
+     * @member {boolean}
+     * @readonly
+     */
+    this.isDataUrl = this.url.indexOf('data:') === 0;
+
+    /**
+     * The data that was loaded by the resource.
+     *
+     * @member {any}
+     */
+    this.data = null;
+
+    /**
+     * Is this request cross-origin? If unset, determined automatically.
+     *
+     * @member {string}
+     */
+    this.crossOrigin = options.crossOrigin === true ? 'anonymous' : options.crossOrigin;
+
+    /**
+     * The method of loading to use for this resource.
+     *
+     * @member {Resource.LOAD_TYPE}
+     */
+    this.loadType = options.loadType || this._determineLoadType();
+
+    /**
+     * The type used to load the resource via XHR. If unset, determined automatically.
+     *
+     * @member {string}
+     */
+    this.xhrType = options.xhrType;
+
+    /**
+     * Extra info for middleware
+     *
+     * @member {object}
+     */
+    this.metadata = options.metadata || {};
+
+    /**
+     * The error that occurred while loading (if any).
+     *
+     * @member {Error}
+     * @readonly
+     */
+    this.error = null;
+
+    /**
+     * The XHR object that was used to load this resource. This is only set
+     * when `loadType` is `Resource.LOAD_TYPE.XHR`.
+     *
+     * @member {XMLHttpRequest}
+     */
+    this.xhr = null;
+
+    /**
+     * Describes if this resource was loaded as json. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isJson = false;
+
+    /**
+     * Describes if this resource was loaded as xml. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isXml = false;
+
+    /**
+     * Describes if this resource was loaded as an image tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isImage = false;
+
+    /**
+     * Describes if this resource was loaded as an audio tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isAudio = false;
+
+    /**
+     * Describes if this resource was loaded as a video tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isVideo = false;
+
+    /**
+     * The `dequeue` method that will be used a storage place for the async queue dequeue method
+     * used privately by the loader.
+     *
+     * @member {function}
+     * @private
+     */
+    this._dequeue = null;
+
+    /**
+     * The `complete` function bound to this resource's context.
+     *
+     * @member {function}
+     * @private
+     */
+    this._boundComplete = this.complete.bind(this);
+
+    /**
+     * The `_onError` function bound to this resource's context.
+     *
+     * @member {function}
+     * @private
+     */
+    this._boundOnError = this._onError.bind(this);
+
+    /**
+     * The `_onProgress` function bound to this resource's context.
+     *
+     * @member {function}
+     * @private
+     */
+    this._boundOnProgress = this._onProgress.bind(this);
+
+    // xhr callbacks
+    this._boundXhrOnError = this._xhrOnError.bind(this);
+    this._boundXhrOnAbort = this._xhrOnAbort.bind(this);
+    this._boundXhrOnLoad = this._xhrOnLoad.bind(this);
+    this._boundXdrOnTimeout = this._xdrOnTimeout.bind(this);
+
+    /**
+     * Emitted when the resource beings to load.
+     *
+     * @event start
+     * @memberof Resource#
+     */
+
+    /**
+     * Emitted each time progress of this resource load updates.
+     * Not all resources types and loader systems can support this event
+     * so sometimes it may not be available. If the resource
+     * is being loaded on a modern browser, using XHR, and the remote server
+     * properly sets Content-Length headers, then this will be available.
+     *
+     * @event progress
+     * @memberof Resource#
+     */
+
+    /**
+     * Emitted once this resource has loaded, if there was an error it will
+     * be in the `error` property.
+     *
+     * @event complete
+     * @memberof Resource#
+     */
+}
+
+Resource.prototype = Object.create(EventEmitter.prototype);
+Resource.prototype.constructor = Resource;
+module.exports = Resource;
+
+/**
+ * Marks the resource as complete.
+ *
+ * @fires complete
+ */
+Resource.prototype.complete = function () {
+    // TODO: Clean this up in a wrapper or something...gross....
+    if (this.data && this.data.removeEventListener) {
+        this.data.removeEventListener('error', this._boundOnError);
+        this.data.removeEventListener('load', this._boundComplete);
+        this.data.removeEventListener('progress', this._boundOnProgress);
+        this.data.removeEventListener('canplaythrough', this._boundComplete);
+    }
+
+    if (this.xhr) {
+        if (this.xhr.removeEventListener) {
+            this.xhr.removeEventListener('error', this._boundXhrOnError);
+            this.xhr.removeEventListener('abort', this._boundXhrOnAbort);
+            this.xhr.removeEventListener('progress', this._boundOnProgress);
+            this.xhr.removeEventListener('load', this._boundXhrOnLoad);
+        }
+        else {
+            this.xhr.onerror = null;
+            this.xhr.ontimeout = null;
+            this.xhr.onprogress = null;
+            this.xhr.onload = null;
+        }
+    }
+
+    this.emit('complete', this);
+};
+
+/**
+ * Kicks off loading of this resource.
+ *
+ * @fires start
+ * @param [callback] {function} Optional callback to call once the resource is loaded.
+ */
+Resource.prototype.load = function (cb) {
+    this.emit('start', this);
+
+    // if a callback is set, listen for complete event
+    if (cb) {
+        this.once('complete', cb);
+    }
+
+    // if unset, determine the value
+    if (this.crossOrigin === false || typeof this.crossOrigin !== 'string') {
+        this.crossOrigin = this._determineCrossOrigin(this.url);
+    }
+
+    switch(this.loadType) {
+        case Resource.LOAD_TYPE.IMAGE:
+            this._loadImage();
+            break;
+
+        case Resource.LOAD_TYPE.AUDIO:
+            this._loadElement('audio');
+            break;
+
+        case Resource.LOAD_TYPE.VIDEO:
+            this._loadElement('video');
+            break;
+
+        case Resource.LOAD_TYPE.XHR:
+            /* falls through */
+        default:
+            if (useXdr && this.crossOrigin) {
+                this._loadXdr();
+            }
+            else {
+                this._loadXhr();
+            }
+            break;
+    }
+};
+
+/**
+ * Loads this resources using an Image object.
+ *
+ * @private
+ */
+Resource.prototype._loadImage = function () {
+    this.data = new Image();
+
+    if (this.crossOrigin) {
+        this.data.crossOrigin = this.crossOrigin;
+    }
+
+    this.data.src = this.url;
+
+    this.isImage = true;
+
+    this.data.addEventListener('error', this._boundOnError, false);
+    this.data.addEventListener('load', this._boundComplete, false);
+    this.data.addEventListener('progress', this._boundOnProgress, false);
+};
+
+/**
+ * Loads this resources using an HTMLAudioElement or HTMLVideoElement.
+ *
+ * @private
+ */
+Resource.prototype._loadElement = function (type) {
+    if (type === 'audio' && typeof Audio !== 'undefined') {
+        this.data = new Audio();
+    }
+    else {
+        this.data = document.createElement(type);
+    }
+
+    if (this.data === null) {
+        this.error = new Error('Unsupported element ' + type);
+        this.complete();
+        return;
+    }
+
+    // support for CocoonJS Canvas+ runtime, lacks document.createElement('source')
+    if (navigator.isCocoonJS) {
+        this.data.src = Array.isArray(this.url) ? this.url[0] : this.url;
+    }
+    else {
+        if (Array.isArray(this.url)) {
+            for (var i = 0; i < this.url.length; ++i) {
+                this.data.appendChild(this._createSource(type, this.url[i]));
+            }
+        }
+        else {
+            this.data.appendChild(this._createSource(type, this.url));
+        }
+    }
+
+    this['is' + type[0].toUpperCase() + type.substring(1)] = true;
+
+    this.data.addEventListener('error', this._boundOnError, false);
+    this.data.addEventListener('load', this._boundComplete, false);
+    this.data.addEventListener('progress', this._boundOnProgress, false);
+    this.data.addEventListener('canplaythrough', this._boundComplete, false);
+
+    this.data.load();
+};
+
+/**
+ * Loads this resources using an XMLHttpRequest.
+ *
+ * @private
+ */
+Resource.prototype._loadXhr = function () {
+    // if unset, determine the value
+    if (typeof this.xhrType !== 'string') {
+        this.xhrType = this._determineXhrType();
+    }
+
+    var xhr = this.xhr = new XMLHttpRequest();
+
+    // set the request type and url
+    xhr.open('GET', this.url, true);
+
+    // load json as text and parse it ourselves. We do this because some browsers
+    // *cough* safari *cough* can't deal with it.
+    if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON || this.xhrType === Resource.XHR_RESPONSE_TYPE.DOCUMENT) {
+        xhr.responseType = Resource.XHR_RESPONSE_TYPE.TEXT;
+    }
+    else {
+        xhr.responseType = this.xhrType;
+    }
+
+    xhr.addEventListener('error', this._boundXhrOnError, false);
+    xhr.addEventListener('abort', this._boundXhrOnAbort, false);
+    xhr.addEventListener('progress', this._boundOnProgress, false);
+    xhr.addEventListener('load', this._boundXhrOnLoad, false);
+
+    xhr.send();
+};
+
+/**
+ * Loads this resources using an XDomainRequest. This is here because we need to support IE9 (gross).
+ *
+ * @private
+ */
+Resource.prototype._loadXdr = function () {
+    // if unset, determine the value
+    if (typeof this.xhrType !== 'string') {
+        this.xhrType = this._determineXhrType();
+    }
+
+    var xdr = this.xhr = new XDomainRequest();
+
+    // XDomainRequest has a few quirks. Occasionally it will abort requests
+    // A way to avoid this is to make sure ALL callbacks are set even if not used
+    // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
+    xdr.timeout = 5000;
+
+    xdr.onerror = this._boundXhrOnError;
+    xdr.ontimeout = this._boundXdrOnTimeout;
+    xdr.onprogress = this._boundOnProgress;
+    xdr.onload = this._boundXhrOnLoad;
+
+    xdr.open('GET', this.url, true);
+
+    //  Note: The xdr.send() call is wrapped in a timeout to prevent an issue with the interface where some requests are lost
+    //  if multiple XDomainRequests are being sent at the same time.
+    // Some info here: https://github.com/photonstorm/phaser/issues/1248
+    setTimeout(function () {
+        xdr.send();
+    }, 0);
+};
+
+/**
+ * Creates a source used in loading via an element.
+ *
+ * @param type {string} The element type (video or audio).
+ * @param url {string} The source URL to load from.
+ * @param [mime] {string} The mime type of the video
+ * @private
+ */
+Resource.prototype._createSource = function (type, url, mime) {
+    if (!mime) {
+        mime = type + '/' + url.substr(url.lastIndexOf('.') + 1);
+    }
+
+    var source = document.createElement('source');
+
+    source.src = url;
+    source.type = mime;
+
+    return source;
+};
+
+/**
+ * Called if a load errors out.
+ *
+ * @param event {Event} The error event from the element that emits it.
+ * @private
+ */
+Resource.prototype._onError = function (event) {
+    this.error = new Error('Failed to load element using ' + event.target.nodeName);
+    this.complete();
+};
+
+/**
+ * Called if a load progress event fires for xhr/xdr.
+ *
+ * @fires progress
+ * @param event {XMLHttpRequestProgressEvent|Event}
+ * @private
+ */
+Resource.prototype._onProgress =  function (event) {
+    if (event && event.lengthComputable) {
+        this.emit('progress', this, event.loaded / event.total);
+    }
+};
+
+/**
+ * Called if an error event fires for xhr/xdr.
+ *
+ * @param event {XMLHttpRequestErrorEvent|Event}
+ * @private
+ */
+Resource.prototype._xhrOnError = function () {
+    this.error = new Error(
+        reqType(this.xhr) + ' Request failed. ' +
+        'Status: ' + this.xhr.status + ', text: "' + this.xhr.statusText + '"'
+    );
+
+    this.complete();
+};
+
+/**
+ * Called if an abort event fires for xhr.
+ *
+ * @param event {XMLHttpRequestAbortEvent}
+ * @private
+ */
+Resource.prototype._xhrOnAbort = function () {
+    this.error = new Error(reqType(this.xhr) + ' Request was aborted by the user.');
+    this.complete();
+};
+
+/**
+ * Called if a timeout event fires for xdr.
+ *
+ * @param event {Event}
+ * @private
+ */
+Resource.prototype._xdrOnTimeout = function () {
+    this.error = new Error(reqType(this.xhr) + ' Request timed out.');
+    this.complete();
+};
+
+/**
+ * Called when data successfully loads from an xhr/xdr request.
+ *
+ * @param event {XMLHttpRequestLoadEvent|Event}
+ * @private
+ */
+Resource.prototype._xhrOnLoad = function () {
+    var xhr = this.xhr,
+        status = xhr.status !== undefined ? xhr.status : 200; //XDR has no `.status`, assume 200.
+
+    // status can be 0 when using the file:// protocol, also check if a response was found
+    if (status === 200 || status === 204 || (status === 0 && xhr.responseText.length > 0)) {
+        // if text, just return it
+        if (this.xhrType === Resource.XHR_RESPONSE_TYPE.TEXT) {
+            this.data = xhr.responseText;
+        }
+        // if json, parse into json object
+        else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON) {
+            try {
+                this.data = JSON.parse(xhr.responseText);
+                this.isJson = true;
+            } catch(e) {
+                this.error = new Error('Error trying to parse loaded json:', e);
+            }
+        }
+        // if xml, parse into an xml document or div element
+        else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.DOCUMENT) {
+            try {
+                if (window.DOMParser) {
+                    var domparser = new DOMParser();
+                    this.data = domparser.parseFromString(xhr.responseText, 'text/xml');
+                }
+                else {
+                    var div = document.createElement('div');
+                    div.innerHTML = xhr.responseText;
+                    this.data = div;
+                }
+                this.isXml = true;
+            } catch (e) {
+                this.error = new Error('Error trying to parse loaded xml:', e);
+            }
+        }
+        // other types just return the response
+        else {
+            this.data = xhr.response || xhr.responseText;
+        }
+    }
+    else {
+        this.error = new Error('[' + xhr.status + ']' + xhr.statusText + ':' + xhr.responseURL);
+    }
+
+    this.complete();
+};
+
+function reqType(xhr) {
+    return xhr.toString().replace('object ', '');
+}
+
+/**
+ * Sets the `crossOrigin` property for this resource based on if the url
+ * for this resource is cross-origin. If crossOrigin was manually set, this
+ * function does nothing.
+ *
+ * @private
+ * @param url {string} The url to test.
+ * @param [location=window.location] {object} The location object to test against.
+ * @return {string} The crossOrigin value to use (or empty string for none).
+ */
+Resource.prototype._determineCrossOrigin = function (url, loc) {
+    // data: and javascript: urls are considered same-origin
+    if (url.indexOf('data:') === 0) {
+        return '';
+    }
+
+    // default is window.location
+    loc = loc || window.location;
+
+    if (!tempAnchor) {
+        tempAnchor = document.createElement('a');
+    }
+
+    // let the browser determine the full href for the url of this resource and then
+    // parse with the node url lib, we can't use the properties of the anchor element
+    // because they don't work in IE9 :(
+    tempAnchor.href = url;
+    url = _url.parse(tempAnchor.href);
+
+    var samePort = (!url.port && loc.port === '') || (url.port === loc.port);
+
+    // if cross origin
+    if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol) {
+        return 'anonymous';
+    }
+
+    return '';
+};
+
+/**
+ * Determines the responseType of an XHR request based on the extension of the
+ * resource being loaded.
+ *
+ * @private
+ * @return {Resource.XHR_RESPONSE_TYPE} The responseType to use.
+ */
+Resource.prototype._determineXhrType = function () {
+    return Resource._xhrTypeMap[this._getExtension()] || Resource.XHR_RESPONSE_TYPE.TEXT;
+};
+
+Resource.prototype._determineLoadType = function () {
+    return Resource._loadTypeMap[this._getExtension()] || Resource.LOAD_TYPE.XHR;
+};
+
+Resource.prototype._getExtension = function () {
+    var url = this.url,
+        ext;
+
+    if (this.isDataUrl) {
+        var slashIndex = url.indexOf('/');
+        ext = url.substring(slashIndex + 1, url.indexOf(';', slashIndex));
+    }
+    else {
+        var queryStart = url.indexOf('?');
+        if (queryStart !== -1) {
+            url = url.substring(0, queryStart);
+        }
+
+        ext = url.substring(url.lastIndexOf('.') + 1);
+    }
+
+    return ext;
+};
+
+/**
+ * Determines the mime type of an XHR request based on the responseType of
+ * resource being loaded.
+ *
+ * @private
+ * @return {string} The mime type to use.
+ */
+Resource.prototype._getMimeFromXhrType = function (type) {
+    switch(type) {
+        case Resource.XHR_RESPONSE_TYPE.BUFFER:
+            return 'application/octet-binary';
+
+        case Resource.XHR_RESPONSE_TYPE.BLOB:
+            return 'application/blob';
+
+        case Resource.XHR_RESPONSE_TYPE.DOCUMENT:
+            return 'application/xml';
+
+        case Resource.XHR_RESPONSE_TYPE.JSON:
+            return 'application/json';
+
+        case Resource.XHR_RESPONSE_TYPE.DEFAULT:
+        case Resource.XHR_RESPONSE_TYPE.TEXT:
+            /* falls through */
+        default:
+            return 'text/plain';
+
+    }
+};
+
+/**
+ * The types of loading a resource can use.
+ *
+ * @static
+ * @constant
+ * @property {object} LOAD_TYPE
+ * @property {number} LOAD_TYPE.XHR - Uses XMLHttpRequest to load the resource.
+ * @property {number} LOAD_TYPE.IMAGE - Uses an `Image` object to load the resource.
+ * @property {number} LOAD_TYPE.AUDIO - Uses an `Audio` object to load the resource.
+ * @property {number} LOAD_TYPE.VIDEO - Uses a `Video` object to load the resource.
+ */
+Resource.LOAD_TYPE = {
+    XHR:    1,
+    IMAGE:  2,
+    AUDIO:  3,
+    VIDEO:  4
+};
+
+/**
+ * The XHR ready states, used internally.
+ *
+ * @static
+ * @constant
+ * @property {object} XHR_READY_STATE
+ * @property {number} XHR_READY_STATE.UNSENT - open()has not been called yet.
+ * @property {number} XHR_READY_STATE.OPENED - send()has not been called yet.
+ * @property {number} XHR_READY_STATE.HEADERS_RECEIVED - send() has been called, and headers and status are available.
+ * @property {number} XHR_READY_STATE.LOADING - Downloading; responseText holds partial data.
+ * @property {number} XHR_READY_STATE.DONE - The operation is complete.
+ */
+Resource.XHR_READY_STATE = {
+    UNSENT: 0,
+    OPENED: 1,
+    HEADERS_RECEIVED: 2,
+    LOADING: 3,
+    DONE: 4
+};
+
+/**
+ * The XHR ready states, used internally.
+ *
+ * @static
+ * @constant
+ * @property {object} XHR_RESPONSE_TYPE
+ * @property {string} XHR_RESPONSE_TYPE.DEFAULT - defaults to text
+ * @property {string} XHR_RESPONSE_TYPE.BUFFER - ArrayBuffer
+ * @property {string} XHR_RESPONSE_TYPE.BLOB - Blob
+ * @property {string} XHR_RESPONSE_TYPE.DOCUMENT - Document
+ * @property {string} XHR_RESPONSE_TYPE.JSON - Object
+ * @property {string} XHR_RESPONSE_TYPE.TEXT - String
+ */
+Resource.XHR_RESPONSE_TYPE = {
+    DEFAULT:    'text',
+    BUFFER:     'arraybuffer',
+    BLOB:       'blob',
+    DOCUMENT:   'document',
+    JSON:       'json',
+    TEXT:       'text'
+};
+
+Resource._loadTypeMap = {
+    'gif':      Resource.LOAD_TYPE.IMAGE,
+    'png':      Resource.LOAD_TYPE.IMAGE,
+    'bmp':      Resource.LOAD_TYPE.IMAGE,
+    'jpg':      Resource.LOAD_TYPE.IMAGE,
+    'jpeg':     Resource.LOAD_TYPE.IMAGE,
+    'tif':      Resource.LOAD_TYPE.IMAGE,
+    'tiff':     Resource.LOAD_TYPE.IMAGE,
+    'webp':     Resource.LOAD_TYPE.IMAGE,
+    'tga':      Resource.LOAD_TYPE.IMAGE
+};
+
+Resource._xhrTypeMap = {
+    // xml
+    'xhtml':    Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'html':     Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'htm':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'xml':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'tmx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'tsx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'svg':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+
+    // images
+    'gif':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'png':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'bmp':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'jpg':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'jpeg':     Resource.XHR_RESPONSE_TYPE.BLOB,
+    'tif':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'tiff':     Resource.XHR_RESPONSE_TYPE.BLOB,
+    'webp':     Resource.XHR_RESPONSE_TYPE.BLOB,
+    'tga':      Resource.XHR_RESPONSE_TYPE.BLOB,
+
+    // json
+    'json':     Resource.XHR_RESPONSE_TYPE.JSON,
+
+    // text
+    'text':     Resource.XHR_RESPONSE_TYPE.TEXT,
+    'txt':      Resource.XHR_RESPONSE_TYPE.TEXT
+};
+
+/**
+ * Sets the load type to be used for a specific extension.
+ *
+ * @static
+ * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
+ * @param loadType {Resource.LOAD_TYPE} The load type to set it to.
+ */
+Resource.setExtensionLoadType = function (extname, loadType) {
+    setExtMap(Resource._loadTypeMap, extname, loadType);
+};
+
+/**
+ * Sets the load type to be used for a specific extension.
+ *
+ * @static
+ * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
+ * @param xhrType {Resource.XHR_RESPONSE_TYPE} The xhr type to set it to.
+ */
+Resource.setExtensionXhrType = function (extname, xhrType) {
+    setExtMap(Resource._xhrTypeMap, extname, xhrType);
+};
+
+function setExtMap(map, extname, val) {
+    if (extname && extname.indexOf('.') === 0) {
+        extname = extname.substring(1);
+    }
+
+    if (!extname) {
+        return;
+    }
+
+    map[extname] = val;
+}
+
+},{"eventemitter3":10,"url":8}],15:[function(require,module,exports){
+module.exports = {
+
+    // private property
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+    encodeBinary: function (input) {
+        var output = "";
+        var bytebuffer;
+        var encodedCharIndexes = new Array(4);
+        var inx = 0;
+        var jnx = 0;
+        var paddingBytes = 0;
+
+        while (inx < input.length) {
+            // Fill byte buffer array
+            bytebuffer = new Array(3);
+            for (jnx = 0; jnx < bytebuffer.length; jnx++) {
+                if (inx < input.length) {
+                    // throw away high-order byte, as documented at:
+                    // https://developer.mozilla.org/En/Using_XMLHttpRequest#Handling_binary_data
+                    bytebuffer[jnx] = input.charCodeAt(inx++) & 0xff;
+                }
+                else {
+                    bytebuffer[jnx] = 0;
+                }
+            }
+
+            // Get each encoded character, 6 bits at a time
+            // index 1: first 6 bits
+            encodedCharIndexes[0] = bytebuffer[0] >> 2;
+            // index 2: second 6 bits (2 least significant bits from input byte 1 + 4 most significant bits from byte 2)
+            encodedCharIndexes[1] = ((bytebuffer[0] & 0x3) << 4) | (bytebuffer[1] >> 4);
+            // index 3: third 6 bits (4 least significant bits from input byte 2 + 2 most significant bits from byte 3)
+            encodedCharIndexes[2] = ((bytebuffer[1] & 0x0f) << 2) | (bytebuffer[2] >> 6);
+            // index 3: forth 6 bits (6 least significant bits from input byte 3)
+            encodedCharIndexes[3] = bytebuffer[2] & 0x3f;
+
+            // Determine whether padding happened, and adjust accordingly
+            paddingBytes = inx - (input.length - 1);
+            switch (paddingBytes) {
+                case 2:
+                    // Set last 2 characters to padding char
+                    encodedCharIndexes[3] = 64;
+                    encodedCharIndexes[2] = 64;
+                    break;
+
+                case 1:
+                    // Set last character to padding char
+                    encodedCharIndexes[3] = 64;
+                    break;
+
+                default:
+                    break; // No padding - proceed
+            }
+
+            // Now we will grab each appropriate character out of our keystring
+            // based on our index array and append it to the output string
+            for (jnx = 0; jnx < encodedCharIndexes.length; jnx++) {
+                output += this._keyStr.charAt(encodedCharIndexes[jnx]);
+            }
+        }
+        return output;
+    }
+};
+
+},{}],16:[function(require,module,exports){
+module.exports = require('./Loader');
+
+module.exports.Resource = require('./Resource');
+
+module.exports.middleware = {
+    caching: {
+        memory: require('./middlewares/caching/memory')
+    },
+    parsing: {
+        blob: require('./middlewares/parsing/blob')
+    }
+};
+
+},{"./Loader":13,"./Resource":14,"./middlewares/caching/memory":17,"./middlewares/parsing/blob":18}],17:[function(require,module,exports){
+// a simple in-memory cache for resources
+var cache = {};
+
+module.exports = function () {
+    return function (resource, next) {
+        // if cached, then set data and complete the resource
+        if (cache[resource.url]) {
+            resource.data = cache[resource.url];
+            resource.complete();
+        }
+        // if not cached, wait for complete and store it in the cache.
+        else {
+            resource.once('complete', function () {
+               cache[this.url] = this.data;
+            });
+        }
+        
+        next();
+    };
+};
+
+},{}],18:[function(require,module,exports){
+var Resource = require('../../Resource'),
+    b64 = require('../../b64');
+
+window.URL = window.URL || window.webkitURL;
+
+// a middleware for transforming XHR loaded Blobs into more useful objects
+
+module.exports = function () {
+    return function (resource, next) {
+        if (!resource.data) {
+            return next();
+        }
+
+        // if this was an XHR load of a blob
+        if (resource.xhr && resource.xhrType === Resource.XHR_RESPONSE_TYPE.BLOB) {
+            // if there is no blob support we probably got a binary string back
+            if (!window.Blob || typeof resource.data === 'string') {
+                var type = resource.xhr.getResponseHeader('content-type');
+
+                // this is an image, convert the binary string into a data url
+                if (type && type.indexOf('image') === 0) {
+                    resource.data = new Image();
+                    resource.data.src = 'data:' + type + ';base64,' + b64.encodeBinary(resource.xhr.responseText);
+
+                    resource.isImage = true;
+
+                    // wait until the image loads and then callback
+                    resource.data.onload = function () {
+                        resource.data.onload = null;
+
+                        next();
+                    };
+                }
+            }
+            // if content type says this is an image, then we should transform the blob into an Image object
+            else if (resource.data.type.indexOf('image') === 0) {
+                var src = URL.createObjectURL(resource.data);
+
+                resource.blob = resource.data;
+                resource.data = new Image();
+                resource.data.src = src;
+
+                resource.isImage = true;
+
+                // cleanup the no longer used blob after the image loads
+                resource.data.onload = function () {
+                    URL.revokeObjectURL(src);
+                    resource.data.onload = null;
+
+                    next();
+                };
+            }
+        }
+        else {
+            next();
+        }
+    };
+};
+
+},{"../../Resource":14,"../../b64":15}],19:[function(require,module,exports){
+var core = require('../core');
+
+// add some extra variables to the container..
+Object.assign(
+    core.DisplayObject.prototype,
+    require('./accessibleTarget')
+);
+
+
+/**
+ * The Accessibility manager reacreates the ability to tab and and have content read by screen readers. This is very important as it can possibly help people with disabilities access pixi content.
+ * Much like interaction any DisplayObject can be made accessible. This manager will map the events as if the mouse was being used, minimizing the efferot required to implement.
+ *
+ * @class
+ * @memberof PIXI
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
+ */
+function AccessibilityManager(renderer)
+{
+	// first we create a div that will sit over the pixi element. This is where the div overlays will go.
+    var div = document.createElement('div');
+    
+    div.style.width = 100 + 'px';
+    div.style.height = 100 + 'px';
+    div.style.position = 'absolute';
+    div.style.top = 0;
+    div.style.left = 0;
+   //
+    div.style.zIndex = 2;
+   	
+   	/**
+   	 * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
+   	 * 
+   	 * @type {HTMLElement}
+   	 * @private
+   	 */
+   	this.div = div;
+
+   	/**
+   	 * A simple pool for storing divs.
+   	 * 
+   	 * @type {Array}
+   	 * @private
+   	 */
+ 	this.pool = [];
+
+ 	/**
+ 	 * This is a tick used to check if an object is no longer being rendered.
+ 	 * 
+ 	 * @type {Number}
+ 	 * @private
+ 	 */
+   	this.renderId = 0;
+
+   	/**
+   	 * Setting this to true will visually show the divs
+   	 * 
+   	 * @type {Boolean}
+   	 */
+   	this.debug = false;
+
+  	/**
+     * The renderer this accessibility manager works for.
+     *
+     * @member {PIXI.SystemRenderer}
+     */
+   	this.renderer = renderer;
+
+   	/**
+     * The array of currently active accessible items.
+     *
+     * @member {Array}
+     * @private
+     */
+   	this.children = [];
+   	
+   	/**
+     * pre bind the functions..
+     */
+   	this._onKeyDown = this._onKeyDown.bind(this);
+   	this._onMouseMove = this._onMouseMove.bind(this);
+   	
+   	/**
+     * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
+     *
+     * @member {Array}
+     * @private
+     */
+   	this.isActive = false;
+
+
+   	// let listen for tab.. once pressed we can fire up and show the accessibility layer
+   	window.addEventListener('keydown', this._onKeyDown, false);
+}
+
+
+AccessibilityManager.prototype.constructor = AccessibilityManager;
+module.exports = AccessibilityManager;
+
+/**
+ * Activating will cause the Accessibility layer to be shown. This is called when a user preses the tab key
+ * @private
+ */
+AccessibilityManager.prototype.activate = function()
+{
+	if(this.isActive)
+	{
+		return;
+	}
+
+	this.isActive = true;
+
+	window.document.addEventListener('mousemove', this._onMouseMove, true);
+	window.removeEventListener('keydown', this._onKeyDown, false);
+
+	this.renderer.on('postrender', this.update, this);
+
+	this.renderer.view.parentNode.appendChild(this.div);	
+};
+
+/**
+ * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves the mouse
+ * @private
+ */
+AccessibilityManager.prototype.deactivate = function()
+{
+	if(!this.isActive)
+	{
+		return;
+	}
+
+	this.isActive = false;
+
+	window.document.removeEventListener('mousemove', this._onMouseMove);
+	window.addEventListener('keydown', this._onKeyDown, false);
+
+	this.renderer.off('postrender', this.update);
+
+	this.div.parentNode.removeChild(this.div);
+
+};
+
+/**
+ * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
+ * @param element {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the DisplayObject to check.
+ * @private
+ */
+AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
+{
+	if(!displayObject.visible)
+	{
+		return;
+	}
+
+	if(displayObject.accessible && displayObject.interactive)
+	{
+		if(!displayObject._accessibleActive)
+		{
+			this.addChild(displayObject);
+		}
+	   	
+	   	displayObject.renderId = this.renderId;
+	}
+
+
+	if(displayObject.interactiveChildren)
+	{
+
+		var children = displayObject.children;
+
+		for (var i = children.length - 1; i >= 0; i--) {
+		
+			this.updateAccessibleObjects(children[i]);
+		}
+	}
+};
+
+
+/**
+ * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects
+ * @private
+ */
+AccessibilityManager.prototype.update = function()
+{
+
+	// update children...
+	this.updateAccessibleObjects(this.renderer._lastObjectRendered);
+
+	var rect = this.renderer.view.getBoundingClientRect();
+	var sx = rect.width  / this.renderer.width;
+	var sy = rect.height / this.renderer.height;
+
+	var div = this.div;
+
+	div.style.left = rect.left + 'px';
+	div.style.top = rect.top + 'px';
+	div.style.width = this.renderer.width + 'px';
+	div.style.height = this.renderer.height + 'px';
+
+	for (var i = 0; i < this.children.length; i++)
+	{
+
+		var child = this.children[i];
+
+		if(child.renderId !== this.renderId)
+		{
+			child._accessibleActive = false;
+
+            core.utils.removeItems(this.children, i, 1);
+			this.div.removeChild( child._accessibleDiv );
+			this.pool.push(child._accessibleDiv);
+			child._accessibleDiv = null;
+
+			i--;
+
+			if(this.children.length === 0)
+			{
+				this.deactivate();
+			}
+		}
+		else
+		{
+			// map div to display..
+			div = child._accessibleDiv;
+			var hitArea = child.hitArea;
+			var wt = child.worldTransform;
+
+			if(child.hitArea)
+			{
+				div.style.left = ((wt.tx + (hitArea.x * wt.a)) * sx) + 'px';
+				div.style.top =  ((wt.ty + (hitArea.y * wt.d)) * sy) +  'px';
+
+				div.style.width = (hitArea.width * wt.a * sx) + 'px';
+				div.style.height = (hitArea.height * wt.d * sy) + 'px';
+			
+			}
+			else
+			{
+				hitArea = child.getBounds();
+
+				this.capHitArea(hitArea);
+
+				div.style.left = (hitArea.x * sx) + 'px';
+				div.style.top =  (hitArea.y * sy) +  'px';
+
+				div.style.width = (hitArea.width * sx) + 'px';
+				div.style.height = (hitArea.height * sy) + 'px';
+			}		
+		}
+	}
+
+	// increment the render id..
+	this.renderId++;
+};
+
+AccessibilityManager.prototype.capHitArea = function (hitArea)
+{
+    if (hitArea.x < 0)
+    {
+        hitArea.width += hitArea.x;
+        hitArea.x = 0;
+    }
+
+    if (hitArea.y < 0)
+    {
+        hitArea.height += hitArea.y;
+        hitArea.y = 0;
+    }
+
+    if ( hitArea.x + hitArea.width > this.renderer.width )
+    {
+        hitArea.width = this.renderer.width - hitArea.x;
+    }
+
+    if ( hitArea.y + hitArea.height > this.renderer.height )
+    {
+        hitArea.height = this.renderer.height - hitArea.y;
+    }
+};
+
+
+/**
+ * Adds a DisplayObject to the accessibility manager
+ * @private
+ */
+AccessibilityManager.prototype.addChild = function(displayObject)
+{
+//	this.activate();
+	
+	var div = this.pool.pop();
+
+	if(!div)
+	{
+		div = document.createElement('button'); 
+
+	    div.style.width = 100 + 'px';
+	    div.style.height = 100 + 'px';
+	    div.style.backgroundColor = this.debug ? 'rgba(255,0,0,0.5)' : 'transparent';
+	    div.style.position = 'absolute';
+	    div.style.zIndex = 2;
+	    div.style.borderStyle = 'none';
+
+	    
+	    div.addEventListener('click', this._onClick.bind(this));
+	    div.addEventListener('focus', this._onFocus.bind(this));
+	    div.addEventListener('focusout', this._onFocusOut.bind(this));
+	}
+	   	
+
+
+
+	div.title = displayObject.accessibleTitle || 'displayObject ' + this.tabIndex;
+
+	//
+	
+	displayObject._accessibleActive = true;
+	displayObject._accessibleDiv = div;
+	div.displayObject = displayObject;
+
+
+	this.children.push(displayObject);
+	this.div.appendChild( displayObject._accessibleDiv );
+	displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
+};
+
+
+/**
+ * Maps the div button press to pixi's InteractionManager (click)
+ * @private
+ */
+AccessibilityManager.prototype._onClick = function(e)
+{
+	var interactionManager = this.renderer.plugins.interaction;
+	interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
+};
+
+/**
+ * Maps the div focus events to pixis InteractionManager (mouseover)
+ * @private
+ */
+AccessibilityManager.prototype._onFocus = function(e)
+{
+	var interactionManager = this.renderer.plugins.interaction;
+	interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
+};
+
+/**
+ * Maps the div focus events to pixis InteractionManager (mouseout)
+ * @private
+ */
+AccessibilityManager.prototype._onFocusOut = function(e)
+{
+	var interactionManager = this.renderer.plugins.interaction;
+	interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
+};
+
+/**
+ * Is called when a key is pressed
+ *
+ * @private
+ */
+AccessibilityManager.prototype._onKeyDown = function(e)
+{
+	if(e.keyCode !== 9)
+	{
+		return;
+	}
+
+	this.activate();
+};
+
+/**
+ * Is called when the mouse moves across the renderer element
+ *
+ * @private
+ */
+AccessibilityManager.prototype._onMouseMove = function()
+{
+	this.deactivate();
+};
+
+
+/**
+ * Destroys the accessibility manager
+ *
+ */
+AccessibilityManager.prototype.destroy = function () 
+{
+	this.div = null;
+
+	for (var i = 0; i < this.children.length; i++)
+	{
+		this.children[i].div = null;
+	}
+
+	
+	window.document.removeEventListener('mousemove', this._onMouseMove);
+	window.removeEventListener('keydown', this._onKeyDown);
+		
+	this.pool = null;
+	this.children = null;
+	this.renderer = null;
+
+};
+
+core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
+core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+
+
+},{"../core":29,"./accessibleTarget":20}],20:[function(require,module,exports){
+/**
+ * Default property values of accessible objects
+ * used by {@link PIXI.accessibility.AccessibilityManager}.
+ *
+ * @mixin
+ * @memberof PIXI
+ * @example
+ *      function MyObject() {}
+ *
+ *      Object.assign(
+ *          MyObject.prototype,
+ *          PIXI.accessibility.accessibleTarget
+ *      );
+ */
+var accessibleTarget = {
+    
+    /**
+     * @todo Needs docs.
+     */
+    accessible:false,
+
+    /**
+     * @todo Needs docs.
+     */
+    accessibleTitle:null,
+
+    /**
+     * @todo Needs docs.
+     */
+    tabIndex:0,
+
+    /**
+     * @todo Needs docs.
+     */
+    _accessibleActive:false,
+
+    /**
+     * @todo Needs docs.
+     */
+    _accessibleDiv:false
+
+};
+
+module.exports = accessibleTarget;
+
+},{}],21:[function(require,module,exports){
+/**
+ * @file        Main export of the PIXI accessibility library
+ * @author      Mat Groves <mat@goodboydigital.com>
+ * @copyright   2013-2015 GoodBoyDigital
+ * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
+ */
+
+/**
+ * @namespace PIXI.interaction
+ */
+module.exports = {
+    accessibleTarget:     require('./accessibleTarget'),
+    AccessibilityManager: require('./AccessibilityManager')
+};
+
+},{"./AccessibilityManager":19,"./accessibleTarget":20}],22:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -4062,7 +6972,7 @@ var CONST = {
      * @constant
      * @property {string} VERSION
      */
-    VERSION: require('../../package.json').version,
+    VERSION: '3.0.10',
 
     /**
      * @property {number} PI_2 - Two Pi
@@ -4271,8 +7181,9 @@ var CONST = {
 
 module.exports = CONST;
 
-},{"../../package.json":12}],14:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var math = require('../math'),
+    utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
     _tempMatrix = new math.Matrix();
@@ -4377,13 +7288,43 @@ Container.prototype.onChildrenChange = function () {};
 
 /**
  * Adds a child to the container.
- *
+ * 
+ * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
  * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
  * @return {PIXI.DisplayObject} The child that was added.
  */
 Container.prototype.addChild = function (child)
-{
-    return this.addChildAt(child, this.children.length);
+{ 
+    var argumentsLength = arguments.length;
+
+    // if there is only one argument we can bypass looping through the them
+    if(argumentsLength > 1)
+    {
+        // loop through the arguments property and add all children
+        // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+        for (var i = 0; i < argumentsLength; i++)
+        {
+            this.addChild( arguments[i] );
+        }
+    }     
+    else
+    {
+        // if the child has a parent then lets remove it as Pixi objects can only exist in one place
+        if (child.parent)
+        {
+            child.parent.removeChild(child);
+        }
+
+        child.parent = this;
+        
+        this.children.push(child);
+
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(this.children.length-1);
+        child.emit('added', this);
+    }
+
+    return child;
 };
 
 /**
@@ -4395,12 +7336,6 @@ Container.prototype.addChild = function (child)
  */
 Container.prototype.addChildAt = function (child, index)
 {
-    // prevent adding self as child
-    if (child === this)
-    {
-        return child;
-    }
-
     if (index >= 0 && index <= this.children.length)
     {
         if (child.parent)
@@ -4411,8 +7346,9 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
-        this.onChildrenChange(index);
 
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(index);
         child.emit('added', this);
 
         return child;
@@ -4482,7 +7418,7 @@ Container.prototype.setChildIndex = function (child, index)
 
     var currentIndex = this.getChildIndex(child);
 
-    this.children.splice(currentIndex, 1); //remove from old position
+    utils.removeItems(this.children, currentIndex, 1); // remove from old position
     this.children.splice(index, 0, child); //add at new position
     this.onChildrenChange(index);
 };
@@ -4511,14 +7447,36 @@ Container.prototype.getChildAt = function (index)
  */
 Container.prototype.removeChild = function (child)
 {
-    var index = this.children.indexOf(child);
+    var argumentsLength = arguments.length;
 
-    if (index === -1)
+    // if there is only one argument we can bypass looping through the them
+    if(argumentsLength > 1)
     {
-        return;
+        // loop through the arguments property and add all children
+        // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+        for (var i = 0; i < argumentsLength; i++)
+        {
+            this.removeChild( arguments[i] );
+        }
+    }     
+    else
+    {   
+        var index = this.children.indexOf(child);
+
+        if (index === -1)
+        {
+            return;
+        }
+
+        child.parent = null;
+        utils.removeItems(this.children, index, 1);
+
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(index);
+        child.emit('removed', this);
     }
 
-    return this.removeChildAt(index);
+    return child;
 };
 
 /**
@@ -4532,9 +7490,10 @@ Container.prototype.removeChildAt = function (index)
     var child = this.getChildAt(index);
 
     child.parent = null;
-    this.children.splice(index, 1);
-    this.onChildrenChange(index);
+    utils.removeItems(this.children, index, 1);
 
+    // TODO - lets either do all callbacks or all events.. not both!
+    this.onChildrenChange(index);
     child.emit('removed', this);
 
     return child;
@@ -4866,7 +7825,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":23,"../textures/RenderTexture":61,"./DisplayObject":15}],15:[function(require,module,exports){
+},{"../math":33,"../textures/RenderTexture":71,"../utils":77,"./DisplayObject":24}],24:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3'),
@@ -4907,6 +7866,14 @@ function DisplayObject()
      * @member {PIXI.Point}
      */
     this.pivot = new math.Point(0, 0);
+
+
+    /**
+     * The skew factor for the object in radians.
+     *
+     * @member {PIXI.Point}
+     */
+    this.skew = new math.Point(0, 0);
 
     /**
      * The rotation of the object in radians.
@@ -5081,6 +8048,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
      * To remove a mask, set this property to null.
      *
+     * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     *
      * @member {PIXI.Graphics|PIXI.Sprite}
      * @memberof PIXI.DisplayObject#
      */
@@ -5133,7 +8102,6 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-
     // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
@@ -5141,55 +8109,83 @@ DisplayObject.prototype.updateTransform = function ()
     // temporary matrix variables
     var a, b, c, d, tx, ty;
 
-    // so if rotation is between 0 then we can simplify the multiplication process...
-    if (this.rotation % CONST.PI_2)
+    // looks like we are skewing
+    if(this.skew.x || this.skew.y)
     {
-        // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-        if (this.rotation !== this.rotationCache)
-        {
-            this.rotationCache = this.rotation;
-            this._sr = Math.sin(this.rotation);
-            this._cr = Math.cos(this.rotation);
-        }
+        // I'm assuming that skewing is not going to be very common
+        // With that in mind, we can do a full setTransform using the temp matrix
+        _tempMatrix.setTransform(
+            this.position.x,
+            this.position.y,
+            this.pivot.x,
+            this.pivot.y,
+            this.scale.x,
+            this.scale.y,
+            this.rotation,
+            this.skew.x,
+            this.skew.y
+        );
 
-        // get the matrix values of the displayobject based on its transform properties..
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
-        tx =  this.position.x;
-        ty =  this.position.y;
-
-        // check for pivot.. not often used so geared towards that fact!
-        if (this.pivot.x || this.pivot.y)
-        {
-            tx -= this.pivot.x * a + this.pivot.y * c;
-            ty -= this.pivot.x * b + this.pivot.y * d;
-        }
-
-        // concat the parent matrix with the objects transform.
-        wt.a  = a  * pt.a + b  * pt.c;
-        wt.b  = a  * pt.b + b  * pt.d;
-        wt.c  = c  * pt.a + d  * pt.c;
-        wt.d  = c  * pt.b + d  * pt.d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        // now concat the matrix (inlined so that we can avoid using copy)
+        wt.a  = _tempMatrix.a  * pt.a + _tempMatrix.b  * pt.c;
+        wt.b  = _tempMatrix.a  * pt.b + _tempMatrix.b  * pt.d;
+        wt.c  = _tempMatrix.c  * pt.a + _tempMatrix.d  * pt.c;
+        wt.d  = _tempMatrix.c  * pt.b + _tempMatrix.d  * pt.d;
+        wt.tx = _tempMatrix.tx * pt.a + _tempMatrix.ty * pt.c + pt.tx;
+        wt.ty = _tempMatrix.tx * pt.b + _tempMatrix.ty * pt.d + pt.ty;
     }
     else
     {
-        // lets do the fast version as we know there is no rotation..
-        a  = this.scale.x;
-        d  = this.scale.y;
+        // so if rotation is between 0 then we can simplify the multiplication process...
+        if (this.rotation % CONST.PI_2)
+        {
+            // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
+            if (this.rotation !== this.rotationCache)
+            {
+                this.rotationCache = this.rotation;
+                this._sr = Math.sin(this.rotation);
+                this._cr = Math.cos(this.rotation);
+            }
 
-        tx = this.position.x - this.pivot.x * a;
-        ty = this.position.y - this.pivot.y * d;
+            // get the matrix values of the displayobject based on its transform properties..
+            a  =  this._cr * this.scale.x;
+            b  =  this._sr * this.scale.x;
+            c  = -this._sr * this.scale.y;
+            d  =  this._cr * this.scale.y;
+            tx =  this.position.x;
+            ty =  this.position.y;
 
-        wt.a  = a  * pt.a;
-        wt.b  = a  * pt.b;
-        wt.c  = d  * pt.c;
-        wt.d  = d  * pt.d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+            // check for pivot.. not often used so geared towards that fact!
+            if (this.pivot.x || this.pivot.y)
+            {
+                tx -= this.pivot.x * a + this.pivot.y * c;
+                ty -= this.pivot.x * b + this.pivot.y * d;
+            }
+
+            // concat the parent matrix with the objects transform.
+            wt.a  = a  * pt.a + b  * pt.c;
+            wt.b  = a  * pt.b + b  * pt.d;
+            wt.c  = c  * pt.a + d  * pt.c;
+            wt.d  = c  * pt.b + d  * pt.d;
+            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        }
+        else
+        {
+            // lets do the fast version as we know there is no rotation..
+            a  = this.scale.x;
+            d  = this.scale.y;
+
+            tx = this.position.x - this.pivot.x * a;
+            ty = this.position.y - this.pivot.y * d;
+
+            wt.a  = a  * pt.a;
+            wt.b  = a  * pt.b;
+            wt.c  = d  * pt.c;
+            wt.d  = d  * pt.d;
+            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        }
     }
 
     // multiply the alphas..
@@ -5256,9 +8252,10 @@ DisplayObject.prototype.toGlobal = function (position)
  *
  * @param position {PIXI.Point} The world origin to calculate from
  * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from)
+DisplayObject.prototype.toLocal = function (position, from, point)
 {
     if (from)
     {
@@ -5280,7 +8277,7 @@ DisplayObject.prototype.toLocal = function (position, from)
     }
 
     // simply apply the matrix..
-    return this.worldTransform.applyInverse(position);
+    return this.worldTransform.applyInverse(position, point);
 };
 
 /**
@@ -5345,6 +8342,34 @@ DisplayObject.prototype.setParent = function (container)
 };
 
 /**
+ * Convenience function to set the postion, scale, skew and pivot at once.
+ *
+ * @param [x=0] {number} The X position
+ * @param [y=0] {number} The Y position
+ * @param [scaleX=1] {number} The X scale value
+ * @param [scaleY=1] {number} The Y scale value
+ * @param [rotation=0] {number} The rotation
+ * @param [skewX=0] {number} The X skew value
+ * @param [skewY=0] {number} The Y skew value
+ * @param [pivotX=0] {number} The X pivot value
+ * @param [pivotY=0] {number} The Y pivot value
+ * @return {PIXI.DisplayObject}
+ */
+DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
+{
+    this.position.x = x || 0;
+    this.position.y = y || 0;
+    this.scale.x = !scaleX ? 1 : scaleX;
+    this.scale.y = !scaleY ? 1 : scaleY;
+    this.rotation = rotation || 0;
+    this.skew.x = skewX || 0;
+    this.skew.y = skewY || 0;
+    this.pivot.x = pivotX || 0;
+    this.pivot.y = pivotY || 0;
+    return this;
+};
+
+/**
  * Base destroy method for generic display objects
  *
  */
@@ -5354,6 +8379,7 @@ DisplayObject.prototype.destroy = function ()
     this.position = null;
     this.scale = null;
     this.pivot = null;
+    this.skew = null;
 
     this.parent = null;
 
@@ -5365,7 +8391,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":13,"../math":23,"../textures/RenderTexture":61,"eventemitter3":10}],16:[function(require,module,exports){
+},{"../const":22,"../math":33,"../textures/RenderTexture":71,"eventemitter3":10}],25:[function(require,module,exports){
 var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
@@ -6550,7 +9576,7 @@ Graphics.prototype.destroy = function () {
     this._localBounds = null;
 };
 
-},{"../const":13,"../display/Container":14,"../math":23,"../renderers/canvas/utils/CanvasBuffer":35,"../renderers/canvas/utils/CanvasGraphics":36,"../textures/Texture":62,"./GraphicsData":17}],17:[function(require,module,exports){
+},{"../const":22,"../display/Container":23,"../math":33,"../renderers/canvas/utils/CanvasBuffer":45,"../renderers/canvas/utils/CanvasGraphics":46,"../textures/Texture":72,"./GraphicsData":26}],26:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -6643,7 +9669,7 @@ GraphicsData.prototype.destroy = function () {
     this.shape = null;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -6721,7 +9747,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var shader = renderer.shaderManager.plugins.primitiveShader,
         webGLData;
 
-    if (graphics.dirty)
+    if (graphics.dirty || !graphics._webGL[gl.id])
     {
         this.updateGraphics(graphics);
     }
@@ -7362,7 +10388,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
         py = (a2*c1 - a1*c2)/denom;
 
 
-        pdist = (px -p2x) * (px -p2x) + (py -p2y) + (py -p2y);
+        pdist = (px -p2x) * (px -p2x) + (py -p2y) * (py -p2y);
 
 
         if (pdist > 140 * 140)
@@ -7548,7 +10574,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":13,"../../math":23,"../../renderers/webgl/WebGLRenderer":39,"../../renderers/webgl/utils/ObjectRenderer":53,"../../utils":67,"./WebGLGraphicsData":19,"earcut":9}],19:[function(require,module,exports){
+},{"../../const":22,"../../math":33,"../../renderers/webgl/WebGLRenderer":49,"../../renderers/webgl/utils/ObjectRenderer":63,"../../utils":77,"./WebGLGraphicsData":28,"earcut":9}],28:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -7666,7 +10692,7 @@ WebGLGraphicsData.prototype.destroy = function () {
     this.glIndices = null;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -7715,8 +10741,12 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
+    WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
     ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
+    TextureShader:          require('./renderers/webgl/shaders/TextureShader'),
+    PrimitiveShader:        require('./renderers/webgl/shaders/PrimitiveShader'),
+    ComplexPrimitiveShader: require('./renderers/webgl/shaders/ComplexPrimitiveShader'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
 
@@ -7758,7 +10788,175 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":13,"./display/Container":14,"./display/DisplayObject":15,"./graphics/Graphics":16,"./graphics/GraphicsData":17,"./graphics/webgl/GraphicsRenderer":18,"./math":23,"./particles/ParticleContainer":29,"./particles/webgl/ParticleRenderer":31,"./renderers/canvas/CanvasRenderer":34,"./renderers/canvas/utils/CanvasBuffer":35,"./renderers/canvas/utils/CanvasGraphics":36,"./renderers/webgl/WebGLRenderer":39,"./renderers/webgl/filters/AbstractFilter":40,"./renderers/webgl/filters/FXAAFilter":41,"./renderers/webgl/filters/SpriteMaskFilter":42,"./renderers/webgl/managers/ShaderManager":46,"./renderers/webgl/shaders/Shader":51,"./renderers/webgl/utils/ObjectRenderer":53,"./renderers/webgl/utils/RenderTarget":55,"./sprites/Sprite":57,"./sprites/webgl/SpriteRenderer":58,"./text/Text":59,"./textures/BaseTexture":60,"./textures/RenderTexture":61,"./textures/Texture":62,"./textures/TextureUvs":63,"./textures/VideoBaseTexture":64,"./ticker":66,"./utils":67}],21:[function(require,module,exports){
+},{"./const":22,"./display/Container":23,"./display/DisplayObject":24,"./graphics/Graphics":25,"./graphics/GraphicsData":26,"./graphics/webgl/GraphicsRenderer":27,"./math":33,"./particles/ParticleContainer":39,"./particles/webgl/ParticleRenderer":41,"./renderers/canvas/CanvasRenderer":44,"./renderers/canvas/utils/CanvasBuffer":45,"./renderers/canvas/utils/CanvasGraphics":46,"./renderers/webgl/WebGLRenderer":49,"./renderers/webgl/filters/AbstractFilter":50,"./renderers/webgl/filters/FXAAFilter":51,"./renderers/webgl/filters/SpriteMaskFilter":52,"./renderers/webgl/managers/ShaderManager":56,"./renderers/webgl/managers/WebGLManager":58,"./renderers/webgl/shaders/ComplexPrimitiveShader":59,"./renderers/webgl/shaders/PrimitiveShader":60,"./renderers/webgl/shaders/Shader":61,"./renderers/webgl/shaders/TextureShader":62,"./renderers/webgl/utils/ObjectRenderer":63,"./renderers/webgl/utils/RenderTarget":65,"./sprites/Sprite":67,"./sprites/webgl/SpriteRenderer":68,"./text/Text":69,"./textures/BaseTexture":70,"./textures/RenderTexture":71,"./textures/Texture":72,"./textures/TextureUvs":73,"./textures/VideoBaseTexture":74,"./ticker":76,"./utils":77}],30:[function(require,module,exports){
+// Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
+
+var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
+var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
+var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
+var vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
+var tempMatrices = [];
+var Matrix = require('./Matrix');
+
+var mul = [];
+
+function signum(x) {
+    if (x < 0) {
+        return -1;
+    }
+    if (x > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+function init() {
+    for (var i = 0; i < 16; i++) {
+        var row = [];
+        mul.push(row);
+        for (var j = 0; j < 16; j++) {
+            var _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
+            var _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
+            var _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
+            var _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
+            for (var k = 0; k < 16; k++) {
+                if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy) {
+                    row.push(k);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (i=0;i<16;i++) {
+        var mat = new Matrix();
+        mat.set(ux[i], uy[i], vx[i], vy[i], 0, 0);
+        tempMatrices.push(mat);
+    }
+}
+
+init();
+
+/**
+ * Implements Dihedral Group D_8, see [group D4]{@link http://mathworld.wolfram.com/DihedralGroupD4.html}, D8 is the same but with diagonals
+ * Used for texture rotations
+ * Vector xX(i), xY(i) is U-axis of sprite with rotation i
+ * Vector yY(i), yY(i) is V-axis of sprite with rotation i
+ * Rotations: 0 grad (0), 90 grad (2), 180 grad (4), 270 grad (6)
+ * Mirrors: vertical (8), main diagonal (10), horizontal (12), reverse diagonal (14)
+ * This is the small part of gameofbombs.com portal system. It works.
+ * @author Ivan @ivanpopelyshev
+ *
+ * @namespace PIXI.GroupD8
+ */
+var GroupD8 = {
+    E: 0,
+    SE: 1,
+    S: 2,
+    SW: 3,
+    W: 4,
+    NW: 5,
+    N: 6,
+    NE: 7,
+    MIRROR_VERTICAL: 8,
+    MIRROR_HORIZONTAL: 12,
+    uX: function (ind) {
+        return ux[ind];
+    },
+    uY: function (ind) {
+        return uy[ind];
+    },
+    vX: function (ind) {
+        return vx[ind];
+    },
+    vY: function (ind) {
+        return vy[ind];
+    },
+    inv: function (rotation) {
+        if (rotation & 8) {
+            return rotation & 15;
+        }
+        return (-rotation) & 7;
+    },
+    add: function (rotationSecond, rotationFirst) {
+        return mul[rotationSecond][rotationFirst];
+    },
+    sub: function (rotationSecond, rotationFirst) {
+        return mul[rotationSecond][GroupD8.inv(rotationFirst)];
+    },
+    /**
+     * Adds 180 degrees to rotation. Commutative operation
+     * @param rotation
+     * @returns {number}
+     */
+    rotate180: function (rotation) {
+        return rotation ^ 4;
+    },
+    /**
+     * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
+     * @param rotation
+     * @returns {boolean}
+     */
+    isSwapWidthHeight: function(rotation) {
+        return (rotation & 3) === 2;
+    },
+    byDirection: function (dx, dy) {
+        if (Math.abs(dx) * 2 <= Math.abs(dy)) {
+            if (dy >= 0) {
+                return GroupD8.S;
+            }
+            else {
+                return GroupD8.N;
+            }
+        } else if (Math.abs(dy) * 2 <= Math.abs(dx)) {
+            if (dx > 0) {
+                return GroupD8.E;
+            }
+            else {
+                return GroupD8.W;
+            }
+        } else {
+            if (dy > 0) {
+                if (dx > 0) {
+                    return GroupD8.SE;
+                }
+                else {
+                    return GroupD8.SW;
+                }
+            }
+            else if (dx > 0) {
+                return GroupD8.NE;
+            }
+            else {
+                return GroupD8.NW;
+            }
+        }
+    },
+    /**
+     * Helps sprite to compensate texture packer rotation.
+     * @param matrix {PIXI.Matrix} sprite world matrix
+     * @param rotation {number}
+     * @param tx {number|*} sprite anchoring
+     * @param ty {number|*} sprite anchoring
+     */
+    matrixAppendRotationInv: function (matrix, rotation, tx, ty) {
+        //Packer used "rotation", we use "inv(rotation)"
+        var mat = tempMatrices[GroupD8.inv(rotation)];
+        tx = tx || 0;
+        ty = ty || 0;
+        mat.tx = tx;
+        mat.ty = ty;
+        matrix.append(mat);
+    }
+};
+
+module.exports = GroupD8;
+
+},{"./Matrix":31}],31:[function(require,module,exports){
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 var Point = require('./Point');
 
 /**
@@ -7835,10 +11033,37 @@ Matrix.prototype.fromArray = function (array)
     this.ty = array[5];
 };
 
+
+/**
+ * sets the matrix properties
+ *
+ * @param {number} a
+ * @param {number} b
+ * @param {number} c
+ * @param {number} d
+ * @param {number} tx
+ * @param {number} ty
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.set = function (a, b, c, d, tx, ty)
+{
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
+    this.tx = tx;
+    this.ty = ty;
+
+    return this;
+};
+
+
 /**
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
+ * @param [out] {Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -8007,6 +11232,48 @@ Matrix.prototype.append = function (matrix)
 };
 
 /**
+ * Sets the matrix based on all the available properties
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} pivotX
+ * @param {number} pivotY
+ * @param {number} scaleX
+ * @param {number} scaleY
+ * @param {number} rotation
+ * @param {number} skewX
+ * @param {number} skewY
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+{
+    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
+
+    sr  = Math.sin(rotation);
+    cr  = Math.cos(rotation);
+    cy  = Math.cos(skewY);
+    sy  = Math.sin(skewY);
+    nsx = -Math.sin(skewX);
+    cx  =  Math.cos(skewX);
+
+    a  =  cr * scaleX;
+    b  =  sr * scaleX;
+    c  = -sr * scaleY;
+    d  =  cr * scaleY;
+
+    this.a  = cy * a + sy * c;
+    this.b  = cy * b + sy * d;
+    this.c  = nsx * a + cx * c;
+    this.d  = nsx * b + cx * d;
+
+    this.tx = x + ( pivotX * a + pivotY * c );
+    this.ty = y + ( pivotX * b + pivotY * d );
+
+    return this;
+};
+
+/**
  * Prepends the given Matrix to this Matrix.
  *
  * @param {PIXI.Matrix} matrix
@@ -8125,7 +11392,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":22}],22:[function(require,module,exports){
+},{"./Point":32}],32:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -8195,7 +11462,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
@@ -8209,6 +11476,7 @@ module.exports = {
 
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
+    GroupD8:    require('./GroupD8'),
 
     Circle:     require('./shapes/Circle'),
     Ellipse:    require('./shapes/Ellipse'),
@@ -8217,7 +11485,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":21,"./Point":22,"./shapes/Circle":24,"./shapes/Ellipse":25,"./shapes/Polygon":26,"./shapes/Rectangle":27,"./shapes/RoundedRectangle":28}],24:[function(require,module,exports){
+},{"./GroupD8":30,"./Matrix":31,"./Point":32,"./shapes/Circle":34,"./shapes/Ellipse":35,"./shapes/Polygon":36,"./shapes/Rectangle":37,"./shapes/RoundedRectangle":38}],34:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -8305,7 +11573,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":13,"./Rectangle":27}],25:[function(require,module,exports){
+},{"../../const":22,"./Rectangle":37}],35:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -8400,7 +11668,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":13,"./Rectangle":27}],26:[function(require,module,exports){
+},{"../../const":22,"./Rectangle":37}],36:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -8503,7 +11771,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":13,"../Point":22}],27:[function(require,module,exports){
+},{"../../const":22,"../Point":32}],37:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -8597,7 +11865,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":13}],28:[function(require,module,exports){
+},{"../../const":22}],38:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -8689,7 +11957,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":13}],29:[function(require,module,exports){
+},{"../../const":22}],39:[function(require,module,exports){
 var Container = require('../display/Container'),
     CONST = require('../const');
 
@@ -8888,6 +12156,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     var finalWidth = 0;
     var finalHeight = 0;
 
+    var compositeOperation = renderer.blendModes[this.blendMode];
+    if (compositeOperation !== context.globalCompositeOperation)
+    {
+        context.globalCompositeOperation = compositeOperation;
+    }
+
     context.globalAlpha = this.worldAlpha;
 
     this.displayObjectUpdateTransform();
@@ -9002,7 +12276,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../const":13,"../display/Container":14}],30:[function(require,module,exports){
+},{"../const":22,"../display/Container":23}],40:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -9222,7 +12496,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.gl.deleteBuffer(this.staticBuffer);
 };
 
-},{}],31:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -9698,7 +12972,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../math":23,"../../renderers/webgl/WebGLRenderer":39,"../../renderers/webgl/utils/ObjectRenderer":53,"./ParticleBuffer":30,"./ParticleShader":32}],32:[function(require,module,exports){
+},{"../../math":33,"../../renderers/webgl/WebGLRenderer":49,"../../renderers/webgl/utils/ObjectRenderer":63,"./ParticleBuffer":40,"./ParticleShader":42}],42:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -9776,7 +13050,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":52}],33:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":62}],43:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -10037,7 +13311,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":13,"../math":23,"../utils":67,"eventemitter3":10}],34:[function(require,module,exports){
+},{"../const":22,"../math":33,"../utils":77,"eventemitter3":10}],44:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -10151,6 +13425,8 @@ utils.pluginTarget.mixin(CanvasRenderer);
  */
 CanvasRenderer.prototype.render = function (object)
 {
+    this.emit('prerender');
+
     var cacheParent = object.parent;
 
     this._lastObjectRendered = object;
@@ -10188,6 +13464,8 @@ CanvasRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.context);
+
+    this.emit('postrender');
 };
 
 /**
@@ -10301,7 +13579,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":13,"../../math":23,"../../utils":67,"../SystemRenderer":33,"./utils/CanvasMaskManager":37}],35:[function(require,module,exports){
+},{"../../const":22,"../../math":33,"../../utils":77,"../SystemRenderer":43,"./utils/CanvasMaskManager":47}],45:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -10401,7 +13679,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],36:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -10755,7 +14033,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":13}],37:[function(require,module,exports){
+},{"../../../const":22}],47:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -10817,7 +14095,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 
 CanvasMaskManager.prototype.destroy = function () {};
 
-},{"./CanvasGraphics":36}],38:[function(require,module,exports){
+},{"./CanvasGraphics":46}],48:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -11069,7 +14347,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":67}],39:[function(require,module,exports){
+},{"../../../utils":77}],49:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -11223,6 +14501,9 @@ function WebGLRenderer(width, height, options)
     // map some webGL blend modes..
     this._mapGlModes();
 
+    // track textures in the renderer so we can no longer listen to them on destruction.
+    this._managedTextures = [];
+
     /**
      * An array of render targets
      * @member {PIXI.RenderTarget[]}
@@ -11302,6 +14583,9 @@ WebGLRenderer.prototype._initContext = function ()
  */
 WebGLRenderer.prototype.render = function (object)
 {
+
+    this.emit('prerender');
+
     // no point rendering if our context has been blown up!
     if (this.gl.isContextLost())
     {
@@ -11348,6 +14632,8 @@ WebGLRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.renderTarget);//this.projection);
+
+    this.emit('postrender');
 };
 
 /**
@@ -11454,6 +14740,7 @@ WebGLRenderer.prototype.updateTexture = function (texture)
         texture._glTextures[gl.id] = gl.createTexture();
         texture.on('update', this.updateTexture, this);
         texture.on('dispose', this.destroyTexture, this);
+        this._managedTextures.push(texture);
     }
 
 
@@ -11494,7 +14781,7 @@ WebGLRenderer.prototype.updateTexture = function (texture)
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
  */
-WebGLRenderer.prototype.destroyTexture = function (texture)
+WebGLRenderer.prototype.destroyTexture = function (texture, _skipRemove)
 {
     texture = texture.baseTexture || texture;
 
@@ -11506,6 +14793,15 @@ WebGLRenderer.prototype.destroyTexture = function (texture)
     if (texture._glTextures[this.gl.id])
     {
         this.gl.deleteTexture(texture._glTextures[this.gl.id]);
+        delete texture._glTextures[this.gl.id];
+
+        if (!_skipRemove)
+        {
+            var i = this._managedTextures.indexOf(texture);
+            if (i !== -1) {
+                utils.removeItems(this._managedTextures, i, 1);
+            }
+        }
     }
 };
 
@@ -11529,9 +14825,13 @@ WebGLRenderer.prototype.handleContextRestored = function ()
     this._initContext();
 
     // empty all the old gl textures as they are useless now
-    for (var key in utils.BaseTextureCache)
+    for (var i = 0; i < this._managedTextures.length; ++i)
     {
-        utils.BaseTextureCache[key]._glTextures.length = 0;
+        var texture = this._managedTextures[i];
+        if (texture._glTextures[this.gl.id])
+        {
+            delete texture._glTextures[this.gl.id];
+        }
     }
 };
 
@@ -11548,8 +14848,11 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.view.removeEventListener('webglcontextlost', this.handleContextLost);
     this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
-    for (var key in utils.BaseTextureCache) {
-        var texture = utils.BaseTextureCache[key];
+    // destroy managed textures
+    for (var i = 0; i < this._managedTextures.length; ++i)
+    {
+        var texture = this._managedTextures[i];
+        this.destroyTexture(texture, true);
         texture.off('update', this.updateTexture, this);
         texture.off('dispose', this.destroyTexture, this);
     }
@@ -11577,15 +14880,19 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
 
+    this._managedTextures = null;
+
     this.drawCount = 0;
 
     this.gl.useProgram(null);
+
+    this.gl.flush();
 
     this.gl = null;
 };
 
 /**
- * Maps Pixi blend modes to WebGL blend modes.
+ * Maps Pixi blend modes to WebGL blend modes. It works only for pre-multiplied textures.
  *
  * @private
  */
@@ -11598,9 +14905,9 @@ WebGLRenderer.prototype._mapGlModes = function ()
         this.blendModes = {};
 
         this.blendModes[CONST.BLEND_MODES.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        this.blendModes[CONST.BLEND_MODES.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        this.blendModes[CONST.BLEND_MODES.ADD]           = [gl.ONE,       gl.DST_ALPHA];
         this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-        this.blendModes[CONST.BLEND_MODES.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
+        this.blendModes[CONST.BLEND_MODES.SCREEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_COLOR];
         this.blendModes[CONST.BLEND_MODES.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
         this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
@@ -11630,7 +14937,7 @@ WebGLRenderer.prototype._mapGlModes = function ()
     }
 };
 
-},{"../../const":13,"../../utils":67,"../SystemRenderer":33,"./filters/FXAAFilter":41,"./managers/BlendModeManager":43,"./managers/FilterManager":44,"./managers/MaskManager":45,"./managers/ShaderManager":46,"./managers/StencilManager":47,"./utils/ObjectRenderer":53,"./utils/RenderTarget":55}],40:[function(require,module,exports){
+},{"../../const":22,"../../utils":77,"../SystemRenderer":43,"./filters/FXAAFilter":51,"./managers/BlendModeManager":53,"./managers/FilterManager":54,"./managers/MaskManager":55,"./managers/ShaderManager":56,"./managers/StencilManager":57,"./utils/ObjectRenderer":63,"./utils/RenderTarget":65}],50:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -11742,7 +15049,7 @@ AbstractFilter.prototype.syncUniform = function (uniform)
     }
 };
 
-},{"../shaders/TextureShader":52}],41:[function(require,module,exports){
+},{"../shaders/TextureShader":62}],51:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -11797,7 +15104,7 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":40}],42:[function(require,module,exports){
+},{"./AbstractFilter":50}],52:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
@@ -11894,7 +15201,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":23,"./AbstractFilter":40}],43:[function(require,module,exports){
+},{"../../../math":33,"./AbstractFilter":50}],53:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -11938,7 +15245,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":48}],44:[function(require,module,exports){
+},{"./WebGLManager":58}],54:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -12390,7 +15697,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":13,"../../../math":23,"../utils/Quad":54,"../utils/RenderTarget":55,"./WebGLManager":48}],45:[function(require,module,exports){
+},{"../../../const":22,"../../../math":33,"../utils/Quad":64,"../utils/RenderTarget":65,"./WebGLManager":58}],55:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -12505,7 +15812,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":42,"./WebGLManager":48}],46:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":52,"./WebGLManager":58}],56:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -12674,7 +15981,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":67,"../shaders/ComplexPrimitiveShader":49,"../shaders/PrimitiveShader":50,"../shaders/TextureShader":52,"./WebGLManager":48}],47:[function(require,module,exports){
+},{"../../../utils":77,"../shaders/ComplexPrimitiveShader":59,"../shaders/PrimitiveShader":60,"../shaders/TextureShader":62,"./WebGLManager":58}],57:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -13020,7 +16327,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":67,"./WebGLManager":48}],48:[function(require,module,exports){
+},{"../../../utils":77,"./WebGLManager":58}],58:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -13061,7 +16368,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],49:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -13123,7 +16430,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":51}],50:[function(require,module,exports){
+},{"./Shader":61}],60:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -13186,7 +16493,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":51}],51:[function(require,module,exports){
+},{"./Shader":61}],61:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -13750,7 +17057,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":67}],52:[function(require,module,exports){
+},{"../../../utils":77}],62:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -13861,7 +17168,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":51}],53:[function(require,module,exports){
+},{"./Shader":61}],63:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -13919,7 +17226,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":48}],54:[function(require,module,exports){
+},{"../managers/WebGLManager":58}],64:[function(require,module,exports){
 /**
  * Helper class to create a quad
  *
@@ -14074,7 +17381,7 @@ module.exports = Quad;
 
 
 
-},{}],55:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -14396,7 +17703,7 @@ RenderTarget.prototype.destroy = function ()
     this.texture = null;
 };
 
-},{"../../../const":13,"../../../math":23,"../../../utils":67,"./StencilMaskStack":56}],56:[function(require,module,exports){
+},{"../../../const":22,"../../../math":33,"../../../utils":77,"./StencilMaskStack":66}],66:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -14429,14 +17736,16 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],57:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    GroupD8 = math.GroupD8,
+    canvasRenderWorldTransform = new math.Matrix();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -14545,7 +17854,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.x = utils.sign(this.scale.x) * value / this.texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -14563,7 +17873,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.y = utils.sign(this.scale.y) * value / this.texture._frame.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture._frame.height;
             this._height = value;
         }
     },
@@ -14671,7 +17982,8 @@ Sprite.prototype.getBounds = function (matrix)
             minY,
             maxY;
 
-
+        //TODO - I am SURE this can be optimised, but the below is not accurate enough..
+        /*
         if (b === 0 && c === 0)
         {
             // scale may be negative!
@@ -14694,38 +18006,41 @@ Sprite.prototype.getBounds = function (matrix)
         }
         else
         {
-            var x1 = a * w1 + c * h1 + tx;
-            var y1 = d * h1 + b * w1 + ty;
+        */
 
-            var x2 = a * w0 + c * h1 + tx;
-            var y2 = d * h1 + b * w0 + ty;
+        var x1 = a * w1 + c * h1 + tx;
+        var y1 = d * h1 + b * w1 + ty;
 
-            var x3 = a * w0 + c * h0 + tx;
-            var y3 = d * h0 + b * w0 + ty;
+        var x2 = a * w0 + c * h1 + tx;
+        var y2 = d * h1 + b * w0 + ty;
 
-            var x4 =  a * w1 + c * h0 + tx;
-            var y4 =  d * h0 + b * w1 + ty;
+        var x3 = a * w0 + c * h0 + tx;
+        var y3 = d * h0 + b * w0 + ty;
 
-            minX = x1;
-            minX = x2 < minX ? x2 : minX;
-            minX = x3 < minX ? x3 : minX;
-            minX = x4 < minX ? x4 : minX;
+        var x4 =  a * w1 + c * h0 + tx;
+        var y4 =  d * h0 + b * w1 + ty;
 
-            minY = y1;
-            minY = y2 < minY ? y2 : minY;
-            minY = y3 < minY ? y3 : minY;
-            minY = y4 < minY ? y4 : minY;
+        minX = x1;
+        minX = x2 < minX ? x2 : minX;
+        minX = x3 < minX ? x3 : minX;
+        minX = x4 < minX ? x4 : minX;
 
-            maxX = x1;
-            maxX = x2 > maxX ? x2 : maxX;
-            maxX = x3 > maxX ? x3 : maxX;
-            maxX = x4 > maxX ? x4 : maxX;
+        minY = y1;
+        minY = y2 < minY ? y2 : minY;
+        minY = y3 < minY ? y3 : minY;
+        minY = y4 < minY ? y4 : minY;
 
-            maxY = y1;
-            maxY = y2 > maxY ? y2 : maxY;
-            maxY = y3 > maxY ? y3 : maxY;
-            maxY = y4 > maxY ? y4 : maxY;
-        }
+        maxX = x1;
+        maxX = x2 > maxX ? x2 : maxX;
+        maxX = x3 > maxX ? x3 : maxX;
+        maxX = x4 > maxX ? x4 : maxX;
+
+        maxY = y1;
+        maxY = y2 > maxY ? y2 : maxY;
+        maxY = y3 > maxY ? y3 : maxY;
+        maxY = y4 > maxY ? y4 : maxY;
+
+        //}
 
         // check for children
         if(this.children.length)
@@ -14826,8 +18141,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width,
-            height;
+            width = texture.crop.width,
+            height = texture.crop.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -14838,37 +18153,28 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-
-        if(texture.rotate)
-        {
-
-            // cheeky rotation!
-            var a = wt.a;
-            var b = wt.b;
-
-            wt.a  = -wt.c;
-            wt.b  = -wt.d;
-            wt.c  =  a;
-            wt.d  =  b;
-
+        //inline GroupD8.isSwapWidthHeight
+        if ((texture.rotate & 3) === 2) {
             width = texture.crop.height;
             height = texture.crop.width;
-
-            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
         }
-        else
-        {
-            width = texture.crop.width;
-            height = texture.crop.height;
-
-            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
+        if (texture.trim) {
+            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
+            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
+        } else {
+            dx = (0.5 - this.anchor.x) * texture._frame.width;
+            dy = (0.5 - this.anchor.y) * texture._frame.height;
         }
-
-
-
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+        }
+        dx -= width/2;
+        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
@@ -14998,7 +18304,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":13,"../display/Container":14,"../math":23,"../renderers/canvas/utils/CanvasTinter":38,"../textures/Texture":62,"../utils":67}],58:[function(require,module,exports){
+},{"../const":22,"../display/Container":23,"../math":33,"../renderers/canvas/utils/CanvasTinter":48,"../textures/Texture":72,"../utils":77}],68:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -15217,24 +18523,27 @@ SpriteRenderer.prototype.render = function (sprite)
 
     if (this.renderer.roundPixels)
     {
-        // xy
-        positions[index] = a * w1 + c * h1 + tx | 0;
-        positions[index+1] = d * h1 + b * w1 + ty | 0;
+        var resolution = this.renderer.resolution;
 
         // xy
-        positions[index+5] = a * w0 + c * h1 + tx | 0;
-        positions[index+6] = d * h1 + b * w0 + ty | 0;
+        positions[index] = (((a * w1 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+1] = (((d * h1 + b * w1 + ty) * resolution) | 0) / resolution;
+
+        // xy
+        positions[index+5] = (((a * w0 + c * h1 + tx) * resolution) | 0) / resolution;
+        positions[index+6] = (((d * h1 + b * w0 + ty) * resolution) | 0) / resolution;
 
          // xy
-        positions[index+10] = a * w0 + c * h0 + tx | 0;
-        positions[index+11] = d * h0 + b * w0 + ty | 0;
+        positions[index+10] = (((a * w0 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+11] = (((d * h0 + b * w0 + ty) * resolution) | 0) / resolution;
 
         // xy
-        positions[index+15] = a * w1 + c * h0 + tx | 0;
-        positions[index+16] = d * h0 + b * w1 + ty | 0;
+        positions[index+15] = (((a * w1 + c * h0 + tx) * resolution) | 0) / resolution;
+        positions[index+16] = (((d * h0 + b * w1 + ty) * resolution) | 0) / resolution;
     }
     else
     {
+
         // xy
         positions[index] = a * w1 + c * h1 + tx;
         positions[index+1] = d * h1 + b * w1 + ty;
@@ -15468,7 +18777,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":13,"../../renderers/webgl/WebGLRenderer":39,"../../renderers/webgl/utils/ObjectRenderer":53}],59:[function(require,module,exports){
+},{"../../const":22,"../../renderers/webgl/WebGLRenderer":49,"../../renderers/webgl/utils/ObjectRenderer":63}],69:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -15497,11 +18806,14 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
+ * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
  * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
  * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
  *      prevent this from happening by adding padding to the top and bottom of text height.
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
@@ -15627,6 +18939,7 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+     * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
      * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
      *      prevent this from happening by adding padding to the top and bottom of text height.
      * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
@@ -15664,11 +18977,14 @@ Object.defineProperties(Text.prototype, {
             style.strokeThickness = style.strokeThickness || 0;
             style.wordWrap = style.wordWrap || false;
             style.wordWrapWidth = style.wordWrapWidth || 100;
+            style.breakWords = style.breakWords || false;
+            style.letterSpacing = style.letterSpacing || 0;
 
             style.dropShadow = style.dropShadow || false;
             style.dropShadowColor = style.dropShadowColor || '#000000';
-            style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance || 5;
+            style.dropShadowAngle = style.dropShadowAngle !== undefined ? style.dropShadowAngle : Math.PI / 6;
+            style.dropShadowDistance = style.dropShadowDistance !== undefined ? style.dropShadowDistance : 5;
+            style.dropShadowBlur = style.dropShadowBlur !== undefined ? style.dropShadowBlur : 0; //shadowBlur is '0' by default according to HTML
 
             style.padding = style.padding || 0;
 
@@ -15728,7 +19044,7 @@ Text.prototype.updateText = function ()
     var fontProperties = this.determineFontProperties(style.font);
     for (var i = 0; i < lines.length; i++)
     {
-        var lineWidth = this.context.measureText(lines[i]).width;
+        var lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
@@ -15739,7 +19055,7 @@ Text.prototype.updateText = function ()
         width += style.dropShadowDistance;
     }
 
-    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
+    this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
 
     // calculate text height
     var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
@@ -15750,7 +19066,7 @@ Text.prototype.updateText = function ()
         height += style.dropShadowDistance;
     }
 
-    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
+    this.canvas.height = Math.ceil( ( height + this._style.padding * 2 ) * this.resolution );
 
     this.context.scale( this.resolution, this.resolution);
 
@@ -15775,7 +19091,12 @@ Text.prototype.updateText = function ()
 
     if (style.dropShadow)
     {
-        this.context.fillStyle = style.dropShadowColor;
+        if (style.dropShadowBlur > 0) {
+            this.context.shadowColor = style.dropShadowColor;
+            this.context.shadowBlur = style.dropShadowBlur;
+        } else {
+            this.context.fillStyle = style.dropShadowColor;
+        }
 
         var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
         var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
@@ -15796,7 +19117,7 @@ Text.prototype.updateText = function ()
 
             if (style.fill)
             {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
+                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
             }
         }
     }
@@ -15821,16 +19142,61 @@ Text.prototype.updateText = function ()
 
         if (style.stroke && style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding, true);
         }
 
         if (style.fill)
         {
-            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding);
         }
     }
 
     this.updateTexture();
+};
+
+/**
+ * Render the text with letter-spacing.
+ *
+ * @private
+ */
+Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
+{
+    var style = this._style;
+
+    // letterSpacing of 0 means normal
+    var letterSpacing = style.letterSpacing;
+
+    if (letterSpacing === 0)
+    {
+        if (isStroke)
+        {
+            this.context.strokeText(text, x, y);
+        }
+        else
+        {
+            this.context.fillText(text, x, y);
+        }
+        return;
+    }
+
+    var characters = String.prototype.split.call(text, ''),
+        index = 0,
+        current,
+        currentPosition = x;
+
+    while (index < text.length)
+    {
+        current = characters[index++];
+        if (isStroke) 
+        {
+            this.context.strokeText(current, currentPosition, y);
+        }
+        else
+        {
+            this.context.fillText(current, currentPosition, y);
+        }
+        currentPosition += this.context.measureText(current).width + letterSpacing;
+    }
 };
 
 /**
@@ -15841,6 +19207,7 @@ Text.prototype.updateText = function ()
 Text.prototype.updateTexture = function ()
 {
     var texture = this._texture;
+    var style = this._style;
 
     texture.baseTexture.hasLoaded = true;
     texture.baseTexture.resolution = this.resolution;
@@ -15851,10 +19218,10 @@ Text.prototype.updateTexture = function ()
     texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
 
     texture.trim.x = 0;
-    texture.trim.y = -this._style.padding;
+    texture.trim.y = -style.padding;
 
     texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - this._style.padding*2;
+    texture.trim.height = texture._frame.height - style.padding*2;
 
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
@@ -16022,22 +19389,48 @@ Text.prototype.wordWrap = function (text)
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
-            var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if (j === 0 || wordWidthWithSpace > spaceLeft)
+            if (this._style.breakWords && wordWidth > wordWrapWidth) 
             {
-                // Skip printing the newline if it's the first word of the line that is
-                // greater than the word wrap width.
-                if (j > 0)
+                // Word should be split in the middle
+                var characters = words[j].split('');
+                for (var c = 0; c < characters.length; c++) 
                 {
-                    result += '\n';
+                  var characterWidth = this.context.measureText(characters[c]).width;
+                  if (characterWidth > spaceLeft) 
+                  {
+                    result += '\n' + characters[c];
+                    spaceLeft = wordWrapWidth - characterWidth;
+                  } 
+                  else 
+                  {
+                    if (c === 0) 
+                    {
+                      result += ' ';
+                    }
+                    result += characters[c];
+                    spaceLeft -= characterWidth;
+                  }
                 }
-                result += words[j];
-                spaceLeft = wordWrapWidth - wordWidth;
             }
-            else
+            else 
             {
-                spaceLeft -= wordWidthWithSpace;
-                result += ' ' + words[j];
+                var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                if (j === 0 || wordWidthWithSpace > spaceLeft)
+                {
+                    // Skip printing the newline if it's the first word of the line that is
+                    // greater than the word wrap width.
+                    if (j > 0)
+                    {
+                        result += '\n';
+                    }
+                    result += words[j];
+                    spaceLeft = wordWrapWidth - wordWidth;
+                }
+                else
+                {
+                    spaceLeft -= wordWidthWithSpace;
+                    result += ' ' + words[j];
+                }
             }
         }
 
@@ -16081,7 +19474,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":13,"../math":23,"../sprites/Sprite":57,"../textures/Texture":62,"../utils":67}],60:[function(require,module,exports){
+},{"../const":22,"../math":33,"../sprites/Sprite":67,"../textures/Texture":72,"../utils":77}],70:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -16184,6 +19577,7 @@ function BaseTexture(source, scaleMode, resolution)
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
+     * All blend modes, and shaders written for default value. Change it on your own risk.
      *
      * @member {boolean}
      * @default true
@@ -16219,7 +19613,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = [];
+    this._glTextures = {};
 
     // if no source passed don't try to load
     if (source)
@@ -16430,7 +19824,8 @@ BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
 
-    this._glTextures.length = 0;
+    // this should no longer be needed, the renderers should cleanup all the gl textures.
+    // this._glTextures = {};
 };
 
 /**
@@ -16515,7 +19910,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":13,"../utils":67,"eventemitter3":10}],61:[function(require,module,exports){
+},{"../const":22,"../utils":77,"eventemitter3":10}],71:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -16649,7 +20044,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
-        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+        this.baseTexture._glTextures[gl.id] = this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
         this.filterManager = new FilterManager(this.renderer);
@@ -16820,8 +20215,8 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         wt.append(matrix);
     }
 
-    displayObject.worldTransform = wt;
     var cachedWt = displayObject.worldTransform;
+    displayObject.worldTransform = wt;
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
@@ -16840,7 +20235,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
         this.textureBuffer.clear();
     }
 
-   
+
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 
@@ -16852,11 +20247,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
     this.renderer.resolution = realResolution;
 
-     displayObject.worldTransform = cachedWt;
-
- //   context.setTransform(1, 0, 0, 1, 0, 0);
-   // context.fillStyle ="#FF0000"
-//    context.fillRect(0, 0, 800, 600);
+    if(displayObject.worldTransform === wt)
+    {
+        // fixes cacheAsBitmap Happening during the above..
+        displayObject.worldTransform = cachedWt;
+    }
 
 };
 
@@ -16994,7 +20389,7 @@ RenderTexture.prototype.getPixel = function (x, y)
     }
 };
 
-},{"../const":13,"../math":23,"../renderers/canvas/utils/CanvasBuffer":35,"../renderers/webgl/managers/FilterManager":44,"../renderers/webgl/utils/RenderTarget":55,"./BaseTexture":60,"./Texture":62}],62:[function(require,module,exports){
+},{"../const":22,"../math":33,"../renderers/canvas/utils/CanvasBuffer":45,"../renderers/webgl/managers/FilterManager":54,"../renderers/webgl/utils/RenderTarget":65,"./BaseTexture":70,"./Texture":72}],72:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -17020,7 +20415,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture
  * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
- * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
+ * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
@@ -17110,13 +20505,16 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
-    /**
-     * Indicates whether the texture should be rotated by 90 degrees
-     *
-     * @private
-     * @member {boolean}
-     */
-    this.rotate = !!rotate;
+    this._rotate = +(rotate || 0);
+
+    if (rotate === true) {
+        // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
+        this._rotate = 2;
+    } else {
+        if (this._rotate % 2 !== 0) {
+            throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
+        }
+    }
 
     if (baseTexture.hasLoaded)
     {
@@ -17188,6 +20586,29 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
+            if (this.valid)
+            {
+                this._updateUvs();
+            }
+        }
+    },
+    /**
+     * Indicates whether the texture is rotated inside the atlas
+     * set to 2 to compensate for texture packer rotation
+     * set to 6 to compensate for spine packer rotation
+     * can be used to rotate or mirror sprites
+     * See {@link PIXI.GroupD8} for explanation
+     *
+     * @member {number}
+     */
+    rotate: {
+        get: function ()
+        {
+            return this._rotate;
+        },
+        set: function (rotate)
+        {
+            this._rotate = rotate;
             if (this.valid)
             {
                 this._updateUvs();
@@ -17420,7 +20841,7 @@ Texture.removeTextureFromCache = function (id)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":23,"../utils":67,"./BaseTexture":60,"./TextureUvs":63,"./VideoBaseTexture":64,"eventemitter3":10}],63:[function(require,module,exports){
+},{"../math":33,"../utils":77,"./BaseTexture":70,"./TextureUvs":73,"./VideoBaseTexture":74,"eventemitter3":10}],73:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -17446,11 +20867,13 @@ function TextureUvs()
 
 module.exports = TextureUvs;
 
+var GroupD8 = require('../math/GroupD8');
+
 /**
  * Sets the texture Uvs based on the given frame information
  * @param frame {PIXI.Rectangle}
  * @param baseFrame {PIXI.Rectangle}
- * @param rotate {boolean} Whether or not the frame is rotated
+ * @param rotate {number} Rotation of frame, see {@link PIXI.GroupD8}
  * @private
  */
 TextureUvs.prototype.set = function (frame, baseFrame, rotate)
@@ -17460,17 +20883,25 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
 
     if(rotate)
     {
-        this.x0 = (frame.x + frame.height) / tw;
-        this.y0 = frame.y / th;
-
-        this.x1 = (frame.x + frame.height) / tw;
-        this.y1 = (frame.y + frame.width) / th;
-
-        this.x2 = frame.x / tw;
-        this.y2 = (frame.y + frame.width) / th;
-
-        this.x3 = frame.x / tw;
-        this.y3 = frame.y / th;
+        //width and height div 2 div baseFrame size
+        var swapWidthHeight = GroupD8.isSwapWidthHeight(rotate);
+        var w2 = (swapWidthHeight ? frame.height : frame.width) / 2 / tw;
+        var h2 = (swapWidthHeight ? frame.width : frame.height) / 2 / th;
+        //coordinates of center
+        var cX = frame.x / tw + w2;
+        var cY = frame.y / th + h2;
+        rotate = GroupD8.add(rotate, GroupD8.NW); //NW is top-left corner
+        this.x0 = cX + w2 * GroupD8.uX(rotate);
+        this.y0 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2); //rotate 90 degrees clockwise
+        this.x1 = cX + w2 * GroupD8.uX(rotate);
+        this.y1 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2);
+        this.x2 = cX + w2 * GroupD8.uX(rotate);
+        this.y2 = cY + h2 * GroupD8.uY(rotate);
+        rotate = GroupD8.add(rotate, 2);
+        this.x3 = cX + w2 * GroupD8.uX(rotate);
+        this.y3 = cY + h2 * GroupD8.uY(rotate);
     }
     else
     {
@@ -17489,7 +20920,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],64:[function(require,module,exports){
+},{"../math/GroupD8":30}],74:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -17726,7 +21157,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":67,"./BaseTexture":60}],65:[function(require,module,exports){
+},{"../utils":77,"./BaseTexture":70}],75:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -18081,7 +21512,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":13,"eventemitter3":10}],66:[function(require,module,exports){
+},{"../const":22,"eventemitter3":10}],76:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -18137,7 +21568,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":65}],67:[function(require,module,exports){
+},{"./Ticker":75}],77:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -18371,8 +21802,34 @@ var utils = module.exports = {
      * @param n {number}
      * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
      */
-    sign: function (n) {
+    sign: function (n)
+    {
         return n ? (n < 0 ? -1 : 1) : 0;
+    },
+
+    /**
+     * removeItems
+     *
+     * @param {array} arr The target array
+     * @param {number} startIdx The index to begin removing from (inclusive)
+     * @param {number} removeCount How many items to remove
+     */
+    removeItems: function (arr, startIdx, removeCount)
+    {
+        var length = arr.length;
+
+        if (startIdx >= length || removeCount === 0)
+        {
+            return;
+        }
+
+        removeCount = (startIdx+removeCount > length ? length-startIdx : removeCount);
+        for (var i = startIdx, len = length-removeCount; i < len; ++i)
+        {
+            arr[i] = arr[i + removeCount];
+        }
+
+        arr.length = len;
     },
 
     /**
@@ -18388,7 +21845,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":13,"./pluginTarget":68,"async":1,"eventemitter3":10}],68:[function(require,module,exports){
+},{"../const":22,"./pluginTarget":78,"async":1,"eventemitter3":10}],78:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -18458,7 +21915,7 @@ module.exports = {
     }
 };
 
-},{}],69:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -18809,7 +22266,7 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
-},{"./core":20,"./extras":76,"./filters":93,"./mesh":117}],70:[function(require,module,exports){
+},{"./core":29,"./extras":86,"./filters":103,"./mesh":128}],80:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -19065,7 +22522,7 @@ BitmapText.prototype.updateText = function ()
 
         if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
         {
-            chars.splice(lastSpace, i - lastSpace);
+            core.utils.removeItems(chars, lastSpace, i - lastSpace);
             i = lastSpace;
             lastSpace = -1;
 
@@ -19197,7 +22654,7 @@ BitmapText.prototype.validate = function()
 
 BitmapText.fonts = {};
 
-},{"../core":20}],71:[function(require,module,exports){
+},{"../core":29}],81:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -19517,7 +22974,7 @@ MovieClip.fromImages = function (images)
 
     return new MovieClip(textures);
 };
-},{"../core":20}],72:[function(require,module,exports){
+},{"../core":29}],82:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempPoint = new core.Point(),
@@ -19758,7 +23215,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width * resolution, texture._frame.height * resolution);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
@@ -19773,7 +23230,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         }
         else
         {
-            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+            tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x * resolution, -texture._frame.y * resolution);
         }
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
@@ -19788,7 +23245,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
                        transform.ty * resolution);
 
     // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x,this.tileScale.y);
+    context.scale(this.tileScale.x / resolution, this.tileScale.y / resolution);
 
     context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
@@ -19804,8 +23261,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     context.fillStyle = this._canvasPattern;
     context.fillRect(-modX,
                      -modY,
-                     this._width / this.tileScale.x,
-                     this._height / this.tileScale.y);
+                     this._width * resolution / this.tileScale.x,
+                     this._height * resolution / this.tileScale.y);
 
 
     //TODO - pretty sure this can be deleted...
@@ -19969,7 +23426,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":20,"../core/renderers/canvas/utils/CanvasTinter":38}],73:[function(require,module,exports){
+},{"../core":29,"../core/renderers/canvas/utils/CanvasTinter":48}],83:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -19988,7 +23445,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
      * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'null'
+     * To remove simply set this property to 'false'
      *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
@@ -20241,7 +23698,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":20}],74:[function(require,module,exports){
+},{"../core":29}],84:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20271,7 +23728,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":20}],75:[function(require,module,exports){
+},{"../core":29}],85:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20301,7 +23758,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":20}],76:[function(require,module,exports){
+},{"../core":29}],86:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -20322,7 +23779,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":70,"./MovieClip":71,"./TilingSprite":72,"./cacheAsBitmap":73,"./getChildByName":74,"./getGlobalPosition":75}],77:[function(require,module,exports){
+},{"./BitmapText":80,"./MovieClip":81,"./TilingSprite":82,"./cacheAsBitmap":83,"./getChildByName":84,"./getGlobalPosition":85}],87:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -20379,7 +23836,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":20}],78:[function(require,module,exports){
+},{"../../core":29}],88:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -20480,7 +23937,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":20,"../blur/BlurXFilter":81,"../blur/BlurYFilter":82}],79:[function(require,module,exports){
+},{"../../core":29,"../blur/BlurXFilter":91,"../blur/BlurYFilter":92}],89:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -20622,7 +24079,7 @@ Object.defineProperties(BlurDirFilter.prototype, {
     }
 });
 
-},{"../../core":20}],80:[function(require,module,exports){
+},{"../../core":29}],90:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -20732,7 +24189,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":20,"./BlurXFilter":81,"./BlurYFilter":82}],81:[function(require,module,exports){
+},{"../../core":29,"./BlurXFilter":91,"./BlurYFilter":92}],91:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -20825,7 +24282,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":20}],82:[function(require,module,exports){
+},{"../../core":29}],92:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -20911,7 +24368,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":20}],83:[function(require,module,exports){
+},{"../../core":29}],93:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -20941,7 +24398,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":20}],84:[function(require,module,exports){
+},{"../../core":29}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -20967,7 +24424,7 @@ function ColorMatrixFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[25];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4];\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9];\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14];\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19];\n\n}\n",
+        "precision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform float m[25];\n\nvoid main(void)\n{\n\n    vec4 c = texture2D(uSampler, vTextureCoord);\n\n    gl_FragColor.r = (m[0] * c.r);\n        gl_FragColor.r += (m[1] * c.g);\n        gl_FragColor.r += (m[2] * c.b);\n        gl_FragColor.r += (m[3] * c.a);\n        gl_FragColor.r += m[4] * c.a;\n\n    gl_FragColor.g = (m[5] * c.r);\n        gl_FragColor.g += (m[6] * c.g);\n        gl_FragColor.g += (m[7] * c.b);\n        gl_FragColor.g += (m[8] * c.a);\n        gl_FragColor.g += m[9] * c.a;\n\n     gl_FragColor.b = (m[10] * c.r);\n        gl_FragColor.b += (m[11] * c.g);\n        gl_FragColor.b += (m[12] * c.b);\n        gl_FragColor.b += (m[13] * c.a);\n        gl_FragColor.b += m[14] * c.a;\n\n     gl_FragColor.a = (m[15] * c.r);\n        gl_FragColor.a += (m[16] * c.g);\n        gl_FragColor.a += (m[17] * c.b);\n        gl_FragColor.a += (m[18] * c.a);\n        gl_FragColor.a += m[19] * c.a;\n\n}\n",
         // custom uniforms
         {
             m: {
@@ -21477,7 +24934,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":20}],85:[function(require,module,exports){
+},{"../../core":29}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21526,7 +24983,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":20}],86:[function(require,module,exports){
+},{"../../core":29}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21617,7 +25074,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":20}],87:[function(require,module,exports){
+},{"../../core":29}],97:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21643,7 +25100,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":20}],88:[function(require,module,exports){
+},{"../../core":29}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21727,7 +25184,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":20}],89:[function(require,module,exports){
+},{"../../core":29}],99:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21799,7 +25256,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":20}],90:[function(require,module,exports){
+},{"../../core":29}],100:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -21890,7 +25347,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     }
 });
 
-},{"../../core":20}],91:[function(require,module,exports){
+},{"../../core":29}],101:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -22083,7 +25540,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":20,"../blur/BlurXFilter":81,"./BlurYTintFilter":90}],92:[function(require,module,exports){
+},{"../../core":29,"../blur/BlurXFilter":91,"./BlurYTintFilter":100}],102:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22132,7 +25589,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":20}],93:[function(require,module,exports){
+},{"../../core":29}],103:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22171,7 +25628,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"./ascii/AsciiFilter":77,"./bloom/BloomFilter":78,"./blur/BlurDirFilter":79,"./blur/BlurFilter":80,"./blur/BlurXFilter":81,"./blur/BlurYFilter":82,"./blur/SmartBlurFilter":83,"./color/ColorMatrixFilter":84,"./color/ColorStepFilter":85,"./convolution/ConvolutionFilter":86,"./crosshatch/CrossHatchFilter":87,"./displacement/DisplacementFilter":88,"./dot/DotScreenFilter":89,"./dropshadow/DropShadowFilter":91,"./gray/GrayFilter":92,"./invert/InvertFilter":94,"./noise/NoiseFilter":95,"./pixelate/PixelateFilter":96,"./rgb/RGBSplitFilter":97,"./sepia/SepiaFilter":98,"./shockwave/ShockwaveFilter":99,"./tiltshift/TiltShiftFilter":101,"./tiltshift/TiltShiftXFilter":102,"./tiltshift/TiltShiftYFilter":103,"./twist/TwistFilter":104}],94:[function(require,module,exports){
+},{"./ascii/AsciiFilter":87,"./bloom/BloomFilter":88,"./blur/BlurDirFilter":89,"./blur/BlurFilter":90,"./blur/BlurXFilter":91,"./blur/BlurYFilter":92,"./blur/SmartBlurFilter":93,"./color/ColorMatrixFilter":94,"./color/ColorStepFilter":95,"./convolution/ConvolutionFilter":96,"./crosshatch/CrossHatchFilter":97,"./displacement/DisplacementFilter":98,"./dot/DotScreenFilter":99,"./dropshadow/DropShadowFilter":101,"./gray/GrayFilter":102,"./invert/InvertFilter":104,"./noise/NoiseFilter":105,"./pixelate/PixelateFilter":106,"./rgb/RGBSplitFilter":107,"./sepia/SepiaFilter":108,"./shockwave/ShockwaveFilter":109,"./tiltshift/TiltShiftFilter":111,"./tiltshift/TiltShiftXFilter":112,"./tiltshift/TiltShiftYFilter":113,"./twist/TwistFilter":114}],104:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22221,7 +25678,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":20}],95:[function(require,module,exports){
+},{"../../core":29}],105:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22276,7 +25733,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":20}],96:[function(require,module,exports){
+},{"../../core":29}],106:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22327,7 +25784,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":20}],97:[function(require,module,exports){
+},{"../../core":29}],107:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22413,7 +25870,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":20}],98:[function(require,module,exports){
+},{"../../core":29}],108:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22463,7 +25920,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":20}],99:[function(require,module,exports){
+},{"../../core":29}],109:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22551,7 +26008,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":20}],100:[function(require,module,exports){
+},{"../../core":29}],110:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22676,7 +26133,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":20}],101:[function(require,module,exports){
+},{"../../core":29}],111:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -22786,7 +26243,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":20,"./TiltShiftXFilter":102,"./TiltShiftYFilter":103}],102:[function(require,module,exports){
+},{"../../core":29,"./TiltShiftXFilter":112,"./TiltShiftYFilter":113}],112:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -22824,7 +26281,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":100}],103:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":110}],113:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -22862,7 +26319,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":100}],104:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":110}],114:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22947,7 +26404,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":20}],105:[function(require,module,exports){
+},{"../../core":29}],115:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -22960,6 +26417,7 @@ core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
+core.accessibility  = require('./accessibility');
 
 // export a premade loader instance
 /**
@@ -22978,8 +26436,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./core":20,"./deprecation":69,"./extras":76,"./filters":93,"./interaction":108,"./loaders":111,"./mesh":117,"./polyfill":122}],106:[function(require,module,exports){
+},{"./accessibility":21,"./core":29,"./deprecation":79,"./extras":86,"./filters":103,"./interaction":118,"./loaders":121,"./mesh":128,"./polyfill":133}],116:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -23020,15 +26477,15 @@ module.exports = InteractionData;
  *
  * @param displayObject {PIXI.DisplayObject} The DisplayObject that you would like the local coords off
  * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new point)
- * param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
+ * @param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
  * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
 InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
-    return displayObject.toLocal(globalPos ? globalPos : this.global, point);
+    return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":20}],107:[function(require,module,exports){
+},{"../core":29}],117:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -23115,6 +26572,16 @@ function InteractionManager(renderer, options)
     this.interactionDOMElement = null;
 
     /**
+     * This property determins if mousemove and touchmove events are fired only when the cursror is over the object
+     * Setting to true will make things work more in line with how the DOM verison works.
+     * Setting to false can make things easier for things like dragging
+     * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
+     * @member {boolean}
+     * @private
+     */
+    this.moveWhenInside = false;
+    
+    /**
      * Have events been attached to the dom element?
      *
      * @member {boolean}
@@ -23185,6 +26652,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this._tempPoint = new core.Point();
+    
 
     /**
      * The current resolution
@@ -23378,45 +26846,80 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
  * @return {boolean} returns true if the displayObject hit the point
  */
-InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive )
+InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
 {
     if(!displayObject || !displayObject.visible)
     {
         return false;
     }
 
-    var children = displayObject.children;
+    // Took a little while to rework this function correctly! But now it is done and nice and optimised. ^_^
+    // 
+    // This function will now loop through all objects and then only hit test the objects it HAS to, not all of them. MUCH faster..
+    // An object will be hit test if the following is true:
+    // 
+    // 1: It is interactive.
+    // 2: It belongs to a parent that is interactive AND one of the parents children have not already been hit.
+    // 
+    // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
+    // A final optimisation is that an object is not hit test directly if a child has already been hit.
+    
+    var hit = false,
+        interactiveParent = interactive = displayObject.interactive || interactive;
 
-    var hit = false;
-
-    // if the object is interactive we must hit test all its children..
-    interactive = interactive || displayObject.interactive;
-
-    if(displayObject.interactiveChildren)
+    // if the displayobject has a hitArea, then it does not need to hitTest children.
+    if(displayObject.hitArea)
     {
-
-        for (var i = children.length-1; i >= 0; i--)
-        {
-            if(! hit  && hitTest)
-            {
-                hit = this.processInteractive(point, children[i], func, true, interactive );
-            }
-            else
-            {
-                // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false, false );
-            }
-        }
-
+        interactiveParent = false;
     }
 
+    // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
+    // This will allow pixi to completly ignore and bypass checking the displayObjects children.
+    if(displayObject.interactiveChildren)
+    {       
+        var children = displayObject.children;
+        
+        for (var i = children.length-1; i >= 0; i--)
+        {
+            var child = children[i];
+
+            // time to get recursive.. if this function will return if somthing is hit..
+            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
+            {
+                // its a good idea to check if a child has lost its parent.
+                // this means it has been removed whilst looping so its best
+                if(!child.parent)
+                {
+                    continue;
+                }
+
+                hit = true;
+
+                // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
+                interactiveParent = false;
+                
+                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
+                // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
+                //if(child.interactive)
+                //{
+                hitTest = false;
+                //}
+
+                // we can break now as we have hit an object.
+                //break;
+            }
+        }
+    }
+
+    // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
     {
-        if(hitTest)
-        {
+        // if we are hit testing (as in we have no hit any objects yet)
+        // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
+        if(hitTest && !hit)
+        {  
             if(displayObject.hitArea)
             {
-                // lets use the hit object first!
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                 hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
             }
@@ -23428,14 +26931,13 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
         if(displayObject.interactive)
         {
-            func(displayObject, hit);
+            func(displayObject, hit); 
         }
     }
 
     return hit;
+  
 };
-
-
 
 
 /**
@@ -23471,7 +26973,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 {
     var e = this.mouse.originalEvent;
-
+    
     var isRightButton = e.button === 2 || e.which === 3;
 
     if(hit)
@@ -23574,8 +27076,13 @@ InteractionManager.prototype.onMouseMove = function (event)
  */
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
-    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
     this.processMouseOverOut(displayObject, hit);
+    
+    // only display on mouse over
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    }
 };
 
 
@@ -23676,7 +27183,6 @@ InteractionManager.prototype.onTouchStart = function (event)
  */
 InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 {
-    //console.log("hit" + hit)
     if(hit)
     {
         displayObject._touchDown = true;
@@ -23775,7 +27281,7 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.eventData.data = touchData;
         this.eventData.stopped = false;
 
-        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, true );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
         this.returnTouchData( touchData );
     }
@@ -23790,8 +27296,10 @@ InteractionManager.prototype.onTouchMove = function (event)
  */
 InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
-    hit = hit;
-    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    if(!this.moveWhenInside || hit)
+    {
+        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+    }
 };
 
 /**
@@ -23883,7 +27391,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":20,"./InteractionData":106,"./interactiveTarget":109}],108:[function(require,module,exports){
+},{"../core":29,"./InteractionData":116,"./interactiveTarget":119}],118:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -23900,7 +27408,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":106,"./InteractionManager":107,"./interactiveTarget":109}],109:[function(require,module,exports){
+},{"./InteractionData":116,"./InteractionManager":117,"./interactiveTarget":119}],119:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -23949,7 +27457,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],110:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -23998,7 +27506,10 @@ function parse(resource, texture) {
         var second = parseInt(kernings[i].getAttribute('second'), 10);
         var amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
-        data.chars[second].kerning[first] = amount;
+        if(data.chars[second])
+        {
+            data.chars[second].kerning[first] = amount;
+        }
     }
 
     resource.bitmapFont = data;
@@ -24058,7 +27569,8 @@ module.exports = function ()
         else {
             var loadOptions = {
                 crossOrigin: resource.crossOrigin,
-                loadType: Resource.LOAD_TYPE.IMAGE
+                loadType: Resource.LOAD_TYPE.IMAGE,
+                metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
             this.add(resource.name + '_image', textureUrl, loadOptions, function (res) {
@@ -24069,7 +27581,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":20,"../extras":76,"path":2,"resource-loader":129}],111:[function(require,module,exports){
+},{"../core":29,"../extras":86,"path":2,"resource-loader":16}],121:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24090,7 +27602,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":110,"./loader":112,"./spritesheetParser":113,"./textureParser":114,"resource-loader":129}],112:[function(require,module,exports){
+},{"./bitmapFontParser":120,"./loader":122,"./spritesheetParser":123,"./textureParser":124,"resource-loader":16}],122:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -24152,90 +27664,126 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":110,"./spritesheetParser":113,"./textureParser":114,"resource-loader":129}],113:[function(require,module,exports){
+},{"./bitmapFontParser":120,"./spritesheetParser":123,"./textureParser":124,"resource-loader":16}],123:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
-    core = require('../core');
+    core = require('../core'),
+    async = require('async');
+
+var BATCH_SIZE = 1000;
 
 module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data, its not json, or it isn't spritesheet data
-        if (!resource.data || !resource.isJson || !resource.data.frames)
+        var imageResourceName = resource.name + '_image';
+
+        // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
+        if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
         {
             return next();
         }
 
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
-            loadType: Resource.LOAD_TYPE.IMAGE
+            loadType: Resource.LOAD_TYPE.IMAGE,
+            metadata: resource.metadata.imageMetadata
         };
 
         var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
-        var resolution = core.utils.getResolutionOfUrl( resource.url );
-
         // load the image for this sheet
-        this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
+        this.add(imageResourceName, route + '/' + resource.data.meta.image, loadOptions, function (res)
         {
             resource.textures = {};
 
             var frames = resource.data.frames;
+            var frameKeys = Object.keys(frames);
+            var resolution = core.utils.getResolutionOfUrl(resource.url);
+            var batchIndex = 0;
 
-            for (var i in frames)
+            function processFrames(initialFrameIndex, maxFrames)
             {
-                var rect = frames[i].frame;
+                var frameIndex = initialFrameIndex;
 
-                if (rect)
+                while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    var size = null;
-                    var trim = null;
+                    var frame = frames[frameKeys[frameIndex]];
+                    var rect = frame.frame;
 
-                    if (frames[i].rotated) {
-                        size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
-                    }
-                    else {
-                        size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
-                    }
-
-                    //  Check to see if the sprite is trimmed
-                    if (frames[i].trimmed)
+                    if (rect)
                     {
-                        trim = new core.Rectangle(
-                            frames[i].spriteSourceSize.x / resolution,
-                            frames[i].spriteSourceSize.y / resolution,
-                            frames[i].sourceSize.w / resolution,
-                            frames[i].sourceSize.h / resolution
-                         );
+                        var size = null;
+                        var trim = null;
+
+                        if (frame.rotated)
+                        {
+                            size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        }
+                        else
+                        {
+                            size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        }
+
+                        //  Check to see if the sprite is trimmed
+                        if (frame.trimmed)
+                        {
+                            trim = new core.Rectangle(
+                                frame.spriteSourceSize.x / resolution,
+                                frame.spriteSourceSize.y / resolution,
+                                frame.sourceSize.w / resolution,
+                                frame.sourceSize.h / resolution
+                            );
+                        }
+
+                        // flip the width and height!
+                        if (frame.rotated)
+                        {
+                            var temp = size.width;
+                            size.width = size.height;
+                            size.height = temp;
+                        }
+
+                        size.x /= resolution;
+                        size.y /= resolution;
+                        size.width /= resolution;
+                        size.height /= resolution;
+
+                        resource.textures[frameKeys[frameIndex]] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frame.rotated);
+
+                        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+                        core.utils.TextureCache[frameKeys[frameIndex]] = resource.textures[frameKeys[frameIndex]];
                     }
-
-                    // flip the width and height!
-                    if (frames[i].rotated)
-                    {
-                        var temp = size.width;
-                        size.width = size.height;
-                        size.height = temp;
-                    }
-
-                    size.x /= resolution;
-                    size.y /= resolution;
-                    size.width /= resolution;
-                    size.height /= resolution;
-
-                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
-
-                    // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                    core.utils.TextureCache[i] = resource.textures[i];
+                    frameIndex++;
                 }
             }
 
-            next();
+            function shouldProcessNextBatch()
+            {
+                return batchIndex * BATCH_SIZE < frameKeys.length;
+            }
+
+            function processNextBatch(done)
+            {
+                processFrames(batchIndex * BATCH_SIZE, BATCH_SIZE);
+                batchIndex++;
+                setTimeout(done, 0);
+            }
+
+            if (frameKeys.length <= BATCH_SIZE)
+            {
+                processFrames(0, BATCH_SIZE);
+                next();
+            }
+            else
+            {
+                async.whilst(shouldProcessNextBatch, processNextBatch, next);
+            }
         });
     };
 };
 
-},{"../core":20,"path":2,"resource-loader":129}],114:[function(require,module,exports){
+},{"../core":29,"async":1,"path":2,"resource-loader":16}],124:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -24257,7 +27805,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":20}],115:[function(require,module,exports){
+},{"../core":29}],125:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
@@ -24268,7 +27816,7 @@ var core = require('../core'),
  * @extends PIXI.Container
  * @memberof PIXI.mesh
  * @param texture {PIXI.Texture} The texture to use
- * @param [vertices] {Float32Arrif you want to specify the vertices
+ * @param [vertices] {Float32Array} if you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
  * @param [indices] {Uint16Array} if you want to specify the indices
  * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
@@ -24290,9 +27838,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      *
      * @member {Float32Array}
      */
-    this.uvs = uvs || new Float32Array([0, 1,
-        1, 1,
+    this.uvs = uvs || new Float32Array([0, 0,
         1, 0,
+        1, 1,
         0, 1]);
 
     /**
@@ -24309,7 +27857,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {Uint16Array} An array containing the indices of the vertices
      */
     //  TODO auto generate this based on draw mode!
-    this.indices = indices || new Uint16Array([0, 1, 2, 3]);
+    this.indices = indices || new Uint16Array([0, 1, 3, 2]);
 
     /**
      * Whether the Mesh is dirty or not
@@ -24344,6 +27892,13 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
 
     // run texture setter;
     this.texture = texture;
+
+     /**
+     * The default shader that is used if a mesh doesn't have a more specific one.
+     *
+     * @member {PIXI.Shader}
+     */
+    this.shader = null;
 }
 
 // constructor
@@ -24411,14 +27966,15 @@ Mesh.prototype._renderCanvas = function (renderer)
     var context = renderer.context;
 
     var transform = this.worldTransform;
+    var res = renderer.resolution;
 
     if (renderer.roundPixels)
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
     }
     else
     {
-        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+        context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
     }
 
     if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
@@ -24491,15 +28047,16 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this._texture.baseTexture.source;
-    var textureWidth = this._texture.baseTexture.width;
-    var textureHeight = this._texture.baseTexture.height;
+    var base = this._texture.baseTexture;
+    var textureSource = base.source;
+    var textureWidth = base.width;
+    var textureHeight = base.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
 
-    var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
-    var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
+    var u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
+    var v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
 
     if (this.canvasPadding > 0)
     {
@@ -24557,7 +28114,7 @@ Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, ind
         deltaB / delta, deltaE / delta,
         deltaC / delta, deltaF / delta);
 
-    context.drawImage(textureSource, 0, 0);
+    context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
     context.restore();
 };
 
@@ -24726,7 +28283,133 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":20}],116:[function(require,module,exports){
+},{"../core":29}],126:[function(require,module,exports){
+var Mesh = require('./Mesh');
+
+/**
+ * The Plane allows you to draw a texture across several points and them manipulate these points
+ *
+ *```js
+ * for (var i = 0; i < 20; i++) {
+ *     points.push(new PIXI.Point(i * 50, 0));
+ * };
+ * var Plane = new PIXI.Plane(PIXI.Texture.fromImage("snake.png"), points);
+ *  ```
+ *
+ * @class
+ * @extends PIXI.mesh.Mesh
+ * @memberof PIXI.mesh
+ * @param {PIXI.Texture} texture - The texture to use on the Plane.
+ * @param {int} segmentsX - The number ox x segments
+ * @param {int} segmentsY - The number of y segments
+ *
+ */
+function Plane(texture, segmentsX, segmentsY)
+{
+    Mesh.call(this, texture);
+
+    /**
+     * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can
+     * call _onTextureUpdated which could call refresh too early.
+     *
+     * @member {boolean}
+     * @private
+     */
+    this._ready = true;
+
+    this.segmentsX =  segmentsX || 10;
+    this.segmentsY = segmentsY || 10;
+
+    this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
+    this.refresh();
+
+}
+
+
+// constructor
+Plane.prototype = Object.create( Mesh.prototype );
+Plane.prototype.constructor = Plane;
+module.exports = Plane;
+
+/**
+ * Refreshes
+ *
+ */
+Plane.prototype.refresh = function()
+{
+    var total = this.segmentsX * this.segmentsY;
+    var verts = [];
+    var colors = [];
+    var uvs = [];
+    var indices = [];
+    var texture = this.texture;
+
+  //  texture.width = 800 texture.width || 800;
+ //   texture.height = 800//texture.height || 800;
+
+    var segmentsXSub = this.segmentsX - 1;
+    var segmentsYSub = this.segmentsY - 1;
+    var i = 0;
+
+    var sizeX = texture.width / segmentsXSub;
+    var sizeY = texture.height / segmentsYSub;
+
+    for (i = 0; i < total; i++) {
+
+        var x = (i % this.segmentsX);
+        var y = ( (i / this.segmentsX ) | 0 );
+
+
+        verts.push((x * sizeX),
+                   (y * sizeY));
+
+        // this works for rectangular textures. 
+        uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.segmentsX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.segmentsY-1)));
+      }
+
+    //  cons
+
+    var totalSub = segmentsXSub * segmentsYSub;
+
+    for (i = 0; i < totalSub; i++) {
+
+        var xpos = i % segmentsXSub;
+        var ypos = (i / segmentsXSub ) | 0;
+
+
+        var  value = (ypos * this.segmentsX) + xpos;
+        var  value2 = (ypos * this.segmentsX) + xpos + 1;
+        var  value3 = ((ypos+1) * this.segmentsX) + xpos;
+        var  value4 = ((ypos+1) * this.segmentsX) + xpos + 1;
+
+        indices.push(value, value2, value3);
+        indices.push(value2, value4, value3);
+    }
+
+
+    //console.log(indices)
+    this.vertices = new Float32Array(verts);
+    this.uvs = new Float32Array(uvs);
+    this.colors = new Float32Array(colors);
+    this.indices = new Uint16Array(indices);
+};
+
+/**
+ * Clear texture UVs when new texture is set
+ *
+ * @private
+ */
+Plane.prototype._onTextureUpdate = function ()
+{
+    Mesh.prototype._onTextureUpdate.call(this);
+
+    // wait for the Plane ctor to finish before calling refresh
+    if (this._ready) {
+        this.refresh();
+    }
+};
+
+},{"./Mesh":125}],127:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -24939,7 +28622,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":20,"./Mesh":115}],117:[function(require,module,exports){
+},{"../core":29,"./Mesh":125}],128:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24952,12 +28635,13 @@ Rope.prototype.updateTransform = function ()
  */
 module.exports = {
     Mesh:           require('./Mesh'),
+    Plane:           require('./Plane'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":115,"./Rope":116,"./webgl/MeshRenderer":118,"./webgl/MeshShader":119}],118:[function(require,module,exports){
+},{"./Mesh":125,"./Plane":126,"./Rope":127,"./webgl/MeshRenderer":129,"./webgl/MeshShader":130}],129:[function(require,module,exports){
 var core = require('../../core'),
     Mesh = require('../Mesh');
 
@@ -24990,6 +28674,7 @@ function MeshRenderer(renderer)
      *
      * @member {Uint16Array}
      */
+    
     this.indices = new Uint16Array(15000);
 
     //TODO this could be a single buffer shared amongst all renderers as we reuse this set up in most renderers
@@ -25002,6 +28687,8 @@ function MeshRenderer(renderer)
         this.indices[i + 4] = j + 2;
         this.indices[i + 5] = j + 3;
     }
+
+    this.currentShader = null;
 }
 
 MeshRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
@@ -25036,18 +28723,29 @@ MeshRenderer.prototype.render = function (mesh)
     var renderer = this.renderer,
         gl = renderer.gl,
         texture = mesh._texture.baseTexture,
-        shader = renderer.shaderManager.plugins.meshShader;
+        shader = mesh.shader;// || renderer.shaderManager.plugins.meshShader;
 
     var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     renderer.blendModeManager.setBlendMode(mesh.blendMode);
 
+    //TODO cache custom state..
+    if (!shader)
+    {
+        shader = renderer.shaderManager.plugins.meshShader;
+    }
+    else
+    {
+        shader = shader.shaders[gl.id] || shader.getShader(renderer);// : shader;
+    }
 
-    // set uniforms
-    gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, mesh.worldTransform.toArray(true));
+    this.renderer.shaderManager.setShader(shader);
 
-    gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
-    gl.uniform1f(shader.uniforms.alpha._location, mesh.worldAlpha);
+    shader.uniforms.translationMatrix.value = mesh.worldTransform.toArray(true);
+    shader.uniforms.projectionMatrix.value = renderer.currentRenderTarget.projectionMatrix.toArray(true);
+    shader.uniforms.alpha.value = mesh.worldAlpha;
+
+    shader.syncUniforms();
 
     if (!mesh.dirty)
     {
@@ -25158,9 +28856,9 @@ MeshRenderer.prototype.flush = function ()
  */
 MeshRenderer.prototype.start = function ()
 {
-    var shader = this.renderer.shaderManager.plugins.meshShader;
+    
 
-    this.renderer.shaderManager.setShader(shader);
+    this.currentShader = null;
 };
 
 /**
@@ -25172,7 +28870,7 @@ MeshRenderer.prototype.destroy = function ()
     core.ObjectRenderer.prototype.destroy.call(this);
 };
 
-},{"../../core":20,"../Mesh":115}],119:[function(require,module,exports){
+},{"../../core":29,"../Mesh":125}],130:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -25233,7 +28931,7 @@ module.exports = MeshShader;
 
 core.ShaderManager.registerPlugin('meshShader', MeshShader);
 
-},{"../../core":20}],120:[function(require,module,exports){
+},{"../../core":29}],131:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -25249,7 +28947,7 @@ if (!Math.sign)
     };
 }
 
-},{}],121:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -25259,12 +28957,12 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":11}],122:[function(require,module,exports){
+},{"object-assign":11}],133:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
 
-},{"./Math.sign":120,"./Object.assign":121,"./requestAnimationFrame":123}],123:[function(require,module,exports){
+},{"./Math.sign":131,"./Object.assign":132,"./requestAnimationFrame":134}],134:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -25334,2813 +29032,6 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],124:[function(require,module,exports){
-(function (process){
-/*!
- * async
- * https://github.com/caolan/async
- *
- * Copyright 2010-2014 Caolan McMahon
- * Released under the MIT license
- */
-/*jshint onevar: false, indent:4 */
-/*global setImmediate: false, setTimeout: false, console: false */
-(function () {
-
-    var async = {};
-
-    // global on the server, window in the browser
-    var root, previous_async;
-
-    root = this;
-    if (root != null) {
-      previous_async = root.async;
-    }
-
-    async.noConflict = function () {
-        root.async = previous_async;
-        return async;
-    };
-
-    function only_once(fn) {
-        var called = false;
-        return function() {
-            if (called) throw new Error("Callback was already called.");
-            called = true;
-            fn.apply(root, arguments);
-        }
-    }
-
-    //// cross-browser compatiblity functions ////
-
-    var _toString = Object.prototype.toString;
-
-    var _isArray = Array.isArray || function (obj) {
-        return _toString.call(obj) === '[object Array]';
-    };
-
-    var _each = function (arr, iterator) {
-        if (arr.forEach) {
-            return arr.forEach(iterator);
-        }
-        for (var i = 0; i < arr.length; i += 1) {
-            iterator(arr[i], i, arr);
-        }
-    };
-
-    var _map = function (arr, iterator) {
-        if (arr.map) {
-            return arr.map(iterator);
-        }
-        var results = [];
-        _each(arr, function (x, i, a) {
-            results.push(iterator(x, i, a));
-        });
-        return results;
-    };
-
-    var _reduce = function (arr, iterator, memo) {
-        if (arr.reduce) {
-            return arr.reduce(iterator, memo);
-        }
-        _each(arr, function (x, i, a) {
-            memo = iterator(memo, x, i, a);
-        });
-        return memo;
-    };
-
-    var _keys = function (obj) {
-        if (Object.keys) {
-            return Object.keys(obj);
-        }
-        var keys = [];
-        for (var k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    };
-
-    //// exported async module functions ////
-
-    //// nextTick implementation with browser-compatible fallback ////
-    if (typeof process === 'undefined' || !(process.nextTick)) {
-        if (typeof setImmediate === 'function') {
-            async.nextTick = function (fn) {
-                // not a direct alias for IE10 compatibility
-                setImmediate(fn);
-            };
-            async.setImmediate = async.nextTick;
-        }
-        else {
-            async.nextTick = function (fn) {
-                setTimeout(fn, 0);
-            };
-            async.setImmediate = async.nextTick;
-        }
-    }
-    else {
-        async.nextTick = process.nextTick;
-        if (typeof setImmediate !== 'undefined') {
-            async.setImmediate = function (fn) {
-              // not a direct alias for IE10 compatibility
-              setImmediate(fn);
-            };
-        }
-        else {
-            async.setImmediate = async.nextTick;
-        }
-    }
-
-    async.each = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        _each(arr, function (x) {
-            iterator(x, only_once(done) );
-        });
-        function done(err) {
-          if (err) {
-              callback(err);
-              callback = function () {};
-          }
-          else {
-              completed += 1;
-              if (completed >= arr.length) {
-                  callback();
-              }
-          }
-        }
-    };
-    async.forEach = async.each;
-
-    async.eachSeries = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        var iterate = function () {
-            iterator(arr[completed], function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed >= arr.length) {
-                        callback();
-                    }
-                    else {
-                        iterate();
-                    }
-                }
-            });
-        };
-        iterate();
-    };
-    async.forEachSeries = async.eachSeries;
-
-    async.eachLimit = function (arr, limit, iterator, callback) {
-        var fn = _eachLimit(limit);
-        fn.apply(null, [arr, iterator, callback]);
-    };
-    async.forEachLimit = async.eachLimit;
-
-    var _eachLimit = function (limit) {
-
-        return function (arr, iterator, callback) {
-            callback = callback || function () {};
-            if (!arr.length || limit <= 0) {
-                return callback();
-            }
-            var completed = 0;
-            var started = 0;
-            var running = 0;
-
-            (function replenish () {
-                if (completed >= arr.length) {
-                    return callback();
-                }
-
-                while (running < limit && started < arr.length) {
-                    started += 1;
-                    running += 1;
-                    iterator(arr[started - 1], function (err) {
-                        if (err) {
-                            callback(err);
-                            callback = function () {};
-                        }
-                        else {
-                            completed += 1;
-                            running -= 1;
-                            if (completed >= arr.length) {
-                                callback();
-                            }
-                            else {
-                                replenish();
-                            }
-                        }
-                    });
-                }
-            })();
-        };
-    };
-
-
-    var doParallel = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.each].concat(args));
-        };
-    };
-    var doParallelLimit = function(limit, fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [_eachLimit(limit)].concat(args));
-        };
-    };
-    var doSeries = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.eachSeries].concat(args));
-        };
-    };
-
-
-    var _asyncMap = function (eachfn, arr, iterator, callback) {
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        if (!callback) {
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err) {
-                    callback(err);
-                });
-            });
-        } else {
-            var results = [];
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err, v) {
-                    results[x.index] = v;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-    async.map = doParallel(_asyncMap);
-    async.mapSeries = doSeries(_asyncMap);
-    async.mapLimit = function (arr, limit, iterator, callback) {
-        return _mapLimit(limit)(arr, iterator, callback);
-    };
-
-    var _mapLimit = function(limit) {
-        return doParallelLimit(limit, _asyncMap);
-    };
-
-    // reduce only has a series version, as doing reduce in parallel won't
-    // work in many situations.
-    async.reduce = function (arr, memo, iterator, callback) {
-        async.eachSeries(arr, function (x, callback) {
-            iterator(memo, x, function (err, v) {
-                memo = v;
-                callback(err);
-            });
-        }, function (err) {
-            callback(err, memo);
-        });
-    };
-    // inject alias
-    async.inject = async.reduce;
-    // foldl alias
-    async.foldl = async.reduce;
-
-    async.reduceRight = function (arr, memo, iterator, callback) {
-        var reversed = _map(arr, function (x) {
-            return x;
-        }).reverse();
-        async.reduce(reversed, memo, iterator, callback);
-    };
-    // foldr alias
-    async.foldr = async.reduceRight;
-
-    var _filter = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.filter = doParallel(_filter);
-    async.filterSeries = doSeries(_filter);
-    // select alias
-    async.select = async.filter;
-    async.selectSeries = async.filterSeries;
-
-    var _reject = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (!v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.reject = doParallel(_reject);
-    async.rejectSeries = doSeries(_reject);
-
-    var _detect = function (eachfn, arr, iterator, main_callback) {
-        eachfn(arr, function (x, callback) {
-            iterator(x, function (result) {
-                if (result) {
-                    main_callback(x);
-                    main_callback = function () {};
-                }
-                else {
-                    callback();
-                }
-            });
-        }, function (err) {
-            main_callback();
-        });
-    };
-    async.detect = doParallel(_detect);
-    async.detectSeries = doSeries(_detect);
-
-    async.some = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (v) {
-                    main_callback(true);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(false);
-        });
-    };
-    // any alias
-    async.any = async.some;
-
-    async.every = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (!v) {
-                    main_callback(false);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(true);
-        });
-    };
-    // all alias
-    async.all = async.every;
-
-    async.sortBy = function (arr, iterator, callback) {
-        async.map(arr, function (x, callback) {
-            iterator(x, function (err, criteria) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, {value: x, criteria: criteria});
-                }
-            });
-        }, function (err, results) {
-            if (err) {
-                return callback(err);
-            }
-            else {
-                var fn = function (left, right) {
-                    var a = left.criteria, b = right.criteria;
-                    return a < b ? -1 : a > b ? 1 : 0;
-                };
-                callback(null, _map(results.sort(fn), function (x) {
-                    return x.value;
-                }));
-            }
-        });
-    };
-
-    async.auto = function (tasks, callback) {
-        callback = callback || function () {};
-        var keys = _keys(tasks);
-        var remainingTasks = keys.length
-        if (!remainingTasks) {
-            return callback();
-        }
-
-        var results = {};
-
-        var listeners = [];
-        var addListener = function (fn) {
-            listeners.unshift(fn);
-        };
-        var removeListener = function (fn) {
-            for (var i = 0; i < listeners.length; i += 1) {
-                if (listeners[i] === fn) {
-                    listeners.splice(i, 1);
-                    return;
-                }
-            }
-        };
-        var taskComplete = function () {
-            remainingTasks--
-            _each(listeners.slice(0), function (fn) {
-                fn();
-            });
-        };
-
-        addListener(function () {
-            if (!remainingTasks) {
-                var theCallback = callback;
-                // prevent final callback from calling itself if it errors
-                callback = function () {};
-
-                theCallback(null, results);
-            }
-        });
-
-        _each(keys, function (k) {
-            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
-            var taskCallback = function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (args.length <= 1) {
-                    args = args[0];
-                }
-                if (err) {
-                    var safeResults = {};
-                    _each(_keys(results), function(rkey) {
-                        safeResults[rkey] = results[rkey];
-                    });
-                    safeResults[k] = args;
-                    callback(err, safeResults);
-                    // stop subsequent errors hitting callback multiple times
-                    callback = function () {};
-                }
-                else {
-                    results[k] = args;
-                    async.setImmediate(taskComplete);
-                }
-            };
-            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
-            var ready = function () {
-                return _reduce(requires, function (a, x) {
-                    return (a && results.hasOwnProperty(x));
-                }, true) && !results.hasOwnProperty(k);
-            };
-            if (ready()) {
-                task[task.length - 1](taskCallback, results);
-            }
-            else {
-                var listener = function () {
-                    if (ready()) {
-                        removeListener(listener);
-                        task[task.length - 1](taskCallback, results);
-                    }
-                };
-                addListener(listener);
-            }
-        });
-    };
-
-    async.retry = function(times, task, callback) {
-        var DEFAULT_TIMES = 5;
-        var attempts = [];
-        // Use defaults if times not passed
-        if (typeof times === 'function') {
-            callback = task;
-            task = times;
-            times = DEFAULT_TIMES;
-        }
-        // Make sure times is a number
-        times = parseInt(times, 10) || DEFAULT_TIMES;
-        var wrappedTask = function(wrappedCallback, wrappedResults) {
-            var retryAttempt = function(task, finalAttempt) {
-                return function(seriesCallback) {
-                    task(function(err, result){
-                        seriesCallback(!err || finalAttempt, {err: err, result: result});
-                    }, wrappedResults);
-                };
-            };
-            while (times) {
-                attempts.push(retryAttempt(task, !(times-=1)));
-            }
-            async.series(attempts, function(done, data){
-                data = data[data.length - 1];
-                (wrappedCallback || callback)(data.err, data.result);
-            });
-        }
-        // If a callback is passed, run this as a controll flow
-        return callback ? wrappedTask() : wrappedTask
-    };
-
-    async.waterfall = function (tasks, callback) {
-        callback = callback || function () {};
-        if (!_isArray(tasks)) {
-          var err = new Error('First argument to waterfall must be an array of functions');
-          return callback(err);
-        }
-        if (!tasks.length) {
-            return callback();
-        }
-        var wrapIterator = function (iterator) {
-            return function (err) {
-                if (err) {
-                    callback.apply(null, arguments);
-                    callback = function () {};
-                }
-                else {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    var next = iterator.next();
-                    if (next) {
-                        args.push(wrapIterator(next));
-                    }
-                    else {
-                        args.push(callback);
-                    }
-                    async.setImmediate(function () {
-                        iterator.apply(null, args);
-                    });
-                }
-            };
-        };
-        wrapIterator(async.iterator(tasks))();
-    };
-
-    var _parallel = function(eachfn, tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            eachfn.map(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            eachfn.each(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.parallel = function (tasks, callback) {
-        _parallel({ map: async.map, each: async.each }, tasks, callback);
-    };
-
-    async.parallelLimit = function(tasks, limit, callback) {
-        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
-    };
-
-    async.series = function (tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            async.mapSeries(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            async.eachSeries(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.iterator = function (tasks) {
-        var makeCallback = function (index) {
-            var fn = function () {
-                if (tasks.length) {
-                    tasks[index].apply(null, arguments);
-                }
-                return fn.next();
-            };
-            fn.next = function () {
-                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
-            };
-            return fn;
-        };
-        return makeCallback(0);
-    };
-
-    async.apply = function (fn) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return function () {
-            return fn.apply(
-                null, args.concat(Array.prototype.slice.call(arguments))
-            );
-        };
-    };
-
-    var _concat = function (eachfn, arr, fn, callback) {
-        var r = [];
-        eachfn(arr, function (x, cb) {
-            fn(x, function (err, y) {
-                r = r.concat(y || []);
-                cb(err);
-            });
-        }, function (err) {
-            callback(err, r);
-        });
-    };
-    async.concat = doParallel(_concat);
-    async.concatSeries = doSeries(_concat);
-
-    async.whilst = function (test, iterator, callback) {
-        if (test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.whilst(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doWhilst = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (test.apply(null, args)) {
-                async.doWhilst(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.until = function (test, iterator, callback) {
-        if (!test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.until(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doUntil = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (!test.apply(null, args)) {
-                async.doUntil(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.queue = function (worker, concurrency) {
-        if (concurrency === undefined) {
-            concurrency = 1;
-        }
-        function _insert(q, data, pos, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-
-              if (pos) {
-                q.tasks.unshift(item);
-              } else {
-                q.tasks.push(item);
-              }
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-
-        var workers = 0;
-        var q = {
-            tasks: [],
-            concurrency: concurrency,
-            saturated: null,
-            empty: null,
-            drain: null,
-            started: false,
-            paused: false,
-            push: function (data, callback) {
-              _insert(q, data, false, callback);
-            },
-            kill: function () {
-              q.drain = null;
-              q.tasks = [];
-            },
-            unshift: function (data, callback) {
-              _insert(q, data, true, callback);
-            },
-            process: function () {
-                if (!q.paused && workers < q.concurrency && q.tasks.length) {
-                    var task = q.tasks.shift();
-                    if (q.empty && q.tasks.length === 0) {
-                        q.empty();
-                    }
-                    workers += 1;
-                    var next = function () {
-                        workers -= 1;
-                        if (task.callback) {
-                            task.callback.apply(task, arguments);
-                        }
-                        if (q.drain && q.tasks.length + workers === 0) {
-                            q.drain();
-                        }
-                        q.process();
-                    };
-                    var cb = only_once(next);
-                    worker(task.data, cb);
-                }
-            },
-            length: function () {
-                return q.tasks.length;
-            },
-            running: function () {
-                return workers;
-            },
-            idle: function() {
-                return q.tasks.length + workers === 0;
-            },
-            pause: function () {
-                if (q.paused === true) { return; }
-                q.paused = true;
-                q.process();
-            },
-            resume: function () {
-                if (q.paused === false) { return; }
-                q.paused = false;
-                q.process();
-            }
-        };
-        return q;
-    };
-    
-    async.priorityQueue = function (worker, concurrency) {
-        
-        function _compareTasks(a, b){
-          return a.priority - b.priority;
-        };
-        
-        function _binarySearch(sequence, item, compare) {
-          var beg = -1,
-              end = sequence.length - 1;
-          while (beg < end) {
-            var mid = beg + ((end - beg + 1) >>> 1);
-            if (compare(item, sequence[mid]) >= 0) {
-              beg = mid;
-            } else {
-              end = mid - 1;
-            }
-          }
-          return beg;
-        }
-        
-        function _insert(q, data, priority, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  priority: priority,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-              
-              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-        
-        // Start with a normal queue
-        var q = async.queue(worker, concurrency);
-        
-        // Override push to accept second parameter representing priority
-        q.push = function (data, priority, callback) {
-          _insert(q, data, priority, callback);
-        };
-        
-        // Remove unshift function
-        delete q.unshift;
-
-        return q;
-    };
-
-    async.cargo = function (worker, payload) {
-        var working     = false,
-            tasks       = [];
-
-        var cargo = {
-            tasks: tasks,
-            payload: payload,
-            saturated: null,
-            empty: null,
-            drain: null,
-            drained: true,
-            push: function (data, callback) {
-                if (!_isArray(data)) {
-                    data = [data];
-                }
-                _each(data, function(task) {
-                    tasks.push({
-                        data: task,
-                        callback: typeof callback === 'function' ? callback : null
-                    });
-                    cargo.drained = false;
-                    if (cargo.saturated && tasks.length === payload) {
-                        cargo.saturated();
-                    }
-                });
-                async.setImmediate(cargo.process);
-            },
-            process: function process() {
-                if (working) return;
-                if (tasks.length === 0) {
-                    if(cargo.drain && !cargo.drained) cargo.drain();
-                    cargo.drained = true;
-                    return;
-                }
-
-                var ts = typeof payload === 'number'
-                            ? tasks.splice(0, payload)
-                            : tasks.splice(0, tasks.length);
-
-                var ds = _map(ts, function (task) {
-                    return task.data;
-                });
-
-                if(cargo.empty) cargo.empty();
-                working = true;
-                worker(ds, function () {
-                    working = false;
-
-                    var args = arguments;
-                    _each(ts, function (data) {
-                        if (data.callback) {
-                            data.callback.apply(null, args);
-                        }
-                    });
-
-                    process();
-                });
-            },
-            length: function () {
-                return tasks.length;
-            },
-            running: function () {
-                return working;
-            }
-        };
-        return cargo;
-    };
-
-    var _console_fn = function (name) {
-        return function (fn) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            fn.apply(null, args.concat([function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (typeof console !== 'undefined') {
-                    if (err) {
-                        if (console.error) {
-                            console.error(err);
-                        }
-                    }
-                    else if (console[name]) {
-                        _each(args, function (x) {
-                            console[name](x);
-                        });
-                    }
-                }
-            }]));
-        };
-    };
-    async.log = _console_fn('log');
-    async.dir = _console_fn('dir');
-    /*async.info = _console_fn('info');
-    async.warn = _console_fn('warn');
-    async.error = _console_fn('error');*/
-
-    async.memoize = function (fn, hasher) {
-        var memo = {};
-        var queues = {};
-        hasher = hasher || function (x) {
-            return x;
-        };
-        var memoized = function () {
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            var key = hasher.apply(null, args);
-            if (key in memo) {
-                async.nextTick(function () {
-                    callback.apply(null, memo[key]);
-                });
-            }
-            else if (key in queues) {
-                queues[key].push(callback);
-            }
-            else {
-                queues[key] = [callback];
-                fn.apply(null, args.concat([function () {
-                    memo[key] = arguments;
-                    var q = queues[key];
-                    delete queues[key];
-                    for (var i = 0, l = q.length; i < l; i++) {
-                      q[i].apply(null, arguments);
-                    }
-                }]));
-            }
-        };
-        memoized.memo = memo;
-        memoized.unmemoized = fn;
-        return memoized;
-    };
-
-    async.unmemoize = function (fn) {
-      return function () {
-        return (fn.unmemoized || fn).apply(null, arguments);
-      };
-    };
-
-    async.times = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.map(counter, iterator, callback);
-    };
-
-    async.timesSeries = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.mapSeries(counter, iterator, callback);
-    };
-
-    async.seq = function (/* functions... */) {
-        var fns = arguments;
-        return function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            async.reduce(fns, args, function (newargs, fn, cb) {
-                fn.apply(that, newargs.concat([function () {
-                    var err = arguments[0];
-                    var nextargs = Array.prototype.slice.call(arguments, 1);
-                    cb(err, nextargs);
-                }]))
-            },
-            function (err, results) {
-                callback.apply(that, [err].concat(results));
-            });
-        };
-    };
-
-    async.compose = function (/* functions... */) {
-      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
-    };
-
-    var _applyEach = function (eachfn, fns /*args...*/) {
-        var go = function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            return eachfn(fns, function (fn, cb) {
-                fn.apply(that, args.concat([cb]));
-            },
-            callback);
-        };
-        if (arguments.length > 2) {
-            var args = Array.prototype.slice.call(arguments, 2);
-            return go.apply(this, args);
-        }
-        else {
-            return go;
-        }
-    };
-    async.applyEach = doParallel(_applyEach);
-    async.applyEachSeries = doSeries(_applyEach);
-
-    async.forever = function (fn, callback) {
-        function next(err) {
-            if (err) {
-                if (callback) {
-                    return callback(err);
-                }
-                throw err;
-            }
-            fn(next);
-        }
-        next();
-    };
-
-    // Node.js
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = async;
-    }
-    // AMD / RequireJS
-    else if (typeof define !== 'undefined' && define.amd) {
-        define([], function () {
-            return async;
-        });
-    }
-    // included directly via <script> tag
-    else {
-        root.async = async;
-    }
-
-}());
-
-}).call(this,require('_process'))
-
-},{"_process":3}],125:[function(require,module,exports){
-'use strict';
-
-//
-// We store our EE objects in a plain object whose properties are event names.
-// If `Object.create(null)` is not supported we prefix the event names with a
-// `~` to make sure that the built-in object properties are not overridden or
-// used as an attack vector.
-// We also assume that `Object.create(null)` is available when the event name
-// is an ES6 Symbol.
-//
-var prefix = typeof Object.create !== 'function' ? '~' : false;
-
-/**
- * Representation of a single EventEmitter function.
- *
- * @param {Function} fn Event handler to be called.
- * @param {Mixed} context Context for function execution.
- * @param {Boolean} once Only emit once
- * @api private
- */
-function EE(fn, context, once) {
-  this.fn = fn;
-  this.context = context;
-  this.once = once || false;
-}
-
-/**
- * Minimal EventEmitter interface that is molded against the Node.js
- * EventEmitter interface.
- *
- * @constructor
- * @api public
- */
-function EventEmitter() { /* Nothing to set */ }
-
-/**
- * Holds the assigned EventEmitters by name.
- *
- * @type {Object}
- * @private
- */
-EventEmitter.prototype._events = undefined;
-
-/**
- * Return a list of assigned event listeners.
- *
- * @param {String} event The events that should be listed.
- * @param {Boolean} exists We only need to know if there are listeners.
- * @returns {Array|Boolean}
- * @api public
- */
-EventEmitter.prototype.listeners = function listeners(event, exists) {
-  var evt = prefix ? prefix + event : event
-    , available = this._events && this._events[evt];
-
-  if (exists) return !!available;
-  if (!available) return [];
-  if (this._events[evt].fn) return [this._events[evt].fn];
-
-  for (var i = 0, l = this._events[evt].length, ee = new Array(l); i < l; i++) {
-    ee[i] = this._events[evt][i].fn;
-  }
-
-  return ee;
-};
-
-/**
- * Emit an event to all registered event listeners.
- *
- * @param {String} event The name of the event.
- * @returns {Boolean} Indication if we've emitted an event.
- * @api public
- */
-EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events || !this._events[evt]) return false;
-
-  var listeners = this._events[evt]
-    , len = arguments.length
-    , args
-    , i;
-
-  if ('function' === typeof listeners.fn) {
-    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
-
-    switch (len) {
-      case 1: return listeners.fn.call(listeners.context), true;
-      case 2: return listeners.fn.call(listeners.context, a1), true;
-      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
-      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
-      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-    }
-
-    for (i = 1, args = new Array(len -1); i < len; i++) {
-      args[i - 1] = arguments[i];
-    }
-
-    listeners.fn.apply(listeners.context, args);
-  } else {
-    var length = listeners.length
-      , j;
-
-    for (i = 0; i < length; i++) {
-      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
-
-      switch (len) {
-        case 1: listeners[i].fn.call(listeners[i].context); break;
-        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-        default:
-          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-            args[j - 1] = arguments[j];
-          }
-
-          listeners[i].fn.apply(listeners[i].context, args);
-      }
-    }
-  }
-
-  return true;
-};
-
-/**
- * Register a new EventListener for the given event.
- *
- * @param {String} event Name of the event.
- * @param {Functon} fn Callback function.
- * @param {Mixed} context The context of the function.
- * @api public
- */
-EventEmitter.prototype.on = function on(event, fn, context) {
-  var listener = new EE(fn, context || this)
-    , evt = prefix ? prefix + event : event;
-
-  if (!this._events) this._events = prefix ? {} : Object.create(null);
-  if (!this._events[evt]) this._events[evt] = listener;
-  else {
-    if (!this._events[evt].fn) this._events[evt].push(listener);
-    else this._events[evt] = [
-      this._events[evt], listener
-    ];
-  }
-
-  return this;
-};
-
-/**
- * Add an EventListener that's only called once.
- *
- * @param {String} event Name of the event.
- * @param {Function} fn Callback function.
- * @param {Mixed} context The context of the function.
- * @api public
- */
-EventEmitter.prototype.once = function once(event, fn, context) {
-  var listener = new EE(fn, context || this, true)
-    , evt = prefix ? prefix + event : event;
-
-  if (!this._events) this._events = prefix ? {} : Object.create(null);
-  if (!this._events[evt]) this._events[evt] = listener;
-  else {
-    if (!this._events[evt].fn) this._events[evt].push(listener);
-    else this._events[evt] = [
-      this._events[evt], listener
-    ];
-  }
-
-  return this;
-};
-
-/**
- * Remove event listeners.
- *
- * @param {String} event The event we want to remove.
- * @param {Function} fn The listener that we need to find.
- * @param {Mixed} context Only remove listeners matching this context.
- * @param {Boolean} once Only remove once listeners.
- * @api public
- */
-EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events || !this._events[evt]) return this;
-
-  var listeners = this._events[evt]
-    , events = [];
-
-  if (fn) {
-    if (listeners.fn) {
-      if (
-           listeners.fn !== fn
-        || (once && !listeners.once)
-        || (context && listeners.context !== context)
-      ) {
-        events.push(listeners);
-      }
-    } else {
-      for (var i = 0, length = listeners.length; i < length; i++) {
-        if (
-             listeners[i].fn !== fn
-          || (once && !listeners[i].once)
-          || (context && listeners[i].context !== context)
-        ) {
-          events.push(listeners[i]);
-        }
-      }
-    }
-  }
-
-  //
-  // Reset the array, or remove it completely if we have no more listeners.
-  //
-  if (events.length) {
-    this._events[evt] = events.length === 1 ? events[0] : events;
-  } else {
-    delete this._events[evt];
-  }
-
-  return this;
-};
-
-/**
- * Remove all listeners or only the listeners for the specified event.
- *
- * @param {String} event The event want to remove all listeners for.
- * @api public
- */
-EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-  if (!this._events) return this;
-
-  if (event) delete this._events[prefix ? prefix + event : event];
-  else this._events = prefix ? {} : Object.create(null);
-
-  return this;
-};
-
-//
-// Alias methods names because people roll like that.
-//
-EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-//
-// This function doesn't apply anymore.
-//
-EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
-  return this;
-};
-
-//
-// Expose the prefix.
-//
-EventEmitter.prefixed = prefix;
-
-//
-// Expose the module.
-//
-module.exports = EventEmitter;
-
-},{}],126:[function(require,module,exports){
-var async       = require('async'),
-    urlParser   = require('url'),
-    Resource    = require('./Resource'),
-    EventEmitter = require('eventemitter3');
-
-/**
- * Manages the state and loading of multiple resources to load.
- *
- * @class
- * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
- * @param [concurrency=10] {number} The number of resources to load concurrently.
- */
-function Loader(baseUrl, concurrency) {
-    EventEmitter.call(this);
-
-    concurrency = concurrency || 10;
-
-    /**
-     * The base url for all resources loaded by this loader.
-     *
-     * @member {string}
-     */
-    this.baseUrl = baseUrl || '';
-
-    /**
-     * The progress percent of the loader going through the queue.
-     *
-     * @member {number}
-     */
-    this.progress = 0;
-
-    /**
-     * Loading state of the loader, true if it is currently loading resources.
-     *
-     * @member {boolean}
-     */
-    this.loading = false;
-
-    /**
-     * The percentage of total progress that a single resource represents.
-     *
-     * @member {number}
-     */
-    this._progressChunk = 0;
-
-    /**
-     * The middleware to run before loading each resource.
-     *
-     * @member {function[]}
-     */
-    this._beforeMiddleware = [];
-
-    /**
-     * The middleware to run after loading each resource.
-     *
-     * @member {function[]}
-     */
-    this._afterMiddleware = [];
-
-    /**
-     * The `_loadResource` function bound with this object context.
-     *
-     * @private
-     * @member {function}
-     */
-    this._boundLoadResource = this._loadResource.bind(this);
-
-    /**
-     * The `_onLoad` function bound with this object context.
-     *
-     * @private
-     * @member {function}
-     */
-    this._boundOnLoad = this._onLoad.bind(this);
-
-    /**
-     * The resource buffer that fills until `load` is called to start loading resources.
-     *
-     * @private
-     * @member {Resource[]}
-     */
-    this._buffer = [];
-
-    /**
-     * Used to track load completion.
-     *
-     * @private
-     * @member {number}
-     */
-    this._numToLoad = 0;
-
-    /**
-     * The resources waiting to be loaded.
-     *
-     * @private
-     * @member {Resource[]}
-     */
-    this._queue = async.queue(this._boundLoadResource, concurrency);
-
-    /**
-     * All the resources for this loader keyed by name.
-     *
-     * @member {object<string, Resource>}
-     */
-    this.resources = {};
-
-    /**
-     * Emitted once per loaded or errored resource.
-     *
-     * @event progress
-     * @memberof Loader#
-     */
-
-    /**
-     * Emitted once per errored resource.
-     *
-     * @event error
-     * @memberof Loader#
-     */
-
-    /**
-     * Emitted once per loaded resource.
-     *
-     * @event load
-     * @memberof Loader#
-     */
-
-    /**
-     * Emitted when the loader begins to process the queue.
-     *
-     * @event start
-     * @memberof Loader#
-     */
-
-    /**
-     * Emitted when the queued resources all load.
-     *
-     * @event complete
-     * @memberof Loader#
-     */
-}
-
-Loader.prototype = Object.create(EventEmitter.prototype);
-Loader.prototype.constructor = Loader;
-module.exports = Loader;
-
-/**
- * Adds a resource (or multiple resources) to the loader queue.
- *
- * This function can take a wide variety of different parameters. The only thing that is always
- * required the url to load. All the following will work:
- *
- * ```js
- * loader
- *     // normal param syntax
- *     .add('key', 'http://...', function () {})
- *     .add('http://...', function () {})
- *     .add('http://...')
- *
- *     // object syntax
- *     .add({
- *         name: 'key2',
- *         url: 'http://...'
- *     }, function () {})
- *     .add({
- *         url: 'http://...'
- *     }, function () {})
- *     .add({
- *         name: 'key3',
- *         url: 'http://...'
- *         onComplete: function () {}
- *     })
- *     .add({
- *         url: 'https://...',
- *         onComplete: function () {},
- *         crossOrigin: true
- *     })
- *
- *     // you can also pass an array of objects or urls or both
- *     .add([
- *         { name: 'key4', url: 'http://...', onComplete: function () {} },
- *         { url: 'http://...', onComplete: function () {} },
- *         'http://...'
- *     ]);
- * ```
- *
- * @alias enqueue
- * @param [name] {string} The name of the resource to load, if not passed the url is used.
- * @param url {string} The url for this resource, relative to the baseUrl of this loader.
- * @param [options] {object} The options for the load.
- * @param [options.crossOrigin] {boolean} Is this request cross-origin? Default is to determine automatically.
- * @param [options.loadType=Resource.LOAD_TYPE.XHR] {Resource.XHR_LOAD_TYPE} How should this resource be loaded?
- * @param [options.xhrType=Resource.XHR_RESPONSE_TYPE.DEFAULT] {Resource.XHR_RESPONSE_TYPE} How should the data being
- *      loaded be interpreted when using XHR?
- * @param [callback] {function} Function to call when this specific resource completes loading.
- * @return {Loader}
- */
-Loader.prototype.add = Loader.prototype.enqueue = function (name, url, options, cb) {
-    // special case of an array of objects or urls
-    if (Array.isArray(name)) {
-        for (var i = 0; i < name.length; ++i) {
-            this.add(name[i]);
-        }
-
-        return this;
-    }
-
-    // if an object is passed instead of params
-    if (typeof name === 'object') {
-        cb = url || name.callback || name.onComplete;
-        options = name;
-        url = name.url;
-        name = name.name || name.key || name.url;
-    }
-
-    // case where no name is passed shift all args over by one.
-    if (typeof url !== 'string') {
-        cb = options;
-        options = url;
-        url = name;
-    }
-
-    // now that we shifted make sure we have a proper url.
-    if (typeof url !== 'string') {
-        throw new Error('No url passed to add resource to loader.');
-    }
-
-    // options are optional so people might pass a function and no options
-    if (typeof options === 'function') {
-        cb = options;
-        options = null;
-    }
-
-    // check if resource already exists.
-    if (this.resources[name]) {
-        throw new Error('Resource with name "' + name + '" already exists.');
-    }
-
-    // add base url if this isn't an absolute url
-    url = this._handleBaseUrl(url);
-
-    // create the store the resource
-    this.resources[name] = new Resource(name, url, options);
-
-    if (typeof cb === 'function') {
-        this.resources[name].once('afterMiddleware', cb);
-    }
-
-    this._numToLoad++;
-
-    // if already loading add it to the worker queue
-    if (this._queue.started) {
-        this._queue.push(this.resources[name]);
-        this._progressChunk = (100 - this.progress) / (this._queue.length() + this._queue.running());
-    }
-    // otherwise buffer it to be added to the queue later
-    else {
-        this._buffer.push(this.resources[name]);
-        this._progressChunk = 100 / this._buffer.length;
-    }
-
-    return this;
-};
-
-Loader.prototype._handleBaseUrl = function (url) {
-    var parsedUrl = urlParser.parse(url);
-
-    // absolute url, just use it as is.
-    if (parsedUrl.protocol || parsedUrl.pathname.indexOf('//') === 0) {
-        return url;
-    }
-
-    // if baseUrl doesn't end in slash and url doesn't start with slash, then add a slash inbetween
-    if (
-        this.baseUrl.length &&
-        this.baseUrl.lastIndexOf('/') !== this.baseUrl.length - 1 &&
-        url.lastIndexOf('/') !== url.length - 1
-    ) {
-        return this.baseUrl + '/' + url;
-    }
-    else {
-        return this.baseUrl + url;
-    }
-};
-
-
-/**
- * Sets up a middleware function that will run *before* the
- * resource is loaded.
- *
- * @alias pre
- * @param middleware {function} The middleware function to register.
- * @return {Loader}
- */
-Loader.prototype.before = Loader.prototype.pre = function (fn) {
-    this._beforeMiddleware.push(fn);
-
-    return this;
-};
-
-/**
- * Sets up a middleware function that will run *after* the
- * resource is loaded.
- *
- * @alias use
- * @param middleware {function} The middleware function to register.
- * @return {Loader}
- */
-Loader.prototype.after = Loader.prototype.use = function (fn) {
-    this._afterMiddleware.push(fn);
-
-    return this;
-};
-
-/**
- * Resets the queue of the loader to prepare for a new load.
- *
- * @return {Loader}
- */
-Loader.prototype.reset = function () {
-    // this.baseUrl = baseUrl || '';
-
-    this.progress = 0;
-
-    this.loading = false;
-
-    this._progressChunk = 0;
-
-    // this._beforeMiddleware.length = 0;
-    // this._afterMiddleware.length = 0;
-
-    this._buffer.length = 0;
-
-    this._numToLoad = 0;
-
-    this._queue.kill();
-    this._queue.started = false;
-
-    this.resources = {};
-};
-
-/**
- * Starts loading the queued resources.
- *
- * @fires start
- * @param [callback] {function} Optional callback that will be bound to the `complete` event.
- * @return {Loader}
- */
-Loader.prototype.load = function (cb) {
-    // register complete callback if they pass one
-    if (typeof cb === 'function') {
-        this.once('complete', cb);
-    }
-
-    // if the queue has already started we are done here
-    if (this._queue.started) {
-        return this;
-    }
-
-    // notify of start
-    this.emit('start', this);
-
-    // start the internal queue
-    for (var i = 0; i < this._buffer.length; ++i) {
-        this._queue.push(this._buffer[i]);
-    }
-
-    // empty the buffer
-    this._buffer.length = 0;
-
-    return this;
-};
-
-/**
- * Loads a single resource.
- *
- * @fires progress
- * @private
- */
-Loader.prototype._loadResource = function (resource, dequeue) {
-    var self = this;
-
-    resource._dequeue = dequeue;
-
-    this._runMiddleware(resource, this._beforeMiddleware, function () {
-        // resource.on('progress', self.emit.bind(self, 'progress'));
-
-        resource.load(self._boundOnLoad);
-    });
-};
-
-/**
- * Called once each resource has loaded.
- *
- * @fires complete
- * @private
- */
-Loader.prototype._onComplete = function () {
-    this.emit('complete', this, this.resources);
-};
-
-/**
- * Called each time a resources is loaded.
- *
- * @fires progress
- * @fires error
- * @fires load
- * @private
- */
-Loader.prototype._onLoad = function (resource) {
-    this.progress += this._progressChunk;
-
-    this.emit('progress', this, resource);
-
-    // run middleware, this *must* happen before dequeue so sub-assets get added properly
-    this._runMiddleware(resource, this._afterMiddleware, function () {
-        resource.emit('afterMiddleware', resource);
-
-        this._numToLoad--;
-
-        // do completion check
-        if (this._numToLoad === 0) {
-            this.progress = 100;
-            this._onComplete();
-        }
-        
-        if (resource.error) {
-            this.emit('error', resource.error, this, resource);
-        }
-        else {
-            this.emit('load', this, resource);
-        }
-    });
-    
-
-
-    // remove this resource from the async queue
-    resource._dequeue();
-};
-
-/**
- * Run middleware functions on a resource.
- *
- * @private
- */
-Loader.prototype._runMiddleware = function (resource, fns, cb) {
-    var self = this;
-
-    async.eachSeries(fns, function (fn, next) {
-        fn.call(self, resource, next);
-    }, cb.bind(this, resource));
-};
-
-Loader.LOAD_TYPE = Resource.LOAD_TYPE;
-Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
-Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
-
-},{"./Resource":127,"async":124,"eventemitter3":125,"url":8}],127:[function(require,module,exports){
-var EventEmitter = require('eventemitter3'),
-    _url = require('url'),
-    // tests is CORS is supported in XHR, if not we need to use XDR
-    useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest()))),
-    tempAnchor = null;
-
-/**
- * Manages the state and loading of a single resource represented by
- * a single URL.
- *
- * @class
- * @param name {string} The name of the resource to load.
- * @param url {string|string[]} The url for this resource, for audio/video loads you can pass an array of sources.
- * @param [options] {object} The options for the load.
- * @param [options.crossOrigin] {boolean} Is this request cross-origin? Default is to determine automatically.
- * @param [options.loadType=Resource.LOAD_TYPE.XHR] {Resource.LOAD_TYPE} How should this resource be loaded?
- * @param [options.xhrType=Resource.XHR_RESPONSE_TYPE.DEFAULT] {Resource.XHR_RESPONSE_TYPE} How should the data being
- *      loaded be interpreted when using XHR?
- */
-function Resource(name, url, options) {
-    EventEmitter.call(this);
-
-    options = options || {};
-
-    if (typeof name !== 'string' || typeof url !== 'string') {
-        throw new Error('Both name and url are required for constructing a resource.');
-    }
-
-    /**
-     * The name of this resource.
-     *
-     * @member {string}
-     * @readonly
-     */
-    this.name = name;
-
-    /**
-     * The url used to load this resource.
-     *
-     * @member {string}
-     * @readonly
-     */
-    this.url = url;
-
-    /**
-     * Stores whether or not this url is a data url.
-     *
-     * @member {boolean}
-     * @readonly
-     */
-    this.isDataUrl = this.url.indexOf('data:') === 0;
-
-    /**
-     * The data that was loaded by the resource.
-     *
-     * @member {any}
-     */
-    this.data = null;
-
-    /**
-     * Is this request cross-origin? If unset, determined automatically.
-     *
-     * @member {string}
-     */
-    this.crossOrigin = options.crossOrigin === true ? 'anonymous' : null;
-
-    /**
-     * The method of loading to use for this resource.
-     *
-     * @member {Resource.LOAD_TYPE}
-     */
-    this.loadType = options.loadType || this._determineLoadType();
-
-    /**
-     * The type used to load the resource via XHR. If unset, determined automatically.
-     *
-     * @member {string}
-     */
-    this.xhrType = options.xhrType;
-
-    /**
-     * The error that occurred while loading (if any).
-     *
-     * @member {Error}
-     * @readonly
-     */
-    this.error = null;
-
-    /**
-     * The XHR object that was used to load this resource. This is only set
-     * when `loadType` is `Resource.LOAD_TYPE.XHR`.
-     *
-     * @member {XMLHttpRequest}
-     */
-    this.xhr = null;
-
-    /**
-     * Describes if this resource was loaded as json. Only valid after the resource
-     * has completely loaded.
-     *
-     * @member {boolean}
-     */
-    this.isJson = false;
-
-    /**
-     * Describes if this resource was loaded as xml. Only valid after the resource
-     * has completely loaded.
-     *
-     * @member {boolean}
-     */
-    this.isXml = false;
-
-    /**
-     * Describes if this resource was loaded as an image tag. Only valid after the resource
-     * has completely loaded.
-     *
-     * @member {boolean}
-     */
-    this.isImage = false;
-
-    /**
-     * Describes if this resource was loaded as an audio tag. Only valid after the resource
-     * has completely loaded.
-     *
-     * @member {boolean}
-     */
-    this.isAudio = false;
-
-    /**
-     * Describes if this resource was loaded as a video tag. Only valid after the resource
-     * has completely loaded.
-     *
-     * @member {boolean}
-     */
-    this.isVideo = false;
-
-    /**
-     * The `dequeue` method that will be used a storage place for the async queue dequeue method
-     * used privately by the loader.
-     *
-     * @member {function}
-     * @private
-     */
-    this._dequeue = null;
-
-    /**
-     * The `complete` function bound to this resource's context.
-     *
-     * @member {function}
-     * @private
-     */
-    this._boundComplete = this.complete.bind(this);
-
-    /**
-     * The `_onError` function bound to this resource's context.
-     *
-     * @member {function}
-     * @private
-     */
-    this._boundOnError = this._onError.bind(this);
-
-    /**
-     * The `_onProgress` function bound to this resource's context.
-     *
-     * @member {function}
-     * @private
-     */
-    this._boundOnProgress = this._onProgress.bind(this);
-
-    // xhr callbacks
-    this._boundXhrOnError = this._xhrOnError.bind(this);
-    this._boundXhrOnAbort = this._xhrOnAbort.bind(this);
-    this._boundXhrOnLoad = this._xhrOnLoad.bind(this);
-    this._boundXdrOnTimeout = this._xdrOnTimeout.bind(this);
-
-    /**
-     * Emitted when the resource beings to load.
-     *
-     * @event start
-     * @memberof Resource#
-     */
-
-    /**
-     * Emitted each time progress of this resource load updates.
-     * Not all resources types and loader systems can support this event
-     * so sometimes it may not be available. If the resource
-     * is being loaded on a modern browser, using XHR, and the remote server
-     * properly sets Content-Length headers, then this will be available.
-     *
-     * @event progress
-     * @memberof Resource#
-     */
-
-    /**
-     * Emitted once this resource has loaded, if there was an error it will
-     * be in the `error` property.
-     *
-     * @event complete
-     * @memberof Resource#
-     */
-}
-
-Resource.prototype = Object.create(EventEmitter.prototype);
-Resource.prototype.constructor = Resource;
-module.exports = Resource;
-
-/**
- * Marks the resource as complete.
- *
- * @fires complete
- */
-Resource.prototype.complete = function () {
-    // TODO: Clean this up in a wrapper or something...gross....
-    if (this.data && this.data.removeEventListener) {
-        this.data.removeEventListener('error', this._boundOnError);
-        this.data.removeEventListener('load', this._boundComplete);
-        this.data.removeEventListener('progress', this._boundOnProgress);
-        this.data.removeEventListener('canplaythrough', this._boundComplete);
-    }
-
-    if (this.xhr) {
-        if (this.xhr.removeEventListener) {
-            this.xhr.removeEventListener('error', this._boundXhrOnError);
-            this.xhr.removeEventListener('abort', this._boundXhrOnAbort);
-            this.xhr.removeEventListener('progress', this._boundOnProgress);
-            this.xhr.removeEventListener('load', this._boundXhrOnLoad);
-        }
-        else {
-            this.xhr.onerror = null;
-            this.xhr.ontimeout = null;
-            this.xhr.onprogress = null;
-            this.xhr.onload = null;
-        }
-    }
-
-    this.emit('complete', this);
-};
-
-/**
- * Kicks off loading of this resource.
- *
- * @fires start
- * @param [callback] {function} Optional callback to call once the resource is loaded.
- */
-Resource.prototype.load = function (cb) {
-    this.emit('start', this);
-
-    // if a callback is set, listen for complete event
-    if (cb) {
-        this.once('complete', cb);
-    }
-
-    // if unset, determine the value
-    if (typeof this.crossOrigin !== 'string') {
-        this.crossOrigin = this._determineCrossOrigin(this.url);
-    }
-
-    switch(this.loadType) {
-        case Resource.LOAD_TYPE.IMAGE:
-            this._loadImage();
-            break;
-
-        case Resource.LOAD_TYPE.AUDIO:
-            this._loadElement('audio');
-            break;
-
-        case Resource.LOAD_TYPE.VIDEO:
-            this._loadElement('video');
-            break;
-
-        case Resource.LOAD_TYPE.XHR:
-            /* falls through */
-        default:
-            if (useXdr && this.crossOrigin) {
-                this._loadXdr();
-            }
-            else {
-                this._loadXhr();
-            }
-            break;
-    }
-};
-
-/**
- * Loads this resources using an Image object.
- *
- * @private
- */
-Resource.prototype._loadImage = function () {
-    this.data = new Image();
-
-    if (this.crossOrigin) {
-        this.data.crossOrigin = this.crossOrigin;
-    }
-
-    this.data.src = this.url;
-
-    this.isImage = true;
-
-    this.data.addEventListener('error', this._boundOnError, false);
-    this.data.addEventListener('load', this._boundComplete, false);
-    this.data.addEventListener('progress', this._boundOnProgress, false);
-};
-
-/**
- * Loads this resources using an HTMLAudioElement or HTMLVideoElement.
- *
- * @private
- */
-Resource.prototype._loadElement = function (type) {
-    if (type === 'audio' && typeof Audio !== 'undefined') {
-        this.data = new Audio();
-    }
-    else {
-        this.data = document.createElement(type);
-    }
-
-    if (this.data === null) {
-        this.error = new Error('Unsupported element ' + type);
-        this.complete();
-        return;
-    }
-
-    // support for CocoonJS Canvas+ runtime, lacks document.createElement('source')
-    if (navigator.isCocoonJS) {
-        this.data.src = Array.isArray(this.url) ? this.url[0] : this.url;
-    }
-    else {
-        if (Array.isArray(this.url)) {
-            for (var i = 0; i < this.url.length; ++i) {
-                this.data.appendChild(this._createSource(type, this.url[i]));
-            }
-        }
-        else {
-            this.data.appendChild(this._createSource(type, this.url));
-        }
-    }
-
-    this['is' + type[0].toUpperCase() + type.substring(1)] = true;
-
-    this.data.addEventListener('error', this._boundOnError, false);
-    this.data.addEventListener('load', this._boundComplete, false);
-    this.data.addEventListener('progress', this._boundOnProgress, false);
-    this.data.addEventListener('canplaythrough', this._boundComplete, false);
-
-    this.data.load();
-};
-
-/**
- * Loads this resources using an XMLHttpRequest.
- *
- * @private
- */
-Resource.prototype._loadXhr = function () {
-    // if unset, determine the value
-    if (typeof this.xhrType !== 'string') {
-        this.xhrType = this._determineXhrType();
-    }
-
-    var xhr = this.xhr = new XMLHttpRequest();
-
-    // set the request type and url
-    xhr.open('GET', this.url, true);
-
-    // load json as text and parse it ourselves. We do this because some browsers
-    // *cough* safari *cough* can't deal with it.
-    if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON || this.xhrType === Resource.XHR_RESPONSE_TYPE.DOCUMENT) {
-        xhr.responseType = Resource.XHR_RESPONSE_TYPE.TEXT;
-    }
-    else {
-        xhr.responseType = this.xhrType;
-    }
-
-    xhr.addEventListener('error', this._boundXhrOnError, false);
-    xhr.addEventListener('abort', this._boundXhrOnAbort, false);
-    xhr.addEventListener('progress', this._boundOnProgress, false);
-    xhr.addEventListener('load', this._boundXhrOnLoad, false);
-
-    xhr.send();
-};
-
-/**
- * Loads this resources using an XDomainRequest. This is here because we need to support IE9 (gross).
- *
- * @private
- */
-Resource.prototype._loadXdr = function () {
-    // if unset, determine the value
-    if (typeof this.xhrType !== 'string') {
-        this.xhrType = this._determineXhrType();
-    }
-
-    var xdr = this.xhr = new XDomainRequest();
-
-    // XDomainRequest has a few quirks. Occasionally it will abort requests
-    // A way to avoid this is to make sure ALL callbacks are set even if not used
-    // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
-    xdr.timeout = 5000;
-
-    xdr.onerror = this._boundXhrOnError;
-    xdr.ontimeout = this._boundXdrOnTimeout;
-    xdr.onprogress = this._boundOnProgress;
-    xdr.onload = this._boundXhrOnLoad;
-
-    xdr.open('GET', this.url, true);
-
-    //  Note: The xdr.send() call is wrapped in a timeout to prevent an issue with the interface where some requests are lost
-    //  if multiple XDomainRequests are being sent at the same time.
-    // Some info here: https://github.com/photonstorm/phaser/issues/1248
-    setTimeout(function () {
-        xdr.send();
-    }, 0);
-};
-
-/**
- * Creates a source used in loading via an element.
- *
- * @param type {string} The element type (video or audio).
- * @param url {string} The source URL to load from.
- * @param [mime] {string} The mime type of the video
- * @private
- */
-Resource.prototype._createSource = function (type, url, mime) {
-    if (!mime) {
-        mime = type + '/' + url.substr(url.lastIndexOf('.') + 1);
-    }
-
-    var source = document.createElement('source');
-
-    source.src = url;
-    source.type = mime;
-
-    return source;
-};
-
-/**
- * Called if a load errors out.
- *
- * @param event {Event} The error event from the element that emits it.
- * @private
- */
-Resource.prototype._onError = function (event) {
-    this.error = new Error('Failed to load element using ' + event.target.nodeName);
-    this.complete();
-};
-
-/**
- * Called if a load progress event fires for xhr/xdr.
- *
- * @fires progress
- * @param event {XMLHttpRequestProgressEvent|Event}
- * @private
- */
-Resource.prototype._onProgress =  function (event) {
-    if (event && event.lengthComputable) {
-        this.emit('progress', this, event.loaded / event.total);
-    }
-};
-
-/**
- * Called if an error event fires for xhr/xdr.
- *
- * @param event {XMLHttpRequestErrorEvent|Event}
- * @private
- */
-Resource.prototype._xhrOnError = function () {
-    this.error = new Error(
-        reqType(this.xhr) + ' Request failed. ' +
-        'Status: ' + this.xhr.status + ', text: "' + this.xhr.statusText + '"'
-    );
-
-    this.complete();
-};
-
-/**
- * Called if an abort event fires for xhr.
- *
- * @param event {XMLHttpRequestAbortEvent}
- * @private
- */
-Resource.prototype._xhrOnAbort = function () {
-    this.error = new Error(reqType(this.xhr) + ' Request was aborted by the user.');
-    this.complete();
-};
-
-/**
- * Called if a timeout event fires for xdr.
- *
- * @param event {Event}
- * @private
- */
-Resource.prototype._xdrOnTimeout = function () {
-    this.error = new Error(reqType(this.xhr) + ' Request timed out.');
-    this.complete();
-};
-
-/**
- * Called when data successfully loads from an xhr/xdr request.
- *
- * @param event {XMLHttpRequestLoadEvent|Event}
- * @private
- */
-Resource.prototype._xhrOnLoad = function () {
-    var xhr = this.xhr,
-        status = xhr.status !== undefined ? xhr.status : 200; //XDR has no `.status`, assume 200.
-
-    // status can be 0 when using the file:// protocol, also check if a response was found
-    if (status === 200 || status === 204 || (status === 0 && xhr.responseText.length > 0)) {
-        // if text, just return it
-        if (this.xhrType === Resource.XHR_RESPONSE_TYPE.TEXT) {
-            this.data = xhr.responseText;
-        }
-        // if json, parse into json object
-        else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON) {
-            try {
-                this.data = JSON.parse(xhr.responseText);
-                this.isJson = true;
-            } catch(e) {
-                this.error = new Error('Error trying to parse loaded json:', e);
-            }
-        }
-        // if xml, parse into an xml document or div element
-        else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.DOCUMENT) {
-            try {
-                if (window.DOMParser) {
-                    var domparser = new DOMParser();
-                    this.data = domparser.parseFromString(xhr.responseText, 'text/xml');
-                }
-                else {
-                    var div = document.createElement('div');
-                    div.innerHTML = xhr.responseText;
-                    this.data = div;
-                }
-                this.isXml = true;
-            } catch (e) {
-                this.error = new Error('Error trying to parse loaded xml:', e);
-            }
-        }
-        // other types just return the response
-        else {
-            this.data = xhr.response || xhr.responseText;
-        }
-    }
-    else {
-        this.error = new Error('[' + xhr.status + ']' + xhr.statusText + ':' + xhr.responseURL);
-    }
-
-    this.complete();
-};
-
-function reqType(xhr) {
-    return xhr.toString().replace('object ', '');
-}
-
-/**
- * Sets the `crossOrigin` property for this resource based on if the url
- * for this resource is cross-origin. If crossOrigin was manually set, this
- * function does nothing.
- *
- * @private
- * @param url {string} The url to test.
- * @param [location=window.location] {object} The location object to test against.
- * @return {string} The crossOrigin value to use (or empty string for none).
- */
-Resource.prototype._determineCrossOrigin = function (url, loc) {
-    // data: and javascript: urls are considered same-origin
-    if (url.indexOf('data:') === 0) {
-        return '';
-    }
-
-    // default is window.location
-    loc = loc || window.location;
-
-    if (!tempAnchor) {
-        tempAnchor = document.createElement('a');
-    }
-
-    // let the browser determine the full href for the url of this resource and then
-    // parse with the node url lib, we can't use the properties of the anchor element
-    // because they don't work in IE9 :(
-    tempAnchor.href = url;
-    url = _url.parse(tempAnchor.href);
-
-    var samePort = (!url.port && loc.port === '') || (url.port === loc.port);
-
-    // if cross origin
-    if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol) {
-        return 'anonymous';
-    }
-
-    return '';
-};
-
-/**
- * Determines the responseType of an XHR request based on the extension of the
- * resource being loaded.
- *
- * @private
- * @return {Resource.XHR_RESPONSE_TYPE} The responseType to use.
- */
-Resource.prototype._determineXhrType = function () {
-    return Resource._xhrTypeMap[this._getExtension()] || Resource.XHR_RESPONSE_TYPE.TEXT;
-};
-
-Resource.prototype._determineLoadType = function () {
-    return Resource._loadTypeMap[this._getExtension()] || Resource.LOAD_TYPE.XHR;
-};
-
-Resource.prototype._getExtension = function () {
-    var url = this.url,
-        ext;
-
-    if (this.isDataUrl) {
-        var slashIndex = url.indexOf('/');
-        ext = url.substring(slashIndex + 1, url.indexOf(';', slashIndex));
-    }
-    else {
-        var queryStart = url.indexOf('?');
-        if (queryStart !== -1) {
-            url = url.substring(0, queryStart);
-        }
-
-        ext = url.substring(url.lastIndexOf('.') + 1);
-    }
-
-    return ext;
-};
-
-/**
- * Determines the mime type of an XHR request based on the responseType of
- * resource being loaded.
- *
- * @private
- * @return {string} The mime type to use.
- */
-Resource.prototype._getMimeFromXhrType = function (type) {
-    switch(type) {
-        case Resource.XHR_RESPONSE_TYPE.BUFFER:
-            return 'application/octet-binary';
-
-        case Resource.XHR_RESPONSE_TYPE.BLOB:
-            return 'application/blob';
-
-        case Resource.XHR_RESPONSE_TYPE.DOCUMENT:
-            return 'application/xml';
-
-        case Resource.XHR_RESPONSE_TYPE.JSON:
-            return 'application/json';
-
-        case Resource.XHR_RESPONSE_TYPE.DEFAULT:
-        case Resource.XHR_RESPONSE_TYPE.TEXT:
-            /* falls through */
-        default:
-            return 'text/plain';
-
-    }
-};
-
-/**
- * The types of loading a resource can use.
- *
- * @static
- * @constant
- * @property {object} LOAD_TYPE
- * @property {number} LOAD_TYPE.XHR - Uses XMLHttpRequest to load the resource.
- * @property {number} LOAD_TYPE.IMAGE - Uses an `Image` object to load the resource.
- * @property {number} LOAD_TYPE.AUDIO - Uses an `Audio` object to load the resource.
- * @property {number} LOAD_TYPE.VIDEO - Uses a `Video` object to load the resource.
- */
-Resource.LOAD_TYPE = {
-    XHR:    1,
-    IMAGE:  2,
-    AUDIO:  3,
-    VIDEO:  4
-};
-
-/**
- * The XHR ready states, used internally.
- *
- * @static
- * @constant
- * @property {object} XHR_READY_STATE
- * @property {number} XHR_READY_STATE.UNSENT - open()has not been called yet.
- * @property {number} XHR_READY_STATE.OPENED - send()has not been called yet.
- * @property {number} XHR_READY_STATE.HEADERS_RECEIVED - send() has been called, and headers and status are available.
- * @property {number} XHR_READY_STATE.LOADING - Downloading; responseText holds partial data.
- * @property {number} XHR_READY_STATE.DONE - The operation is complete.
- */
-Resource.XHR_READY_STATE = {
-    UNSENT: 0,
-    OPENED: 1,
-    HEADERS_RECEIVED: 2,
-    LOADING: 3,
-    DONE: 4
-};
-
-/**
- * The XHR ready states, used internally.
- *
- * @static
- * @constant
- * @property {object} XHR_RESPONSE_TYPE
- * @property {string} XHR_RESPONSE_TYPE.DEFAULT - defaults to text
- * @property {string} XHR_RESPONSE_TYPE.BUFFER - ArrayBuffer
- * @property {string} XHR_RESPONSE_TYPE.BLOB - Blob
- * @property {string} XHR_RESPONSE_TYPE.DOCUMENT - Document
- * @property {string} XHR_RESPONSE_TYPE.JSON - Object
- * @property {string} XHR_RESPONSE_TYPE.TEXT - String
- */
-Resource.XHR_RESPONSE_TYPE = {
-    DEFAULT:    'text',
-    BUFFER:     'arraybuffer',
-    BLOB:       'blob',
-    DOCUMENT:   'document',
-    JSON:       'json',
-    TEXT:       'text'
-};
-
-Resource._loadTypeMap = {
-    'gif':      Resource.LOAD_TYPE.IMAGE,
-    'png':      Resource.LOAD_TYPE.IMAGE,
-    'bmp':      Resource.LOAD_TYPE.IMAGE,
-    'jpg':      Resource.LOAD_TYPE.IMAGE,
-    'jpeg':     Resource.LOAD_TYPE.IMAGE,
-    'tif':      Resource.LOAD_TYPE.IMAGE,
-    'tiff':     Resource.LOAD_TYPE.IMAGE,
-    'webp':     Resource.LOAD_TYPE.IMAGE,
-    'tga':      Resource.LOAD_TYPE.IMAGE
-};
-
-Resource._xhrTypeMap = {
-    // xml
-    'xhtml':    Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'html':     Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'htm':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'xml':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'tmx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'tsx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-    'svg':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
-
-    // images
-    'gif':      Resource.XHR_RESPONSE_TYPE.BLOB,
-    'png':      Resource.XHR_RESPONSE_TYPE.BLOB,
-    'bmp':      Resource.XHR_RESPONSE_TYPE.BLOB,
-    'jpg':      Resource.XHR_RESPONSE_TYPE.BLOB,
-    'jpeg':     Resource.XHR_RESPONSE_TYPE.BLOB,
-    'tif':      Resource.XHR_RESPONSE_TYPE.BLOB,
-    'tiff':     Resource.XHR_RESPONSE_TYPE.BLOB,
-    'webp':     Resource.XHR_RESPONSE_TYPE.BLOB,
-    'tga':      Resource.XHR_RESPONSE_TYPE.BLOB,
-
-    // json
-    'json':     Resource.XHR_RESPONSE_TYPE.JSON,
-
-    // text
-    'text':     Resource.XHR_RESPONSE_TYPE.TEXT,
-    'txt':      Resource.XHR_RESPONSE_TYPE.TEXT
-};
-
-/**
- * Sets the load type to be used for a specific extension.
- *
- * @static
- * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
- * @param loadType {Resource.LOAD_TYPE} The load type to set it to.
- */
-Resource.setExtensionLoadType = function (extname, loadType) {
-    setExtMap(Resource._loadTypeMap, extname, loadType);
-};
-
-/**
- * Sets the load type to be used for a specific extension.
- *
- * @static
- * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
- * @param xhrType {Resource.XHR_RESPONSE_TYPE} The xhr type to set it to.
- */
-Resource.setExtensionXhrType = function (extname, xhrType) {
-    setExtMap(Resource._xhrTypeMap, extname, xhrType);
-};
-
-function setExtMap(map, extname, val) {
-    if (extname && extname.indexOf('.') === 0) {
-        extname = extname.substring(1);
-    }
-
-    if (!extname) {
-        return;
-    }
-
-    map[extname] = val;
-}
-
-},{"eventemitter3":125,"url":8}],128:[function(require,module,exports){
-module.exports = {
-
-    // private property
-    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-
-    encodeBinary: function (input) {
-        var output = "";
-        var bytebuffer;
-        var encodedCharIndexes = new Array(4);
-        var inx = 0;
-        var jnx = 0;
-        var paddingBytes = 0;
-
-        while (inx < input.length) {
-            // Fill byte buffer array
-            bytebuffer = new Array(3);
-            for (jnx = 0; jnx < bytebuffer.length; jnx++) {
-                if (inx < input.length) {
-                    // throw away high-order byte, as documented at:
-                    // https://developer.mozilla.org/En/Using_XMLHttpRequest#Handling_binary_data
-                    bytebuffer[jnx] = input.charCodeAt(inx++) & 0xff;
-                }
-                else {
-                    bytebuffer[jnx] = 0;
-                }
-            }
-
-            // Get each encoded character, 6 bits at a time
-            // index 1: first 6 bits
-            encodedCharIndexes[0] = bytebuffer[0] >> 2;
-            // index 2: second 6 bits (2 least significant bits from input byte 1 + 4 most significant bits from byte 2)
-            encodedCharIndexes[1] = ((bytebuffer[0] & 0x3) << 4) | (bytebuffer[1] >> 4);
-            // index 3: third 6 bits (4 least significant bits from input byte 2 + 2 most significant bits from byte 3)
-            encodedCharIndexes[2] = ((bytebuffer[1] & 0x0f) << 2) | (bytebuffer[2] >> 6);
-            // index 3: forth 6 bits (6 least significant bits from input byte 3)
-            encodedCharIndexes[3] = bytebuffer[2] & 0x3f;
-
-            // Determine whether padding happened, and adjust accordingly
-            paddingBytes = inx - (input.length - 1);
-            switch (paddingBytes) {
-                case 2:
-                    // Set last 2 characters to padding char
-                    encodedCharIndexes[3] = 64;
-                    encodedCharIndexes[2] = 64;
-                    break;
-
-                case 1:
-                    // Set last character to padding char
-                    encodedCharIndexes[3] = 64;
-                    break;
-
-                default:
-                    break; // No padding - proceed
-            }
-
-            // Now we will grab each appropriate character out of our keystring
-            // based on our index array and append it to the output string
-            for (jnx = 0; jnx < encodedCharIndexes.length; jnx++) {
-                output += this._keyStr.charAt(encodedCharIndexes[jnx]);
-            }
-        }
-        return output;
-    }
-};
-
-},{}],129:[function(require,module,exports){
-module.exports = require('./Loader');
-
-module.exports.Resource = require('./Resource');
-
-module.exports.middleware = {
-    caching: {
-        memory: require('./middlewares/caching/memory')
-    },
-    parsing: {
-        blob: require('./middlewares/parsing/blob')
-    }
-};
-
-},{"./Loader":126,"./Resource":127,"./middlewares/caching/memory":130,"./middlewares/parsing/blob":131}],130:[function(require,module,exports){
-// a simple in-memory cache for resources
-var cache = {};
-
-module.exports = function () {
-    return function (resource, next) {
-        // if cached, then set data and complete the resource
-        if (cache[resource.url]) {
-            resource.data = cache[resource.url];
-            resource.complete();
-        }
-        // if not cached, wait for complete and store it in the cache.
-        else {
-            resource.once('complete', function () {
-               cache[this.url] = this.data;
-            });
-
-            next();
-        }
-    };
-};
-
-},{}],131:[function(require,module,exports){
-var Resource = require('../../Resource'),
-    b64 = require('../../b64');
-
-window.URL = window.URL || window.webkitURL;
-
-// a middleware for transforming XHR loaded Blobs into more useful objects
-
-module.exports = function () {
-    return function (resource, next) {
-        if (!resource.data) {
-            return next();
-        }
-
-        // if this was an XHR load of a blob
-        if (resource.xhr && resource.xhrType === Resource.XHR_RESPONSE_TYPE.BLOB) {
-            // if there is no blob support we probably got a binary string back
-            if (!window.Blob || typeof resource.data === 'string') {
-                var type = resource.xhr.getResponseHeader('content-type');
-
-                // this is an image, convert the binary string into a data url
-                if (type && type.indexOf('image') === 0) {
-                    resource.data = new Image();
-                    resource.data.src = 'data:' + type + ';base64,' + b64.encodeBinary(resource.xhr.responseText);
-
-                    resource.isImage = true;
-
-                    // wait until the image loads and then callback
-                    resource.data.onload = function () {
-                        resource.data.onload = null;
-
-                        next();
-                    };
-                }
-            }
-            // if content type says this is an image, then we should transform the blob into an Image object
-            else if (resource.data.type.indexOf('image') === 0) {
-                var src = URL.createObjectURL(resource.data);
-
-                resource.blob = resource.data;
-                resource.data = new Image();
-                resource.data.src = src;
-
-                resource.isImage = true;
-
-                // cleanup the no longer used blob after the image loads
-                resource.data.onload = function () {
-                    URL.revokeObjectURL(src);
-                    resource.data.onload = null;
-
-                    next();
-                };
-            }
-        }
-        else {
-            next();
-        }
-    };
-};
-
-},{"../../Resource":127,"../../b64":128}]},{},[105])(105)
+},{}]},{},[115])(115)
 });
-
-
 //# sourceMappingURL=pixi.js.map

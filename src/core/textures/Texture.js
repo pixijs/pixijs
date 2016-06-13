@@ -23,7 +23,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture
  * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
- * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
+ * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
@@ -113,13 +113,16 @@ function Texture(baseTexture, frame, crop, trim, rotate)
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
-    /**
-     * Indicates whether the texture should be rotated by 90 degrees
-     *
-     * @private
-     * @member {boolean}
-     */
-    this.rotate = !!rotate;
+    this._rotate = +(rotate || 0);
+
+    if (rotate === true) {
+        // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
+        this._rotate = 2;
+    } else {
+        if (this._rotate % 2 !== 0) {
+            throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
+        }
+    }
 
     if (baseTexture.hasLoaded)
     {
@@ -191,6 +194,29 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
+            if (this.valid)
+            {
+                this._updateUvs();
+            }
+        }
+    },
+    /**
+     * Indicates whether the texture is rotated inside the atlas
+     * set to 2 to compensate for texture packer rotation
+     * set to 6 to compensate for spine packer rotation
+     * can be used to rotate or mirror sprites
+     * See {@link PIXI.GroupD8} for explanation
+     *
+     * @member {number}
+     */
+    rotate: {
+        get: function ()
+        {
+            return this._rotate;
+        },
+        set: function (rotate)
+        {
+            this._rotate = rotate;
             if (this.valid)
             {
                 this._updateUvs();

@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "3.0.8",
+  "version": "3.0.11",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -30,43 +30,45 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "^1.4.2",
+    "async": "^1.5.0",
     "brfs": "^1.4.1",
-    "earcut": "^2.0.2",
+    "browserify-versionify": "^1.0.6",
+    "earcut": "^2.0.8",
     "eventemitter3": "^1.1.1",
-    "gulp-header": "^1.7.1",
     "object-assign": "^4.0.1",
-    "resource-loader": "^1.6.2"
+    "resource-loader": "^1.6.4"
   },
   "devDependencies": {
-    "browserify": "^11.1.0",
+    "browserify": "^13.0.0",
     "chai": "^3.2.0",
-    "del": "^2.0.2",
+    "del": "^2.2.0",
     "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.1.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-mirror": "^0.4.0",
+    "gulp-header": "^1.7.1",
+    "gulp-jshint": "^2.0.0",
+    "gulp-mirror": "^1.0.0",
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
-    "gulp-uglify": "^1.4.1",
+    "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.6",
     "jaguarjs-jsdoc": "git+https://github.com/davidshimjs/jaguarjs-jsdoc.git",
-    "jsdoc": "^3.3.2",
+    "jsdoc": "^3.4.0",
     "jshint-summary": "^0.4.0",
     "minimist": "^1.2.0",
-    "mocha": "^2.3.2",
+    "mocha": "^2.4.5",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.2",
     "testem": "^0.9.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.4.0"
+    "watchify": "^3.7.0"
   },
   "browserify": {
     "transform": [
+      "browserify-versionify",
       "brfs"
     ]
   }

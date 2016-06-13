@@ -253,7 +253,7 @@ BitmapText.prototype.updateText = function ()
 
         if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
         {
-            chars.splice(lastSpace, i - lastSpace);
+            core.utils.removeItems(chars, lastSpace, i - lastSpace);
             i = lastSpace;
             lastSpace = -1;
 

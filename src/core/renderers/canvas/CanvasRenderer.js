@@ -111,6 +111,8 @@ utils.pluginTarget.mixin(CanvasRenderer);
  */
 CanvasRenderer.prototype.render = function (object)
 {
+    this.emit('prerender');
+
     var cacheParent = object.parent;
 
     this._lastObjectRendered = object;
@@ -148,6 +150,8 @@ CanvasRenderer.prototype.render = function (object)
     }
 
     this.renderDisplayObject(object, this.context);
+
+    this.emit('postrender');
 };
 
 /**

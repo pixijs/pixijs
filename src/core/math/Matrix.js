@@ -1,3 +1,7 @@
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 var Point = require('./Point');
 
 /**
@@ -74,10 +78,37 @@ Matrix.prototype.fromArray = function (array)
     this.ty = array[5];
 };
 
+
+/**
+ * sets the matrix properties
+ *
+ * @param {number} a
+ * @param {number} b
+ * @param {number} c
+ * @param {number} d
+ * @param {number} tx
+ * @param {number} ty
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.set = function (a, b, c, d, tx, ty)
+{
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
+    this.tx = tx;
+    this.ty = ty;
+
+    return this;
+};
+
+
 /**
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
+ * @param [out] {Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)
@@ -241,6 +272,48 @@ Matrix.prototype.append = function (matrix)
 
     this.tx = matrix.tx * a1 + matrix.ty * c1 + this.tx;
     this.ty = matrix.tx * b1 + matrix.ty * d1 + this.ty;
+
+    return this;
+};
+
+/**
+ * Sets the matrix based on all the available properties
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} pivotX
+ * @param {number} pivotY
+ * @param {number} scaleX
+ * @param {number} scaleY
+ * @param {number} rotation
+ * @param {number} skewX
+ * @param {number} skewY
+ *
+ * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+{
+    var a, b, c, d, sr, cr, cy, sy, nsx, cx;
+
+    sr  = Math.sin(rotation);
+    cr  = Math.cos(rotation);
+    cy  = Math.cos(skewY);
+    sy  = Math.sin(skewY);
+    nsx = -Math.sin(skewX);
+    cx  =  Math.cos(skewX);
+
+    a  =  cr * scaleX;
+    b  =  sr * scaleX;
+    c  = -sr * scaleY;
+    d  =  cr * scaleY;
+
+    this.a  = cy * a + sy * c;
+    this.b  = cy * b + sy * d;
+    this.c  = nsx * a + cx * c;
+    this.d  = nsx * b + cx * d;
+
+    this.tx = x + ( pivotX * a + pivotY * c );
+    this.ty = y + ( pivotX * b + pivotY * d );
 
     return this;
 };

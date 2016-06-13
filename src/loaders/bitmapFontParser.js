@@ -46,7 +46,10 @@ function parse(resource, texture) {
         var second = parseInt(kernings[i].getAttribute('second'), 10);
         var amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
-        data.chars[second].kerning[first] = amount;
+        if(data.chars[second])
+        {
+            data.chars[second].kerning[first] = amount;
+        }
     }
 
     resource.bitmapFont = data;
@@ -106,7 +109,8 @@ module.exports = function ()
         else {
             var loadOptions = {
                 crossOrigin: resource.crossOrigin,
-                loadType: Resource.LOAD_TYPE.IMAGE
+                loadType: Resource.LOAD_TYPE.IMAGE,
+                metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
             this.add(resource.name + '_image', textureUrl, loadOptions, function (res) {

@@ -75,7 +75,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var shader = renderer.shaderManager.plugins.primitiveShader,
         webGLData;
 
-    if (graphics.dirty)
+    if (graphics.dirty || !graphics._webGL[gl.id])
     {
         this.updateGraphics(graphics);
     }
@@ -716,7 +716,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
         py = (a2*c1 - a1*c2)/denom;
 
 
-        pdist = (px -p2x) * (px -p2x) + (py -p2y) + (py -p2y);
+        pdist = (px -p2x) * (px -p2x) + (py -p2y) * (py -p2y);
 
 
         if (pdist > 140 * 140)

@@ -61,7 +61,7 @@ function BaseTexture(source, scaleMode, resolution)
      * The scale mode to apply when scaling this texture
      *
      * @member {number}
-     * @default PIXI.SCALE_MODES.LINEAR
+     * @default PIXI.SCALE_MODES.DEFAULT
      * @see PIXI.SCALE_MODES
      */
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
@@ -100,6 +100,7 @@ function BaseTexture(source, scaleMode, resolution)
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
+     * All blend modes, and shaders written for default value. Change it on your own risk.
      *
      * @member {boolean}
      * @default true
@@ -135,7 +136,7 @@ function BaseTexture(source, scaleMode, resolution)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = [];
+    this._glTextures = {};
 
     // if no source passed don't try to load
     if (source)
@@ -346,7 +347,8 @@ BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
 
-    this._glTextures.length = 0;
+    // this should no longer be needed, the renderers should cleanup all the gl textures.
+    // this._glTextures = {};
 };
 
 /**

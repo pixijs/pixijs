@@ -39,6 +39,14 @@ function DisplayObject()
      */
     this.pivot = new math.Point(0, 0);
 
+
+    /**
+     * The skew factor for the object in radians.
+     *
+     * @member {PIXI.Point}
+     */
+    this.skew = new math.Point(0, 0);
+
     /**
      * The rotation of the object in radians.
      *
@@ -212,6 +220,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
      * To remove a mask, set this property to null.
      *
+     * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     *
      * @member {PIXI.Graphics|PIXI.Sprite}
      * @memberof PIXI.DisplayObject#
      */
@@ -264,7 +274,6 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-
     // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
@@ -272,55 +281,83 @@ DisplayObject.prototype.updateTransform = function ()
     // temporary matrix variables
     var a, b, c, d, tx, ty;
 
-    // so if rotation is between 0 then we can simplify the multiplication process...
-    if (this.rotation % CONST.PI_2)
+    // looks like we are skewing
+    if(this.skew.x || this.skew.y)
     {
-        // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-        if (this.rotation !== this.rotationCache)
-        {
-            this.rotationCache = this.rotation;
-            this._sr = Math.sin(this.rotation);
-            this._cr = Math.cos(this.rotation);
-        }
+        // I'm assuming that skewing is not going to be very common
+        // With that in mind, we can do a full setTransform using the temp matrix
+        _tempMatrix.setTransform(
+            this.position.x,
+            this.position.y,
+            this.pivot.x,
+            this.pivot.y,
+            this.scale.x,
+            this.scale.y,
+            this.rotation,
+            this.skew.x,
+            this.skew.y
+        );
 
-        // get the matrix values of the displayobject based on its transform properties..
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
-        tx =  this.position.x;
-        ty =  this.position.y;
-
-        // check for pivot.. not often used so geared towards that fact!
-        if (this.pivot.x || this.pivot.y)
-        {
-            tx -= this.pivot.x * a + this.pivot.y * c;
-            ty -= this.pivot.x * b + this.pivot.y * d;
-        }
-
-        // concat the parent matrix with the objects transform.
-        wt.a  = a  * pt.a + b  * pt.c;
-        wt.b  = a  * pt.b + b  * pt.d;
-        wt.c  = c  * pt.a + d  * pt.c;
-        wt.d  = c  * pt.b + d  * pt.d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        // now concat the matrix (inlined so that we can avoid using copy)
+        wt.a  = _tempMatrix.a  * pt.a + _tempMatrix.b  * pt.c;
+        wt.b  = _tempMatrix.a  * pt.b + _tempMatrix.b  * pt.d;
+        wt.c  = _tempMatrix.c  * pt.a + _tempMatrix.d  * pt.c;
+        wt.d  = _tempMatrix.c  * pt.b + _tempMatrix.d  * pt.d;
+        wt.tx = _tempMatrix.tx * pt.a + _tempMatrix.ty * pt.c + pt.tx;
+        wt.ty = _tempMatrix.tx * pt.b + _tempMatrix.ty * pt.d + pt.ty;
     }
     else
     {
-        // lets do the fast version as we know there is no rotation..
-        a  = this.scale.x;
-        d  = this.scale.y;
+        // so if rotation is between 0 then we can simplify the multiplication process...
+        if (this.rotation % CONST.PI_2)
+        {
+            // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
+            if (this.rotation !== this.rotationCache)
+            {
+                this.rotationCache = this.rotation;
+                this._sr = Math.sin(this.rotation);
+                this._cr = Math.cos(this.rotation);
+            }
 
-        tx = this.position.x - this.pivot.x * a;
-        ty = this.position.y - this.pivot.y * d;
+            // get the matrix values of the displayobject based on its transform properties..
+            a  =  this._cr * this.scale.x;
+            b  =  this._sr * this.scale.x;
+            c  = -this._sr * this.scale.y;
+            d  =  this._cr * this.scale.y;
+            tx =  this.position.x;
+            ty =  this.position.y;
 
-        wt.a  = a  * pt.a;
-        wt.b  = a  * pt.b;
-        wt.c  = d  * pt.c;
-        wt.d  = d  * pt.d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+            // check for pivot.. not often used so geared towards that fact!
+            if (this.pivot.x || this.pivot.y)
+            {
+                tx -= this.pivot.x * a + this.pivot.y * c;
+                ty -= this.pivot.x * b + this.pivot.y * d;
+            }
+
+            // concat the parent matrix with the objects transform.
+            wt.a  = a  * pt.a + b  * pt.c;
+            wt.b  = a  * pt.b + b  * pt.d;
+            wt.c  = c  * pt.a + d  * pt.c;
+            wt.d  = c  * pt.b + d  * pt.d;
+            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        }
+        else
+        {
+            // lets do the fast version as we know there is no rotation..
+            a  = this.scale.x;
+            d  = this.scale.y;
+
+            tx = this.position.x - this.pivot.x * a;
+            ty = this.position.y - this.pivot.y * d;
+
+            wt.a  = a  * pt.a;
+            wt.b  = a  * pt.b;
+            wt.c  = d  * pt.c;
+            wt.d  = d  * pt.d;
+            wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+            wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        }
     }
 
     // multiply the alphas..
@@ -387,9 +424,10 @@ DisplayObject.prototype.toGlobal = function (position)
  *
  * @param position {PIXI.Point} The world origin to calculate from
  * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from)
+DisplayObject.prototype.toLocal = function (position, from, point)
 {
     if (from)
     {
@@ -411,7 +449,7 @@ DisplayObject.prototype.toLocal = function (position, from)
     }
 
     // simply apply the matrix..
-    return this.worldTransform.applyInverse(position);
+    return this.worldTransform.applyInverse(position, point);
 };
 
 /**
@@ -476,6 +514,34 @@ DisplayObject.prototype.setParent = function (container)
 };
 
 /**
+ * Convenience function to set the postion, scale, skew and pivot at once.
+ *
+ * @param [x=0] {number} The X position
+ * @param [y=0] {number} The Y position
+ * @param [scaleX=1] {number} The X scale value
+ * @param [scaleY=1] {number} The Y scale value
+ * @param [rotation=0] {number} The rotation
+ * @param [skewX=0] {number} The X skew value
+ * @param [skewY=0] {number} The Y skew value
+ * @param [pivotX=0] {number} The X pivot value
+ * @param [pivotY=0] {number} The Y pivot value
+ * @return {PIXI.DisplayObject}
+ */
+DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
+{
+    this.position.x = x || 0;
+    this.position.y = y || 0;
+    this.scale.x = !scaleX ? 1 : scaleX;
+    this.scale.y = !scaleY ? 1 : scaleY;
+    this.rotation = rotation || 0;
+    this.skew.x = skewX || 0;
+    this.skew.y = skewY || 0;
+    this.pivot.x = pivotX || 0;
+    this.pivot.y = pivotY || 0;
+    return this;
+};
+
+/**
  * Base destroy method for generic display objects
  *
  */
@@ -485,6 +551,7 @@ DisplayObject.prototype.destroy = function ()
     this.position = null;
     this.scale = null;
     this.pivot = null;
+    this.skew = null;
 
     this.parent = null;
 

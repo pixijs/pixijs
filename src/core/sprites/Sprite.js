@@ -4,7 +4,9 @@ var math = require('../math'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    GroupD8 = math.GroupD8,
+    canvasRenderWorldTransform = new math.Matrix();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -113,7 +115,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.x = utils.sign(this.scale.x) * value / this.texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -131,7 +134,8 @@ Object.defineProperties(Sprite.prototype, {
         },
         set: function (value)
         {
-            this.scale.y = utils.sign(this.scale.y) * value / this.texture._frame.height;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture._frame.height;
             this._height = value;
         }
     },
@@ -239,7 +243,8 @@ Sprite.prototype.getBounds = function (matrix)
             minY,
             maxY;
 
-
+        //TODO - I am SURE this can be optimised, but the below is not accurate enough..
+        /*
         if (b === 0 && c === 0)
         {
             // scale may be negative!
@@ -262,38 +267,41 @@ Sprite.prototype.getBounds = function (matrix)
         }
         else
         {
-            var x1 = a * w1 + c * h1 + tx;
-            var y1 = d * h1 + b * w1 + ty;
+        */
 
-            var x2 = a * w0 + c * h1 + tx;
-            var y2 = d * h1 + b * w0 + ty;
+        var x1 = a * w1 + c * h1 + tx;
+        var y1 = d * h1 + b * w1 + ty;
 
-            var x3 = a * w0 + c * h0 + tx;
-            var y3 = d * h0 + b * w0 + ty;
+        var x2 = a * w0 + c * h1 + tx;
+        var y2 = d * h1 + b * w0 + ty;
 
-            var x4 =  a * w1 + c * h0 + tx;
-            var y4 =  d * h0 + b * w1 + ty;
+        var x3 = a * w0 + c * h0 + tx;
+        var y3 = d * h0 + b * w0 + ty;
 
-            minX = x1;
-            minX = x2 < minX ? x2 : minX;
-            minX = x3 < minX ? x3 : minX;
-            minX = x4 < minX ? x4 : minX;
+        var x4 =  a * w1 + c * h0 + tx;
+        var y4 =  d * h0 + b * w1 + ty;
 
-            minY = y1;
-            minY = y2 < minY ? y2 : minY;
-            minY = y3 < minY ? y3 : minY;
-            minY = y4 < minY ? y4 : minY;
+        minX = x1;
+        minX = x2 < minX ? x2 : minX;
+        minX = x3 < minX ? x3 : minX;
+        minX = x4 < minX ? x4 : minX;
 
-            maxX = x1;
-            maxX = x2 > maxX ? x2 : maxX;
-            maxX = x3 > maxX ? x3 : maxX;
-            maxX = x4 > maxX ? x4 : maxX;
+        minY = y1;
+        minY = y2 < minY ? y2 : minY;
+        minY = y3 < minY ? y3 : minY;
+        minY = y4 < minY ? y4 : minY;
 
-            maxY = y1;
-            maxY = y2 > maxY ? y2 : maxY;
-            maxY = y3 > maxY ? y3 : maxY;
-            maxY = y4 > maxY ? y4 : maxY;
-        }
+        maxX = x1;
+        maxX = x2 > maxX ? x2 : maxX;
+        maxX = x3 > maxX ? x3 : maxX;
+        maxX = x4 > maxX ? x4 : maxX;
+
+        maxY = y1;
+        maxY = y2 > maxY ? y2 : maxY;
+        maxY = y3 > maxY ? y3 : maxY;
+        maxY = y4 > maxY ? y4 : maxY;
+
+        //}
 
         // check for children
         if(this.children.length)
@@ -394,8 +402,8 @@ Sprite.prototype._renderCanvas = function (renderer)
             wt = this.worldTransform,
             dx,
             dy,
-            width,
-            height;
+            width = texture.crop.width,
+            height = texture.crop.height;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -406,37 +414,28 @@ Sprite.prototype._renderCanvas = function (renderer)
             renderer.context[renderer.smoothProperty] = smoothingEnabled;
         }
 
-        // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-
-        if(texture.rotate)
-        {
-
-            // cheeky rotation!
-            var a = wt.a;
-            var b = wt.b;
-
-            wt.a  = -wt.c;
-            wt.b  = -wt.d;
-            wt.c  =  a;
-            wt.d  =  b;
-
+        //inline GroupD8.isSwapWidthHeight
+        if ((texture.rotate & 3) === 2) {
             width = texture.crop.height;
             height = texture.crop.width;
-
-            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
-            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
         }
-        else
-        {
-            width = texture.crop.width;
-            height = texture.crop.height;
-
-            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
-            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
+        if (texture.trim) {
+            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
+            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
+        } else {
+            dx = (0.5 - this.anchor.x) * texture._frame.width;
+            dy = (0.5 - this.anchor.y) * texture._frame.height;
         }
-
-
-
+        if(texture.rotate) {
+            wt.copy(canvasRenderWorldTransform);
+            wt = canvasRenderWorldTransform;
+            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+            // the anchor has already been applied above, so lets set it to zero
+            dx = 0;
+            dy = 0;
+        }
+        dx -= width/2;
+        dy -= height/2;
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
