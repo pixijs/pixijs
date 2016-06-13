@@ -9,7 +9,7 @@
  * @namespace PIXI.filters
  */
 module.exports = {
-    FXAAFilter:          require('./fxaa_/FXAAFilter'),
+    FXAAFilter:          require('./fxaa/FXAAFilter'),
     NoiseFilter:        require('./noise/NoiseFilter'),
     DisplacementFilter: require('./displacement/DisplacementFilter'),
     BlurFilter:         require('./blur/BlurFilter'),
