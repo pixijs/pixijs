@@ -28,7 +28,7 @@ var BaseTexture = require('./BaseTexture'),
  * @memberof PIXI
  * @param source {HTMLVideoElement}
  * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
+ * @param autoPlay {boolean} Is video will be played automatically on load (default 'true')
  */
 function VideoBaseTexture(source, scaleMode, autoPlay)
 {
@@ -59,9 +59,9 @@ function VideoBaseTexture(source, scaleMode, autoPlay)
      * Should video automatically played on "onCanPlay" event
      *
      * @member {boolean}
-     * @default true
+     * @default false
      */
-    this.autoPlay = autoPlay !== undefined ? autoPlay : true;
+    this.autoPlay = autoPlay !== undefined ? autoPlay : false;
 
     this._onUpdate = this._onUpdate.bind(this);
     this._onCanPlay = this._onCanPlay.bind(this);
@@ -138,7 +138,7 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
 
-        if (this.autoPlay) 
+        if (this.autoPlay)
         {
             this.source.play();
         }
@@ -173,7 +173,7 @@ VideoBaseTexture.prototype.destroy = function ()
  * @static
  * @param video {HTMLVideoElement}
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
+ * @param autoPlay {boolean} Is video will be played automatically on load (default 'true')
  * @return {PIXI.VideoBaseTexture}
  */
 VideoBaseTexture.fromVideo = function (video, scaleMode, autoPlay)
@@ -204,7 +204,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode, autoPlay)
  * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
  *  the url's extension will be used as the second part of the mime type.
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
+ * @param autoPlay {boolean} Is video will be played automatically on load (default 'true')
  * @return {PIXI.VideoBaseTexture}
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode, autoPlay)
@@ -226,7 +226,7 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode, autoPlay)
     }
 
     video.load();
-    if (autoPlay) 
+    if (autoPlay)
     {
         video.play();
     }

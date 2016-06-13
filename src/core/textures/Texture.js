@@ -359,7 +359,7 @@ Texture.fromCanvas = function (canvas, scaleMode)
  * @static
  * @param video {HTMLVideoElement}
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
+ * @param autoPlay {boolean} Is video will be played automatically on load (default 'false')
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideo = function (video, scaleMode, autoPlay)
@@ -380,7 +380,7 @@ Texture.fromVideo = function (video, scaleMode, autoPlay)
  * @static
  * @param videoUrl {string}
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param autoPlay {boolenan} Is video will be played automatically on load (default 'true')
+ * @param autoPlay {boolenan} Is video will be played automatically on load (default 'false')
  * @return {PIXI.Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode, autoPlay)
