@@ -1,6 +1,5 @@
-var AbstractFilter = require('./AbstractFilter');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var core = require('../../core');
+var glslify  = require('glslify');
 
 /**
  *
@@ -19,35 +18,18 @@ var fs = require('fs');
  */
 function FXAAFilter()
 {
-    AbstractFilter.call(this,
+    //TODO - needs work
+    core.Filter.call(this,
+
         // vertex shader
-        fs.readFileSync(__dirname + '/FXAA.vert', 'utf8'),
+        glslify('./fxaa.vert'),
         // fragment shader
-        fs.readFileSync(__dirname + '/FXAA.frag', 'utf8'),
-        // uniforms
-        {
-            resolution: { type: 'v2', value: { x: 1, y: 1 } }
-        }
+        glslify('./fxaa.frag')
     );
 
 }
 
-FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
+FXAAFilter.prototype = Object.create(core.Filter.prototype);
 FXAAFilter.prototype.constructor = FXAAFilter;
+
 module.exports = FXAAFilter;
-
-/**
- * Applies the filter
- *
- * @param renderer {PIXI.WebGLRenderer} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
- */
-FXAAFilter.prototype.applyFilter = function (renderer, input, output)
-{
-    var filterManager = renderer.filterManager;
-
-    var shader = this.getShader( renderer );
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output);
-};
