@@ -281,7 +281,7 @@ Texture.prototype.destroy = function (destroyBase)
             // this only needs to be removed if the base texture is actually destoryed too..
             if(utils.TextureCache[this.baseTexture.imageUrl])
             {
-                delete utils.TextureCache[this.baseTexture.imageUrl]
+                delete utils.TextureCache[this.baseTexture.imageUrl];
             }
 
             this.baseTexture.destroy();
