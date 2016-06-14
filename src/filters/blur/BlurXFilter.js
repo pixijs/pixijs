@@ -22,6 +22,8 @@ function BlurXFilter(strength, quality, resolution)
         fragSrc
     );
 
+    this.resolution = resolution || 1;
+
     this._quality = 0;
 
     this.quality = quality || 4;
@@ -51,7 +53,7 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
     this.uniforms.strength = (1/output.size.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     // screen space!
-    this.uniforms.strength *= this.strength
+    this.uniforms.strength *= this.strength;
     this.uniforms.strength /= this.passes;// / this.passes//Math.pow(1, this.passes);
 
     if(this.passes === 1)

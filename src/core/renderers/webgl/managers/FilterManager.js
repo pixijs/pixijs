@@ -277,7 +277,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
             //check if its a point..
            if(uniforms[i].x !== undefined)
            {
-                val = shader.uniforms[i];
+                val = shader.uniforms[i] || new Float32Array(2);
                 val[0] = uniforms[i].x;
                 val[1] = uniforms[i].y;
                 shader.uniforms[i] = val;

@@ -497,21 +497,6 @@ Object.defineProperties(filters, {
     /**
      * @class
      * @private
-     * @name PIXI.filters.FXAAFilter
-     * @see PIXI.FXAAFilter
-     * @deprecated since version 3.0.6
-     */
-    FXAAFilter: {
-        get: function()
-        {
-            warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
-            return core.FXAAFilter;
-        }
-    },
-
-    /**
-     * @class
-     * @private
      * @name PIXI.filters.SpriteMaskFilter
      * @see PIXI.SpriteMaskFilter
      * @deprecated since version 3.0.6

@@ -13,9 +13,9 @@ function VoidFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('./void.vert', 'utf8'),
+        glslify('../fragments/default.vert'),
         // fragment shader
-        glslify('./void.frag', 'utf8')
+        glslify('./void.frag')
     );
 
     this.glShaderKey = 'void';

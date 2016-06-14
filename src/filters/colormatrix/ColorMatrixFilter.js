@@ -21,7 +21,7 @@ function ColorMatrixFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('./colorMatrix.vert'),
+        glslify('../fragments/default.vert'),
         // fragment shader
         glslify('./colorMatrix.frag')
     );
@@ -186,34 +186,34 @@ ColorMatrixFilter.prototype.blackAndWhite = function (multiply)
 ColorMatrixFilter.prototype.hue = function (rotation, multiply)
 {
     rotation = (rotation || 0) / 180 * Math.PI;
-   
+
     var cosR = Math.cos(rotation),
         sinR = Math.sin(rotation),
         sqrt = Math.sqrt;
- 
+
     /*a good approximation for hue rotation
     This matrix is far better than the versions with magic luminance constants
     formerly used here, but also used in the starling framework (flash) and known from this
     old part of the internet: quasimondo.com/archives/000565.php
-        
+
     This new matrix is based on rgb cube rotation in space. Look here for a more descriptive
     implementation as a shader not a general matrix:
     https://github.com/evanw/glfx.js/blob/58841c23919bd59787effc0333a4897b43835412/src/filters/adjust/huesaturation.js
-    
+
     This is the source for the code:
     see http://stackoverflow.com/questions/8507885/shift-hue-of-an-rgb-color/8510751#8510751
     */
-    
+
     var w = 1/3, sqrW = sqrt(w);//weight is
 
     var a00 = cosR + (1.0 - cosR) * w;
     var a01 = w * (1.0 - cosR) - sqrW * sinR;
     var a02 = w * (1.0 - cosR) + sqrW * sinR;
-    
+
     var a10 = w * (1.0 - cosR) + sqrW * sinR;
     var a11 = cosR + w*(1.0 - cosR);
     var a12 = w * (1.0 - cosR) - sqrW * sinR;
-    
+
     var a20 = w * (1.0 - cosR) - sqrW * sinR;
     var a21 = w * (1.0 - cosR) + sqrW * sinR;
     var a22 = cosR + w * (1.0 - cosR);

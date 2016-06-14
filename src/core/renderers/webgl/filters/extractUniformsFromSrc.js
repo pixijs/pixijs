@@ -34,7 +34,7 @@ function extractUniformsFromString(string)
             var type = splitLine[1];
 
             var name = splitLine[2];
-            var size = mapSize(type);
+            var size = 1;
 
             if(name.indexOf('[') > -1)
             {
