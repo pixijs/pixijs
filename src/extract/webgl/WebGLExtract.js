@@ -14,8 +14,8 @@ function WebGLExtract(renderer)
 }
 
 
-WebGLExtract.prototype.constructor = Extract;
-module.exports = Extract;
+WebGLExtract.prototype.constructor = WebGLExtract;
+module.exports = WebGLExtract;
 
 /**
  * Will return a HTML Image of the target
@@ -192,4 +192,4 @@ WebGLExtract.prototype.destroy = function ()
     this.renderer = null;
 };
 
-core.WebGLRenderer.registerPlugin('extract', Extract);
+core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
