@@ -10,7 +10,10 @@ function MaskManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
+    //TODO - we don't need both!
     this.scissor = false;
+    this.scissorData = null;
+    this.scissorRenderTarget = null;
 
     this.enableScissor = true;
 
@@ -26,7 +29,7 @@ module.exports = MaskManager;
  * Applies the Mask and adds it to the current filter stack.
  *
  * @param target {PIXI.DisplayObject}
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
 {
@@ -36,7 +39,6 @@ MaskManager.prototype.pushMask = function (target, maskData)
     }
     else
     {
-       // console.log( maskData.graphicsData[0].shape.type)
         if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
         {
             var matrix = maskData.worldTransform;
@@ -66,7 +68,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
  * Removes the last mask from the mask stack and doesn't return it.
  *
  * @param target {PIXI.DisplayObject}
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.popMask = function (target, maskData)
 {
@@ -127,7 +129,7 @@ MaskManager.prototype.popSpriteMask = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param maskData {*[]}
+ * @param maskData {Array<*>}
  */
 MaskManager.prototype.pushStencilMask = function (maskData)
 {
@@ -152,22 +154,29 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     var renderTarget = this.renderer._activeRenderTarget;
 
     var bounds = maskData.getBounds();
+
     bounds.fit(renderTarget.size);
     maskData.renderable = false;
 
     this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
-    this.renderer.gl.scissor(bounds.x,
-               renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y,
-               bounds.width ,
-               bounds.height);
+    var resolution = this.renderer.resolution;
+    this.renderer.gl.scissor(bounds.x * resolution,
+        (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
+                           bounds.width * resolution,
+                           bounds.height * resolution);
 
+    this.scissorRenderTarget = renderTarget;
+    this.scissorData = maskData;
     this.scissor = true;
 };
 
 MaskManager.prototype.popScissorMask = function ()
 {
+    this.scissorRenderTarget = null;
+    this.scissorData = null;
     this.scissor = false;
+
     // must be scissor!
     var gl = this.renderer.gl;
     gl.disable(gl.SCISSOR_TEST);

@@ -50,7 +50,7 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
         width = texture._frame.width,
         height = texture._frame.height;
 
-    if (texture.orig.width <= 0 || texture.orig.height <= 0)
+    if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.baseTexture.source)
     {
         return;
     }

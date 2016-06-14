@@ -187,8 +187,6 @@ var CONST = {
      * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
      * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
      * Handy for mobile devices!
-     * This property only affects WebGL
-     * Handy for mobile devices!
      * This property only affects WebGL.
      *
      * @static
@@ -225,7 +223,7 @@ var CONST = {
     RETINA_PREFIX: /@(.+)x/,
 
     /**
-     * Default resolution of the renderer.
+     * Default resolution / device pixel ratio of the renderer.
      *
      * @property {number} RESOLUTION
      * @constant
@@ -309,6 +307,12 @@ var CONST = {
         LOW: 'lowp',
         MEDIUM: 'mediump',
         HIGH: 'highp'
+    },
+
+    TRANSFORM_MODE:{
+        STATIC:0,
+        DYNAMIC:1,
+        DEFAULT:0
     },
 
     /**

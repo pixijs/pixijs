@@ -11,7 +11,7 @@ var utils = require('../utils'),
  * @memberof PIXI
  * @param [source ]{Image|HTMLCanvasElement} the source object of the texture.
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=CONST.resolution] {number} the resolution of the texture for devices with different pixel ratios
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the texture
  */
 function BaseTexture(source, scaleMode, resolution)
 {
@@ -22,9 +22,10 @@ function BaseTexture(source, scaleMode, resolution)
     this.touched = 0;
 
     /**
-     * The Resolution of the texture.
+     * The resolution / device pixel ratio of the texture
      *
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 
@@ -134,15 +135,13 @@ function BaseTexture(source, scaleMode, resolution)
      */
     this.mipmap = CONST.MIPMAP_TEXTURES;
 
-
     /**
      *
-     * Set this to true if a mipmap of this texture needs to be generated. This value needs to be set before the texture is used
-     * Also the texture must be a power of two size to work
+     * WebGL Texture wrap mode
      *
      * @member {boolean}
      */
-    this.wrap = CONST.MIPMAP_TEXTURES;
+    this.wrapMode = CONST.WRAP_MODES.DEFAULT;
 
     /**
      * A map of renderer IDs to webgl textures

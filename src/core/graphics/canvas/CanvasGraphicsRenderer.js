@@ -232,11 +232,6 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
  */
 CanvasGraphicsRenderer.prototype.updateGraphicsTint = function (graphics)
 {
-    if (graphics.tint === 0xFFFFFF && graphics._prevTint === graphics.tint)
-    {
-        return;
-    }
-
     graphics._prevTint = graphics.tint;
 
     var tintR = (graphics.tint >> 16 & 0xFF) / 255;

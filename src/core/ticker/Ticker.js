@@ -331,19 +331,42 @@ Ticker.prototype.update = function update(currentTime)
 
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
-    // Save uncapped elapsedMS for measurement
-    Math.max(0, elapsedMS = this.elapsedMS = currentTime - this.lastTime);
 
-    // cap the milliseconds elapsed used for deltaTime
-    if (elapsedMS > this._maxElapsedMS)
+    // If the difference in time is zero or negative, we ignore most of the work done here.
+    // If there is no valid difference, then should be no reason to let anyone know about it.
+    // A zero delta, is exactly that, nothing should update.
+    //
+    // The difference in time can be negative, and no this does not mean time traveling.
+    // This can be the result of a race condition between when an animation frame is requested
+    // on the current JavaScript engine event loop, and when the ticker's start method is invoked
+    // (which invokes the internal _requestIfNeeded method). If a frame is requested before
+    // _requestIfNeeded is invoked, then the callback for the animation frame the ticker requests,
+    // can receive a time argument that can be less than the lastTime value that was set within
+    // _requestIfNeeded. This difference is in microseconds, but this is enough to cause problems.
+    //
+    // This check covers this browser engine timing issue, as well as if consumers pass an invalid
+    // currentTime value. This may happen if consumers opt-out of the autoStart, and update themselves.
+
+    if (currentTime > this.lastTime)
     {
-        elapsedMS = this._maxElapsedMS;
+        // Save uncapped elapsedMS for measurement
+        elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+
+        // cap the milliseconds elapsed used for deltaTime
+        if (elapsedMS > this._maxElapsedMS)
+        {
+            elapsedMS = this._maxElapsedMS;
+        }
+
+        this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
+
+        // Invoke listeners added to internal emitter
+        this._emitter.emit(TICK, this.deltaTime);
     }
-
-    this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
-
-    // Invoke listeners added to internal emitter
-    this._emitter.emit(TICK, this.deltaTime);
+    else
+    {
+        this.deltaTime = this.elapsedMS = 0;
+    }
 
     this.lastTime = currentTime;
 };

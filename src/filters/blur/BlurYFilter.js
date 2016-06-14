@@ -10,7 +10,7 @@ var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurYFilter()
+function BlurYFilter(strength, quality, resolution)
 {
     var vertSrc = generateBlurVertSource(5, false);
     var fragSrc = generateBlurFragSource(5);
@@ -22,9 +22,14 @@ function BlurYFilter()
         fragSrc
     );
 
-    this.passes = 1;
-    this.resolution = 1;//0.25;//0.5;//0.1//5;
-    this.strength = 4;
+    this.resolution = resolution || 1;
+
+    this._quality = 0;
+
+    this.quality = quality || 4;
+    this.strength = strength || 8;
+
+    this.firstRun = true;
 }
 
 BlurYFilter.prototype = Object.create(core.Filter.prototype);
@@ -44,9 +49,10 @@ BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
         this.firstRun = false;
     }
 
-    this.uniforms.strength = (1/output.destinationFrame.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength = (1/output.size.height) * (output.size.height/input.size.height); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     this.uniforms.strength *= this.strength;
+    this.uniforms.strength /= this.passes;
 
     if(this.passes === 1)
     {
@@ -91,6 +97,25 @@ Object.defineProperties(BlurYFilter.prototype, {
         {
             this.padding = Math.abs(value) * 2;
             this.strength = value;
+        }
+    },
+
+    /**
+     * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
+     *
+     * @member {number}
+     * @memberof PIXI.filters.BlurXFilter#
+     * @default 4
+     */
+    quality: {
+        get: function ()
+        {
+            return  this._quality;
+        },
+        set: function (value)
+        {
+            this._quality = value;
+            this.passes = value;
         }
     }
 });

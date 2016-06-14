@@ -19,7 +19,7 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
- * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
+ * @param [resolution=1] {number} The current resolution / device pixel ratio of the canvas
  */
 function Text(text, style, resolution)
 {
@@ -37,8 +37,9 @@ function Text(text, style, resolution)
     this.context = this.canvas.getContext('2d');
 
     /**
-     * The resolution of the canvas.
+     * The resolution / device pixel ratio of the canvas
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 
@@ -64,6 +65,14 @@ function Text(text, style, resolution)
      * @private
      */
     this._styleListener = null;
+
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {string}
+     * @private
+     */
+    this._font = '';
 
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
@@ -98,6 +107,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
@@ -118,6 +129,8 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            this.updateText(true);
+
             this.scale.y = value / this._texture._frame.height;
             this._height = value;
         }
@@ -192,7 +205,12 @@ Text.prototype.updateText = function (respectDirty)
         return;
     }
     var style = this._style;
-    this.context.font = style.font;
+
+    // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
+    var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
+    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
+
+    this.context.font = this._font;
 
     // word wrap
     // preserve original text
@@ -204,7 +222,7 @@ Text.prototype.updateText = function (respectDirty)
     // calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(style.font);
+    var fontProperties = this.determineFontProperties(this._font);
 
     var i;
     for (i = 0; i < lines.length; i++)
@@ -244,7 +262,7 @@ Text.prototype.updateText = function (respectDirty)
     //this.context.fillStyle="#FF0000";
     //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.context.font = style.font;
+    this.context.font = this._font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = style.textBaseline;
@@ -283,6 +301,13 @@ Text.prototype.updateText = function (respectDirty)
             if (style.fill)
             {
                 this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
+
+                if (style.stroke && style.strokeThickness)
+                {
+                    this.context.strokeStyle = style.dropShadowColor;
+                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding, true);
+                    this.context.strokeStyle = style.stroke;
+			    }
             }
         }
     }
@@ -683,17 +708,22 @@ Text.prototype._generateFillStyle = function (style, lines)
 
 /**
  * Destroys this text object.
+ * Destroys this text
  *
- * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Text.prototype.destroy = function (destroyBaseTexture)
+Text.prototype.destroy = function (options)
 {
+    Sprite.prototype.destroy.call(this, options);
+
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;
 
     this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
-
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };

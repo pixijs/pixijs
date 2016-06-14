@@ -132,6 +132,9 @@ function Texture(baseTexture, frame, orig, trim, rotate)
      * @memberof PIXI.Texture#
      * @protected
      */
+
+
+    this._updateID = 0;
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -164,7 +167,7 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim)
+            if (!this.trim && !this.rotate)
             {
                 this.orig = frame;
             }
@@ -238,6 +241,8 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
+    this._updateID++;
+
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -250,6 +255,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 
     this.baseTexture.on('update', this.onBaseTextureUpdated, this);
     this.emit('update', this);
+
 };
 
 /**
@@ -259,6 +265,8 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 {
+    this._updateID++;
+
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
@@ -274,8 +282,16 @@ Texture.prototype.destroy = function (destroyBase)
 {
     if (this.baseTexture)
     {
+
         if (destroyBase)
         {
+            // delete the texture if it exists in the texture cache..
+            // this only needs to be removed if the base texture is actually destoryed too..
+            if(utils.TextureCache[this.baseTexture.imageUrl])
+            {
+                delete utils.TextureCache[this.baseTexture.imageUrl];
+            }
+
             this.baseTexture.destroy();
         }
 
@@ -319,6 +335,8 @@ Texture.prototype._updateUvs = function ()
     }
 
     this._uvs.set(this._frame, this.baseTexture, this.rotate);
+
+    this._updateID++;
 };
 
 /**

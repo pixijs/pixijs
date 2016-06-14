@@ -412,7 +412,7 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
  */
 Mesh.prototype._onTextureUpdate = function ()
 {
-    this.updateFrame = true;
+
 };
 
 /**

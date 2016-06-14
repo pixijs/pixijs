@@ -2,9 +2,7 @@ var utils = require('../../utils'),
 canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 /**
  * Utility methods for Sprite/Texture tinting.
- * @static
- * @class
- * @memberof PIXI
+ * @namespace PIXI.CanvasTinter
  */
 var CanvasTinter = {};
 module.exports = CanvasTinter;
@@ -65,9 +63,14 @@ CanvasTinter.getTintedTexture = function (sprite, color)
 CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
+    var crop = texture._frame.clone();
+    var resolution = texture.baseTexture.resolution;
 
-    var crop = texture._frame;
-
+    crop.x *= resolution;
+    crop.y *= resolution;
+    crop.width *= resolution;
+    crop.height *= resolution;
+     
     canvas.width = crop.width;
     canvas.height = crop.height;
 
@@ -114,8 +117,13 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas)
 CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
+    var crop = texture._frame.clone();
+    var resolution = texture.baseTexture.resolution;
 
-    var crop = texture._frame;
+    crop.x *= resolution;
+    crop.y *= resolution;
+    crop.width *= resolution;
+    crop.height *= resolution;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
@@ -150,7 +158,13 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas)
 CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
 {
     var context = canvas.getContext( '2d' );
-    var crop = texture._frame;
+    var crop = texture._frame.clone();
+    var resolution = texture.baseTexture.resolution;
+
+    crop.x *= resolution;
+    crop.y *= resolution;
+    crop.width *= resolution;
+    crop.height *= resolution;
 
     canvas.width = crop.width;
     canvas.height = crop.height;

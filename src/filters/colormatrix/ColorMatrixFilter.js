@@ -14,14 +14,14 @@ var glslify  = require('glslify');
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 function ColorMatrixFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('./colorMatrix.vert'),
+        glslify('../fragments/default.vert'),
         // fragment shader
         glslify('./colorMatrix.frag')
     );
@@ -186,21 +186,45 @@ ColorMatrixFilter.prototype.blackAndWhite = function (multiply)
 ColorMatrixFilter.prototype.hue = function (rotation, multiply)
 {
     rotation = (rotation || 0) / 180 * Math.PI;
-    var cos = Math.cos(rotation),
-        sin = Math.sin(rotation);
 
-    // luminanceRed, luminanceGreen, luminanceBlue
-    var lumR = 0.213, // or 0.3086
-        lumG = 0.715, // or 0.6094
-        lumB = 0.072; // or 0.0820
+    var cosR = Math.cos(rotation),
+        sinR = Math.sin(rotation),
+        sqrt = Math.sqrt;
+
+    /*a good approximation for hue rotation
+    This matrix is far better than the versions with magic luminance constants
+    formerly used here, but also used in the starling framework (flash) and known from this
+    old part of the internet: quasimondo.com/archives/000565.php
+
+    This new matrix is based on rgb cube rotation in space. Look here for a more descriptive
+    implementation as a shader not a general matrix:
+    https://github.com/evanw/glfx.js/blob/58841c23919bd59787effc0333a4897b43835412/src/filters/adjust/huesaturation.js
+
+    This is the source for the code:
+    see http://stackoverflow.com/questions/8507885/shift-hue-of-an-rgb-color/8510751#8510751
+    */
+
+    var w = 1/3, sqrW = sqrt(w);//weight is
+
+    var a00 = cosR + (1.0 - cosR) * w;
+    var a01 = w * (1.0 - cosR) - sqrW * sinR;
+    var a02 = w * (1.0 - cosR) + sqrW * sinR;
+
+    var a10 = w * (1.0 - cosR) + sqrW * sinR;
+    var a11 = cosR + w*(1.0 - cosR);
+    var a12 = w * (1.0 - cosR) - sqrW * sinR;
+
+    var a20 = w * (1.0 - cosR) - sqrW * sinR;
+    var a21 = w * (1.0 - cosR) + sqrW * sinR;
+    var a22 = cosR + w * (1.0 - cosR);
+
 
     var matrix = [
-        lumR + cos * (1 - lumR) + sin * (-lumR), lumG + cos * (-lumG) + sin * (-lumG), lumB + cos * (-lumB) + sin * (1 - lumB), 0, 0,
-        lumR + cos * (-lumR) + sin * (0.143), lumG + cos * (1 - lumG) + sin * (0.140), lumB + cos * (-lumB) + sin * (-0.283), 0, 0,
-        lumR + cos * (-lumR) + sin * (-(1 - lumR)), lumG + cos * (-lumG) + sin * (lumG), lumB + cos * (1 - lumB) + sin * (lumB), 0, 0,
-        0, 0, 0, 1, 0
+      a00, a01, a02, 0, 0,
+      a10, a11, a12, 0, 0,
+      a20, a21, a22, 0, 0,
+      0, 0, 0, 1, 0,
     ];
-
 
     this._loadMatrix(matrix, multiply);
 };

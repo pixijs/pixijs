@@ -31,7 +31,7 @@ function Sprite(texture)
      *
      * @member {PIXI.Point}
      */
-    this.anchor = new math.Point();
+    this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
      * The texture that the sprite is using
@@ -91,8 +91,9 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.textureDirty = true;
-    this.vertexData = new Float32Array(8);
+    this.vertexData = new Float32Array(16);
+    this._transformID = -1;
+    this._textureID = -1;
 }
 
 // constructor
@@ -160,7 +161,7 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
-            this.textureDirty = true;
+            this._textureID = -1;
 
             if (value)
             {
@@ -185,7 +186,7 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
-    this.textureDirty = true;
+    this._textureID = -1;
 
     // so if _width is 0 then width was not set..
     if (this._width)
@@ -199,8 +200,26 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
+Sprite.prototype.onAnchorUpdate = function()
+{
+    this._transformID = -1;
+};
+
+/**
+ * calculates worldTransform * vertices, store it in vertexData
+ */
 Sprite.prototype.calculateVertices = function ()
 {
+    if(this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+    {
+        return;
+    }
+
+    this._transformID = this.transform._worldID;
+    this._textureID = this._texture._updateID;
+
+    // set the vertex data
+
     var texture = this._texture,
         wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
@@ -246,6 +265,56 @@ Sprite.prototype.calculateVertices = function ()
 };
 
 /**
+ * we need this method to be compatible with pixiv3. v3 does calculate bounds of original texture are, not trimmed one
+ */
+Sprite.prototype.calculateBoundsVertices = function ()
+{
+    var texture = this._texture,
+        trim = texture.trim,
+        vertexData = this.vertexData,
+        orig = texture.orig;
+
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
+        vertexData[8] = vertexData[0];
+        vertexData[9] = vertexData[1];
+        vertexData[10] = vertexData[2];
+        vertexData[11] = vertexData[3];
+        vertexData[12] = vertexData[4];
+        vertexData[13] = vertexData[5];
+        vertexData[14] = vertexData[6];
+        vertexData[15] = vertexData[7];
+        return;
+    }
+
+    var wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        w0, w1, h0, h1;
+
+
+    w0 = (orig.width ) * (1-this.anchor.x);
+    w1 = (orig.width ) * -this.anchor.x;
+
+    h0 = orig.height * (1-this.anchor.y);
+    h1 = orig.height * -this.anchor.y;
+
+    // xy
+    vertexData[8] = a * w1 + c * h1 + tx;
+    vertexData[9] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[10] = a * w0 + c * h1 + tx;
+    vertexData[11] = d * h1 + b * w0 + ty;
+
+    // xy
+    vertexData[12] = a * w0 + c * h0 + tx;
+    vertexData[13] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[14] = a * w1 + c * h0 + tx;
+    vertexData[15] = d * h0 + b * w1 + ty;
+};
+
+/**
 *
 * Renders the object using the WebGL renderer
 *
@@ -254,12 +323,7 @@ Sprite.prototype.calculateVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
-    {
-        this.textureDirty = false;
-        // set the vertex data
-        this.calculateVertices();
-    }
+    this.calculateVertices();
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -287,30 +351,27 @@ Sprite.prototype.getBounds = function ()
     //TODO lookinto caching..
     if(!this._currentBounds)
     {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
+        // set the vertex data
+        this.calculateVertices();
 
-            // set the vertex data
-            this.calculateVertices();
-
-        }
+        // set the vertex data
+        this.calculateBoundsVertices();
 
         var minX, maxX, minY, maxY,
             w0, w1, h0, h1,
             vertexData = this.vertexData;
 
-        var x1 = vertexData[0];
-        var y1 = vertexData[1];
+        var x1 = vertexData[8];
+        var y1 = vertexData[9];
 
-        var x2 = vertexData[2];
-        var y2 = vertexData[3];
+        var x2 = vertexData[10];
+        var y2 = vertexData[11];
 
-        var x3 = vertexData[4];
-        var y3 = vertexData[5];
+        var x3 = vertexData[12];
+        var y3 = vertexData[13];
 
-        var x4 = vertexData[6];
-        var y4 = vertexData[7];
+        var x4 = vertexData[14];
+        var y4 = vertexData[15];
 
         minX = x1;
         minX = x2 < minX ? x2 : minX;
@@ -407,20 +468,25 @@ Sprite.prototype.containsPoint = function( point )
 
 
 /**
- * Destroys this sprite and optionally its texture
+ * Destroys this sprite and optionally its texture and children
  *
- * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
- * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+Sprite.prototype.destroy = function (options)
 {
-    Container.prototype.destroy.call(this);
+    Container.prototype.destroy.call(this, options);
 
     this.anchor = null;
 
+    var destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
     if (destroyTexture)
     {
-        this._texture.destroy(destroyBaseTexture);
+        var destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+        this._texture.destroy(!!destroyBaseTexture);
     }
 
     this._texture = null;
