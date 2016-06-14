@@ -301,6 +301,13 @@ Text.prototype.updateText = function (respectDirty)
             if (style.fill)
             {
                 this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
+
+                if (style.stroke && style.strokeThickness)
+                {
+                    this.context.strokeStyle = style.dropShadowColor;
+                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding, true);
+                    this.context.strokeStyle = style.stroke;
+			    }
             }
         }
     }
