@@ -2,8 +2,9 @@
  * Generic Mask Stack data structure
  * @class
  * @memberof PIXI
+ * @param size {number} Number of quads
+ * @return {Uint16Array} indices
  */
-
 var createIndicesForQuads = function (size)
 {
     // the total number of indices in our array, there are 6 points per quad.

@@ -72,6 +72,8 @@ function RenderTexture(baseRenderTexture, frame)
     );
 
     /**
+     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
+     *
      * @member {boolean}
      */
     this.valid = true;
@@ -111,7 +113,7 @@ RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture
  * A short hand way of creating a render texture..
  * @param [width=100] {number} The width of the render texture
  * @param [height=100] {number} The height of the render texture
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
 RenderTexture.create = function(width, height, scaleMode, resolution)

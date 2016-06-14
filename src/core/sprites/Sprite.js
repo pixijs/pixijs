@@ -29,7 +29,7 @@ function Sprite(texture)
      * Setting the anchor to 0.5,0.5 means the texture's origin is centered
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint}
      */
     this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
@@ -497,11 +497,11 @@ Sprite.prototype.destroy = function (options)
 
 /**
  * Helper function that creates a new sprite based on the source you provide.
- * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+ * The source can be - frame id, image url, video url, canvas element, video element, base texture
  *
  * @static
- * @param source {}
- * @return {PIXI.Texture} A Texture
+ * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+ * @return {PIXI.Texture} The newly created texture
  */
 Sprite.from = function (source)
 {

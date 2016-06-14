@@ -28,7 +28,7 @@ module.exports = MaskManager;
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {PIXI.DisplayObject}
+ * @param target {PIXI.DisplayObject} Display Object to push the mask to
  * @param maskData {Array<*>}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
@@ -67,7 +67,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
 /**
  * Removes the last mask from the mask stack and doesn't return it.
  *
- * @param target {PIXI.DisplayObject}
+ * @param target {PIXI.DisplayObject} Display Object to pop the mask from
  * @param maskData {Array<*>}
  */
 MaskManager.prototype.popMask = function (target, maskData)
@@ -93,8 +93,8 @@ MaskManager.prototype.popMask = function (target, maskData)
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param target {PIXI.RenderTarget}
- * @param maskData {PIXI.Sprite}
+ * @param target {PIXI.RenderTarget} Display Object to push the sprite mask to
+ * @param maskData {PIXI.Sprite} Sprite to be used as the mask
  */
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
@@ -147,6 +147,11 @@ MaskManager.prototype.popStencilMask = function ()
     this.renderer.stencilManager.popStencil();
 };
 
+/**
+ *
+ * @param target {PIXI.RenderTarget} Display Object to push the scissor mask to
+ * @param maskData
+ */
 MaskManager.prototype.pushScissorMask = function (target, maskData)
 {
     maskData.renderable = true;
@@ -171,6 +176,10 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
     this.scissor = true;
 };
 
+/**
+ *
+ *
+ */
 MaskManager.prototype.popScissorMask = function ()
 {
     this.scissorRenderTarget = null;

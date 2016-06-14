@@ -1,4 +1,12 @@
 var core = require('../core');
+
+/**
+ * @typedef PIXI.extras.MovieClip.FrameObject
+ * @type {object}
+ * @property texture {PIXI.Texture} The {@link PIXI.Texture} of the frame
+ * @property time {number} the duration of the frame in ms
+ */
+
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
@@ -15,15 +23,11 @@ var core = require('../core');
  * var mc = new PIXI.MovieClip(textureArray);
  * ```
  *
- * @typedef FrameObject
- * @type {object}
- * @property texture {PIXI.Texture} The {@link PIXI.Texture} of the frame
- * @property time {number} the duration of the frame in ms
  *
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
+ * @param textures {PIXI.Texture[]|PIXI.extras.MovieClip.FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
 function MovieClip(textures)
 {

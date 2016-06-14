@@ -4,7 +4,7 @@ var Shader = require('../../core/Shader');
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param gl {Shader} TODO: Find a good explanation for this.
+ * @param gl {PIXI.Shader} TODO: Find a good explanation for this.
  */
 function MeshShader(gl)
 {

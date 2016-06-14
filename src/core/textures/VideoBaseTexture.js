@@ -26,8 +26,8 @@ var BaseTexture = require('./BaseTexture'),
  * @class
  * @extends PIXI.BaseTexture
  * @memberof PIXI
- * @param source {HTMLVideoElement}
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param source {HTMLVideoElement} Video source
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  */
 function VideoBaseTexture(source, scaleMode)
 {
@@ -159,9 +159,9 @@ VideoBaseTexture.prototype.destroy = function ()
  * Mimic Pixi BaseTexture.from.... method.
  *
  * @static
- * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.VideoBaseTexture}
+ * @param video {HTMLVideoElement} Video to create texture from
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
  */
 VideoBaseTexture.fromVideo = function (video, scaleMode)
 {
@@ -191,7 +191,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
  * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
  *  the url's extension will be used as the second part of the mime type.
  * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.VideoBaseTexture}
+ * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
 {

@@ -12,7 +12,6 @@ var core = require('../core'),
  * var bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
- *
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
  *
@@ -40,7 +39,7 @@ function BitmapText(text, style)
      * which is defined in the style object
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.textWidth = 0;
 
@@ -49,7 +48,7 @@ function BitmapText(text, style)
      * which is defined in the style object
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.textHeight = 0;
 
@@ -108,7 +107,7 @@ function BitmapText(text, style)
     /**
      * Text anchor. read-only
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint}
      * @private
      */
     this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);

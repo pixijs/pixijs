@@ -87,7 +87,7 @@ ObservablePoint.prototype.set = function (x, y)
 /**
  * Copies the data from another point
  *
- * @param point {PIXI.Point|{PIXI.ObservablePoint} point to copy from
+ * @param point {PIXI.Point|PIXI.ObservablePoint} point to copy from
  */
 ObservablePoint.prototype.copy = function (point)
 {

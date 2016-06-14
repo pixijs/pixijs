@@ -53,6 +53,9 @@ function Polygon(points_)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readOnly
+     * @default CONST.SHAPES.POLY
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.POLY;
 }

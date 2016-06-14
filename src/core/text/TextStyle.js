@@ -79,7 +79,7 @@ TextStyle.prototype._defaults = {
  * Creates a new TextStyle object with the same values as this one.
  * Note that the only the properties of the object are cloned, not its event emitter.
  *
- * @return {PIXI.TextStyle}
+ * @return {PIXI.TextStyle} New cloned TextStyle object
  */
 TextStyle.prototype.clone = function ()
 {

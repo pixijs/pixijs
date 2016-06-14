@@ -522,6 +522,12 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
+/**
+ * @method
+ * @name PIXI.utils.canUseNewCanvasBlendModes
+ * @see PIXI.utils.canUseNewCanvasBlendModes
+ * @deprecated
+ */
 core.utils.canUseNewCanvasBlendModes = function() {
     warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;

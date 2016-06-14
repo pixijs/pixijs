@@ -132,20 +132,19 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
 
 /**
  * Decomposes a matrix and sets the transforms properties based on it.
- * @param {Matrix}
+ * @param {PIXI.Matrix} The matrix to decompose
  */
 TransformStatic.prototype.setFromMatrix = function (matrix)
 {
     matrix.decompose(this);
 };
 
-
-
 Object.defineProperties(TransformStatic.prototype, {
     /**
      * The rotation of the object in radians.
      *
      * @member {number}
+     * @memberof PIXI.TransformStatic#
      */
     rotation: {
         get: function () {

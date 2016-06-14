@@ -236,7 +236,7 @@ Ticker.prototype._startIfPossible = function _startIfPossible()
  *
  * @param fn {Function} The listener function to be added for updates
  * @param [context] {Function} The listener context
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.add = function add(fn, context)
 {
@@ -254,7 +254,7 @@ Ticker.prototype.add = function add(fn, context)
  *
  * @param fn {Function} The listener function to be added for one update
  * @param [context] {Function} The listener context
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.addOnce = function addOnce(fn, context)
 {
@@ -272,7 +272,7 @@ Ticker.prototype.addOnce = function addOnce(fn, context)
  *
  * @param [fn] {Function} The listener function to be removed
  * @param [context] {Function} The listener context to be removed
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.remove = function remove(fn, context)
 {
