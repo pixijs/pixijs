@@ -1,5 +1,4 @@
-var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint');
+var math = require('../math');
 
 
 /**
@@ -35,7 +34,7 @@ function Transform()
     this.scale = new math.Point(1,1);
 
 
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -60,6 +59,8 @@ function Transform()
 
     this._dirty = false;
     this.updated = true;
+
+    this._worldID = 0;
 }
 
 Transform.prototype.constructor = Transform;
@@ -105,14 +106,9 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
-};
 
-Transform.prototype.updateChildTransform = function (childTransform)
-{
-    childTransform.updateTransform(this);
-    return childTransform;
+    this._worldID ++;
 };
-
 
 /**
  * Decomposes a matrix and sets the transforms properties based on it.

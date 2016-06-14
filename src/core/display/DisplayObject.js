@@ -1,5 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
+    CONST = require('../const'),
+    TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
     _tempDisplayObjectParent = new DisplayObject();
 
@@ -17,12 +19,14 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    var TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+
     //TODO: need to create Transform from factory
     /**
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
      */
-    this.transform = new Transform();
+    this.transform =  new TransformClass();
 
     /**
      * The opacity of the object.
@@ -322,7 +326,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    this.transform =  this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };

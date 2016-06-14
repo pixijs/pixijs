@@ -1,5 +1,5 @@
 var core = require('../core'),
-    ObservablePoint = require('../core/display/ObservablePoint');
+    ObservablePoint = require('../core/math/ObservablePoint');
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To

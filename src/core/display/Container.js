@@ -131,6 +131,9 @@ Container.prototype.addChild = function (child)
 
         child.parent = this;
 
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
+
         this.children.push(child);
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -366,7 +369,7 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
 
     //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
@@ -468,6 +471,7 @@ Container.prototype.getLocalBounds = function ()
     var matrixCache = this.transform.worldTransform;
 
     this.transform.worldTransform = math.Matrix.IDENTITY;
+    this.transform._worldID++;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -475,6 +479,7 @@ Container.prototype.getLocalBounds = function ()
     }
 
     this.transform.worldTransform = matrixCache;
+    this.transform._worldID++;
 
     this._currentBounds = null;
 
