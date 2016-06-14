@@ -14,6 +14,48 @@ export default class CanvasMaskManager
     constructor(renderer)
     {
         this.renderer = renderer;
+        this._maskStates = [];
+    }
+
+    /**
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
+     * @returns {Canvas} a new canvas object with the same attributes as the one used in the rendering context.
+     */
+    _copyCanvas(renderer)
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = renderer.context.canvas.width;
+        canvas.height = renderer.context.canvas.height;
+
+        return canvas;
+    }
+
+    /**
+     * This function sets up and returns a context in the given canvas copying the
+     * data from the canvas used in the renderer class.
+     *
+     * @param {Canvas} canvas - The canvas to setup the context for.
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer to copy the setup from.
+     * @param {object} maskData - the maskData that will be pushed
+     * @returns {Context} a new 2d rendering context created to draw in the given canvas.
+     */
+    _setupContext(canvas, renderer, maskData)
+    {
+        const context = canvas.getContext('2d');
+        const transform = maskData.worldTransform;
+        const resolution = renderer.resolution;
+
+        context.setTransform(
+            transform.a * resolution,
+            transform.b * resolution,
+            transform.c * resolution,
+            transform.d * resolution,
+            transform.tx * resolution,
+            transform.ty * resolution
+        );
+
+        return context;
     }
 
     /**
@@ -40,9 +82,18 @@ export default class CanvasMaskManager
             transform.ty * resolution
         );
 
-        // TODO suport sprite alpha masks??
-        // lots of effort required. If demand is great enough..
-        if (!maskData._texture)
+        if (maskData._texture)
+        {
+            const maskState = {
+                originalContext: renderer.context,
+                maskableContext: this._setupContext(this._copyCanvas(renderer), renderer, maskData),
+                maskData,
+            };
+
+            this._maskStates.push(maskState);
+            renderer.context = maskState.maskableContext;
+        }
+        else
         {
             this.renderGraphicsShape(maskData);
             renderer.context.clip();
@@ -153,12 +204,55 @@ export default class CanvasMaskManager
     }
 
     /**
+     * Makes the black on the giben context transparent. This is necessary to make this canvas mask act as the
+     * webgl version with black masks.
+     * @param {Context} context - The context in which we want to convert black pixels into transparent.
+     */
+    _makeBlackTransparent(context)
+    {
+        const imgd = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+        const pix = imgd.data;
+
+        for (let i = 0, n = pix.length; i < n; i += 4)
+        {
+            if (pix[i] === 0 && pix[i + 1] === 0 && pix[i + 2] === 0)
+            {
+                pix[i + 3] = 0;
+            }
+        }
+
+        context.putImageData(imgd, 0, 0);
+    }
+
+    /**
      * Restores the current drawing context to the state it was before the mask was applied.
      *
      * @param {PIXI.CanvasRenderer} renderer - The renderer context to use.
      */
     popMask(renderer)
     {
+        if (this._maskStates.length > 0)
+        {
+            const maskState = this._maskStates.pop();
+            const maskCanvas = this._copyCanvas(renderer);
+            const maskContext = this._setupContext(maskCanvas, renderer, maskState.maskData);
+
+            renderer.context = maskContext;
+
+            // Render the mask data to cull the content
+            maskState.maskData._renderCanvas(renderer);
+            // Black is transparent with the webgl mask, this forces this to be transparent too.
+            this._makeBlackTransparent(maskContext);
+            // Render the stuff to be masked into the mask context
+            maskContext.globalCompositeOperation = 'source-in';
+            maskContext.drawImage(maskState.maskableContext.canvas, -maskCanvas.width / 2, -maskCanvas.height / 2);
+
+            // Restore the original context
+            renderer.context = maskState.originalContext;
+            // draw the masked content into the original context
+            renderer.context.drawImage(maskCanvas, -maskCanvas.width / 2, -maskCanvas.height / 2);
+        }
+
         renderer.context.restore();
     }
 
