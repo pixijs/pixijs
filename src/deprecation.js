@@ -525,7 +525,7 @@ core.utils.uuid = function ()
 /**
  * @method
  * @name PIXI.utils.canUseNewCanvasBlendModes
- * @see PIXI.utils.canUseNewCanvasBlendModes
+ * @see PIXI.CanvasTinter
  * @deprecated
  */
 core.utils.canUseNewCanvasBlendModes = function() {
