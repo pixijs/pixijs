@@ -19,6 +19,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     Container:              require('./display/Container'),
     Transform:              require('./display/Transform'),
     TransformStatic:        require('./display/TransformStatic'),
+    TransformManual:        require('./display/TransformManual'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
