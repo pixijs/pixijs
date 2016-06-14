@@ -67,8 +67,8 @@ Prepare.UPLOADS_PER_FRAME = 4;
 Prepare.prototype.constructor = Prepare;
 module.exports = Prepare;
 
-/** 
- * Upload all the textures and graphics to the GPU. 
+/**
+ * Upload all the textures and graphics to the GPU.
  * @method upload
  * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
  *        the container or display object to search for items to upload or
@@ -141,8 +141,8 @@ Prepare.prototype.tick = function()
     if (this.queue.length)
     {
         this.numLeft = Prepare.UPLOADS_PER_FRAME;
-    } 
-    else 
+    }
+    else
     {
         this.ticking = false;
         SharedTicker.remove(this.tick, this);
@@ -170,7 +170,7 @@ Prepare.prototype.register = function(addHook, uploadHook)
     {
         this.addHooks.push(addHook);
     }
-    if (uploadHook) 
+    if (uploadHook)
     {
         this.uploadHooks.push(uploadHook);
     }
@@ -180,15 +180,15 @@ Prepare.prototype.register = function(addHook, uploadHook)
 /**
  * Manually add an item to the uploading queue.
  * @method add
- * @param {PIXI.DisplayObject|PIXI.Container|*} item 
+ * @param {PIXI.DisplayObject|PIXI.Container|*} item
  * @return {PIXI.webgl.Prepare} Instance of plugin for chaining.
  */
 Prepare.prototype.add = function(item)
 {
-    var i, len; 
+    var i, len;
 
     // Add additional hooks for finding elements on special
-    // types of objects that 
+    // types of objects that
     for (i = 0, len = this.addHooks.length; i < len; i++)
     {
         if (this.addHooks[i](item, this.queue))
