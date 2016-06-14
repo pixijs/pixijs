@@ -8950,7 +8950,7 @@ AccessibilityManager.prototype.destroy = function ()
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
-},{"../core":59,"./accessibleTarget":38,"ismobilejs":12}],38:[function(require,module,exports){
+},{"../core":58,"./accessibleTarget":38,"ismobilejs":12}],38:[function(require,module,exports){
 /**
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
@@ -9374,6 +9374,12 @@ var CONST = {
         HIGH: 'highp'
     },
 
+    TRANSFORM_MODE:{
+        STATIC:0,
+        DYNAMIC:1,
+        DEFAULT:0
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
@@ -9383,7 +9389,7 @@ var CONST = {
 
 module.exports = CONST;
 
-},{"./utils/maxRecommendedTextures":112}],42:[function(require,module,exports){
+},{"./utils/maxRecommendedTextures":113}],42:[function(require,module,exports){
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject');
@@ -9516,6 +9522,9 @@ Container.prototype.addChild = function (child)
         }
 
         child.parent = this;
+
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
 
         this.children.push(child);
 
@@ -9752,7 +9761,7 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
 
     //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
@@ -9854,6 +9863,7 @@ Container.prototype.getLocalBounds = function ()
     var matrixCache = this.transform.worldTransform;
 
     this.transform.worldTransform = math.Matrix.IDENTITY;
+    this.transform._worldID++;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -9861,6 +9871,7 @@ Container.prototype.getLocalBounds = function ()
     }
 
     this.transform.worldTransform = matrixCache;
+    this.transform._worldID++;
 
     this._currentBounds = null;
 
@@ -10014,9 +10025,11 @@ Container.prototype.destroy = function (options)
     this.children = null;
 };
 
-},{"../math":63,"../utils":111,"./DisplayObject":43}],43:[function(require,module,exports){
+},{"../math":63,"../utils":112,"./DisplayObject":43}],43:[function(require,module,exports){
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
+    CONST = require('../const'),
+    TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
     _tempDisplayObjectParent = new DisplayObject();
 
@@ -10034,12 +10047,14 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    var TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+
     //TODO: need to create Transform from factory
     /**
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
      */
-    this.transform = new Transform();
+    this.transform =  new TransformClass();
 
     /**
      * The opacity of the object.
@@ -10339,7 +10354,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    this.transform =  this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
@@ -10517,111 +10532,8 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../math":63,"./Transform":45,"eventemitter3":11}],44:[function(require,module,exports){
-/**
- * The Point object represents a location in a two-dimensional coordinate system, where x represents
- * the horizontal axis and y represents the vertical axis.
- * An observable point is a point that triggers a callback when the point's position is changed.
- *
- * @class
- * @memberof PIXI
- * @param cb {Function} callback when changed
- * @param scope {Object} owner of callback
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
- */
-function ObservablePoint(cb, scope, x, y)
-{
-    this._x = x || 0;
-    this._y = y || 0;
-
-    this.cb = cb;
-    this.scope = scope;
-}
-
-ObservablePoint.prototype.constructor = ObservablePoint;
-module.exports = ObservablePoint;
-
-
-
-Object.defineProperties(ObservablePoint.prototype, {
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.ObservablePoint#
-     */
-    x: {
-        get: function ()
-        {
-            return this._x;
-        },
-        set: function (value)
-        {
-            if (this._x !== value) {
-                this._x = value;
-                this.cb.call(this.scope);
-            }
-        }
-    },
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.ObservablePoint#
-     */
-    y: {
-        get: function ()
-        {
-            return this._y;
-        },
-        set: function (value)
-        {
-            if (this._y !== value) {
-                this._y = value;
-                this.cb.call(this.scope);
-            }
-        }
-    }
-});
-
-/**
- * Sets the point to a new x and y position.
- * If y is omitted, both x and y will be set to x.
- *
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
- */
-ObservablePoint.prototype.set = function (x, y)
-{
-    var _x = x || 0;
-    var _y = y || ( (y !== 0) ? _x : 0 );
-    if (this._x !== _x || this._y !== _y)
-    {
-        this._x = _x;
-        this._y = _y;
-        this.cb.call(this.scope);
-    }
-};
-
-/**
- * Copies the data from another point
- *
- * @param point {PIXI.Point|{PIXI.ObservablePoint} point to copy from
- */
-ObservablePoint.prototype.copy = function (point)
-{
-    if (this._x !== point.x || this._y !== point.y)
-    {
-        this._x = point.x;
-        this._y = point.y;
-        this.cb.call(this.scope);
-    }
-};
-
-},{}],45:[function(require,module,exports){
-var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint');
+},{"../const":41,"../math":63,"./Transform":44,"./TransformStatic":45,"eventemitter3":11}],44:[function(require,module,exports){
+var math = require('../math');
 
 
 /**
@@ -10657,7 +10569,7 @@ function Transform()
     this.scale = new math.Point(1,1);
 
 
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -10682,6 +10594,8 @@ function Transform()
 
     this._dirty = false;
     this.updated = true;
+
+    this._worldID = 0;
 }
 
 Transform.prototype.constructor = Transform;
@@ -10727,14 +10641,9 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
-};
 
-Transform.prototype.updateChildTransform = function (childTransform)
-{
-    childTransform.updateTransform(this);
-    return childTransform;
+    this._worldID ++;
 };
-
 
 /**
  * Decomposes a matrix and sets the transforms properties based on it.
@@ -10766,9 +10675,8 @@ Object.defineProperties(Transform.prototype, {
 
 module.exports = Transform;
 
-},{"../math":63,"./ObservablePoint":44}],46:[function(require,module,exports){
+},{"../math":63}],45:[function(require,module,exports){
 var math = require('../math');
-var ObservablePoint = require('./ObservablePoint');
 
 /**
  * Transform that takes care about its versions
@@ -10793,39 +10701,61 @@ function TransformStatic()
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.position = new ObservablePoint(this,0.0);
+    this.position = new math.ObservablePoint(this.onChange, this,0.0);
 
     /**
      * The scale factor of the object.
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.scale = new ObservablePoint(this,1,1);
+    this.scale = new math.ObservablePoint(this.onChange, this,1,1);
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.pivot = new ObservablePoint(this,0.0);
+    this.pivot = new math.ObservablePoint(this.onChange, this,0, 0);
 
     /**
      * The skew amount, on the x and y axis.
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.skew = new ObservablePoint(this,0.0);
+    this.skew = new math.ObservablePoint(this.updateSkew, this,0, 0);
 
     this._rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
+    this._cy  = Math.cos(0);//skewY);
+    this._sy  = Math.sin(0);//skewY);
+    this._nsx = Math.sin(0);//skewX);
+    this._cx  = Math.cos(0);//skewX);
 
-    this._dirtyLocal = 0;
-    this._versionLocal = 0;
-    this._versionGlobal = 0;
+
+    this._localID = 0;
+    this._currentLocalID = 0;
+    this._parentID = 0;
+    this._worldID = 0;
 }
 
 TransformStatic.prototype.constructor = TransformStatic;
+
+TransformStatic.prototype.onChange = function ()
+{
+    this._localID ++;
+};
+
+TransformStatic.prototype.updateSkew = function ()
+{
+    this._cy  = Math.cos(this.skew.y);
+    this._sy  = Math.sin(this.skew.y);
+    this._nsx = Math.sin(this.skew.x);
+    this._cx  = Math.cos(this.skew.x);
+
+    this._localID ++;
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.
@@ -10838,34 +10768,56 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
     var wt = this.worldTransform;
     var lt = this.localTransform;
 
-    if(this._dirtyLocal !== this._versionLocal)
+    if(this._localID !== this._currentLocalID)
     {
         // get the matrix values of the displayobject based on its transform properties..
-        lt.a  =  this._cr * this.scale._x;
-        lt.b  =  this._sr * this.scale._x;
-        lt.c  = -this._sr * this.scale._y;
-        lt.d  =  this._cr * this.scale._y;
+        var a,b,c,d;
+
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+
+        lt.a  = this._cy * a + this._sy * c;
+        lt.b  = this._cy * b + this._sy * d;
+        lt.c  = this._nsx * a + this._cx * c;
+        lt.d  = this._nsx * b + this._cx * d;
+
         lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
         lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
-        this._dirtyLocal = this._versionLocal;
+        this._currentLocalID = this._localID;
+
+        // force an update..
+        this._parentID = -1;
     }
-    // concat the parent matrix with the objects transform.
-    wt.a  = lt.a  * pt.a + lt.b  * pt.c;
-    wt.b  = lt.a  * pt.b + lt.b  * pt.d;
-    wt.c  = lt.c  * pt.a + lt.d  * pt.c;
-    wt.d  = lt.c  * pt.b + lt.d  * pt.d;
-    wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
 
-    this._versionGlobal++;
-    this.updated = true;
+    if(this._parentID !== parentTransform._worldID)
+    {
+        // concat the parent matrix with the objects transform.
+        wt.a  = lt.a  * pt.a + lt.b  * pt.c;
+        wt.b  = lt.a  * pt.b + lt.b  * pt.d;
+        wt.c  = lt.c  * pt.a + lt.d  * pt.c;
+        wt.d  = lt.c  * pt.b + lt.d  * pt.d;
+        wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
+        wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+        this._parentID = parentTransform._worldID;
+
+        // update the id of the transform..
+        this._worldID ++;
+    }
 };
 
-TransformStatic.prototype.updateChildTransform = function (childTransform)
+/**
+ * Decomposes a matrix and sets the transforms properties based on it.
+ * @param {Matrix}
+ */
+TransformStatic.prototype.setFromMatrix = function (matrix)
 {
-    childTransform.updateTransform(this);
-    return childTransform;
+    matrix.decompose(this);
 };
+
+
 
 Object.defineProperties(TransformStatic.prototype, {
     /**
@@ -10881,13 +10833,14 @@ Object.defineProperties(TransformStatic.prototype, {
             this._rotation = value;
             this._sr = Math.sin(value);
             this._cr = Math.cos(value);
+            this._localID ++;
         }
     }
 });
 
 module.exports = TransformStatic;
 
-},{"../math":63,"./ObservablePoint":44}],47:[function(require,module,exports){
+},{"../math":63}],46:[function(require,module,exports){
 var Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
@@ -11981,7 +11934,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":41,"../display/Container":42,"../math":63,"../renderers/canvas/CanvasRenderer":70,"../sprites/Sprite":93,"../textures/RenderTexture":103,"../textures/Texture":104,"./GraphicsData":48,"./utils/bezierCurveTo":50}],48:[function(require,module,exports){
+},{"../const":41,"../display/Container":42,"../math":63,"../renderers/canvas/CanvasRenderer":70,"../sprites/Sprite":94,"../textures/RenderTexture":104,"../textures/Texture":105,"./GraphicsData":47,"./utils/bezierCurveTo":49}],47:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -12083,7 +12036,7 @@ GraphicsData.prototype.destroy = function () {
     this.holes = null;
 };
 
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const');
 
@@ -12361,7 +12314,7 @@ CanvasGraphicsRenderer.prototype.destroy = function ()
   this.renderer = null;
 };
 
-},{"../../const":41,"../../renderers/canvas/CanvasRenderer":70}],50:[function(require,module,exports){
+},{"../../const":41,"../../renderers/canvas/CanvasRenderer":70}],49:[function(require,module,exports){
 
 /**
  * Calculate the points for a bezier curve and then draws it.
@@ -12412,7 +12365,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
 
 module.exports = bezierCurveTo;
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var utils = require('../../utils'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
@@ -12633,7 +12586,7 @@ GraphicsRenderer.prototype.getWebGLData = function (webGL, type)
     return webGLData;
 };
 
-},{"../../const":41,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":87,"../../utils":111,"./WebGLGraphicsData":52,"./shaders/PrimitiveShader":53,"./utils/buildCircle":54,"./utils/buildPoly":56,"./utils/buildRectangle":57,"./utils/buildRoundedRectangle":58}],52:[function(require,module,exports){
+},{"../../const":41,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":87,"../../utils":112,"./WebGLGraphicsData":51,"./shaders/PrimitiveShader":52,"./utils/buildCircle":53,"./utils/buildPoly":55,"./utils/buildRectangle":56,"./utils/buildRoundedRectangle":57}],51:[function(require,module,exports){
 var glCore = require('pixi-gl-core');
 
 
@@ -12760,7 +12713,7 @@ WebGLGraphicsData.prototype.destroy = function ()
     this.glIndices = null;
 };
 
-},{"pixi-gl-core":20}],53:[function(require,module,exports){
+},{"pixi-gl-core":20}],52:[function(require,module,exports){
 var Shader = require('../../../Shader');
 
 /**
@@ -12809,7 +12762,7 @@ PrimitiveShader.prototype.constructor = PrimitiveShader;
 
 module.exports = PrimitiveShader;
 
-},{"../../../Shader":40}],54:[function(require,module,exports){
+},{"../../../Shader":40}],53:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     CONST = require('../../../const'),
     utils = require('../../../utils');
@@ -12898,7 +12851,7 @@ var buildCircle = function (graphicsData, webGLData)
 
 module.exports = buildCircle;
 
-},{"../../../const":41,"../../../utils":111,"./buildLine":55}],55:[function(require,module,exports){
+},{"../../../const":41,"../../../utils":112,"./buildLine":54}],54:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils');
 
@@ -13119,7 +13072,7 @@ var buildLine = function (graphicsData, webGLData)
 
 module.exports = buildLine;
 
-},{"../../../math":63,"../../../utils":111}],56:[function(require,module,exports){
+},{"../../../math":63,"../../../utils":112}],55:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils'),
     earcut = require('earcut');
@@ -13198,7 +13151,7 @@ var buildPoly = function (graphicsData, webGLData)
 
 module.exports = buildPoly;
 
-},{"../../../utils":111,"./buildLine":55,"earcut":10}],57:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":54,"earcut":10}],56:[function(require,module,exports){
 var buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -13270,7 +13223,7 @@ var buildRectangle = function (graphicsData, webGLData)
 
 module.exports = buildRectangle;
 
-},{"../../../utils":111,"./buildLine":55}],58:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":54}],57:[function(require,module,exports){
 var earcut = require('earcut'),
     buildLine = require('./buildLine'),
     utils = require('../../../utils');
@@ -13400,7 +13353,7 @@ var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// js
 
 module.exports = buildRoundedRectangle;
 
-},{"../../../utils":111,"./buildLine":55,"earcut":10}],59:[function(require,module,exports){
+},{"../../../utils":112,"./buildLine":54,"earcut":10}],58:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -13497,7 +13450,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./Shader":40,"./const":41,"./display/Container":42,"./display/DisplayObject":43,"./display/Transform":45,"./display/TransformStatic":46,"./graphics/Graphics":47,"./graphics/GraphicsData":48,"./graphics/canvas/CanvasGraphicsRenderer":49,"./graphics/webgl/GraphicsRenderer":51,"./math":63,"./renderers/canvas/CanvasRenderer":70,"./renderers/canvas/utils/CanvasRenderTarget":72,"./renderers/webgl/WebGLRenderer":77,"./renderers/webgl/filters/Filter":79,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":82,"./renderers/webgl/managers/WebGLManager":86,"./renderers/webgl/utils/ObjectRenderer":87,"./renderers/webgl/utils/Quad":88,"./renderers/webgl/utils/RenderTarget":89,"./sprites/Sprite":93,"./sprites/canvas/CanvasSpriteRenderer":94,"./sprites/canvas/CanvasTinter":95,"./sprites/webgl/SpriteRenderer":97,"./text/Text":99,"./text/TextStyle":100,"./textures/BaseRenderTexture":101,"./textures/BaseTexture":102,"./textures/RenderTexture":103,"./textures/Texture":104,"./textures/TextureUvs":105,"./textures/VideoBaseTexture":106,"./ticker":108,"./utils":111,"pixi-gl-core":20}],60:[function(require,module,exports){
+},{"./Shader":40,"./const":41,"./display/Container":42,"./display/DisplayObject":43,"./display/Transform":44,"./display/TransformStatic":45,"./graphics/Graphics":46,"./graphics/GraphicsData":47,"./graphics/canvas/CanvasGraphicsRenderer":48,"./graphics/webgl/GraphicsRenderer":50,"./math":63,"./renderers/canvas/CanvasRenderer":70,"./renderers/canvas/utils/CanvasRenderTarget":72,"./renderers/webgl/WebGLRenderer":77,"./renderers/webgl/filters/Filter":79,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":82,"./renderers/webgl/managers/WebGLManager":86,"./renderers/webgl/utils/ObjectRenderer":87,"./renderers/webgl/utils/Quad":88,"./renderers/webgl/utils/RenderTarget":89,"./sprites/Sprite":94,"./sprites/canvas/CanvasSpriteRenderer":95,"./sprites/canvas/CanvasTinter":96,"./sprites/webgl/SpriteRenderer":98,"./text/Text":100,"./text/TextStyle":101,"./textures/BaseRenderTexture":102,"./textures/BaseTexture":103,"./textures/RenderTexture":104,"./textures/Texture":105,"./textures/TextureUvs":106,"./textures/VideoBaseTexture":107,"./ticker":109,"./utils":112,"pixi-gl-core":20}],59:[function(require,module,exports){
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
 var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
@@ -13661,7 +13614,7 @@ var GroupD8 = {
 
 module.exports = GroupD8;
 
-},{"./Matrix":61}],61:[function(require,module,exports){
+},{"./Matrix":60}],60:[function(require,module,exports){
 // @todo - ignore the too many parameters warning for now
 // should either fix it or change the jshint config
 // jshint -W072
@@ -14150,7 +14103,109 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":62}],62:[function(require,module,exports){
+},{"./Point":62}],61:[function(require,module,exports){
+/**
+ * The Point object represents a location in a two-dimensional coordinate system, where x represents
+ * the horizontal axis and y represents the vertical axis.
+ * An observable point is a point that triggers a callback when the point's position is changed.
+ *
+ * @class
+ * @memberof PIXI
+ * @param cb {Function} callback when changed
+ * @param scope {Object} owner of callback
+ * @param [x=0] {number} position of the point on the x axis
+ * @param [y=0] {number} position of the point on the y axis
+ */
+function ObservablePoint(cb, scope, x, y)
+{
+    this._x = x || 0;
+    this._y = y || 0;
+
+    this.cb = cb;
+    this.scope = scope;
+}
+
+ObservablePoint.prototype.constructor = ObservablePoint;
+module.exports = ObservablePoint;
+
+
+
+Object.defineProperties(ObservablePoint.prototype, {
+    /**
+     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.ObservablePoint#
+     */
+    x: {
+        get: function ()
+        {
+            return this._x;
+        },
+        set: function (value)
+        {
+            if (this._x !== value) {
+                this._x = value;
+                this.cb.call(this.scope);
+            }
+        }
+    },
+    /**
+     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.ObservablePoint#
+     */
+    y: {
+        get: function ()
+        {
+            return this._y;
+        },
+        set: function (value)
+        {
+            if (this._y !== value) {
+                this._y = value;
+                this.cb.call(this.scope);
+            }
+        }
+    }
+});
+
+/**
+ * Sets the point to a new x and y position.
+ * If y is omitted, both x and y will be set to x.
+ *
+ * @param [x=0] {number} position of the point on the x axis
+ * @param [y=0] {number} position of the point on the y axis
+ */
+ObservablePoint.prototype.set = function (x, y)
+{
+    var _x = x || 0;
+    var _y = y || ( (y !== 0) ? _x : 0 );
+    if (this._x !== _x || this._y !== _y)
+    {
+        this._x = _x;
+        this._y = _y;
+        this.cb.call(this.scope);
+    }
+};
+
+/**
+ * Copies the data from another point
+ *
+ * @param point {PIXI.Point|{PIXI.ObservablePoint} point to copy from
+ */
+ObservablePoint.prototype.copy = function (point)
+{
+    if (this._x !== point.x || this._y !== point.y)
+    {
+        this._x = point.x;
+        this._y = point.y;
+        this.cb.call(this.scope);
+    }
+};
+
+},{}],62:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -14232,18 +14287,19 @@ module.exports = {
     // to avoid circular dependencies and cut down on
     // internal module requires.
 
-    Point:      require('./Point'),
-    Matrix:     require('./Matrix'),
-    GroupD8:    require('./GroupD8'),
+    Point:              require('./Point'),
+    ObservablePoint:    require('./ObservablePoint'),
+    Matrix:             require('./Matrix'),
+    GroupD8:            require('./GroupD8'),
 
-    Circle:     require('./shapes/Circle'),
-    Ellipse:    require('./shapes/Ellipse'),
-    Polygon:    require('./shapes/Polygon'),
-    Rectangle:  require('./shapes/Rectangle'),
-    RoundedRectangle: require('./shapes/RoundedRectangle')
+    Circle:             require('./shapes/Circle'),
+    Ellipse:            require('./shapes/Ellipse'),
+    Polygon:            require('./shapes/Polygon'),
+    Rectangle:          require('./shapes/Rectangle'),
+    RoundedRectangle:   require('./shapes/RoundedRectangle')
 };
 
-},{"./GroupD8":60,"./Matrix":61,"./Point":62,"./shapes/Circle":64,"./shapes/Ellipse":65,"./shapes/Polygon":66,"./shapes/Rectangle":67,"./shapes/RoundedRectangle":68}],64:[function(require,module,exports){
+},{"./GroupD8":59,"./Matrix":60,"./ObservablePoint":61,"./Point":62,"./shapes/Circle":64,"./shapes/Ellipse":65,"./shapes/Polygon":66,"./shapes/Rectangle":67,"./shapes/RoundedRectangle":68}],64:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -15095,7 +15151,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._lastObjectRendered = null;
 };
 
-},{"../const":41,"../display/Container":42,"../math":63,"../textures/RenderTexture":103,"../utils":111,"eventemitter3":11}],70:[function(require,module,exports){
+},{"../const":41,"../display/Container":42,"../math":63,"../textures/RenderTexture":104,"../utils":112,"eventemitter3":11}],70:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
@@ -15358,7 +15414,7 @@ CanvasRenderer.prototype.resize = function (w, h)
 
 };
 
-},{"../../const":41,"../../utils":111,"../SystemRenderer":69,"./utils/CanvasMaskManager":71,"./utils/CanvasRenderTarget":72,"./utils/mapCanvasBlendModesToPixi":74}],71:[function(require,module,exports){
+},{"../../const":41,"../../utils":112,"../SystemRenderer":69,"./utils/CanvasMaskManager":71,"./utils/CanvasRenderTarget":72,"./utils/mapCanvasBlendModesToPixi":74}],71:[function(require,module,exports){
 var CONST = require('../../../const');
 /**
  * A set of functions used to handle masking.
@@ -16042,7 +16098,7 @@ TextureManager.prototype.destroy = function()
 
 module.exports = TextureManager;
 
-},{"../../const":41,"../../utils":111,"./utils/RenderTarget":89,"pixi-gl-core":20}],77:[function(require,module,exports){
+},{"../../const":41,"../../utils":112,"./utils/RenderTarget":89,"pixi-gl-core":20}],77:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
@@ -16054,6 +16110,7 @@ var SystemRenderer = require('../SystemRenderer'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
+    validateContext = require('./utils/validateContext'),
     utils = require('../../utils'),
     glCore = require('pixi-gl-core'),
     CONST = require('../../const');
@@ -16155,6 +16212,12 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLRenderingContext}
      */
     // initialize the context so it is ready for the managers.
+    if(options.context)
+    {
+        // checks to see if a context is valid..
+        validateContext(options.context);
+    }
+
     this.gl = options.context || createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
@@ -16600,7 +16663,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     // this = null;
 };
 
-},{"../../const":41,"../../utils":111,"../SystemRenderer":69,"./TextureGarbageCollector":75,"./TextureManager":76,"./WebGLState":78,"./managers/FilterManager":83,"./managers/MaskManager":84,"./managers/StencilManager":85,"./utils/ObjectRenderer":87,"./utils/RenderTarget":89,"./utils/mapWebGLDrawModesToPixi":92,"pixi-gl-core":20}],78:[function(require,module,exports){
+},{"../../const":41,"../../utils":112,"../SystemRenderer":69,"./TextureGarbageCollector":75,"./TextureManager":76,"./WebGLState":78,"./managers/FilterManager":83,"./managers/MaskManager":84,"./managers/StencilManager":85,"./utils/ObjectRenderer":87,"./utils/RenderTarget":89,"./utils/mapWebGLDrawModesToPixi":92,"./utils/validateContext":93,"pixi-gl-core":20}],78:[function(require,module,exports){
 var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
 /**
@@ -17017,7 +17080,7 @@ Filter.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"../../../const":41,"../../../utils":111,"./extractUniformsFromSrc":80}],80:[function(require,module,exports){
+},{"../../../const":41,"../../../utils":112,"./extractUniformsFromSrc":80}],80:[function(require,module,exports){
 var defaultValue = require('pixi-gl-core').shader.defaultValue;
 var mapSize = require('pixi-gl-core').shader.mapSize;
 
@@ -18198,7 +18261,7 @@ Quad.prototype.destroy = function()
 
 module.exports = Quad;
 
-},{"../../../utils/createIndicesForQuads":109,"pixi-gl-core":20}],89:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":110,"pixi-gl-core":20}],89:[function(require,module,exports){
 var math = require('../../../math'),
     CONST = require('../../../const'),
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
@@ -18661,6 +18724,22 @@ function mapWebGLDrawModesToPixi(gl, object)
 module.exports = mapWebGLDrawModesToPixi;
 
 },{"../../../const":41}],93:[function(require,module,exports){
+
+
+function validateContext(gl)
+{
+	var attributes = gl.getContextAttributes();
+
+	// this is going to be fairly simple for now.. but at least we have rom to grow!
+	if(!attributes.stencil)
+	{
+		console.warn("Provided WebGL context does not have a stencil buffer, masks may not correctly")
+	}
+}
+
+module.exports = validateContext;
+
+},{}],94:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -18694,7 +18773,7 @@ function Sprite(texture)
      *
      * @member {PIXI.Point}
      */
-    this.anchor = new math.Point();
+    this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
      * The texture that the sprite is using
@@ -18754,8 +18833,9 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.textureDirty = true;
     this.vertexData = new Float32Array(16);
+    this._transformID = -1;
+    this._textureID = -1;
 }
 
 // constructor
@@ -18823,7 +18903,7 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
-            this.textureDirty = true;
+            this._textureID = -1;
 
             if (value)
             {
@@ -18848,7 +18928,7 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
-    this.textureDirty = true;
+    this._textureID = -1;
 
     // so if _width is 0 then width was not set..
     if (this._width)
@@ -18862,11 +18942,26 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
+Sprite.prototype.onAnchorUpdate = function()
+{
+    this._transformID = -1;
+};
+
 /**
  * calculates worldTransform * vertices, store it in vertexData
  */
 Sprite.prototype.calculateVertices = function ()
 {
+    if(this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+    {
+        return;
+    }
+
+    this._transformID = this.transform._worldID;
+    this._textureID = this._texture._updateID;
+
+    // set the vertex data
+
     var texture = this._texture,
         wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
@@ -18970,12 +19065,7 @@ Sprite.prototype.calculateBoundsVertices = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    if(this.transform.updated || this.textureDirty)
-    {
-        this.textureDirty = false;
-        // set the vertex data
-        this.calculateVertices();
-    }
+    this.calculateVertices();
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -19003,14 +19093,11 @@ Sprite.prototype.getBounds = function ()
     //TODO lookinto caching..
     if(!this._currentBounds)
     {
-       // if(this.vertexDirty)
-        {
-            this.vertexDirty = false;
+        // set the vertex data
+        this.calculateVertices();
 
-            // set the vertex data
-            this.calculateBoundsVertices();
-
-        }
+        // set the vertex data
+        this.calculateBoundsVertices();
 
         var minX, maxX, minY, maxY,
             w0, w1, h0, h1,
@@ -19198,7 +19285,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":41,"../display/Container":42,"../math":63,"../textures/Texture":104,"../utils":111}],94:[function(require,module,exports){
+},{"../const":41,"../display/Container":42,"../math":63,"../textures/Texture":105,"../utils":112}],95:[function(require,module,exports){
 var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
@@ -19364,7 +19451,7 @@ CanvasSpriteRenderer.prototype.destroy = function (){
   this.renderer = null;
 };
 
-},{"../../const":41,"../../math":63,"../../renderers/canvas/CanvasRenderer":70,"./CanvasTinter":95}],95:[function(require,module,exports){
+},{"../../const":41,"../../math":63,"../../renderers/canvas/CanvasRenderer":70,"./CanvasTinter":96}],96:[function(require,module,exports){
 var utils = require('../../utils'),
 canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 /**
@@ -19611,7 +19698,7 @@ CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":73,"../../utils":111}],96:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":73,"../../utils":112}],97:[function(require,module,exports){
 
 
  var Buffer = function(size)
@@ -19642,7 +19729,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
    this.uvs = null;
    this.colors  = null;
  };
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     createIndicesForQuads = require('../../utils/createIndicesForQuads'),
@@ -20044,7 +20131,7 @@ SpriteRenderer.prototype.destroy = function ()
 
 };
 
-},{"../../const":41,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":87,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":90,"../../utils/createIndicesForQuads":109,"./BatchBuffer":96,"./generateMultiTextureShader":98,"bit-twiddle":2,"pixi-gl-core":20}],98:[function(require,module,exports){
+},{"../../const":41,"../../renderers/webgl/WebGLRenderer":77,"../../renderers/webgl/utils/ObjectRenderer":87,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":90,"../../utils/createIndicesForQuads":110,"./BatchBuffer":97,"./generateMultiTextureShader":99,"bit-twiddle":2,"pixi-gl-core":20}],99:[function(require,module,exports){
 var Shader = require('../../Shader');
 
 
@@ -20117,7 +20204,7 @@ function generateSampleSrc(maxTextures)
 
 module.exports = generateMultiTextureShader;
 
-},{"../../Shader":40}],99:[function(require,module,exports){
+},{"../../Shader":40}],100:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -20778,7 +20865,7 @@ Text.prototype.destroy = function (options)
     this._style = null;
 };
 
-},{"../const":41,"../math":63,"../sprites/Sprite":93,"../textures/Texture":104,"./TextStyle":100}],100:[function(require,module,exports){
+},{"../const":41,"../math":63,"../sprites/Sprite":94,"../textures/Texture":105,"./TextStyle":101}],101:[function(require,module,exports){
 var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     utils = require('../utils');
@@ -21250,7 +21337,7 @@ function getColor(color)
     }
 }
 
-},{"../const":41,"../utils":111,"eventemitter3":11}],101:[function(require,module,exports){
+},{"../const":41,"../utils":112,"eventemitter3":11}],102:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     CONST = require('../const');
 
@@ -21386,7 +21473,7 @@ BaseRenderTexture.prototype.destroy = function ()
 };
 
 
-},{"../const":41,"./BaseTexture":102}],102:[function(require,module,exports){
+},{"../const":41,"./BaseTexture":103}],103:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
@@ -21834,7 +21921,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":41,"../utils":111,"../utils/determineCrossOrigin":110,"bit-twiddle":2,"eventemitter3":11}],103:[function(require,module,exports){
+},{"../const":41,"../utils":112,"../utils/determineCrossOrigin":111,"bit-twiddle":2,"eventemitter3":11}],104:[function(require,module,exports){
 var BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture');
 
@@ -21956,7 +22043,7 @@ RenderTexture.create = function(width, height, scaleMode, resolution)
     return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
 };
 
-},{"./BaseRenderTexture":101,"./Texture":104}],104:[function(require,module,exports){
+},{"./BaseRenderTexture":102,"./Texture":105}],105:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -22091,6 +22178,9 @@ function Texture(baseTexture, frame, orig, trim, rotate)
      * @memberof PIXI.Texture#
      * @protected
      */
+
+
+    this._updateID = 0;
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -22197,6 +22287,8 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
+    this._updateID++;
+
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -22209,6 +22301,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 
     this.baseTexture.on('update', this.onBaseTextureUpdated, this);
     this.emit('update', this);
+
 };
 
 /**
@@ -22218,6 +22311,8 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 {
+    this._updateID++;
+
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
@@ -22286,6 +22381,8 @@ Texture.prototype._updateUvs = function ()
     }
 
     this._uvs.set(this._frame, this.baseTexture, this.rotate);
+
+    this._updateID++;
 };
 
 /**
@@ -22465,7 +22562,7 @@ Texture.EMPTY.once = function() {};
 Texture.EMPTY.emit = function() {};
 
 
-},{"../math":63,"../utils":111,"./BaseTexture":102,"./TextureUvs":105,"./VideoBaseTexture":106,"eventemitter3":11}],105:[function(require,module,exports){
+},{"../math":63,"../utils":112,"./BaseTexture":103,"./TextureUvs":106,"./VideoBaseTexture":107,"eventemitter3":11}],106:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -22550,7 +22647,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
 };
 
-},{"../math/GroupD8":60}],106:[function(require,module,exports){
+},{"../math/GroupD8":59}],107:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -22787,7 +22884,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":111,"./BaseTexture":102}],107:[function(require,module,exports){
+},{"../utils":112,"./BaseTexture":103}],108:[function(require,module,exports){
 var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
@@ -23163,7 +23260,7 @@ Ticker.prototype.update = function update(currentTime)
 
 module.exports = Ticker;
 
-},{"../const":41,"eventemitter3":11}],108:[function(require,module,exports){
+},{"../const":41,"eventemitter3":11}],109:[function(require,module,exports){
 var Ticker = require('./Ticker');
 
 /**
@@ -23219,7 +23316,7 @@ module.exports = {
     Ticker: Ticker
 };
 
-},{"./Ticker":107}],109:[function(require,module,exports){
+},{"./Ticker":108}],110:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -23250,7 +23347,7 @@ var createIndicesForQuads = function (size)
 
 module.exports = createIndicesForQuads;
 
-},{}],110:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 var tempAnchor;
 var _url = require('url');
 
@@ -23295,7 +23392,7 @@ var determineCrossOrigin = function (url, loc) {
 
 module.exports = determineCrossOrigin;
 
-},{"url":9}],111:[function(require,module,exports){
+},{"url":9}],112:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -23510,7 +23607,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":41,"./pluginTarget":113,"eventemitter3":11}],112:[function(require,module,exports){
+},{"../const":41,"./pluginTarget":114,"eventemitter3":11}],113:[function(require,module,exports){
 
 
 var  Device = require('ismobilejs');
@@ -23531,7 +23628,7 @@ var maxRecommendedTextures = function(max)
 };
 
 module.exports = maxRecommendedTextures;
-},{"ismobilejs":12}],113:[function(require,module,exports){
+},{"ismobilejs":12}],114:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -23601,7 +23698,7 @@ module.exports = {
     }
 };
 
-},{}],114:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -24132,7 +24229,7 @@ core.utils.canUseNewCanvasBlendModes = function() {
 };
 
 
-},{"./core":59,"./core/const":41,"./extras":124,"./filters":135,"./mesh":151,"./particles":154}],115:[function(require,module,exports){
+},{"./core":58,"./core/const":41,"./extras":125,"./filters":136,"./mesh":152,"./particles":155}],116:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -24284,13 +24381,13 @@ CanvasExtract.prototype.destroy = function ()
 
 core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
 
-},{"../../core":59}],116:[function(require,module,exports){
+},{"../../core":58}],117:[function(require,module,exports){
 
 module.exports = {
     webGL: require('./webgl/WebGLExtract'),
     canvas: require('./canvas/CanvasExtract')
 };
-},{"./canvas/CanvasExtract":115,"./webgl/WebGLExtract":117}],117:[function(require,module,exports){
+},{"./canvas/CanvasExtract":116,"./webgl/WebGLExtract":118}],118:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
 
@@ -24487,9 +24584,9 @@ Extract.prototype.destroy = function ()
 
 core.WebGLRenderer.registerPlugin('extract', Extract);
 
-},{"../../core":59}],118:[function(require,module,exports){
+},{"../../core":58}],119:[function(require,module,exports){
 var core = require('../core'),
-    ObservablePoint = require('../core/display/ObservablePoint');
+    ObservablePoint = require('../core/math/ObservablePoint');
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -24920,7 +25017,7 @@ BitmapText.prototype.makeDirty = function() {
 
 BitmapText.fonts = {};
 
-},{"../core":59,"../core/display/ObservablePoint":44}],119:[function(require,module,exports){
+},{"../core":58,"../core/math/ObservablePoint":61}],120:[function(require,module,exports){
 var core = require('../core');
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -25243,7 +25340,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":59}],120:[function(require,module,exports){
+},{"../core":58}],121:[function(require,module,exports){
 var core = require('../core'),
     tempPoint = new core.Point(),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
@@ -25682,7 +25779,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":59,"../core/sprites/canvas/CanvasTinter":95,"./webgl/TilingShader":125}],121:[function(require,module,exports){
+},{"../core":58,"../core/sprites/canvas/CanvasTinter":96,"./webgl/TilingShader":126}],122:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -25772,7 +25869,7 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
 
     this._initCachedDisplayObject( renderer );
 
-    this._cachedSprite.transform.updated = true;
+    this._cachedSprite._transformID = -1;
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
     this._cachedSprite._renderWebGL(renderer);
@@ -25958,7 +26055,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
     this._originalDestroy();
 };
 
-},{"../core":59}],122:[function(require,module,exports){
+},{"../core":58}],123:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25988,7 +26085,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":59}],123:[function(require,module,exports){
+},{"../core":58}],124:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -26018,7 +26115,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":59}],124:[function(require,module,exports){
+},{"../core":58}],125:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26039,7 +26136,7 @@ module.exports = {
     BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":118,"./MovieClip":119,"./TilingSprite":120,"./cacheAsBitmap":121,"./getChildByName":122,"./getGlobalPosition":123}],125:[function(require,module,exports){
+},{"./BitmapText":119,"./MovieClip":120,"./TilingSprite":121,"./cacheAsBitmap":122,"./getChildByName":123,"./getGlobalPosition":124}],126:[function(require,module,exports){
 var Shader = require('../../core/Shader');
 
 
@@ -26063,7 +26160,7 @@ TilingShader.prototype.constructor = TilingShader;
 module.exports = TilingShader;
 
 
-},{"../../core/Shader":40}],126:[function(require,module,exports){
+},{"../../core/Shader":40}],127:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -26183,7 +26280,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":59,"./BlurXFilter":127,"./BlurYFilter":128}],127:[function(require,module,exports){
+},{"../../core":58,"./BlurXFilter":128,"./BlurYFilter":129}],128:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -26308,7 +26405,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     }
 });
 
-},{"../../core":59,"./generateBlurFragSource":129,"./generateBlurVertSource":130,"./getMaxBlurKernelSize":131}],128:[function(require,module,exports){
+},{"../../core":58,"./generateBlurFragSource":130,"./generateBlurVertSource":131,"./getMaxBlurKernelSize":132}],129:[function(require,module,exports){
 var core = require('../../core');
 var generateBlurVertSource  = require('./generateBlurVertSource');
 var generateBlurFragSource  = require('./generateBlurFragSource');
@@ -26431,7 +26528,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     }
 });
 
-},{"../../core":59,"./generateBlurFragSource":129,"./generateBlurVertSource":130,"./getMaxBlurKernelSize":131}],129:[function(require,module,exports){
+},{"../../core":58,"./generateBlurFragSource":130,"./generateBlurVertSource":131,"./getMaxBlurKernelSize":132}],130:[function(require,module,exports){
 var GAUSSIAN_VALUES = {
 	5:[0.153388, 0.221461, 0.250301],
 	7:[0.071303, 0.131514, 0.189879, 0.214607],
@@ -26493,7 +26590,7 @@ var generateFragBlurSource = function(kernelSize)
 
 module.exports = generateFragBlurSource;
 
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 
 var vertTemplate = [
 	'attribute vec2 aVertexPosition;',
@@ -26559,7 +26656,7 @@ var generateVertBlurSource = function(kernelSize, x)
 
 module.exports = generateVertBlurSource;
 
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 
 
 var getMaxKernelSize = function(gl)
@@ -26577,7 +26674,7 @@ var getMaxKernelSize = function(gl)
 
 module.exports = getMaxKernelSize;
 
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -27134,7 +27231,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":59}],133:[function(require,module,exports){
+},{"../../core":58}],134:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -27215,7 +27312,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":59}],134:[function(require,module,exports){
+},{"../../core":58}],135:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -27240,9 +27337,9 @@ function FXAAFilter()
     core.Filter.call(this,
 
         // vertex shader
-        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nuniform vec4 filterArea;\n\nvarying vec2 vTextureCoord;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\n//To save 9 dependent texture reads, you can compute\n//these in the vertex shader and use the optimized\n//frag.glsl function in your frag shader. \n\n//This is best suited for mobile devices, like iOS.\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n\t\t\tout vec2 v_rgbNW, out vec2 v_rgbNE,\n\t\t\tout vec2 v_rgbSW, out vec2 v_rgbSE,\n\t\t\tout vec2 v_rgbM) {\n\tvec2 inverseVP = 1.0 / resolution.xy;\n\tv_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n\tv_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n\tv_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n\tv_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n\tv_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void) {\n\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n   vTextureCoord = aTextureCoord;\n\n   vec2 fragCoord = vTextureCoord * filterArea.xy;\n\n   texcoords(fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}",
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nuniform vec4 filterArea;\n\nvarying vec2 vTextureCoord;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvoid texcoords(vec2 fragCoord, vec2 resolution,\n               out vec2 v_rgbNW, out vec2 v_rgbNE,\n               out vec2 v_rgbSW, out vec2 v_rgbSE,\n               out vec2 v_rgbM) {\n    vec2 inverseVP = 1.0 / resolution.xy;\n    v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n    v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n    v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n    v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n    v_rgbM = vec2(fragCoord * inverseVP);\n}\n\nvoid main(void) {\n\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n   vTextureCoord = aTextureCoord;\n\n   vec2 fragCoord = vTextureCoord * filterArea.xy;\n\n   texcoords(fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n}",
         // fragment shader
-        "#define GLSLIFY 1\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\n\n/**\nBasic FXAA implementation based on the code on geeks3d.com with the\nmodification that the texture2DLod stuff was removed since it's\nunsupported by WebGL.\n\n--\n\nFrom:\nhttps://github.com/mitsuhiko/webgl-meincraft\n\nCopyright (c) 2011 by Armin Ronacher.\n\nSome rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n    * Redistributions of source code must retain the above copyright\n      notice, this list of conditions and the following disclaimer.\n\n    * Redistributions in binary form must reproduce the above\n      copyright notice, this list of conditions and the following\n      disclaimer in the documentation and/or other materials provided\n      with the distribution.\n\n    * The names of the contributors may not be used to endorse or\n      promote products derived from this software without specific\n      prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n*/\n\n#ifndef FXAA_REDUCE_MIN\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\n#endif\n#ifndef FXAA_REDUCE_MUL\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\n#endif\n#ifndef FXAA_SPAN_MAX\n    #define FXAA_SPAN_MAX     8.0\n#endif\n\n//optimized version for mobile, where dependent \n//texture reads can be a bottleneck\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\n            vec2 v_rgbNW, vec2 v_rgbNE, \n            vec2 v_rgbSW, vec2 v_rgbSE, \n            vec2 v_rgbM) {\n    vec4 color;\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\n    vec4 texColor = texture2D(tex, v_rgbM);\n    vec3 rgbM  = texColor.xyz;\n    vec3 luma = vec3(0.299, 0.587, 0.114);\n    float lumaNW = dot(rgbNW, luma);\n    float lumaNE = dot(rgbNE, luma);\n    float lumaSW = dot(rgbSW, luma);\n    float lumaSE = dot(rgbSE, luma);\n    float lumaM  = dot(rgbM,  luma);\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\n    \n    mediump vec2 dir;\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\n    \n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\n    \n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\n              dir * rcpDirMin)) * inverseVP;\n    \n    vec3 rgbA = 0.5 * (\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\n\n    float lumaB = dot(rgbB, luma);\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\n        color = vec4(rgbA, texColor.a);\n    else\n        color = vec4(rgbB, texColor.a);\n    return color;\n}\n\nvoid main() {\n\n  \tvec2 fragCoord = vTextureCoord * filterArea.xy;\n\n  \tvec4 color;\n\n    color = fxaa(uSampler, fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n\n  \tgl_FragColor = color;\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 v_rgbNW;\nvarying vec2 v_rgbNE;\nvarying vec2 v_rgbSW;\nvarying vec2 v_rgbSE;\nvarying vec2 v_rgbM;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\n\n/**\n Basic FXAA implementation based on the code on geeks3d.com with the\n modification that the texture2DLod stuff was removed since it's\n unsupported by WebGL.\n \n --\n \n From:\n https://github.com/mitsuhiko/webgl-meincraft\n \n Copyright (c) 2011 by Armin Ronacher.\n \n Some rights reserved.\n \n Redistribution and use in source and binary forms, with or without\n modification, are permitted provided that the following conditions are\n met:\n \n * Redistributions of source code must retain the above copyright\n notice, this list of conditions and the following disclaimer.\n \n * Redistributions in binary form must reproduce the above\n copyright notice, this list of conditions and the following\n disclaimer in the documentation and/or other materials provided\n with the distribution.\n \n * The names of the contributors may not be used to endorse or\n promote products derived from this software without specific\n prior written permission.\n \n THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n */\n\n#ifndef FXAA_REDUCE_MIN\n#define FXAA_REDUCE_MIN   (1.0/ 128.0)\n#endif\n#ifndef FXAA_REDUCE_MUL\n#define FXAA_REDUCE_MUL   (1.0 / 8.0)\n#endif\n#ifndef FXAA_SPAN_MAX\n#define FXAA_SPAN_MAX     8.0\n#endif\n\n//optimized version for mobile, where dependent\n//texture reads can be a bottleneck\nvec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\n          vec2 v_rgbNW, vec2 v_rgbNE,\n          vec2 v_rgbSW, vec2 v_rgbSE,\n          vec2 v_rgbM) {\n    vec4 color;\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\n    vec4 texColor = texture2D(tex, v_rgbM);\n    vec3 rgbM  = texColor.xyz;\n    vec3 luma = vec3(0.299, 0.587, 0.114);\n    float lumaNW = dot(rgbNW, luma);\n    float lumaNE = dot(rgbNE, luma);\n    float lumaSW = dot(rgbSW, luma);\n    float lumaSE = dot(rgbSE, luma);\n    float lumaM  = dot(rgbM,  luma);\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\n    \n    mediump vec2 dir;\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\n    \n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\n                          (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\n    \n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\n              max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\n                  dir * rcpDirMin)) * inverseVP;\n    \n    vec3 rgbA = 0.5 * (\n                       texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\n                       texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\n                                     texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\n                                     texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\n    \n    float lumaB = dot(rgbB, luma);\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\n        color = vec4(rgbA, texColor.a);\n    else\n        color = vec4(rgbB, texColor.a);\n    return color;\n}\n\nvoid main() {\n\n  \tvec2 fragCoord = vTextureCoord * filterArea.xy;\n\n  \tvec4 color;\n\n    color = fxaa(uSampler, fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n\n  \tgl_FragColor = color;\n}\n"
     );
 
 }
@@ -27252,7 +27349,7 @@ FXAAFilter.prototype.constructor = FXAAFilter;
 
 module.exports = FXAAFilter;
 
-},{"../../core":59}],135:[function(require,module,exports){
+},{"../../core":58}],136:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27274,7 +27371,7 @@ module.exports = {
     VoidFilter:         require('./void/VoidFilter')
 };
 
-},{"./blur/BlurFilter":126,"./blur/BlurXFilter":127,"./blur/BlurYFilter":128,"./colormatrix/ColorMatrixFilter":132,"./displacement/DisplacementFilter":133,"./fxaa/FXAAFilter":134,"./noise/NoiseFilter":136,"./void/VoidFilter":137}],136:[function(require,module,exports){
+},{"./blur/BlurFilter":127,"./blur/BlurXFilter":128,"./blur/BlurYFilter":129,"./colormatrix/ColorMatrixFilter":133,"./displacement/DisplacementFilter":134,"./fxaa/FXAAFilter":135,"./noise/NoiseFilter":137,"./void/VoidFilter":138}],137:[function(require,module,exports){
 var core = require('../../core');
 
 
@@ -27326,7 +27423,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":59}],137:[function(require,module,exports){
+},{"../../core":58}],138:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -27354,7 +27451,7 @@ VoidFilter.prototype = Object.create(core.Filter.prototype);
 VoidFilter.prototype.constructor = VoidFilter;
 module.exports = VoidFilter;
 
-},{"../../core":59}],138:[function(require,module,exports){
+},{"../../core":58}],139:[function(require,module,exports){
 (function (global){
 // run the polyfills
 require('./polyfill');
@@ -27389,7 +27486,7 @@ Object.assign(core, require('./deprecation'));
 global.PIXI = core;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":39,"./core":59,"./deprecation":114,"./extract":116,"./extras":124,"./filters":135,"./interaction":141,"./loaders":144,"./mesh":151,"./particles":154,"./polyfill":160,"./prepare":163}],139:[function(require,module,exports){
+},{"./accessibility":39,"./core":58,"./deprecation":115,"./extract":117,"./extras":125,"./filters":136,"./interaction":142,"./loaders":145,"./mesh":152,"./particles":155,"./polyfill":161,"./prepare":164}],140:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -27438,7 +27535,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
 };
 
-},{"../core":59}],140:[function(require,module,exports){
+},{"../core":58}],141:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -28387,7 +28484,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":59,"./InteractionData":139,"./interactiveTarget":142}],141:[function(require,module,exports){
+},{"../core":58,"./InteractionData":140,"./interactiveTarget":143}],142:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28404,7 +28501,7 @@ module.exports = {
     interactiveTarget:  require('./interactiveTarget')
 };
 
-},{"./InteractionData":139,"./InteractionManager":140,"./interactiveTarget":142}],142:[function(require,module,exports){
+},{"./InteractionData":140,"./InteractionManager":141,"./interactiveTarget":143}],143:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
@@ -28493,7 +28590,7 @@ var interactiveTarget = {
 
 module.exports = interactiveTarget;
 
-},{}],143:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -28576,25 +28673,27 @@ module.exports = function ()
             return next();
         }
 
-        var xmlUrl = path.dirname(resource.url);
+        var xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
-        if (xmlUrl === '.') {
-            xmlUrl = '';
-        }
-
-        if (this.baseUrl && xmlUrl) {
-            // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-            if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
-                xmlUrl += '/';
+        if (resource.isDataUrl) {
+            if (xmlUrl === '.') {
+                xmlUrl = '';
             }
 
-            // remove baseUrl from xmlUrl
-            xmlUrl = xmlUrl.replace(this.baseUrl, '');
-        }
+            if (this.baseUrl && xmlUrl) {
+                // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                    xmlUrl += '/';
+                }
 
-        // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
-            xmlUrl += '/';
+                // remove baseUrl from xmlUrl
+                xmlUrl = xmlUrl.replace(this.baseUrl, '');
+            }
+
+            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+                xmlUrl += '/';
+            }
         }
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         if (core.utils.TextureCache[textureUrl]) {
@@ -28617,7 +28716,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":59,"../extras":124,"path":3,"resource-loader":34}],144:[function(require,module,exports){
+},{"../core":58,"../extras":125,"path":3,"resource-loader":34}],145:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -28638,7 +28737,7 @@ module.exports = {
     Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":143,"./loader":145,"./spritesheetParser":146,"./textureParser":147,"resource-loader":34}],145:[function(require,module,exports){
+},{"./bitmapFontParser":144,"./loader":146,"./spritesheetParser":147,"./textureParser":148,"resource-loader":34}],146:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -28700,7 +28799,7 @@ var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":143,"./spritesheetParser":146,"./textureParser":147,"resource-loader":34}],146:[function(require,module,exports){
+},{"./bitmapFontParser":144,"./spritesheetParser":147,"./textureParser":148,"resource-loader":34}],147:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core'),
@@ -28817,7 +28916,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":59,"async":1,"path":3,"resource-loader":34}],147:[function(require,module,exports){
+},{"../core":58,"async":1,"path":3,"resource-loader":34}],148:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -28839,7 +28938,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":59}],148:[function(require,module,exports){
+},{"../core":58}],149:[function(require,module,exports){
 var core = require('../core'),
     glCore = require('pixi-gl-core'),
     Shader = require('./webgl/MeshShader'),
@@ -29254,7 +29353,7 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
  */
 Mesh.prototype._onTextureUpdate = function ()
 {
-    this.updateFrame = true;
+
 };
 
 /**
@@ -29376,7 +29475,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":59,"./webgl/MeshShader":152,"pixi-gl-core":20}],149:[function(require,module,exports){
+},{"../core":58,"./webgl/MeshShader":153,"pixi-gl-core":20}],150:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -29501,7 +29600,7 @@ Plane.prototype._onTextureUpdate = function ()
     }
 };
 
-},{"./Mesh":148}],150:[function(require,module,exports){
+},{"./Mesh":149}],151:[function(require,module,exports){
 var Mesh = require('./Mesh');
 var core = require('../core');
 
@@ -29716,7 +29815,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"../core":59,"./Mesh":148}],151:[function(require,module,exports){
+},{"../core":58,"./Mesh":149}],152:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -29734,7 +29833,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":148,"./Plane":149,"./Rope":150,"./webgl/MeshShader":152}],152:[function(require,module,exports){
+},{"./Mesh":149,"./Plane":150,"./Rope":151,"./webgl/MeshShader":153}],153:[function(require,module,exports){
 var Shader = require('../../core/Shader');
 
 /**
@@ -29781,7 +29880,7 @@ MeshShader.prototype.constructor = MeshShader;
 module.exports = MeshShader;
 
 
-},{"../../core/Shader":40}],153:[function(require,module,exports){
+},{"../../core/Shader":40}],154:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -30113,7 +30212,7 @@ ParticleContainer.prototype.destroy = function () {
     this._buffers = null;
 };
 
-},{"../core":59}],154:[function(require,module,exports){
+},{"../core":58}],155:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -30129,7 +30228,7 @@ module.exports = {
     ParticleRenderer: 			 require('./webgl/ParticleRenderer')
 };
 
-},{"./ParticleContainer":153,"./webgl/ParticleRenderer":156}],155:[function(require,module,exports){
+},{"./ParticleContainer":154,"./webgl/ParticleRenderer":157}],156:[function(require,module,exports){
 var glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
 
@@ -30350,7 +30449,7 @@ ParticleBuffer.prototype.destroy = function ()
     this.staticBuffer.destroy();
 };
 
-},{"../../core/utils/createIndicesForQuads":109,"pixi-gl-core":20}],156:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":110,"pixi-gl-core":20}],157:[function(require,module,exports){
 var core = require('../../core'),
     ParticleShader = require('./ParticleShader'),
     ParticleBuffer = require('./ParticleBuffer');
@@ -30782,7 +30881,7 @@ ParticleRenderer.prototype.destroy = function ()
     this.tempMatrix = null;
 };
 
-},{"../../core":59,"./ParticleBuffer":155,"./ParticleShader":157}],157:[function(require,module,exports){
+},{"../../core":58,"./ParticleBuffer":156,"./ParticleShader":158}],158:[function(require,module,exports){
 var Shader = require('../../core/Shader');
 
 /**
@@ -30848,7 +30947,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../core/Shader":40}],158:[function(require,module,exports){
+},{"../../core/Shader":40}],159:[function(require,module,exports){
 // References:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign
 
@@ -30864,7 +30963,7 @@ if (!Math.sign)
     };
 }
 
-},{}],159:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -30874,7 +30973,7 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":13}],160:[function(require,module,exports){
+},{"object-assign":13}],161:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 require('./Math.sign');
@@ -30892,7 +30991,7 @@ if(!window.Uint16Array){
   window.Uint16Array = Array;
 }
 
-},{"./Math.sign":158,"./Object.assign":159,"./requestAnimationFrame":161}],161:[function(require,module,exports){
+},{"./Math.sign":159,"./Object.assign":160,"./requestAnimationFrame":162}],162:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -30962,7 +31061,7 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],162:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -31021,13 +31120,13 @@ Prepare.prototype.destroy = function()
 };
 
 core.CanvasRenderer.registerPlugin('prepare', Prepare);
-},{"../../core":59}],163:[function(require,module,exports){
+},{"../../core":58}],164:[function(require,module,exports){
 
 module.exports = {
     webGL: require('./webgl/WebGLPrepare'),
     canvas: require('./canvas/CanvasPrepare')
 };
-},{"./canvas/CanvasPrepare":162,"./webgl/WebGLPrepare":164}],164:[function(require,module,exports){
+},{"./canvas/CanvasPrepare":163,"./webgl/WebGLPrepare":165}],165:[function(require,module,exports){
 var core = require('../../core'),
     SharedTicker = core.ticker.shared;
 
@@ -31340,6 +31439,6 @@ function findGraphics(item, queue)
 }
 
 core.WebGLRenderer.registerPlugin('prepare', Prepare);
-},{"../../core":59}]},{},[138])(138)
+},{"../../core":58}]},{},[139])(139)
 });
 //# sourceMappingURL=pixi.js.map
