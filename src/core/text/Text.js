@@ -708,7 +708,6 @@ Text.prototype._generateFillStyle = function (style, lines)
 
 /**
  * Destroys this text object.
- * Destroys this text
  *
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
