@@ -4,6 +4,8 @@ var CONST = require('../../../const');
  * Maps gl blend combinations to WebGL
  * @class
  * @memberof PIXI
+ * @param gl {WebGLRenderingContext} The current WebGL drawing context
+ * @param array
  */
 function mapWebGLBlendModesToPixi(gl, array)
 {

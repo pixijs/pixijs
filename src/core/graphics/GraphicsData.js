@@ -22,10 +22,12 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      * @member {number} the color of the line to draw
      */
     this.lineColor = lineColor;
+
     /*
      * @member {number} the alpha of the line to draw
      */
     this.lineAlpha = lineAlpha;
+
     /*
      * @member {number} cached tint of the line to draw
      */
@@ -51,7 +53,6 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      */
     this.fill = fill;
 
-
     this.holes = [];
 
     /*
@@ -71,7 +72,7 @@ module.exports = GraphicsData;
 /**
  * Creates a new GraphicsData object with the same values as this one.
  *
- * @return {PIXI.GraphicsData}
+ * @return {PIXI.GraphicsData} Cloned GraphicsData object
  */
 GraphicsData.prototype.clone = function ()
 {
@@ -86,6 +87,10 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
+/**
+ *
+ *
+ */
 GraphicsData.prototype.addHole = function (shape)
 {
     this.holes.push(shape);

@@ -33,7 +33,11 @@ function Transform()
      */
     this.scale = new math.Point(1,1);
 
-
+    /**
+     * The skew amount, on the x and y axis.
+     *
+     * @member {PIXI.ObservablePoint}
+     */
     this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
@@ -48,8 +52,10 @@ function Transform()
      * The rotation value of the object, in radians
      *
      * @member {Number}
+     * @private
      */
     this._rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     this._cy  = Math.cos(0);//skewY);
@@ -75,8 +81,7 @@ Transform.prototype.updateSkew = function ()
 
 /**
  * Updates the values of the object and applies the parent's transform.
- * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
- *
+ * @param parentTransform {PIXI.Transform} The transform of the parent of this object
  */
 Transform.prototype.updateTransform = function (parentTransform)
 {
@@ -112,7 +117,7 @@ Transform.prototype.updateTransform = function (parentTransform)
 
 /**
  * Decomposes a matrix and sets the transforms properties based on it.
- * @param {Matrix}
+ * @param {PIXI.Matrix} The matrix to decompose
  */
 Transform.prototype.setFromMatrix = function (matrix)
 {
@@ -125,6 +130,7 @@ Object.defineProperties(Transform.prototype, {
      * The rotation of the object in radians.
      *
      * @member {number}
+     * @memberof PIXI.Transform#
      */
     rotation: {
         get: function () {

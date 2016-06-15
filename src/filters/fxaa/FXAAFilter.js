@@ -7,9 +7,7 @@ var glslify  = require('glslify');
  * modification that the texture2DLod stuff was removed since it's
  * unsupported by WebGL.
  *
- * --
- * From:
- * https://github.com/mitsuhiko/webgl-meincraft
+ * @see https://github.com/mitsuhiko/webgl-meincraft
  *
  * @class
  * @extends PIXI.Filter

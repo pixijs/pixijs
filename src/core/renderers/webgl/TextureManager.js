@@ -8,7 +8,7 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  *
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
 var TextureManager = function(renderer)
 {
@@ -139,9 +139,9 @@ TextureManager.prototype.updateTexture = function(texture)
  * Deletes the texture from WebGL
  *
  * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
- * @param [_skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
+ * @param [skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
  */
-TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
+TextureManager.prototype.destroyTexture = function(texture, skipRemove)
 {
 	texture = texture.baseTexture || texture;
 
@@ -159,7 +159,7 @@ TextureManager.prototype.destroyTexture = function(texture, _skipRemove)
 
         delete texture._glTextures[this.renderer.CONTEXT_UID];
 
-        if (!_skipRemove)
+        if (!skipRemove)
         {
             var i = this._managedTextures.indexOf(texture);
             if (i !== -1) {

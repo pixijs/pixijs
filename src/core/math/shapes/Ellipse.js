@@ -41,6 +41,9 @@ function Ellipse(x, y, width, height)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readOnly
+     * @default CONST.SHAPES.ELIP
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.ELIP;
 }

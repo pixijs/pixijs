@@ -2,11 +2,12 @@ var CONST = require('../../../const'),
 canUseNewCanvasBlendModes = require('./canUseNewCanvasBlendModes');
 
 /**
- * Maps gl blend combinations to WebGL
+ * Maps blend combinations to Canvas
  * @class
  * @memberof PIXI
+ * @param array
  */
-function mapWebGLBlendModesToPixi(array)
+function mapCanvasBlendModesToPixi(array)
 {
     array = array || [];
 
@@ -55,4 +56,4 @@ function mapWebGLBlendModesToPixi(array)
     return array;
 }
 
-module.exports = mapWebGLBlendModesToPixi;
+module.exports = mapCanvasBlendModesToPixi;

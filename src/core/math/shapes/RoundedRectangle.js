@@ -47,6 +47,9 @@ function RoundedRectangle(x, y, width, height, radius)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readonly
+     * @default CONST.SHAPES.RREC
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.RREC;
 }

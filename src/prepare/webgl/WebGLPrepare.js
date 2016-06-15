@@ -7,7 +7,7 @@ var core = require('../../core'),
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-function Prepare(renderer)
+function WebGLPrepare(renderer)
 {
     /**
      * Reference to the renderer.
@@ -46,7 +46,7 @@ function Prepare(renderer)
 
     /**
      * If prepare is ticking (running).
-     * @type {Boolean}
+     * @type {boolean}
      * @private
      */
     this.ticking = false;
@@ -58,24 +58,23 @@ function Prepare(renderer)
 
 /**
  * The number of graphics or textures to upload to the GPU
- * @property {int} UPLOADS_PER_FRAME
+ * @property {number} UPLOADS_PER_FRAME
  * @static
  * @default 4
  */
-Prepare.UPLOADS_PER_FRAME = 4;
+WebGLPrepare.UPLOADS_PER_FRAME = 4;
 
-Prepare.prototype.constructor = Prepare;
-module.exports = Prepare;
+WebGLPrepare.prototype.constructor = WebGLPrepare;
+module.exports = WebGLPrepare;
 
 /**
  * Upload all the textures and graphics to the GPU.
- * @method upload
  * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
  *        the container or display object to search for items to upload or
  *        the callback function, if items have been added using `prepare.add`.
  * @param {Function} done When completed
  */
-Prepare.prototype.upload = function(item, done)
+WebGLPrepare.prototype.upload = function(item, done)
 {
     if (typeof item === 'function')
     {
@@ -93,7 +92,7 @@ Prepare.prototype.upload = function(item, done)
     // Get the items for upload from the display
     if (this.queue.length)
     {
-        this.numLeft = Prepare.UPLOADS_PER_FRAME;
+        this.numLeft = WebGLPrepare.UPLOADS_PER_FRAME;
         this.completes.push(done);
         if (!this.ticking)
         {
@@ -109,10 +108,9 @@ Prepare.prototype.upload = function(item, done)
 
 /**
  * Handle tick update
- * @method tick
  * @private
  */
-Prepare.prototype.tick = function()
+WebGLPrepare.prototype.tick = function()
 {
     var i, len;
 
@@ -140,7 +138,7 @@ Prepare.prototype.tick = function()
     // We're finished
     if (this.queue.length)
     {
-        this.numLeft = Prepare.UPLOADS_PER_FRAME;
+        this.numLeft = WebGLPrepare.UPLOADS_PER_FRAME;
     }
     else
     {
@@ -157,14 +155,13 @@ Prepare.prototype.tick = function()
 
 /**
  * Adds hooks for finding and uploading items.
- * @method register
  * @param {Function} [addHook] Function call that takes two parameters: `item:*, queue:Array`
           function must return `true` if it was able to add item to the queue.
  * @param {Function} [uploadHook] Function call that takes two parameters: `renderer:WebGLRenderer, item:*` and
  *        function must return `true` if it was able to handle upload of item.
- * @return {PIXI.webgl.Prepare} Instance of plugin for chaining.
+ * @return {PIXI.WebGLPrepare} Instance of plugin for chaining.
  */
-Prepare.prototype.register = function(addHook, uploadHook)
+WebGLPrepare.prototype.register = function(addHook, uploadHook)
 {
     if (addHook)
     {
@@ -179,11 +176,10 @@ Prepare.prototype.register = function(addHook, uploadHook)
 
 /**
  * Manually add an item to the uploading queue.
- * @method add
- * @param {PIXI.DisplayObject|PIXI.Container|*} item
- * @return {PIXI.webgl.Prepare} Instance of plugin for chaining.
+ * @param {PIXI.DisplayObject|PIXI.Container|*} item Object to add to the queue
+ * @return {PIXI.WebGLPrepare} Instance of plugin for chaining.
  */
-Prepare.prototype.add = function(item)
+WebGLPrepare.prototype.add = function(item)
 {
     var i, len;
 
@@ -210,9 +206,8 @@ Prepare.prototype.add = function(item)
 
 /**
  * Destroys the plugin, don't use after this.
- * @method destroy
  */
-Prepare.prototype.destroy = function()
+WebGLPrepare.prototype.destroy = function()
 {
     if (this.ticking)
     {
@@ -228,10 +223,9 @@ Prepare.prototype.destroy = function()
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU
- * @method uploadBaseTextures
  * @private
  * @param {*} item Item to check
- * @return {Boolean} If item was uploaded.
+ * @return {boolean} If item was uploaded.
  */
 function uploadBaseTextures(renderer, item)
 {
@@ -245,10 +239,9 @@ function uploadBaseTextures(renderer, item)
 
 /**
  * Built-in hook to upload PIXI.Graphics to the GPU
- * @method uploadGraphics
  * @private
  * @param {*} item Item to check
- * @return {Boolean} If item was uploaded.
+ * @return {boolean} If item was uploaded.
  */
 function uploadGraphics(renderer, item)
 {
@@ -262,11 +255,10 @@ function uploadGraphics(renderer, item)
 
 /**
  * Built-in hook to find textures from Sprites
- * @method findTextures
  * @private
  * @param {PIXI.DisplayObject} item Display object to check
  * @param {Array<*>} queue Collection of items to upload
- * @return {Boolean} if a PIXI.Texture object was found.
+ * @return {boolean} if a PIXI.Texture object was found.
  */
 function findBaseTextures(item, queue)
 {
@@ -293,11 +285,10 @@ function findBaseTextures(item, queue)
 
 /**
  * Built-in hook to find graphics
- * @method findGraphics
  * @private
  * @param {PIXI.DisplayObject} item Display object to check
  * @param {Array<*>} queue Collection of items to upload
- * @return {Boolean} if a PIXI.Graphics object was found.
+ * @return {boolean} if a PIXI.Graphics object was found.
  */
 function findGraphics(item, queue)
 {
@@ -309,4 +300,4 @@ function findGraphics(item, queue)
     return false;
 }
 
-core.WebGLRenderer.registerPlugin('prepare', Prepare);
+core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);

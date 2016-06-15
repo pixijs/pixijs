@@ -5,25 +5,25 @@ var core = require('../../core'),
  * The extract manager provides functionality to export content from the renderers
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
+ * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-function Extract(renderer)
+function WebGLExtract(renderer)
 {
     this.renderer = renderer;
     renderer.extract = this;
 }
 
 
-Extract.prototype.constructor = Extract;
-module.exports = Extract;
+WebGLExtract.prototype.constructor = WebGLExtract;
+module.exports = WebGLExtract;
 
 /**
  * Will return a HTML Image of the target
  *
- * @return {Image}
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+ * @return {Image} HTML Image of the target
  */
-Extract.prototype.image = function ( target )
+WebGLExtract.prototype.image = function ( target )
 {
 	var image = new Image();
     image.src = this.base64( target );
@@ -35,7 +35,7 @@ Extract.prototype.image = function ( target )
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {string} A base64 encoded string of the texture.
  */
-Extract.prototype.base64 = function ( target )
+WebGLExtract.prototype.base64 = function ( target )
 {
     return this.canvas( target ).toDataURL();
 };
@@ -45,7 +45,7 @@ Extract.prototype.base64 = function ( target )
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
-Extract.prototype.canvas = function ( target )
+WebGLExtract.prototype.canvas = function ( target )
 {
 	var renderer = this.renderer;
 	var textureBuffer;
@@ -126,9 +126,9 @@ Extract.prototype.canvas = function ( target )
 /**
  * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
- * @return {Uint8ClampedArray}
+ * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
  */
-Extract.prototype.pixels = function ( target )
+WebGLExtract.prototype.pixels = function ( target )
 {
     var renderer = this.renderer;
     var textureBuffer;
@@ -186,10 +186,10 @@ Extract.prototype.pixels = function ( target )
  * Destroys the extract
  *
  */
-Extract.prototype.destroy = function ()
+WebGLExtract.prototype.destroy = function ()
 {
     this.renderer.extract = null;
     this.renderer = null;
 };
 
-core.WebGLRenderer.registerPlugin('extract', Extract);
+core.WebGLRenderer.registerPlugin('extract', WebGLExtract);

@@ -242,14 +242,16 @@ CanvasRenderer.prototype.destroy = function (removeView)
 };
 
 /**
+ * Resizes the canvas view to the specified width and height.
+ *
  * @extends PIXI.SystemRenderer#resize
  *
- * @param {number} w
- * @param {number} h
+ * @param width {number} The new width of the canvas view
+ * @param height {number} The new height of the canvas view
  */
-CanvasRenderer.prototype.resize = function (w, h)
+CanvasRenderer.prototype.resize = function (width, height)
 {
-    SystemRenderer.prototype.resize.call(this, w, h);
+    SystemRenderer.prototype.resize.call(this, width, height);
 
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..

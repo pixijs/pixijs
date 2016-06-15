@@ -48,8 +48,8 @@ function WebGLRenderer(width, height, options)
     /**
      * The type of this renderer as a standardised const
      *
-     * @member {number}//
-     *
+     * @member {number}
+     * @see PIXI.RENDERER_TYPE
      */
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
@@ -203,13 +203,12 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param displayObject {PIXI.DisplayObject} the object to be rendered
  * @param renderTexture {PIXI.RenderTexture}
- * @param clear {boolean}
- * @param transform {PIXI.Transform}
- * @param skipUpdateTransform {boolean}
+ * @param [clear] {boolean} Should the canvas be cleared before the new render
+ * @param [transform] {PIXI.Transform}
+ * @param [skipUpdateTransform] {boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
-
 
     // can be handy to know!
     this.renderingToScreen = !renderTexture;

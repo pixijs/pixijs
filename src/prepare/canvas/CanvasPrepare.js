@@ -7,18 +7,21 @@ var core = require('../../core');
  * @memberof PIXI
  * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-function Prepare()
+function CanvasPrepare()
 {
 }
 
-Prepare.prototype.constructor = Prepare;
-module.exports = Prepare;
+CanvasPrepare.prototype.constructor = CanvasPrepare;
+module.exports = CanvasPrepare;
 
 /**
  * Stub method for upload.
- * @method upload
+ * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
+ *        the container or display object to search for items to upload or
+ *        the callback function, if items have been added using `prepare.add`.
+ * @param {Function} done When completed
  */
-Prepare.prototype.upload = function(displayObject, done)
+CanvasPrepare.prototype.upload = function(displayObject, done)
 {
     if (typeof displayObject === 'function')
     {
@@ -30,29 +33,27 @@ Prepare.prototype.upload = function(displayObject, done)
 
 /**
  * Stub method for registering hooks.
- * @method upload
+ * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
  */
-Prepare.prototype.register = function()
+CanvasPrepare.prototype.register = function()
 {
     return this;
 };
 
 /**
  * Stub method for adding items.
- * @method upload
+ * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
  */
-Prepare.prototype.add = function()
+CanvasPrepare.prototype.add = function()
 {
     return this;
 };
 
 /**
  * Stub method for destroying plugin.
- * @method destroy
  */
-Prepare.prototype.destroy = function()
+CanvasPrepare.prototype.destroy = function()
 {
-
 };
 
-core.CanvasRenderer.registerPlugin('prepare', Prepare);
+core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);

@@ -139,7 +139,7 @@ Object.defineProperties(Text.prototype, {
     /**
      * Set the style of the text. Set up an event listener to listen for changes on the style object and mark the text as dirty.
      *
-     * @param [style] {object|PIXI.TextStyle} The style parameters
+     * @member {object|PIXI.TextStyle}
      * @memberof PIXI.Text#
      */
     style: {
@@ -171,7 +171,7 @@ Object.defineProperties(Text.prototype, {
     /**
      * Set the copy for the text object. To split a line you can use '\n'.
      *
-     * @param text {string} The copy that you would like the text to display
+     * @member {string}
      * @memberof PIXI.Text#
      */
     text: {
@@ -346,7 +346,10 @@ Text.prototype.updateText = function (respectDirty)
 
 /**
  * Render the text with letter-spacing.
- *
+ * @param {string} text - The text to draw
+ * @param {number} x - Horizontal position to draw the text
+ * @param {number} y - Vertical position to draw the text
+ * @param {boolean} isStroke - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
  * @private
  */
 Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
@@ -424,7 +427,7 @@ Text.prototype.updateTexture = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {PIXI.WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer} The renderer
  */
 Text.prototype.renderWebGL = function (renderer)
 {
@@ -436,7 +439,7 @@ Text.prototype.renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {PIXI.CanvasRenderer}
+ * @param renderer {PIXI.CanvasRenderer} The renderer
  * @private
  */
 Text.prototype._renderCanvas = function (renderer)
@@ -449,7 +452,8 @@ Text.prototype._renderCanvas = function (renderer)
 /**
  * Calculates the ascent, descent and fontSize of a given fontStyle
  *
- * @param fontStyle {object}
+ * @param fontStyle {string} String representing the style of the font
+ * @return {Object} Font properties object
  * @private
  */
 Text.prototype.determineFontProperties = function (fontStyle)
@@ -552,7 +556,8 @@ Text.prototype.determineFontProperties = function (fontStyle)
  * Applies newlines to a string to have it optimally fit into the horizontal
  * bounds set by the Text object's wordWrapWidth property.
  *
- * @param text {string}
+ * @param text {string} String to apply word wrapping to
+ * @return {string} New string with new lines applied where required
  * @private
  */
 Text.prototype.wordWrap = function (text)

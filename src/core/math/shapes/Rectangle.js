@@ -40,6 +40,9 @@ function Rectangle(x, y, width, height)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readOnly
+     * @default CONST.SHAPES.RECT
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.RECT;
 }

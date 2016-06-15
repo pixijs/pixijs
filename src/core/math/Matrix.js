@@ -196,8 +196,8 @@ Matrix.prototype.applyInverse = function (pos, newPos)
 /**
  * Translates the matrix on the x and y.
  *
- * @param {number} x
- * @param {number} y
+ * @param {number} x How much to translate x by
+ * @param {number} y How much to translate y by
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
 Matrix.prototype.translate = function (x, y)
@@ -280,15 +280,15 @@ Matrix.prototype.append = function (matrix)
 /**
  * Sets the matrix based on all the available properties
  *
- * @param {number} x
- * @param {number} y
- * @param {number} pivotX
- * @param {number} pivotY
- * @param {number} scaleX
- * @param {number} scaleY
- * @param {number} rotation
- * @param {number} skewX
- * @param {number} skewY
+ * @param {number} x Position on the x axis
+ * @param {number} y Position on the y axis
+ * @param {number} pivotX Pivot on the x axis
+ * @param {number} pivotY Pivot on the y axis
+ * @param {number} scaleX Scale on the x axis
+ * @param {number} scaleY Scale on the y axis
+ * @param {number} rotation Rotation in radians
+ * @param {number} skewX Skew on the x axis
+ * @param {number} skewY Skew on the y axis
  *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
@@ -347,8 +347,8 @@ Matrix.prototype.prepend = function(matrix)
 
 /**
  * Decomposes the matrix (x, y, scaleX, scaleY, and rotation) and sets the properties on to a transform.
- * @param {Transform} the transform to apply the properties to.
- * @return {Transform} The transform with the newly applied properies
+ * @param transform {PIXI.Transform} the transform to apply the properties to.
+ * @return {PIXI.Transform} The transform with the newly applied properies
 */
 Matrix.prototype.decompose = function(transform)
 {

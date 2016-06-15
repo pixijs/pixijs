@@ -81,7 +81,9 @@ function AccessibilityManager(renderer)
    	this.children = [];
 
    	/**
-     * pre bind the functions..
+     * pre-bind the functions
+	 *
+ 	 * @private
      */
    	this._onKeyDown = this._onKeyDown.bind(this);
    	this._onMouseMove = this._onMouseMove.bind(this);

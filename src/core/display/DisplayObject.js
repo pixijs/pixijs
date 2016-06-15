@@ -25,6 +25,8 @@ function DisplayObject()
     /**
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+     *
+     * @member {PIXI.Transform|PIXI.TransformStatic}
      */
     this.transform =  new TransformClass();
 
@@ -55,7 +57,7 @@ function DisplayObject()
      * The display object container that contains this display object.
      *
      * @member {PIXI.Container}
-     * @readOnly
+     * @readonly
      */
     this.parent = null;
 
@@ -63,7 +65,7 @@ function DisplayObject()
      * The multiplied alpha of the displayObject
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.worldAlpha = 1;
 
@@ -147,7 +149,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on world (parent) factors
      *
      * @member {PIXI.Matrix}
-     * @readOnly
+     * @readonly
      */
     worldTransform: {
         get: function ()
@@ -160,7 +162,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on local factors: position, scale, other stuff
      *
      * @member {PIXI.Matrix}
-     * @readOnly
+     * @readonly
      */
     localTransform: {
         get: function ()
@@ -172,7 +174,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
      */
     position: {
         get: function()
@@ -187,7 +189,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The scale factor of the object.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
      */
     scale: {
         get: function() {
@@ -201,7 +203,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The pivot point of the displayObject that it rotates around
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
      */
     pivot: {
         get: function() {
@@ -215,7 +217,7 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The skew factor for the object in radians.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint}
      */
     skew: {
         get: function() {
@@ -440,8 +442,8 @@ DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:fals
 /**
  * Set the parent Container of this DisplayObject
  *
- * @param container {Container} The Container to add this DisplayObject to
- * @return {Container} The Container that this DisplayObject was added to
+ * @param container {PIXI.Container} The Container to add this DisplayObject to
+ * @return {PIXI.Container} The Container that this DisplayObject was added to
  */
 DisplayObject.prototype.setParent = function (container)
 {
@@ -466,7 +468,7 @@ DisplayObject.prototype.setParent = function (container)
  * @param [skewY=0] {number} The Y skew value
  * @param [pivotX=0] {number} The X pivot value
  * @param [pivotY=0] {number} The Y pivot value
- * @return {PIXI.DisplayObject}
+ * @return {PIXI.DisplayObject} The DisplayObject instance
  */
 DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
 {
