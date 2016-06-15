@@ -2,7 +2,6 @@ var math = require('../math');
 
 /**
  * Transform that takes care about its versions
- * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
  *
  * @class
  * @memberof PIXI

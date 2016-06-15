@@ -1,6 +1,9 @@
 var math = require('../math'),
     utils = require('../utils'),
-    DisplayObject = require('./DisplayObject');
+    DisplayObject = require('./DisplayObject'),
+    TransformManual = require('./TransformManual'),
+    BoundsBuilder = require('./BoundsBuilder'),
+    _tempBoundsBuilder = new BoundsBuilder();
 
 /**
  * A Container represents a collection of display objects.
@@ -395,24 +398,19 @@ Container.prototype.getBounds = function ()
     if(!this._currentBounds)
     {
 
-        if (this.children.length === 0)
-        {
-            return math.Rectangle.EMPTY;
-        }
+        var rb = _tempBoundsBuilder;
+        rb.clear();
+        this._calcBounds(rb, this.transform);
 
-        // TODO the bounds have already been calculated this render session so return what we have
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
+        // _tempBoundsBuilder can be used inside cycle, so we have to maintain our own set of variables
+        var minX = rb.minX;
+        var minY = rb.minY;
+        var maxX = rb.maxX;
+        var maxY = rb.maxY;
 
         var childBounds;
         var childMaxX;
         var childMaxY;
-
-        var childVisible = false;
 
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
@@ -427,7 +425,6 @@ Container.prototype.getBounds = function ()
             if (childBounds === math.Rectangle.EMPTY) {
                 continue;
             }
-            childVisible = true;
 
             minX = minX < childBounds.x ? minX : childBounds.x;
             minY = minY < childBounds.y ? minY : childBounds.y;
@@ -439,52 +436,20 @@ Container.prototype.getBounds = function ()
             maxY = maxY > childMaxY ? maxY : childMaxY;
         }
 
-        if (!childVisible)
-        {
-             this._currentBounds = math.Rectangle.EMPTY;
-             return this._currentBounds;
-        }
+        //return variables to their place
+        rb.minX = minX;
+        rb.minY = minY;
+        rb.maxX = maxX;
+        rb.maxY = maxY;
 
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-
-        this._currentBounds = bounds;
+        //use BoundsBuilder logic
+        this._currentBounds = rb.getRectangle(this._bounds);
     }
 
     return this._currentBounds;
 };
 
 Container.prototype.containerGetBounds = Container.prototype.getBounds;
-
-/**
- * Retrieves the non-global local bounds of the Container as a rectangle.
- * The calculation takes all visible children into consideration.
- *
- * @return {PIXI.Rectangle} The rectangular bounding area
- */
-Container.prototype.getLocalBounds = function ()
-{
-    var matrixCache = this.transform.worldTransform;
-
-    this.transform.worldTransform = math.Matrix.IDENTITY;
-    this.transform._worldID++;
-
-    for (var i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].updateTransform();
-    }
-
-    this.transform.worldTransform = matrixCache;
-    this.transform._worldID++;
-
-    this._currentBounds = null;
-
-    return this.getBounds();
-};
 
 /**
  * Renders the object using the WebGL renderer
@@ -554,6 +519,58 @@ Container.prototype.renderWebGL = function (renderer)
             this.children[i].renderWebGL(renderer);
         }
     }
+};
+
+/**
+ * _calcBounds() adds bounds of this object with transform to builder.
+ * calcBounds() adds child bounds too.
+ *
+ * Please do not override it.
+ *
+ * The calculation takes all visible children into consideration.
+ * If there are any visible children, one temporary cached transform object will be used.
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ */
+
+Container.prototype.calcBounds = function (builder, transform)
+{
+    var children = this.children;
+    var i, j;
+    this._calcBounds(builder, transform);
+    // now loop through the children and make sure they get rendered
+    for (i = 0, j = children.length; i < j; i++)
+    {
+        var child = children[i];
+        if (!child.visible)
+        {
+            continue;
+        }
+        var bt = this._boundsTransform;
+        if (!bt)
+        {
+            bt = new TransformManual();
+            this._boundsTransform = bt;
+        }
+        bt.localTransform = child.transform.localTransform;
+        bt.updateTransform(transform);
+        this.children[i].calcBounds(builder, bt);
+    }
+};
+
+/**
+ * To be overridden by the subclass. Same strategy as for renderWebGL/_renderWebGL applies:
+ * _calcBounds() adds bounds of this object with transform to builder
+ * calcBounds() adds child bounds too
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @private
+ */
+Container.prototype._calcBounds = function (builder, transform) // jshint unused:false
+{
+    // this is where content bounds are measured
 };
 
 /**

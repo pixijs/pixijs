@@ -7,8 +7,9 @@ var math = require('../math');
  *
  * @class
  * @memberof PIXI
+ * @params [localTransform=null] {PIXI.Matrix} use this local matrix. Useful for model parts like Spine or Spriter
  */
-function TransformManual()
+function TransformManual(localTransform)
 {
     /**
      * @member {PIXI.Matrix} The global matrix transform
@@ -17,7 +18,7 @@ function TransformManual()
     /**
      * @member {PIXI.Matrix} The local matrix transform
      */
-    this.localTransform = new math.Matrix();
+    this.localTransform = localTransform || new math.Matrix();
 
     this._worldID = 0;
 }
@@ -46,5 +47,7 @@ TransformManual.prototype.updateTransform = function (parentTransform)
 
     this._worldID ++;
 };
+
+TransformManual.IDENTITY = new TransformManual();
 
 module.exports = TransformManual;

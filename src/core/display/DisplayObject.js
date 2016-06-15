@@ -3,7 +3,10 @@ var math = require('../math'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    _tempDisplayObjectParent = new DisplayObject();
+    TransformManual = require('./TransformManual'),
+    BoundsBuilder = require('./BoundsBuilder'),
+    _tempDisplayObjectParent = new DisplayObject(),
+    _tempBoundsBuilder = new BoundsBuilder();
 
 
 /**
@@ -88,6 +91,20 @@ function DisplayObject()
     this._bounds = new math.Rectangle(0, 0, 1, 1);
 
     /**
+     * Cache for local bounds
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._localBounds = null;
+
+    /**
+     * Last asked localBounds. Can be null, this._localBounds or PIXI.Rectangle.EMPTY
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._currentLocalBounds = null;
+
+    /**
      * The most up-to-date bounds of the object
      *
      * @member {PIXI.Rectangle}
@@ -102,6 +119,13 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    /**
+     * Used for bounds calculation
+     * @member {PIXI.Transform}
+     * @private
+     */
+    this._boundsTransform = null;
 }
 
 // constructor
@@ -349,13 +373,39 @@ DisplayObject.prototype.getBounds = function () // jshint unused:false
 };
 
 /**
+ * Fills the builder with points. Both parameters are required
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ */
+DisplayObject.prototype.calcBounds = function(builder, transform) // jshint unused:false
+{
+
+};
+
+/**
  * Retrieves the local bounds of the displayObject as a rectangle object
+ *
+ * For a container, the calculation takes all visible children into consideration.
  *
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
 DisplayObject.prototype.getLocalBounds = function ()
 {
-    return this.getBounds(math.Matrix.IDENTITY);
+    var rb = _tempBoundsBuilder;
+    rb.clear();
+    var bt = this._boundsTransform;
+    if (!bt) {
+        bt = new TransformManual(this.transform.localTransform);
+        this._boundsTransform = bt;
+    }
+    bt.worldTransform.identity();
+    this.calcBounds(rb, bt);
+    var bounds = rb.getRectangle(this._localBounds);
+    if (bounds !== math.Rectangle.EMPTY) {
+        this._localBounds = bounds;
+    }
+    this._currentLocalBounds = bounds;
+    return bounds;
 };
 
 /**

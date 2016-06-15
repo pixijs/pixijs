@@ -251,9 +251,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 */
 DisplayObject.prototype._getCachedBounds = function ()
 {
-    this._cachedSprite._currentBounds = null;
-
-    return this._cachedSprite.getBounds(core.Matrix.IDENTITY);
+    return this._cachedSprite.getLocalBounds();
 };
 
 /**
