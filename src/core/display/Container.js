@@ -452,6 +452,35 @@ Container.prototype.getBounds = function ()
 Container.prototype.containerGetBounds = Container.prototype.getBounds;
 
 /**
+ * This is old v3 implementation which is required for cacheAsBitmap and generateTexture functions.
+ * Retrieves the non-global local bounds of the Container as a rectangle.
+ *
+ * The calculation takes all visible children into consideration.
+ *
+ * The calculation can mess up with current transforms and bounds!
+ *
+ * @return {PIXI.Rectangle} The rectangular bounding area
+ */
+Container.prototype.getLegacyLocalBounds = function() {
+    var matrixCache = this.transform.worldTransform;
+
+    this.transform.worldTransform = math.Matrix.IDENTITY;
+    this.transform._worldID++;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].updateTransform();
+    }
+
+    this.transform.worldTransform = matrixCache;
+    this.transform._worldID++;
+
+    this._currentBounds = null;
+
+    return this.getBounds();
+};
+
+/**
  * Renders the object using the WebGL renderer
  *
  * @param renderer {PIXI.WebGLRenderer} The renderer

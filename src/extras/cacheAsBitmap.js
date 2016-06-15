@@ -112,7 +112,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // next we find the dimensions of the untransformed object
     // this function also calls updatetransform on all its children as part of the measuring. This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    var bounds = this.getLocalBounds().clone();
+    var bounds = this.getLegacyLocalBounds().clone();
 
     // add some padding!
     if(this._filters)
@@ -204,7 +204,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     }
 
     //get bounds actually transforms the object for us already!
-    var bounds = this.getLocalBounds();
+    var bounds = this.getLegacyLocalBounds();
 
     var cachedRenderTarget = renderer.context;
 
@@ -251,7 +251,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 */
 DisplayObject.prototype._getCachedBounds = function ()
 {
-    return this._cachedSprite.getLocalBounds();
+    this._cachedSprite._currentBounds = null;
+
+    return this._cachedSprite.getBounds();
 };
 
 /**

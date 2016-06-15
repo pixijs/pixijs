@@ -235,7 +235,7 @@ SystemRenderer.prototype.resize = function (width, height) {
  */
 SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
 
-    var bounds = displayObject.getLocalBounds();
+    var bounds = displayObject.getLegacyLocalBounds();
 
     var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 
