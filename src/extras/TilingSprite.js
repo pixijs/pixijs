@@ -103,6 +103,14 @@ TilingSprite.prototype.constructor = TilingSprite;
 module.exports = TilingSprite;
 
 /**
+ * TilingSprite doesnt need that
+ * @private
+ */
+TilingSprite.prototype._onTextureUpdate = function () {
+
+};
+
+/**
  * Renders the object using the WebGL renderer
  *
  * @param renderer {PIXI.WebGLRenderer}
