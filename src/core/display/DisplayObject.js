@@ -113,6 +113,7 @@ module.exports = DisplayObject;
 Object.defineProperties(DisplayObject.prototype, {
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     * An alias to position.x
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
@@ -130,6 +131,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+     * An alias to position.y
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
@@ -175,6 +177,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The coordinate of the object relative to the local coordinates of the parent.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     position: {
         get: function()
@@ -190,6 +193,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The scale factor of the object.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     scale: {
         get: function() {
@@ -204,6 +208,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The pivot point of the displayObject that it rotates around
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     pivot: {
         get: function() {
@@ -218,6 +223,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The skew factor for the object in radians.
      *
      * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     skew: {
         get: function() {
@@ -232,6 +238,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The rotation of the object in radians.
      *
      * @member {number}
+     * @memberof PIXI.DisplayObject#
      */
     rotation: {
         get: function ()

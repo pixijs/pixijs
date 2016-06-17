@@ -174,6 +174,7 @@ Object.defineProperties(BitmapText.prototype, {
      * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
      *
      * @member {PIXI.Point | number}
+     * @memberof PIXI.extras.BitmapText#
      */
     anchor: {
         get : function() {
