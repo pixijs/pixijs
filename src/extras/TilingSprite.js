@@ -17,8 +17,6 @@ function TilingSprite(texture, width, height)
 {
     core.Sprite.call(this, texture);
 
-    this._size._x = width || 100;
-    this._size._y = height || 100;
     /**
      * The scaling of the image that is being tiled
      *
@@ -36,6 +34,22 @@ function TilingSprite(texture, width, height)
     //TODO: for v4.1 make dirty uvs separated, and tileScale/tilePosition observable
 
     /**
+     * The width of the tiling sprite
+     *
+     * @member {number}
+     * @private
+     */
+    this._width = width || 100;
+
+    /**
+     * The height of the tiling sprite
+     *
+     * @member {number}
+     * @private
+     */
+    this._height = height || 100;
+
+    /**
      * An internal WebGL UV cache.
      *
      * @member {PIXI.TextureUvs}
@@ -47,6 +61,42 @@ function TilingSprite(texture, width, height)
 
     this._glDatas = [];
 }
+
+Object.defineProperties(TilingSprite.prototype, {
+    /**
+     * The width of the sprite, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     * @memberof PIXI.extras.TilingSprite#
+     */
+    width: {
+        get: function ()
+        {
+            return this._width;
+        },
+        set: function (value)
+        {
+            this._width = value;
+        }
+    },
+
+    /**
+     * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     * @memberof PIXI.extras.TilingSprite#
+     */
+    height: {
+        get: function ()
+        {
+            return this._height;
+        },
+        set: function (value)
+        {
+            this._height = value;
+        }
+    }
+});
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
 TilingSprite.prototype.constructor = TilingSprite;
@@ -116,8 +166,8 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     uFrame[3] = textureUvs.y2 - textureUvs.y0;
     glData.shader.uniforms.uFrame = uFrame;
 
-    var width = this._size._x;
-    var height = this._size._y;
+    var width = this._width;
+    var height = this._height;
 
     var uTransform = glData.shader.uniforms.uTransform;
     uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / width;
@@ -187,6 +237,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
 
+    var width = this._width;
+    var height = this._height;
     // set context state..
     context.globalAlpha = this.worldAlpha;
     context.setTransform(transform.a * resolution,
@@ -199,8 +251,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-    context.translate(modX + (this.anchor.x * -this._size._x),
-                      modY + (this.anchor.y * -this._size._y));
+    context.translate(modX + (this.anchor.x * width),
+                      modY + (this.anchor.y * height));
 
     // check blend mode
     var compositeOperation = renderer.blendModes[this.blendMode];
@@ -213,8 +265,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     context.fillStyle = this._canvasPattern;
     context.fillRect(-modX,
                      -modY,
-                     this._size._x / this.tileScale.x,
-                     this._size._y / this.tileScale.y);
+                     width / this.tileScale.x,
+                     height / this.tileScale.y);
 
 
     //TODO - pretty sure this can be deleted...
@@ -224,8 +276,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
 
 TilingSprite.prototype.calculateVertices = function () {
-    var width = this._size._x;
-    var height = this._size._y;
+    var width = this._width;
+    var height = this._height;
 
     var w0 = width * (1-this.anchor.x);
     var w1 = width * -this.anchor.x;
@@ -233,30 +285,6 @@ TilingSprite.prototype.calculateVertices = function () {
     var h0 = height * (1-this.anchor.y);
     var h1 = height * -this.anchor.y;
     this.geometry.setRectCoords(0, w1, h1, w0, h0);
-};
-
-/**
- * Checks if a point is inside this tiling sprite
- * @param point {PIXI.Point} the point to check
- */
-TilingSprite.prototype.containsLocalPoint = function( point )
-{
-    var width = this._size._x;
-    var height = this._size._y;
-    var x1 = -width * this.anchor.x;
-    var y1;
-
-    if ( point.x > x1 && point.x < x1 + width )
-    {
-        y1 = -height * this.anchor.y;
-
-        if ( point.y > y1 && point.y < y1 + height )
-        {
-            return true;
-        }
-    }
-
-    return false;
 };
 
 /**
