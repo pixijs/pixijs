@@ -382,6 +382,12 @@ core.Text.prototype.setStyle = function(style)
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
+    /**
+     * Set all properties of a font as a single string
+     *
+     * @name PIXI.TextStyle#font
+     * @deprecated since version 4.0.0
+     */
     font: {
         get: function ()
         {
