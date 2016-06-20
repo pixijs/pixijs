@@ -24,7 +24,7 @@ Object.assign(
 function InteractionManager(renderer, options)
 {
     EventEmitter.call(this);
-    
+
     options = options || {};
 
     /**
@@ -725,7 +725,7 @@ InteractionManager.prototype.onMouseOver = function(/*event*/)
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
-    
+
 	this.emit('mouseover', this.eventData);
 };
 
