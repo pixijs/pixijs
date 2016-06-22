@@ -9,6 +9,7 @@ var SystemRenderer = require('../SystemRenderer'),
     WebGLState = require('./WebGLState'),
     createContext = require('pixi-gl-core').createContext,
     mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
+    validateContext = require('./utils/validateContext'),
     utils = require('../../utils'),
     glCore = require('pixi-gl-core'),
     CONST = require('../../const');
@@ -32,7 +33,7 @@ var CONTEXT_UID = 0;
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias. If not available natively then FXAA antialiasing is used
  * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
- * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+ * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer. The resolution of the renderer retina would be 2.
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
  * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if
@@ -47,8 +48,8 @@ function WebGLRenderer(width, height, options)
     /**
      * The type of this renderer as a standardised const
      *
-     * @member {number}//
-     *
+     * @member {number}
+     * @see PIXI.RENDERER_TYPE
      */
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
@@ -110,6 +111,12 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLRenderingContext}
      */
     // initialize the context so it is ready for the managers.
+    if(options.context)
+    {
+        // checks to see if a context is valid..
+        validateContext(options.context);
+    }
+
     this.gl = options.context || createContext(this.view, this._contextOptions);
 
     this.CONTEXT_UID = CONTEXT_UID++;
@@ -196,13 +203,12 @@ WebGLRenderer.prototype._initContext = function ()
  *
  * @param displayObject {PIXI.DisplayObject} the object to be rendered
  * @param renderTexture {PIXI.RenderTexture}
- * @param clear {boolean}
- * @param transform {PIXI.Transform}
- * @param skipUpdateTransform {boolean}
+ * @param [clear] {boolean} Should the canvas be cleared before the new render
+ * @param [transform] {PIXI.Transform}
+ * @param [skipUpdateTransform] {boolean}
  */
 WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
-
 
     // can be handy to know!
     this.renderingToScreen = !renderTexture;

@@ -10,7 +10,7 @@ var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurXFilter()
+function BlurXFilter(strength, quality, resolution)
 {
     var vertSrc = generateBlurVertSource(5, true);
     var fragSrc = generateBlurFragSource(5);
@@ -22,16 +22,15 @@ function BlurXFilter()
         fragSrc
     );
 
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @default 1
-     */
-    this.passes = 1;
-    this.resolution = 1;//0.25;//0.5;//0.1//5;
-    this.strength = 4;
+    this.resolution = resolution || 1;
+
+    this._quality = 0;
+
+    this.quality = quality || 4;
+    this.strength = strength || 8;
+
     this.firstRun = true;
+
 }
 
 BlurXFilter.prototype = Object.create(core.Filter.prototype);
@@ -55,6 +54,7 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
 
     // screen space!
     this.uniforms.strength *= this.strength;
+    this.uniforms.strength /= this.passes;// / this.passes//Math.pow(1, this.passes);
 
     if(this.passes === 1)
     {
@@ -88,7 +88,7 @@ Object.defineProperties(BlurXFilter.prototype, {
      *
      * @member {number}
      * @memberof PIXI.filters.BlurXFilter#
-     * @default 2
+     * @default 16
      */
     blur: {
         get: function ()
@@ -99,6 +99,25 @@ Object.defineProperties(BlurXFilter.prototype, {
         {
             this.padding =  Math.abs(value) * 2;
             this.strength = value;
+        }
+    },
+
+     /**
+     * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
+     *
+     * @member {number}
+     * @memberof PIXI.filters.BlurXFilter#
+     * @default 4
+     */
+    quality: {
+        get: function ()
+        {
+            return  this._quality;
+        },
+        set: function (value)
+        {
+            this._quality = value;
+            this.passes = value;
         }
     }
 });

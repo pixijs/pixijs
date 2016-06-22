@@ -95,6 +95,15 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      */
     this.shader = null;
 
+
+    /**
+     * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     */
+    this.tintRgb = new Float32Array([1, 1, 1]);
+
     this._glDatas = [];
 }
 
@@ -136,6 +145,21 @@ Object.defineProperties(Mesh.prototype, {
                     value.once('update', this._onTextureUpdate, this);
                 }
             }
+        }
+    },
+    /**
+     * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     * @default 0xFFFFFF
+     */
+    tint: {
+        get: function() {
+            return core.utils.rgb2hex(this.tintRgb);
+        },
+        set: function(value) {
+            this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
         }
     }
 });
@@ -198,9 +222,9 @@ Mesh.prototype._renderWebGL = function (renderer)
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
+    glData.shader.uniforms.tint = this.tintRgb;
 
     var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
-
 
     glData.vao.bind()
     .draw(drawMode, this.indices.length)
@@ -412,7 +436,7 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
  */
 Mesh.prototype._onTextureUpdate = function ()
 {
-    this.updateFrame = true;
+
 };
 
 /**

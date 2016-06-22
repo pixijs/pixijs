@@ -177,7 +177,7 @@ module.exports = Graphics;
  * Creates a new Graphics object with the same values as this one.
  * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
  *
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} A clone of the graphics object
  */
 Graphics.prototype.clone = function ()
 {
@@ -214,7 +214,7 @@ Graphics.prototype.clone = function ()
  * @param lineWidth {number} width of the line to draw, will update the objects stored style
  * @param color {number} color of the line to draw, will update the objects stored style
  * @param alpha {number} alpha of the line to draw, will update the objects stored style
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
 {
@@ -248,8 +248,8 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
  *
  * @param x {number} the X coordinate to move to
  * @param y {number} the Y coordinate to move to
- * @return {PIXI.Graphics}
-  */
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ */
 Graphics.prototype.moveTo = function (x, y)
 {
     var shape = new math.Polygon([x,y]);
@@ -265,7 +265,7 @@ Graphics.prototype.moveTo = function (x, y)
  *
  * @param x {number} the X coordinate to draw to
  * @param y {number} the Y coordinate to draw to
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.lineTo = function (x, y)
 {
@@ -283,7 +283,7 @@ Graphics.prototype.lineTo = function (x, y)
  * @param cpY {number} Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
 {
@@ -339,7 +339,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
 {
@@ -379,7 +379,7 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
  * @param x2 {number} The x-coordinate of the end of the arc
  * @param y2 {number} The y-coordinate of the end of the arc
  * @param radius {number} The radius of the arc
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
 {
@@ -445,8 +445,8 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
  * @param radius {number} The radius of the circle
  * @param startAngle {number} The starting angle, in radians (0 is at the 3 o'clock position of the arc's circle)
  * @param endAngle {number} The ending angle, in radians
- * @param anticlockwise {boolean} Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
- * @return {PIXI.Graphics}
+ * @param [anticlockwise=false] {boolean} Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
@@ -523,7 +523,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
  *
  * @param color {number} the color of the fill
  * @param alpha {number} the alpha of the fill
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.beginFill = function (color, alpha)
 {
@@ -546,7 +546,7 @@ Graphics.prototype.beginFill = function (color, alpha)
 /**
  * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
  *
- * @return {Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.endFill = function ()
 {
@@ -563,7 +563,7 @@ Graphics.prototype.endFill = function ()
  * @param y {number} The Y coord of the top-left of the rectangle
  * @param width {number} The width of the rectangle
  * @param height {number} The height of the rectangle
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.drawRect = function ( x, y, width, height )
 {
@@ -579,7 +579,7 @@ Graphics.prototype.drawRect = function ( x, y, width, height )
  * @param width {number} The width of the rectangle
  * @param height {number} The height of the rectangle
  * @param radius {number} Radius of the rectangle corners
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius )
 {
@@ -594,7 +594,7 @@ Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius )
  * @param x {number} The X coordinate of the center of the circle
  * @param y {number} The Y coordinate of the center of the circle
  * @param radius {number} The radius of the circle
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.drawCircle = function (x, y, radius)
 {
@@ -610,7 +610,7 @@ Graphics.prototype.drawCircle = function (x, y, radius)
  * @param y {number} The Y coordinate of the center of the ellipse
  * @param width {number} The half width of the ellipse
  * @param height {number} The half height of the ellipse
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.drawEllipse = function (x, y, width, height)
 {
@@ -623,7 +623,7 @@ Graphics.prototype.drawEllipse = function (x, y, width, height)
  * Draws a polygon using the given path.
  *
  * @param path {number[]|PIXI.Point[]} The path data used to construct the polygon.
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.drawPolygon = function (path)
 {
@@ -662,7 +662,7 @@ Graphics.prototype.drawPolygon = function (path)
 /**
  * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
  *
- * @return {PIXI.Graphics}
+ * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.clear = function ()
 {
@@ -724,9 +724,10 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
         this._spriteRect.tint = this.graphicsData[0].fillColor;
+        this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     }
 
-    this._spriteRect.worldAlpha = this.worldAlpha;
+    this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
     Graphics._SPRITE_TEXTURE._frame.width = rect.width;
     Graphics._SPRITE_TEXTURE._frame.height = rect.height;

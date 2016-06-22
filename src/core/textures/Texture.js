@@ -132,6 +132,9 @@ function Texture(baseTexture, frame, orig, trim, rotate)
      * @memberof PIXI.Texture#
      * @protected
      */
+
+
+    this._updateID = 0;
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -164,7 +167,7 @@ Object.defineProperties(Texture.prototype, {
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
             this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
-            if (!this.trim)
+            if (!this.trim && !this.rotate)
             {
                 this.orig = frame;
             }
@@ -238,6 +241,8 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
+    this._updateID++;
+
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -250,6 +255,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 
     this.baseTexture.on('update', this.onBaseTextureUpdated, this);
     this.emit('update', this);
+
 };
 
 /**
@@ -259,6 +265,8 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
 {
+    this._updateID++;
+
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
@@ -274,8 +282,16 @@ Texture.prototype.destroy = function (destroyBase)
 {
     if (this.baseTexture)
     {
+
         if (destroyBase)
         {
+            // delete the texture if it exists in the texture cache..
+            // this only needs to be removed if the base texture is actually destoryed too..
+            if(utils.TextureCache[this.baseTexture.imageUrl])
+            {
+                delete utils.TextureCache[this.baseTexture.imageUrl];
+            }
+
             this.baseTexture.destroy();
         }
 
@@ -319,6 +335,8 @@ Texture.prototype._updateUvs = function ()
     }
 
     this._uvs.set(this._frame, this.baseTexture, this.rotate);
+
+    this._updateID++;
 };
 
 /**
@@ -328,7 +346,7 @@ Texture.prototype._updateUvs = function ()
  * @static
  * @param imageUrl {string} The image url of the texture
  * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
@@ -369,8 +387,8 @@ Texture.fromFrame = function (frameId)
  *
  * @static
  * @param canvas {HTMLCanvasElement} The canvas element source of the texture
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture}
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromCanvas = function (canvas, scaleMode)
 {
@@ -382,8 +400,8 @@ Texture.fromCanvas = function (canvas, scaleMode)
  *
  * @static
  * @param video {HTMLVideoElement|string} The URL or actual element of the video
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture} A Texture
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromVideo = function (video, scaleMode)
 {
@@ -401,9 +419,9 @@ Texture.fromVideo = function (video, scaleMode)
  * Helper function that creates a new Texture based on the video url.
  *
  * @static
- * @param videoUrl {string}
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture} A Texture
+ * @param videoUrl {string} URL of the video
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
@@ -415,8 +433,8 @@ Texture.fromVideoUrl = function (videoUrl, scaleMode)
  * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
  *
  * @static
- * @param source {}
- * @return {PIXI.Texture} A Texture
+ * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+ * @return {PIXI.Texture} The newly created texture
  */
 Texture.from = function (source)
 {

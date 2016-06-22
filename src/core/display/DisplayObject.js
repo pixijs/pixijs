@@ -1,5 +1,7 @@
 var math = require('../math'),
     EventEmitter = require('eventemitter3'),
+    CONST = require('../const'),
+    TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
     _tempDisplayObjectParent = new DisplayObject();
 
@@ -17,12 +19,16 @@ function DisplayObject()
 {
     EventEmitter.call(this);
 
+    var TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+
     //TODO: need to create Transform from factory
     /**
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+     *
+     * @member {PIXI.Transform|PIXI.TransformStatic}
      */
-    this.transform = new Transform();
+    this.transform =  new TransformClass();
 
     /**
      * The opacity of the object.
@@ -51,7 +57,7 @@ function DisplayObject()
      * The display object container that contains this display object.
      *
      * @member {PIXI.Container}
-     * @readOnly
+     * @readonly
      */
     this.parent = null;
 
@@ -59,7 +65,7 @@ function DisplayObject()
      * The multiplied alpha of the displayObject
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.worldAlpha = 1;
 
@@ -107,6 +113,7 @@ module.exports = DisplayObject;
 Object.defineProperties(DisplayObject.prototype, {
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     * An alias to position.x
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
@@ -124,6 +131,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+     * An alias to position.y
      *
      * @member {number}
      * @memberof PIXI.DisplayObject#
@@ -143,7 +151,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on world (parent) factors
      *
      * @member {PIXI.Matrix}
-     * @readOnly
+     * @readonly
      */
     worldTransform: {
         get: function ()
@@ -156,7 +164,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on local factors: position, scale, other stuff
      *
      * @member {PIXI.Matrix}
-     * @readOnly
+     * @readonly
      */
     localTransform: {
         get: function ()
@@ -168,7 +176,8 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     position: {
         get: function()
@@ -183,7 +192,8 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The scale factor of the object.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     scale: {
         get: function() {
@@ -197,7 +207,8 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The pivot point of the displayObject that it rotates around
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.Point|PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     pivot: {
         get: function() {
@@ -211,7 +222,8 @@ Object.defineProperties(DisplayObject.prototype, {
     /**
      * The skew factor for the object in radians.
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
      */
     skew: {
         get: function() {
@@ -226,6 +238,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * The rotation of the object in radians.
      *
      * @member {number}
+     * @memberof PIXI.DisplayObject#
      */
     rotation: {
         get: function ()
@@ -322,7 +335,7 @@ Object.defineProperties(DisplayObject.prototype, {
  */
 DisplayObject.prototype.updateTransform = function ()
 {
-    this.transform =  this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
@@ -436,8 +449,8 @@ DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:fals
 /**
  * Set the parent Container of this DisplayObject
  *
- * @param container {Container} The Container to add this DisplayObject to
- * @return {Container} The Container that this DisplayObject was added to
+ * @param container {PIXI.Container} The Container to add this DisplayObject to
+ * @return {PIXI.Container} The Container that this DisplayObject was added to
  */
 DisplayObject.prototype.setParent = function (container)
 {
@@ -462,7 +475,7 @@ DisplayObject.prototype.setParent = function (container)
  * @param [skewY=0] {number} The Y skew value
  * @param [pivotX=0] {number} The X pivot value
  * @param [pivotY=0] {number} The Y pivot value
- * @return {PIXI.DisplayObject}
+ * @return {PIXI.DisplayObject} The DisplayObject instance
  */
 DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
 {

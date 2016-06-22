@@ -11,7 +11,7 @@ var utils = require('../utils'),
  * @memberof PIXI
  * @param [source ]{Image|HTMLCanvasElement} the source object of the texture.
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=CONST.resolution] {number} the resolution of the texture for devices with different pixel ratios
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the texture
  */
 function BaseTexture(source, scaleMode, resolution)
 {
@@ -22,9 +22,10 @@ function BaseTexture(source, scaleMode, resolution)
     this.touched = 0;
 
     /**
-     * The Resolution of the texture.
+     * The resolution / device pixel ratio of the texture
      *
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 
@@ -32,7 +33,7 @@ function BaseTexture(source, scaleMode, resolution)
      * The width of the base texture set when the image has loaded
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.width = 100;
 
@@ -40,7 +41,7 @@ function BaseTexture(source, scaleMode, resolution)
      * The height of the base texture set when the image has loaded
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.height = 100;
 
@@ -50,14 +51,14 @@ function BaseTexture(source, scaleMode, resolution)
      * Used to store the actual width of the source of this texture
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.realWidth = 100;
     /**
      * Used to store the actual height of the source of this texture
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.realHeight = 100;
 
@@ -76,7 +77,7 @@ function BaseTexture(source, scaleMode, resolution)
      * This is never true if the underlying source fails to load or has no texture data.
      *
      * @member {boolean}
-     * @readOnly
+     * @readonly
      */
     this.hasLoaded = false;
 
@@ -112,6 +113,8 @@ function BaseTexture(source, scaleMode, resolution)
     this.premultipliedAlpha = true;
 
     /**
+     * The image url of the texture
+     *
      * @member {string}
      */
     this.imageUrl = null;
@@ -131,18 +134,18 @@ function BaseTexture(source, scaleMode, resolution)
      * Also the texture must be a power of two size to work
      *
      * @member {boolean}
+     * @see PIXI.MIPMAP_TEXTURES
      */
     this.mipmap = CONST.MIPMAP_TEXTURES;
 
-
     /**
      *
-     * Set this to true if a mipmap of this texture needs to be generated. This value needs to be set before the texture is used
-     * Also the texture must be a power of two size to work
+     * WebGL Texture wrap mode
      *
-     * @member {boolean}
+     * @member {number}
+     * @see PIXI.WRAP_MODES
      */
-    this.wrap = CONST.MIPMAP_TEXTURES;
+    this.wrapMode = CONST.WRAP_MODES.DEFAULT;
 
     /**
      * A map of renderer IDs to webgl textures
@@ -208,11 +211,9 @@ BaseTexture.prototype.update = function ()
  *
  * The logic state after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
  *
- *     if (texture.hasLoaded)
- {
+ *     if (texture.hasLoaded) {
  *        // texture ready for use
- *     } else if (texture.isLoading)
- {
+ *     } else if (texture.isLoading) {
  *        // listen to 'loaded' and/or 'error' events on texture
  *     } else {
  *        // not loading, not going to load UNLESS the source is reloaded

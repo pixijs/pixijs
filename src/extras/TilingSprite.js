@@ -113,7 +113,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {PIXI.WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer} The renderer
  * @private
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
@@ -193,6 +193,8 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     glData.shader.uniforms.uColor = color;
 
     renderer.bindTexture(this._texture, 0);
+
+    renderer.state.setBlendMode( this.blendMode );
     glData.quad.draw();
 };
 
@@ -404,6 +406,7 @@ TilingSprite.prototype.destroy = function () {
  * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
+ * @return {PIXI.extras.TilingSprite} A new TilingSprite
  */
 TilingSprite.fromFrame = function (frameId,width,height)
 {

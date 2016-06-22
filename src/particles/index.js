@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI.mesh
+ * @namespace PIXI.particles
  */
 module.exports = {
 	ParticleContainer:           require('./ParticleContainer'),

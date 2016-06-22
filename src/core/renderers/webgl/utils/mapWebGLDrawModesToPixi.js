@@ -4,6 +4,8 @@ var CONST = require('../../../const');
  * Generic Mask Stack data structure
  * @class
  * @memberof PIXI
+ * @param gl {WebGLRenderingContext} The current WebGL drawing context
+ * @param object
  */
 function mapWebGLDrawModesToPixi(gl, object)
 {

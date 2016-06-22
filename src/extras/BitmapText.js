@@ -1,4 +1,5 @@
-var core = require('../core');
+var core = require('../core'),
+    ObservablePoint = require('../core/math/ObservablePoint');
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -10,7 +11,6 @@ var core = require('../core');
  * // in this case the font is in a file called 'desyrel.fnt'
  * var bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
- *
  *
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
@@ -39,7 +39,7 @@ function BitmapText(text, style)
      * which is defined in the style object
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.textWidth = 0;
 
@@ -48,7 +48,7 @@ function BitmapText(text, style)
      * which is defined in the style object
      *
      * @member {number}
-     * @readOnly
+     * @readonly
      */
     this.textHeight = 0;
 
@@ -105,6 +105,14 @@ function BitmapText(text, style)
     this.maxLineHeight = 0;
 
     /**
+     * Text anchor. read-only
+     *
+     * @member {PIXI.ObservablePoint}
+     * @private
+     */
+    this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
+
+    /**
      * The dirty state of this object.
      *
      * @member {boolean}
@@ -156,6 +164,29 @@ Object.defineProperties(BitmapText.prototype, {
             this._font.align = value || 'left';
 
             this.dirty = true;
+        }
+    },
+
+    /**
+     * The anchor sets the origin point of the text.
+     * The default is 0,0 this means the text's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the text's origin is centered
+     * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
+     *
+     * @member {PIXI.Point | number}
+     * @memberof PIXI.extras.BitmapText#
+     */
+    anchor: {
+        get : function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            if (typeof value === 'number'){
+                 this._anchor.set(value);
+            }
+            else {
+                this._anchor.copy(value);
+            }
         }
     },
 
@@ -343,6 +374,16 @@ BitmapText.prototype.updateText = function ()
 
     this.textWidth = maxLineWidth * scale;
     this.textHeight = (pos.y + data.lineHeight) * scale;
+
+    // apply anchor
+    if (this.anchor.x !== 0 || this.anchor.y !== 0)
+    {
+        for (i = 0; i < lenChars; i++)
+        {
+            this._glyphs[i].x -= this.textWidth * this.anchor.x;
+            this._glyphs[i].y -= this.textHeight * this.anchor.y;
+        }
+    }
     this.maxLineHeight = maxLineHeight * scale;
 };
 
@@ -381,6 +422,10 @@ BitmapText.prototype.validate = function()
         this.updateText();
         this.dirty = false;
     }
+};
+
+BitmapText.prototype.makeDirty = function() {
+    this.dirty = true;
 };
 
 BitmapText.fonts = {};

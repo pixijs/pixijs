@@ -19,7 +19,7 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
- * @param [resolution=CONST.RESOLUTION] The resolution of the canvas
+ * @param [resolution=1] {number} The current resolution / device pixel ratio of the canvas
  */
 function Text(text, style, resolution)
 {
@@ -37,8 +37,9 @@ function Text(text, style, resolution)
     this.context = this.canvas.getContext('2d');
 
     /**
-     * The resolution of the canvas.
+     * The resolution / device pixel ratio of the canvas
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 
@@ -138,7 +139,7 @@ Object.defineProperties(Text.prototype, {
     /**
      * Set the style of the text. Set up an event listener to listen for changes on the style object and mark the text as dirty.
      *
-     * @param [style] {object|PIXI.TextStyle} The style parameters
+     * @member {object|PIXI.TextStyle}
      * @memberof PIXI.Text#
      */
     style: {
@@ -170,7 +171,7 @@ Object.defineProperties(Text.prototype, {
     /**
      * Set the copy for the text object. To split a line you can use '\n'.
      *
-     * @param text {string} The copy that you would like the text to display
+     * @member {string}
      * @memberof PIXI.Text#
      */
     text: {
@@ -300,6 +301,13 @@ Text.prototype.updateText = function (respectDirty)
             if (style.fill)
             {
                 this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
+
+                if (style.stroke && style.strokeThickness)
+                {
+                    this.context.strokeStyle = style.dropShadowColor;
+                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding, true);
+                    this.context.strokeStyle = style.stroke;
+			    }
             }
         }
     }
@@ -338,7 +346,10 @@ Text.prototype.updateText = function (respectDirty)
 
 /**
  * Render the text with letter-spacing.
- *
+ * @param {string} text - The text to draw
+ * @param {number} x - Horizontal position to draw the text
+ * @param {number} y - Vertical position to draw the text
+ * @param {boolean} isStroke - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
  * @private
  */
 Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
@@ -416,7 +427,7 @@ Text.prototype.updateTexture = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {PIXI.WebGLRenderer}
+ * @param renderer {PIXI.WebGLRenderer} The renderer
  */
 Text.prototype.renderWebGL = function (renderer)
 {
@@ -428,7 +439,7 @@ Text.prototype.renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {PIXI.CanvasRenderer}
+ * @param renderer {PIXI.CanvasRenderer} The renderer
  * @private
  */
 Text.prototype._renderCanvas = function (renderer)
@@ -441,7 +452,8 @@ Text.prototype._renderCanvas = function (renderer)
 /**
  * Calculates the ascent, descent and fontSize of a given fontStyle
  *
- * @param fontStyle {object}
+ * @param fontStyle {string} String representing the style of the font
+ * @return {Object} Font properties object
  * @private
  */
 Text.prototype.determineFontProperties = function (fontStyle)
@@ -544,7 +556,8 @@ Text.prototype.determineFontProperties = function (fontStyle)
  * Applies newlines to a string to have it optimally fit into the horizontal
  * bounds set by the Text object's wordWrapWidth property.
  *
- * @param text {string}
+ * @param text {string} String to apply word wrapping to
+ * @return {string} New string with new lines applied where required
  * @private
  */
 Text.prototype.wordWrap = function (text)
@@ -637,18 +650,22 @@ Text.prototype._onStyleChange = function ()
 };
 
 /**
- * Destroys this text object.
+ * Destroys this text
  *
- * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Text.prototype.destroy = function (destroyBaseTexture)
+Text.prototype.destroy = function (options)
 {
+    Sprite.prototype.destroy.call(this, options);
+
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;
 
     this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
-
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };

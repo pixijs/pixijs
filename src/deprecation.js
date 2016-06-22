@@ -288,7 +288,7 @@ Object.defineProperties(core, {
 core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
 {
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
-    return renderer.generateTexture(renderer, scaleMode, resolution);
+    return renderer.generateTexture(this, scaleMode, resolution);
 };
 
 
@@ -313,19 +313,19 @@ core.RenderTexture.prototype.getImage = function(target)
 core.RenderTexture.prototype.getBase64 = function(target)
 {
     warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
-    this.legacyRenderer.extract.base64(target);
+    return this.legacyRenderer.extract.base64(target);
 };
 
 core.RenderTexture.prototype.getCanvas = function(target)
 {
     warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
-    this.legacyRenderer.extract.canvas(target);
+    return this.legacyRenderer.extract.canvas(target);
 };
 
 core.RenderTexture.prototype.getPixels = function(target)
 {
     warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
-    this.legacyRenderer.pixels(target);
+    return this.legacyRenderer.pixels(target);
 };
 
 
@@ -382,6 +382,12 @@ core.Text.prototype.setStyle = function(style)
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
+    /**
+     * Set all properties of a font as a single string
+     *
+     * @name PIXI.TextStyle#font
+     * @deprecated since version 4.0.0
+     */
     font: {
         get: function ()
         {
@@ -392,7 +398,7 @@ Object.defineProperties(core.TextStyle.prototype, {
         set: function (font)
         {
             warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
-            
+
             // can work out fontStyle from search of whole string
             if ( font.indexOf('italic') > 1 )
             {
@@ -400,14 +406,14 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
             else if ( font.indexOf('oblique') > -1 )
             {
-                this._fontStyle = 'oblique';                
+                this._fontStyle = 'oblique';
             }
             else
             {
                 this._fontStyle = 'normal';
             }
 
-            // can work out fontVariant from search of whole string            
+            // can work out fontVariant from search of whole string
             if ( font.indexOf('small-caps') > -1 )
             {
                 this._fontVariant = 'small-caps';
@@ -416,13 +422,13 @@ Object.defineProperties(core.TextStyle.prototype, {
             {
                 this._fontVariant = 'normal';
             }
-            
+
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
             var splits = font.split(' ');
             var i;
             var fontSizeIndex = -1;
 
-            this._fontSize = 26;            
+            this._fontSize = 26;
             for ( i = 0; i < splits.length; ++i )
             {
                 if ( splits[i].match( /(px|pt|em|%)/ ) )
@@ -432,7 +438,7 @@ Object.defineProperties(core.TextStyle.prototype, {
                     break;
                 }
             }
-            
+
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
             for ( i = 0; i < fontSizeIndex; ++i )
@@ -443,8 +449,8 @@ Object.defineProperties(core.TextStyle.prototype, {
                     break;
                 }
             }
-            
-            // and finally join everything together after the fontSize in case the font family has multiple words    
+
+            // and finally join everything together after the fontSize in case the font family has multiple words
             if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
             {
                 this._fontFamily = '';
@@ -452,17 +458,17 @@ Object.defineProperties(core.TextStyle.prototype, {
                 {
                     this._fontFamily += splits[i] + ' ';
                 }
-                
+
                 this._fontFamily = this._fontFamily.slice(0, -1);
             }
             else
             {
                 this._fontFamily = 'Arial';
             }
-            
+
             this.emit(CONST.TEXT_STYLE_CHANGED);
         }
-    }    
+    }
 } );
 
 /**
@@ -497,21 +503,6 @@ Object.defineProperties(filters, {
     /**
      * @class
      * @private
-     * @name PIXI.filters.FXAAFilter
-     * @see PIXI.FXAAFilter
-     * @deprecated since version 3.0.6
-     */
-    FXAAFilter: {
-        get: function()
-        {
-            warn('filters.FXAAFilter is an undocumented alias, please use FXAAFilter from now on.');
-            return core.FXAAFilter;
-        }
-    },
-
-    /**
-     * @class
-     * @private
      * @name PIXI.filters.SpriteMaskFilter
      * @see PIXI.SpriteMaskFilter
      * @deprecated since version 3.0.6
@@ -537,6 +528,12 @@ core.utils.uuid = function ()
     return core.utils.uid();
 };
 
+/**
+ * @method
+ * @name PIXI.utils.canUseNewCanvasBlendModes
+ * @see PIXI.CanvasTinter
+ * @deprecated
+ */
 core.utils.canUseNewCanvasBlendModes = function() {
     warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;

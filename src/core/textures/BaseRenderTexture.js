@@ -42,8 +42,8 @@ var BaseTexture = require('./BaseTexture'),
  * @memberof PIXI
  * @param [width=100] {number} The width of the base render texture
  * @param [height=100] {number} The height of the base render texture
- * @param [scaleMode] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution of the texture being generated
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
 function BaseRenderTexture(width, height, scaleMode, resolution)
 {
@@ -73,6 +73,8 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
     this._canvasRenderTarget = null;
 
     /**
+     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
+     *
      * @member {boolean}
      */
     this.valid = false;

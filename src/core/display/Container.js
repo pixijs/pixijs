@@ -101,11 +101,11 @@ Object.defineProperties(Container.prototype, {
 Container.prototype.onChildrenChange = function () {};
 
 /**
- * Adds a child to the container.
+ * Adds a child or multiple children to the container.
  *
- * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
- * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
- * @return {PIXI.DisplayObject} The child that was added.
+ * Multple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
+ * @param child {...PIXI.DisplayObject} The DisplayObject(s) to add to the container
+ * @return {PIXI.DisplayObject} The first child that was added.
  */
 Container.prototype.addChild = function (child)
 {
@@ -130,6 +130,9 @@ Container.prototype.addChild = function (child)
         }
 
         child.parent = this;
+
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
 
         this.children.push(child);
 
@@ -176,8 +179,8 @@ Container.prototype.addChildAt = function (child, index)
 /**
  * Swaps the position of 2 Display Objects within this container.
  *
- * @param child {PIXI.DisplayObject}
- * @param child2 {PIXI.DisplayObject}
+ * @param child {PIXI.DisplayObject} First display object to swap
+ * @param child2 {PIXI.DisplayObject} Second display object to swap
  */
 Container.prototype.swapChildren = function (child, child2)
 {
@@ -366,7 +369,7 @@ Container.prototype.updateTransform = function ()
         return;
     }
 
-    this.transform = this.parent.transform.updateChildTransform(this.transform);
+    this.transform.updateTransform(this.parent.transform);
 
     //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
@@ -468,6 +471,7 @@ Container.prototype.getLocalBounds = function ()
     var matrixCache = this.transform.worldTransform;
 
     this.transform.worldTransform = math.Matrix.IDENTITY;
+    this.transform._worldID++;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -475,6 +479,7 @@ Container.prototype.getLocalBounds = function ()
     }
 
     this.transform.worldTransform = matrixCache;
+    this.transform._worldID++;
 
     this._currentBounds = null;
 
@@ -606,17 +611,20 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
  */
-Container.prototype.destroy = function (destroyChildren)
+Container.prototype.destroy = function (options)
 {
     DisplayObject.prototype.destroy.call(this);
 
+    var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
     if (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
-            this.children[i].destroy(destroyChildren);
+            this.children[i].destroy(options);
         }
     }
 

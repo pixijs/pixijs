@@ -1,5 +1,4 @@
-var math = require('../math'),
-    ObservablePoint = require('./ObservablePoint');
+var math = require('../math');
 
 
 /**
@@ -34,8 +33,12 @@ function Transform()
      */
     this.scale = new math.Point(1,1);
 
-
-    this.skew = new ObservablePoint(this.updateSkew, this, 0,0);
+    /**
+     * The skew amount, on the x and y axis.
+     *
+     * @member {PIXI.ObservablePoint}
+     */
+    this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -49,8 +52,10 @@ function Transform()
      * The rotation value of the object, in radians
      *
      * @member {Number}
+     * @private
      */
     this._rotation = 0;
+
     this._sr = Math.sin(0);
     this._cr = Math.cos(0);
     this._cy  = Math.cos(0);//skewY);
@@ -60,6 +65,8 @@ function Transform()
 
     this._dirty = false;
     this.updated = true;
+
+    this._worldID = 0;
 }
 
 Transform.prototype.constructor = Transform;
@@ -74,8 +81,7 @@ Transform.prototype.updateSkew = function ()
 
 /**
  * Updates the values of the object and applies the parent's transform.
- * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
- *
+ * @param parentTransform {PIXI.Transform} The transform of the parent of this object
  */
 Transform.prototype.updateTransform = function (parentTransform)
 {
@@ -105,19 +111,26 @@ Transform.prototype.updateTransform = function (parentTransform)
     wt.d  = lt.c  * pt.b + lt.d  * pt.d;
     wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
     wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+    this._worldID ++;
 };
 
-Transform.prototype.updateChildTransform = function (childTransform)
+/**
+ * Decomposes a matrix and sets the transforms properties based on it.
+ * @param {PIXI.Matrix} The matrix to decompose
+ */
+Transform.prototype.setFromMatrix = function (matrix)
 {
-    childTransform.updateTransform(this);
-    return childTransform;
+    matrix.decompose(this);
 };
+
 
 Object.defineProperties(Transform.prototype, {
     /**
      * The rotation of the object in radians.
      *
      * @member {number}
+     * @memberof PIXI.Transform#
      */
     rotation: {
         get: function () {

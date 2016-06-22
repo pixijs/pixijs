@@ -45,10 +45,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
 {
     var renderer = this.renderer;
 
-    var filterData = this.renderer._activeRenderTarget.filterStack;
+    var filterData = this.filterData;
 
     if(!filterData)
     {
+        filterData = this.renderer._activeRenderTarget.filterStack;
+
         // add new stack
         var filterState = new FilterState();
         filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
@@ -58,9 +60,9 @@ FilterManager.prototype.pushFilter = function(target, filters)
             index:0,
             stack:[filterState]
         };
-    }
 
-    this.filterData = filterData;
+        this.filterData = filterData;
+    }
 
     // get the current filter state..
     var currentState = filterData.stack[++filterData.index];
@@ -142,6 +144,11 @@ FilterManager.prototype.popFilter = function()
     }
 
     filterData.index--;
+
+    if(filterData.index === 0)
+    {
+        this.filterData = null;
+    }
 };
 
 FilterManager.prototype.applyFilter = function (filter, input, output, clear)
@@ -196,13 +203,15 @@ FilterManager.prototype.applyFilter = function (filter, input, output, clear)
 
     // bind the input texture..
     input.texture.bind(0);
+    // when you manually bind a texture, please switch active texture location to it
+    renderer._activeTextureLocation = 0;
 
     renderer.state.setBlendMode( filter.blendMode );
 
     this.quad.draw();
 };
 
-// thia returns a matrix that will normalise map filter cords in the filter to screen space
+// this returns a matrix that will normalise map filter cords in the filter to screen space
 FilterManager.prototype.syncUniforms = function (shader, filter)
 {
     var uniformData = filter.uniformData;
@@ -210,10 +219,11 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
     // 0 is reserverd for the pixi texture so we start at 1!
     var textureCount = 1;
+    var currentState;
 
     if(shader.uniforms.data.filterArea)
     {
-        var currentState = this.filterData.stack[this.filterData.index];
+        currentState = this.filterData.stack[this.filterData.index];
         var filterArea = shader.uniforms.filterArea;
 
         filterArea[0] = currentState.renderTarget.size.width;
@@ -222,6 +232,21 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         filterArea[3] = currentState.sourceFrame.y;
 
         shader.uniforms.filterArea = filterArea;
+    }
+
+    // use this to clamp displaced texture coords so they belong to filterArea
+    // see displacementFilter fragment shader for an example
+    if(shader.uniforms.data.filterClamp)
+    {
+        currentState = this.filterData.stack[this.filterData.index];
+        var filterClamp = shader.uniforms.filterClamp;
+
+        filterClamp[0] = 0.5 / currentState.renderTarget.size.width;
+        filterClamp[1] = 0.5 / currentState.renderTarget.size.height;
+        filterClamp[2] = (currentState.sourceFrame.width - 0.5) / currentState.renderTarget.size.width;
+        filterClamp[3] = (currentState.sourceFrame.height - 0.5) / currentState.renderTarget.size.height;
+
+        shader.uniforms.filterClamp = filterClamp;
     }
 
     var val;
@@ -252,7 +277,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
             //check if its a point..
            if(uniforms[i].x !== undefined)
            {
-                val = shader.uniforms[i];
+                val = shader.uniforms[i] || new Float32Array(2);
                 val[0] = uniforms[i].x;
                 val[1] = uniforms[i].y;
                 shader.uniforms[i] = val;
@@ -305,13 +330,16 @@ FilterManager.prototype.calculateScreenSpaceMatrix = function (outputMatrix)
     return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
 };
 
-FilterManager.prototype.calculateNormalisedScreenSpaceMatrix = function (outputMatrix)
+/**
+ * Multiply vTextureCoord to this matrix to achieve (0,0,1,1) for filterArea
+ *
+ * @param outputMatrix {PIXI.Matrix}
+ */
+FilterManager.prototype.calculateNormalizedScreenSpaceMatrix = function (outputMatrix)
 {
     var currentState = this.filterData.stack[this.filterData.index];
 
-
-
-    return filterTransforms.calculateNormalisedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
+    return filterTransforms.calculateNormalizedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
 };
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite

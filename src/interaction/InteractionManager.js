@@ -162,24 +162,28 @@ function InteractionManager(renderer, options)
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseUp = this.onMouseUp.bind(this);
     this.processMouseUp = this.processMouseUp.bind( this );
 
     /**
      * @member {Function}
+     *  @private
      */
     this.onMouseDown = this.onMouseDown.bind(this);
     this.processMouseDown = this.processMouseDown.bind( this );
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseMove = this.onMouseMove.bind( this );
     this.processMouseMove = this.processMouseMove.bind( this );
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseOut = this.onMouseOut.bind(this);
     this.processMouseOverOut = this.processMouseOverOut.bind( this );
@@ -212,26 +216,24 @@ function InteractionManager(renderer, options)
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchStart = this.onTouchStart.bind(this);
     this.processTouchStart = this.processTouchStart.bind(this);
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.processTouchEnd = this.processTouchEnd.bind(this);
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchMove = this.onTouchMove.bind(this);
     this.processTouchMove = this.processTouchMove.bind(this);
-
-    /**
-     * @member {number}
-     */
-    this.last = 0;
 
     /**
      * Every update cursor will be reset to this value, if some element wont override it in its hitTest
@@ -255,8 +257,9 @@ function InteractionManager(renderer, options)
 
 
     /**
-     * The current resolution
+     * The current resolution / device pixel ratio.
      * @member {number}
+     * @default 1
      */
     this.resolution = 1;
 
@@ -272,7 +275,7 @@ module.exports = InteractionManager;
  * another DOM element to receive those events.
  *
  * @param element {HTMLElement} the DOM element which will receive mouse and touch events.
- * @param [resolution=1] {number} THe resolution of the new element (relative to the canvas).
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the new element (relative to the canvas).
  * @private
  */
 InteractionManager.prototype.setTargetElement = function (element, resolution)
@@ -387,7 +390,7 @@ InteractionManager.prototype.removeEvents = function ()
  * Invoked by a throttled ticker update from
  * {@link PIXI.ticker.shared}.
  *
- * @param deltaTime {number}
+ * @param deltaTime {number} time delta since last tick
  */
 InteractionManager.prototype.update = function (deltaTime)
 {
@@ -518,7 +521,15 @@ InteractionManager.prototype.normalizeEventString = function ( eventString )
  */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
-    var rect = this.interactionDOMElement.getBoundingClientRect();
+    var rect;
+    // IE 11 fix
+    if(!this.interactionDOMElement.parentElement)
+    {
+        rect = { x: 0, y: 0, width: 0, height: 0 };
+    } else {
+        rect = this.interactionDOMElement.getBoundingClientRect();
+    }
+
     point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
 };
@@ -1076,6 +1087,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
  * Is called when a touch ends on the renderer element
  *
  * @param event {Event} The DOM event of a touch ending on the renderer view
+ * @private
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {

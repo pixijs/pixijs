@@ -13,6 +13,7 @@ var utils = module.exports = {
     /**
      * Gets the next unique identifier
      *
+     * @memberof PIXI.utils
      * @return {number} The next unique identifier to use.
      */
     uid: function ()
@@ -23,8 +24,9 @@ var utils = module.exports = {
     /**
      * Converts a hex color number to an [R, G, B] array
      *
+     * @memberof PIXI.utils
      * @param hex {number}
-     * @param  {number[]} [out=[]]
+     * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
     hex2rgb: function (hex, out)
@@ -41,7 +43,8 @@ var utils = module.exports = {
     /**
      * Converts a hex color number to a string.
      *
-     * @param hex {number}
+     * @memberof PIXI.utils
+     * @param hex {number} Number in hex
      * @return {string} The string color.
      */
     hex2string: function (hex)
@@ -55,7 +58,8 @@ var utils = module.exports = {
     /**
      * Converts a color as an [R, G, B] array to a hex number
      *
-     * @param rgb {number[]}
+     * @memberof PIXI.utils
+     * @param rgb {number[]} rgb array
      * @return {number} The color number
      */
     rgb2hex: function (rgb)
@@ -65,11 +69,12 @@ var utils = module.exports = {
 
 
     /**
-     * get the resolution of an asset by looking for the prefix
+     * get the resolution / device pixel ratio of an asset by looking for the prefix
      * used by spritesheets and image urls
      *
+     * @memberof PIXI.utils
      * @param url {string} the image path
-     * @return {number}
+     * @return {number} resolution / device pixel ratio of an asset
      */
     getResolutionOfUrl: function (url)
     {
@@ -89,6 +94,7 @@ var utils = module.exports = {
      * so the library thinks it already said it. Keep in mind that doing that will forever
      * makes you a jerk face.
      *
+     * @memberof PIXI.utils
      * @param {string} type - The string renderer type to log.
      * @constant
      * @static
@@ -128,7 +134,8 @@ var utils = module.exports = {
     /**
      * Helper for checking for webgl support
      *
-     * @return {boolean}
+     * @memberof PIXI.utils
+     * @return {boolean} is webgl supported
      */
     isWebGLSupported: function ()
     {
@@ -166,6 +173,7 @@ var utils = module.exports = {
     /**
      * Returns sign of number
      *
+     * @memberof PIXI.utils
      * @param n {number}
      * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
      */
@@ -175,9 +183,10 @@ var utils = module.exports = {
     },
 
     /**
-     * removeItems
+     * Remove a range of items from an array
      *
-     * @param {*[]} arr The target array
+     * @memberof PIXI.utils
+     * @param {Array<*>} arr The target array
      * @param {number} startIdx The index to begin removing from (inclusive)
      * @param {number} removeCount How many items to remove
      */
@@ -201,12 +210,16 @@ var utils = module.exports = {
 
     /**
      * @todo Describe property usage
+     *
+     * @memberof PIXI.utils
      * @private
      */
     TextureCache: {},
 
     /**
      * @todo Describe property usage
+     *
+     * @memberof PIXI.utils
      * @private
      */
     BaseTextureCache: {}

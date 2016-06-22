@@ -7,7 +7,7 @@ var glslify  = require('glslify');
  * The SpriteMaskFilter class
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI
  * @param sprite {PIXI.Sprite} the target sprite
  */

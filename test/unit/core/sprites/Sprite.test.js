@@ -52,4 +52,102 @@ describe('PIXI.Sprite', function () {
             expect(sprite.scale.y).to.be.below(0);
         });
     });
+
+    describe('destroy', function () {
+        it('should call through to Container.destroy', function () {
+            var sprite = new PIXI.Sprite();
+
+            expect(sprite.children).to.not.equal(null);
+            sprite.destroy();
+            expect(sprite.children).to.equal(null);
+        });
+
+        it('should set anchor and texture to null', function () {
+            var sprite = new PIXI.Sprite();
+
+            expect(sprite.anchor).to.not.equal(null);
+            expect(sprite.texture).to.not.equal(null);
+            sprite.destroy();
+            expect(sprite.anchor).to.equal(null);
+            expect(sprite.texture).to.equal(null);
+        });
+
+        it('by default should not destroy texture', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyed = false;
+
+            sprite.texture.destroy = function() { textureDestroyed = true; };
+
+            sprite.destroy();
+            expect(textureDestroyed).to.equal(false);
+        });
+
+        it('should destroy texture when texture flag is set', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyed = false;
+
+            sprite.texture.destroy = function() { textureDestroyed = true; };
+
+            sprite.destroy({texture: true});
+            expect(textureDestroyed).to.equal(true);
+        });
+
+        it('by default should not destroy baseTexture', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyArg;
+
+            sprite.texture.destroy = function(arg) { textureDestroyArg = arg; };
+
+            sprite.destroy({texture: true});
+            expect(textureDestroyArg).to.equal(false);
+        });
+
+        it('should destroy baseTexture if baseTexture flag is set', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyArg;
+
+            sprite.texture.destroy = function(arg) { textureDestroyArg = arg; };
+
+            sprite.destroy({texture: true, baseTexture: true});
+            expect(textureDestroyArg).to.equal(true);
+        });
+
+        it('should correctly handle boolean', function () {
+            var sprite = new PIXI.Sprite();
+            var textureDestroyArg;
+
+            sprite.texture.destroy = function(arg) { textureDestroyArg = arg; };
+
+            sprite.destroy(true);
+            expect(textureDestroyArg).to.equal(true);
+        });
+
+        it('should pass opts on to children if children flag is set', function () {
+            var sprite = new PIXI.Sprite(),
+                child = new PIXI.DisplayObject(),
+                childDestroyOpts;
+
+            child.destroy = function(opts) {
+                childDestroyOpts = opts;
+            };
+
+            sprite.addChild(child);
+            sprite.destroy({children: true, texture: true});
+            expect(childDestroyOpts).to.deep.equal({children: true, texture: true});
+        });
+
+        it('should pass bool on to children', function () {
+            var sprite = new PIXI.Sprite(),
+                child = new PIXI.DisplayObject(),
+                childDestroyOpts;
+
+            child.destroy = function(opts) {
+                childDestroyOpts = opts;
+            };
+
+            sprite.addChild(child);
+            sprite.destroy(true);
+            expect(childDestroyOpts).to.deep.equal(true);
+        });
+    });
 });

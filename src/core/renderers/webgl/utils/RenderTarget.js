@@ -12,8 +12,8 @@ var math = require('../../../math'),
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @param [width=0] {number} the horizontal range of the filter
  * @param [height=0] {number} the vertical range of the filter
- * @param [scaleMode=CONST.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=CONST.RESOLUTION] {number} the current resolution
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+ * @param [resolution=1] {number} The current resolution / device pixel ratio
  * @param [root=false] {boolean} Whether this object is the root element or not
  */
 var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
@@ -58,9 +58,10 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.size = new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The current resolution
+     * The current resolution / device pixel ratio
      *
      * @member {number}
+     * @default 1
      */
     this.resolution = resolution || CONST.RESOLUTION;
 

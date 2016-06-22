@@ -1,5 +1,4 @@
-var defaultValue = require('pixi-gl-core/lib/shader/defaultValue');
-var mapSize = require('pixi-gl-core/lib/shader/mapSize');
+var defaultValue = require('pixi-gl-core').shader.defaultValue;
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
@@ -34,7 +33,7 @@ function extractUniformsFromString(string)
             var type = splitLine[1];
 
             var name = splitLine[2];
-            var size = mapSize(type);
+            var size = 1;
 
             if(name.indexOf('[') > -1)
             {

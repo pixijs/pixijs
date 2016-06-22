@@ -4,7 +4,7 @@ var Shader = require('../../core/Shader');
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param gl {Shader} TODO: Find a good explanation for this.
+ * @param gl {PIXI.Shader} TODO: Find a good explanation for this.
  */
 function MeshShader(gl)
 {
@@ -28,11 +28,12 @@ function MeshShader(gl)
         [
             'varying vec2 vTextureCoord;',
             'uniform float alpha;',
+            'uniform vec3 tint;',
 
             'uniform sampler2D uSampler;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * alpha ;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vec4(tint * alpha, alpha);',
            // '   gl_FragColor = vec4(1.0);',
             '}'
         ].join('\n')
