@@ -1257,7 +1257,7 @@ InteractionManager.prototype.normalizeToPointerData = function (event)
         event.tiltX = 0;
         event.tiltY = 0;
         event.pointerType = 'touch';
-        event.pointerId = event.touches.length;
+        event.pointerId = event.pointerId = event.changedTouches[0].identifier || 0;
         event.pressure = event.changedTouches[0].force || 0.5;
         event.rotation = event.changedTouches[0].rotationAngle || 0;
 
