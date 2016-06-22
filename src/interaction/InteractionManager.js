@@ -1278,7 +1278,7 @@ InteractionManager.prototype.normalizeToPointerData = function (event)
         event.tiltX = 0;
         event.tiltY = 0;
         event.pointerType = 'mouse';
-        event.pointerId = event.buttons;
+        event.pointerId = 1;
         event.pressure = 0.5;
         event.rotation = 0;
     }
