@@ -868,16 +868,10 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
  */
 InteractionManager.prototype.onPointerDown = function (event)
 {
+    this.normalizeToPointerData( event );
     this.pointer.originalEvent = event;
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
-
-    // in case of normalising, and a touch event is sent through
-    if ( this.normalizingTouchEvents )
-    {
-        event.clientX = event.changedTouches[0].clientX;
-        event.clientY = event.changedTouches[0].clientY;
-    }
 
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
@@ -914,16 +908,10 @@ InteractionManager.prototype.processPointerDown = function ( displayObject, hit 
  */
 InteractionManager.prototype.onPointerUp = function (event)
 {
+    this.normalizeToPointerData( event );
     this.pointer.originalEvent = event;
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
-
-    // in case of normalising, and a touch event is sent through
-    if ( this.normalizingTouchEvents )
-    {
-        event.clientX = event.changedTouches[0].clientX;
-        event.clientY = event.changedTouches[0].clientY;
-    }
 
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
@@ -968,16 +956,10 @@ InteractionManager.prototype.processPointerUp = function ( displayObject, hit )
  */
 InteractionManager.prototype.onPointerMove = function (event)
 {
+    this.normalizeToPointerData( event );
     this.pointer.originalEvent = event;
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
-
-    // in case of normalising, and a touch event is sent through
-    if ( this.normalizingTouchEvents )
-    {
-        event.clientX = event.changedTouches[0].clientX;
-        event.clientY = event.changedTouches[0].clientY;
-    }
 
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
 
@@ -1013,15 +995,9 @@ InteractionManager.prototype.processPointerMove = function ( displayObject, hit 
  */
 InteractionManager.prototype.onPointerOut = function (event)
 {
+    this.normalizeToPointerData( event );
     this.pointer.originalEvent = event;
     this.eventData.stopped = false;
-
-    // in case of normalising, and a touch event is sent through
-    if ( this.normalizingTouchEvents )
-    {
-        event.clientX = event.changedTouches[0].clientX;
-        event.clientY = event.changedTouches[0].clientY;
-    }
 
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
@@ -1260,6 +1236,52 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 InteractionManager.prototype.returnTouchData = function ( touchData )
 {
     this.interactiveDataPool.push( touchData );
+};
+
+/**
+ * Ensures that the original event object contains all data that a regular pointer event would have
+ *
+ * @param event {Object} The original event data from a touch or mouse event
+ *
+ * @private
+ */
+InteractionManager.prototype.normalizeToPointerData = function (event)
+{
+    if (this.normalizingTouchEvents)
+    {
+        event.button = event.touches.length ? 1 : 0;
+        event.buttons = event.touches.length ? 1 : 0;
+        event.isPrimary = event.touches.length === 1;
+        event.width = event.changedTouches[0].radiusX || 1;
+        event.height = event.changedTouches[0].radiusY || 1;
+        event.tiltX = 0;
+        event.tiltY = 0;
+        event.pointerType = 'touch';
+        event.pointerId = event.touches.length;
+        event.pressure = event.changedTouches[0].force || 0.5;
+        event.rotation = event.changedTouches[0].rotationAngle || 0;
+
+        event.clientX = event.changedTouches[0].clientX;
+        event.clientY = event.changedTouches[0].clientY;
+        event.pageX = event.changedTouches[0].pageX;
+        event.pageY = event.changedTouches[0].pageY;
+        event.screenX = event.changedTouches[0].screenX;
+        event.screenY = event.changedTouches[0].screenY;
+        event.layerX = event.offsetX = event.clientX;
+        event.layerY = event.offsetY = event.clientY;
+    }
+    else if (this.normalizingMouseEvents)
+    {
+        event.isPrimary = true;
+        event.width = 1;
+        event.height = 1;
+        event.tiltX = 0;
+        event.tiltY = 0;
+        event.pointerType = 'mouse';
+        event.pointerId = event.buttons;
+        event.pressure = 0.5;
+        event.rotation = 0;
+    }
 };
 
 /**
