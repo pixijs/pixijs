@@ -17,8 +17,9 @@ var EventEmitter = require('eventemitter3'),
  * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.fill='black'] {string|number|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
- *      text e.g 'red', '#00FF00'. @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+ * @param [style.fill='black'] {string|string[]|number|number[]|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
+ *      text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF'] @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+ * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
  * @param [style.fontFamily='Arial'] {string} The font family
  * @param [style.fontSize=26] {number|string} The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
  * @param [style.fontStyle='normal'] {string} The font style ('normal', 'italic' or 'oblique')
@@ -58,6 +59,7 @@ TextStyle.prototype._defaults = {
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
     fill: 'black',
+    fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
     fontFamily: 'Arial',
     fontSize: 26,
     fontStyle: 'normal',
@@ -221,6 +223,20 @@ Object.defineProperties(TextStyle.prototype, {
             if (this._fill !== outputColor)
             {
                 this._fill = outputColor;
+                this.emit(CONST.TEXT_STYLE_CHANGED);
+            }
+        }
+    },
+
+    fillGradientType: {
+        get: function ()
+        {
+            return this._fillGradientType;
+        }, set: function (fillGradientType)
+        {
+            if (this._fillGradientType !== fillGradientType)
+            {
+                this._fillGradientType = fillGradientType;
                 this.emit(CONST.TEXT_STYLE_CHANGED);
             }
         }
@@ -463,8 +479,17 @@ function getColor(color)
     if (typeof color === 'number')
     {
         return utils.hex2string(color);
-    } else
-    {
-        return color;
     }
+    else if (Array.isArray(color))
+    {
+        for (var i = 0; i < color.length; ++i)
+        {
+            if (typeof color[i] === 'number')
+            {
+                color[i] = utils.hex2string(color[i])
+            }
+        }
+    }
+
+    return color;
 }
