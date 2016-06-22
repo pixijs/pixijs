@@ -232,7 +232,8 @@ Object.defineProperties(TextStyle.prototype, {
         get: function ()
         {
             return this._fillGradientType;
-        }, set: function (fillGradientType)
+        },
+        set: function (fillGradientType)
         {
             if (this._fillGradientType !== fillGradientType)
             {
@@ -486,7 +487,7 @@ function getColor(color)
         {
             if (typeof color[i] === 'number')
             {
-                color[i] = utils.hex2string(color[i])
+                color[i] = utils.hex2string(color[i]);
             }
         }
     }
