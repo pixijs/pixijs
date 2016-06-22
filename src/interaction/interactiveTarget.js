@@ -57,7 +57,7 @@ var interactiveTarget = {
      * @inner {boolean}
      * @private
      */
-    _over: false,
+    _mouseOver: false,
 
     /**
      * Internal check to detect if the left mouse button is pressed on the displayObject
@@ -82,6 +82,14 @@ var interactiveTarget = {
      * @private
      */
     _touchDown: false,
+
+    /**
+     * Internal check to detect if the pointer cursor is hovered over the displayObject
+     *
+     * @inner {boolean}
+     * @private
+     */
+    _pointerOver: false,
 
     /**
      * Internal check to detect if a pointer is down on the displayObject

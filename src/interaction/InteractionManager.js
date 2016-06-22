@@ -97,7 +97,6 @@ function InteractionManager(renderer, options)
      * Setting to false can make things easier for things like dragging
      * It is currently set to false as this is how pixi used to work. This will be set to true in future versions of pixi.
      * @member {boolean}
-     * @private
      */
     this.moveWhenInside = false;
 
@@ -114,7 +113,7 @@ function InteractionManager(renderer, options)
      * https://www.w3.org/TR/touch-events/
 
      * @member {boolean}
-     * @private
+     * @readonly
      */
     this.supportsTouchEvents = 'ontouchstart' in window;
 
@@ -123,7 +122,7 @@ function InteractionManager(renderer, options)
      * https://www.w3.org/Submission/pointer-events/
      *
      * @member {boolean}
-     * @private
+     * @readonly
      */
     this.supportsPointerEvents = !!window.PointerEvent;
 
@@ -131,13 +130,15 @@ function InteractionManager(renderer, options)
      * A list of  mouse events that the Interaction Manager can invoke to Display Objects
      *
      * @member {string[]}
+     * @readonly
      */
-    this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','moveover','mouseout','mouseupoutside','rightupoutside'];
+    this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','mouseover','mouseout','mouseupoutside','rightupoutside'];
 
     /**
      * A list of the touch events that the Interaction Manager can invoke to Display Objects
      *
      * @member {string[]}
+     * @readonly
      */
     this.touchEvents = ['touchstart','touchend','tap','touchmove','touchendoutside'];
 
@@ -145,17 +146,29 @@ function InteractionManager(renderer, options)
      * A list of the pointer events that the Interaction Manager can invoke to Display Objects
      *
      * @member {string[]}
+     * @readonly
      */
-    this.pointerEvents = ['pointerdown','pointerup','pointerclick','pointermove','pointermoveover','pointermoveout','pointerupoutside'];
+    this.pointerEvents = ['pointerdown','pointerup','pointertap','pointermove','pointerover','pointerout','pointerupoutside'];
 
     /**
-     * Should mouse & touch events be 'normalized' and converted into pointer events if pointer events are not supported
-     * On a non touch screen device, a mousedown would be converted to pointerdown
-     * On a touch screen device, mousedown would be ignored, and a touchstart would be converted to a pointerdown
+     * Are touch events being 'normalized' and converted into pointer events if pointer events are not supported
+     * For example, on a touch screen mobile device, a touchstart would also be emitted as a pointerdown
      *
      * @member {boolean}
+     * @readonly
+     * @private
      */
-    this.normalizeEvents = false;
+    this.normalizingTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents && Device.any;
+
+    /**
+     * Are mouse events being 'normalized' and converted into pointer events if pointer events are not supported
+     * For example, on a desktop pc, a mousedown would also be emitted as a pointerdown
+     *
+     * @member {boolean}
+     * @readonly
+     * @private
+     */
+    this.normalizingMouseEvents = !this.supportsPointerEvents && !this.normalizingTouch;
 
 
     //this will make it so that you don't have to call bind all the time
@@ -332,6 +345,26 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
         window.addEventListener('pointerup', this.onPointerUp, true);
     }
+    else
+    {
+        /**
+         * If pointer events aren't available on a device, this will turn either the touch or mouse events into pointer events
+         * This allows a developer to just listen for emitted pointer events on interactive sprites
+         */
+        if (this.normalizingTouchEvents)
+        {
+            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
+            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
+            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+        }
+        else if (this.normalizingMouseEvents)
+        {
+            window.document.addEventListener('mousemove', this.onPointerMove, true);
+            this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
+            this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
+            window.addEventListener('mouseup', this.onPointerUp, true);
+        }
+    }
 
     this.eventsAdded = true;
 };
@@ -378,6 +411,26 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
         this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
         window.removeEventListener('pointerup', this.onPointerUp, true);
+    }
+    else
+    {
+        /**
+         * If pointer events aren't available on a device, this will turn either the touch or mouse events into pointer events
+         * This allows a developer to just listen for emitted pointer events on interactive sprites
+         */
+        if (this.normalizingTouchEvents)
+        {
+            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
+            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
+            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+        }
+        else if (this.normalizingMouseEvents)
+        {
+            window.document.removeEventListener('mousemove', this.onPointerMove, true);
+            this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
+            this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
+            window.removeEventListener('mouseup', this.onPointerUp, true);
+        }
     }
 
     this.interactionDOMElement = null;
@@ -438,15 +491,6 @@ InteractionManager.prototype.update = function (deltaTime)
  */
 InteractionManager.prototype.dispatchEvent = function ( displayObject, eventString, eventData )
 {
-    if (this.normalizeEvents)
-    {
-        eventString = this.normalizeEventString( eventString );
-        if (!eventString)
-        {
-            return;
-        }
-    }
-
     if(!eventData.stopped)
     {
         eventData.target = displayObject;
@@ -461,55 +505,6 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
     }
 };
 
-/**
- * If pointer events aren't available on a device, this will turn either the touch or mouse events into pointer events
- * This allows a developer to just listen for emitted pointer events on interactive sprites
- *
- * @param eventString {string} the name of the event (e.g, mousedown)
- * @private
- */
-InteractionManager.prototype.normalizeEventString = function ( eventString )
-{
-    if (!this.supportsPointerEvents)
-    {
-        if (this.supportsTouchEvents && Device.any)
-        {
-            switch (eventString)
-            {
-                case 'touchstart': return 'pointerdown';
-                case 'touchend': return 'pointerup';
-                case 'tap': return 'pointerclick';
-                case 'touchmove': return 'pointermove';
-                case 'touchendoutside': return 'pointerupoutside';
-            }
-        }
-        else
-        {
-            switch (eventString)
-            {
-                case 'mousedown': return 'pointerdown';
-                case 'mouseup': return 'pointerup';
-                case 'rightdown': return 'pointerdown';
-                case 'rightup': return 'pointerup';
-                case 'click': return 'pointerclick';
-                case 'rightclick': return 'pointerclick';
-                case 'mousemove': return 'pointermove';
-                case 'mouseover': return 'pointerover';
-                case 'mouseout': return 'pointerout';
-                case 'mouseupoutside': return 'pointerupoutside';
-                case 'rightupoutside': return 'pointerupoutside';
-            }
-        }
-    }
-
-    // make sure only pointer events get emitted
-    if (this.pointerEvents.indexOf(eventString) === -1)
-    {
-        return '';
-    }
-
-    return eventString;
-};
 
 /**
  * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The resulting value is stored in the point.
@@ -843,9 +838,9 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
 {
     if(hit)
     {
-        if(!displayObject._over)
+        if(!displayObject._mouseOver)
         {
-            displayObject._over = true;
+            displayObject._mouseOver = true;
             this.dispatchEvent( displayObject, 'mouseover', this.eventData );
         }
 
@@ -856,9 +851,9 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
     }
     else
     {
-        if(displayObject._over)
+        if(displayObject._mouseOver)
         {
-            displayObject._over = false;
+            displayObject._mouseOver = false;
             this.dispatchEvent( displayObject, 'mouseout', this.eventData);
         }
     }
@@ -876,6 +871,13 @@ InteractionManager.prototype.onPointerDown = function (event)
     this.pointer.originalEvent = event;
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
+
+    // in case of normalising, and a touch event is sent through
+    if ( this.normalizingTouchEvents )
+    {
+        event.clientX = event.changedTouches[0].clientX;
+        event.clientY = event.changedTouches[0].clientY;
+    }
 
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
@@ -916,6 +918,13 @@ InteractionManager.prototype.onPointerUp = function (event)
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
 
+    // in case of normalising, and a touch event is sent through
+    if ( this.normalizingTouchEvents )
+    {
+        event.clientX = event.changedTouches[0].clientX;
+        event.clientY = event.changedTouches[0].clientY;
+    }
+
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
 
@@ -938,7 +947,7 @@ InteractionManager.prototype.processPointerUp = function ( displayObject, hit )
         if( displayObject._pointerDown )
         {
             displayObject._pointerDown = false;
-            this.dispatchEvent( displayObject, 'pointerclick', this.eventData );
+            this.dispatchEvent( displayObject, 'pointertap', this.eventData );
         }
     }
     else
@@ -963,9 +972,14 @@ InteractionManager.prototype.onPointerMove = function (event)
     this.eventData.data = this.pointer;
     this.eventData.stopped = false;
 
-    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+    // in case of normalising, and a touch event is sent through
+    if ( this.normalizingTouchEvents )
+    {
+        event.clientX = event.changedTouches[0].clientX;
+        event.clientY = event.changedTouches[0].clientY;
+    }
 
-    this.didMove = true;
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
 
     this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerMove, true );
 };
@@ -979,7 +993,10 @@ InteractionManager.prototype.onPointerMove = function (event)
  */
 InteractionManager.prototype.processPointerMove = function ( displayObject, hit )
 {
-    this.processPointerOverOut(displayObject, hit);
+    if (!this.normalizingTouchEvents)
+    {
+        this.processPointerOverOut(displayObject, hit);
+    }
 
     if(!this.moveWhenInside || hit)
     {
@@ -999,6 +1016,13 @@ InteractionManager.prototype.onPointerOut = function (event)
     this.pointer.originalEvent = event;
     this.eventData.stopped = false;
 
+    // in case of normalising, and a touch event is sent through
+    if ( this.normalizingTouchEvents )
+    {
+        event.clientX = event.changedTouches[0].clientX;
+        event.clientY = event.changedTouches[0].clientY;
+    }
+
     // Update internal pointer reference
     this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
 
@@ -1016,17 +1040,17 @@ InteractionManager.prototype.processPointerOverOut = function ( displayObject, h
 {
     if(hit)
     {
-        if(!displayObject._over)
+        if(!displayObject._pointerOver)
         {
-            displayObject._over = true;
+            displayObject._pointerOver = true;
             this.dispatchEvent( displayObject, 'pointerover', this.eventData );
         }
     }
     else
     {
-        if(displayObject._over)
+        if(displayObject._pointerOver)
         {
-            displayObject._over = false;
+            displayObject._pointerOver = false;
             this.dispatchEvent( displayObject, 'pointerout', this.eventData);
         }
     }
