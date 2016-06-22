@@ -479,8 +479,17 @@ function getColor(color)
     if (typeof color === 'number')
     {
         return utils.hex2string(color);
-    } else
-    {
-        return color;
     }
+    else if (Array.isArray(color))
+    {
+        for (var i = 0; i < color.length; ++i)
+        {
+            if (typeof color[i] === 'number')
+            {
+                color[i] = utils.hex2string(color[i])
+            }
+        }
+    }
+
+    return color;
 }
