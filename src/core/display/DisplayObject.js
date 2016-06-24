@@ -501,11 +501,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
  */
 DisplayObject.prototype.destroy = function ()
 {
-
-    this.position = null;
-    this.scale = null;
-    this.pivot = null;
-    this.skew = null;
+    this.transform = null;
 
     this.parent = null;
 
