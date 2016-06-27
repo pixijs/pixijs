@@ -67,6 +67,16 @@ function ParticleBuffer(gl, properties, dynamicPropertyFlags, size)
     {
         var property = properties[i];
 
+        // Make copy of properties object so that when we edit the offset it doesn't
+        // change all other instances of the object literal
+        property = 
+        {
+            attribute:property.attribute,
+            size:property.size,
+            uploadFunction:property.uploadFunction,
+            offset:property.offset
+        };
+
         if(dynamicPropertyFlags[i])
         {
             this.dynamicProperties.push(property);
