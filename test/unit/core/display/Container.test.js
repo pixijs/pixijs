@@ -44,9 +44,9 @@ describe('PIXI.Container', function () {
         it('should call through to DisplayContainer.destroy', function () {
             var container = new PIXI.Container();
 
-            expect(container.position).to.not.equal(null);
+            expect(container.transform).to.not.equal(null);
             container.destroy();
-            expect(container.position).to.equal(null);
+            expect(container.transform).to.equal(null);
         });
 
         it('should set children to null', function () {
@@ -63,8 +63,8 @@ describe('PIXI.Container', function () {
 
             container.addChild(child);
             container.destroy();
-            expect(container.position).to.equal(null);
-            expect(child.position).to.not.equal(null);
+            expect(container.transform).to.equal(null);
+            expect(child.transform).to.not.equal(null);
         });
 
         it('should destroy children if children flag is set', function () {
@@ -73,8 +73,8 @@ describe('PIXI.Container', function () {
 
             container.addChild(child);
             container.destroy({children: true});
-            expect(container.position).to.equal(null);
-            expect(child.position).to.equal(null);
+            expect(container.transform).to.equal(null);
+            expect(child.transform).to.equal(null);
         });
 
         it('should pass opts on to children if children flag is set', function () {

@@ -86,6 +86,7 @@ function Sprite(texture)
      *
      * @member {number}
      * @default 0xFFFFFF
+     * @private
      */
     this.cachedTint = 0xFFFFFF;
 

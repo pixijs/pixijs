@@ -22,8 +22,8 @@ describe('PIXI.Text', function () {
 
             text.addChild(child);
             text.destroy({children: true});
-            expect(text.position).to.equal(null);
-            expect(child.position).to.equal(null);
+            expect(text.transform).to.equal(null);
+            expect(child.transform).to.equal(null);
         });
 
         it('should accept boolean correctly', function () {
@@ -32,8 +32,8 @@ describe('PIXI.Text', function () {
 
             text.addChild(child);
             text.destroy(true);
-            expect(text.position).to.equal(null);
-            expect(child.position).to.equal(null);
+            expect(text.transform).to.equal(null);
+            expect(child.transform).to.equal(null);
         });
 
         it('should pass opts on to children if children flag is set', function () {
