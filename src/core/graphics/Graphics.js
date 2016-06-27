@@ -734,8 +734,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
     this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
-    this._spriteRect.anchor.x = -rect.x / rect.width;
-    this._spriteRect.anchor.y = -rect.y / rect.height;
+    this._spriteRect.anchor.set(-rect.x / rect.width, -rect.y / rect.height);
+    this._spriteRect.onAnchorUpdate();
 
     this._spriteRect._renderWebGL(renderer);
 };
