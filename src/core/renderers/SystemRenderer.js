@@ -235,14 +235,21 @@ SystemRenderer.prototype.resize = function (width, height) {
  */
 SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, resolution) {
 
-    var bounds = displayObject.getLegacyLocalBounds();
+    var bounds = displayObject.getLocalBounds();
 
     var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 
     tempMatrix.tx = -bounds.x;
     tempMatrix.ty = -bounds.y;
 
-    this.render(displayObject, renderTexture, false, tempMatrix, true);
+    renderTexture.generatedSpriteFrame = bounds.clone();
+    renderTexture.generatedSpriteAnchor = new math.Point(-bounds.x / bounds.width, -bounds.y / bounds.height);
+
+    displayObject.beginTextureGeneration(tempMatrix);
+
+    this.render(displayObject, renderTexture, false, null, true);
+
+    displayObject.endTextureGeneration(true);
 
     return renderTexture;
 };

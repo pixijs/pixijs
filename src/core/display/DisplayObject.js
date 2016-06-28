@@ -404,13 +404,7 @@ DisplayObject.prototype.getLocalBounds = function ()
 {
     var rb = _tempBoundsBuilder;
     rb.clear();
-    var bt = this._boundsTransform;
-    if (!bt) {
-        bt = new TransformManual(this.transform.localTransform);
-        this._boundsTransform = bt;
-    }
-    bt.worldTransform.identity();
-    this.calcBounds(rb, bt);
+    this.calcBounds(rb, TransformManual.IDENTITY);
     var bounds = rb.getRectangle(this._localBounds);
     if (bounds !== math.Rectangle.EMPTY) {
         this._localBounds = bounds;

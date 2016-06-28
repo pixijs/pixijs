@@ -351,16 +351,17 @@ Sprite.prototype._renderCanvas = function (renderer)
  */
 Sprite.prototype._calcBounds = function (builder, transform)
 {
-    this.calculateVertices();
-
     var texture = this._texture,
         trim = texture.trim,
         vertexData = this.vertexData,
         orig = texture.orig;
 
-    if (!trim || trim.width === orig.width && trim.height === orig.height && transform === this.transform) {
-        builder.addQuad(vertexData);
-        return;
+    if (transform === this.transform) {
+        this.calculateVertices();
+        if (!trim || trim.width === orig.width && trim.height === orig.height) {
+            builder.addQuad(vertexData);
+            return;
+        }
     }
 
     var w0, w1, h0, h1;

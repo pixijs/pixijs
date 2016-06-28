@@ -72,6 +72,49 @@ Object.defineProperties(DisplayObject.prototype, {
         }
     }
 });
+
+/**
+ * This is old v3 implementation of getLocalBounds() which is required for cacheAsBitmap and generateTexture functions.
+ * Temporarily hijacks
+ *
+ * The calculation takes all visible children into consideration.
+ *
+ * The calculation can mess up with current transforms and bounds!
+ *
+ * @param matrix {PIXI.Matrix} required, take PIXI.Matrix.IDENTITY
+ */
+DisplayObject.prototype.beginTextureGeneration = function(matrix) {
+    this._cacheWorldTransform = this.transform.worldTransform;
+    this._cacheWorldAlpha = this.worldAlpha;
+
+    this.transform.worldTransform = matrix;
+    this.transform._worldID++;
+    this.worldAlpha = this.alpha;
+
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].updateTransform();
+    }
+    this._currentBounds = null;
+};
+
+/**
+ * Finalizes texture generation, returns all previous values.
+ * You can omit that for performance, nothing really bad will happen, just some side-effects
+ * @param updateChildren {boolean} may update children again to return them in old state
+ */
+DisplayObject.prototype.endTextureGeneration = function(updateChildren) {
+    this.transform.worldTransform = this._cacheWorldTransform;
+    this.transform._worldID++;
+    this.worldAlpha = this._cacheWorldAlpha;
+    if (updateChildren) {
+        for (var i = 0, j = this.children.length; i < j; ++i) {
+            this.children[i].updateTransform();
+        }
+    }
+    this._currentBounds = null;
+};
+
 /**
 * Renders a cached version of the sprite with WebGL
 *
@@ -112,7 +155,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // next we find the dimensions of the untransformed object
     // this function also calls updatetransform on all its children as part of the measuring. This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    var bounds = this.getLegacyLocalBounds().clone();
+    var bounds = this.getLocalBounds().clone();
 
     // add some padding!
     if(this._filters)
@@ -141,11 +184,13 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     m.tx = -bounds.x;
     m.ty = -bounds.y;
 
+    this.beginTextureGeneration(_tempMatrix);
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-    renderer.render(this, renderTexture, true, m, true);
+    renderer.render(this, renderTexture, true, null, true);
     // now restore the state be setting the new properties
+    this.endTextureGeneration(false);
 
     renderer.bindRenderTarget(cachedRenderTarget);
 
