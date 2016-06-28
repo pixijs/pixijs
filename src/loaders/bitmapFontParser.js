@@ -82,12 +82,12 @@ module.exports = function ()
 
         var xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
-        if (resource.isDataUrl) {
+        if (xmlUrl) {
             if (xmlUrl === '.') {
                 xmlUrl = '';
             }
 
-            if (this.baseUrl && xmlUrl) {
+            if (this.baseUrl) {
                 // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
                 if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
                     xmlUrl += '/';
@@ -98,11 +98,12 @@ module.exports = function ()
             }
 
             // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+            if (xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
                 xmlUrl += '/';
             }
         }
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+
         if (core.utils.TextureCache[textureUrl]) {
             //reuse existing texture
             parse(resource, core.utils.TextureCache[textureUrl]);
