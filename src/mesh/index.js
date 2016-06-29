@@ -10,7 +10,8 @@
  */
 module.exports = {
     Mesh:           require('./Mesh'),
-    Plane:           require('./Plane'),
+    Plane:          require('./Plane'),
+    NineSlicePlane: require('./NineSlicePlane'),
     Rope:           require('./Rope'),
     MeshShader:     require('./webgl/MeshShader')
 };
