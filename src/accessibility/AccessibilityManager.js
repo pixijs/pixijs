@@ -18,17 +18,12 @@ Object.assign(
  */
 function AccessibilityManager(renderer)
 {
-	if(Device.tablet || Device.phone)
-	{
-		this.createTouchHook();
-	}
-
 	// first we create a div that will sit over the pixi element. This is where the div overlays will go.
     var div = document.createElement('div');
 
     div.style.width = 100 + 'px';
     div.style.height = 100 + 'px';
-    div.style.position = 'absolute';
+    div.style.position = 'fixed';
     div.style.top = 0;
     div.style.left = 0;
    //
@@ -96,9 +91,23 @@ function AccessibilityManager(renderer)
      */
    	this.isActive = false;
    	this.isMobileAccessabillity = false;
+    this.isAlwaysOn = false;
 
    	// let listen for tab.. once pressed we can fire up and show the accessibility layer
    	window.addEventListener('keydown', this._onKeyDown, false);
+
+    //check for mobile specific solutions
+    if(this.isMobileDevice())
+    {
+        if (this.hasFocusEvents())
+        {
+            this.createTouchHook();
+        }
+        else
+        {
+            this.alwaysOn();
+        }
+    }
 }
 
 
@@ -127,6 +136,29 @@ AccessibilityManager.prototype.createTouchHook = function()
 
     document.body.appendChild(hookDiv);
 
+};
+
+/**
+ * some mobile devices fire Focus Events in accessibility mode eg. IOS Voiceover
+ * other mobile devices do not fire Focus Events eg. Android Talkback or Kindle Fire VoiceView
+ * default to false unless tested
+ */
+AccessibilityManager.prototype.hasFocusEvents = function() {
+    return (Device.apple.device);
+};
+
+
+AccessibilityManager.prototype.isMobileDevice = function()
+{
+    return (Device.tablet || Device.phone);
+};
+
+AccessibilityManager.prototype.alwaysOn = function()
+{
+    this.isAlwaysOn = true;
+
+    //render is undefined until the next tick
+    setTimeout(this.activate.bind(this));
 };
 
 /**
@@ -209,6 +241,41 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
 	}
 };
 
+/**
+ * Sort children by tab index
+ * The divs seem to tab in order of being added as a child regardless of the tab order set
+ * This sorts the children whenever a new one is set
+ * @param  {DOMElement} element the one which will have children sorted.
+ */
+AccessibilityManager.prototype.updateTabOrders = function()
+{
+    if (!this._tabOrderDirty) {
+        return;
+    }
+
+    var element = this.div;
+    var children = element.childNodes;
+
+    var list = [];
+    for (var i = 0; i < children.length; i++) {
+        if (children[i].nodeType === 1) {
+            list.push(children[i]);
+        }
+    }
+
+    list = list.sort(function(a, b) {
+        var ta = a.getAttribute('tabindex');
+        var tb = b.getAttribute('tabindex');
+        return ta === tb ? 0 : tb > ta ? -1 : 1;
+    });
+
+    for (var j in list) {
+        element.appendChild(list[j]);
+    }
+
+    this._tabOrderDirty = false;
+};
+
 
 /**
  * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects
@@ -216,12 +283,16 @@ AccessibilityManager.prototype.updateAccessibleObjects = function(displayObject)
  */
 AccessibilityManager.prototype.update = function()
 {
-	if(!this.renderer.renderingToScreen) {
+	//change this to strict equality comparison so that it will work with PIXI v3 where renderingToScreen is not set.
+    if (this.renderer.renderingToScreen === false) {
     	return;
   	}
 
 	// update children...
 	this.updateAccessibleObjects(this.renderer._lastObjectRendered);
+
+    //sort out tab orders
+    this.updateTabOrders();
 
 	var rect = this.renderer.view.getBoundingClientRect();
 	var sx = rect.width  / this.renderer.width;
@@ -337,6 +408,13 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	    div.style.zIndex = 2;
 	    div.style.borderStyle = 'none';
 
+        if (this.isAlwaysOn) {
+            //remove the focus highlight from the div so you cannot see the hidden div during normal touch to click
+            div.style['-webkit-tap-highlight-color'] = 'rgba(0,0,0,0)';
+            div.style.border = 0;
+            div.style.outline = 'none';
+        }
+
 
 	    div.addEventListener('click', this._onClick.bind(this));
 	    div.addEventListener('focus', this._onFocus.bind(this));
@@ -369,6 +447,9 @@ AccessibilityManager.prototype.addChild = function(displayObject)
 	this.children.push(displayObject);
 	this.div.appendChild( displayObject._accessibleDiv );
 	displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
+
+    //set this to true so we know to sort the tab order of the divs
+    this._tabOrderDirty = true;
 };
 
 
