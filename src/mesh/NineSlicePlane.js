@@ -7,7 +7,7 @@ var Plane = require('./Plane');
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *  
  *```js
- * var Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage("BoxWithRoundedCorners.png"), 15, 15, 15, 15);
+ * var Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
  * <pre>
  *      A                          B
@@ -76,25 +76,25 @@ function NineSlicePlane(texture, leftWidth, topHeight, rightWidth, bottomHeight)
 	 *
 	 * @member {number}
 	 */
-	this.leftWidth = leftWidth || DEFAULT_BORDER_SIZE;
+	this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
 	/**
 	 * The width of the right column (b)
 	 *
 	 * @member {number}
 	 */
-	this.rightWidth = rightWidth || DEFAULT_BORDER_SIZE;
+	this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
 	/**
 	 * The height of the top row (c)
 	 *
 	 * @member {number}
 	 */
-	this.topHeight = topHeight || DEFAULT_BORDER_SIZE;
+	this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
 	/**
 	 * The height of the bottom row (d)
 	 *
 	 * @member {number}
 	 */
-	this.bottomHeight = bottomHeight || DEFAULT_BORDER_SIZE;
+	this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
 }
 
 
