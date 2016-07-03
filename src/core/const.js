@@ -297,10 +297,10 @@ var CONST = {
      * @static
      * @constant
      * @property {object} PRECISION
-     * @property {number} PRECISION.DEFAULT='mediump'
-     * @property {number} PRECISION.LOW='lowp'
-     * @property {number} PRECISION.MEDIUM='mediump'
-     * @property {number} PRECISION.HIGH='highp'
+     * @property {string} PRECISION.DEFAULT='mediump'
+     * @property {string} PRECISION.LOW='lowp'
+     * @property {string} PRECISION.MEDIUM='mediump'
+     * @property {string} PRECISION.HIGH='highp'
      */
     PRECISION: {
         DEFAULT: 'mediump',
