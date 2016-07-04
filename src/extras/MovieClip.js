@@ -302,7 +302,7 @@ MovieClip.fromFrames = function (frames)
 
     for (var i = 0; i < frames.length; ++i)
     {
-        textures.push(new core.Texture.fromFrame(frames[i]));
+        textures.push(core.Texture.fromFrame(frames[i]));
     }
 
     return new MovieClip(textures);
@@ -320,7 +320,7 @@ MovieClip.fromImages = function (images)
 
     for (var i = 0; i < images.length; ++i)
     {
-        textures.push(new core.Texture.fromImage(images[i]));
+        textures.push(core.Texture.fromImage(images[i]));
     }
 
     return new MovieClip(textures);
