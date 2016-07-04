@@ -628,16 +628,28 @@ Text.prototype.wordWrap = function (text)
 };
 
 /**
- * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {PIXI.Matrix} the transformation matrix of the Text
- * @return {PIXI.Rectangle} the framing rectangle
+ * Fills the builder with points. Both parameters are required
+ * Updates text if needed
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
  */
-Text.prototype.getBounds = function (matrix)
+Text.prototype._calcBounds = function(builder, transform) // jshint unused:false
 {
     this.updateText(true);
 
-    return Sprite.prototype.getBounds.call(this, matrix);
+    Sprite.prototype._calcBounds.call(this, builder, transform);
+};
+
+/**
+ * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+ *
+ * @return {PIXI.Rectangle} the framing rectangle
+ */
+Text.prototype.getBounds = function ()
+{
+    this.updateText(true);
+
+    return Sprite.prototype.getBounds.call(this);
 };
 
 /**
