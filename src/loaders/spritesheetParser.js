@@ -58,13 +58,23 @@ module.exports = function ()
 
                         var frame = null;
                         var trim = null;
-                        var orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+                        var orig = null;
 
                         if (frames[i].rotated) {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                         }
                         else {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
+                        }
+
+                        // Check to see if the sprite data has sourceSize
+                        if (frames[i].sourceSize)
+                        {
+                          orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+                        }
+                        else
+                        {
+                          orig = frame.clone();
                         }
 
                         //  Check to see if the sprite is trimmed
