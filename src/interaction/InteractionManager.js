@@ -1,6 +1,6 @@
 var core = require('../core'),
     InteractionData = require('./InteractionData'),
-    Device = require('ismobilejs');
+    MobileDevice = require('ismobilejs');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -158,7 +158,7 @@ function InteractionManager(renderer, options)
      * @readonly
      * @private
      */
-    this.normalizingTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents && Device.any;
+    this.normalizingTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents;
 
     /**
      * Are mouse events being 'normalized' and converted into pointer events if pointer events are not supported
@@ -168,8 +168,7 @@ function InteractionManager(renderer, options)
      * @readonly
      * @private
      */
-    this.normalizingMouseEvents = !this.supportsPointerEvents && !this.normalizingTouch;
-
+    this.normalizingMouseEvents = !this.supportsPointerEvents && !MobileDevice.any;
 
     //this will make it so that you don't have to call bind all the time
 
@@ -357,7 +356,8 @@ InteractionManager.prototype.addEvents = function ()
             this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
             this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
         }
-        else if (this.normalizingMouseEvents)
+
+        if (this.normalizingMouseEvents)
         {
             window.document.addEventListener('mousemove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
@@ -424,7 +424,8 @@ InteractionManager.prototype.removeEvents = function ()
             this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
             this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
         }
-        else if (this.normalizingMouseEvents)
+
+        if (this.normalizingMouseEvents)
         {
             window.document.removeEventListener('mousemove', this.onPointerMove, true);
             this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
@@ -975,7 +976,7 @@ InteractionManager.prototype.onPointerMove = function (event)
  */
 InteractionManager.prototype.processPointerMove = function ( displayObject, hit )
 {
-    if (!this.normalizingTouchEvents)
+    if (!this.pointer.originalEvent.changedTouches)
     {
         this.processPointerOverOut(displayObject, hit);
     }
@@ -1247,7 +1248,7 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
  */
 InteractionManager.prototype.normalizeToPointerData = function (event)
 {
-    if (this.normalizingTouchEvents)
+    if (this.normalizingTouchEvents && event.changedTouches )
     {
         event.button = event.touches.length ? 1 : 0;
         event.buttons = event.touches.length ? 1 : 0;
@@ -1257,7 +1258,7 @@ InteractionManager.prototype.normalizeToPointerData = function (event)
         event.tiltX = 0;
         event.tiltY = 0;
         event.pointerType = 'touch';
-        event.pointerId = event.pointerId = event.changedTouches[0].identifier || 0;
+        event.pointerId = event.changedTouches[0].identifier || 0;
         event.pressure = event.changedTouches[0].force || 0.5;
         event.rotation = event.changedTouches[0].rotationAngle || 0;
 
