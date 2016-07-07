@@ -347,7 +347,7 @@ Sprite.prototype._renderCanvas = function (renderer)
 /**
  * Pass sprite corners (without trimming) to the builder.
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 Sprite.prototype._calcBounds = function (builder, transform)
 {

@@ -128,7 +128,7 @@ BoundsBuilder.prototype.addQuad = function(vertices)
 
 /**
  * Adds sprite frame, transformed
- * @param transform {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual}
+ * @param transform {PIXI.TransformBase}
  * @param x0 {number}
  * @param y0 {number}
  * @param x1 {number}
@@ -176,7 +176,7 @@ BoundsBuilder.prototype.addFrame = function(transform, x0, y0, x1, y1)
 
 /**
  * add an array of vertices
- * @param transform {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual}
+ * @param transform {PIXI.TransformBase}
  * @param vertices {Float32Array}
  * @param beginOffset {number}
  * @param endOffset {number}

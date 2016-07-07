@@ -631,7 +631,7 @@ Text.prototype.wordWrap = function (text)
  * Fills the builder with points. Both parameters are required
  * Updates text if needed
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 Text.prototype._calcBounds = function(builder, transform) // jshint unused:false
 {

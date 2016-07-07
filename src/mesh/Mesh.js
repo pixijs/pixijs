@@ -442,7 +442,7 @@ Mesh.prototype._onTextureUpdate = function ()
 /**
  * Pass mesh vertices to the builder.
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 Mesh.prototype._calcBounds = function (builder, transform)
 {

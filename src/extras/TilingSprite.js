@@ -284,7 +284,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 /**
  * Calculates TilingSprite corners and pushes them to the builder.
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 TilingSprite.prototype._calcBounds = function (builder, transform)
 {

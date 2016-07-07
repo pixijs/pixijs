@@ -1,22 +1,18 @@
-var math = require('../math');
+var math = require('../math'),
+    TransformBase = require('./TransformBase');
 
 
 /**
  * Generic class to deal with traditional 2D matrix transforms
+ * local transformation is calculated from position,scale,skew and rotation
  *
  * @class
+ * @extends PIXI.TransformBase
  * @memberof PIXI
  */
 function Transform()
 {
-    /**
-     * @member {PIXI.Matrix} The global matrix transform
-     */
-    this.worldTransform = new math.Matrix();
-    /**
-     * @member {PIXI.Matrix} The local matrix transform
-     */
-    this.localTransform = new math.Matrix();
+    TransformBase.call(this);
 
      /**
      * The coordinate of the object relative to the local coordinates of the parent.
@@ -46,7 +42,6 @@ function Transform()
      */
     this.pivot = new math.Point(0.0);
 
-
     /**
      * The rotation value of the object, in radians
      *
@@ -61,13 +56,9 @@ function Transform()
     this._sy  = Math.sin(0);//skewY);
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
-
-    this._dirty = false;
-    this.updated = true;
-
-    this._worldID = 0;
 }
 
+Transform.prototype = Object.create(TransformBase.prototype);
 Transform.prototype.constructor = Transform;
 
 Transform.prototype.updateSkew = function ()
@@ -76,6 +67,24 @@ Transform.prototype.updateSkew = function ()
     this._sy  = Math.sin(this.skew.y);
     this._nsx = Math.sin(this.skew.x);
     this._cx  = Math.cos(this.skew.x);
+};
+
+/**
+ * Updates only local matrix
+ */
+Transform.prototype.updateLocalTransform = function() {
+    var lt = this.localTransform;
+    var a, b, c, d;
+
+    a  =  this._cr * this.scale.x;
+    b  =  this._sr * this.scale.x;
+    c  = -this._sr * this.scale.y;
+    d  =  this._cr * this.scale.y;
+
+    lt.a  = this._cy * a + this._sy * c;
+    lt.b  = this._cy * b + this._sy * d;
+    lt.c  = this._nsx * a + this._cx * c;
+    lt.d  = this._nsx * b + this._cx * d;
 };
 
 /**

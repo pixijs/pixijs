@@ -1,7 +1,7 @@
 var math = require('../math'),
     utils = require('../utils'),
     DisplayObject = require('./DisplayObject'),
-    TransformManual = require('./TransformManual'),
+    TransformBase = require('./TransformBase'),
     BoundsBuilder = require('./BoundsBuilder'),
     _tempBoundsBuilder = new BoundsBuilder();
 
@@ -28,6 +28,13 @@ function Container()
      * @readonly
      */
     this.children = [];
+
+    /**
+     * Used for bounds calculation of children
+     * @member {?PIXI.Transform}
+     * @private
+     */
+    this._boundsTransform = null;
 }
 
 // constructor
@@ -531,7 +538,7 @@ Container.prototype.renderWebGL = function (renderer)
  * If there are any visible children, one temporary cached transform object will be used.
  *
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 
 Container.prototype.calcBounds = function (builder, transform)
@@ -550,10 +557,11 @@ Container.prototype.calcBounds = function (builder, transform)
         var bt = this._boundsTransform;
         if (!bt)
         {
-            bt = new TransformManual();
+            bt = new TransformBase();
             this._boundsTransform = bt;
         }
         bt.localTransform = child.transform.localTransform;
+        bt.transform.updateLocalTransform();
         bt.updateTransform(transform);
         this.children[i].calcBounds(builder, bt);
     }
@@ -565,7 +573,7 @@ Container.prototype.calcBounds = function (builder, transform)
  * calcBounds() adds child bounds too
  *
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  * @private
  */
 Container.prototype._calcBounds = function (builder, transform) // jshint unused:false

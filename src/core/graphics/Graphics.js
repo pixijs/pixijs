@@ -759,7 +759,7 @@ Graphics.prototype._renderCanvas = function (renderer)
 /**
  * Takes graphics cached localBounds, rotates them with transform, passes to the builder
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 Graphics.prototype._calcBounds = function (builder, transform)
 {

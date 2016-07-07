@@ -3,7 +3,7 @@ var math = require('../math'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    TransformManual = require('./TransformManual'),
+    TransformBase = require('./TransformBase'),
     BoundsBuilder = require('./BoundsBuilder'),
     _tempDisplayObjectParent = new DisplayObject(),
     _tempBoundsBuilder = new BoundsBuilder();
@@ -119,13 +119,6 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
-
-    /**
-     * Used for bounds calculation
-     * @member {PIXI.Transform}
-     * @private
-     */
-    this._boundsTransform = null;
 }
 
 // constructor
@@ -386,7 +379,7 @@ DisplayObject.prototype.getBounds = function () // jshint unused:false
 /**
  * Fills the builder with points. Both parameters are required
  * @param {PIXI.BoundsBuilder} builder
- * @param {PIXI.Transform | PIXI.TransformStatic | PIXI.TransformManual} transform
+ * @param {PIXI.TransformBase} transform
  */
 DisplayObject.prototype.calcBounds = function(builder, transform) // jshint unused:false
 {
@@ -404,7 +397,7 @@ DisplayObject.prototype.getLocalBounds = function ()
 {
     var rb = _tempBoundsBuilder;
     rb.clear();
-    this.calcBounds(rb, TransformManual.IDENTITY);
+    this.calcBounds(rb, TransformBase.IDENTITY);
     var bounds = rb.getRectangle(this._localBounds);
     if (bounds !== math.Rectangle.EMPTY) {
         this._localBounds = bounds;
@@ -414,29 +407,23 @@ DisplayObject.prototype.getLocalBounds = function ()
 };
 
 /**
- * Calculates the global position of the display object
+ * Calculates the global position of the display object. Recursively applies all local transforms from object to the root
  *
  * @param position {PIXI.Point} The world origin to calculate from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position)
+DisplayObject.prototype.toGlobal = function (position, point)
 {
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
-    {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
+    point = point || new math.Point();
+    point.copy(position);
+    var displayObject = this;
+    while (displayObject !== null) {
+        displayObject.transform.updateLocalTransform();
+        displayObject.transform.localTransform.apply(point, point);
+        displayObject = displayObject.parent;
     }
-    else
-    {
-        this.displayObjectUpdateTransform();
-    }
-
-    // don't need to update the lot
-    return this.worldTransform.apply(position);
+    return point;
 };
 
 /**
@@ -449,27 +436,29 @@ DisplayObject.prototype.toGlobal = function (position)
  */
 DisplayObject.prototype.toLocal = function (position, from, point)
 {
+    this._recursivePostUpdateTransform();
     if (from)
     {
-        position = from.toGlobal(position);
+        point = from.toGlobal(position, point);
+    } else {
+        point = point || new math.Point();
+        point.copy(position);
     }
-
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
-    {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.displayObjectUpdateTransform();
-    }
-
     // simply apply the matrix..
-    return this.worldTransform.applyInverse(position, point);
+    return this.worldTransform.applyInverse(point, point);
+};
+
+/**
+ * recursively updates transform of all objects from the root to this one
+ * internal function for toLocal()
+ */
+DisplayObject.prototype._recursivePostUpdateTransform = function() {
+    if (this.parent) {
+        this.parent._recursivePostUpdateTransform();
+        this.transform.updateTransform(this.parent.transform);
+    } else {
+        this.transform.updateTransform(_tempDisplayObjectParent.transform);
+    }
 };
 
 /**
