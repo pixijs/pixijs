@@ -359,6 +359,8 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -366,14 +368,28 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 
 /**
  *
- *
  * Retrieves the bounds of the displayObject as a rectangle object
+ * Assumes that all necessary transforms have been updated
  *
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
 DisplayObject.prototype.getBounds = function () // jshint unused:false
 {
     return math.Rectangle.EMPTY;
+};
+
+/**
+ *
+ * Retrieves the bounds of the displayObject as a rectangle object
+ * Updates all necessary transforms
+ * It is safe to assume that all children bounds are calculated after that
+ *
+ * @return {PIXI.Rectangle} the rectangular bounding area
+ */
+DisplayObject.prototype.getBoundsSlow = function() {
+    this._recursivePostUpdateTransform();
+    this.updateTransform();
+    return this.getBounds();
 };
 
 /**
@@ -427,6 +443,22 @@ DisplayObject.prototype.toGlobal = function (position, point)
 };
 
 /**
+ * Calculates the global position of the display object. Recursively applies all local transforms from object to the root
+ * Assumes that all necessary transforms have been updated
+ *
+ * @param position {PIXI.Point} The world origin to calculate from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+ * @return {PIXI.Point} A point object representing the position of this object
+ */
+DisplayObject.prototype.toGlobalFast = function (position, point)
+{
+    point = point || new math.Point();
+    point.copy(position);
+    this.transform.worldTransform.apply(point, point);
+    return point;
+};
+
+/**
  * Calculates the local position of the display object relative to another point
  *
  * @param position {PIXI.Point} The world origin to calculate from
@@ -459,6 +491,23 @@ DisplayObject.prototype._recursivePostUpdateTransform = function() {
     } else {
         this.transform.updateTransform(_tempDisplayObjectParent.transform);
     }
+};
+
+/**
+ * Calculates the local position of the display object relative to another point
+ * Assumes that all necessary transforms have been updated
+ *
+ * @param position {PIXI.Point} The world origin to calculate from
+ * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+ * @return {PIXI.Point} A point object representing the position of this object
+ */
+DisplayObject.prototype.toLocalFast = function (position, from, point)
+{
+    point = point || new math.Point();
+    point.copy(position);
+    point = from.transform.worldTransform.apply(point, point);
+    return this.worldTransform.applyInverse(point, point);
 };
 
 /**

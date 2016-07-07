@@ -396,7 +396,8 @@ Container.prototype.updateTransform = function ()
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 /**
-* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+ * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+ * Assumes that all necessary transforms have been updated
  *
  * @return {PIXI.Rectangle} The rectangular bounding area
  */
@@ -560,8 +561,8 @@ Container.prototype.calcBounds = function (builder, transform)
             bt = new TransformBase();
             this._boundsTransform = bt;
         }
+        child.transform.updateLocalTransform();
         bt.localTransform = child.transform.localTransform;
-        bt.transform.updateLocalTransform();
         bt.updateTransform(transform);
         this.children[i].calcBounds(builder, bt);
     }
