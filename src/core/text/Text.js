@@ -75,6 +75,7 @@ function Text(text, style, resolution)
     this._font = '';
 
     var texture = Texture.fromCanvas(this.canvas);
+    texture.orig = new math.Rectangle();
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
 
