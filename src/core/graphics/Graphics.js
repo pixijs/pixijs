@@ -676,6 +676,13 @@ Graphics.prototype.clear = function ()
     return this;
 };
 
+/**
+ * True if graphics consists of one rectangle, and thus, can be drawn like a Sprite and masked with gl.scissor
+ * @returns {boolean}
+ */
+Graphics.prototype.isFastRect = function() {
+    return this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
+};
 
 /**
  * Renders the object using the WebGL renderer
@@ -691,7 +698,7 @@ Graphics.prototype._renderWebGL = function (renderer)
     {
         this.dirty = true;
         this.glDirty = false;
-        this._fastRect = this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
+        this._fastRect = this.isFastRect();
     }
 
     //TODO this check can be moved to dirty?
