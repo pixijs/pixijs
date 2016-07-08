@@ -341,7 +341,7 @@ InteractionManager.prototype.addEvents = function ()
     {
         window.document.addEventListener('pointermove', this.onPointerMove, true);
         this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
-        this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
+        this.interactionDOMElement.addEventListener('pointerout', this.onPointerOut, true);
         window.addEventListener('pointerup', this.onPointerUp, true);
     }
     else
@@ -409,7 +409,7 @@ InteractionManager.prototype.removeEvents = function ()
     {
         window.document.removeEventListener('pointermove', this.onPointerMove, true);
         this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
-        this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
+        this.interactionDOMElement.removeEventListener('pointerout', this.onPointerOut, true);
         window.removeEventListener('pointerup', this.onPointerUp, true);
     }
     else
@@ -998,6 +998,7 @@ InteractionManager.prototype.onPointerOut = function (event)
 {
     this.normalizeToPointerData( event );
     this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
     this.eventData.stopped = false;
 
     // Update internal pointer reference
