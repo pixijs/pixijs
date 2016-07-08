@@ -1,6 +1,7 @@
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
+    utils = require('../utils'),
     CONST = require('../const'),
     TextStyle = require('./TextStyle');
 
@@ -75,6 +76,7 @@ function Text(text, style, resolution)
     this._font = '';
 
     var texture = Texture.fromCanvas(this.canvas);
+    texture.orig = new math.Rectangle();
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
 
@@ -103,13 +105,14 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            return this.scale.x * this._texture._frame.width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             this.updateText(true);
 
-            this.scale.x = value / this._texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -125,14 +128,15 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            return  this.scale.y * this._texture._frame.height;
+            return Math.abs(this.scale.y) * this._texture.orig.height;
         },
         set: function (value)
         {
             this.updateText(true);
 
-            this.scale.y = value / this._texture._frame.height;
-            this._height = value;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture.orig.width;
+            this._width = value;
         }
     },
 
@@ -407,17 +411,17 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.width = this.canvas.width / this.resolution;
     texture.baseTexture.height = this.canvas.height / this.resolution;
-    texture.orig.width = texture._frame.width = this.canvas.width / this.resolution;
-    texture.orig.height = texture._frame.height = this.canvas.height / this.resolution;
+    texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.trim.height = texture._frame.height = this.canvas.height / this.resolution;
 
     texture.trim.x = 0;
     texture.trim.y = -style.padding;
 
-    texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - style.padding*2;
+    texture.orig.width = texture._frame.width;
+    texture.orig.height = texture._frame.height - style.padding*2;
 
-    this._width = this.canvas.width / this.resolution;
-    this._height = this.canvas.height / this.resolution;
+    //call sprite onTextureUpdate to update scale if _width or _height were set
+    this._onTextureUpdate();
 
     texture.baseTexture.emit('update',  texture.baseTexture);
 
