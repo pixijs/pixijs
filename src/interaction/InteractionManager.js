@@ -195,6 +195,7 @@ function InteractionManager(renderer, options)
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 }
 
+InteractionManager.prototype = Object.create(EventEmitter.prototype);
 InteractionManager.prototype.constructor = InteractionManager;
 module.exports = InteractionManager;
 
@@ -720,7 +721,13 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
     }
 };
 
-InteractionManager.prototype.onMouseOver = function(/*event*/)
+/**
+ * Is called when the mouse enters the renderer element area
+ *
+ * @param event {Event} The DOM event of the mouse moving into the renderer view
+ * @private
+ */
+InteractionManager.prototype.onMouseOver = function(event)
 {
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
