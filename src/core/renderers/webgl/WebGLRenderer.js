@@ -85,7 +85,7 @@ function WebGLRenderer(width, height, options)
     /**
      * Manages the stencil buffer.
      *
-     * @member {StencilManager}
+     * @member {PIXI.StencilManager}
      */
     this.stencilManager = new StencilManager(this);
 
@@ -124,7 +124,7 @@ function WebGLRenderer(width, height, options)
     /**
      * The currently active ObjectRenderer.
      *
-     * @member {WebGLState}
+     * @member {PIXI.WebGLState}
      */
     this.state = new WebGLState(this.gl);
 

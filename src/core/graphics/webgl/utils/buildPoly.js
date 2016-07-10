@@ -5,6 +5,9 @@ var buildLine = require('./buildLine'),
 /**
  * Builds a polygon to draw
  *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
  * @private
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape

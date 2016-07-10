@@ -52,6 +52,7 @@ function Matrix()
      */
     this.ty = 0;
 
+    this.array = null;
 }
 
 Matrix.prototype.constructor = Matrix;
@@ -109,7 +110,7 @@ Matrix.prototype.set = function (a, b, c, d, tx, ty)
  * Creates an array from the current Matrix object.
  *
  * @param transpose {boolean} Whether we need to transpose the matrix or not
- * @param [out=Float32Array[]} If provided the array will be assigned to out
+ * @param [out=new Float32Array(9)] {Float32Array} If provided the array will be assigned to out
  * @return {number[]} the newly created array which contains the matrix
  */
 Matrix.prototype.toArray = function (transpose, out)

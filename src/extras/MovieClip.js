@@ -1,7 +1,7 @@
 var core = require('../core');
 
 /**
- * @typedef PIXI.extras.MovieClip.FrameObject
+ * @typedef FrameObject
  * @type {object}
  * @property texture {PIXI.Texture} The {@link PIXI.Texture} of the frame
  * @property time {number} the duration of the frame in ms
@@ -27,7 +27,7 @@ var core = require('../core');
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {PIXI.Texture[]|PIXI.extras.MovieClip.FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
+ * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
 function MovieClip(textures)
 {

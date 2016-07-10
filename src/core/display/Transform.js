@@ -11,11 +11,16 @@ var math = require('../math');
 function Transform()
 {
     /**
-     * @member {PIXI.Matrix} The global matrix transform
+     * The global matrix transform.
+     *
+     * @member {PIXI.Matrix}
      */
     this.worldTransform = new math.Matrix();
+
     /**
-     * @member {PIXI.Matrix} The local matrix transform
+     * The local matrix transform.
+     *
+     * @member {PIXI.Matrix}
      */
     this.localTransform = new math.Matrix();
 

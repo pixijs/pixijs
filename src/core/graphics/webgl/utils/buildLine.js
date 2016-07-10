@@ -4,6 +4,9 @@ var math = require('../../../math'),
 /**
  * Builds a line to draw
  *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
  * @private
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
@@ -13,7 +16,7 @@ var buildLine = function (graphicsData, webGLData)
     // TODO OPTIMISE!
     var i = 0;
     var points = graphicsData.points;
-   
+
     if (points.length === 0)
     {
         return;

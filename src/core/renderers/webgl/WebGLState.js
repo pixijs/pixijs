@@ -2,27 +2,29 @@ var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
 /**
  * A WebGL state machines
+ *
+ * @memberof PIXI
+ * @class
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  */
-var WebGLState = function(gl)
+function WebGLState(gl)
 {
-
     /**
      * The current active state
      *
      * @member {Uint8Array}
      */
-	this.activeState = new Uint8Array(16);
+    this.activeState = new Uint8Array(16);
 
     /**
      * The default state
      *
      * @member {Uint8Array}
      */
-	this.defaultState = new Uint8Array(16);
+    this.defaultState = new Uint8Array(16);
 
-	// default blend mode..
-	this.defaultState[0] = 1;
+    // default blend mode..
+    this.defaultState[0] = 1;
 
     /**
      * The current state index in the stack
@@ -30,7 +32,7 @@ var WebGLState = function(gl)
      * @member {number}
      * @private
      */
-	this.stackIndex = 0;
+    this.stackIndex = 0;
 
     /**
      * The stack holding all the different states
@@ -38,27 +40,24 @@ var WebGLState = function(gl)
      * @member {Array<*>}
      * @private
      */
-	this.stack = [];
+    this.stack = [];
 
     /**
      * The current WebGL rendering context
      *
      * @member {WebGLRenderingContext}
      */
-	this.gl = gl;
+    this.gl = gl;
 
-	this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+    this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
-	this.attribState = {tempAttribState:new Array(this.maxAttribs),
+    this.attribState = {tempAttribState:new Array(this.maxAttribs),
                         attribState:new Array(this.maxAttribs)};
 
+    this.blendModes = mapWebGLBlendModesToPixi(gl);
 
-
-	this.blendModes = mapWebGLBlendModesToPixi(gl);
-
-
-	// check we have vao..
-	this.nativeVaoExtension = (
+    // check we have vao..
+    this.nativeVaoExtension = (
       gl.getExtension('OES_vertex_array_object') ||
       gl.getExtension('MOZ_OES_vertex_array_object') ||
       gl.getExtension('WEBKIT_OES_vertex_array_object')
@@ -70,35 +69,35 @@ var WebGLState = function(gl)
  */
 WebGLState.prototype.push = function()
 {
-	// next state..
-	var state = this.state[++this.stackIndex];
+    // next state..
+    var state = this.state[++this.stackIndex];
 
-	if(!state)
-	{
-		state = this.state[this.stackIndex] = new Uint8Array(16);
-	}
+    if(!state)
+    {
+        state = this.state[this.stackIndex] = new Uint8Array(16);
+    }
 
-	// copy state..
-	// set active state so we can force overrides of gl state
-	for (var i = 0; i < this.activeState.length; i++)
-	{
-		this.activeState[i] = state[i];
-	}
+    // copy state..
+    // set active state so we can force overrides of gl state
+    for (var i = 0; i < this.activeState.length; i++)
+    {
+        this.activeState[i] = state[i];
+    }
 };
 
 var BLEND = 0,
-	DEPTH_TEST = 1,
-	FRONT_FACE = 2,
-	CULL_FACE = 3,
-	BLEND_FUNC = 4;
+    DEPTH_TEST = 1,
+    FRONT_FACE = 2,
+    CULL_FACE = 3,
+    BLEND_FUNC = 4;
 
 /**
  * Pops a state out
  */
 WebGLState.prototype.pop = function()
 {
-	var state = this.state[--this.stackIndex];
-	this.setState(state);
+    var state = this.state[--this.stackIndex];
+    this.setState(state);
 };
 
 /**
@@ -107,11 +106,11 @@ WebGLState.prototype.pop = function()
  */
 WebGLState.prototype.setState = function(state)
 {
-	this.setBlend(state[BLEND]);
-	this.setDepthTest(state[DEPTH_TEST]);
-	this.setFrontFace(state[FRONT_FACE]);
-	this.setCullFace(state[CULL_FACE]);
-	this.setBlendMode(state[BLEND_FUNC]);
+    this.setBlend(state[BLEND]);
+    this.setDepthTest(state[DEPTH_TEST]);
+    this.setFrontFace(state[FRONT_FACE]);
+    this.setCullFace(state[CULL_FACE]);
+    this.setBlendMode(state[BLEND_FUNC]);
 };
 
 /**
@@ -120,22 +119,22 @@ WebGLState.prototype.setState = function(state)
  */
 WebGLState.prototype.setBlend = function(value)
 {
-	if(this.activeState[BLEND] === value|0) {
+    if(this.activeState[BLEND] === value|0) {
     return;
   }
 
-	this.activeState[BLEND] = value|0;
+    this.activeState[BLEND] = value|0;
 
-	var gl = this.gl;
+    var gl = this.gl;
 
-	if(value)
-	{
-		gl.enable(gl.BLEND);
-	}
-	else
-	{
-		gl.disable(gl.BLEND);
-	}
+    if(value)
+    {
+        gl.enable(gl.BLEND);
+    }
+    else
+    {
+        gl.disable(gl.BLEND);
+    }
 };
 
 /**
@@ -144,13 +143,13 @@ WebGLState.prototype.setBlend = function(value)
  */
 WebGLState.prototype.setBlendMode = function(value)
 {
-	if(value === this.activeState[BLEND_FUNC]) {
+    if(value === this.activeState[BLEND_FUNC]) {
     return;
   }
 
-	this.activeState[BLEND_FUNC] = value;
+    this.activeState[BLEND_FUNC] = value;
 
-	this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
+    this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
 };
 
 /**
@@ -159,22 +158,22 @@ WebGLState.prototype.setBlendMode = function(value)
  */
 WebGLState.prototype.setDepthTest = function(value)
 {
-	if(this.activeState[DEPTH_TEST] === value|0) {
-    return;
-  }
+    if(this.activeState[DEPTH_TEST] === value|0) {
+        return;
+    }
 
-	this.activeState[DEPTH_TEST] = value|0;
+    this.activeState[DEPTH_TEST] = value|0;
 
-	var gl = this.gl;
+    var gl = this.gl;
 
-	if(value)
-	{
-		gl.enable(gl.DEPTH_TEST);
-	}
-	else
-	{
-		gl.disable(gl.DEPTH_TEST);
-	}
+    if(value)
+    {
+        gl.enable(gl.DEPTH_TEST);
+    }
+    else
+    {
+        gl.disable(gl.DEPTH_TEST);
+    }
 };
 
 /**
@@ -183,22 +182,22 @@ WebGLState.prototype.setDepthTest = function(value)
  */
 WebGLState.prototype.setCullFace = function(value)
 {
-	if(this.activeState[CULL_FACE] === value|0) {
-    return;
-  }
+    if(this.activeState[CULL_FACE] === value|0) {
+        return;
+    }
 
-	this.activeState[CULL_FACE] = value|0;
+    this.activeState[CULL_FACE] = value|0;
 
-	var gl = this.gl;
+    var gl = this.gl;
 
-	if(value)
-	{
-		gl.enable(gl.CULL_FACE);
-	}
-	else
-	{
-		gl.disable(gl.CULL_FACE);
-	}
+    if(value)
+    {
+        gl.enable(gl.CULL_FACE);
+    }
+    else
+    {
+        gl.disable(gl.CULL_FACE);
+    }
 };
 
 /**
@@ -207,22 +206,22 @@ WebGLState.prototype.setCullFace = function(value)
  */
 WebGLState.prototype.setFrontFace = function(value)
 {
-	if(this.activeState[FRONT_FACE] === value|0) {
-    return;
-  }
+    if(this.activeState[FRONT_FACE] === value|0) {
+        return;
+    }
 
-	this.activeState[FRONT_FACE] = value|0;
+    this.activeState[FRONT_FACE] = value|0;
 
-	var gl = this.gl;
+    var gl = this.gl;
 
-	if(value)
-	{
-		gl.frontFace(gl.CW);
-	}
-	else
-	{
-		gl.frontFace(gl.CCW);
-	}
+    if(value)
+    {
+        gl.frontFace(gl.CW);
+    }
+    else
+    {
+        gl.frontFace(gl.CCW);
+    }
 };
 
 /**
@@ -230,23 +229,23 @@ WebGLState.prototype.setFrontFace = function(value)
  */
 WebGLState.prototype.resetAttributes = function()
 {
-	var i;
+    var i;
 
     for ( i = 0; i < this.attribState.tempAttribState.length; i++) {
-    	this.attribState.tempAttribState[i] = 0;
+        this.attribState.tempAttribState[i] = 0;
     }
 
     for ( i = 0; i < this.attribState.attribState.length; i++) {
-    	this.attribState.attribState[i] = 0;
+        this.attribState.attribState[i] = 0;
     }
 
-	var gl = this.gl;
+    var gl = this.gl;
 
-	// im going to assume one is always active for performance reasons.
-	for (i = 1; i < this.maxAttribs; i++)
-  	{
-		gl.disableVertexAttribArray(i);
-  	}
+    // im going to assume one is always active for performance reasons.
+    for (i = 1; i < this.maxAttribs; i++)
+    {
+        gl.disableVertexAttribArray(i);
+    }
 };
 
 //used
@@ -256,27 +255,27 @@ WebGLState.prototype.resetAttributes = function()
 WebGLState.prototype.resetToDefault = function()
 {
 
-	// unbind any VAO if they exist..
-	if(this.nativeVaoExtension)
-	{
-		this.nativeVaoExtension.bindVertexArrayOES(null);
-	}
+    // unbind any VAO if they exist..
+    if(this.nativeVaoExtension)
+    {
+        this.nativeVaoExtension.bindVertexArrayOES(null);
+    }
 
 
-	// reset all attributs..
-	this.resetAttributes();
+    // reset all attributs..
+    this.resetAttributes();
 
-	// set active state so we can force overrides of gl state
-	for (var i = 0; i < this.activeState.length; i++)
-	{
-		this.activeState[i] = 2;
-	}
+    // set active state so we can force overrides of gl state
+    for (var i = 0; i < this.activeState.length; i++)
+    {
+        this.activeState[i] = 2;
+    }
 
-	var gl = this.gl;
-	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    var gl = this.gl;
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
 
-	this.setState(this.defaultState);
+    this.setState(this.defaultState);
 };
 
 module.exports = WebGLState;

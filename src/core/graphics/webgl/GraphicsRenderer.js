@@ -17,7 +17,6 @@ var utils = require('../../utils'),
  * Renders the graphics object.
  *
  * @class
- * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
