@@ -49,6 +49,8 @@ function NineSlicePlane(texture, leftWidth, topHeight, rightWidth, bottomHeight)
 
 	this._origWidth = texture.width;
 	this._origHeight = texture.height;
+	this._uvw = 1 / this._origWidth;
+	this._uvh = 1 / this._origHeight;
 	/**
 	 * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
 	 *
@@ -119,7 +121,6 @@ Object.defineProperties(NineSlicePlane.prototype, {
 		set: function (value)
 		{
 			this._width = value;
-			this._uvw = 1 / value * value / this._origWidth;
 			this.updateVerticalVertices();
 		}
 	},
@@ -139,7 +140,6 @@ Object.defineProperties(NineSlicePlane.prototype, {
 		set: function (value)
 		{
 			this._height = value;
-			this._uvh = 1 / value * value / this._origHeight;
 			this.updateHorizontalVertices();
 		}
 	},
