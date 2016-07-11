@@ -54,6 +54,13 @@ function InteractionManager(renderer, options)
     this.mouse = new InteractionData();
 
     /**
+     * The pointer data
+     *
+     * @member {PIXI.interaction.InteractionData}
+     */
+    this.pointer = new InteractionData();
+
+    /**
      * An event data object to handle all the event tracking/dispatching
      *
      * @member {object}
@@ -104,12 +111,35 @@ function InteractionManager(renderer, options)
     //this will make it so that you don't have to call bind all the time
 
     /**
+    * @member {Function}
+    */
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.processPointerMove = this.processPointerMove.bind( this );
+
+    /**
+    * @member {Function}
+    */
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.processPointerDown = this.processPointerDown.bind( this );
+
+    /**
+    * @member {Function}
+    */
+    this.onPointerOut = this.onPointerOut.bind(this);
+    this.processPointerInOut = this.processPointerInOut.bind( this );
+
+    /**
+    * @member {Function}
+    */
+    this.onPointerUp = this.onPointerUp.bind(this);
+    this.processPointerUp = this.processPointerUp.bind( this );
+
+    /**
      * @member {Function}
      * @private
      */
     this.onMouseUp = this.onMouseUp.bind(this);
     this.processMouseUp = this.processMouseUp.bind( this );
-
 
     /**
      * @member {Function}
@@ -228,15 +258,25 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
-    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
-    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    if(window.PointerEvent) {
+        window.document.addEventListener('pointermove', this.onPointerMove, true);
+        this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+        this.interactionDOMElement.addEventListener('pointerleave',  this.onPointerOut, true);
+        window.addEventListener('pointerup',  this.onPointerUp, true);
+    
+    } else{
+        window.document.addEventListener('mousemove',    this.onMouseMove, true);
+        this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
+        this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
-    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
-    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
-    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
+        this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
+        this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
+        this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
 
-    window.addEventListener('mouseup',  this.onMouseUp, true);
+        window.addEventListener('mouseup',  this.onMouseUp, true);
+    }
+
+   
 
     this.eventsAdded = true;
 };
@@ -261,17 +301,25 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    window.document.removeEventListener('mousemove', this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+     if(window.PointerEvent) {
+        window.document.removeEventListener('pointermove', this.onPointerMove, true);
+        this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
+        this.interactionDOMElement.removeEventListener('pointerleave',  this.onPointerOut, true);
+        window.removeEventListener('pointerup',  this.onPointerUp, true);
+    
+    } else{
+        window.document.removeEventListener('mousemove', this.onMouseMove, true);
+        this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
+        this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
 
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+        this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+        this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
+        this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
 
+        window.removeEventListener('mouseup',  this.onMouseUp, true);
+    }
+    
     this.interactionDOMElement = null;
-
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
 
     this.eventsAdded = false;
 };
@@ -693,6 +741,189 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         {
             displayObject._over = false;
             this.dispatchEvent( displayObject, 'mouseout', this.eventData);
+        }
+    }
+};
+
+
+/**
+ * Is called when the pointer button is pressed down on the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer button being pressed down
+ * @private
+ */
+InteractionManager.prototype.onPointerDown = function (event)
+{
+    if (this.autoPreventDefault)
+    {
+        event.preventDefault();
+    }
+
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    if (this.autoPreventDefault)
+    {
+        this.pointer.originalEvent.preventDefault();
+    }
+
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerDown, true );
+};
+
+/**
+ * Processes the result of the pointer down check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the dispay object
+ * @private
+ */
+InteractionManager.prototype.processPointerDown = function ( displayObject, hit )
+{
+    var e = this.pointer.originalEvent;
+
+    var isRightButton = e.button === 2 || e.which === 3;
+
+    if(hit)
+    {
+        displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
+        this.dispatchEvent( displayObject, isRightButton ? 'pointercommanddown' : 'pointerdown', this.eventData );
+    }
+};
+
+/**
+ * Is called when the pointer button is released on the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer button being released
+ * @private
+ */
+InteractionManager.prototype.onPointerUp = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerUp, true );
+};
+
+/**
+ * Processes the result of the pointer up check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerUp = function ( displayObject, hit )
+{
+    var e = this.pointer.originalEvent;
+
+    var isRightButton = e.button === 2 || e.which === 3;
+    var isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
+
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, isRightButton ? 'pointercommandup' : 'pointerup', this.eventData );
+
+        if( displayObject[ isDown ] )
+        {
+            displayObject[ isDown ] = false;
+            this.dispatchEvent( displayObject, isRightButton ? 'pointercommandtap' : 'pointertap', this.eventData );
+        }
+    }
+    else
+    {
+        if( displayObject[ isDown ] )
+        {
+            displayObject[ isDown ] = false;
+            this.dispatchEvent( displayObject, isRightButton ? 'pointercommandupoutside' : 'pointerupoutside', this.eventData );
+        }
+    }
+};
+
+/**
+ * Is called when the pointer moves across the renderer element
+ *
+ * @param event {Event} The DOM event of the pointer moving
+ * @private
+ */
+InteractionManager.prototype.onPointerMove = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.data = this.pointer;
+    this.eventData.stopped = false;
+
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.didMove = true;
+
+    this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerMove, true );    
+};
+
+/**
+ * Processes the result of the pointer move check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerMove = function ( displayObject, hit )
+{
+    this.dispatchEvent( displayObject, 'pointermove', this.eventData);
+    this.processPointerInOut(displayObject, hit);
+};
+
+
+/**
+ * Is called when the pointer is moved out of the renderer element
+ *
+ * @param event {Event} The DOM event of a pointer being moved out
+ * @private
+ */
+InteractionManager.prototype.onPointerOut = function (event)
+{
+    this.pointer.originalEvent = event;
+    this.eventData.stopped = false;
+
+    // Update internal pointer reference
+    this.mapPositionToPoint( this.pointer.global, event.clientX, event.clientY);
+
+    this.processInteractive( this.pointer.global, this.renderer._lastObjectRendered, this.processPointerInOut, false );
+};
+
+/**
+ * Processes the result of the pointer over/out check and dispatches the event if need be
+ *
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} The display object that was tested
+ * @param hit {boolean} the result of the hit test on the display object
+ * @private
+ */
+InteractionManager.prototype.processPointerInOut = function ( displayObject, hit )
+{
+    if(hit)
+    {
+        if(!displayObject._over)
+        {
+            displayObject._over = true;
+            this.dispatchEvent( displayObject, 'pointerover', this.eventData );
+        }
+
+        if (displayObject.buttonMode)
+        {
+            this.cursor = displayObject.defaultCursor;
+        }
+    }
+    else
+    {
+        if(displayObject._over)
+        {
+            displayObject._over = false;
+            this.dispatchEvent( displayObject, 'pointerout', this.eventData);
         }
     }
 };
