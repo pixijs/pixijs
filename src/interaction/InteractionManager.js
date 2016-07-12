@@ -57,6 +57,10 @@ function InteractionManager(renderer, options)
      */
     this.mouse = new InteractionData();
 
+    // setting the pointer to start off far off screen will mean that mouse over does
+    //  not get called before we even move the mouse.
+    this.mouse.global.set(-999999);
+
     /**
      * An event data object to handle all the event tracking/dispatching
      *
