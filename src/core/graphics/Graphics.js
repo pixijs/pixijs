@@ -698,6 +698,10 @@ Graphics.prototype._renderWebGL = function (renderer)
     {
         this.dirty = true;
         this.glDirty = false;
+    }
+
+    if(this.dirty)
+    {
         this._fastRect = this.isFastRect();
     }
 
