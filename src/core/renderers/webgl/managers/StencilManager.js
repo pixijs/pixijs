@@ -5,22 +5,22 @@ var WebGLManager = require('./WebGLManager');
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-function StencilMaskManager(renderer)
+function StencilManager(renderer)
 {
     WebGLManager.call(this, renderer);
     this.stencilMaskStack = null;
 }
 
-StencilMaskManager.prototype = Object.create(WebGLManager.prototype);
-StencilMaskManager.prototype.constructor = StencilMaskManager;
-module.exports = StencilMaskManager;
+StencilManager.prototype = Object.create(WebGLManager.prototype);
+StencilManager.prototype.constructor = StencilManager;
+module.exports = StencilManager;
 
 /**
  * Changes the mask stack that is used by this manager.
  *
  * @param stencilMaskStack {PIXI.Graphics[]} The mask stack
  */
-StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
+StencilManager.prototype.setMaskStack = function ( stencilMaskStack )
 {
     this.stencilMaskStack = stencilMaskStack;
 
@@ -41,7 +41,7 @@ StencilMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
  *
  * @param graphics {PIXI.Graphics}
  */
-StencilMaskManager.prototype.pushStencil = function (graphics)
+StencilManager.prototype.pushStencil = function (graphics)
 {
     this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
@@ -72,7 +72,7 @@ StencilMaskManager.prototype.pushStencil = function (graphics)
 /**
  * TODO @alvin
  */
-StencilMaskManager.prototype.popStencil = function ()
+StencilManager.prototype.popStencil = function ()
 {
     this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
@@ -103,7 +103,7 @@ StencilMaskManager.prototype.popStencil = function ()
  * Destroys the mask stack.
  *
  */
-StencilMaskManager.prototype.destroy = function ()
+StencilManager.prototype.destroy = function ()
 {
     WebGLManager.prototype.destroy.call(this);
 

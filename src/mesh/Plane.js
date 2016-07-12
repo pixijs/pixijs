@@ -14,8 +14,8 @@ var Mesh = require('./Mesh');
  * @extends PIXI.mesh.Mesh
  * @memberof PIXI.mesh
  * @param {PIXI.Texture} texture - The texture to use on the Plane.
- * @param {int} segmentsX - The number ox x segments
- * @param {int} segmentsY - The number of y segments
+ * @param {number} segmentsX - The number ox x segments
+ * @param {number} segmentsY - The number of y segments
  *
  */
 function Plane(texture, segmentsX, segmentsY)
@@ -74,7 +74,7 @@ Plane.prototype.refresh = function()
         verts.push((x * sizeX),
                    (y * sizeY));
 
-        // this works for rectangular textures. 
+        // this works for rectangular textures.
         uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.segmentsX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.segmentsY-1)));
       }
 
