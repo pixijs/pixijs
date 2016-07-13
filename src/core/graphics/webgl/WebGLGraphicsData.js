@@ -5,11 +5,11 @@ var glCore = require('pixi-gl-core');
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
  * @class
+ * @private
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The current WebGL drawing context
  * @param shader {PIXI.Shader} The shader
  * @param attribsState {object} The state for the VAO
- * @private
  */
 function WebGLGraphicsData(gl, shader, attribsState)
 {

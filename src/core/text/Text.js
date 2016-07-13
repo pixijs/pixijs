@@ -1,6 +1,7 @@
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
+    utils = require('../utils'),
     CONST = require('../const'),
     TextStyle = require('./TextStyle');
 
@@ -75,6 +76,7 @@ function Text(text, style, resolution)
     this._font = '';
 
     var texture = Texture.fromCanvas(this.canvas);
+    texture.orig = new math.Rectangle();
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
 
@@ -103,13 +105,14 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            return this.scale.x * this._texture._frame.width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             this.updateText(true);
 
-            this.scale.x = value / this._texture._frame.width;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -125,14 +128,15 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            return  this.scale.y * this._texture._frame.height;
+            return Math.abs(this.scale.y) * this._texture.orig.height;
         },
         set: function (value)
         {
             this.updateText(true);
 
-            this.scale.y = value / this._texture._frame.height;
-            this._height = value;
+            var sign = utils.sign(this.scale.x) || 1;
+            this.scale.x = sign * value / this.texture.orig.width;
+            this._width = value;
         }
     },
 
@@ -313,7 +317,7 @@ Text.prototype.updateText = function (respectDirty)
     }
 
     //set canvas text styles
-    this.context.fillStyle = style.fill;
+    this.context.fillStyle = this._generateFillStyle(style, lines);
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
@@ -407,17 +411,17 @@ Text.prototype.updateTexture = function ()
 
     texture.baseTexture.width = this.canvas.width / this.resolution;
     texture.baseTexture.height = this.canvas.height / this.resolution;
-    texture.orig.width = texture._frame.width = this.canvas.width / this.resolution;
-    texture.orig.height = texture._frame.height = this.canvas.height / this.resolution;
+    texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.trim.height = texture._frame.height = this.canvas.height / this.resolution;
 
     texture.trim.x = 0;
     texture.trim.y = -style.padding;
 
-    texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - style.padding*2;
+    texture.orig.width = texture._frame.width;
+    texture.orig.height = texture._frame.height - style.padding*2;
 
-    this._width = this.canvas.width / this.resolution;
-    this._height = this.canvas.height / this.resolution;
+    //call sprite onTextureUpdate to update scale if _width or _height were set
+    this._onTextureUpdate();
 
     texture.baseTexture.emit('update',  texture.baseTexture);
 
@@ -650,7 +654,69 @@ Text.prototype._onStyleChange = function ()
 };
 
 /**
- * Destroys this text
+ * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
+ * @return string|Number|CanvasGradient
+ * @private
+ */
+Text.prototype._generateFillStyle = function (style, lines)
+{
+    if (!Array.isArray(style.fill))
+    {
+        return style.fill;
+    }
+    else
+    {
+        // the gradient will be evenly spaced out according to how large the array is.
+        // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
+        var i;
+        var gradient;
+        var totalIterations;
+        var currentIteration;
+        var stop;
+
+        if (style.fillGradientType === CONST.TEXT_GRADIENT.LINEAR_VERTICAL)
+        {
+            // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
+            gradient = this.context.createLinearGradient(this.canvas.width / 2, 0, this.canvas.width / 2, this.canvas.height);
+
+            // we need to repeat the gradient so that each invididual line of text has the same vertical gradient effect
+            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
+            totalIterations = ( style.fill.length + 1 ) * lines.length;
+            currentIteration = 0;
+            for (i = 0; i < lines.length; i++)
+            {
+                currentIteration += 1;
+                for (var j = 0; j < style.fill.length; j++)
+                {
+                    stop = (currentIteration / totalIterations);
+                    gradient.addColorStop(stop, style.fill[j]);
+                    currentIteration++;
+                }
+            }
+        }
+        else
+        {
+            // start the gradient at the center left of the canvas, and end at the center right of the canvas
+            gradient = this.context.createLinearGradient(0, this.canvas.height / 2, this.canvas.width, this.canvas.height / 2);
+
+            // can just evenly space out the gradients in this case, as multiple lines makes no difference to an even left to right gradient
+            totalIterations = style.fill.length + 1;
+            currentIteration = 1;
+
+            for (i = 0; i < style.fill.length; i++)
+            {
+                stop = currentIteration / totalIterations;
+                gradient.addColorStop(stop, style.fill[i]);
+                currentIteration++;
+            }
+        }
+
+        return gradient;
+    }
+};
+
+/**
+ * Destroys this text object.
  *
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy

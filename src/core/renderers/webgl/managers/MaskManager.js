@@ -29,7 +29,7 @@ module.exports = MaskManager;
  * Applies the Mask and adds it to the current filter stack.
  *
  * @param target {PIXI.DisplayObject} Display Object to push the mask to
- * @param maskData {Array<*>}
+ * @param maskData {PIXI.Sprite|PIXI.Graphics}
  */
 MaskManager.prototype.pushMask = function (target, maskData)
 {
@@ -39,7 +39,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
     }
     else
     {
-        if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.graphicsData[0].shape.type === 1)
+        if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect())
         {
             var matrix = maskData.worldTransform;
 

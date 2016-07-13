@@ -9,7 +9,7 @@ var utils = require('../utils'),
  *
  * @class
  * @memberof PIXI
- * @param [source ]{Image|HTMLCanvasElement} the source object of the texture.
+ * @param [source ]{HTMLImageElement|HTMLCanvasElement} the source object of the texture.
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture
  */
@@ -98,7 +98,7 @@ function BaseTexture(source, scaleMode, resolution)
      *
      * TODO: Make this a setter that calls loadSource();
      *
-     * @member {Image|HTMLCanvasElement}
+     * @member {HTMLImageElement|HTMLCanvasElement}
      * @readonly
      */
     this.source = null; // set in loadSource, if at all
@@ -221,7 +221,7 @@ BaseTexture.prototype.update = function ()
  *     }
  *
  * @protected
- * @param source {Image|HTMLCanvasElement} the source object of the texture.
+ * @param source {HTMLImageElement|HTMLCanvasElement} the source object of the texture.
  */
 BaseTexture.prototype.loadSource = function (source)
 {

@@ -151,6 +151,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on world (parent) factors
      *
      * @member {PIXI.Matrix}
+     * @memberof PIXI.DisplayObject#
      * @readonly
      */
     worldTransform: {
@@ -164,6 +165,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on local factors: position, scale, other stuff
      *
      * @member {PIXI.Matrix}
+     * @memberof PIXI.DisplayObject#
      * @readonly
      */
     localTransform: {
@@ -175,6 +177,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
+     * Assignment by value since pixi-v4.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
@@ -185,12 +188,13 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.position;
         },
         set: function(value) {
-            this.transform.position = value;
+            this.transform.position.copy(value);
         }
     },
 
     /**
      * The scale factor of the object.
+     * Assignment by value since pixi-v4.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
@@ -200,12 +204,13 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.scale;
         },
         set: function(value) {
-            this.transform.scale = value;
+            this.transform.scale.copy(value);
         }
     },
 
     /**
      * The pivot point of the displayObject that it rotates around
+     * Assignment by value since pixi-v4.
      *
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
@@ -215,12 +220,13 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.pivot;
         },
         set: function(value) {
-            this.transform.pivot = value;
+            this.transform.pivot.copy(value);
         }
     },
 
     /**
      * The skew factor for the object in radians.
+     * Assignment by value since pixi-v4.
      *
      * @member {PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
@@ -230,7 +236,7 @@ Object.defineProperties(DisplayObject.prototype, {
             return this.transform.skew;
         },
         set: function(value) {
-            this.transform.skew = value;
+            this.transform.skew.copy(value);
         }
     },
 
@@ -428,7 +434,6 @@ DisplayObject.prototype.toLocal = function (position, from, point)
  * Renders the object using the WebGL renderer
  *
  * @param renderer {PIXI.WebGLRenderer} The renderer
- * @private
  */
 DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
@@ -439,7 +444,6 @@ DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
  * Renders the object using the Canvas renderer
  *
  * @param renderer {PIXI.CanvasRenderer} The renderer
- * @private
  */
 DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
@@ -497,11 +501,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
  */
 DisplayObject.prototype.destroy = function ()
 {
-
-    this.position = null;
-    this.scale = null;
-    this.pivot = null;
-    this.skew = null;
+    this.transform = null;
 
     this.parent = null;
 

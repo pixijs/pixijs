@@ -10,34 +10,34 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {string} VERSION
+     * @type {string}
      */
     VERSION: '__VERSION__',
 
     /**
      * Two Pi.
      *
-     * @property {number} PI_2
-     * @constant
      * @static
+     * @constant
+     * @type {number}
      */
     PI_2: Math.PI * 2,
 
     /**
      * Conversion factor for converting radians to degrees.
      *
-     * @property {number} RAD_TO_DEG
-     * @constant
      * @static
+     * @constant
+     * @type {number}
      */
     RAD_TO_DEG: 180 / Math.PI,
 
     /**
      * Conversion factor for converting degrees to radians.
      *
-     * @property {number} DEG_TO_RAD
-     * @constant
      * @static
+     * @constant
+     * @type {number}
      */
     DEG_TO_RAD: Math.PI / 180,
 
@@ -46,7 +46,8 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {number} TARGET_FPMS=0.06
+     * @type {number}
+     * @default 0.06
      */
     TARGET_FPMS: 0.06,
 
@@ -55,10 +56,10 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} RENDERER_TYPE
-     * @property {number} RENDERER_TYPE.UNKNOWN
-     * @property {number} RENDERER_TYPE.WEBGL
-     * @property {number} RENDERER_TYPE.CANVAS
+     * @type {object}
+     * @property {number} UNKNOWN - Unknown render type.
+     * @property {number} WEBGL - WebGL render type.
+     * @property {number} CANVAS - Canvas render type.
      */
     RENDERER_TYPE: {
         UNKNOWN:    0,
@@ -74,24 +75,24 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} BLEND_MODES
-     * @property {number} BLEND_MODES.NORMAL
-     * @property {number} BLEND_MODES.ADD
-     * @property {number} BLEND_MODES.MULTIPLY
-     * @property {number} BLEND_MODES.SCREEN
-     * @property {number} BLEND_MODES.OVERLAY
-     * @property {number} BLEND_MODES.DARKEN
-     * @property {number} BLEND_MODES.LIGHTEN
-     * @property {number} BLEND_MODES.COLOR_DODGE
-     * @property {number} BLEND_MODES.COLOR_BURN
-     * @property {number} BLEND_MODES.HARD_LIGHT
-     * @property {number} BLEND_MODES.SOFT_LIGHT
-     * @property {number} BLEND_MODES.DIFFERENCE
-     * @property {number} BLEND_MODES.EXCLUSION
-     * @property {number} BLEND_MODES.HUE
-     * @property {number} BLEND_MODES.SATURATION
-     * @property {number} BLEND_MODES.COLOR
-     * @property {number} BLEND_MODES.LUMINOSITY
+     * @type {object}
+     * @property {number} NORMAL
+     * @property {number} ADD
+     * @property {number} MULTIPLY
+     * @property {number} SCREEN
+     * @property {number} OVERLAY
+     * @property {number} DARKEN
+     * @property {number} LIGHTEN
+     * @property {number} COLOR_DODGE
+     * @property {number} COLOR_BURN
+     * @property {number} HARD_LIGHT
+     * @property {number} SOFT_LIGHT
+     * @property {number} DIFFERENCE
+     * @property {number} EXCLUSION
+     * @property {number} HUE
+     * @property {number} SATURATION
+     * @property {number} COLOR
+     * @property {number} LUMINOSITY
      */
     BLEND_MODES: {
         NORMAL:         0,
@@ -119,14 +120,14 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} DRAW_MODES
-     * @property {number} DRAW_MODES.POINTS
-     * @property {number} DRAW_MODES.LINES
-     * @property {number} DRAW_MODES.LINE_LOOP
-     * @property {number} DRAW_MODES.LINE_STRIP
-     * @property {number} DRAW_MODES.TRIANGLES
-     * @property {number} DRAW_MODES.TRIANGLE_STRIP
-     * @property {number} DRAW_MODES.TRIANGLE_FAN
+     * @type {object}
+     * @property {number} POINTS
+     * @property {number} LINES
+     * @property {number} LINE_LOOP
+     * @property {number} LINE_STRIP
+     * @property {number} TRIANGLES
+     * @property {number} TRIANGLE_STRIP
+     * @property {number} TRIANGLE_FAN
      */
     DRAW_MODES: {
         POINTS:         0,
@@ -146,10 +147,10 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} SCALE_MODES
-     * @property {number} SCALE_MODES.DEFAULT=LINEAR
-     * @property {number} SCALE_MODES.LINEAR Smooth scaling
-     * @property {number} SCALE_MODES.NEAREST Pixelating scaling
+     * @type {object}
+     * @property {number} DEFAULT=LINEAR
+     * @property {number} LINEAR Smooth scaling
+     * @property {number} NEAREST Pixelating scaling
      */
     SCALE_MODES: {
         DEFAULT:    0,
@@ -167,11 +168,11 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} WRAP_MODES
-     * @property {number} WRAP_MODES.DEFAULT=CLAMP
-     * @property {number} WRAP_MODES.CLAMP The textures uvs are clamped
-     * @property {number} WRAP_MODES.REPEAT The texture uvs tile and repeat
-     * @property {number} WRAP_MODES.MIRRORED_REPEAT The texture uvs tile and repeat with mirroring
+     * @type {object}
+     * @property {number} DEFAULT=CLAMP
+     * @property {number} CLAMP - The textures uvs are clamped
+     * @property {number} REPEAT - The texture uvs tile and repeat
+     * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
      */
     WRAP_MODES: {
         DEFAULT:        0,
@@ -191,10 +192,10 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} GC_MODES
-     * @property {number} GC_MODES.DEFAULT=DEFAULT
-     * @property {number} GC_MODES.AUTO Garbage collection will happen periodically automatically
-     * @property {number} GC_MODES.MANUAL Garbage collection will need to be called manually
+     * @type {object}
+     * @property {number} DEFAULT=MANUAL
+     * @property {number} AUTO - Garbage collection will happen periodically automatically
+     * @property {number} MANUAL - Garbage collection will need to be called manually
      */
     GC_MODES: {
         DEFAULT:        1,
@@ -208,16 +209,16 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {bool} MIPMAP_TEXTURES
+     * @type {boolean}
      */
-    MIPMAP_TEXTURES:true,
+    MIPMAP_TEXTURES: true,
 
     /**
      * The prefix that denotes a URL is for a retina asset.
      *
      * @static
      * @constant
-     * @property {string} RETINA_PREFIX
+     * @type {RegExp|string}
      * @example `@2x`
      */
     RETINA_PREFIX: /@(.+)x/,
@@ -225,18 +226,18 @@ var CONST = {
     /**
      * Default resolution / device pixel ratio of the renderer.
      *
-     * @property {number} RESOLUTION
-     * @constant
      * @static
+     * @constant
+     * @type {number}
      */
-    RESOLUTION:1,
+    RESOLUTION: 1,
 
     /**
      * Default filter resolution.
      *
-     * @property {number} FILTER_RESOLUTION
-     * @constant
      * @static
+     * @constant
+     * @type {number}
      */
     FILTER_RESOLUTION:1,
 
@@ -246,17 +247,17 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} DEFAULT_RENDER_OPTIONS
-     * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
-     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
-     * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.roundPixels=false
+     * @type {object}
+     * @property {HTMLCanvasElement} view=null
+     * @property {number} resolution=1
+     * @property {boolean} antialias=false
+     * @property {boolean} forceFXAA=false
+     * @property {boolean} autoResize=false
+     * @property {boolean} transparent=false
+     * @property {number} backgroundColor=0x000000
+     * @property {boolean} clearBeforeRender=true
+     * @property {boolean} preserveDrawingBuffer=false
+     * @property {boolean} roundPixels=false
      */
     DEFAULT_RENDER_OPTIONS: {
         view: null,
@@ -276,12 +277,12 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} SHAPES
-     * @property {number} SHAPES.POLY=0
-     * @property {number} SHAPES.RECT=1
-     * @property {number} SHAPES.CIRC=2
-     * @property {number} SHAPES.ELIP=3
-     * @property {number} SHAPES.RREC=4
+     * @type {object}
+     * @property {number} POLY
+     * @property {number} RECT
+     * @property {number} CIRC
+     * @property {number} ELIP
+     * @property {number} RREC
      */
     SHAPES: {
         POLY: 0,
@@ -296,11 +297,11 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} PRECISION
-     * @property {number} PRECISION.DEFAULT='mediump'
-     * @property {number} PRECISION.LOW='lowp'
-     * @property {number} PRECISION.MEDIUM='mediump'
-     * @property {number} PRECISION.HIGH='highp'
+     * @type {object}
+     * @property {number} DEFAULT='mediump'
+     * @property {number} LOW='lowp'
+     * @property {number} MEDIUM='mediump'
+     * @property {number} HIGH='highp'
      */
     PRECISION: {
         DEFAULT: 'mediump',
@@ -309,17 +310,68 @@ var CONST = {
         HIGH: 'highp'
     },
 
+    /**
+     * Constants that specify the transform type.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} DEFAULT=STATIC
+     * @property {number} STATIC
+     * @property {number} DYNAMIC
+     */
     TRANSFORM_MODE:{
-        STATIC:0,
-        DYNAMIC:1,
-        DEFAULT:0
+        DEFAULT:    0,
+        STATIC:     0,
+        DYNAMIC:    1
+    },
+
+    /**
+     * Constants that define the type of gradient on text.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} LINEAR_VERTICAL
+     * @property {number} LINEAR_HORIZONTAL
+     */
+    TEXT_GRADIENT: {
+        LINEAR_VERTICAL: 0,
+        LINEAR_HORIZONTAL: 1
     },
 
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-    SPRITE_BATCH_SIZE: 4096, //nice balance between mobile and desktop machines
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32), //this is the MAXIMUM - various gpus will have there own limits.
-    TEXT_STYLE_CHANGED: 'changed' //Name of the event that fires when a text style is changed
+
+    /**
+     * The default sprite batch size.
+     *
+     * The default aims to balance desktop and mobile devices.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     * @default 4096
+     */
+    SPRITE_BATCH_SIZE: 4096,
+
+    /**
+     * The maximum textures that this device supports.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     */
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32),
+
+    /**
+     * Name of the event that fires when a text style is changed.
+     *
+     * @static
+     * @constant
+     * @type {string}
+     */
+    TEXT_STYLE_CHANGED: 'changed'
 };
 
 module.exports = CONST;

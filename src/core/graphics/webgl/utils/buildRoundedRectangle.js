@@ -5,6 +5,9 @@ var earcut = require('earcut'),
 /**
  * Builds a rounded rectangle to draw
  *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
  * @private
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
@@ -77,6 +80,9 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
  * Calculate the points for a quadratic bezier curve. (helper function..)
  * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
  *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
  * @private
  * @param fromX {number} Origin point x
  * @param fromY {number} Origin point x

@@ -2,6 +2,9 @@
 /**
  * Calculate the points for a bezier curve and then draws it.
  *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
  * @param fromX {number} Starting point x
  * @param fromY {number} Starting point y
  * @param cpX {number} Control point x
