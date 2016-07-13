@@ -21,7 +21,7 @@ module.exports = CanvasExtract;
  * Will return a HTML Image of the target
  *
  * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
- * @return {Image} HTML Image of the target
+ * @return {HTMLImageElement} HTML Image of the target
  */
 CanvasExtract.prototype.image = function ( target )
 {

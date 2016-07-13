@@ -90,7 +90,7 @@ function Ticker()
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
      *
-     * @member {DOMHighResTimeStamp|number}
+     * @member {number}
      * @default 1 / TARGET_FPMS
      */
     this.elapsedMS = 1 / CONST.TARGET_FPMS; // default to target frame time
@@ -102,7 +102,7 @@ function Ticker()
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
      *
-     * @member {DOMHighResTimeStamp|number}
+     * @member {number}
      * @default 0
      */
     this.lastTime = 0;
@@ -323,7 +323,7 @@ Ticker.prototype.stop = function stop()
  * frame callbacks if the ticker instance has been started
  * and listeners are added.
  *
- * @param [currentTime=performance.now()] {DOMHighResTimeStamp|number} the current time of execution
+ * @param [currentTime=performance.now()] {number} the current time of execution
  */
 Ticker.prototype.update = function update(currentTime)
 {

@@ -698,6 +698,10 @@ Graphics.prototype._renderWebGL = function (renderer)
     {
         this.dirty = true;
         this.glDirty = false;
+    }
+
+    if(this.dirty)
+    {
         this._fastRect = this.isFastRect();
     }
 
@@ -989,7 +993,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.math.Circle|PIXI.math.Ellipse|PIXI.math.Polygon|PIXI.math.Rectangle|PIXI.math.RoundedRectangle} The shape object to draw.
+ * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)
