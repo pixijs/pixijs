@@ -676,6 +676,13 @@ Graphics.prototype.clear = function ()
     return this;
 };
 
+/**
+ * True if graphics consists of one rectangle, and thus, can be drawn like a Sprite and masked with gl.scissor
+ * @returns {boolean}
+ */
+Graphics.prototype.isFastRect = function() {
+    return this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
+};
 
 /**
  * Renders the object using the WebGL renderer
@@ -691,7 +698,11 @@ Graphics.prototype._renderWebGL = function (renderer)
     {
         this.dirty = true;
         this.glDirty = false;
-        this._fastRect = this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
+    }
+
+    if(this.dirty)
+    {
+        this._fastRect = this.isFastRect();
     }
 
     //TODO this check can be moved to dirty?
@@ -940,7 +951,7 @@ Graphics.prototype.updateLocalBounds = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param shape {PIXI.math.Circle|PIXI.math.Ellipse|PIXI.math.Polygon|PIXI.math.Rectangle|PIXI.math.RoundedRectangle} The shape object to draw.
+ * @param shape {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
  * @return {PIXI.GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)

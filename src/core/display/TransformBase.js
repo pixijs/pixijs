@@ -10,11 +10,15 @@ var math = require('../math');
 function TransformBase()
 {
     /**
-     * @member {PIXI.Matrix} The global matrix transform. It can be swapped temporarily by some functions like getLocalBounds()
+     * The global matrix transform. It can be swapped temporarily by some functions like getLocalBounds()
+     *
+     * @member {PIXI.Matrix}
      */
     this.worldTransform = new math.Matrix();
     /**
-     * @member {PIXI.Matrix} The local matrix transform
+     * The local matrix transform
+     * 
+     * @member {PIXI.Matrix}
      */
     this.localTransform = new math.Matrix();
 

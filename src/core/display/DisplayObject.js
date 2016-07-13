@@ -168,6 +168,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on world (parent) factors
      *
      * @member {PIXI.Matrix}
+     * @memberof PIXI.DisplayObject#
      * @readonly
      */
     worldTransform: {
@@ -181,6 +182,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Current transform of the object based on local factors: position, scale, other stuff
      *
      * @member {PIXI.Matrix}
+     * @memberof PIXI.DisplayObject#
      * @readonly
      */
     localTransform: {
@@ -514,7 +516,6 @@ DisplayObject.prototype.toLocalFast = function (position, from, point)
  * Renders the object using the WebGL renderer
  *
  * @param renderer {PIXI.WebGLRenderer} The renderer
- * @private
  */
 DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
@@ -525,7 +526,6 @@ DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
  * Renders the object using the Canvas renderer
  *
  * @param renderer {PIXI.CanvasRenderer} The renderer
- * @private
  */
 DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
