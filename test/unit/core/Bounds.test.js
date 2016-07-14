@@ -160,6 +160,40 @@ describe('getBounds', function () {
 
     });
 
+	it('should register correct width and height with an item that has already had its parent Container transformed', function() {
+        var parent = new PIXI.Container();
+
+        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+
+    	var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);//texture);
+
+
+        parent.addChild(container);
+        container.addChild(graphics);
+
+	    container.position.x = 100;
+    	container.position.y = 100;
+
+        var bounds = container.getBounds();
+
+        expect(bounds.x).to.equal(100);
+        expect(bounds.y).to.equal(100);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
+
+
+        var bounds = graphics.getBounds(true);
+
+        expect(bounds.x).to.equal(100);
+        expect(bounds.y).to.equal(100);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
+
+
+
+
+    });
+
 	it('should register correct width and height with a Mesh', function() {
 	        var parent = new PIXI.Container();
 
