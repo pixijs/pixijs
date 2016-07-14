@@ -6,7 +6,6 @@ var math = require('../math'),
     BoundsBulder = require('./BoundsBuilder'),
     _tempDisplayObjectParent = new DisplayObject();
 
-
 /**
  * The base class for all objects that are rendered on the screen.
  * This is an abstract class and should not be used on its own rather it should be extended.
@@ -363,10 +362,15 @@ DisplayObject.prototype.getBounds = function (noUpdate)
 {
     if(!noUpdate)
     {
-        if(this.parent)
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.updateTransform();
+            this.parent = null
+        }
+        else
         {
             this.updateTransform();
-
         }
     }
 
@@ -386,7 +390,15 @@ DisplayObject.prototype.getBounds = function (noUpdate)
  */
 DisplayObject.prototype.getLocalBounds = function ()
 {
-    return this.getBounds(math.Matrix.IDENTITY);
+    var transformRef = this.transform;
+
+    this.transform = _tempDisplayObjectParent.transform;
+
+    var bounds = this.getBounds();
+
+    this.transform = transformRef;
+
+    return bounds;
 };
 
 /**
