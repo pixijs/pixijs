@@ -3,6 +3,7 @@ var math = require('../math'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
+    BoundsBulder = require('./BoundsBuilder'),
     _tempDisplayObjectParent = new DisplayObject();
 
 
@@ -102,6 +103,8 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+    this._bounds_ = new BoundsBulder();
 }
 
 // constructor
@@ -356,9 +359,24 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  *
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function () // jshint unused:false
+DisplayObject.prototype.getBounds = function (noUpdate)
 {
-    return math.Rectangle.EMPTY;
+    if(!noUpdate)
+    {
+        if(this.parent)
+        {
+            this.updateTransform();
+
+        }
+    }
+
+    if(!this._currentBounds)
+    {
+        this.calculateBounds();
+        this._currentBounds = this._bounds_.getRectangle(this._bounds);
+    }
+
+    return this._currentBounds;
 };
 
 /**

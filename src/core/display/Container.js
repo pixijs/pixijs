@@ -385,80 +385,28 @@ Container.prototype.updateTransform = function ()
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-/**
-* Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
- *
- * @return {PIXI.Rectangle} The rectangular bounding area
- */
-Container.prototype.getBounds = function ()
+
+Container.prototype.calculateBounds = function (transform)
 {
-    if(!this._currentBounds)
+    // if we have already done this on THIS frame.
+    this._bounds_.clear();
+
+    this._calculateBounds();
+
+    for (var i = 0; i < this.children.length; i++)
     {
+        var child = this.children[i];
 
-        if (this.children.length === 0)
-        {
-            return math.Rectangle.EMPTY;
-        }
+        child.calculateBounds();
 
-        // TODO the bounds have already been calculated this render session so return what we have
+        this._bounds_.addBounds(child._bounds_);
+    };
+}
 
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var childBounds;
-        var childMaxX;
-        var childMaxY;
-
-        var childVisible = false;
-
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            var child = this.children[i];
-
-            if (!child.visible)
-            {
-                continue;
-            }
-
-            childBounds = this.children[i].getBounds();
-            if (childBounds === math.Rectangle.EMPTY) {
-                continue;
-            }
-            childVisible = true;
-
-            minX = minX < childBounds.x ? minX : childBounds.x;
-            minY = minY < childBounds.y ? minY : childBounds.y;
-
-            childMaxX = childBounds.width + childBounds.x;
-            childMaxY = childBounds.height + childBounds.y;
-
-            maxX = maxX > childMaxX ? maxX : childMaxX;
-            maxY = maxY > childMaxY ? maxY : childMaxY;
-        }
-
-        if (!childVisible)
-        {
-             this._currentBounds = math.Rectangle.EMPTY;
-             return this._currentBounds;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
-};
-
-Container.prototype.containerGetBounds = Container.prototype.getBounds;
+Container.prototype._calculateBounds = function ()
+{
+    //FILL IN//
+}
 
 /**
  * Retrieves the non-global local bounds of the Container as a rectangle.

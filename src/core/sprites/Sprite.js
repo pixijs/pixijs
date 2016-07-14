@@ -341,90 +341,12 @@ Sprite.prototype._renderCanvas = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-
-/**
- * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @return {PIXI.Rectangle} the framing rectangle
- */
-Sprite.prototype.getBounds = function ()
+Sprite.prototype._calculateBounds = function ()
 {
-    //TODO lookinto caching..
-    if(!this._currentBounds)
-    {
-        // set the vertex data
-        this.calculateVertices();
-
-        // set the vertex data
-        this.calculateBoundsVertices();
-
-        var minX, maxX, minY, maxY,
-            w0, w1, h0, h1,
-            vertexData = this.vertexData;
-
-        var x1 = vertexData[8];
-        var y1 = vertexData[9];
-
-        var x2 = vertexData[10];
-        var y2 = vertexData[11];
-
-        var x3 = vertexData[12];
-        var y3 = vertexData[13];
-
-        var x4 = vertexData[14];
-        var y4 = vertexData[15];
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        // check for children
-        if(this.children.length)
-        {
-            var childBounds = this.containerGetBounds();
-
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
-};
+    this.calculateVertices();
+    // if we have already done this on THIS frame.
+    this._bounds_.addQuad(this.vertexData);
+}
 
 /**
  * Gets the local bounds of the sprite object.
