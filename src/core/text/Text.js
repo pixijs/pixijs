@@ -409,6 +409,8 @@ Text.prototype.updateTexture = function ()
     texture.baseTexture.hasLoaded = true;
     texture.baseTexture.resolution = this.resolution;
 
+    texture.baseTexture.realWidth = this.canvas.width;
+    texture.baseTexture.realHeight = this.canvas.height;
     texture.baseTexture.width = this.canvas.width / this.resolution;
     texture.baseTexture.height = this.canvas.height / this.resolution;
     texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
