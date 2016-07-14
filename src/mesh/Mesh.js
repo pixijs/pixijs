@@ -509,36 +509,20 @@ Mesh.prototype.containsPoint = function( point ) {
 
     var vertices = this.vertices;
     var points = tempPolygon.points;
-    var i, len;
 
-    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
-        var indices = this.indices;
-        len = this.indices.length;
-        //TODO: inline this.
-        for (i=0;i<len;i+=3) {
-            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0+1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1+1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2+1];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
-        }
-    } else {
-        len = vertices.length;
-        for (i=0;i<len;i+=6) {
-            points[0] = vertices[i];
-            points[1] = vertices[i+1];
-            points[2] = vertices[i+2];
-            points[3] = vertices[i+3];
-            points[4] = vertices[i+4];
-            points[5] = vertices[i+5];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
+    var indices = this.indices;
+    var len = this.indices.length;
+    var step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
+    for (var i=0;i+2<len;i+=step) {
+        var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+        points[0] = vertices[ind0];
+        points[1] = vertices[ind0+1];
+        points[2] = vertices[ind1];
+        points[3] = vertices[ind1+1];
+        points[4] = vertices[ind2];
+        points[5] = vertices[ind2+1];
+        if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+            return true;
         }
     }
     return false;
