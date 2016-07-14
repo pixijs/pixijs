@@ -62,7 +62,7 @@ function WebGLState(gl)
       gl.getExtension('MOZ_OES_vertex_array_object') ||
       gl.getExtension('WEBKIT_OES_vertex_array_object')
     );
-};
+}
 
 /**
  * Pushes a new active state
