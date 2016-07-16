@@ -364,6 +364,8 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  */
 Container.prototype.updateTransform = function ()
 {
+    this._currentBounds = null;
+
     if (!this.visible)
     {
         return;
@@ -379,17 +381,23 @@ Container.prototype.updateTransform = function ()
         this.children[i].updateTransform();
     }
 
-    this._currentBounds = null;
+
 };
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 
-Container.prototype.calculateBounds = function (transform)
+Container.prototype.calculateBounds = function ()
 {
     // if we have already done this on THIS frame.
     this._bounds_.clear();
+
+    if(!this.visible)
+    {
+        return;
+    }
+
 
     this._calculateBounds();
 

@@ -323,7 +323,7 @@ var CONST = {
     TRANSFORM_MODE:{
         DEFAULT:    0,
         STATIC:     0,
-        DYNAMIC:    1
+        DYNAMIC:    0
     },
 
     /**
