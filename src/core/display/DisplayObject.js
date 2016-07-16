@@ -352,6 +352,23 @@ DisplayObject.prototype.updateTransform = function ()
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
 /**
+ * recursively updates transform of all objects from the root to this one
+ * internal function for toLocal()
+ */
+DisplayObject.prototype._recursivePostUpdateTransform = function()
+{
+    if (this.parent)
+    {
+        this.parent._recursivePostUpdateTransform();
+        this.transform.updateTransform(this.parent.transform);
+    }
+    else
+    {
+        this.transform.updateTransform(_tempDisplayObjectParent.transform);
+    }
+};
+
+/**
  *
  *
  * Retrieves the bounds of the displayObject as a rectangle object
@@ -370,6 +387,7 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         }
         else
         {
+            this._recursivePostUpdateTransform();
             this.updateTransform();
         }
     }

@@ -267,5 +267,32 @@ describe('getBounds', function () {
 
         });
 
+        it('should register correct width and height with an a DisplayObject parent has moved', function() {
+
+            var parent = new PIXI.Container();
+
+            var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+
+            var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);//texture);
+
+            container.addChild(graphics);
+
+            parent.addChild(container);
+
+          //  graphics.position.x = 100;
+          //  graphics.position.y = 100;
+            container.position.x -= 100;
+            container.position.y -= 100;
+
+            var bounds = graphics.getBounds();
+
+            expect(bounds.x).to.equal(-110);
+            expect(bounds.y).to.equal(-110);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
+
+
+        });
+
 
 	});
