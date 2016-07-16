@@ -110,11 +110,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 
     this.emit('update', this);
 
-    //TODO - remove this!
-    if(this.filterManager)
-    {
-        this.filterManager.resize(this.width, this.height);
-    }
 };
 
 /**
@@ -124,13 +119,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 BaseRenderTexture.prototype.destroy = function ()
 {
     BaseTexture.prototype.destroy.call(this, true);
-
-    // destroy the filtermanager..
-    if(this.filterManager)
-    {
-        this.filterManager.destroy();
-    }
-
     this.renderer = null;
 };
 

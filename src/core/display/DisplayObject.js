@@ -358,9 +358,9 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  *
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (noUpdate)
+DisplayObject.prototype.getBounds = function (skipUpdate)
 {
-    if(!noUpdate)
+    if(!skipUpdate)
     {
         if(!this.parent)
         {
@@ -391,11 +391,14 @@ DisplayObject.prototype.getBounds = function (noUpdate)
 DisplayObject.prototype.getLocalBounds = function ()
 {
     var transformRef = this.transform;
+    var parentRef = this.parent;
 
+    this.parent = null;
     this.transform = _tempDisplayObjectParent.transform;
 
     var bounds = this.getBounds();
 
+    this.parent = parentRef;
     this.transform = transformRef;
 
     return bounds;

@@ -409,32 +409,6 @@ Container.prototype._calculateBounds = function ()
 }
 
 /**
- * Retrieves the non-global local bounds of the Container as a rectangle.
- * The calculation takes all visible children into consideration.
- *
- * @return {PIXI.Rectangle} The rectangular bounding area
- */
-Container.prototype.getLocalBounds = function ()
-{
-    var matrixCache = this.transform.worldTransform;
-
-    this.transform.worldTransform = math.Matrix.IDENTITY;
-    this.transform._worldID++;
-
-    for (var i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].updateTransform();
-    }
-
-    this.transform.worldTransform = matrixCache;
-    this.transform._worldID++;
-
-    this._currentBounds = null;
-
-    return this.getBounds();
-};
-
-/**
  * Renders the object using the WebGL renderer
  *
  * @param renderer {PIXI.WebGLRenderer} The renderer

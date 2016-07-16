@@ -74,8 +74,7 @@ FilterManager.prototype.pushFilter = function(target, filters)
     // for now we go off the filter of the first resolution..
     var resolution = filters[0].resolution;
     var padding = filters[0].padding;
-    var targetBounds = target.filterArea || target.getBounds();
-
+    var targetBounds = target.filterArea || target.getBounds(true);
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
@@ -84,7 +83,14 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
-    sourceFrame.fit(filterData.stack[0].destinationFrame);
+    if(filterData.stack[0].renderTarget.transform)
+    {
+        // TODO we should fit the rect around the transform..
+    }
+    else
+    {
+        sourceFrame.fit(filterData.stack[0].destinationFrame);
+    }
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
@@ -379,7 +385,6 @@ FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, r
     renderTarget.resolution = resolution;
     renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
     renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
-
     return renderTarget;
 };
 
