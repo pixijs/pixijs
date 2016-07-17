@@ -307,18 +307,19 @@ describe('getBounds', function () {
             parent.addChild(container);
 
             var bounds = text.getBounds();
+            var bx = bounds.width;
 
             expect(bounds.x).to.equal(0);
             expect(bounds.y).to.equal(0);
             expect(bounds.width).to.be.greaterThan(0);
-            expect(bounds.height).to.equal(30);
+            expect(bounds.height).to.greaterThan(0);
 
             text.text = 'hello!';
 
             var bounds = text.getBounds();
 
             // this variable seems to be different on different devices. a font thing?
-            expect(bounds.width).to.not.equal(171);
+            expect(bounds.width).to.not.equal(bx);
 
         });
 
