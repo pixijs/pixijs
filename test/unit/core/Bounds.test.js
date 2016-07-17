@@ -145,17 +145,17 @@ describe('getBounds', function () {
 
         var bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(26.855121612548828);
-        expect(bounds.y).to.equal(22.89508628845215);
-        expect(bounds.width).to.equal(73.61032906981947);
-        expect(bounds.height).to.equal(97.53704772328177);
+        expect(bounds.x | 0).to.equal(26);
+        expect(bounds.y | 0).to.equal(22);
+        expect(bounds.width | 0).to.equal(73);
+        expect(bounds.height | 0).to.equal(97);
 
         var bounds = container.getBounds(true);
 
-        expect(bounds.x).to.equal(26.855121612548828);
-        expect(bounds.y).to.equal(22.89508628845215);
-        expect(bounds.width).to.equal(73.61032906981947);
-        expect(bounds.height).to.equal(97.53704772328177);
+        expect(bounds.x | 0).to.equal(26);
+        expect(bounds.y | 0).to.equal(22);
+        expect(bounds.width | 0).to.equal(73);
+        expect(bounds.height | 0).to.equal(97);
 
 
     });
