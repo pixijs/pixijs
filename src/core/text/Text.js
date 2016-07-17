@@ -632,16 +632,14 @@ Text.prototype.wordWrap = function (text)
 };
 
 /**
- * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {PIXI.Matrix} the transformation matrix of the Text
- * @return {PIXI.Rectangle} the framing rectangle
+ * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
  */
-Text.prototype.getBounds = function (matrix)
+Text.prototype._calculateBounds = function ()
 {
     this.updateText(true);
-
-    return Sprite.prototype.getBounds.call(this, matrix);
+    this.calculateVertices();
+    // if we have already done this on THIS frame.
+    this._bounds_.addQuad(this.vertexData);
 };
 
 /**

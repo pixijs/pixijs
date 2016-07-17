@@ -294,5 +294,35 @@ describe('getBounds', function () {
 
         });
 
+        it('should register correct width and height with an a Text Object', function() {
+
+            var parent = new PIXI.Container();
+
+            var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+
+            var text = new PIXI.Text('i am some text');
+
+            container.addChild(text);
+
+            parent.addChild(container);
+
+            var bounds = text.getBounds();
+
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(171);
+            expect(bounds.height).to.equal(30);
+
+            text.text = 'hello!';
+
+            var bounds = text.getBounds();
+
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(64);
+            expect(bounds.height).to.equal(30);
+
+        });
+
 
 	});
