@@ -383,7 +383,7 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         {
             this.parent = _tempDisplayObjectParent;
             this.updateTransform();
-            this.parent = null
+            this.parent = null;
         }
         else
         {
@@ -468,7 +468,7 @@ DisplayObject.prototype.toLocal = function (position, from, point, skipUpdate)
         position = from.toGlobal(position, point, skipUpdate);
     }
 
-    if(!skipUpdate)
+    if(! skipUpdate)
     {
         this._recursivePostUpdateTransform();
 

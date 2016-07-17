@@ -346,7 +346,7 @@ Sprite.prototype._calculateBounds = function ()
     this.calculateVertices();
     // if we have already done this on THIS frame.
     this._bounds_.addQuad(this.vertexData);
-}
+};
 
 /**
  * Gets the local bounds of the sprite object.

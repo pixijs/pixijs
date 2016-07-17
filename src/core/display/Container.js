@@ -1,5 +1,4 @@
-var math = require('../math'),
-    utils = require('../utils'),
+var utils = require('../utils'),
     DisplayObject = require('./DisplayObject');
 
 /**
@@ -390,8 +389,8 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
 
 Container.prototype.calculateBounds = function ()
 {
-    // if we have already done this on THIS frame.
     this._bounds_.clear();
+    // if we have already done this on THIS frame.
 
     if(!this.visible)
     {
@@ -408,13 +407,13 @@ Container.prototype.calculateBounds = function ()
         child.calculateBounds();
 
         this._bounds_.addBounds(child._bounds_);
-    };
-}
+    }
+};
 
 Container.prototype._calculateBounds = function ()
 {
     //FILL IN//
-}
+};
 
 /**
  * Renders the object using the WebGL renderer

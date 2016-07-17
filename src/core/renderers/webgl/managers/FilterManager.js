@@ -84,8 +84,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
     sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
 
     if(filterData.stack[0].renderTarget.transform)
-    {
+    {//jshint ignore:line
+
         // TODO we should fit the rect around the transform..
+
     }
     else
     {

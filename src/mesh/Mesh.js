@@ -445,7 +445,7 @@ Mesh.prototype._onTextureUpdate = function ()
  * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Mesh.prototype._calculateBounds = function (matrix)
+Mesh.prototype._calculateBounds = function ()
 {
     //TODO - we can cache local bounds and use them if they are dirty (like graphics)
     this._bounds_.addVertices(this.transform, this.vertices, 0, this.vertices.length);

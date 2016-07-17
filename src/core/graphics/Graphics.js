@@ -119,7 +119,7 @@ function Graphics()
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._localBounds = new BoundsBuilder()//math.Rectangle(0,0,1,1);
+    this._localBounds = new BoundsBuilder();
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -775,9 +775,12 @@ Graphics.prototype._renderCanvas = function (renderer)
  *  object's worldTransform.
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-Graphics.prototype._calculateBounds = function (matrix)
+Graphics.prototype._calculateBounds = function ()
 {
-    if (!this.renderable)return;
+    if (!this.renderable)
+    {
+        return;
+    }
 
     if (this.boundsDirty)
     {

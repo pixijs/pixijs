@@ -213,4 +213,4 @@ BoundsBuilder.prototype.addBounds = function(bounds)
     this.minY = bounds.minY < minY ? bounds.minY : minY;
     this.maxX = bounds.maxX > maxX ? bounds.maxX : maxX;
     this.maxY = bounds.maxY > maxY ? bounds.maxY : maxY;
-}
+};
