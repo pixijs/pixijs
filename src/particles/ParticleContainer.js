@@ -243,8 +243,8 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                     transform.b,
                     transform.c,
                     transform.d,
-                    transform.tx,
-                    transform.ty
+                    transform.tx * renderer.resolution,
+                    transform.ty * renderer.resolution
                 );
 
                 isRotated = false;
@@ -275,8 +275,8 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                     childTransform.b,
                     childTransform.c,
                     childTransform.d,
-                    childTransform.tx | 0,
-                    childTransform.ty | 0
+                    (childTransform.tx * renderer.resolution) | 0,
+                    (childTransform.ty * renderer.resolution) | 0
                 );
             }
             else
@@ -286,8 +286,8 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                     childTransform.b,
                     childTransform.c,
                     childTransform.d,
-                    childTransform.tx,
-                    childTransform.ty
+                    childTransform.tx * renderer.resolution,
+                    childTransform.ty * renderer.resolution
                 );
             }
 
@@ -298,16 +298,18 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
             finalHeight = frame.height;
         }
 
+        var resolution = child.texture.baseTexture.resolution;
+
         context.drawImage(
             child.texture.baseTexture.source,
-            frame.x,
-            frame.y,
-            frame.width,
-            frame.height,
-            positionX,
-            positionY,
-            finalWidth,
-            finalHeight
+            frame.x * resolution,
+            frame.y * resolution,
+            frame.width * resolution,
+            frame.height * resolution,
+            positionX * resolution,
+            positionY * resolution,
+            finalWidth * resolution,
+            finalHeight * resolution
         );
     }
 };
