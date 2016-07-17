@@ -118,7 +118,7 @@ function Graphics()
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._localBounds = new math.Rectangle(0,0,1,1);
+    this._cacheLocalBounds = new math.Rectangle(0,0,1,1);
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -768,90 +768,48 @@ Graphics.prototype._renderCanvas = function (renderer)
 };
 
 /**
+ * Takes graphics cached localBounds, rotates them with transform, passes to the builder
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
+ */
+Graphics.prototype._calcBounds = function (builder, transform)
+{
+    if (this.boundsDirty)
+    {
+        this.updateLocalBounds();
+
+        this.glDirty = true;
+        this.cachedSpriteDirty = true;
+        this.boundsDirty = false;
+    }
+
+    var bounds = this._cacheLocalBounds;
+
+    var w0 = bounds.x;
+    var w1 = bounds.width + bounds.x;
+
+    var h0 = bounds.y;
+    var h1 = bounds.height + bounds.y;
+    builder.addFrame(transform, w0, h0, w1, h1);
+};
+
+/**
  * Retrieves the bounds of the graphic shape as a rectangle object
+ * contains a hack: it does return Rectangle.EMPTY if graphics is not renderable (is a mask)
  *
- * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
- *  object's worldTransform.
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-Graphics.prototype.getBounds = function (matrix)
+Graphics.prototype.getBounds = function ()
 {
     if(!this._currentBounds)
     {
-
         // return an empty object if the item is a mask!
         if (!this.renderable)
         {
             return math.Rectangle.EMPTY;
         }
 
-        if (this.boundsDirty)
-        {
-            this.updateLocalBounds();
-
-            this.glDirty = true;
-            this.cachedSpriteDirty = true;
-            this.boundsDirty = false;
-        }
-
-        var bounds = this._localBounds;
-
-        var w0 = bounds.x;
-        var w1 = bounds.width + bounds.x;
-
-        var h0 = bounds.y;
-        var h1 = bounds.height + bounds.y;
-
-        var worldTransform = matrix || this.worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var x1 = a * w1 + c * h1 + tx;
-        var y1 = d * h1 + b * w1 + ty;
-
-        var x2 = a * w0 + c * h1 + tx;
-        var y2 = d * h1 + b * w0 + ty;
-
-        var x3 = a * w0 + c * h0 + tx;
-        var y3 = d * h0 + b * w0 + ty;
-
-        var x4 =  a * w1 + c * h0 + tx;
-        var y4 =  d * h0 + b * w1 + ty;
-
-        var maxX = x1;
-        var maxY = y1;
-
-        var minX = x1;
-        var minY = y1;
-
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        this._bounds.x = minX;
-        this._bounds.width = maxX - minX;
-
-        this._bounds.y = minY;
-        this._bounds.height = maxY - minY;
-
-        this._currentBounds = this._bounds;
+        return this.containerGetBounds();
     }
 
     return this._currentBounds;
@@ -982,11 +940,11 @@ Graphics.prototype.updateLocalBounds = function ()
 
     var padding = this.boundsPadding;
 
-    this._localBounds.x = minX - padding;
-    this._localBounds.width = (maxX - minX) + padding * 2;
+    this._cacheLocalBounds.x = minX - padding;
+    this._cacheLocalBounds.width = (maxX - minX) + padding * 2;
 
-    this._localBounds.y = minY - padding;
-    this._localBounds.height = (maxY - minY) + padding * 2;
+    this._cacheLocalBounds.y = minY - padding;
+    this._cacheLocalBounds.height = (maxY - minY) + padding * 2;
 };
 
 
@@ -1028,7 +986,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
 {
     resolution = resolution || 1;
 
-    var bounds = this.getLocalBounds();
+    var bounds = this.getLegacyLocalBounds();
 
     var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
@@ -1099,5 +1057,5 @@ Graphics.prototype.destroy = function ()
 
     this.currentPath = null;
     this._webgl = null;
-    this._localBounds = null;
+    this._cacheLocalBounds = null;
 };

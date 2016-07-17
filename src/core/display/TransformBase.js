@@ -3,23 +3,21 @@ var math = require('../math');
 
 /**
  * Generic class to deal with traditional 2D matrix transforms
- * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
  *
  * @class
  * @memberof PIXI
  */
-function TransformManual()
+function TransformBase()
 {
     /**
-     * The global matrix transform.
+     * The global matrix transform. It can be swapped temporarily by some functions like getLocalBounds()
      *
      * @member {PIXI.Matrix}
      */
     this.worldTransform = new math.Matrix();
-
     /**
-     * The local matrix transform.
-     *
+     * The local matrix transform
+     * 
      * @member {PIXI.Matrix}
      */
     this.localTransform = new math.Matrix();
@@ -27,16 +25,22 @@ function TransformManual()
     this._worldID = 0;
 }
 
-TransformManual.prototype.constructor = TransformManual;
+TransformBase.prototype.constructor = TransformBase;
+
+/**
+ * TransformBase does not have decomposition, so this function wont do anything
+ */
+TransformBase.prototype.updateLocalTransform = function() { // jshint unused:false
+
+};
 
 /**
  * Updates the values of the object and applies the parent's transform.
- * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
+ * @param  parentTransform {PIXI.TransformBase} The transform of the parent of this object
  *
  */
-TransformManual.prototype.updateTransform = function (parentTransform)
+TransformBase.prototype.updateTransform = function (parentTransform)
 {
-
     var pt = parentTransform.worldTransform;
     var wt = this.worldTransform;
     var lt = this.localTransform;
@@ -52,4 +56,13 @@ TransformManual.prototype.updateTransform = function (parentTransform)
     this._worldID ++;
 };
 
-module.exports = TransformManual;
+/**
+ * Updates the values of the object and applies the parent's transform.
+ * @param  parentTransform {PIXI.Transform} The transform of the parent of this object
+ *
+ */
+TransformBase.prototype.updateWorldTransform = TransformBase.prototype.updateTransform;
+
+TransformBase.IDENTITY = new TransformBase();
+
+module.exports = TransformBase;
