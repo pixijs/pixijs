@@ -509,6 +509,5 @@ DisplayObject.prototype.destroy = function ()
     this._currentBounds = null;
     this._mask = null;
 
-    this.worldTransform = null;
     this.filterArea = null;
 };
