@@ -428,24 +428,29 @@ DisplayObject.prototype.getLocalBounds = function ()
  * @param position {PIXI.Point} The world origin to calculate from
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position)
+DisplayObject.prototype.toGlobal = function (position, point, skipUpdate)
 {
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
+    if(!skipUpdate)
     {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.displayObjectUpdateTransform();
+        this._recursivePostUpdateTransform();
+
+        // this parent check is for just in case the item is a root object.
+        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.displayObjectUpdateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this.displayObjectUpdateTransform();
+        }
     }
 
     // don't need to update the lot
-    return this.worldTransform.apply(position);
+    return this.worldTransform.apply(position, point);
 };
 
 /**
@@ -456,25 +461,30 @@ DisplayObject.prototype.toGlobal = function (position)
  * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from, point)
+DisplayObject.prototype.toLocal = function (position, from, point, skipUpdate)
 {
     if (from)
     {
-        position = from.toGlobal(position);
+        position = from.toGlobal(position, point, skipUpdate);
     }
 
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
+    if(skipUpdate)
     {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.displayObjectUpdateTransform();
+        this._recursivePostUpdateTransform();
+
+        // this parent check is for just in case the item is a root object.
+        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.displayObjectUpdateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this.displayObjectUpdateTransform();
+        }
     }
 
     // simply apply the matrix..
