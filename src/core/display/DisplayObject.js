@@ -26,7 +26,7 @@ function DisplayObject()
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
      *
-     * @member {PIXI.Transform|PIXI.TransformStatic}
+     * @member {PIXI.TransformBase}
      */
     this.transform =  new TransformClass();
 

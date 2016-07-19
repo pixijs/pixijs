@@ -1,28 +1,16 @@
-var math = require('../math');
+var math = require('../math'),
+    TransformBase = require('./TransformBase');
 
 /**
  * Transform that takes care about its versions
- * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
  *
  * @class
+ * @extends PIXI.TransformBase
  * @memberof PIXI
  */
 function TransformStatic()
 {
-    /**
-     * The global matrix transform.
-     *
-     * @member {PIXI.Matrix}
-     */
-    this.worldTransform = new math.Matrix();
-
-    /**
-     * The local matrix transform.
-     *
-     * @member {PIXI.Matrix}
-     */
-    this.localTransform = new math.Matrix();
-
+    TransformBase.call(this);
      /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -60,13 +48,10 @@ function TransformStatic()
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
 
-
-    this._localID = 0;
     this._currentLocalID = 0;
-    this._parentID = 0;
-    this._worldID = 0;
 }
 
+TransformStatic.prototype = Object.create(TransformBase.prototype);
 TransformStatic.prototype.constructor = TransformStatic;
 
 TransformStatic.prototype.onChange = function ()
@@ -82,6 +67,35 @@ TransformStatic.prototype.updateSkew = function ()
     this._cx  = Math.cos(this.skew.x);
 
     this._localID ++;
+};
+
+/**
+ * Updates only local matrix
+ */
+TransformStatic.prototype.updateLocalTransform = function() {
+    var lt = this.localTransform;
+    if(this._localID !== this._currentLocalID)
+    {
+        // get the matrix values of the displayobject based on its transform properties..
+        var a,b,c,d;
+
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+
+        lt.a  = this._cy * a + this._sy * c;
+        lt.b  = this._cy * b + this._sy * d;
+        lt.c  = this._nsx * a + this._cx * c;
+        lt.d  = this._nsx * b + this._cx * d;
+
+        lt.tx =  this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
+        lt.ty =  this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
+        this._currentLocalID = this._localID;
+
+        // force an update..
+        this._parentID = -1;
+    }
 };
 
 /**
