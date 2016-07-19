@@ -348,8 +348,8 @@ Matrix.prototype.prepend = function(matrix)
 
 /**
  * Decomposes the matrix (x, y, scaleX, scaleY, and rotation) and sets the properties on to a transform.
- * @param transform {PIXI.Transform} the transform to apply the properties to.
- * @return {PIXI.Transform} The transform with the newly applied properies
+ * @param transform {PIXI.Transform|PIXI.TransformStatic} the transform to apply the properties to.
+ * @return {PIXI.Transform|PIXI.TransformStatic} The transform with the newly applied properies
 */
 Matrix.prototype.decompose = function(transform)
 {
