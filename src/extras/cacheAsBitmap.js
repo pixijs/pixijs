@@ -101,13 +101,13 @@ DisplayObject.prototype.beginTextureGeneration = function(matrix) {
 /**
  * Finalizes texture generation, returns all previous values.
  * You can omit that for performance, nothing really bad will happen, just some side-effects
- * @param updateChildren {boolean} may update children again to return them in old state
+ * @param skipUpdate {boolean} do not update children to return them in old state
  */
-DisplayObject.prototype.endTextureGeneration = function(updateChildren) {
+DisplayObject.prototype.endTextureGeneration = function(skipUpdate) {
     this.transform.worldTransform = this._cacheWorldTransform;
     this.transform._worldID++;
     this.worldAlpha = this._cacheWorldAlpha;
-    if (updateChildren) {
+    if (!skipUpdate) {
         for (var i = 0, j = this.children.length; i < j; ++i) {
             this.children[i].updateTransform();
         }
@@ -190,7 +190,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     renderer.render(this, renderTexture, true, null, true);
     // now restore the state be setting the new properties
-    this.endTextureGeneration(false);
+    this.endTextureGeneration(true);
 
     renderer.bindRenderTarget(cachedRenderTarget);
 

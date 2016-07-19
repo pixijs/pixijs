@@ -249,7 +249,7 @@ SystemRenderer.prototype.generateTexture = function (displayObject, scaleMode, r
 
     this.render(displayObject, renderTexture, false, null, true);
 
-    displayObject.endTextureGeneration(true);
+    displayObject.endTextureGeneration(false);
 
     return renderTexture;
 };
