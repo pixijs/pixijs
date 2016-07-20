@@ -447,7 +447,7 @@ Container.prototype.getBounds = function (skipUpdate)
                 child.updateTransform();
             }
 
-            childBounds = this.children[i].getBounds();
+            childBounds = this.children[i].getBounds(true);
             if (childBounds === math.Rectangle.EMPTY) {
                 continue;
             }
