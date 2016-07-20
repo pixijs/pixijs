@@ -8,9 +8,10 @@ var fragTemplate = [
     'uniform sampler2D uSamplers[%count%];',
 
     'void main(void){',
-        'vec4 color;',
-        '%forloop%',
-        'gl_FragColor = color * vColor;',
+    'vec4 color;',
+    'float textureId = floor(vTextureId+0.01);',
+    '%forloop%',
+    'gl_FragColor = color * vColor;',
     '}'
 ].join('\n');
 
@@ -52,7 +53,7 @@ function generateSampleSrc(maxTextures)
 
         if(i < maxTextures-1)
         {
-            src += 'if(vTextureId == ' + i + '.0)';
+            src += 'if(textureId == ' + i + '.0)';
         }
 
         src += '\n{';
