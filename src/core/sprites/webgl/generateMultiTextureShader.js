@@ -9,7 +9,7 @@ var fragTemplate = [
 
     'void main(void){',
     'vec4 color;',
-    'float textureId = floor(vTextureId+0.01);',
+    'float textureId = floor(vTextureId+0.5);',
     '%forloop%',
     'gl_FragColor = color * vColor;',
     '}'
