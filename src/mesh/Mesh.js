@@ -440,15 +440,15 @@ Mesh.prototype._onTextureUpdate = function ()
 };
 
 /**
- * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
+ * Pass mesh vertices to the builder.
  *
- * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
- * @return {PIXI.Rectangle} the framing rectangle
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
  */
-Mesh.prototype._calculateBounds = function ()
+Mesh.prototype._calculateBounds = function (builder, transform)
 {
-    //TODO - we can cache local bounds and use them if they are dirty (like graphics)
-    this._bounds_.addVertices(this.transform, this.vertices, 0, this.vertices.length);
+    //TODO - we can cache local bounds and use them if they are dirty (like graphics). Though, only for our transform.
+    builder.addVertices(transform, this.vertices, 0, this.vertices.length);
 };
 
 /**

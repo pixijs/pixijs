@@ -6,6 +6,9 @@ var math = require('../math'),
  * Axis-Aligned Bounding Box
  * It is not a shape! Its mutable thing, no 'EMPTY' or that kind of problems
  *
+ * Condition: Use it only as a temporary object per one calculation or per one module.
+ * If browser profiler shows more than 10 elements of that in memory, something is clearly wrong
+ *
  * @class
  * @memberof PIXI
  */

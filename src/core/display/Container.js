@@ -1,5 +1,9 @@
-var utils = require('../utils'),
-    DisplayObject = require('./DisplayObject');
+var math = require('../math'),
+    utils = require('../utils'),
+    DisplayObject = require('./DisplayObject'),
+    TransformBase = require('./TransformBase'),
+    BoundsBuilder = require('./BoundsBuilder'),
+    _tempBoundsBuilder = new BoundsBuilder();
 
 /**
  * A Container represents a collection of display objects.
@@ -24,6 +28,13 @@ function Container()
      * @readonly
      */
     this.children = [];
+
+    /**
+     * Used for bounds calculation of children
+     * @member {?PIXI.Transform}
+     * @private
+     */
+    this._boundsTransform = null;
 }
 
 // constructor
@@ -131,7 +142,7 @@ Container.prototype.addChild = function (child)
         child.parent = this;
 
         // ensure a transform will be recalculated..
-        this.transform._parentID = -1;
+        child.transform._parentID = -1;
 
         this.children.push(child);
 
@@ -285,6 +296,10 @@ Container.prototype.removeChild = function (child)
         }
 
         child.parent = null;
+        if (child.transform)
+        {
+            child.transform._parentID = -1;
+        }
         utils.removeItems(this.children, index, 1);
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -363,8 +378,6 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  */
 Container.prototype.updateTransform = function ()
 {
-    this._currentBounds = null;
-
     if (!this.visible)
     {
         return;
@@ -380,40 +393,89 @@ Container.prototype.updateTransform = function ()
         this.children[i].updateTransform();
     }
 
-
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-
-Container.prototype.calculateBounds = function ()
+/**
+ * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
+ *
+ * @param [skipUpdate] {boolean} pass 'true' to make it faster, only if you know that no changes happened after last updateTransform()
+ * @return {PIXI.Rectangle} The rectangular bounding area
+ */
+Container.prototype.getBounds = function (skipUpdate)
 {
-    this._bounds_.clear();
-    // if we have already done this on THIS frame.
-
-    if(!this.visible)
-    {
-        return;
+    if (!this.visible) {
+        return math.Rectangle.EMPTY;
     }
 
-
-    this._calculateBounds();
-
-    for (var i = 0; i < this.children.length; i++)
-    {
-        var child = this.children[i];
-
-        child.calculateBounds();
-
-        this._bounds_.addBounds(child._bounds_);
+    if (!skipUpdate) {
+        this._recursivePostUpdateTransform();
+        this._currentBounds = null;
     }
+
+    if(!this._currentBounds)
+    {
+
+        var rb = _tempBoundsBuilder;
+        rb.clear();
+        this._calculateBounds(rb, this.transform);
+
+        // _tempBoundsBuilder can be used inside cycle, so we have to maintain our own set of variables
+        var minX = rb.minX;
+        var minY = rb.minY;
+        var maxX = rb.maxX;
+        var maxY = rb.maxY;
+
+        var childBounds;
+        var childMaxX;
+        var childMaxY;
+
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            var child = this.children[i];
+
+            if (!child.visible)
+            {
+                continue;
+            }
+
+            if (!skipUpdate)
+            {
+                child.updateTransform();
+            }
+
+            childBounds = this.children[i].getBounds();
+            if (childBounds === math.Rectangle.EMPTY) {
+                continue;
+            }
+
+            minX = minX < childBounds.x ? minX : childBounds.x;
+            minY = minY < childBounds.y ? minY : childBounds.y;
+
+            childMaxX = childBounds.width + childBounds.x;
+            childMaxY = childBounds.height + childBounds.y;
+
+            maxX = maxX > childMaxX ? maxX : childMaxX;
+            maxY = maxY > childMaxY ? maxY : childMaxY;
+        }
+
+        //return variables to their place
+        rb.minX = minX;
+        rb.minY = minY;
+        rb.maxX = maxX;
+        rb.maxY = maxY;
+
+        //use BoundsBuilder logic
+        this._currentBounds = rb.getRectangle(this._bounds);
+    }
+
+    return this._currentBounds;
 };
 
-Container.prototype._calculateBounds = function ()
-{
-    //FILL IN//
-};
+Container.prototype.containerGetBounds = Container.prototype.getBounds;
 
 /**
  * Renders the object using the WebGL renderer
@@ -483,6 +545,62 @@ Container.prototype.renderWebGL = function (renderer)
             this.children[i].renderWebGL(renderer);
         }
     }
+};
+
+/**
+ * _calculateBounds() adds bounds of this object with transform to builder.
+ * calculateBounds() adds child bounds too.
+ *
+ * Please do not override it.
+ *
+ * The calculation takes all visible children into consideration.
+ * If there are any visible children, one temporary cached transform object will be used.
+ *
+ * Condition: this method is recursive and uses one temporary pooled transform per every parent that has children in this subtree.
+ * It does not affect anything except builder and may be some cached bounds for Mesh or Graphics
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
+ */
+
+Container.prototype.calculateBounds = function (builder, transform)
+{
+    var children = this.children;
+    var i, j;
+    this._calculateBounds(builder, transform);
+    // now loop through the children and make sure they get rendered
+    for (i = 0, j = children.length; i < j; i++)
+    {
+        var child = children[i];
+        if (!child.visible)
+        {
+            continue;
+        }
+        var bt = this._boundsTransform;
+        if (!bt)
+        {
+            bt = new TransformBase();
+            this._boundsTransform = bt;
+        }
+        child.transform.updateLocalTransform();
+        bt.localTransform = child.transform.localTransform;
+        bt.updateTransform(transform);
+        this.children[i].calculateBounds(builder, bt);
+    }
+};
+
+/**
+ * To be overridden by the subclass. Same strategy as for renderWebGL/_renderWebGL applies:
+ * _calculateBounds() adds bounds of this object with transform to builder
+ * calculateBounds() adds child bounds too
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
+ * @private
+ */
+Container.prototype._calculateBounds = function (builder, transform) // jshint unused:false
+{
+    // this is where content bounds are measured
 };
 
 /**

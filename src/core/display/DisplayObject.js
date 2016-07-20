@@ -3,8 +3,10 @@ var math = require('../math'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    BoundsBulder = require('./BoundsBuilder'),
-    _tempDisplayObjectParent = new DisplayObject();
+    TransformBase = require('./TransformBase'),
+    BoundsBuilder = require('./BoundsBuilder'),
+    _tempBoundsBuilder = new BoundsBuilder();
+
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -24,7 +26,9 @@ function DisplayObject()
     //TODO: need to create Transform from factory
     /**
      * World transform and local transform of this object.
-     * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+     *
+     * Condition: transform shows global coordinates that were calculated after last updateTransform() pass.
+     * It may show some local stuff ONLY if a parent is cachedAsBitmap or inside generateTexture
      *
      * @member {PIXI.TransformBase}
      */
@@ -88,6 +92,22 @@ function DisplayObject()
     this._bounds = new math.Rectangle(0, 0, 1, 1);
 
     /**
+     * Cache/pool for local bounds, it will be initialized only if someone asks getLocalBounds()
+     *
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._localBounds = null;
+
+    /**
+     * Last asked localBounds. Can be null, this._localBounds or PIXI.Rectangle.EMPTY
+     *
+     * @member {PIXI.Rectangle}
+     * @private
+     */
+    this._currentLocalBounds = null;
+
+    /**
      * The most up-to-date bounds of the object
      *
      * @member {PIXI.Rectangle}
@@ -102,8 +122,6 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
-
-    this._bounds_ = new BoundsBulder();
 }
 
 // constructor
@@ -346,111 +364,91 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
 /**
- * recursively updates transform of all objects from the root to this one
- * internal function for toLocal()
- */
-DisplayObject.prototype._recursivePostUpdateTransform = function()
-{
-    if (this.parent)
-    {
-        this.parent._recursivePostUpdateTransform();
-        this.transform.updateTransform(this.parent.transform);
-    }
-    else
-    {
-        this.transform.updateTransform(_tempDisplayObjectParent.transform);
-    }
-};
-
-/**
- *
  *
  * Retrieves the bounds of the displayObject as a rectangle object
+ * Assumes that all necessary transforms have been updated
  *
+ * @param [skipUpdate] {boolean} pass 'true' to make it faster, only if you know that no changes happened after last updateTransform()
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (skipUpdate)
+DisplayObject.prototype.getBounds = function (skipUpdate) // jshint unused:false
 {
-    if(!skipUpdate)
-    {
-        if(!this.parent)
-        {
-            this.parent = _tempDisplayObjectParent;
-            this.updateTransform();
-            this.parent = null;
-        }
-        else
-        {
-            this._recursivePostUpdateTransform();
-            this.updateTransform();
-        }
+    if (!skipUpdate) {
+        this._recursivePostUpdateTransform();
     }
 
     if(!this._currentBounds)
     {
-        this.calculateBounds();
-        this._currentBounds = this._bounds_.getRectangle(this._bounds);
+
+        var rb = _tempBoundsBuilder;
+        rb.clear();
+        this.calculateBounds(rb, this.transform);
+        this._currentBounds = rb.getRectangle(this._bounds);
     }
 
     return this._currentBounds;
 };
 
 /**
+ * Fills the builder with points. Both parameters are required
+ *
+ * Condition: this method does not affect anything except builder and may be some cached bounds for Mesh or Graphics
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
+ */
+DisplayObject.prototype.calculateBounds = function(builder, transform) // jshint unused:false
+{
+
+};
+
+/**
  * Retrieves the local bounds of the displayObject as a rectangle object
+ *
+ * For a container, the calculation takes all visible children into consideration.
+ *
+ * Condition: it does not modify transform of the displayObject. Only temporary/pooled variables are used
  *
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
 DisplayObject.prototype.getLocalBounds = function ()
 {
-    var transformRef = this.transform;
-    var parentRef = this.parent;
-
-    this.parent = null;
-    this.transform = _tempDisplayObjectParent.transform;
-
-    var bounds = this.getBounds();
-
-    this.parent = parentRef;
-    this.transform = transformRef;
-
+    var rb = _tempBoundsBuilder;
+    rb.clear();
+    this.calculateBounds(rb, TransformBase.IDENTITY);
+    var bounds = rb.getRectangle(this._localBounds);
+    if (bounds !== math.Rectangle.EMPTY) {
+        this._localBounds = bounds;
+    }
+    this._currentLocalBounds = bounds;
     return bounds;
 };
 
 /**
- * Calculates the global position of the display object
+ * Calculates the global position of the display object. Recursively applies all local transforms from object to the root
  *
  * @param position {PIXI.Point} The world origin to calculate from
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+ * @param [skipUpdate] {boolean} pass 'true' to make it faster, only if you know that no changes happened after last updateTransform()
  * @return {PIXI.Point} A point object representing the position of this object
  */
 DisplayObject.prototype.toGlobal = function (position, point, skipUpdate)
 {
-    if(!skipUpdate)
-    {
+    if (!skipUpdate) {
         this._recursivePostUpdateTransform();
-
-        // this parent check is for just in case the item is a root object.
-        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-        if(!this.parent)
-        {
-            this.parent = _tempDisplayObjectParent;
-            this.displayObjectUpdateTransform();
-            this.parent = null;
-        }
-        else
-        {
-            this.displayObjectUpdateTransform();
-        }
     }
-
-    // don't need to update the lot
-    return this.worldTransform.apply(position, point);
+    point = point || new math.Point();
+    point.copy(position);
+    this.transform.worldTransform.apply(point, point);
+    return point;
 };
 
 /**
@@ -459,36 +457,37 @@ DisplayObject.prototype.toGlobal = function (position, point, skipUpdate)
  * @param position {PIXI.Point} The world origin to calculate from
  * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
  * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+ * @param [skipUpdate] {boolean} pass 'true' to make it faster, only if you know that no changes happened after last updateTransform()
  * @return {PIXI.Point} A point object representing the position of this object
  */
 DisplayObject.prototype.toLocal = function (position, from, point, skipUpdate)
 {
+    if (!skipUpdate) {
+        this._recursivePostUpdateTransform();
+    }
+    point = point || new math.Point();
+    point.copy(position);
     if (from)
     {
-        position = from.toGlobal(position, point, skipUpdate);
-    }
-
-    if(! skipUpdate)
-    {
-        this._recursivePostUpdateTransform();
-
-        // this parent check is for just in case the item is a root object.
-        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-        if(!this.parent)
-        {
-            this.parent = _tempDisplayObjectParent;
-            this.displayObjectUpdateTransform();
-            this.parent = null;
+        if (!skipUpdate) {
+            from._recursivePostUpdateTransform();
         }
-        else
-        {
-            this.displayObjectUpdateTransform();
-        }
+        point = from.transform.worldTransform.apply(point, point);
     }
+    return this.worldTransform.applyInverse(point, point);
+};
 
-    // simply apply the matrix..
-    return this.worldTransform.applyInverse(position, point);
+/**
+ * recursively updates transform of all objects from the root to this one
+ * internal function for toLocal()
+ */
+DisplayObject.prototype._recursivePostUpdateTransform = function() {
+    if (this.parent) {
+        this.parent._recursivePostUpdateTransform();
+        this.transform.updateTransform(this.parent.transform);
+    } else {
+        this.transform.updateRootTransform();
+    }
 };
 
 /**
@@ -570,5 +569,6 @@ DisplayObject.prototype.destroy = function ()
     this._currentBounds = null;
     this._mask = null;
 
+    this.worldTransform = null;
     this.filterArea = null;
 };

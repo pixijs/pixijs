@@ -5,7 +5,6 @@ var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
-    BoundsBuilder = require('../display/BoundsBuilder'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
@@ -115,11 +114,12 @@ function Graphics()
 
     /**
      * A cache of the local bounds to prevent recalculation.
+     * Stores local bounds of this graphics element, does not care for children
      *
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._localBounds = new BoundsBuilder();
+    this._cacheLocalBounds = new math.Rectangle(0,0,1,1);
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -769,19 +769,12 @@ Graphics.prototype._renderCanvas = function (renderer)
 };
 
 /**
- * Retrieves the bounds of the graphic shape as a rectangle object
- *
- * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
- *  object's worldTransform.
- * @return {PIXI.Rectangle} the rectangular bounding area
+ * Takes graphics cached localBounds, rotates them with transform, passes to the builder
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
  */
-Graphics.prototype._calculateBounds = function ()
+Graphics.prototype._calculateBounds = function (builder, transform)
 {
-    if (!this.renderable)
-    {
-        return;
-    }
-
     if (this.boundsDirty)
     {
         this.updateLocalBounds();
@@ -791,8 +784,14 @@ Graphics.prototype._calculateBounds = function ()
         this.boundsDirty = false;
     }
 
-    var lb = this._localBounds;
-    this._bounds_.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+    var bounds = this._cacheLocalBounds;
+
+    var w0 = bounds.x;
+    var w1 = bounds.width + bounds.x;
+
+    var h0 = bounds.y;
+    var h1 = bounds.height + bounds.y;
+    builder.addFrame(transform, w0, h0, w1, h1);
 };
 
 /**
@@ -920,11 +919,11 @@ Graphics.prototype.updateLocalBounds = function ()
 
     var padding = this.boundsPadding;
 
-    this._localBounds.minX = minX - padding;
-    this._localBounds.maxX = maxX + padding * 2;
+    this._cacheLocalBounds.x = minX - padding;
+    this._cacheLocalBounds.width = (maxX - minX) + padding * 2;
 
-    this._localBounds.minY = minY - padding;
-    this._localBounds.maxY = maxY + padding * 2;
+    this._cacheLocalBounds.y = minY - padding;
+    this._cacheLocalBounds.height = (maxY - minY) + padding * 2;
 };
 
 
@@ -966,7 +965,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
 {
     resolution = resolution || 1;
 
-    var bounds = this.getLocalBounds();
+    var bounds = this.getLegacyLocalBounds();
 
     var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
@@ -1037,5 +1036,5 @@ Graphics.prototype.destroy = function ()
 
     this.currentPath = null;
     this._webgl = null;
-    this._localBounds = null;
+    this._cacheLocalBounds = null;
 };
