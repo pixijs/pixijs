@@ -108,7 +108,7 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
     alphaMaskFilter[0].maskSprite = maskData;
 
     //TODO - may cause issues!
-    target.filterArea = maskData.getBounds();
+    target.filterArea = maskData.getBounds(true);
 
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
 
@@ -158,7 +158,7 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
 
     var renderTarget = this.renderer._activeRenderTarget;
 
-    var bounds = maskData.getBounds();
+    var bounds = maskData.getBounds(true);
 
     bounds.fit(renderTarget.size);
     maskData.renderable = false;
