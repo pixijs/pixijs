@@ -94,14 +94,14 @@ var utils = module.exports = {
         context.drawImage(magenta, 0, 0);
         context.drawImage(yellow, 2, 0);
         
-        try 
-        {
-            var data = context.getImageData(2, 0, 1, 1).data;
-        }
-        catch (e) 
+        var imageData = context.getImageData(2,0,1,1);
+        
+        if (!imageData)
         {
             return false;
         }
+        
+        var data = imageData.data;
 
         return (data[0] === 255 && data[1] === 0 && data[2] === 0);
     },
