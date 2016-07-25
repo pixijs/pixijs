@@ -968,7 +968,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
 
     var bounds = this.getLocalBounds();
 
-    var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+    var canvasBuffer = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 
     if(!canvasRenderer)
     {
@@ -978,7 +978,9 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
     tempMatrix.tx = -bounds.x;
     tempMatrix.ty = -bounds.y;
 
-    canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
+    this.beginTextureGeneration(tempMatrix);
+    canvasRenderer.render(this, canvasBuffer);
+    this.endTextureGeneration(false);
 
     var texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
