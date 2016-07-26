@@ -52,6 +52,9 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
     this.width = width || 100;
     this.height = height || 100;
 
+    this.realWidth = this.width * resolution;
+    this.realHeight = this.height * resolution;
+
     this.resolution = resolution || CONST.RESOLUTION;
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     this.hasLoaded = true;
@@ -102,6 +105,9 @@ BaseRenderTexture.prototype.resize = function (width, height)
 
     this.width = width;
     this.height = height;
+
+    this.realWidth = this.width * this.resolution;
+    this.realHeight = this.height * this.resolution;
 
     if (!this.valid)
     {
