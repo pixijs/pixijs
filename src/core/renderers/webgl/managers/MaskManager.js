@@ -108,7 +108,7 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
     alphaMaskFilter[0].maskSprite = maskData;
 
     //TODO - may cause issues!
-    target.filterArea = maskData.getBounds();
+    target.filterArea = maskData.getBounds(true);
 
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
 
