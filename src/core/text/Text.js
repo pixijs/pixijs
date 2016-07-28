@@ -280,7 +280,7 @@ Text.prototype.updateText = function ()
     // calculate text height
     var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
-    var height = lineHeight * lines.length;
+    var height = Math.max(lineHeight, fontProperties.fontSize  + style.strokeThickness) + (lines.length - 1) * lineHeight;
     if (style.dropShadow)
     {
         height += style.dropShadowDistance;
