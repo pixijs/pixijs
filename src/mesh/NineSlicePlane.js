@@ -1,7 +1,6 @@
 var DEFAULT_BORDER_SIZE= 10;
 
 var Plane = require('./Plane');
-var Mesh = require('./Mesh');
 
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
