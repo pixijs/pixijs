@@ -105,6 +105,7 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
         alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
     }
 
+    alphaMaskFilter[0].resolution = this.renderer.resolution;
     alphaMaskFilter[0].maskSprite = maskData;
 
     //TODO - may cause issues!
