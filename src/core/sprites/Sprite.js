@@ -92,7 +92,17 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.vertexData = new Float32Array(16);
+    /**
+     * Current vertex data
+     * @type {Float32Array}
+     */
+    this.vertexData = new Float32Array(8);
+    /**
+     * Current border data. Do you need it? please call callBorde
+     * @type {null}
+     */
+    this.borderData = null;
+
     this._transformID = -1;
     this._textureID = -1;
 }
@@ -266,31 +276,23 @@ Sprite.prototype.calculateVertices = function ()
 };
 
 /**
- * we need this method to be compatible with pixiv3. v3 does calculate bounds of original texture are, not trimmed one
+ * calculates worldTransform * border, store it in borderData. It is not trimmed!
+ * Utility function, is not used in PIXI renderer. It is here just for your own good.
  */
-Sprite.prototype.calculateBoundsVertices = function ()
+Sprite.prototype.calculateBorder = function ()
 {
     var texture = this._texture,
-        trim = texture.trim,
-        vertexData = this.vertexData,
+        wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        borderData = this.borderData,
+        w0, w1, h0, h1,
         orig = texture.orig;
 
-    if (!trim || trim.width === orig.width && trim.height === orig.height) {
-        vertexData[8] = vertexData[0];
-        vertexData[9] = vertexData[1];
-        vertexData[10] = vertexData[2];
-        vertexData[11] = vertexData[3];
-        vertexData[12] = vertexData[4];
-        vertexData[13] = vertexData[5];
-        vertexData[14] = vertexData[6];
-        vertexData[15] = vertexData[7];
-        return;
+    if (!borderData)
+    {
+        borderData = new Float32Array(8);
+        this.borderData = borderData;
     }
-
-    var wt = this.transform.worldTransform,
-        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
-        w0, w1, h0, h1;
-
 
     w0 = (orig.width ) * (1-this.anchor.x);
     w1 = (orig.width ) * -this.anchor.x;
@@ -299,20 +301,20 @@ Sprite.prototype.calculateBoundsVertices = function ()
     h1 = orig.height * -this.anchor.y;
 
     // xy
-    vertexData[8] = a * w1 + c * h1 + tx;
-    vertexData[9] = d * h1 + b * w1 + ty;
+    borderData[0] = a * w1 + c * h1 + tx;
+    borderData[1] = d * h1 + b * w1 + ty;
 
     // xy
-    vertexData[10] = a * w0 + c * h1 + tx;
-    vertexData[11] = d * h1 + b * w0 + ty;
+    borderData[2] = a * w0 + c * h1 + tx;
+    borderData[3] = d * h1 + b * w0 + ty;
 
     // xy
-    vertexData[12] = a * w0 + c * h0 + tx;
-    vertexData[13] = d * h0 + b * w0 + ty;
+    borderData[4] = a * w0 + c * h0 + tx;
+    borderData[5] = d * h0 + b * w0 + ty;
 
     // xy
-    vertexData[14] = a * w1 + c * h0 + tx;
-    vertexData[15] = d * h0 + b * w1 + ty;
+    borderData[6] = a * w1 + c * h0 + tx;
+    borderData[7] = d * h0 + b * w1 + ty;
 };
 
 /**
@@ -341,16 +343,42 @@ Sprite.prototype._renderCanvas = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
-Sprite.prototype._calculateBounds = function ()
+
+/**
+ * Passes sprite corners (without trimming) to bounds builder, takes passed transform into account.
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
+ */
+Sprite.prototype._calculateBounds = function (builder, transform)
 {
-    this.calculateVertices();
-    // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    var texture = this._texture,
+        trim = texture.trim,
+        vertexData = this.vertexData,
+        orig = texture.orig;
+
+    if (transform === this.transform) {
+        this.calculateVertices();
+        if (!trim || trim.width === orig.width && trim.height === orig.height) {
+            builder.addQuad(vertexData);
+            return;
+        }
+    }
+
+    var w0, w1, h0, h1;
+
+    w0 = (orig.width ) * (1-this.anchor.x);
+    w1 = (orig.width ) * -this.anchor.x;
+
+    h0 = orig.height * (1-this.anchor.y);
+    h1 = orig.height * -this.anchor.y;
+
+    builder.addFrame(transform, w1, h1, w0, h0);
 };
 
 /**
  * Gets the local bounds of the sprite object.
- *
+ * Does not care about children. This is compliant with PIXI-v3
  */
 Sprite.prototype.getLocalBounds = function ()
 {

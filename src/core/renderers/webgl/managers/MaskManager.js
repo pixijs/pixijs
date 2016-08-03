@@ -158,7 +158,7 @@ MaskManager.prototype.pushScissorMask = function (target, maskData)
 
     var renderTarget = this.renderer._activeRenderTarget;
 
-    var bounds = maskData.getBounds();
+    var bounds = maskData.getBounds(true);
 
     bounds.fit(renderTarget.size);
     maskData.renderable = false;

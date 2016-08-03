@@ -17,15 +17,25 @@ function TransformBase()
     this.worldTransform = new math.Matrix();
     /**
      * The local matrix transform
-     * 
+     *
      * @member {PIXI.Matrix}
      */
     this.localTransform = new math.Matrix();
 
     this._worldID = 0;
+
+    this._parentID = -1;
 }
 
 TransformBase.prototype.constructor = TransformBase;
+
+/**
+ * Updates local transform, copies it to world. Used by elements which are roots and do not have parents
+ */
+TransformBase.prototype.updateRootTransform = function() {
+    this.updateLocalTransform();
+    this.updateTransform(TransformBase.IDENTITY);
+};
 
 /**
  * TransformBase does not have decomposition, so this function wont do anything

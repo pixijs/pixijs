@@ -282,11 +282,12 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
 
 /**
- * Returns the framing rectangle of the sprite as a Rectangle object
-*
- * @return {PIXI.Rectangle} the framing rectangle
+ * Pass sprite corners to the builder.
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
  */
-TilingSprite.prototype.getBounds = function ()
+TilingSprite.prototype._calculateBounds = function (builder, transform)
 {
     var width = this._width;
     var height = this._height;
@@ -297,64 +298,7 @@ TilingSprite.prototype.getBounds = function ()
     var h0 = height * (1-this.anchor.y);
     var h1 = height * -this.anchor.y;
 
-    var worldTransform = this.worldTransform;
-
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
-
-    var x1 = a * w1 + c * h1 + tx;
-    var y1 = d * h1 + b * w1 + ty;
-
-    var x2 = a * w0 + c * h1 + tx;
-    var y2 = d * h1 + b * w0 + ty;
-
-    var x3 = a * w0 + c * h0 + tx;
-    var y3 = d * h0 + b * w0 + ty;
-
-    var x4 =  a * w1 + c * h0 + tx;
-    var y4 =  d * h0 + b * w1 + ty;
-
-    var minX,
-        maxX,
-        minY,
-        maxY;
-
-    minX = x1;
-    minX = x2 < minX ? x2 : minX;
-    minX = x3 < minX ? x3 : minX;
-    minX = x4 < minX ? x4 : minX;
-
-    minY = y1;
-    minY = y2 < minY ? y2 : minY;
-    minY = y3 < minY ? y3 : minY;
-    minY = y4 < minY ? y4 : minY;
-
-    maxX = x1;
-    maxX = x2 > maxX ? x2 : maxX;
-    maxX = x3 > maxX ? x3 : maxX;
-    maxX = x4 > maxX ? x4 : maxX;
-
-    maxY = y1;
-    maxY = y2 > maxY ? y2 : maxY;
-    maxY = y3 > maxY ? y3 : maxY;
-    maxY = y4 > maxY ? y4 : maxY;
-
-    var bounds = this._bounds;
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    this._currentBounds = bounds;
-
-    return bounds;
+    builder.addFrame(transform, w0, h0, w1, h1);
 };
 
 /**

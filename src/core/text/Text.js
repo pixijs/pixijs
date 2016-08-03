@@ -634,14 +634,15 @@ Text.prototype.wordWrap = function (text)
 };
 
 /**
- * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+ * Passes corners of Text rectangle to bounds builder, takes passed transform into account.
+ *
+ * @param {PIXI.BoundsBuilder} builder
+ * @param {PIXI.TransformBase} transform
  */
-Text.prototype._calculateBounds = function ()
+Text.prototype._calculateBounds = function(builder, transform)
 {
     this.updateText(true);
-    this.calculateVertices();
-    // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    return Sprite.prototype._calculateBounds.call(this, builder, transform);
 };
 
 /**
