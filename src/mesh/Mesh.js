@@ -219,6 +219,7 @@ Mesh.prototype._renderWebGL = function (renderer)
 
     renderer.bindShader(glData.shader);
     renderer.bindTexture(this._texture, 0);
+    renderer.state.setBlendMode(this.blendMode);
 
     glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
     glData.shader.uniforms.alpha = this.worldAlpha;
