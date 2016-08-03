@@ -1,9 +1,8 @@
-var math = require('../math'),
-    EventEmitter = require('eventemitter3'),
+var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    BoundsBulder = require('./BoundsBuilder'),
+    Bounds = require('./BoundsBuilder'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -80,20 +79,14 @@ function DisplayObject()
     this.filterArea = null;
 
     /**
-     * The original, cached bounds of the object
+     * The bounds object, this is used to calculate and store the bounds of the displayObject
      *
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._bounds = new math.Rectangle(0, 0, 1, 1);
-
-    /**
-     * The most up-to-date bounds of the object
-     *
-     * @member {PIXI.Rectangle}
-     * @private
-     */
-    this._currentBounds = null;
+    this._bounds = new Bounds();
+    this._boundsID = 0;
+    this._lastBoundsID = -1;
 
     /**
      * The original, cached mask of the object
@@ -103,7 +96,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this._bounds_ = new BoundsBulder();
+
 }
 
 // constructor
@@ -346,6 +339,8 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._bounds.updateID++;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -392,13 +387,12 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         }
     }
 
-    if(!this._currentBounds)
+    if(this._boundsID !== this._lastBoundsID)
     {
         this.calculateBounds();
-        this._currentBounds = this._bounds_.getRectangle(this._bounds);
     }
 
-    return this._currentBounds;
+    return this._bounds.getRectangle(this._bounds);
 };
 
 /**

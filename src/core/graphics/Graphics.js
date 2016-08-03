@@ -792,7 +792,7 @@ Graphics.prototype._calculateBounds = function ()
     }
 
     var lb = this._localBounds;
-    this._bounds_.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+    this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
 };
 
 /**

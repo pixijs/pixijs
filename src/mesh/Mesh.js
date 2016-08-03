@@ -449,7 +449,7 @@ Mesh.prototype._onTextureUpdate = function ()
 Mesh.prototype._calculateBounds = function ()
 {
     //TODO - we can cache local bounds and use them if they are dirty (like graphics)
-    this._bounds_.addVertices(this.transform, this.vertices, 0, this.vertices.length);
+    this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
 };
 
 /**
