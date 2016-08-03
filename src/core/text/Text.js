@@ -641,7 +641,7 @@ Text.prototype._calculateBounds = function ()
     this.updateText(true);
     this.calculateVertices();
     // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    this._bounds.addQuad(this.vertexData);
 };
 
 /**

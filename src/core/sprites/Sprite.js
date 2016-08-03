@@ -345,20 +345,23 @@ Sprite.prototype._calculateBounds = function ()
 {
     this.calculateVertices();
     // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    this._bounds.addQuad(this.vertexData);
 };
 
 /**
  * Gets the local bounds of the sprite object.
  *
  */
+
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture.orig.width * this.anchor.x;
-    this._bounds.y = -this._texture.orig.height * this.anchor.y;
-    this._bounds.width = this._texture.orig.width;
-    this._bounds.height = this._texture.orig.height;
-    return this._bounds;
+
+    this._bounds.minX = -this._texture.orig.width * this.anchor.x;
+    this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+    this._bounds.maxX = this._texture.orig.width;
+    this._bounds.maxY = this._texture.orig.height;
+
+    return this._bounds.getRectangle(this._bounds);
 };
 
 /**

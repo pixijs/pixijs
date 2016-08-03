@@ -363,7 +363,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  */
 Container.prototype.updateTransform = function ()
 {
-    this._currentBounds = null;
+    this._boundsID++;
 
     if (!this.visible)
     {
@@ -379,8 +379,6 @@ Container.prototype.updateTransform = function ()
     {
         this.children[i].updateTransform();
     }
-
-
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -389,14 +387,12 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
 
 Container.prototype.calculateBounds = function ()
 {
-    this._bounds_.clear();
-    // if we have already done this on THIS frame.
+    this._bounds.clear();
 
     if(!this.visible)
     {
         return;
     }
-
 
     this._calculateBounds();
 
@@ -406,8 +402,10 @@ Container.prototype.calculateBounds = function ()
 
         child.calculateBounds();
 
-        this._bounds_.addBounds(child._bounds_);
+        this._bounds.addBounds(child._bounds);
     }
+
+    this._boundsID = this._lastBoundsID;
 };
 
 Container.prototype._calculateBounds = function ()

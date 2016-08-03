@@ -9,7 +9,7 @@ var math = require('../math'),
  * @class
  * @memberof PIXI
  */
-function BoundsBuilder()
+function Bounds()
 {
     /**
      * @member {number}
@@ -34,18 +34,22 @@ function BoundsBuilder()
      * @default 0
      */
     this.maxY = -Infinity;
+
+    this.rect = null;
 }
 
-BoundsBuilder.prototype.constructor = BoundsBuilder;
-module.exports = BoundsBuilder;
+Bounds.prototype.constructor = Bounds;
+module.exports = Bounds;
 
-BoundsBuilder.prototype.isEmpty = function()
+Bounds.prototype.isEmpty = function()
 {
     return this.minX > this.maxX || this.minY > this.maxY;
 };
 
-BoundsBuilder.prototype.clear = function()
+Bounds.prototype.clear = function()
 {
+    this.updateID++;
+
     this.minX = Infinity;
     this.minY = Infinity;
     this.maxX = -Infinity;
@@ -58,24 +62,30 @@ BoundsBuilder.prototype.clear = function()
  * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
  * @returns {PIXI.Rectangle}
  */
-BoundsBuilder.prototype.getRectangle = function(tempRect)
+Bounds.prototype.getRectangle = function()
 {
     if (this.minX > this.maxX || this.minY > this.maxY) {
         return Rectangle.EMPTY;
     }
-    tempRect = tempRect || new Rectangle(0, 0, 1, 1);
-    tempRect.x = this.minX;
-    tempRect.y = this.minY;
-    tempRect.width = this.maxX - this.minX;
-    tempRect.height = this.maxY - this.minY;
-    return tempRect;
+
+    if(!this.rect)
+    {
+        this.rect = new Rectangle(0, 0, 1, 1);
+    }
+
+    this.rect.x = this.minX;
+    this.rect.y = this.minY;
+    this.rect.width = this.maxX - this.minX;
+    this.rect.height = this.maxY - this.minY;
+
+    return this.rect;
 };
 
 /**
  * This function should be inlined when its possible
  * @param point {PIXI.Point}
  */
-BoundsBuilder.prototype.addPoint = function (point)
+Bounds.prototype.addPoint = function (point)
 {
     this.minX = Math.min(this.minX, point.x);
     this.maxX = Math.max(this.maxX, point.x);
@@ -86,9 +96,9 @@ BoundsBuilder.prototype.addPoint = function (point)
 /**
  * Adds a quad, not transformed
  * @param vertices {Float32Array}
- * @returns {PIXI.BoundsBuilder}
+ * @returns {PIXI.Bounds}
  */
-BoundsBuilder.prototype.addQuad = function(vertices)
+Bounds.prototype.addQuad = function(vertices)
 {
     var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
@@ -134,7 +144,7 @@ BoundsBuilder.prototype.addQuad = function(vertices)
  * @param x1 {number}
  * @param y1 {number}
  */
-BoundsBuilder.prototype.addFrame = function(transform, x0, y0, x1, y1)
+Bounds.prototype.addFrame = function(transform, x0, y0, x1, y1)
 {
     var matrix = transform.worldTransform;
     var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -181,7 +191,7 @@ BoundsBuilder.prototype.addFrame = function(transform, x0, y0, x1, y1)
  * @param beginOffset {number}
  * @param endOffset {number}
  */
-BoundsBuilder.prototype.addVertices = function(transform, vertices, beginOffset, endOffset)
+Bounds.prototype.addVertices = function(transform, vertices, beginOffset, endOffset)
 {
     var matrix = transform.worldTransform;
     var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -205,7 +215,7 @@ BoundsBuilder.prototype.addVertices = function(transform, vertices, beginOffset,
     this.maxY = maxY;
 };
 
-BoundsBuilder.prototype.addBounds = function(bounds)
+Bounds.prototype.addBounds = function(bounds)
 {
     var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
