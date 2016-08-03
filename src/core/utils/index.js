@@ -139,7 +139,7 @@ var utils = module.exports = {
      */
     isWebGLSupported: function ()
     {
-        var contextOptions = { stencil: true };
+        var contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
         try
         {
             if (!window.WebGLRenderingContext)
