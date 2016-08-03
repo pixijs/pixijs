@@ -156,6 +156,7 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
 TransformStatic.prototype.setFromMatrix = function (matrix)
 {
     matrix.decompose(this);
+    this._localID ++;
 };
 
 Object.defineProperties(TransformStatic.prototype, {
