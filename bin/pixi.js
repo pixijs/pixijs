@@ -9455,7 +9455,7 @@ var math = require('../math'),
  * @class
  * @memberof PIXI
  */
-function BoundsBuilder()
+function Bounds()
 {
     /**
      * @member {number}
@@ -9480,18 +9480,22 @@ function BoundsBuilder()
      * @default 0
      */
     this.maxY = -Infinity;
+
+    this.rect = null;
 }
 
-BoundsBuilder.prototype.constructor = BoundsBuilder;
-module.exports = BoundsBuilder;
+Bounds.prototype.constructor = Bounds;
+module.exports = Bounds;
 
-BoundsBuilder.prototype.isEmpty = function()
+Bounds.prototype.isEmpty = function()
 {
     return this.minX > this.maxX || this.minY > this.maxY;
 };
 
-BoundsBuilder.prototype.clear = function()
+Bounds.prototype.clear = function()
 {
+    this.updateID++;
+
     this.minX = Infinity;
     this.minY = Infinity;
     this.maxX = -Infinity;
@@ -9504,24 +9508,30 @@ BoundsBuilder.prototype.clear = function()
  * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
  * @returns {PIXI.Rectangle}
  */
-BoundsBuilder.prototype.getRectangle = function(tempRect)
+Bounds.prototype.getRectangle = function()
 {
     if (this.minX > this.maxX || this.minY > this.maxY) {
         return Rectangle.EMPTY;
     }
-    tempRect = tempRect || new Rectangle(0, 0, 1, 1);
-    tempRect.x = this.minX;
-    tempRect.y = this.minY;
-    tempRect.width = this.maxX - this.minX;
-    tempRect.height = this.maxY - this.minY;
-    return tempRect;
+
+    if(!this.rect)
+    {
+        this.rect = new Rectangle(0, 0, 1, 1);
+    }
+
+    this.rect.x = this.minX;
+    this.rect.y = this.minY;
+    this.rect.width = this.maxX - this.minX;
+    this.rect.height = this.maxY - this.minY;
+
+    return this.rect;
 };
 
 /**
  * This function should be inlined when its possible
  * @param point {PIXI.Point}
  */
-BoundsBuilder.prototype.addPoint = function (point)
+Bounds.prototype.addPoint = function (point)
 {
     this.minX = Math.min(this.minX, point.x);
     this.maxX = Math.max(this.maxX, point.x);
@@ -9532,9 +9542,9 @@ BoundsBuilder.prototype.addPoint = function (point)
 /**
  * Adds a quad, not transformed
  * @param vertices {Float32Array}
- * @returns {PIXI.BoundsBuilder}
+ * @returns {PIXI.Bounds}
  */
-BoundsBuilder.prototype.addQuad = function(vertices)
+Bounds.prototype.addQuad = function(vertices)
 {
     var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
@@ -9580,7 +9590,7 @@ BoundsBuilder.prototype.addQuad = function(vertices)
  * @param x1 {number}
  * @param y1 {number}
  */
-BoundsBuilder.prototype.addFrame = function(transform, x0, y0, x1, y1)
+Bounds.prototype.addFrame = function(transform, x0, y0, x1, y1)
 {
     var matrix = transform.worldTransform;
     var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -9627,7 +9637,7 @@ BoundsBuilder.prototype.addFrame = function(transform, x0, y0, x1, y1)
  * @param beginOffset {number}
  * @param endOffset {number}
  */
-BoundsBuilder.prototype.addVertices = function(transform, vertices, beginOffset, endOffset)
+Bounds.prototype.addVertices = function(transform, vertices, beginOffset, endOffset)
 {
     var matrix = transform.worldTransform;
     var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
@@ -9651,7 +9661,7 @@ BoundsBuilder.prototype.addVertices = function(transform, vertices, beginOffset,
     this.maxY = maxY;
 };
 
-BoundsBuilder.prototype.addBounds = function(bounds)
+Bounds.prototype.addBounds = function(bounds)
 {
     var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
@@ -10027,7 +10037,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  */
 Container.prototype.updateTransform = function ()
 {
-    this._currentBounds = null;
+    this._boundsID++;
 
     if (!this.visible)
     {
@@ -10043,8 +10053,6 @@ Container.prototype.updateTransform = function ()
     {
         this.children[i].updateTransform();
     }
-
-
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -10053,14 +10061,12 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
 
 Container.prototype.calculateBounds = function ()
 {
-    this._bounds_.clear();
-    // if we have already done this on THIS frame.
+    this._bounds.clear();
 
     if(!this.visible)
     {
         return;
     }
-
 
     this._calculateBounds();
 
@@ -10070,8 +10076,10 @@ Container.prototype.calculateBounds = function ()
 
         child.calculateBounds();
 
-        this._bounds_.addBounds(child._bounds_);
+        this._bounds.addBounds(child._bounds);
     }
+
+    this._boundsID = this._lastBoundsID;
 };
 
 Container.prototype._calculateBounds = function ()
@@ -10227,12 +10235,11 @@ Container.prototype.destroy = function (options)
 };
 
 },{"../utils":114,"./DisplayObject":44}],44:[function(require,module,exports){
-var math = require('../math'),
-    EventEmitter = require('eventemitter3'),
+var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    BoundsBulder = require('./BoundsBuilder'),
+    Bounds = require('./BoundsBuilder'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -10309,20 +10316,14 @@ function DisplayObject()
     this.filterArea = null;
 
     /**
-     * The original, cached bounds of the object
+     * The bounds object, this is used to calculate and store the bounds of the displayObject
      *
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._bounds = new math.Rectangle(0, 0, 1, 1);
-
-    /**
-     * The most up-to-date bounds of the object
-     *
-     * @member {PIXI.Rectangle}
-     * @private
-     */
-    this._currentBounds = null;
+    this._bounds = new Bounds();
+    this._boundsID = 0;
+    this._lastBoundsID = -1;
 
     /**
      * The original, cached mask of the object
@@ -10332,7 +10333,7 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this._bounds_ = new BoundsBulder();
+
 }
 
 // constructor
@@ -10575,6 +10576,8 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._bounds.updateID++;
 };
 
 // performance increase to avoid using call.. (10x faster)
@@ -10621,13 +10624,12 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         }
     }
 
-    if(!this._currentBounds)
+    if(this._boundsID !== this._lastBoundsID)
     {
         this.calculateBounds();
-        this._currentBounds = this._bounds_.getRectangle(this._bounds);
     }
 
-    return this._currentBounds;
+    return this._bounds.getRectangle(this._bounds);
 };
 
 /**
@@ -10802,7 +10804,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":41,"../math":65,"./BoundsBuilder":42,"./Transform":45,"./TransformStatic":47,"eventemitter3":11}],45:[function(require,module,exports){
+},{"../const":41,"./BoundsBuilder":42,"./Transform":45,"./TransformStatic":47,"eventemitter3":11}],45:[function(require,module,exports){
 var math = require('../math'),
     TransformBase = require('./TransformBase');
 
@@ -12008,7 +12010,7 @@ Graphics.prototype._calculateBounds = function ()
     }
 
     var lb = this._localBounds;
-    this._bounds_.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
+    this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
 };
 
 /**
@@ -18170,6 +18172,7 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
         alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
     }
 
+    alphaMaskFilter[0].resolution = this.renderer.resolution;
     alphaMaskFilter[0].maskSprite = maskData;
 
     //TODO - may cause issues!
@@ -19471,20 +19474,23 @@ Sprite.prototype._calculateBounds = function ()
 {
     this.calculateVertices();
     // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    this._bounds.addQuad(this.vertexData);
 };
 
 /**
  * Gets the local bounds of the sprite object.
  *
  */
+
 Sprite.prototype.getLocalBounds = function ()
 {
-    this._bounds.x = -this._texture.orig.width * this.anchor.x;
-    this._bounds.y = -this._texture.orig.height * this.anchor.y;
-    this._bounds.width = this._texture.orig.width;
-    this._bounds.height = this._texture.orig.height;
-    return this._bounds;
+
+    this._bounds.minX = -this._texture.orig.width * this.anchor.x;
+    this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+    this._bounds.maxX = this._texture.orig.width;
+    this._bounds.maxY = this._texture.orig.height;
+
+    return this._bounds.getRectangle(this._bounds);
 };
 
 /**
@@ -21179,7 +21185,7 @@ Text.prototype._calculateBounds = function ()
     this.updateText(true);
     this.calculateVertices();
     // if we have already done this on THIS frame.
-    this._bounds_.addQuad(this.vertexData);
+    this._bounds.addQuad(this.vertexData);
 };
 
 /**
@@ -26577,7 +26583,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function ()
 DisplayObject.prototype._cacheAsBitmapDestroy = function ()
 {
     this.cacheAsBitmap = false;
-    this._cacheData.originalDestroy();
+    this.destroy();
 };
 
 },{"../core":60}],125:[function(require,module,exports){
@@ -29970,7 +29976,7 @@ Mesh.prototype._onTextureUpdate = function ()
 Mesh.prototype._calculateBounds = function ()
 {
     //TODO - we can cache local bounds and use them if they are dirty (like graphics)
-    this._bounds_.addVertices(this.transform, this.vertices, 0, this.vertices.length);
+    this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
 };
 
 /**
