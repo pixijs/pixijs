@@ -2,7 +2,7 @@ var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    Bounds = require('./BoundsBuilder'),
+    Bounds = require('./Bounds'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
