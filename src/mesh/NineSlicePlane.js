@@ -249,6 +249,7 @@ NineSlicePlane.prototype.updateVerticalVertices = function() {
 NineSlicePlane.prototype._renderCanvas= function (renderer)
 {
     var context = renderer.context;
+    context.globalAlpha = this.worldAlpha;
 
     var transform = this.worldTransform;
     var res = renderer.resolution;
