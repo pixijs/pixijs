@@ -1,0 +1,12 @@
+bower.json
+.gitignore
+.editorconfig
+.jshintrc
+node_modules
+.travis.yml
+gulpfile.js
+inch.json
+Pixi_mini.jpg
+testem.json
+gulp
+/test
