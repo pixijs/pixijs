@@ -10239,7 +10239,7 @@ var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
-    Bounds = require('./BoundsBuilder'),
+    Bounds = require('./Bounds'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -10804,7 +10804,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":41,"./BoundsBuilder":42,"./Transform":45,"./TransformStatic":47,"eventemitter3":11}],45:[function(require,module,exports){
+},{"../const":41,"./Bounds":42,"./Transform":45,"./TransformStatic":47,"eventemitter3":11}],45:[function(require,module,exports){
 var math = require('../math'),
     TransformBase = require('./TransformBase');
 
@@ -11223,7 +11223,7 @@ var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
-    BoundsBuilder = require('../display/BoundsBuilder'),
+    Bounds = require('../display/Bounds'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
@@ -11337,7 +11337,7 @@ function Graphics()
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._localBounds = new BoundsBuilder();
+    this._localBounds = new Bounds();
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -12258,7 +12258,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":41,"../display/BoundsBuilder":42,"../display/Container":43,"../math":65,"../renderers/canvas/CanvasRenderer":72,"../sprites/Sprite":96,"../textures/RenderTexture":106,"../textures/Texture":107,"./GraphicsData":49,"./utils/bezierCurveTo":51}],49:[function(require,module,exports){
+},{"../const":41,"../display/Bounds":42,"../display/Container":43,"../math":65,"../renderers/canvas/CanvasRenderer":72,"../sprites/Sprite":96,"../textures/RenderTexture":106,"../textures/Texture":107,"./GraphicsData":49,"./utils/bezierCurveTo":51}],49:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
