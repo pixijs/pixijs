@@ -1,8 +1,0 @@
-/**
- * @license
- * pixi.js - v${version}
- * Compiled ${date}
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license
- */

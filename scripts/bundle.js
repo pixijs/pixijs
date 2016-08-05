@@ -1,28 +1,38 @@
 #!/usr/bin/env node
 
-var execSync = require('child_process').execSync;
 var minimist = require('minimist');
-var postbundle = require('./postbundle');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var vfs = require('vinyl-fs');
+var uglify = require('gulp-uglify');
+var empty = require('gulp-empty');
+var sourcemaps = require('gulp-sourcemaps');
+var path = require('path');
 
 // Get the commandline arguments
 var args = minimist(process.argv.slice(2), {
-    alias: {
-        e: 'exclude'
-    }
+    alias: { e: 'exclude' }
 });
 
-var exclusions = '';
-var excludes = args.exclude;
+var bundler = browserify({
+    entries: './src/',
+    debug: true
+});
+
+// Get the license for the header
+var license = path.join(__dirname, 'license.js');
+bundler.plugin('./scripts/header.js', { file: license });
 
 // Exclude certain modules
-if (excludes) {
+if (args.exclude) {
+    var excludes = args.exclude;
     if (!Array.isArray(excludes)) {
         excludes = [excludes];
     }
     excludes.forEach(function(exclude){
         try {
-            var mod = require.resolve('../src/' + exclude);
-            exclusions += '-i ' + mod + ' ';
+            bundler.ignore(require.resolve('../src/' + exclude));
             console.log('> Ignoring module \'%s\'', exclude);
         }
         catch(e){
@@ -32,14 +42,23 @@ if (excludes) {
     console.log('');
 }
 
-// Build the debug version
-execSync('browserify ' + exclusions + 'src -s PIXI -d | exorcist bin/pixi.js.map > bin/pixi.js');
+function bundle(output, debug) {
+    bundler.bundle()
+        .pipe(source(output))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(debug ? empty() : uglify({
+                mange: true,
+                preserveComments: function(node, comment) {
+                    if (/\@preserve/m.test(comment.value)) {
+                        return true;
+                    }
+                }
+            }))
+        .pipe(sourcemaps.write('./'))
+        .pipe(vfs.dest('./bin/'));
+}
 
-// Fix the output 
-postbundle('bin/pixi.js', true);
-
-// Build the release version
-execSync('browserify ' + exclusions + 'src -s PIXI -d | exorcist bin/pixi.min.js.map | uglifyjs -cm > bin/pixi.min.js');
-
-// Fix the output 
-postbundle('bin/pixi.min.js');
+// Build the bundles
+bundle('pixi.js', true);
+bundle('pixi.min.js', false);
