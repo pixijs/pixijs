@@ -48,7 +48,7 @@ function bundle(output, debug) {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
             .pipe(debug ? empty() : uglify({
-                mange: true,
+                mangle: true,
                 preserveComments: function(node, comment) {
                     if (/\@preserve/m.test(comment.value)) {
                         return true;
