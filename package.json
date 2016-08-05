@@ -22,7 +22,7 @@
     "watch:debug": "watchify src/index.js -s PIXI -o bin/pixi.js -dv",
     "watch:release": "watchify src/index.js -s PIXI -o bin/pixi.min.js -dv",
     "test": "npm run build && testem ci",
-    "lint": "jshint --reporter=scripts/reporter.js scripts/*.js src/*.js src/**/*.js",
+    "lint": "jshint --reporter=scripts/reporter.js scripts src",
     "prebuild": "npm run lint && npm run clean",
     "build": "scripts/bundle.js",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
