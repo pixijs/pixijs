@@ -18,7 +18,7 @@
   "scripts": {
     "clean": "rimraf bin && mkdirp bin",
     "prestart": "npm run clean",
-    "start": "parallelshell 'npm run watch:debug' 'npm run watch:release'",
+    "start": "parallelshell \"npm run watch:debug\" \"npm run watch:release\"",
     "watch:debug": "watchify src/index.js -s PIXI -o bin/pixi.js -dv",
     "watch:release": "watchify src/index.js -s PIXI -o bin/pixi.min.js -dv",
     "test": "npm run build && testem ci",
