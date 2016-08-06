@@ -521,7 +521,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 
     if (destroyTexture)
     {
-        this._texture.destroy(destroyBaseTexture);
+        this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
     }
 
     this._texture = null;
