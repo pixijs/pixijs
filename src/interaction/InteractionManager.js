@@ -337,26 +337,27 @@ InteractionManager.prototype.update = function (deltaTime)
 };
 
 /**
- * Dispatches an event on the display object that was interacted with
+ * Dispatches an event on the display object that was interacted with, and then bubbles up the scene graph
  *
  * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the display object in question
- * @param eventString {string} the name of the event (e.g, mousedown)
+ * @param eventString {string} the name of the event (e.g., mousedown)
  * @param eventData {object} the event data object
  * @private
  */
-InteractionManager.prototype.dispatchEvent = function ( displayObject, eventString, eventData )
+InteractionManager.prototype.dispatchEvent = function (displayObject, eventString, eventData)
 {
-    if(!eventData.stopped)
+    eventData.target = displayObject;
+    eventData.type = eventString;
+
+    var bubbleTarget = displayObject;
+    while (bubbleTarget && !eventData.stopped) 
     {
-        eventData.target = displayObject;
-        eventData.type = eventString;
-
-        displayObject.emit( eventString, eventData );
-
-        if( displayObject[eventString] )
+        bubbleTarget.emit(eventString, eventData);
+        if (bubbleTarget[eventString])
         {
-            displayObject[eventString]( eventData );
+            bubbleTarget[eventString](eventData);
         }
+        bubbleTarget = bubbleTarget.parent;
     }
 };
 
