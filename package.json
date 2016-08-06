@@ -51,7 +51,6 @@
     "browserify-versionify": "^1.0.6",
     "chai": "^3.5.0",
     "del": "^2.2.0",
-    "exorcist": "^0.4.0",
     "gulp-empty": "^0.1.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^2.0.0",
