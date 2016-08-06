@@ -137,14 +137,8 @@ Note that for most users you don't need to build this project. If all you want i
 just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
 the only time you should need to build pixi.js is if you are developing it.
 
-If you don't already have Node.js and NPM, go install them. Once you do, you can then install the gulp
-executable:
-
-```
-$> npm install -g gulp
-```
-
-Then, in the folder where you have cloned the repository, install the build dependencies using npm:
+If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned 
+the repository, install the build dependencies using npm:
 
 ```
 $> npm install
@@ -153,7 +147,7 @@ $> npm install
 Then, to build the source, run:
 
 ```
-$> gulp build
+$> npm run build
 ```
 
 This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
@@ -162,13 +156,13 @@ with all the plugins in the pixi.js project.
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> gulp build --exclude extras --exclude interaction
+$> npm run build -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> gulp build -e extras -e interaction -e filters
+$> npm run build -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
@@ -179,14 +173,7 @@ The docs can be generated using npm:
 $> npm run docs
 ```
 
-There is also a gulp task to generate them if you want to:
-
-```
-$> gulp jsdoc
-```
-
-The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration
-file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/pixijs/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
+The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
 
 ### License ###
 
