@@ -555,7 +555,11 @@ Container.prototype.destroy = function (options)
         }
     }
 
-    this.removeChildren();
+    // Since this is called by Sprite.destroy and sprites don't have children double check to see if there are children first
+    if (this.children)
+    {
+        this.removeChildren();
 
-    this.children = null;
+        this.children = null;
+    }
 };
