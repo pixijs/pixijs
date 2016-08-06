@@ -604,7 +604,12 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
         if( displayObject[ isDown ] )
         {
             displayObject[ isDown ] = false;
-            this.dispatchEvent( displayObject, isRightButton ? 'rightclick' : 'click', this.eventData );
+            if (isRightButton) {
+                this.dispatchEvent( displayObject, 'rightclick', this.eventData );
+            } else {
+                this.dispatchEvent( displayObject, 'click', this.eventData );
+                this.dispatchEvent( displayObject, 'clicktap', this.eventData );
+            }
         }
     }
     else
@@ -847,6 +852,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
         {
             displayObject._touchDown = false;
             this.dispatchEvent( displayObject, 'tap', this.eventData );
+            this.dispatchEvent( displayObject, 'clicktap', this.eventData );
         }
     }
     else
