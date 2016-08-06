@@ -6,6 +6,8 @@ PIXI.BaseTextureCache = {};
 
 PIXI.BaseTextureCacheIdGenerator = 0;
 
+PIXI.BaseTextureCacheManager = null;
+
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
@@ -248,7 +250,12 @@ PIXI.BaseTexture.prototype.unloadFromGPU = function()
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
-    var baseTexture = PIXI.BaseTextureCache[imageUrl];
+    if (!PIXI.BaseTextureCacheManager)
+    {
+        PIXI.BaseTextureCacheManager = new PIXI.CumulativeCacheManager(PIXI.BaseTextureCache);
+    }
+
+    var baseTexture = PIXI.BaseTextureCacheManager.get(imageUrl);
 
     if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
@@ -265,7 +272,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
-        PIXI.BaseTextureCache[imageUrl] = baseTexture;
+        PIXI.BaseTextureCacheManager.put(imageUrl, baseTexture);
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
         if( imageUrl.indexOf(PIXI.RETINA_PREFIX + '.') !== -1)

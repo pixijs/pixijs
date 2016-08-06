@@ -63,6 +63,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/extras/PIXISpine.js',
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
+            '<%= dirs.src %>/textures/TextureCacheManager.js',
             '<%= dirs.src %>/textures/RenderTexture.js',
             '<%= dirs.src %>/textures/VideoTexture.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
