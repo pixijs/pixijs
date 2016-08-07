@@ -294,7 +294,7 @@ Object.defineProperties(core, {
     TransformManual: {
         get: function()
         {
-            warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
+          //  warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
             return core.TransformBase;
         }
     }
