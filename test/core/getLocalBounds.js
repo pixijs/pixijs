@@ -9,8 +9,9 @@ describe('getLocalBounds', function () {
 
         parent.addChild(sprite);
 
+        var bounds;
 
-        var bounds = sprite.getLocalBounds();
+        bounds = sprite.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
@@ -23,13 +24,12 @@ describe('getLocalBounds', function () {
         sprite.scale.x = 2;
         sprite.scale.y = 2;
 
-        var bounds = sprite.getLocalBounds();
+        bounds = sprite.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
-
 
     });
 
@@ -70,19 +70,19 @@ describe('getLocalBounds', function () {
 
     });
 
-	it('should register correct local-bounds with an item that has already had its parent Container transformed', function() {
+    it('should register correct local-bounds with an item that has already had its parent Container transformed', function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-    	var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);//texture);
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);//texture);
 
 
         parent.addChild(container);
         container.addChild(graphics);
 
-	    container.position.x = 100;
-    	container.position.y = 100;
+        container.position.x = 100;
+        container.position.y = 100;
 
         var bounds = container.getLocalBounds();
 
@@ -95,25 +95,23 @@ describe('getLocalBounds', function () {
 
     });
 
-	it('should register correct local-bounds with a Mesh', function() {
-	        var parent = new PIXI.Container();
+    it('should register correct local-bounds with a Mesh', function() {
+        var parent = new PIXI.Container();
 
-	    	var texture = PIXI.RenderTexture.create(10, 10);
+        var texture = PIXI.RenderTexture.create(10, 10);
 
-	        var plane = new PIXI.mesh.Plane(texture);
+        var plane = new PIXI.mesh.Plane(texture);
 
-	        parent.addChild(plane);
+        parent.addChild(plane);
 
-		    plane.position.x = 20;
-	    	plane.position.y = 20;
+        plane.position.x = 20;
+        plane.position.y = 20;
 
-	        var bounds = plane.getLocalBounds();
+        var bounds = plane.getLocalBounds();
 
-	        expect(bounds.x).to.equal(0);
-	        expect(bounds.y).to.equal(0);
-	        expect(bounds.width).to.equal(10);
-	        expect(bounds.height).to.equal(10);
-
-
-	    });
-	});
+        expect(bounds.x).to.equal(0);
+        expect(bounds.y).to.equal(0);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
+    });
+});

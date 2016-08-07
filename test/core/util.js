@@ -1,5 +1,5 @@
 describe('PIXI.utils', function () {
-    describe('.uid', function () {
+    describe('uid', function () {
         it('should exist', function () {
             expect(PIXI.utils.uid)
                 .to.be.a('function');
@@ -11,57 +11,57 @@ describe('PIXI.utils', function () {
         });
     });
 
-    describe('.hex2rgb', function () {
+    describe('hex2rgb', function () {
         it('should exist', function () {
             expect(PIXI.utils.hex2rgb)
                 .to.be.a('function');
         });
 
-        it('should properly convert number to rgb array');
+        // it('should properly convert number to rgb array');
     });
 
-    describe('.hex2string', function () {
+    describe('hex2string', function () {
         it('should exist', function () {
             expect(PIXI.utils.hex2string)
                 .to.be.a('function');
         });
 
-        it('should properly convert number to hex color string');
+        // it('should properly convert number to hex color string');
     });
 
-    describe('.rgb2hex', function () {
+    describe('rgb2hex', function () {
         it('should exist', function () {
             expect(PIXI.utils.rgb2hex)
                 .to.be.a('function');
         });
 
-        it('should properly convert rgb array to hex color string');
+        // it('should properly convert rgb array to hex color string');
     });
 
-    describe('.getResolutionOfUrl', function () {
+    describe('getResolutionOfUrl', function () {
         it('should exist', function () {
             expect(PIXI.utils.getResolutionOfUrl)
                 .to.be.a('function');
         });
 
-        it('should return the correct resolution based on a URL');
+        // it('should return the correct resolution based on a URL');
     });
 
-    describe('.sayHello', function () {
+    describe('sayHello', function () {
         it('should exist', function () {
             expect(PIXI.utils.sayHello)
                 .to.be.a('function');
         });
     });
 
-    describe('.isWebGLSupported', function () {
+    describe('isWebGLSupported', function () {
         it('should exist', function () {
             expect(PIXI.utils.isWebGLSupported)
                 .to.be.a('function');
         });
     });
 
-    describe('.sign', function () {
+    describe('sign', function () {
         it('should return 0 for 0', function () {
             expect(PIXI.utils.sign(0))
                 .to.be.equal(0);

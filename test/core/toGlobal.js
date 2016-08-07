@@ -11,7 +11,9 @@ describe('toGlobal', function () {
 
         var point = new PIXI.Point(100, 100);
 
-        var globalPoint = container.toGlobal(point);
+        var globalPoint;
+
+        globalPoint = container.toGlobal(point);
 
         expect(globalPoint.x).to.equal(100);
         expect(globalPoint.y).to.equal(100);
@@ -22,7 +24,7 @@ describe('toGlobal', function () {
         container.scale.x = 2;
         container.scale.y = 2;
 
-        var globalPoint = container.toGlobal(point);
+        globalPoint = container.toGlobal(point);
 
         expect(globalPoint.x).to.equal(220);
         expect(globalPoint.y).to.equal(220);

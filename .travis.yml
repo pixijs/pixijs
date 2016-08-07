@@ -1,23 +1,29 @@
-sudo: false
 language: node_js
 node_js:
     - "4"
 
-branches:
-    only:
-        - master
-        - dev
+env:
+  - CXX=g++-4.8
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 install:
+    - npm install xvfb-maybe
     - npm install
 
 cache:
-    directories:
-        - node_modules
+  directories:
+    - node_modules
 
 before_script:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
 
 script:
-    - npm test
+    - npm run build
+    - xvfb-maybe npm test
