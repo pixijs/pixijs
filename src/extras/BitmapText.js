@@ -263,12 +263,17 @@ BitmapText.prototype.updateText = function ()
     var line = 0;
     var scale = this._font.size / data.size;
     var lastSpace = -1;
+    var lastSpaceWidth = 0;
     var maxLineHeight = 0;
 
     for (var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        lastSpace = /(\s)/.test(this.text.charAt(i)) ? i : lastSpace;
+        
+        if(/(\s)/.test(this.text.charAt(i))){
+            lastSpace = i;
+            lastSpaceWidth = lastLineWidth;
+        }
 
         if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
@@ -288,8 +293,8 @@ BitmapText.prototype.updateText = function ()
             i = lastSpace;
             lastSpace = -1;
 
-            lineWidths.push(lastLineWidth);
-            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            lineWidths.push(lastSpaceWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
             line++;
 
             pos.x = 0;
