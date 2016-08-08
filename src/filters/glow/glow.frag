@@ -5,6 +5,7 @@ uniform sampler2D uSampler;
 uniform sampler2D uBlurSampler;
 uniform float strength;
 uniform float haloStrength;
+uniform vec4 glowColor;
 
 
 void main(void)
@@ -20,8 +21,7 @@ void main(void)
   float alpha = max(bluredNormal.a * intensity, original.a);
   alpha = min(alpha, 1.0);
 
-  vec4 originalColor = vec4(125.0/255.0, 249.0/255.0, 255.0/255.0, 0.0);
-  vec4 color = originalColor * alpha;
+  vec4 color = glowColor * alpha;
 
   color *= strength;
 
@@ -30,7 +30,7 @@ void main(void)
   bluredScaled *= knockout;
   bluredScaled *= 3.0;
   bluredScaled *= haloStrength * strength;
-  bluredScaled = originalColor * bluredScaled.a;
+  bluredScaled = glowColor * bluredScaled.a;
 
   gl_FragColor = color + (bluredScaled  * (1.0-color.a) );
 

@@ -32358,7 +32358,7 @@ function GlowFilter()
     	// vertex shader
         "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform vec4 filterArea;\nuniform vec2 center;\nuniform float haloScale;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vTextureCoordScaled;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vec2 transl = mapCoord(aTextureCoord);\n\n    vec2 c = center;//vec2(1280.0/2.0, 720.0/2.0);\n\n    transl -= c;\n\n    transl *= haloScale;\n\n    transl += c ;\n\n    transl = unmapCoord(transl);\n\n//    center\n    vTextureCoordScaled = transl;\n}\n\n",
         // fragment shader
-        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec2 vTextureCoordScaled;\n\nuniform sampler2D uSampler;\nuniform sampler2D uBlurSampler;\nuniform float strength;\nuniform float haloStrength;\n\nvoid main(void)\n{\n  vec4 original = texture2D(uSampler, vTextureCoord);\n  vec4 bluredNormal = texture2D(uBlurSampler, vTextureCoord);\n\n  vec4 originalScaled = texture2D(uSampler, vTextureCoordScaled);\n  vec4 bluredScaled = texture2D(uBlurSampler, vTextureCoordScaled);\n\n  float intensity = 2.0;\n  float alpha = max(bluredNormal.a * intensity, original.a);\n  alpha = min(alpha, 1.0);\n\n  vec4 originalColor = vec4(125.0/255.0, 249.0/255.0, 255.0/255.0, 0.0);\n  vec4 color = originalColor * alpha;\n\n  color *= strength;\n\n  float knockout = bluredScaled.a * ( 1.0-originalScaled.a );\n  bluredScaled *= knockout;\n  bluredScaled *= 3.0;\n  bluredScaled *= haloStrength * strength;\n  bluredScaled = originalColor * bluredScaled.a;\n\n  gl_FragColor = color + (bluredScaled  * (1.0-color.a) );\n\n}\n"
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nvarying vec2 vTextureCoordScaled;\n\nuniform sampler2D uSampler;\nuniform sampler2D uBlurSampler;\nuniform float strength;\nuniform float haloStrength;\nuniform vec4 glowColor;\n\nvoid main(void)\n{\n  vec4 original = texture2D(uSampler, vTextureCoord);\n  vec4 bluredNormal = texture2D(uBlurSampler, vTextureCoord);\n\n  vec4 originalScaled = texture2D(uSampler, vTextureCoordScaled);\n  vec4 bluredScaled = texture2D(uBlurSampler, vTextureCoordScaled);\n\n  float intensity = 2.0;\n  float alpha = max(bluredNormal.a * intensity, original.a);\n  alpha = min(alpha, 1.0);\n\n  vec4 color = glowColor * alpha;\n\n  color *= strength;\n\n  float knockout = bluredScaled.a * ( 1.0-originalScaled.a );\n  bluredScaled *= knockout;\n  bluredScaled *= 3.0;\n  bluredScaled *= haloStrength * strength;\n  bluredScaled = glowColor * bluredScaled.a;\n\n  gl_FragColor = color + (bluredScaled  * (1.0-color.a) );\n\n}\n"
     );
 
 
@@ -32370,11 +32370,15 @@ function GlowFilter()
     this.blurXFilter.blur = 15;
     this.blurYFilter.blur = 15;
 
+    this.haloDistance = 30;
+
   //  this.blurXFilter.passes = 1;
 //    this.blurYFilter.passes = 1;
     this.blendMode = CONST.BLEND_MODES.ADD;
 
     this.defaultFilter = new VoidFilter();
+
+    this.uniforms.glowColor = [125.0/255.0, 249.0/255.0, 255.0/255.0, 0.0];
 
     this.uniforms.center.x = 0.1;
     this.uniforms.center.y = 0.1;
@@ -32396,8 +32400,8 @@ GlowFilter.prototype.apply = function (filterManager, input, output)
 //	this.blurXFilter.blur = this.uniforms.strength * 15;
   //  this.blurYFilter.blur = this.uniforms.strength * 15;
 
-    var renderTarget = filterManager.getRenderTarget(true, 0.5);
-    var renderTarget2 = filterManager.getRenderTarget(true, 0.5);
+    var renderTarget = filterManager.getRenderTarget(true);
+    var renderTarget2 = filterManager.getRenderTarget(true);
 
     //TODO - copyTexSubImage2D could be used here?
     this.defaultFilter.apply(filterManager, input, output, true);
@@ -32409,7 +32413,8 @@ GlowFilter.prototype.apply = function (filterManager, input, output)
     this.uniforms.center.x = target.position.x;
     this.uniforms.center.y = target.position.y;
 
-
+    var width = target.getBounds(true).width;
+    glow.uniforms.haloScale = 1/((width+this.haloDistance)/(width))
   //  var renderer = filterManager.renderer;
   //  var gl = renderer.gl;
 
@@ -32450,39 +32455,14 @@ Object.defineProperties(GlowFilter.prototype, {
         }
     },
 
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf core.filters.GlowFilter#
-     * @default 2
-     */
-    blurX: {
+    glowColor: {
         get: function ()
         {
-            return this.blurXFilter.blur;
+            return core.utils.rgb2hex( this.uniforms.glowColor );
         },
         set: function (value)
         {
-            this.blurXFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf core.filters.GlowFilter#
-     * @default 2
-     */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
+            this.uniforms.glowColor = core.utils.hex2rgb(value, this.uniforms.glowColor);
         }
     }
 });

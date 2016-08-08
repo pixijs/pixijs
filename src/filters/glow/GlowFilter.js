@@ -33,11 +33,15 @@ function GlowFilter()
     this.blurXFilter.blur = 15;
     this.blurYFilter.blur = 15;
 
+    this.haloDistance = 30;
+
   //  this.blurXFilter.passes = 1;
 //    this.blurYFilter.passes = 1;
     this.blendMode = CONST.BLEND_MODES.ADD;
 
     this.defaultFilter = new VoidFilter();
+
+    this.uniforms.glowColor = [125.0/255.0, 249.0/255.0, 255.0/255.0, 0.0];
 
     this.uniforms.center.x = 0.1;
     this.uniforms.center.y = 0.1;
@@ -59,8 +63,8 @@ GlowFilter.prototype.apply = function (filterManager, input, output)
 //	this.blurXFilter.blur = this.uniforms.strength * 15;
   //  this.blurYFilter.blur = this.uniforms.strength * 15;
 
-    var renderTarget = filterManager.getRenderTarget(true, 0.5);
-    var renderTarget2 = filterManager.getRenderTarget(true, 0.5);
+    var renderTarget = filterManager.getRenderTarget(true);
+    var renderTarget2 = filterManager.getRenderTarget(true);
 
     //TODO - copyTexSubImage2D could be used here?
     this.defaultFilter.apply(filterManager, input, output, true);
@@ -72,7 +76,8 @@ GlowFilter.prototype.apply = function (filterManager, input, output)
     this.uniforms.center.x = target.position.x;
     this.uniforms.center.y = target.position.y;
 
-
+    var width = target.getBounds(true).width;
+    glow.uniforms.haloScale = 1/((width+this.haloDistance)/(width))
   //  var renderer = filterManager.renderer;
   //  var gl = renderer.gl;
 
@@ -113,39 +118,14 @@ Object.defineProperties(GlowFilter.prototype, {
         }
     },
 
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf core.filters.GlowFilter#
-     * @default 2
-     */
-    blurX: {
+    glowColor: {
         get: function ()
         {
-            return this.blurXFilter.blur;
+            return core.utils.rgb2hex( this.uniforms.glowColor );
         },
         set: function (value)
         {
-            this.blurXFilter.blur = value;
-        }
-    },
-
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf core.filters.GlowFilter#
-     * @default 2
-     */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
+            this.uniforms.glowColor = core.utils.hex2rgb(value, this.uniforms.glowColor);
         }
     }
 });
