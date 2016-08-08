@@ -56,10 +56,10 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     /**
      * Whether the Mesh is dirty or not
      *
-     * @member {boolean}
+     * @member {number}
      */
-    this.dirty = true;
-    this.indexDirty = true;
+    this.dirty = 0;
+    this.indexDirty = 0;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -187,7 +187,9 @@ Mesh.prototype._renderWebGL = function (renderer)
             uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
             indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
             // build the vao object that will render..
-            vao:new glCore.VertexArrayObject(gl)
+            vao:new glCore.VertexArrayObject(gl),
+            dirty:this.dirty,
+            indexDirty:this.indexDirty
         };
 
         // build the vao object that will render..
@@ -199,19 +201,18 @@ Mesh.prototype._renderWebGL = function (renderer)
         this._glDatas[renderer.CONTEXT_UID] = glData;
 
 
-        this.indexDirty = false;
     }
 
-    if(this.dirty)
+    if(this.dirty !== glData.dirty)
     {
-        this.dirty = false;
+        glData.dirty = this.dirty;
         glData.uvBuffer.upload();
 
     }
 
-    if(this.indexDirty)
+    if(this.indexDirty !== glData.indexDirty)
     {
-        this.indexDirty = false;
+        glData.indexDirty = this.indexDirty;
         glData.indexBuffer.upload();
     }
 
