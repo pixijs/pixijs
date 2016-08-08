@@ -54,6 +54,8 @@ function VideoBaseTexture(source, scaleMode)
      */
     this.autoUpdate = false;
 
+    this.__loaded = false;
+
     this._onUpdate = this._onUpdate.bind(this);
     this._onCanPlay = this._onCanPlay.bind(this);
 
@@ -62,12 +64,7 @@ function VideoBaseTexture(source, scaleMode)
         source.addEventListener('canplay', this._onCanPlay);
         source.addEventListener('canplaythrough', this._onCanPlay);
 
-        // started playing..
-        source.addEventListener('play', this._onPlayStart.bind(this));
-        source.addEventListener('pause', this._onPlayStop.bind(this));
     }
-
-    this.__loaded = false;
 }
 
 VideoBaseTexture.prototype = Object.create(BaseTexture.prototype);
@@ -129,7 +126,6 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
 
-        this.source.play();
 
         // prevent multiple loaded dispatches..
         if (!this.__loaded)
