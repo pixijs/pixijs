@@ -59,7 +59,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "^2.5.3",
     "parallelshell": "^2.0.0",
-    "pixify": "^1.0.0",
+    "pixify": "^1.2.0",
     "rimraf": "^2.5.3",
     "testem": "^1.8.1",
     "watchify": "^3.7.0"
