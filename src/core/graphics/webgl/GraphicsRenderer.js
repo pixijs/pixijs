@@ -81,12 +81,17 @@ GraphicsRenderer.prototype.render = function(graphics)
 
     var webGLData;
 
-    if (graphics.dirty || !graphics._webGL[this.CONTEXT_UID])
+    var webGL = graphics._webGL[this.CONTEXT_UID];
+
+    if (!webGL || graphics.dirty !== webGL.dirty )
     {
+
         this.updateGraphics(graphics);
+
+        webGL = graphics._webGL[this.CONTEXT_UID];
     }
 
-    var webGL = graphics._webGL[this.CONTEXT_UID];
+
 
     // This  could be speeded up for sure!
     var shader = this.primitiveShader;
@@ -125,19 +130,19 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     // if the graphics object does not exist in the webGL context time to create it!
     if (!webGL)
     {
-        webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl:gl};
+        webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl:gl, clearDirty:-1, dirty:-1};
 
     }
 
     // flag the graphics as not dirty as we are about to update it...
-    graphics.dirty = false;
+    webGL.dirty = graphics.dirty;
 
     var i;
 
     // if the user cleared the graphics object we will need to clear every object
-    if (graphics.clearDirty)
+    if (graphics.clearDirty !== webGL.clearDirty)
     {
-        graphics.clearDirty = false;
+        webGL.clearDirty = graphics.clearDirty;
 
         // loop through and return all the webGLDatas to the object pool so than can be reused later on
         for (i = 0; i < webGL.data.length; i++)
