@@ -26,6 +26,7 @@
     "lint": "jshint --reporter=scripts/reporter.js scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "node scripts/bundle.js",
+    "postbuild": "npm test",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
   },
   "files": [
