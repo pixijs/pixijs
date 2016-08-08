@@ -24,7 +24,7 @@
     "test": "npm run build && testem ci",
     "lint": "jshint --reporter=scripts/reporter.js scripts src",
     "prebuild": "npm run lint && npm run clean",
-    "build": "node scripts/bundle.js",
+    "build": "pixify --name pixi",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
   },
   "files": [
@@ -47,13 +47,9 @@
     "resource-loader": "^1.6.4"
   },
   "devDependencies": {
-    "browserify": "^13.0.1",
     "browserify-versionify": "^1.0.6",
     "chai": "^3.5.0",
     "del": "^2.2.0",
-    "gulp-empty": "^0.1.1",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^2.0.0",
     "jaguarjs-jsdoc": "^1.0.0",
     "jsdoc": "^3.4.0",
     "jshint": "^2.9.2",
@@ -63,12 +59,9 @@
     "mkdirp": "^0.5.1",
     "mocha": "^2.5.3",
     "parallelshell": "^2.0.0",
+    "pixify": "^1.0.0",
     "rimraf": "^2.5.3",
     "testem": "^1.8.1",
-    "through2": "^2.0.1",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-fs": "^2.4.3",
-    "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   },
   "browserify": {
