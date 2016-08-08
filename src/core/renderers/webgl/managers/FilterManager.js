@@ -278,7 +278,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
                 // make the filter texture cache return a RenderTexture
                 // rather than a renderTarget
                 var gl = this.renderer.gl;
-                this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount
+                this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
                 gl.activeTexture(gl.TEXTURE0 + textureCount );
                 uniforms[i].texture.bind();
             }
@@ -392,7 +392,6 @@ FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, r
 
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
- //   console.log(minWidth + "  " + minHeight)
     if(!this.pool[key]) {
       this.pool[key] = [];
     }
