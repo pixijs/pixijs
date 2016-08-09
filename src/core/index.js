@@ -23,7 +23,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasSpriteRenderer:     require('./sprites/canvas/CanvasSpriteRenderer'),
     CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
