@@ -1,3 +1,4 @@
+// @if DEBUG
 /*global console */
 var core = require('./core'),
     mesh = require('./mesh'),
@@ -553,4 +554,4 @@ core.utils.canUseNewCanvasBlendModes = function() {
     warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;
 };
-
+// @endif
