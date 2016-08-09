@@ -1,7 +1,7 @@
 /*!
  * @preserve
  * pixi.js - v4.0.0
- * Compiled Mon Aug 08 2016 22:45:29 GMT+0100 (BST)
+ * Compiled Tue Aug 09 2016 20:36:37 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -13858,23 +13858,20 @@ Bounds.prototype.clear = function()
  * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
  * @returns {PIXI.Rectangle}
  */
-Bounds.prototype.getRectangle = function()
+Bounds.prototype.getRectangle = function(rect)
 {
     if (this.minX > this.maxX || this.minY > this.maxY) {
         return Rectangle.EMPTY;
     }
 
-    if(!this.rect)
-    {
-        this.rect = new Rectangle(0, 0, 1, 1);
-    }
+    rect = rect || new Rectangle(0, 0, 1, 1);
 
-    this.rect.x = this.minX;
-    this.rect.y = this.minY;
-    this.rect.width = this.maxX - this.minX;
-    this.rect.height = this.maxY - this.minY;
+    rect.x = this.minX;
+    rect.y = this.minY;
+    rect.width = this.maxX - this.minX;
+    rect.height = this.maxY - this.minY;
 
-    return this.rect;
+    return rect;
 };
 
 /**
@@ -14590,6 +14587,7 @@ var EventEmitter = require('eventemitter3'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
     Bounds = require('./Bounds'),
+    math = require('../math'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -14674,6 +14672,8 @@ function DisplayObject()
     this._bounds = new Bounds();
     this._boundsID = 0;
     this._lastBoundsID = -1;
+    this._boundsRect = null;
+    this._localBoundsRect = null;
 
     /**
      * The original, cached mask of the object
@@ -14953,11 +14953,12 @@ DisplayObject.prototype._recursivePostUpdateTransform = function()
 /**
  *
  *
- * Retrieves the bounds of the displayObject as a rectangle object
- *
+ * Retrieves the bounds of the displayObject as a rectangle object.
+ * @param skipUpdate {boolean} setting to true will stop the transforms of the scene graph from being updated. This means the calculation returned MAY be out of date BUT will give you a nice performance boost
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (skipUpdate)
+DisplayObject.prototype.getBounds = function (skipUpdate, rect)
 {
     if(!skipUpdate)
     {
@@ -14979,15 +14980,25 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         this.calculateBounds();
     }
 
-    return this._bounds.getRectangle(this._bounds);
+    if(!rect)
+    {
+        if(!this._boundsRect)
+        {
+            this._boundsRect = new math.Rectangle();
+        }
+
+        rect = this._boundsRect;
+    }
+
+    return this._bounds.getRectangle(rect);
 };
 
 /**
  * Retrieves the local bounds of the displayObject as a rectangle object
- *
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getLocalBounds = function ()
+DisplayObject.prototype.getLocalBounds = function (rect)
 {
     var transformRef = this.transform;
     var parentRef = this.parent;
@@ -14995,7 +15006,17 @@ DisplayObject.prototype.getLocalBounds = function ()
     this.parent = null;
     this.transform = _tempDisplayObjectParent.transform;
 
-    var bounds = this.getBounds();
+    if(!rect)
+    {
+        if(!this._localBoundsRect)
+        {
+            this._localBoundsRect = new math.Rectangle();
+        }
+
+        rect = this._localBoundsRect;
+    }
+
+    var bounds = this.getBounds(rect);
 
     this.parent = parentRef;
     this.transform = transformRef;
@@ -15154,7 +15175,7 @@ DisplayObject.prototype.destroy = function ()
     this.filterArea = null;
 };
 
-},{"../const":42,"./Bounds":43,"./Transform":46,"./TransformStatic":48,"eventemitter3":12}],46:[function(require,module,exports){
+},{"../const":42,"../math":66,"./Bounds":43,"./Transform":46,"./TransformStatic":48,"eventemitter3":12}],46:[function(require,module,exports){
 var math = require('../math'),
     TransformBase = require('./TransformBase');
 
