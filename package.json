@@ -4,6 +4,8 @@
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
+    "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
+    "Matt Karl <matt@mattkarl.com>",
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
