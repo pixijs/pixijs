@@ -323,5 +323,40 @@ describe('getBounds', function () {
 
         });
 
+        it('should return a different rectangle if getting local bounds after global bounds ', function() {
+
+            var parent = new PIXI.Container();
+            var texture = PIXI.RenderTexture.create(10, 10);
+
+            var sprite = new PIXI.Sprite(texture);
+
+            sprite.position.x = 20;
+            sprite.position.y = 20;
+
+            sprite.scale.x = 2;
+            sprite.scale.y = 2;
+
+            parent.addChild(sprite);
+
+
+            var bounds = sprite.getBounds();
+
+            expect(bounds.x).to.equal(20);
+            expect(bounds.y).to.equal(20);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
+
+
+            var localBounds = sprite.getLocalBounds();
+
+            expect(bounds.x).to.equal(20);
+            expect(bounds.y).to.equal(20);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
+
+
+
+        });
+
 
 	});

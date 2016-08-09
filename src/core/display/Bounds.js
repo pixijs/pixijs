@@ -62,23 +62,20 @@ Bounds.prototype.clear = function()
  * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
  * @returns {PIXI.Rectangle}
  */
-Bounds.prototype.getRectangle = function()
+Bounds.prototype.getRectangle = function(rect)
 {
     if (this.minX > this.maxX || this.minY > this.maxY) {
         return Rectangle.EMPTY;
     }
 
-    if(!this.rect)
-    {
-        this.rect = new Rectangle(0, 0, 1, 1);
-    }
+    rect = rect || new Rectangle(0, 0, 1, 1);
 
-    this.rect.x = this.minX;
-    this.rect.y = this.minY;
-    this.rect.width = this.maxX - this.minX;
-    this.rect.height = this.maxY - this.minY;
+    rect.x = this.minX;
+    rect.y = this.minY;
+    rect.width = this.maxX - this.minX;
+    rect.height = this.maxY - this.minY;
 
-    return this.rect;
+    return rect;
 };
 
 /**
