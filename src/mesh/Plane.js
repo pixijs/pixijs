@@ -58,12 +58,12 @@ Plane.prototype.refresh = function()
     var indices = [];
     var texture = this.texture;
 
-    var verticesXSub = this.verticesX - 1;
-    var verticesYSub = this.verticesY - 1;
+    var segmentsX = this.verticesX - 1;
+    var segmentsY = this.verticesY - 1;
     var i = 0;
 
-    var sizeX = texture.width / verticesXSub;
-    var sizeY = texture.height / verticesYSub;
+    var sizeX = texture.width / segmentsX;
+    var sizeY = texture.height / segmentsY;
 
     for (i = 0; i < total; i++) {
 
@@ -80,12 +80,12 @@ Plane.prototype.refresh = function()
 
     //  cons
 
-    var totalSub = verticesXSub * verticesYSub;
+    var totalSub = segmentsX * segmentsY;
 
     for (i = 0; i < totalSub; i++) {
 
-        var xpos = i % verticesXSub;
-        var ypos = (i / verticesXSub ) | 0;
+        var xpos = i % segmentsX;
+        var ypos = (i / segmentsX ) | 0;
 
 
         var  value = (ypos * this.verticesX) + xpos;
