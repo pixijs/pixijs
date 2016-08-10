@@ -3,6 +3,7 @@ var EventEmitter = require('eventemitter3'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
     Bounds = require('./Bounds'),
+    math = require('../math'),
     _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -87,6 +88,8 @@ function DisplayObject()
     this._bounds = new Bounds();
     this._boundsID = 0;
     this._lastBoundsID = -1;
+    this._boundsRect = null;
+    this._localBoundsRect = null;
 
     /**
      * The original, cached mask of the object
@@ -366,11 +369,12 @@ DisplayObject.prototype._recursivePostUpdateTransform = function()
 /**
  *
  *
- * Retrieves the bounds of the displayObject as a rectangle object
- *
+ * Retrieves the bounds of the displayObject as a rectangle object.
+ * @param skipUpdate {boolean} setting to true will stop the transforms of the scene graph from being updated. This means the calculation returned MAY be out of date BUT will give you a nice performance boost
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (skipUpdate)
+DisplayObject.prototype.getBounds = function (skipUpdate, rect)
 {
     if(!skipUpdate)
     {
@@ -392,15 +396,25 @@ DisplayObject.prototype.getBounds = function (skipUpdate)
         this.calculateBounds();
     }
 
-    return this._bounds.getRectangle(this._bounds);
+    if(!rect)
+    {
+        if(!this._boundsRect)
+        {
+            this._boundsRect = new math.Rectangle();
+        }
+
+        rect = this._boundsRect;
+    }
+
+    return this._bounds.getRectangle(rect);
 };
 
 /**
  * Retrieves the local bounds of the displayObject as a rectangle object
- *
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getLocalBounds = function ()
+DisplayObject.prototype.getLocalBounds = function (rect)
 {
     var transformRef = this.transform;
     var parentRef = this.parent;
@@ -408,7 +422,17 @@ DisplayObject.prototype.getLocalBounds = function ()
     this.parent = null;
     this.transform = _tempDisplayObjectParent.transform;
 
-    var bounds = this.getBounds();
+    if(!rect)
+    {
+        if(!this._localBoundsRect)
+        {
+            this._localBoundsRect = new math.Rectangle();
+        }
+
+        rect = this._localBoundsRect;
+    }
+
+    var bounds = this.getBounds(rect);
 
     this.parent = parentRef;
     this.transform = transformRef;

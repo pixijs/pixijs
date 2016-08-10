@@ -267,33 +267,55 @@ SpriteRenderer.prototype.flush = function ()
         uvs = sprite._texture._uvs.uvsUint32;
         textureId = nextTexture._id;
 
-        //xy
-        float32View[index++] = vertexData[0];
-        float32View[index++] = vertexData[1];
-        uint32View[index++] = uvs[0];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+        if (this.renderer.roundPixels)
+        {
+            var resolution = this.renderer.resolution;
 
-        // xy
-        float32View[index++] = vertexData[2];
-        float32View[index++] = vertexData[3];
-        uint32View[index++] = uvs[1];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+            //xy
+            float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
+            float32View[index+1] = ((vertexData[1] * resolution) | 0) / resolution;
 
-         // xy
-        float32View[index++] = vertexData[4];
-        float32View[index++] = vertexData[5];
-        uint32View[index++] = uvs[2];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+            // xy
+            float32View[index+5] = ((vertexData[2] * resolution) | 0) / resolution;
+            float32View[index+6] = ((vertexData[3] * resolution) | 0) / resolution;
 
-        // xy
-        float32View[index++] = vertexData[6];
-        float32View[index++] = vertexData[7];
-        uint32View[index++] = uvs[3];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+             // xy
+            float32View[index+10] = ((vertexData[4] * resolution) | 0) / resolution;
+            float32View[index+11] = ((vertexData[5] * resolution) | 0) / resolution;
+
+            // xy
+            float32View[index+15] = ((vertexData[6] * resolution) | 0) / resolution;
+            float32View[index+16] = ((vertexData[7] * resolution) | 0) / resolution;
+
+        }
+        else
+        {
+            //xy
+            float32View[index] = vertexData[0];
+            float32View[index+1] = vertexData[1];
+
+            // xy
+            float32View[index+5] = vertexData[2];
+            float32View[index+6] = vertexData[3];
+
+             // xy
+            float32View[index+10] = vertexData[4];
+            float32View[index+11] = vertexData[5];
+
+            // xy
+            float32View[index+15] = vertexData[6];
+            float32View[index+16] = vertexData[7];
+        }
+
+        uint32View[index+2] = uvs[0];
+        uint32View[index+7] = uvs[1];
+        uint32View[index+12] = uvs[2];
+        uint32View[index+17] = uvs[3];
+
+        uint32View[index+3] = uint32View[index+8] = uint32View[index+13] = uint32View[index+18] = tint;
+        float32View[index+4] = float32View[index+9] = float32View[index+14] = float32View[index+19] = textureId;
+
+        index += 20;
     }
 
     currentGroup.size = i - currentGroup.start;

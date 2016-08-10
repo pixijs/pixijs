@@ -128,18 +128,25 @@ function Graphics()
      * @member {boolean}
      * @private
      */
-    this.dirty = true;
+    this.dirty = 0;
 
     /**
-     * Used to detect if the WebGL graphics object has changed. If this is set to true then the
-     * graphics object will be recalculated.
-     *
-     * @member {boolean}
-     * @private
+     * Used to detect if we need to do a fast rect check using the id compare method
+     * @type {Number}
      */
-    this.glDirty = false;
+    this.fastRectDirty = -1;
 
-    this.boundsDirty = true;
+    /**
+     * Used to detect if we clear the graphics webGL data
+     * @type {Number}
+     */
+    this.clearDirty = 0;
+
+    /**
+     * Used to detect if we we need to recalculate local bounds
+     * @type {Number}
+     */
+    this.boundsDirty = -1;
 
     /**
      * Used to detect if the cached sprite object needs to be updated.
@@ -192,8 +199,7 @@ Graphics.prototype.clone = function ()
     clone.blendMode     = this.blendMode;
     clone.isMask        = this.isMask;
     clone.boundsPadding = this.boundsPadding;
-    clone.dirty         = true;
-    clone.glDirty       = true;
+    clone.dirty         = 0;
     clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
     // copy graphics data
@@ -271,7 +277,7 @@ Graphics.prototype.moveTo = function (x, y)
 Graphics.prototype.lineTo = function (x, y)
 {
     this.currentPath.shape.points.push(x, y);
-    this.dirty = true;
+    this.dirty++;
 
     return this;
 };
@@ -326,7 +332,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
                      ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
     }
 
-    this.dirty = this.boundsDirty = true;
+    this.dirty++;
 
     return this;
 };
@@ -365,7 +371,7 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
 
     bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, points);
 
-    this.dirty = this.boundsDirty = true;
+    this.dirty++;
 
     return this;
 };
@@ -433,7 +439,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
         this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
     }
 
-    this.dirty = this.boundsDirty = true;
+    this.dirty++;
 
     return this;
 };
@@ -513,7 +519,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
                     ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
     }
 
-    this.dirty = this.boundsDirty = true;
+    this.dirty++;
 
     return this;
 };
@@ -670,8 +676,8 @@ Graphics.prototype.clear = function ()
     this.lineWidth = 0;
     this.filling = false;
 
-    this.dirty = true;
-    this.clearDirty = true;
+    this.dirty++;
+    this.clearDirty++;
     this.graphicsData = [];
 
     return this;
@@ -694,15 +700,9 @@ Graphics.prototype.isFastRect = function() {
 Graphics.prototype._renderWebGL = function (renderer)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-
-    if (this.glDirty)
+    if(this.dirty !== this.fastRectDirty)
     {
-        this.dirty = true;
-        this.glDirty = false;
-    }
-
-    if(this.dirty)
-    {
+        this.fastRectDirty = this.dirty;
         this._fastRect = this.isFastRect();
     }
 
@@ -782,13 +782,13 @@ Graphics.prototype._calculateBounds = function ()
         return;
     }
 
-    if (this.boundsDirty)
+    if (this.boundsDirty !== this.dirty)
     {
+        this.boundsDirty = this.dirty;
         this.updateLocalBounds();
 
-        this.glDirty = true;
+        this.dirty++;
         this.cachedSpriteDirty = true;
-        this.boundsDirty = false;
     }
 
     var lb = this._localBounds;
@@ -957,7 +957,7 @@ Graphics.prototype.drawShape = function (shape)
         this.currentPath = data;
     }
 
-    this.dirty = this.boundsDirty = true;
+    this.dirty++;
 
     return data;
 };
