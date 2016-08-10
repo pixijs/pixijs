@@ -23,10 +23,12 @@
     "start": "parallelshell \"npm run watch:debug\" \"npm run watch:release\"",
     "watch:debug": "watchify src/index.js -s PIXI -o bin/pixi.js -dv",
     "watch:release": "watchify src/index.js -s PIXI -o bin/pixi.min.js -dv",
-    "test": "npm run build && testem ci",
-    "lint": "jshint --reporter=scripts/reporter.js scripts src",
+    "test": "floss --path test/index.js",
+    "test:debug": "npm test -- --debug",
+    "lint": "jshint --reporter=scripts/reporter.js scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify --name pixi",
+    "postbuild": "npm test",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
   },
   "files": [
@@ -50,8 +52,9 @@
   },
   "devDependencies": {
     "browserify-versionify": "^1.0.6",
-    "chai": "^3.5.0",
     "del": "^2.2.0",
+    "electron-prebuilt": "^1.3.2",
+    "floss": "^0.7.1",
     "jaguarjs-jsdoc": "^1.0.0",
     "jsdoc": "^3.4.0",
     "jshint": "^2.9.2",
@@ -59,11 +62,9 @@
     "jshint-stylish-summary": "^0.1.2",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.5.3",
     "parallelshell": "^2.0.0",
     "pixify": "^1.2.0",
     "rimraf": "^2.5.3",
-    "testem": "^1.8.1",
     "watchify": "^3.7.0"
   },
   "browserify": {

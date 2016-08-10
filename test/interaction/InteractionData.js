@@ -7,14 +7,10 @@ describe('PIXI.interaction.InteractionData', function() {
                 point = new PIXI.Point();
 
             data.global.set(10, 10);
-
             displayObject.position.set(5, 3);
-            
-            displayObject.parent = stage
+            displayObject.parent = stage;
             displayObject.displayObjectUpdateTransform();
-
             data.getLocalPosition(displayObject, point);
-
             expect(point.x).to.equal(5);
             expect(point.y).to.equal(7);
         });

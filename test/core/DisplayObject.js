@@ -8,12 +8,4 @@ describe('PIXI.DisplayObject', function () {
         expect(container.children.length).to.equal(1);
         expect(child.parent).to.equal(container);
     });
-
-    it('should be be able to destroy itself', function() {
-
-    	var child = new PIXI.DisplayObject();
-
-        child.destroy();
-
-    });
 });
