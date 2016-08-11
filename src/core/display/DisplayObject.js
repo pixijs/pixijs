@@ -432,7 +432,7 @@ DisplayObject.prototype.getLocalBounds = function (rect)
         rect = this._localBoundsRect;
     }
 
-    var bounds = this.getBounds(rect);
+    var bounds = this.getBounds(false, rect);
 
     this.parent = parentRef;
     this.transform = transformRef;
