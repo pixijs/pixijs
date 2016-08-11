@@ -353,11 +353,11 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
 
-        var localBounds = sprite.getLocalBounds();
+        bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).to.equal(0);
+        expect(bounds.y).to.equal(0);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
     });
 });
