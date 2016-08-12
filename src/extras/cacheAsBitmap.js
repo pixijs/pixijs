@@ -199,6 +199,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this._cacheData.sprite = cachedSprite;
 
+    this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
     this.updateTransform();
 
