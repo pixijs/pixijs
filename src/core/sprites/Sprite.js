@@ -353,15 +353,34 @@ Sprite.prototype._calculateBounds = function ()
  *
  */
 
-Sprite.prototype.getLocalBounds = function ()
+Sprite.prototype.getLocalBounds = function (rect)
 {
+    // we can do a fast local bounds if the sprite has no children!
+    if(this.children.length === 0)
+    {
 
-    this._bounds.minX = -this._texture.orig.width * this.anchor.x;
-    this._bounds.minY = -this._texture.orig.height * this.anchor.y;
-    this._bounds.maxX = this._texture.orig.width;
-    this._bounds.maxY = this._texture.orig.height;
+        this._bounds.minX = -this._texture.orig.width * this.anchor.x;
+        this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+        this._bounds.maxX = this._texture.orig.width;
+        this._bounds.maxY = this._texture.orig.height;
 
-    return this._bounds.getRectangle(this._bounds);
+        if(!rect)
+        {
+            if(!this._localBoundsRect)
+            {
+                this._localBoundsRect = new math.Rectangle();
+            }
+
+            rect = this._localBoundsRect;
+        }
+
+        return this._bounds.getRectangle(rect);
+    }
+    else
+    {
+        return DisplayObject.prototype.getLocalBounds.call(this, rect);
+    }
+
 };
 
 /**

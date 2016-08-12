@@ -168,9 +168,11 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // need to set //
     var m = _tempMatrix;
-
     m.tx = -bounds.x;
     m.ty = -bounds.y;
+
+    // reset
+    this.transform.worldTransform.identity();
 
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._cacheData.originalRenderWebGL;
@@ -197,6 +199,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this._cacheData.sprite = cachedSprite;
 
+    this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
     this.updateTransform();
 
