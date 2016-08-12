@@ -428,19 +428,18 @@ Container.prototype.renderWebGL = function (renderer)
         return;
     }
 
-    var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters)
     {
-        this.renderAdvancedWebGL(renderer)
+        this.renderAdvancedWebGL(renderer);
     }
     else
     {
         this._renderWebGL(renderer);
 
         // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i)
+        for (var i = 0, j = this.children.length; i < j; ++i)
         {
             this.children[i].renderWebGL(renderer);
         }
@@ -451,9 +450,9 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
 {
     renderer.currentRenderer.flush();
 
-    var activeFilters = false;
     var filters = this._filters;
     var mask = this._mask;
+    var i, j;
 
     // push filter first as we need to ensure the stencil buffer is correct for any masking
     if ( filters )
@@ -465,13 +464,13 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
 
         this._enabledFilters.length = 0;
 
-        for (var i = 0; i < filters.length; i++)
+        for (i = 0; i < filters.length; i++)
         {
             if(filters[i].enabled)
             {
-                this._enabledFilters.push( filters[i] )
+                this._enabledFilters.push( filters[i] );
             }
-        };
+        }
 
         if( this._enabledFilters.length )
         {
@@ -508,7 +507,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
     }
 
     renderer.currentRenderer.start();
-}
+};
 
 /**
  * To be overridden by the subclass
