@@ -378,7 +378,7 @@ Sprite.prototype.getLocalBounds = function (rect)
     }
     else
     {
-        return DisplayObject.prototype.getLocalBounds.call(this, rect);
+        return Container.prototype.getLocalBounds.call(this, rect);
     }
 
 };
