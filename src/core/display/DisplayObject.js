@@ -381,6 +381,7 @@ DisplayObject.prototype.getBounds = function (skipUpdate, rect)
         if(!this.parent)
         {
             this.parent = _tempDisplayObjectParent;
+            this.parent.transform._worldID++;
             this.updateTransform();
             this.parent = null;
         }
