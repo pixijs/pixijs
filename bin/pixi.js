@@ -1,7 +1,6 @@
 /*!
- * @preserve
  * pixi.js - v4.0.0
- * Compiled Tue Aug 09 2016 20:36:37 GMT+0100 (BST)
+ * Compiled Fri Aug 12 2016 20:46:11 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -14965,6 +14964,7 @@ DisplayObject.prototype.getBounds = function (skipUpdate, rect)
         if(!this.parent)
         {
             this.parent = _tempDisplayObjectParent;
+            this.parent.transform._worldID++;
             this.updateTransform();
             this.parent = null;
         }
@@ -15016,7 +15016,7 @@ DisplayObject.prototype.getLocalBounds = function (rect)
         rect = this._localBoundsRect;
     }
 
-    var bounds = this.getBounds(rect);
+    var bounds = this.getBounds(false, rect);
 
     this.parent = parentRef;
     this.transform = transformRef;
@@ -15452,7 +15452,8 @@ function TransformStatic()
     this._sy  = Math.sin(0);//skewY);
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
-
+    
+    this._localID = 0;
     this._currentLocalID = 0;
 }
 
@@ -18104,7 +18105,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRender:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasSpriteRenderer:     require('./sprites/canvas/CanvasSpriteRenderer'),
     CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
@@ -20457,8 +20458,15 @@ var canUseNewCanvasBlendModes = function ()
     context.drawImage(magenta, 0, 0);
     context.drawImage(yellow, 2, 0);
 
-    var data = context.getImageData(2,0,1,1).data;
-
+    var imageData = context.getImageData(2,0,1,1);
+    
+    if (!imageData)
+    {
+        return false;
+    }
+    
+    var data = imageData.data;
+    
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
 };
 
@@ -23874,15 +23882,34 @@ Sprite.prototype._calculateBounds = function ()
  *
  */
 
-Sprite.prototype.getLocalBounds = function ()
+Sprite.prototype.getLocalBounds = function (rect)
 {
+    // we can do a fast local bounds if the sprite has no children!
+    if(this.children.length === 0)
+    {
 
-    this._bounds.minX = -this._texture.orig.width * this.anchor.x;
-    this._bounds.minY = -this._texture.orig.height * this.anchor.y;
-    this._bounds.maxX = this._texture.orig.width;
-    this._bounds.maxY = this._texture.orig.height;
+        this._bounds.minX = -this._texture.orig.width * this.anchor.x;
+        this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+        this._bounds.maxX = this._texture.orig.width;
+        this._bounds.maxY = this._texture.orig.height;
 
-    return this._bounds.getRectangle(this._bounds);
+        if(!rect)
+        {
+            if(!this._localBoundsRect)
+            {
+                this._localBoundsRect = new math.Rectangle();
+            }
+
+            rect = this._localBoundsRect;
+        }
+
+        return this._bounds.getRectangle(rect);
+    }
+    else
+    {
+        return Container.prototype.getLocalBounds.call(this, rect);
+    }
+
 };
 
 /**
@@ -29126,8 +29153,6 @@ core.utils.canUseNewCanvasBlendModes = function() {
     warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     return core.CanvasTinter.canUseMultiply;
 };
-
-
 },{"./core":61,"./core/const":42,"./extras":128,"./filters":139,"./mesh":155,"./particles":158}],119:[function(require,module,exports){
 var core = require('../../core'),
     tempRect = new core.Rectangle();
@@ -30856,9 +30881,11 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     // need to set //
     var m = _tempMatrix;
-
     m.tx = -bounds.x;
     m.ty = -bounds.y;
+
+    // reset
+    this.transform.worldTransform.identity();
 
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._cacheData.originalRenderWebGL;
@@ -30885,6 +30912,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this._cacheData.sprite = cachedSprite;
 
+    this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
     this.updateTransform();
 
@@ -34748,11 +34776,11 @@ var Mesh = require('./Mesh');
  * @extends PIXI.mesh.Mesh
  * @memberof PIXI.mesh
  * @param {PIXI.Texture} texture - The texture to use on the Plane.
- * @param {number} segmentsX - The number ox x segments
- * @param {number} segmentsY - The number of y segments
+ * @param {number} verticesX - The number of vertices in the x-axis
+ * @param {number} verticesY - The number of vertices in the y-axis
  *
  */
-function Plane(texture, segmentsX, segmentsY)
+function Plane(texture, verticesX, verticesY)
 {
     Mesh.call(this, texture);
 
@@ -34765,8 +34793,8 @@ function Plane(texture, segmentsX, segmentsY)
      */
     this._ready = true;
 
-    this.segmentsX =  segmentsX || 10;
-    this.segmentsY = segmentsY || 10;
+    this.verticesX = verticesX || 10;
+    this.verticesY = verticesY || 10;
 
     this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
     this.refresh();
@@ -34785,47 +34813,47 @@ module.exports = Plane;
  */
 Plane.prototype.refresh = function()
 {
-    var total = this.segmentsX * this.segmentsY;
+    var total = this.verticesX * this.verticesY;
     var verts = [];
     var colors = [];
     var uvs = [];
     var indices = [];
     var texture = this.texture;
 
-    var segmentsXSub = this.segmentsX - 1;
-    var segmentsYSub = this.segmentsY - 1;
+    var segmentsX = this.verticesX - 1;
+    var segmentsY = this.verticesY - 1;
     var i = 0;
 
-    var sizeX = texture.width / segmentsXSub;
-    var sizeY = texture.height / segmentsYSub;
+    var sizeX = texture.width / segmentsX;
+    var sizeY = texture.height / segmentsY;
 
     for (i = 0; i < total; i++) {
 
-        var x = (i % this.segmentsX);
-        var y = ( (i / this.segmentsX ) | 0 );
+        var x = (i % this.verticesX);
+        var y = ( (i / this.verticesX ) | 0 );
 
 
         verts.push((x * sizeX),
                    (y * sizeY));
 
         // this works for rectangular textures.
-        uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.segmentsX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.segmentsY-1)));
+        uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.verticesX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.verticesY-1)));
       }
 
     //  cons
 
-    var totalSub = segmentsXSub * segmentsYSub;
+    var totalSub = segmentsX * segmentsY;
 
     for (i = 0; i < totalSub; i++) {
 
-        var xpos = i % segmentsXSub;
-        var ypos = (i / segmentsXSub ) | 0;
+        var xpos = i % segmentsX;
+        var ypos = (i / segmentsX ) | 0;
 
 
-        var  value = (ypos * this.segmentsX) + xpos;
-        var  value2 = (ypos * this.segmentsX) + xpos + 1;
-        var  value3 = ((ypos+1) * this.segmentsX) + xpos;
-        var  value4 = ((ypos+1) * this.segmentsX) + xpos + 1;
+        var  value = (ypos * this.verticesX) + xpos;
+        var  value2 = (ypos * this.verticesX) + xpos + 1;
+        var  value3 = ((ypos+1) * this.verticesX) + xpos;
+        var  value4 = ((ypos+1) * this.verticesX) + xpos + 1;
 
         indices.push(value, value2, value3);
         indices.push(value2, value4, value3);
@@ -36717,7 +36745,7 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
-core.extract  		= require('./extract');
+core.extract        = require('./extract');
 core.prepare        = require('./prepare');
 
 // export a premade loader instance
