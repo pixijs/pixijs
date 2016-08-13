@@ -81,6 +81,8 @@ function Text(text, style)
 
     this.text = text;
     this.style = style;
+
+    this.localStyleID = -1;
 }
 
 // constructor
@@ -152,10 +154,6 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
-            if (this._style)
-            {
-                this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
-            }
 
             style = style || {};
             if (style instanceof TextStyle)
@@ -166,7 +164,8 @@ Object.defineProperties(Text.prototype, {
             {
                 this._style = new TextStyle(style);
             }
-            this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
+
+            this.localStyleID = -1;
             this.dirty = true;
         }
     },
@@ -204,10 +203,18 @@ Object.defineProperties(Text.prototype, {
  */
 Text.prototype.updateText = function (respectDirty)
 {
+    var style = this._style;
+
+    // check if style has changed..
+    if(this.localStyleID !== style.styleID)
+    {
+        this.dirty = true;
+        this.localStyleID = style.styleID;
+    }
+
     if (!this.dirty && respectDirty) {
         return;
     }
-    var style = this._style;
 
     // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
     var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
@@ -746,6 +753,5 @@ Text.prototype.destroy = function (options)
     this.context = null;
     this.canvas = null;
 
-    this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
 };
