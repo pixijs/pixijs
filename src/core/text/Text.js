@@ -20,9 +20,8 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
- * @param [resolution=1] {number} The current resolution / device pixel ratio of the canvas
  */
-function Text(text, style, resolution)
+function Text(text, style)
 {
     /**
      * The canvas element that everything is drawn to
@@ -38,11 +37,11 @@ function Text(text, style, resolution)
     this.context = this.canvas.getContext('2d');
 
     /**
-     * The resolution / device pixel ratio of the canvas
+     * The resolution / device pixel ratio of the canvas. This is set automatically by the renderer.
      * @member {number}
      * @default 1
      */
-    this.resolution = resolution || CONST.RESOLUTION;
+    this.resolution = CONST.RESOLUTION;
 
     /**
      * Private tracker for the current text.
@@ -437,6 +436,12 @@ Text.prototype.updateTexture = function ()
  */
 Text.prototype.renderWebGL = function (renderer)
 {
+    if(this.resolution !== renderer.resolution)
+    {
+        this.resolution = renderer.resolution;
+        this.dirty = true;
+    }
+
     this.updateText(true);
 
     Sprite.prototype.renderWebGL.call(this, renderer);
@@ -450,6 +455,12 @@ Text.prototype.renderWebGL = function (renderer)
  */
 Text.prototype._renderCanvas = function (renderer)
 {
+    if(this.resolution !== renderer.resolution)
+    {
+        this.resolution = renderer.resolution;
+        this.dirty = true;
+    }
+
     this.updateText(true);
 
     Sprite.prototype._renderCanvas.call(this, renderer);
