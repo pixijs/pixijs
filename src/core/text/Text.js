@@ -248,6 +248,8 @@ Text.prototype.updateText = function (respectDirty)
         width += style.dropShadowDistance;
     }
 
+    width += style.padding * 2;
+
     this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
 
     // calculate text height
@@ -269,8 +271,8 @@ Text.prototype.updateText = function (respectDirty)
 
     }
 
-    //this.context.fillStyle="#FF0000";
-    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+//    this.context.fillStyle="#FF0000";
+//    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.font = this._font;
     this.context.strokeStyle = style.stroke;
@@ -310,12 +312,12 @@ Text.prototype.updateText = function (respectDirty)
 
             if (style.fill)
             {
-                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
+                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding);
 
                 if (style.stroke && style.strokeThickness)
                 {
                     this.context.strokeStyle = style.dropShadowColor;
-                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding, true);
+                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
                     this.context.strokeStyle = style.stroke;
 			    }
             }
@@ -342,12 +344,12 @@ Text.prototype.updateText = function (respectDirty)
 
         if (style.stroke && style.strokeThickness)
         {
-            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding, true);
+            this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
         }
 
         if (style.fill)
         {
-            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding);
         }
     }
 
@@ -422,7 +424,7 @@ Text.prototype.updateTexture = function ()
     texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
     texture.trim.height = texture._frame.height = this.canvas.height / this.resolution;
 
-    texture.trim.x = 0;
+    texture.trim.x = -style.padding;
     texture.trim.y = -style.padding;
 
     texture.orig.width = texture._frame.width;
