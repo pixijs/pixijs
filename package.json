@@ -40,7 +40,6 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "^1.5.2",
     "bit-twiddle": "^1.0.2",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
