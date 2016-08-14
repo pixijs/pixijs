@@ -79,6 +79,9 @@ function DisplayObject()
      */
     this.filterArea = null;
 
+    this._filters = null;
+    this._enabledFilters = null;
+
     /**
      * The bounds object, this is used to calculate and store the bounds of the displayObject
      *
