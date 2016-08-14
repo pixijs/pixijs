@@ -4,8 +4,7 @@ var core = require('./core'),
     mesh = require('./mesh'),
     particles = require('./particles'),
     extras = require('./extras'),
-    filters = require('./filters'),
-    CONST = require('./core/const');
+    filters = require('./filters')
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
