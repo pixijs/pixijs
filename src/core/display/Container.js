@@ -428,59 +428,85 @@ Container.prototype.renderWebGL = function (renderer)
         return;
     }
 
-    var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters)
     {
-        renderer.currentRenderer.flush();
-
-        // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters && this._filters.length)
-        {
-            renderer.filterManager.pushFilter(this, this._filters);
-        }
-
-        if (this._mask)
-        {
-            renderer.maskManager.pushMask(this, this._mask);
-        }
-
-        renderer.currentRenderer.start();
-
-        // add this object to the batch, only rendered if it has a texture.
-        this._renderWebGL(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
-
-        renderer.currentRenderer.flush();
-
-        if (this._mask)
-        {
-            renderer.maskManager.popMask(this, this._mask);
-        }
-
-        if (this._filters)
-        {
-            renderer.filterManager.popFilter();
-
-        }
-        renderer.currentRenderer.start();
+        this.renderAdvancedWebGL(renderer);
     }
     else
     {
         this._renderWebGL(renderer);
 
         // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i)
+        for (var i = 0, j = this.children.length; i < j; ++i)
         {
             this.children[i].renderWebGL(renderer);
         }
     }
+};
+
+Container.prototype.renderAdvancedWebGL = function (renderer)
+{
+    renderer.currentRenderer.flush();
+
+    var filters = this._filters;
+    var mask = this._mask;
+    var i, j;
+
+    // push filter first as we need to ensure the stencil buffer is correct for any masking
+    if ( filters )
+    {
+        if(!this._enabledFilters)
+        {
+            this._enabledFilters = [];
+        }
+
+        this._enabledFilters.length = 0;
+
+        for (i = 0; i < filters.length; i++)
+        {
+            if(filters[i].enabled)
+            {
+                this._enabledFilters.push( filters[i] );
+            }
+        }
+
+        if( this._enabledFilters.length )
+        {
+            renderer.filterManager.pushFilter(this, this._enabledFilters);
+        }
+    }
+
+    if ( mask )
+    {
+        renderer.maskManager.pushMask(this, this._mask);
+    }
+
+    renderer.currentRenderer.start();
+
+    // add this object to the batch, only rendered if it has a texture.
+    this._renderWebGL(renderer);
+
+    // now loop through the children and make sure they get rendered
+    for (i = 0, j = this.children.length; i < j; i++)
+    {
+        this.children[i].renderWebGL(renderer);
+    }
+
+    renderer.currentRenderer.flush();
+
+    if ( mask )
+    {
+        renderer.maskManager.popMask(this, this._mask);
+    }
+
+    if (this._enabledFilters && this._enabledFilters.length )
+    {
+        renderer.filterManager.popFilter();
+    }
+
+    renderer.currentRenderer.start();
 };
 
 /**

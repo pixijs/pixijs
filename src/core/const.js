@@ -362,16 +362,7 @@ var CONST = {
      * @constant
      * @type {number}
      */
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32),
-
-    /**
-     * Name of the event that fires when a text style is changed.
-     *
-     * @static
-     * @constant
-     * @type {string}
-     */
-    TEXT_STYLE_CHANGED: 'changed'
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
 };
 
 module.exports = CONST;

@@ -54,8 +54,22 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
 
     this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
 
+    /**
+     * The padding of the filter. Some filters require extra space to breath such as a blur. Increasing this will add extra width and height to the bounds of the object that the filter is applied to.
+     */
     this.padding = 4;
+
+    /**
+     * The resolution of the filter. Setting this to be lower will lower the quality but increase the performance of the filter.
+     * @member {number}
+     */
     this.resolution = 1;
+
+    /**
+     * If enabled is true the filter is applied, if false it will not.
+     * @member {boolean}
+     */
+    this.enabled = true;
 }
 
 // constructor
