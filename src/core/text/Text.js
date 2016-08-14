@@ -20,9 +20,8 @@ var Sprite = require('../sprites/Sprite'),
  * @memberof PIXI
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
- * @param [resolution=1] {number} The current resolution / device pixel ratio of the canvas
  */
-function Text(text, style, resolution)
+function Text(text, style)
 {
     /**
      * The canvas element that everything is drawn to
@@ -38,11 +37,11 @@ function Text(text, style, resolution)
     this.context = this.canvas.getContext('2d');
 
     /**
-     * The resolution / device pixel ratio of the canvas
+     * The resolution / device pixel ratio of the canvas. This is set automatically by the renderer.
      * @member {number}
      * @default 1
      */
-    this.resolution = resolution || CONST.RESOLUTION;
+    this.resolution = CONST.RESOLUTION;
 
     /**
      * Private tracker for the current text.
@@ -82,6 +81,8 @@ function Text(text, style, resolution)
 
     this.text = text;
     this.style = style;
+
+    this.localStyleID = -1;
 }
 
 // constructor
@@ -153,10 +154,6 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (style)
         {
-            if (this._style)
-            {
-                this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
-            }
 
             style = style || {};
             if (style instanceof TextStyle)
@@ -167,7 +164,8 @@ Object.defineProperties(Text.prototype, {
             {
                 this._style = new TextStyle(style);
             }
-            this._style.on(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
+
+            this.localStyleID = -1;
             this.dirty = true;
         }
     },
@@ -205,10 +203,18 @@ Object.defineProperties(Text.prototype, {
  */
 Text.prototype.updateText = function (respectDirty)
 {
+    var style = this._style;
+
+    // check if style has changed..
+    if(this.localStyleID !== style.styleID)
+    {
+        this.dirty = true;
+        this.localStyleID = style.styleID;
+    }
+
     if (!this.dirty && respectDirty) {
         return;
     }
-    var style = this._style;
 
     // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
     var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
@@ -242,6 +248,8 @@ Text.prototype.updateText = function (respectDirty)
         width += style.dropShadowDistance;
     }
 
+    width += style.padding * 2;
+
     this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
 
     // calculate text height
@@ -263,8 +271,8 @@ Text.prototype.updateText = function (respectDirty)
 
     }
 
-    //this.context.fillStyle="#FF0000";
-    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+//    this.context.fillStyle="#FF0000";
+//    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.font = this._font;
     this.context.strokeStyle = style.stroke;
@@ -304,12 +312,12 @@ Text.prototype.updateText = function (respectDirty)
 
             if (style.fill)
             {
-                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding);
+                this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding);
 
                 if (style.stroke && style.strokeThickness)
                 {
                     this.context.strokeStyle = style.dropShadowColor;
-                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + style.padding, true);
+                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
                     this.context.strokeStyle = style.stroke;
 			    }
             }
@@ -336,12 +344,12 @@ Text.prototype.updateText = function (respectDirty)
 
         if (style.stroke && style.strokeThickness)
         {
-            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding, true);
+            this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
         }
 
         if (style.fill)
         {
-            this.drawLetterSpacing(lines[i], linePositionX, linePositionY + style.padding);
+            this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding);
         }
     }
 
@@ -416,7 +424,7 @@ Text.prototype.updateTexture = function ()
     texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
     texture.trim.height = texture._frame.height = this.canvas.height / this.resolution;
 
-    texture.trim.x = 0;
+    texture.trim.x = -style.padding;
     texture.trim.y = -style.padding;
 
     texture.orig.width = texture._frame.width;
@@ -437,6 +445,12 @@ Text.prototype.updateTexture = function ()
  */
 Text.prototype.renderWebGL = function (renderer)
 {
+    if(this.resolution !== renderer.resolution)
+    {
+        this.resolution = renderer.resolution;
+        this.dirty = true;
+    }
+
     this.updateText(true);
 
     Sprite.prototype.renderWebGL.call(this, renderer);
@@ -450,6 +464,12 @@ Text.prototype.renderWebGL = function (renderer)
  */
 Text.prototype._renderCanvas = function (renderer)
 {
+    if(this.resolution !== renderer.resolution)
+    {
+        this.resolution = renderer.resolution;
+        this.dirty = true;
+    }
+
     this.updateText(true);
 
     Sprite.prototype._renderCanvas.call(this, renderer);
@@ -735,6 +755,5 @@ Text.prototype.destroy = function (options)
     this.context = null;
     this.canvas = null;
 
-    this._style.off(CONST.TEXT_STYLE_CHANGED, this._onStyleChange, this);
     this._style = null;
 };
