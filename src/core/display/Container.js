@@ -501,7 +501,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
         renderer.maskManager.popMask(this, this._mask);
     }
 
-    if ( this._enabledFilters.length )
+    if (this._enabledFilters && this._enabledFilters.length )
     {
         renderer.filterManager.popFilter();
     }
