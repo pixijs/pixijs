@@ -482,7 +482,7 @@ Object.defineProperties(core.TextStyle.prototype, {
                 this._fontFamily = 'Arial';
             }
 
-            this.emit(CONST.TEXT_STYLE_CHANGED);
+            this.styleID++;
         }
     }
 } );
