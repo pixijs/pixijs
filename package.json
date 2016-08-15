@@ -20,9 +20,8 @@
   "scripts": {
     "clean": "rimraf bin && mkdirp bin",
     "prestart": "npm run clean",
-    "start": "parallelshell \"npm run watch:lint\" \"npm run watch:debug\" \"npm run watch:release\"",
-    "watch:debug": "watchify src -s PIXI -o bin/pixi.js -dv",
-    "watch:release": "watchify src -s PIXI -o bin/pixi.min.js -dv",
+    "start": "parallelshell \"npm run watch:lint\" \"npm run watch\"",
+    "watch": "pixify -n PIXI -o pixi -w",
     "watch:lint": "watch \"jshint --reporter=scripts/reporter.js scripts src test || exit 0\" src",
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
@@ -63,10 +62,9 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
-    "pixify": "^1.3.0",
+    "pixify": "^1.4.0",
     "rimraf": "^2.5.3",
-    "watch": "^0.19.1",
-    "watchify": "^3.7.0"
+    "watch": "^0.19.1"
   },
   "browserify": {
     "transform": [
