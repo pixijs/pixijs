@@ -563,7 +563,8 @@ Container.prototype.renderCanvas = function (renderer)
 };
 
 /**
- * Destroys the container
+ * Removes all internal references and listeners as well as remove current children from the display list. 
+ * Do not use a Container after calling `destroy`.
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
  *      method called as well. 'options' will be passed on to those calls.
