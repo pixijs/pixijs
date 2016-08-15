@@ -30,6 +30,30 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 
 **Boost your development and feel free to use your imagination!**
 
+### Installation ###
+
+Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [NPM](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page. 
+
+#### Bower Install
+
+```
+$> bower install pixi.js
+```
+
+#### NPM Install
+
+```
+$> npm install pixi.js
+```
+
+#### CDN Install (via cdnjs)
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js"></script>
+```
+_Note: `3.0.11` can be replaced any [released](/pixijs/pixi.js/releases) version._
+
+
 ### Demos ###
 
 - [WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
