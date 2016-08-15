@@ -1,11 +1,11 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Mon Aug 15 2016 11:32:08 GMT+0100 (BST)
+ * Compiled Mon Aug 15 2016 22:59:42 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
  */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.pixi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PIXI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
 
 /**
@@ -13328,7 +13328,8 @@ Container.prototype.renderCanvas = function (renderer)
 };
 
 /**
- * Destroys the container
+ * Removes all internal references and listeners as well as removes children from the display list. 
+ * Do not use a Container after calling `destroy`.
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
  *      method called as well. 'options' will be passed on to those calls.
@@ -13338,17 +13339,19 @@ Container.prototype.destroy = function (options)
     DisplayObject.prototype.destroy.call(this);
 
     var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+
+    var oldChildren = this.children;
+    this.children = null;
+
     if (destroyChildren)
     {
-        for (var i = 0, j = this.children.length; i < j; ++i)
+        for (var i = oldChildren.length - 1; i >= 0; i--)
         {
-            this.children[i].destroy(options);
+            var child = oldChildren[i];
+            child.parent = null;
+            child.destroy(options);
         }
     }
-
-    this.removeChildren();
-
-    this.children = null;
 };
 
 },{"../utils":114,"./DisplayObject":44}],44:[function(require,module,exports){
@@ -13933,11 +13936,18 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
 };
 
 /**
- * Base destroy method for generic display objects
- *
+ * Base destroy method for generic display objects. This will automatically
+ * remove the display object from its parent Container as well as remove
+ * all current event listeners and internal references. Do not use a DisplayObject 
+ * after calling `destroy`.
  */
 DisplayObject.prototype.destroy = function ()
 {
+    this.removeAllListeners();
+    if (this.parent)
+    {
+        this.parent.removeChild(this);
+    }
     this.transform = null;
 
     this.parent = null;
@@ -20899,10 +20909,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
-    sourceFrame.x = (((targetBounds.x - padding) * resolution) | 0) / resolution;
-    sourceFrame.y = (((targetBounds.y - padding) * resolution) | 0) / resolution;
-    sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
-    sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
+    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
+    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
+    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
+    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
     if(filterData.stack[0].renderTarget.transform)
     {//jshint ignore:line
@@ -20914,6 +20924,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
     {
         sourceFrame.fit(filterData.stack[0].destinationFrame);
     }
+
+    // lets pplay the padding After we fit the element to the screen.
+    // this should stop the strange side effects that can occour when cropping to the edges
+    sourceFrame.pad(padding);
+
+
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
@@ -28575,12 +28591,17 @@ BitmapText.prototype.updateText = function ()
     var line = 0;
     var scale = this._font.size / data.size;
     var lastSpace = -1;
+    var lastSpaceWidth = 0;
     var maxLineHeight = 0;
 
     for (var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        lastSpace = /(\s)/.test(this.text.charAt(i)) ? i : lastSpace;
+        
+        if(/(\s)/.test(this.text.charAt(i))){
+            lastSpace = i;
+            lastSpaceWidth = lastLineWidth;
+        }
 
         if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
@@ -28600,8 +28621,8 @@ BitmapText.prototype.updateText = function ()
             i = lastSpace;
             lastSpace = -1;
 
-            lineWidths.push(lastLineWidth);
-            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            lineWidths.push(lastSpaceWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
             line++;
 
             pos.x = 0;
