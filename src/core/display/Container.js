@@ -574,13 +574,17 @@ Container.prototype.destroy = function (options)
 
     var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 
+    var oldChildren = this.children;
+    this.children = null;
+
     if (destroyChildren)
     {
-        for (var i = this.children.length - 1; i >= 0; i--)
+        for (var i = oldChildren.length - 1; i >= 0; i--)
         {
-            this.children[i].destroy(options);
+            var child = oldChildren[i];
+            child.parent = null;
+            child.emit('removed', this);
+            child.destroy(options);
         }
     }
-
-    this.children = null;
 };
