@@ -573,7 +573,7 @@ Container.prototype.destroy = function (options)
     DisplayObject.prototype.destroy.call(this);
 
     var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
-    
+
     if (destroyChildren)
     {
         for (var i = this.children.length - 1; i >= 0; i--)
