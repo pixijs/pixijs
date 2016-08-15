@@ -584,6 +584,10 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
  */
 DisplayObject.prototype.destroy = function ()
 {
+    if (this.parent)
+    {
+        this.parent.removeChild(this);
+    }
     this.transform = null;
 
     this.parent = null;
