@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Mon Aug 15 2016 10:31:56 GMT+0100 (BST)
+ * Compiled Mon Aug 15 2016 11:32:08 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -13266,7 +13266,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
         renderer.maskManager.popMask(this, this._mask);
     }
 
-    if (this._enabledFilters && this._enabledFilters.length )
+    if ( filters && this._enabledFilters && this._enabledFilters.length )
     {
         renderer.filterManager.popFilter();
     }
