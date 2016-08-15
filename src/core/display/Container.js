@@ -583,7 +583,6 @@ Container.prototype.destroy = function (options)
         {
             var child = oldChildren[i];
             child.parent = null;
-            child.emit('removed', this);
             child.destroy(options);
         }
     }
