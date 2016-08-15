@@ -80,10 +80,10 @@ FilterManager.prototype.pushFilter = function(target, filters)
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
-    sourceFrame.x = (((targetBounds.x - padding) * resolution) | 0) / resolution;
-    sourceFrame.y = (((targetBounds.y - padding) * resolution) | 0) / resolution;
-    sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
-    sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
+    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
+    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
+    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
+    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
     if(filterData.stack[0].renderTarget.transform)
     {//jshint ignore:line
@@ -95,6 +95,12 @@ FilterManager.prototype.pushFilter = function(target, filters)
     {
         sourceFrame.fit(filterData.stack[0].destinationFrame);
     }
+
+    // lets pplay the padding After we fit the element to the screen.
+    // this should stop the strange side effects that can occour when cropping to the edges
+    sourceFrame.pad(padding);
+
+
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
