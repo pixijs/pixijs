@@ -572,7 +572,10 @@ Container.prototype.destroy = function (options)
 {
     DisplayObject.prototype.destroy.call(this);
 
+    this.removeChildren();
+
     var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+    
     if (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
@@ -580,8 +583,5 @@ Container.prototype.destroy = function (options)
             this.children[i].destroy(options);
         }
     }
-
-    this.removeChildren();
-
     this.children = null;
 };
