@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Sun Aug 14 2016 20:50:23 GMT+0100 (BST)
+ * Compiled Mon Aug 15 2016 10:31:56 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -256,7 +256,7 @@ Framebuffer.prototype.bind = function()
 Framebuffer.prototype.unbind = function()
 {
     var gl = this.gl;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null );  
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null );
 };
 /**
  * Resizes the drawing area of the buffer to the given width and height
@@ -312,7 +312,7 @@ Framebuffer.prototype.destroy = function()
  * @param height {Number} the height of the drawing area of the frame buffer
  * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
  */
-Framebuffer.createRGBA = function(gl, width, height/*, data*/)
+Framebuffer.createRGBA = function(gl, width, height, data)
 {
     var texture = Texture.fromData(gl, null, width, height);
     texture.enableNearestScaling();
@@ -552,8 +552,6 @@ Texture.prototype.uploadData = function(data, width, height)
 
 	var gl = this.gl;
 
-	this.width = width || this.width;
-	this.height = height || this.height;
 
 	if(data instanceof Float32Array)
 	{
@@ -579,11 +577,23 @@ Texture.prototype.uploadData = function(data, width, height)
 		this.type = gl.UNSIGNED_BYTE;
 	}
 
-
-//
 	// what type of data?
 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
-	gl.texSubImage2D(gl.TEXTURE_2D, 0, this.format,  this.width, this.height, 0, this.format, this.type, data || null);
+
+
+	if(width !== this.width || height !== this.height)
+	{
+		gl.texImage2D(gl.TEXTURE_2D, 0, this.format,  width, height, 0, this.format, this.type, data || null);
+	}
+	else
+	{
+		gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, this.format, this.type, data || null);
+	}
+
+	this.width = width;
+	this.height = height;
+
+
 //	texSubImage2D
 };
 
