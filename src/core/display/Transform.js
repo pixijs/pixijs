@@ -19,7 +19,7 @@ function Transform()
      *
      * @member {PIXI.Point}
      */
-    this.position = new math.Point(0.0);
+    this.position = new math.Point(0,0);
 
     /**
      * The scale factor of the object.
@@ -40,7 +40,7 @@ function Transform()
      *
      * @member {PIXI.Point}
      */
-    this.pivot = new math.Point(0.0);
+    this.pivot = new math.Point(0,0);
 
     /**
      * The rotation value of the object, in radians

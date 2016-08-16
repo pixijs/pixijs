@@ -16,7 +16,7 @@ function TransformStatic()
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.position = new math.ObservablePoint(this.onChange, this,0.0);
+    this.position = new math.ObservablePoint(this.onChange, this,0,0);
 
     /**
      * The scale factor of the object.
@@ -47,7 +47,7 @@ function TransformStatic()
     this._sy  = Math.sin(0);//skewY);
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
-    
+
     this._localID = 0;
     this._currentLocalID = 0;
 }
