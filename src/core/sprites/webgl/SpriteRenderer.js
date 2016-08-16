@@ -263,7 +263,7 @@ SpriteRenderer.prototype.flush = function ()
         vertexData = sprite.vertexData;
 
         //TODO this sum does not need to be set each frame..
-        tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
         uvs = sprite._texture._uvs.uvsUint32;
         textureId = nextTexture._id;
 

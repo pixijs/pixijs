@@ -47,7 +47,7 @@ function TransformStatic()
     this._sy  = Math.sin(0);//skewY);
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
-    
+
     this._localID = 0;
     this._currentLocalID = 0;
 }
@@ -62,10 +62,10 @@ TransformStatic.prototype.onChange = function ()
 
 TransformStatic.prototype.updateSkew = function ()
 {
-    this._cy  = Math.cos(this.skew.y);
-    this._sy  = Math.sin(this.skew.y);
-    this._nsx = Math.sin(this.skew.x);
-    this._cx  = Math.cos(this.skew.x);
+    this._cy  = Math.cos(this.skew._y);
+    this._sy  = Math.sin(this.skew._y);
+    this._nsx = Math.sin(this.skew._x);
+    this._cx  = Math.cos(this.skew._x);
 
     this._localID ++;
 };
@@ -80,10 +80,10 @@ TransformStatic.prototype.updateLocalTransform = function() {
         // get the matrix values of the displayobject based on its transform properties..
         var a,b,c,d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        a  =  this._cr * this.scale._x;
+        b  =  this._sr * this.scale._x;
+        c  = -this._sr * this.scale._y;
+        d  =  this._cr * this.scale._y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -115,10 +115,10 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
         // get the matrix values of the displayobject based on its transform properties..
         var a,b,c,d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        a  =  this._cr * this.scale._x;
+        b  =  this._sr * this.scale._x;
+        c  = -this._sr * this.scale._y;
+        d  =  this._cr * this.scale._y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;

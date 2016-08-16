@@ -63,6 +63,8 @@ function Sprite(texture)
      * @member {number}
      * @default 0xFFFFFF
      */
+    this._tint = null;
+    this._tintRGB = null;
     this.tint = 0xFFFFFF;
 
     /**
@@ -150,6 +152,18 @@ Object.defineProperties(Sprite.prototype, {
             var sign = utils.sign(this.scale.y) || 1;
             this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
+        }
+    },
+
+    tint: {
+        get: function ()
+        {
+            return  this._tint;
+        },
+        set: function (value)
+        {
+            this._tint = value;
+            this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
         }
     },
 
@@ -244,20 +258,20 @@ Sprite.prototype.calculateVertices = function ()
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * orig.width;
+        w1 = trim.x - this.anchor._x * orig.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * orig.height;
+        h1 = trim.y - this.anchor._y * orig.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (orig.width ) * (1-this.anchor.x);
-        w1 = (orig.width ) * -this.anchor.x;
+        w0 = orig.width * (1-this.anchor._x);
+        w1 = orig.width * -this.anchor._x;
 
-        h0 = orig.height * (1-this.anchor.y);
-        h1 = orig.height * -this.anchor.y;
+        h0 = orig.height * (1-this.anchor._y);
+        h1 = orig.height * -this.anchor._y;
     }
 
     // xy
@@ -298,11 +312,11 @@ Sprite.prototype.calculateTrimmedVertices = function ()
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         w0, w1, h0, h1;
 
-    w0 = (orig.width ) * (1-this.anchor.x);
-    w1 = (orig.width ) * -this.anchor.x;
+    w0 = (orig.width ) * (1-this.anchor._x);
+    w1 = (orig.width ) * -this.anchor._x;
 
-    h0 = orig.height * (1-this.anchor.y);
-    h1 = orig.height * -this.anchor.y;
+    h0 = orig.height * (1-this.anchor._y);
+    h1 = orig.height * -this.anchor._y;
 
     // xy
     vertexData[0] = a * w1 + c * h1 + tx;
@@ -380,8 +394,8 @@ Sprite.prototype.getLocalBounds = function (rect)
     if(this.children.length === 0)
     {
 
-        this._bounds.minX = -this._texture.orig.width * this.anchor.x;
-        this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+        this._bounds.minX = -this._texture.orig.width * this.anchor._x;
+        this._bounds.minY = -this._texture.orig.height * this.anchor._y;
         this._bounds.maxX = this._texture.orig.width;
         this._bounds.maxY = this._texture.orig.height;
 
