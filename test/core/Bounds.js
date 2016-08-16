@@ -360,4 +360,31 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
     });
+
+    it('should ensure bounds respect the trim of a texture ', function() {
+
+        var parent = new PIXI.Container();
+        var baseTexture = new PIXI.BaseRenderTexture(100, 100);
+
+        var orig = new PIXI.Rectangle(0,0,100,50);
+        var frame = new PIXI.Rectangle(2,2,50,50);
+        var trim = new PIXI.Rectangle(25,0,50,50);
+
+        var trimmedTexture = new PIXI.Texture(baseTexture, frame, orig, trim);
+
+        var sprite = new PIXI.Sprite(trimmedTexture);
+
+        sprite.position.x = 20;
+        sprite.position.y = 20;
+
+        parent.addChild(sprite);
+
+        var bounds = sprite.getBounds();
+
+        expect(bounds.x).to.equal(20);
+        expect(bounds.y).to.equal(20);
+        expect(bounds.width).to.equal(100);
+        expect(bounds.height).to.equal(50);
+
+    });
 });
