@@ -92,7 +92,19 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.vertexData = new Float32Array(16);
+
+    /**
+     * this is used to store the vertex data of the sprite (basically a quad)
+     * @type {Float32Array}
+     */
+    this.vertexData = new Float32Array(8);
+
+    /**
+     * this is used to calculate the bounds of the object IF it is a trimmed sprite
+     * @type {Float32Array}
+     */
+    this.vertexTrimmedData = null;
+
     this._transformID = -1;
     this._textureID = -1;
 }
@@ -266,31 +278,25 @@ Sprite.prototype.calculateVertices = function ()
 };
 
 /**
- * we need this method to be compatible with pixiv3. v3 does calculate bounds of original texture are, not trimmed one
+ * calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData
+ * This is used to ensure that the true width and height of a trimmed texture is respected
  */
-Sprite.prototype.calculateBoundsVertices = function ()
+Sprite.prototype.calculateTrimmedVertices = function ()
 {
-    var texture = this._texture,
-        trim = texture.trim,
-        vertexData = this.vertexData,
-        orig = texture.orig;
-
-    if (!trim || trim.width === orig.width && trim.height === orig.height) {
-        vertexData[8] = vertexData[0];
-        vertexData[9] = vertexData[1];
-        vertexData[10] = vertexData[2];
-        vertexData[11] = vertexData[3];
-        vertexData[12] = vertexData[4];
-        vertexData[13] = vertexData[5];
-        vertexData[14] = vertexData[6];
-        vertexData[15] = vertexData[7];
-        return;
+    if(!this.vertexTrimmedData)
+    {
+        this.vertexTrimmedData = new Float32Array(8);
     }
 
+    // lets do some special trim code!
+    var texture = this._texture,
+        vertexData = this.vertexTrimmedData,
+        orig = texture.orig;
+
+    // lets calculate the new untrimmed bounds..
     var wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         w0, w1, h0, h1;
-
 
     w0 = (orig.width ) * (1-this.anchor.x);
     w1 = (orig.width ) * -this.anchor.x;
@@ -299,20 +305,20 @@ Sprite.prototype.calculateBoundsVertices = function ()
     h1 = orig.height * -this.anchor.y;
 
     // xy
-    vertexData[8] = a * w1 + c * h1 + tx;
-    vertexData[9] = d * h1 + b * w1 + ty;
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
 
     // xy
-    vertexData[10] = a * w0 + c * h1 + tx;
-    vertexData[11] = d * h1 + b * w0 + ty;
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
 
     // xy
-    vertexData[12] = a * w0 + c * h0 + tx;
-    vertexData[13] = d * h0 + b * w0 + ty;
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
 
     // xy
-    vertexData[14] = a * w1 + c * h0 + tx;
-    vertexData[15] = d * h0 + b * w1 + ty;
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
 };
 
 /**
@@ -341,11 +347,26 @@ Sprite.prototype._renderCanvas = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
+
 Sprite.prototype._calculateBounds = function ()
 {
-    this.calculateVertices();
-    // if we have already done this on THIS frame.
-    this._bounds.addQuad(this.vertexData);
+
+    var trim = this._texture.trim,
+        orig = this._texture.orig;
+
+    //First lets check to see if the current texture has a trim..
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
+
+        // no trim! lets use the usual calculations..
+        this.calculateVertices();
+        this._bounds.addQuad(this.vertexData);
+    }
+    else
+    {
+        // lets calculate a special trimmed bounds...
+        this.calculateTrimmedVertices();
+        this._bounds.addQuad(this.vertexTrimmedData);
+    }
 };
 
 /**
