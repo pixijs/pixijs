@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Mon Aug 15 2016 22:59:42 GMT+0100 (BST)
+ * Compiled Tue Aug 16 2016 22:43:39 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -13981,7 +13981,7 @@ function Transform()
      *
      * @member {PIXI.Point}
      */
-    this.position = new math.Point(0.0);
+    this.position = new math.Point(0,0);
 
     /**
      * The scale factor of the object.
@@ -14002,7 +14002,7 @@ function Transform()
      *
      * @member {PIXI.Point}
      */
-    this.pivot = new math.Point(0.0);
+    this.pivot = new math.Point(0,0);
 
     /**
      * The rotation value of the object, in radians
@@ -14205,7 +14205,7 @@ function TransformStatic()
      *
      * @member {PIXI.ObservablePoint}
      */
-    this.position = new math.ObservablePoint(this.onChange, this,0.0);
+    this.position = new math.ObservablePoint(this.onChange, this,0,0);
 
     /**
      * The scale factor of the object.
@@ -14236,7 +14236,7 @@ function TransformStatic()
     this._sy  = Math.sin(0);//skewY);
     this._nsx = Math.sin(0);//skewX);
     this._cx  = Math.cos(0);//skewX);
-    
+
     this._localID = 0;
     this._currentLocalID = 0;
 }
@@ -14251,10 +14251,10 @@ TransformStatic.prototype.onChange = function ()
 
 TransformStatic.prototype.updateSkew = function ()
 {
-    this._cy  = Math.cos(this.skew.y);
-    this._sy  = Math.sin(this.skew.y);
-    this._nsx = Math.sin(this.skew.x);
-    this._cx  = Math.cos(this.skew.x);
+    this._cy  = Math.cos(this.skew._y);
+    this._sy  = Math.sin(this.skew._y);
+    this._nsx = Math.sin(this.skew._x);
+    this._cx  = Math.cos(this.skew._x);
 
     this._localID ++;
 };
@@ -14269,10 +14269,10 @@ TransformStatic.prototype.updateLocalTransform = function() {
         // get the matrix values of the displayobject based on its transform properties..
         var a,b,c,d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        a  =  this._cr * this.scale._x;
+        b  =  this._sr * this.scale._x;
+        c  = -this._sr * this.scale._y;
+        d  =  this._cr * this.scale._y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -14304,10 +14304,10 @@ TransformStatic.prototype.updateTransform = function (parentTransform)
         // get the matrix values of the displayobject based on its transform properties..
         var a,b,c,d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        a  =  this._cr * this.scale._x;
+        b  =  this._sr * this.scale._x;
+        c  = -this._sr * this.scale._y;
+        d  =  this._cr * this.scale._y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -22395,6 +22395,8 @@ function Sprite(texture)
      * @member {number}
      * @default 0xFFFFFF
      */
+    this._tint = null;
+    this._tintRGB = null;
     this.tint = 0xFFFFFF;
 
     /**
@@ -22424,7 +22426,19 @@ function Sprite(texture)
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
-    this.vertexData = new Float32Array(16);
+
+    /**
+     * this is used to store the vertex data of the sprite (basically a quad)
+     * @type {Float32Array}
+     */
+    this.vertexData = new Float32Array(8);
+
+    /**
+     * this is used to calculate the bounds of the object IF it is a trimmed sprite
+     * @type {Float32Array}
+     */
+    this.vertexTrimmedData = null;
+
     this._transformID = -1;
     this._textureID = -1;
 }
@@ -22470,6 +22484,18 @@ Object.defineProperties(Sprite.prototype, {
             var sign = utils.sign(this.scale.y) || 1;
             this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
+        }
+    },
+
+    tint: {
+        get: function ()
+        {
+            return  this._tint;
+        },
+        set: function (value)
+        {
+            this._tint = value;
+            this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
         }
     },
 
@@ -22564,20 +22590,20 @@ Sprite.prototype.calculateVertices = function ()
     if (trim)
     {
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        w1 = trim.x - this.anchor.x * orig.width;
+        w1 = trim.x - this.anchor._x * orig.width;
         w0 = w1 + trim.width;
 
-        h1 = trim.y - this.anchor.y * orig.height;
+        h1 = trim.y - this.anchor._y * orig.height;
         h0 = h1 + trim.height;
 
     }
     else
     {
-        w0 = (orig.width ) * (1-this.anchor.x);
-        w1 = (orig.width ) * -this.anchor.x;
+        w0 = orig.width * (1-this.anchor._x);
+        w1 = orig.width * -this.anchor._x;
 
-        h0 = orig.height * (1-this.anchor.y);
-        h1 = orig.height * -this.anchor.y;
+        h0 = orig.height * (1-this.anchor._y);
+        h1 = orig.height * -this.anchor._y;
     }
 
     // xy
@@ -22598,53 +22624,47 @@ Sprite.prototype.calculateVertices = function ()
 };
 
 /**
- * we need this method to be compatible with pixiv3. v3 does calculate bounds of original texture are, not trimmed one
+ * calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData
+ * This is used to ensure that the true width and height of a trimmed texture is respected
  */
-Sprite.prototype.calculateBoundsVertices = function ()
+Sprite.prototype.calculateTrimmedVertices = function ()
 {
-    var texture = this._texture,
-        trim = texture.trim,
-        vertexData = this.vertexData,
-        orig = texture.orig;
-
-    if (!trim || trim.width === orig.width && trim.height === orig.height) {
-        vertexData[8] = vertexData[0];
-        vertexData[9] = vertexData[1];
-        vertexData[10] = vertexData[2];
-        vertexData[11] = vertexData[3];
-        vertexData[12] = vertexData[4];
-        vertexData[13] = vertexData[5];
-        vertexData[14] = vertexData[6];
-        vertexData[15] = vertexData[7];
-        return;
+    if(!this.vertexTrimmedData)
+    {
+        this.vertexTrimmedData = new Float32Array(8);
     }
 
+    // lets do some special trim code!
+    var texture = this._texture,
+        vertexData = this.vertexTrimmedData,
+        orig = texture.orig;
+
+    // lets calculate the new untrimmed bounds..
     var wt = this.transform.worldTransform,
         a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
         w0, w1, h0, h1;
 
+    w0 = (orig.width ) * (1-this.anchor._x);
+    w1 = (orig.width ) * -this.anchor._x;
 
-    w0 = (orig.width ) * (1-this.anchor.x);
-    w1 = (orig.width ) * -this.anchor.x;
-
-    h0 = orig.height * (1-this.anchor.y);
-    h1 = orig.height * -this.anchor.y;
-
-    // xy
-    vertexData[8] = a * w1 + c * h1 + tx;
-    vertexData[9] = d * h1 + b * w1 + ty;
+    h0 = orig.height * (1-this.anchor._y);
+    h1 = orig.height * -this.anchor._y;
 
     // xy
-    vertexData[10] = a * w0 + c * h1 + tx;
-    vertexData[11] = d * h1 + b * w0 + ty;
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
 
     // xy
-    vertexData[12] = a * w0 + c * h0 + tx;
-    vertexData[13] = d * h0 + b * w0 + ty;
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
 
     // xy
-    vertexData[14] = a * w1 + c * h0 + tx;
-    vertexData[15] = d * h0 + b * w1 + ty;
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
 };
 
 /**
@@ -22673,11 +22693,26 @@ Sprite.prototype._renderCanvas = function (renderer)
     renderer.plugins.sprite.render(this);
 };
 
+
 Sprite.prototype._calculateBounds = function ()
 {
-    this.calculateVertices();
-    // if we have already done this on THIS frame.
-    this._bounds.addQuad(this.vertexData);
+
+    var trim = this._texture.trim,
+        orig = this._texture.orig;
+
+    //First lets check to see if the current texture has a trim..
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
+
+        // no trim! lets use the usual calculations..
+        this.calculateVertices();
+        this._bounds.addQuad(this.vertexData);
+    }
+    else
+    {
+        // lets calculate a special trimmed bounds...
+        this.calculateTrimmedVertices();
+        this._bounds.addQuad(this.vertexTrimmedData);
+    }
 };
 
 /**
@@ -22691,8 +22726,8 @@ Sprite.prototype.getLocalBounds = function (rect)
     if(this.children.length === 0)
     {
 
-        this._bounds.minX = -this._texture.orig.width * this.anchor.x;
-        this._bounds.minY = -this._texture.orig.height * this.anchor.y;
+        this._bounds.minX = -this._texture.orig.width * this.anchor._x;
+        this._bounds.minY = -this._texture.orig.height * this.anchor._y;
         this._bounds.maxX = this._texture.orig.width;
         this._bounds.maxY = this._texture.orig.height;
 
@@ -23553,7 +23588,7 @@ SpriteRenderer.prototype.flush = function ()
         vertexData = sprite.vertexData;
 
         //TODO this sum does not need to be set each frame..
-        tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
         uvs = sprite._texture._uvs.uvsUint32;
         textureId = nextTexture._id;
 
