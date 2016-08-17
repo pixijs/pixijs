@@ -36,6 +36,7 @@ deploy:
     acl: public_read
     local_dir: bin
     upload-dir: "$TRAVIS_COMMIT"
+    region: eu-west-1
     on:
         all_branches: true
   - provider: s3
@@ -46,6 +47,7 @@ deploy:
     acl: public_read
     local_dir: bin
     upload-dir: "$TRAVIS_BRANCH"
+    region: eu-west-1
     on:
         all_branches: true
   - provider: s3
@@ -56,5 +58,6 @@ deploy:
     acl: public_read
     local_dir: bin
     upload-dir: "$TRAVIS_TAG"
+    region: eu-west-1
     on: 
         tags: true
