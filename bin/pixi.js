@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Tue Aug 16 2016 22:43:39 GMT+0100 (BST)
+ * Compiled Wed Aug 17 2016 14:20:11 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -21882,14 +21882,14 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * A frame buffer
      *
-     * @member {glCore.GLFramebuffer}
+     * @member {PIXI.glCore.GLFramebuffer}
      */
     this.frameBuffer = null;
 
     /**
      * The texture
      *
-     * @member {PIXI.Texture}
+     * @member {PIXI.glCore.GLTexture}
      */
     this.texture = null;
 
