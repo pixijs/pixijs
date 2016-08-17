@@ -197,6 +197,119 @@ function InteractionManager(renderer, options)
     this.resolution = 1;
 
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed on the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event mousedown
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed on the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event rightdown
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released over the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event mouseup
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released over the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event rightup
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed and released on the display object.
+     * 
+     * @event click
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed and released on the display object.
+     * 
+     * @event rightclick
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released outside the display object that initially registered a [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
+     * 
+     * @event mouseupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially 
+     * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
+     * 
+     * @event rightupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved while over the display object
+     * 
+     * @event mousemove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved onto the display object
+     * 
+     * @event mouseover
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved off the display object
+     * 
+     * @event mouseout
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed on the display object.
+     * 
+     * @event touchstart
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed from the display object.
+     * 
+     * @event touchend
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed and removed from the display object.
+     * 
+     * @event tap
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed outside of the display object that initially registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
+     * 
+     * @event touchendoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is moved along the display object.
+     * 
+     * @event touchmove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
 }
 
 InteractionManager.prototype = Object.create(EventEmitter.prototype);
@@ -558,9 +671,6 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
         this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
     }
 };
-
-
-
 
 /**
  * Is called when the mouse button is released on the renderer element
