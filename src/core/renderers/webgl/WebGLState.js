@@ -52,15 +52,15 @@ function WebGLState(gl)
     this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
     this.attribState = {tempAttribState:new Array(this.maxAttribs),
-                        attribState:new Array(this.maxAttribs)};
+        attribState:new Array(this.maxAttribs)};
 
     this.blendModes = mapWebGLBlendModesToPixi(gl);
 
     // check we have vao..
     this.nativeVaoExtension = (
-      gl.getExtension('OES_vertex_array_object') ||
-      gl.getExtension('MOZ_OES_vertex_array_object') ||
-      gl.getExtension('WEBKIT_OES_vertex_array_object')
+        gl.getExtension('OES_vertex_array_object') ||
+        gl.getExtension('MOZ_OES_vertex_array_object') ||
+        gl.getExtension('WEBKIT_OES_vertex_array_object')
     );
 }
 
@@ -70,11 +70,11 @@ function WebGLState(gl)
 WebGLState.prototype.push = function()
 {
     // next state..
-    var state = this.state[++this.stackIndex];
+    var state = this.stack[++this.stackIndex];
 
     if(!state)
     {
-        state = this.state[this.stackIndex] = new Uint8Array(16);
+        state = this.stack[this.stackIndex] = new Uint8Array(16);
     }
 
     // copy state..
@@ -96,7 +96,7 @@ var BLEND = 0,
  */
 WebGLState.prototype.pop = function()
 {
-    var state = this.state[--this.stackIndex];
+    var state = this.stack[--this.stackIndex];
     this.setState(state);
 };
 
@@ -120,8 +120,8 @@ WebGLState.prototype.setState = function(state)
 WebGLState.prototype.setBlend = function(value)
 {
     if(this.activeState[BLEND] === value|0) {
-    return;
-  }
+        return;
+    }
 
     this.activeState[BLEND] = value|0;
 
@@ -144,8 +144,8 @@ WebGLState.prototype.setBlend = function(value)
 WebGLState.prototype.setBlendMode = function(value)
 {
     if(value === this.activeState[BLEND_FUNC]) {
-    return;
-  }
+        return;
+    }
 
     this.activeState[BLEND_FUNC] = value;
 
@@ -268,7 +268,7 @@ WebGLState.prototype.resetToDefault = function()
     // set active state so we can force overrides of gl state
     for (var i = 0; i < this.activeState.length; i++)
     {
-        this.activeState[i] = 2;
+        this.activeState[i] = 32;
     }
 
     var gl = this.gl;
