@@ -32,14 +32,14 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     /**
      * A frame buffer
      *
-     * @member {glCore.GLFramebuffer}
+     * @member {PIXI.glCore.GLFramebuffer}
      */
     this.frameBuffer = null;
 
     /**
      * The texture
      *
-     * @member {PIXI.Texture}
+     * @member {PIXI.glCore.GLTexture}
      */
     this.texture = null;
 
