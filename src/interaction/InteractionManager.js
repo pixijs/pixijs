@@ -248,7 +248,8 @@ function InteractionManager(renderer, options)
      */
 
     /**
-     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially 
+     * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
      * 
      * @event rightupoutside
      * @memberof PIXI.interaction.InteractionManager#
