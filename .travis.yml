@@ -28,10 +28,23 @@ script:
     - xvfb-maybe npm run build
 
 deploy:
-    provider: s3
+  - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
     bucket: "pixi-build"
     skip_cleanup: true
     acl: public_read
     local_dir: bin
+    upload-dir: "$TRAVIS_COMMIT"
+    on:
+        all_branches: true
+  - provider: s3
+    access_key_id: $S3_ACCESS_KEY_ID
+    secret_access_key: $S3_SECRET_ACCESS_KEY
+    bucket: "pixi-release"
+    skip_cleanup: true
+    acl: public_read
+    local_dir: bin
+    upload-dir: "$TRAVIS_TAG"
+    on: 
+        tags: true
