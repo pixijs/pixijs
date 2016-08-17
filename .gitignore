@@ -27,3 +27,6 @@ examples_old/
 
 # jetBrains IDE ignores
 .idea
+
+# build files
+/bin
