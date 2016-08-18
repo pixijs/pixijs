@@ -115,6 +115,11 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (value)
         {
+            if (this.dirty)
+            {
+                this.updateText();
+            }
+                        
             this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
