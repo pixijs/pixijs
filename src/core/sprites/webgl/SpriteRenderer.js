@@ -68,7 +68,6 @@ function SpriteRenderer(renderer)
      */
     this.shaders = null;
 
-    this.textureCount = 0;
     this.currentIndex = 0;
     this.tick =0;
     this.groups = [];
