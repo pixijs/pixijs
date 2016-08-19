@@ -1,5 +1,6 @@
 var core = require('../core'),
     tempPoint = new core.Point(),
+    Texture = require('../core/textures/Texture'),
     CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
     TilingShader = require('./webgl/TilingShader'),
     tempArray = new Float32Array(4);
@@ -396,6 +397,23 @@ TilingSprite.prototype.destroy = function () {
 
     this._uvs = null;
 };
+
+/**
+ * Helper function that creates a new tiling sprite based on the source you provide.
+ * The source can be - frame id, image url, video url, canvas element, video element, base texture
+ *
+ * @static
+ * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+* @param width {number}  the width of the tiling sprite
+ * @param height {number} the height of the tiling sprite
+ * @return {PIXI.Texture} The newly created texture
+ */
+TilingSprite.from = function (source,width,height)
+{
+    return new TilingSprite(Texture.from(source),width,height);
+};
+
+
 
 /**
  * Helper function that creates a tiling sprite that will use a texture from the TextureCache based on the frameId
