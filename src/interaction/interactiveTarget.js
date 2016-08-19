@@ -30,7 +30,8 @@ var interactiveTarget = {
     
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
-     *
+     * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
+     * 
      * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
     hitArea: null,
