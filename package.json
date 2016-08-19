@@ -47,10 +47,10 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.2",
-    "resource-loader": "^1.6.4"
+    "resource-loader": "^1.6.4",
+    "browserify-versionify": "^1.0.6"
   },
   "devDependencies": {
-    "browserify-versionify": "^1.0.6",
     "del": "^2.2.0",
     "electron-prebuilt": "^1.3.2",
     "floss": "^0.7.1",
