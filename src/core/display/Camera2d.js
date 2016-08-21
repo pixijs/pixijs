@@ -99,6 +99,11 @@ function Camera2d() {
     this._invProjectedViewport.size = 4;
 }
 
+// constructor
+Camera2d.prototype = Object.create(Container.prototype);
+Camera2d.prototype.constructor = Camera2d;
+module.exports = Camera2d;
+
 Object.defineProperties(Camera2d.prototype, {
     /**
      * look position is something like pivot of container
@@ -131,11 +136,6 @@ Object.defineProperties(Camera2d.prototype, {
         }
     }
 });
-
-// constructor
-Camera2d.prototype = Object.create(Container.prototype);
-Camera2d.prototype.constructor = Camera2d;
-module.exports = Camera2d;
 
 Camera2d.prototype.initTransform = function () {
     this.displayObjectInitTransform(true);
