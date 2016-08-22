@@ -59,3 +59,8 @@ changing only whitespace or trash files will likely get your PR closed.
 [1]: http://jsfiddle.net
 [2]: http://jsbin.com/
 [3]: http://nodejs.org
+
+
+## Contributor Code of Conduct
+
+[Code of Conduct](CODE_OF_CONDUCT.md) is adapted from [Contributor Covenant, version 1.4](http://contributor-covenant.org/version/1/4)
