@@ -26,7 +26,7 @@ describe('PIXI.Text', function () {
             expect(child.transform).to.equal(null);
         });
 
-        it('should accept boolean correctly', function () {
+        it('should accept options correctly', function () {
             var text = new PIXI.Text("foo"),
                 child = new PIXI.DisplayObject();
 
@@ -47,7 +47,7 @@ describe('PIXI.Text', function () {
 
             text.addChild(child);
             text.destroy({children: true, texture: true});
-            expect(childDestroyOpts).to.deep.equal({children: true, texture: true});
+            expect(childDestroyOpts).to.deep.equal({children: true, texture: true, baseTexture:true});
         });
     });
 });
