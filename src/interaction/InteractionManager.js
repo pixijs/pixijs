@@ -72,7 +72,7 @@ function InteractionManager(renderer, options)
 	// setting the pointer to start off far off screen will mean that mouse over does
     //  not get called before we even move the mouse.
     this.pointer.global.set(-999999);
-    
+
 	/**
      * An event data object to handle all the event tracking/dispatching
      *
@@ -137,30 +137,6 @@ function InteractionManager(renderer, options)
      * @readonly
      */
     this.supportsPointerEvents = !!window.PointerEvent;
-
-    /**
-     * A list of  mouse events that the Interaction Manager can invoke to Display Objects
-     *
-     * @member {string[]}
-     * @readonly
-     */
-    this.mouseEvents = ['mousedown','mouseup','rightdown','rightup','click','rightclick','mousemove','mouseover','mouseout','mouseupoutside','rightupoutside'];
-
-    /**
-     * A list of the touch events that the Interaction Manager can invoke to Display Objects
-     *
-     * @member {string[]}
-     * @readonly
-     */
-    this.touchEvents = ['touchstart','touchend','tap','touchmove','touchendoutside'];
-
-    /**
-     * A list of the pointer events that the Interaction Manager can invoke to Display Objects
-     *
-     * @member {string[]}
-     * @readonly
-     */
-    this.pointerEvents = ['pointerdown','pointerup','pointertap','pointermove','pointerover','pointerout','pointerupoutside'];
 
     /**
      * Are touch events being 'normalized' and converted into pointer events if pointer events are not supported
@@ -300,6 +276,168 @@ function InteractionManager(renderer, options)
     this.resolution = 1;
 
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed on the display object.
+     *
+     * @event mousedown
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed on the display object.
+     *
+     * @event rightdown
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released over the display object.
+     *
+     * @event mouseup
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released over the display object.
+     *
+     * @event rightup
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed and released on the display object.
+     *
+     * @event click
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed and released on the display object.
+     *
+     * @event rightclick
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released outside the display object that initially registered a [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
+     *
+     * @event mouseupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially
+     * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
+     *
+     * @event rightupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved while over the display object
+     *
+     * @event mousemove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved onto the display object
+     *
+     * @event mouseover
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved off the display object
+     *
+     * @event mouseout
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button is pressed on the display object.
+     *
+     * @event pointerdown
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button is released over the display object.
+     *
+     * @event pointerup
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button is pressed and released on the display object.
+     *
+     * @event pointertap
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button is released outside the display object that initially registered a [pointerdown]{@link PIXI.interaction.InteractionManager#event:pointerdown}.
+     *
+     * @event pointerupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device is moved while over the display object
+     *
+     * @event pointermove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device is moved onto the display object
+     *
+     * @event pointerover
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device is moved off the display object
+     *
+     * @event pointerout
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed on the display object.
+     *
+     * @event touchstart
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed from the display object.
+     *
+     * @event touchend
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed and removed from the display object.
+     *
+     * @event tap
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed outside of the display object that initially registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
+     *
+     * @event touchendoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is moved along the display object.
+     *
+     * @event touchmove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
 }
 
 InteractionManager.prototype = Object.create(EventEmitter.prototype);
