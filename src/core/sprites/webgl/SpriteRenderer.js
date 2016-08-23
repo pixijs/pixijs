@@ -8,7 +8,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     glCore = require('pixi-gl-core'),
     bitTwiddle = require('bit-twiddle');
 
-
+    var TICK = 0;
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -69,7 +69,7 @@ function SpriteRenderer(renderer)
     this.shaders = null;
 
     this.currentIndex = 0;
-    this.tick =0;
+    TICK =0;
     this.groups = [];
 
     for (var k = 0; k < this.size; k++)
@@ -210,7 +210,7 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.start = 0;
     currentGroup.blend = blendMode;
 
-    this.tick++;
+    TICK++;
 
     for (var i = 0; i < this.currentIndex; i++)
     {
@@ -227,18 +227,18 @@ SpriteRenderer.prototype.flush = function ()
             // force the batch to break!
             currentTexture = null;
             textureCount = this.MAX_TEXTURES;
-            this.tick++;
+            TICK++;
         }
 
         if(currentTexture !== nextTexture)
         {
             currentTexture = nextTexture;
 
-            if(nextTexture._enabled !== this.tick)
+            if(nextTexture._enabled !== TICK)
             {
                 if(textureCount === this.MAX_TEXTURES)
                 {
-                    this.tick++;
+                    TICK++;
 
                     textureCount = 0;
 
@@ -250,7 +250,7 @@ SpriteRenderer.prototype.flush = function ()
                     currentGroup.start = i;
                 }
 
-                nextTexture._enabled = this.tick;
+                nextTexture._enabled = TICK;
                 nextTexture._id = textureCount;
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
@@ -374,8 +374,8 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
- //   this.renderer.bindShader(this.shader);
-    this.tick %= 1000;
+    //this.renderer.bindShader(this.shader);
+    //TICK %= 1000;
 };
 
 SpriteRenderer.prototype.stop = function ()
