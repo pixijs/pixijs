@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Wed Aug 24 2016 13:11:50 GMT+0100 (BST)
+ * Compiled Wed Aug 24 2016 13:18:58 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -21622,7 +21622,7 @@ function BaseTexture(source, scaleMode, resolution)
      * The scale mode to apply when scaling this texture
      *
      * @member {number}
-     * @default PIXI.SCALE_MODES.LINEAR
+     * @default PIXI.SCALE_MODES.DEFAULT
      * @see PIXI.SCALE_MODES
      */
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
