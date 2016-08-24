@@ -5,6 +5,11 @@ var Sprite = require('../sprites/Sprite'),
     CONST = require('../const'),
     TextStyle = require('./TextStyle');
 
+    var defaultDestroyOptions = {
+            texture:true,
+            children:false,
+            baseTexture:true
+    };
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
@@ -740,15 +745,23 @@ Text.prototype._generateFillStyle = function (style, lines)
 
 /**
  * Destroys this text object.
+ * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
+ * the majorety of the time the texture will not be shared with any other Sprites.
  *
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
  *      method called as well. 'options' will be passed on to those calls.
- * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
- * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
+ * @param [options.texture=true] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=true] {boolean} Should it destroy the base texture of the sprite as well
  */
 Text.prototype.destroy = function (options)
 {
+    if (typeof options === 'boolean') {
+        options = { children: options };
+    }
+
+    options =  Object.assign({}, defaultDestroyOptions, options);
+
     Sprite.prototype.destroy.call(this, options);
 
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
