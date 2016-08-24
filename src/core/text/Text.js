@@ -756,10 +756,11 @@ Text.prototype._generateFillStyle = function (style, lines)
  */
 Text.prototype.destroy = function (options)
 {
-    var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+    if (typeof options === 'boolean') {
+        options = { children: options };
+    }
 
     options =  Object.assign({}, defaultDestroyOptions, options);
-    options.children = destroyChildren;
 
     Sprite.prototype.destroy.call(this, options);
 
