@@ -37,7 +37,7 @@ ObjectRenderer.prototype.stop = function ()
 };
 
 /**
- * flushes
+ * Stub method for rendering content and emptying the current batch.
  *
  */
 ObjectRenderer.prototype.flush = function ()

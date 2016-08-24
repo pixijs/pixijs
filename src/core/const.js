@@ -1,3 +1,4 @@
+
 /**
  * Constant values used in pixi
  *
@@ -5,32 +6,38 @@
  */
 var CONST = {
     /**
-     * String of the current PIXI version
+     * String of the current PIXI version.
      *
      * @static
      * @constant
-     * @property {string} VERSION
+     * @type {string}
      */
     VERSION: '__VERSION__',
 
     /**
-     * @property {number} PI_2 - Two Pi
-     * @constant
+     * Two Pi.
+     *
      * @static
+     * @constant
+     * @type {number}
      */
     PI_2: Math.PI * 2,
 
     /**
-     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
-     * @constant
+     * Conversion factor for converting radians to degrees.
+     *
      * @static
+     * @constant
+     * @type {number}
      */
     RAD_TO_DEG: 180 / Math.PI,
 
     /**
-     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
-     * @constant
+     * Conversion factor for converting degrees to radians.
+     *
      * @static
+     * @constant
+     * @type {number}
      */
     DEG_TO_RAD: Math.PI / 180,
 
@@ -39,7 +46,8 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {number} TARGET_FPMS=0.06
+     * @type {number}
+     * @default 0.06
      */
     TARGET_FPMS: 0.06,
 
@@ -48,10 +56,10 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} RENDERER_TYPE
-     * @property {number} RENDERER_TYPE.UNKNOWN
-     * @property {number} RENDERER_TYPE.WEBGL
-     * @property {number} RENDERER_TYPE.CANVAS
+     * @type {object}
+     * @property {number} UNKNOWN - Unknown render type.
+     * @property {number} WEBGL - WebGL render type.
+     * @property {number} CANVAS - Canvas render type.
      */
     RENDERER_TYPE: {
         UNKNOWN:    0,
@@ -60,30 +68,31 @@ var CONST = {
     },
 
     /**
-     * Various blend modes supported by PIXI. IMPORTANT - The WebGL renderer only supports
-     * the NORMAL, ADD, MULTIPLY and SCREEN blend modes. Anything else will silently act like
-     * NORMAL.
+     * Various blend modes supported by PIXI.
+     *
+     * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+     * Anything else will silently act like NORMAL.
      *
      * @static
      * @constant
-     * @property {object} BLEND_MODES
-     * @property {number} BLEND_MODES.NORMAL
-     * @property {number} BLEND_MODES.ADD
-     * @property {number} BLEND_MODES.MULTIPLY
-     * @property {number} BLEND_MODES.SCREEN
-     * @property {number} BLEND_MODES.OVERLAY
-     * @property {number} BLEND_MODES.DARKEN
-     * @property {number} BLEND_MODES.LIGHTEN
-     * @property {number} BLEND_MODES.COLOR_DODGE
-     * @property {number} BLEND_MODES.COLOR_BURN
-     * @property {number} BLEND_MODES.HARD_LIGHT
-     * @property {number} BLEND_MODES.SOFT_LIGHT
-     * @property {number} BLEND_MODES.DIFFERENCE
-     * @property {number} BLEND_MODES.EXCLUSION
-     * @property {number} BLEND_MODES.HUE
-     * @property {number} BLEND_MODES.SATURATION
-     * @property {number} BLEND_MODES.COLOR
-     * @property {number} BLEND_MODES.LUMINOSITY
+     * @type {object}
+     * @property {number} NORMAL
+     * @property {number} ADD
+     * @property {number} MULTIPLY
+     * @property {number} SCREEN
+     * @property {number} OVERLAY
+     * @property {number} DARKEN
+     * @property {number} LIGHTEN
+     * @property {number} COLOR_DODGE
+     * @property {number} COLOR_BURN
+     * @property {number} HARD_LIGHT
+     * @property {number} SOFT_LIGHT
+     * @property {number} DIFFERENCE
+     * @property {number} EXCLUSION
+     * @property {number} HUE
+     * @property {number} SATURATION
+     * @property {number} COLOR
+     * @property {number} LUMINOSITY
      */
     BLEND_MODES: {
         NORMAL:         0,
@@ -111,14 +120,14 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} DRAW_MODES
-     * @property {number} DRAW_MODES.POINTS
-     * @property {number} DRAW_MODES.LINES
-     * @property {number} DRAW_MODES.LINE_LOOP
-     * @property {number} DRAW_MODES.LINE_STRIP
-     * @property {number} DRAW_MODES.TRIANGLES
-     * @property {number} DRAW_MODES.TRIANGLE_STRIP
-     * @property {number} DRAW_MODES.TRIANGLE_FAN
+     * @type {object}
+     * @property {number} POINTS
+     * @property {number} LINES
+     * @property {number} LINE_LOOP
+     * @property {number} LINE_STRIP
+     * @property {number} TRIANGLES
+     * @property {number} TRIANGLE_STRIP
+     * @property {number} TRIANGLE_FAN
      */
     DRAW_MODES: {
         POINTS:         0,
@@ -138,10 +147,10 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} SCALE_MODES
-     * @property {number} SCALE_MODES.DEFAULT=LINEAR
-     * @property {number} SCALE_MODES.LINEAR Smooth scaling
-     * @property {number} SCALE_MODES.NEAREST Pixelating scaling
+     * @type {object}
+     * @property {number} DEFAULT=LINEAR
+     * @property {number} LINEAR Smooth scaling
+     * @property {number} NEAREST Pixelating scaling
      */
     SCALE_MODES: {
         DEFAULT:    0,
@@ -150,17 +159,86 @@ var CONST = {
     },
 
     /**
-     * The prefix that denotes a URL is for a retina asset
+     * The wrap modes that are supported by pixi.
+     *
+     * The DEFAULT wrap mode affects the default wraping mode of future operations.
+     * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
+     * If the texture is non power of two then clamp will be used regardless as webGL can only use REPEAT if the texture is po2.
+     * This property only affects WebGL.
      *
      * @static
      * @constant
-     * @property {string} RETINA_PREFIX
+     * @type {object}
+     * @property {number} DEFAULT=CLAMP
+     * @property {number} CLAMP - The textures uvs are clamped
+     * @property {number} REPEAT - The texture uvs tile and repeat
+     * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
      */
-    //example: '@2x',
+    WRAP_MODES: {
+        DEFAULT:        0,
+        CLAMP:          0,
+        REPEAT:         1,
+        MIRRORED_REPEAT:2
+    },
+
+    /**
+     * The gc modes that are supported by pixi.
+     *
+     * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
+     * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not used for a specified period of time they will be removed from the GPU.
+     * They will of corse be uploaded again when they are required. This is a silent behind the scenes process that should ensure that the GPU does not  get filled up.
+     * Handy for mobile devices!
+     * This property only affects WebGL.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} DEFAULT=MANUAL
+     * @property {number} AUTO - Garbage collection will happen periodically automatically
+     * @property {number} MANUAL - Garbage collection will need to be called manually
+     */
+    GC_MODES: {
+        DEFAULT:        1,
+        AUTO:           0,
+        MANUAL:         1,
+    },
+
+    /**
+     * If set to true WebGL will attempt make textures mimpaped by default.
+     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
+     *
+     * @static
+     * @constant
+     * @type {boolean}
+     */
+    MIPMAP_TEXTURES: true,
+
+    /**
+     * The prefix that denotes a URL is for a retina asset.
+     *
+     * @static
+     * @constant
+     * @type {RegExp|string}
+     * @example `@2x`
+     */
     RETINA_PREFIX: /@(.+)x/,
 
-    RESOLUTION:1,
+    /**
+     * Default resolution / device pixel ratio of the renderer.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     */
+    RESOLUTION: 1,
 
+    /**
+     * Default filter resolution.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     */
     FILTER_RESOLUTION:1,
 
     /**
@@ -169,16 +247,17 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} DEFAULT_RENDER_OPTIONS
-     * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
-     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
-     * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
-     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
+     * @type {object}
+     * @property {HTMLCanvasElement} view=null
+     * @property {number} resolution=1
+     * @property {boolean} antialias=false
+     * @property {boolean} forceFXAA=false
+     * @property {boolean} autoResize=false
+     * @property {boolean} transparent=false
+     * @property {number} backgroundColor=0x000000
+     * @property {boolean} clearBeforeRender=true
+     * @property {boolean} preserveDrawingBuffer=false
+     * @property {boolean} roundPixels=false
      */
     DEFAULT_RENDER_OPTIONS: {
         view: null,
@@ -198,12 +277,12 @@ var CONST = {
      *
      * @static
      * @constant
-     * @property {object} SHAPES
-     * @property {object} SHAPES.POLY=0
-     * @property {object} SHAPES.RECT=1
-     * @property {object} SHAPES.CIRC=2
-     * @property {object} SHAPES.ELIP=3
-     * @property {object} SHAPES.RREC=4
+     * @type {object}
+     * @property {number} POLY
+     * @property {number} RECT
+     * @property {number} CIRC
+     * @property {number} ELIP
+     * @property {number} RREC
      */
     SHAPES: {
         POLY: 0,
@@ -213,9 +292,77 @@ var CONST = {
         RREC: 4
     },
 
+    /**
+     * Constants that specify float precision in shaders.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} DEFAULT='mediump'
+     * @property {number} LOW='lowp'
+     * @property {number} MEDIUM='mediump'
+     * @property {number} HIGH='highp'
+     */
+    PRECISION: {
+        DEFAULT: 'mediump',
+        LOW: 'lowp',
+        MEDIUM: 'mediump',
+        HIGH: 'highp'
+    },
+
+    /**
+     * Constants that specify the transform type.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} DEFAULT=STATIC
+     * @property {number} STATIC
+     * @property {number} DYNAMIC
+     */
+    TRANSFORM_MODE:{
+        DEFAULT:    0,
+        STATIC:     0,
+        DYNAMIC:    1
+    },
+
+    /**
+     * Constants that define the type of gradient on text.
+     *
+     * @static
+     * @constant
+     * @type {object}
+     * @property {number} LINEAR_VERTICAL
+     * @property {number} LINEAR_HORIZONTAL
+     */
+    TEXT_GRADIENT: {
+        LINEAR_VERTICAL: 0,
+        LINEAR_HORIZONTAL: 1
+    },
+
     // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-    SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
+
+    /**
+     * The default sprite batch size.
+     *
+     * The default aims to balance desktop and mobile devices.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     * @default 4096
+     */
+    SPRITE_BATCH_SIZE: 4096,
+
+    /**
+     * The maximum textures that this device supports.
+     *
+     * @static
+     * @constant
+     * @type {number}
+     */
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
 };
 
 module.exports = CONST;

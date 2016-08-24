@@ -9,7 +9,10 @@ core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
+core.particles      = require('./particles');
 core.accessibility  = require('./accessibility');
+core.extract        = require('./extract');
+core.prepare        = require('./prepare');
 
 // export a premade loader instance
 /**
@@ -21,8 +24,10 @@ core.accessibility  = require('./accessibility');
  */
 core.loader = new core.loaders.Loader();
 
+// @if DEBUG
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
+// @endif
 
 // Always export pixi globally.
 global.PIXI = core;

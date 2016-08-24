@@ -17,48 +17,50 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
+    Transform:              require('./display/Transform'),
+    TransformStatic:        require('./display/TransformStatic'),
+    TransformBase:          require('./display/TransformBase'),
 
     // sprites
     Sprite:                 require('./sprites/Sprite'),
-    ParticleContainer:      require('./particles/ParticleContainer'),
+    CanvasSpriteRenderer:     require('./sprites/canvas/CanvasSpriteRenderer'),
+    CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
-    ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
 
     // text
     Text:                   require('./text/Text'),
-
+    TextStyle:              require('./text/TextStyle'),
     // primitives
     Graphics:               require('./graphics/Graphics'),
     GraphicsData:           require('./graphics/GraphicsData'),
     GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
+    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
+    BaseRenderTexture:      require('./textures/BaseRenderTexture'),
     VideoBaseTexture:       require('./textures/VideoBaseTexture'),
     TextureUvs:             require('./textures/TextureUvs'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasGraphics:         require('./renderers/canvas/utils/CanvasGraphics'),
-    CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
+    CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
 
     // renderers - webgl
+    Shader:                 require('./Shader'),
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
     WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
-    ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
-    Shader:                 require('./renderers/webgl/shaders/Shader'),
-    TextureShader:          require('./renderers/webgl/shaders/TextureShader'),
-    PrimitiveShader:        require('./renderers/webgl/shaders/PrimitiveShader'),
-    ComplexPrimitiveShader: require('./renderers/webgl/shaders/ComplexPrimitiveShader'),
     ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
     RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
+    Quad:                   require('./renderers/webgl/utils/Quad'),
 
     // filters - webgl
-    AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
-    FXAAFilter:             require('./renderers/webgl/filters/FXAAFilter'),
-    SpriteMaskFilter:       require('./renderers/webgl/filters/SpriteMaskFilter'),
+    SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),
+    Filter:                 require('./renderers/webgl/filters/Filter'),
+
+    glCore:                   require('pixi-gl-core'),
 
     /**
      * This helper function will automatically detect which renderer you should be using.
@@ -74,7 +76,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
      * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
      * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
-     * @param [options.resolution=1] {number} the resolution of the renderer, retina would be 2
+     * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer, retina would be 2
      * @param [noWebGL=false] {boolean} prevents selection of WebGL renderer, even if such is present
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer

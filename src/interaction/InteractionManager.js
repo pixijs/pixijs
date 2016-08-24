@@ -1,5 +1,6 @@
 var core = require('../core'),
-    InteractionData = require('./InteractionData');
+    InteractionData = require('./InteractionData'),
+    EventEmitter = require('eventemitter3');
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -13,6 +14,7 @@ Object.assign(
  * This manager also supports multitouch.
  *
  * @class
+ * @extends EventEmitter
  * @memberof PIXI.interaction
  * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
  * @param [options] {object}
@@ -21,6 +23,8 @@ Object.assign(
  */
 function InteractionManager(renderer, options)
 {
+    EventEmitter.call(this);
+
     options = options || {};
 
     /**
@@ -52,6 +56,10 @@ function InteractionManager(renderer, options)
      * @member {PIXI.interaction.InteractionData}
      */
     this.mouse = new InteractionData();
+
+    // setting the pointer to start off far off screen will mean that mouse over does
+    //  not get called before we even move the mouse.
+    this.mouse.global.set(-999999);
 
     /**
      * An event data object to handle all the event tracking/dispatching
@@ -92,7 +100,7 @@ function InteractionManager(renderer, options)
      * @private
      */
     this.moveWhenInside = false;
-    
+
     /**
      * Have events been attached to the dom element?
      *
@@ -105,6 +113,7 @@ function InteractionManager(renderer, options)
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseUp = this.onMouseUp.bind(this);
     this.processMouseUp = this.processMouseUp.bind( this );
@@ -112,45 +121,59 @@ function InteractionManager(renderer, options)
 
     /**
      * @member {Function}
+     *  @private
      */
     this.onMouseDown = this.onMouseDown.bind(this);
     this.processMouseDown = this.processMouseDown.bind( this );
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseMove = this.onMouseMove.bind( this );
     this.processMouseMove = this.processMouseMove.bind( this );
 
     /**
      * @member {Function}
+     * @private
      */
     this.onMouseOut = this.onMouseOut.bind(this);
     this.processMouseOverOut = this.processMouseOverOut.bind( this );
 
+    /**
+     * @member {Function}
+     * @private
+     */
+    this.onMouseOver = this.onMouseOver.bind(this);
+
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchStart = this.onTouchStart.bind(this);
     this.processTouchStart = this.processTouchStart.bind(this);
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.processTouchEnd = this.processTouchEnd.bind(this);
 
     /**
      * @member {Function}
+     * @private
      */
     this.onTouchMove = this.onTouchMove.bind(this);
     this.processTouchMove = this.processTouchMove.bind(this);
 
     /**
-     * @member {number}
+     * Every update cursor will be reset to this value, if some element wont override it in its hitTest
+     * @member {string}
+     * @default 'inherit'
      */
-    this.last = 0;
+    this.defaultCursorStyle = 'inherit';
 
     /**
      * The css style of the cursor that is being used
@@ -164,17 +187,132 @@ function InteractionManager(renderer, options)
      * @private
      */
     this._tempPoint = new core.Point();
-    
+
 
     /**
-     * The current resolution
+     * The current resolution / device pixel ratio.
      * @member {number}
+     * @default 1
      */
     this.resolution = 1;
 
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed on the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event mousedown
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed on the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event rightdown
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released over the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event mouseup
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released over the display object.
+     * 
+     * @memberof PIXI.interaction.InteractionManager#
+     * @event rightup
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is pressed and released on the display object.
+     * 
+     * @event click
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is pressed and released on the display object.
+     * 
+     * @event rightclick
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device button (usually a mouse button) is released outside the display object that initially registered a [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
+     * 
+     * @event mouseupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially 
+     * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
+     * 
+     * @event rightupoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved while over the display object
+     * 
+     * @event mousemove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved onto the display object
+     * 
+     * @event mouseover
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a pointing device (usually a mouse) is moved off the display object
+     * 
+     * @event mouseout
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed on the display object.
+     * 
+     * @event touchstart
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed from the display object.
+     * 
+     * @event touchend
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is placed and removed from the display object.
+     * 
+     * @event tap
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is removed outside of the display object that initially registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
+     * 
+     * @event touchendoutside
+     * @memberof PIXI.interaction.InteractionManager#
+     */
+
+    /**
+     * Fired when a touch point is moved along the display object.
+     * 
+     * @event touchmove
+     * @memberof PIXI.interaction.InteractionManager#
+     */
 }
 
+InteractionManager.prototype = Object.create(EventEmitter.prototype);
 InteractionManager.prototype.constructor = InteractionManager;
 module.exports = InteractionManager;
 
@@ -184,7 +322,7 @@ module.exports = InteractionManager;
  * another DOM element to receive those events.
  *
  * @param element {HTMLElement} the DOM element which will receive mouse and touch events.
- * @param [resolution=1] {number} THe resolution of the new element (relative to the canvas).
+ * @param [resolution=1] {number} The resolution / device pixel ratio of the new element (relative to the canvas).
  * @private
  */
 InteractionManager.prototype.setTargetElement = function (element, resolution)
@@ -221,6 +359,7 @@ InteractionManager.prototype.addEvents = function ()
     window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mouseover',    this.onMouseOver, true);
 
     this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
     this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
@@ -254,6 +393,7 @@ InteractionManager.prototype.removeEvents = function ()
     window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mouseover', this.onMouseOver, true);
 
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
     this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
@@ -271,7 +411,7 @@ InteractionManager.prototype.removeEvents = function ()
  * Invoked by a throttled ticker update from
  * {@link PIXI.ticker.shared}.
  *
- * @param deltaTime {number}
+ * @param deltaTime {number} time delta since last tick
  */
 InteractionManager.prototype.update = function (deltaTime)
 {
@@ -296,7 +436,7 @@ InteractionManager.prototype.update = function (deltaTime)
         return;
     }
 
-    this.cursor = 'inherit';
+    this.cursor = this.defaultCursorStyle;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
@@ -343,7 +483,15 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
  */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
-    var rect = this.interactionDOMElement.getBoundingClientRect();
+    var rect;
+    // IE 11 fix
+    if(!this.interactionDOMElement.parentElement)
+    {
+        rect = { x: 0, y: 0, width: 0, height: 0 };
+    } else {
+        rect = this.interactionDOMElement.getBoundingClientRect();
+    }
+
     point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
 };
@@ -352,10 +500,11 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
  *
- * @param  {PIXI.Point} point the point that is tested for collision
- * @param  {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
- * @param  {Function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
- * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @param point {PIXI.Point} the point that is tested for collision
+ * @param displayObject {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param [func] {Function} the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param [hitTest] {boolean} this indicates if the objects inside should be hit test against the point
+ * @param [interactive] {boolean} Whether the displayObject is interactive
  * @return {boolean} returns true if the displayObject hit the point
  */
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive)
@@ -366,18 +515,21 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     }
 
     // Took a little while to rework this function correctly! But now it is done and nice and optimised. ^_^
-    // 
+    //
     // This function will now loop through all objects and then only hit test the objects it HAS to, not all of them. MUCH faster..
     // An object will be hit test if the following is true:
-    // 
+    //
     // 1: It is interactive.
     // 2: It belongs to a parent that is interactive AND one of the parents children have not already been hit.
-    // 
+    //
     // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
     // A final optimisation is that an object is not hit test directly if a child has already been hit.
-    
+
     var hit = false,
         interactiveParent = interactive = displayObject.interactive || interactive;
+
+
+
 
     // if the displayobject has a hitArea, then it does not need to hitTest children.
     if(displayObject.hitArea)
@@ -385,12 +537,30 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         interactiveParent = false;
     }
 
-    // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
+    // it has a mask! Then lets hit test that before continuing..
+    if(hitTest && displayObject._mask)
+    {
+        if(!displayObject._mask.containsPoint(point))
+        {
+            hitTest = false;
+        }
+    }
+
+    // it has a filterArea! Same as mask but easier, its a rectangle
+    if(hitTest && displayObject.filterArea)
+    {
+        if(!displayObject.filterArea.contains(point.x, point.y))
+        {
+            hitTest = false;
+        }
+    }
+
+    // ** FREE TIP **! If an object is not interactive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
     // This will allow pixi to completly ignore and bypass checking the displayObjects children.
     if(displayObject.interactiveChildren)
-    {       
+    {
         var children = displayObject.children;
-        
+
         for (var i = children.length-1; i >= 0; i--)
         {
             var child = children[i];
@@ -409,19 +579,20 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
                 // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
                 interactiveParent = false;
-                
-                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
+
+                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                //if(child.interactive)
+
                 //{
                 hitTest = false;
                 //}
 
                 // we can break now as we have hit an object.
-                //break;
             }
         }
     }
+
+
 
     // no point running this if the item is not interactive or does not have an interactive parent.
     if(interactive)
@@ -429,7 +600,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         // if we are hit testing (as in we have no hit any objects yet)
         // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
         if(hitTest && !hit)
-        {  
+        {
+
             if(displayObject.hitArea)
             {
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
@@ -439,16 +611,18 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             {
                 hit = displayObject.containsPoint(point);
             }
+
+
         }
 
         if(displayObject.interactive)
         {
-            func(displayObject, hit); 
+            func(displayObject, hit);
         }
     }
 
     return hit;
-  
+
 };
 
 
@@ -473,6 +647,9 @@ InteractionManager.prototype.onMouseDown = function (event)
     }
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
+
+    var isRightButton = event.button === 2 || event.which === 3;
+    this.emit(isRightButton ? 'rightdown' : 'mousedown', this.eventData);
 };
 
 /**
@@ -485,7 +662,7 @@ InteractionManager.prototype.onMouseDown = function (event)
 InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 {
     var e = this.mouse.originalEvent;
-    
+
     var isRightButton = e.button === 2 || e.which === 3;
 
     if(hit)
@@ -494,8 +671,6 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
         this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
     }
 };
-
-
 
 /**
  * Is called when the mouse button is released on the renderer element
@@ -513,6 +688,9 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
+
+    var isRightButton = event.button === 2 || event.which === 3;
+    this.emit(isRightButton ? 'rightup' : 'mouseup', this.eventData);
 };
 
 /**
@@ -566,9 +744,11 @@ InteractionManager.prototype.onMouseMove = function (event)
 
     this.didMove = true;
 
-    this.cursor = 'inherit';
+    this.cursor = this.defaultCursorStyle;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
+
+    this.emit('mousemove', this.eventData);
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -589,7 +769,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 {
     this.processMouseOverOut(displayObject, hit);
-    
+
     // only display on mouse over
     if(!this.moveWhenInside || hit)
     {
@@ -607,17 +787,20 @@ InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
 InteractionManager.prototype.onMouseOut = function (event)
 {
     this.mouse.originalEvent = event;
+    this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    this.interactionDOMElement.style.cursor = this.defaultCursorStyle;
 
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY );
 
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
+
+    this.emit('mouseout', this.eventData);
 };
 
 /**
@@ -652,6 +835,21 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
     }
 };
 
+/**
+ * Is called when the mouse enters the renderer element area
+ *
+ * @param event {Event} The DOM event of the mouse moving into the renderer view
+ * @private
+ */
+InteractionManager.prototype.onMouseOver = function(event)
+{
+    this.mouse.originalEvent = event;
+    this.eventData.data = this.mouse;
+    this.eventData.stopped = false;
+
+	this.emit('mouseover', this.eventData);
+};
+
 
 /**
  * Is called when a touch is started on the renderer element
@@ -682,6 +880,8 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
+        this.emit('touchstart', this.eventData);
+
         this.returnTouchData( touchData );
     }
 };
@@ -707,6 +907,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
  * Is called when a touch ends on the renderer element
  *
  * @param event {Event} The DOM event of a touch ending on the renderer view
+ * @private
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
@@ -732,6 +933,8 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
+
+        this.emit('touchend', this.eventData);
 
         this.returnTouchData( touchData );
     }
@@ -795,6 +998,8 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
+        this.emit('touchmove', this.eventData);
+
         this.returnTouchData( touchData );
     }
 };
@@ -817,7 +1022,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 /**
  * Grabs an interaction data object from the internal pool
  *
- * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
+ * @param touchEvent {object} The touch event we need to pair with an interactionData object
  *
  * @private
  */
@@ -864,6 +1069,8 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
 InteractionManager.prototype.destroy = function () {
     this.removeEvents();
 
+    this.removeAllListeners();
+
     this.renderer = null;
 
     this.mouse = null;
@@ -887,6 +1094,7 @@ InteractionManager.prototype.destroy = function () {
     this.onMouseOut = null;
     this.processMouseOverOut = null;
 
+    this.onMouseOver = null;
 
     this.onTouchStart = null;
     this.processTouchStart = null;

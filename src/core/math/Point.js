@@ -48,7 +48,7 @@ Point.prototype.copy = function (p) {
  * Returns true if the given point is equal to this point
  *
  * @param p {PIXI.Point}
- * @returns {boolean}
+ * @returns {boolean} Whether the given point equal to this point
  */
 Point.prototype.equals = function (p) {
     return (p.x === this.x) && (p.y === this.y);

@@ -1,4 +1,6 @@
 var core = require('../core'),
+    glCore = require('pixi-gl-core'),
+    Shader = require('./webgl/MeshShader'),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
 
@@ -54,9 +56,10 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     /**
      * Whether the Mesh is dirty or not
      *
-     * @member {boolean}
+     * @member {number}
      */
-    this.dirty = true;
+    this.dirty = 0;
+    this.indexDirty = 0;
 
     /**
      * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -91,6 +94,17 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {PIXI.Shader}
      */
     this.shader = null;
+
+
+    /**
+     * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     */
+    this.tintRgb = new Float32Array([1, 1, 1]);
+
+    this._glDatas = [];
 }
 
 // constructor
@@ -132,6 +146,21 @@ Object.defineProperties(Mesh.prototype, {
                 }
             }
         }
+    },
+    /**
+     * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.mesh.Mesh#
+     * @default 0xFFFFFF
+     */
+    tint: {
+        get: function() {
+            return core.utils.rgb2hex(this.tintRgb);
+        },
+        set: function(value) {
+            this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+        }
     }
 });
 
@@ -143,8 +172,65 @@ Object.defineProperties(Mesh.prototype, {
  */
 Mesh.prototype._renderWebGL = function (renderer)
 {
-    renderer.setObjectRenderer(renderer.plugins.mesh);
-    renderer.plugins.mesh.render(this);
+    // get rid of any thing that may be batching.
+    renderer.flush();
+
+    //  renderer.plugins.mesh.render(this);
+    var gl = renderer.gl;
+    var glData = this._glDatas[renderer.CONTEXT_UID];
+
+    if(!glData)
+    {
+        glData = {
+            shader:new Shader(gl),
+            vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
+            uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
+            indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
+            // build the vao object that will render..
+            vao:new glCore.VertexArrayObject(gl),
+            dirty:this.dirty,
+            indexDirty:this.indexDirty
+        };
+
+        // build the vao object that will render..
+        glData.vao = new glCore.VertexArrayObject(gl)
+        .addIndex(glData.indexBuffer)
+        .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+        .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+
+        this._glDatas[renderer.CONTEXT_UID] = glData;
+
+
+    }
+
+    if(this.dirty !== glData.dirty)
+    {
+        glData.dirty = this.dirty;
+        glData.uvBuffer.upload();
+
+    }
+
+    if(this.indexDirty !== glData.indexDirty)
+    {
+        glData.indexDirty = this.indexDirty;
+        glData.indexBuffer.upload();
+    }
+
+    glData.vertexBuffer.upload();
+
+    renderer.bindShader(glData.shader);
+    renderer.bindTexture(this._texture, 0);
+    renderer.state.setBlendMode(this.blendMode);
+
+    glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
+    glData.shader.uniforms.alpha = this.worldAlpha;
+    glData.shader.uniforms.tint = this.tintRgb;
+
+    var drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+
+    glData.vao.bind()
+    .draw(drawMode, this.indices.length)
+    .unbind();
 };
 
 /**
@@ -348,68 +434,23 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @param event
  * @private
  */
 Mesh.prototype._onTextureUpdate = function ()
 {
-    this.updateFrame = true;
+
 };
 
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
+ * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
  */
-Mesh.prototype.getBounds = function (matrix)
+Mesh.prototype._calculateBounds = function ()
 {
-    if (!this._currentBounds) {
-        var worldTransform = matrix || this.worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var vertices = this.vertices;
-        for (var i = 0, n = vertices.length; i < n; i += 2) {
-            var rawX = vertices[i], rawY = vertices[i + 1];
-            var x = (a * rawX) + (c * rawY) + tx;
-            var y = (d * rawY) + (b * rawX) + ty;
-
-            minX = x < minX ? x : minX;
-            minY = y < minY ? y : minY;
-
-            maxX = x > maxX ? x : maxX;
-            maxY = y > maxY ? y : maxY;
-        }
-
-        if (minX === -Infinity || maxY === Infinity) {
-            return core.Rectangle.EMPTY;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-    }
-
-    return this._currentBounds;
+    //TODO - we can cache local bounds and use them if they are dirty (like graphics)
+    this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
 };
 
 /**
@@ -426,36 +467,20 @@ Mesh.prototype.containsPoint = function( point ) {
 
     var vertices = this.vertices;
     var points = tempPolygon.points;
-    var i, len;
 
-    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLES) {
-        var indices = this.indices;
-        len = this.indices.length;
-        //TODO: inline this.
-        for (i=0;i<len;i+=3) {
-            var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0+1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1+1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2+1];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
-        }
-    } else {
-        len = vertices.length;
-        for (i=0;i<len;i+=6) {
-            points[0] = vertices[i];
-            points[1] = vertices[i+1];
-            points[2] = vertices[i+2];
-            points[3] = vertices[i+3];
-            points[4] = vertices[i+4];
-            points[5] = vertices[i+5];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
-                return true;
-            }
+    var indices = this.indices;
+    var len = this.indices.length;
+    var step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
+    for (var i=0;i+2<len;i+=step) {
+        var ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+        points[0] = vertices[ind0];
+        points[1] = vertices[ind0+1];
+        points[2] = vertices[ind1];
+        points[3] = vertices[ind1+1];
+        points[4] = vertices[ind2];
+        points[5] = vertices[ind2+1];
+        if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+            return true;
         }
     }
     return false;

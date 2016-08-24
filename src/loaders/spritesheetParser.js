@@ -1,7 +1,6 @@
 var Resource = require('resource-loader').Resource,
     path = require('path'),
-    core = require('../core'),
-    async = require('async');
+    core = require('../core');
 
 var BATCH_SIZE = 1000;
 
@@ -9,6 +8,7 @@ module.exports = function ()
 {
     return function (resource, next)
     {
+        var resourcePath;
         var imageResourceName = resource.name + '_image';
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
@@ -23,10 +23,18 @@ module.exports = function ()
             metadata: resource.metadata.imageMetadata
         };
 
-        var route = path.dirname(resource.url.replace(this.baseUrl, ''));
+        // Prepend url path unless the resource image is a data url
+        if (resource.isDataUrl)
+        {
+            resourcePath = resource.data.meta.image;
+        }
+        else
+        {
+            resourcePath = path.dirname(resource.url.replace(this.baseUrl, '')) + '/' + resource.data.meta.image;
+        }
 
         // load the image for this sheet
-        this.add(imageResourceName, route + '/' + resource.data.meta.image, loadOptions, function (res)
+        this.add(imageResourceName, resourcePath, loadOptions, function (res)
         {
             resource.textures = {};
 
@@ -41,52 +49,41 @@ module.exports = function ()
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    var frame = frames[frameKeys[frameIndex]];
-                    var rect = frame.frame;
+                    var i = frameKeys[frameIndex];
+                    var rect = frames[i].frame;
 
                     if (rect)
                     {
-                        var size = null;
-                        var trim = null;
 
-                        if (frame.rotated)
-                        {
-                            size = new core.Rectangle(rect.x, rect.y, rect.h, rect.w);
+                        var frame = null;
+                        var trim = null;
+                        var orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+
+                        if (frames[i].rotated) {
+                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                         }
-                        else
-                        {
-                            size = new core.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                        else {
+                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
                         }
 
                         //  Check to see if the sprite is trimmed
-                        if (frame.trimmed)
+                        if (frames[i].trimmed)
                         {
                             trim = new core.Rectangle(
-                                frame.spriteSourceSize.x / resolution,
-                                frame.spriteSourceSize.y / resolution,
-                                frame.sourceSize.w / resolution,
-                                frame.sourceSize.h / resolution
-                            );
+                                frames[i].spriteSourceSize.x / resolution,
+                                frames[i].spriteSourceSize.y / resolution,
+                                frames[i].spriteSourceSize.w / resolution,
+                                frames[i].spriteSourceSize.h / resolution
+                             );
                         }
 
-                        // flip the width and height!
-                        if (frame.rotated)
-                        {
-                            var temp = size.width;
-                            size.width = size.height;
-                            size.height = temp;
-                        }
-
-                        size.x /= resolution;
-                        size.y /= resolution;
-                        size.width /= resolution;
-                        size.height /= resolution;
-
-                        resource.textures[frameKeys[frameIndex]] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frame.rotated);
+                        resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, orig, trim, frames[i].rotated ? 2 : 0);
 
                         // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                        core.utils.TextureCache[frameKeys[frameIndex]] = resource.textures[frameKeys[frameIndex]];
+                        core.utils.TextureCache[i] = resource.textures[i];
+
                     }
+
                     frameIndex++;
                 }
             }
@@ -103,6 +100,16 @@ module.exports = function ()
                 setTimeout(done, 0);
             }
 
+            function iteration() {
+                processNextBatch(function() {
+                    if (shouldProcessNextBatch()) {
+                        iteration();
+                    } else {
+                        next();
+                    }
+                });
+            }
+
             if (frameKeys.length <= BATCH_SIZE)
             {
                 processFrames(0, BATCH_SIZE);
@@ -110,7 +117,7 @@ module.exports = function ()
             }
             else
             {
-                async.whilst(shouldProcessNextBatch, processNextBatch, next);
+                iteration();
             }
         });
     };

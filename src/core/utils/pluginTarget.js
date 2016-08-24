@@ -59,7 +59,7 @@ module.exports = {
     /**
      * Mixes in the properties of the pluginTarget into another object
      *
-     * @param object {object} The obj to mix into
+     * @param obj {object} The obj to mix into
      */
     mixin: function mixin(obj)
     {

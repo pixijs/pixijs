@@ -1,70 +1,83 @@
 var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var generateBlurVertSource  = require('./generateBlurVertSource');
+var generateBlurFragSource  = require('./generateBlurFragSource');
+var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurXFilter()
+function BlurXFilter(strength, quality, resolution)
 {
-    core.AbstractFilter.call(this,
+    var vertSrc = generateBlurVertSource(5, true);
+    var fragSrc = generateBlurFragSource(5);
+
+    core.Filter.call(this,
         // vertex shader
-        fs.readFileSync(__dirname + '/blurX.vert', 'utf8'),
+        vertSrc,
         // fragment shader
-        fs.readFileSync(__dirname + '/blur.frag', 'utf8'),
-        // set the uniforms
-        {
-            strength: { type: '1f', value: 1 }
-        }
+        fragSrc
     );
 
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @default 1
-     */
-    this.passes = 1;
+    this.resolution = resolution || 1;
 
-    this.strength = 4;
+    this._quality = 0;
+
+    this.quality = quality || 4;
+    this.strength = strength || 8;
+
+    this.firstRun = true;
+
 }
 
-BlurXFilter.prototype = Object.create(core.AbstractFilter.prototype);
+BlurXFilter.prototype = Object.create(core.Filter.prototype);
 BlurXFilter.prototype.constructor = BlurXFilter;
 module.exports = BlurXFilter;
 
-BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
+BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
 {
-    var shader = this.getShader(renderer);
+    if(this.firstRun)
+    {
+        var gl = filterManager.renderer.gl;
+        var kernelSize = getMaxBlurKernelSize(gl);
 
-    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+        this.vertexSrc = generateBlurVertSource(kernelSize, true);
+        this.fragmentSrc = generateBlurFragSource(kernelSize);
+
+        this.firstRun = false;
+    }
+
+    this.uniforms.strength = (1/output.size.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+
+    // screen space!
+    this.uniforms.strength *= this.strength;
+    this.uniforms.strength /= this.passes;// / this.passes//Math.pow(1, this.passes);
 
     if(this.passes === 1)
     {
-        renderer.filterManager.applyFilter(shader, input, output, clear);
+        filterManager.applyFilter(this, input, output, clear);
     }
     else
     {
-        var renderTarget = renderer.filterManager.getRenderTarget(true);
+        var renderTarget = filterManager.getRenderTarget(true);
         var flip = input;
         var flop = renderTarget;
 
         for(var i = 0; i < this.passes-1; i++)
         {
-            renderer.filterManager.applyFilter(shader, flip, flop, true);
+            filterManager.applyFilter(this, flip, flop, true);
 
            var temp = flop;
            flop = flip;
            flip = temp;
         }
 
-        renderer.filterManager.applyFilter(shader, flip, output, clear);
+        filterManager.applyFilter(this, flip, output, clear);
 
-        renderer.filterManager.returnRenderTarget(renderTarget);
+        filterManager.returnRenderTarget(renderTarget);
     }
 };
 
@@ -75,7 +88,7 @@ Object.defineProperties(BlurXFilter.prototype, {
      *
      * @member {number}
      * @memberof PIXI.filters.BlurXFilter#
-     * @default 2
+     * @default 16
      */
     blur: {
         get: function ()
@@ -84,8 +97,27 @@ Object.defineProperties(BlurXFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding =  Math.abs(value) * 0.5;
+            this.padding =  Math.abs(value) * 2;
             this.strength = value;
+        }
+    },
+
+     /**
+     * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
+     *
+     * @member {number}
+     * @memberof PIXI.filters.BlurXFilter#
+     * @default 4
+     */
+    quality: {
+        get: function ()
+        {
+            return  this._quality;
+        },
+        set: function (value)
+        {
+            this._quality = value;
+            this.passes = value;
         }
     }
 });

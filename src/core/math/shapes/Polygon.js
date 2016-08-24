@@ -4,7 +4,7 @@ var Point = require('../Point'),
 /**
  * @class
  * @memberof PIXI
- * @param points {PIXI.Point[]|number[]|...PIXI.Point|...number} This can be an array of Points that form the polygon,
+ * @param points_ {PIXI.Point[]|number[]|...PIXI.Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
  *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
@@ -53,6 +53,9 @@ function Polygon(points_)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readOnly
+     * @default CONST.SHAPES.POLY
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.POLY;
 }
@@ -68,6 +71,18 @@ module.exports = Polygon;
 Polygon.prototype.clone = function ()
 {
     return new Polygon(this.points.slice());
+};
+
+
+Polygon.prototype.close = function ()
+{
+    var points = this.points;
+
+    // close the poly if the value is true!
+    if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
+    {
+        points.push(points[0], points[1]);
+    }
 };
 
 /**

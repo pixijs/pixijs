@@ -1,7 +1,8 @@
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
+    CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
+    mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
     utils = require('../../utils'),
-    math = require('../../math'),
     CONST = require('../../const');
 
 /**
@@ -18,7 +19,7 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
- * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+ * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer. The resolution of the renderer retina would be 2.
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
  * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
@@ -36,7 +37,8 @@ function CanvasRenderer(width, height, options)
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootResolution = this.resolution;
 
     /**
      * Boolean flag controlling canvas refresh.
@@ -50,7 +52,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {PIXI.CanvasMaskManager}
      */
-    this.maskManager = new CanvasMaskManager();
+    this.maskManager = new CanvasMaskManager(this);
 
     /**
      * The canvas property used to set the canvas smoothing property.
@@ -59,21 +61,21 @@ function CanvasRenderer(width, height, options)
      */
     this.smoothProperty = 'imageSmoothingEnabled';
 
-    if (!this.context.imageSmoothingEnabled)
+    if (!this.rootContext.imageSmoothingEnabled)
     {
-        if (this.context.webkitImageSmoothingEnabled)
+        if (this.rootContext.webkitImageSmoothingEnabled)
         {
             this.smoothProperty = 'webkitImageSmoothingEnabled';
         }
-        else if (this.context.mozImageSmoothingEnabled)
+        else if (this.rootContext.mozImageSmoothingEnabled)
         {
             this.smoothProperty = 'mozImageSmoothingEnabled';
         }
-        else if (this.context.oImageSmoothingEnabled)
+        else if (this.rootContext.oImageSmoothingEnabled)
         {
             this.smoothProperty = 'oImageSmoothingEnabled';
         }
-        else if (this.context.msImageSmoothingEnabled)
+        else if (this.rootContext.msImageSmoothingEnabled)
         {
             this.smoothProperty = 'msImageSmoothingEnabled';
         }
@@ -81,77 +83,140 @@ function CanvasRenderer(width, height, options)
 
     this.initPlugins();
 
-    this._mapBlendModes();
+    this.blendModes = mapCanvasBlendModesToPixi();
+    this._activeBlendMode = null;
 
-    /**
-     * This temporary display object used as the parent of the currently being rendered item
-     *
-     * @member {PIXI.DisplayObject}
-     * @private
-     */
-    this._tempDisplayObjectParent = {
-        worldTransform: new math.Matrix(),
-        worldAlpha: 1
-    };
-
+    this.context = null;
+    this.renderingToScreen = false;
 
     this.resize(width, height);
 }
 
 // constructor
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
-CanvasRenderer.prototype.constructor = CanvasRenderer;
+CanvasRenderer.prototype.constructor =  CanvasRenderer;
 module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
+
 
 /**
  * Renders the object to this canvas view
  *
- * @param object {PIXI.DisplayObject} the object to be rendered
+ * @param displayObject {PIXI.DisplayObject} The object to be rendered
+ * @param [renderTexture] {PIXI.RenderTexture} A render texture to be rendered to. If unset, it will render to the root context.
+ * @param [clear=false] {boolean} Whether to clear the canvas before drawing
+ * @param [transform] {PIXI.Transform} A transformation to be applied
+ * @param [skipUpdateTransform=false] {boolean} Whether to skip the update transform
  */
-CanvasRenderer.prototype.render = function (object)
+CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear, transform, skipUpdateTransform)
 {
-    this.emit('prerender');
 
-    var cacheParent = object.parent;
-
-    this._lastObjectRendered = object;
-
-    object.parent = this._tempDisplayObjectParent;
-
-    // update the scene graph
-    object.updateTransform();
-
-    object.parent = cacheParent;
-
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-
-    this.context.globalAlpha = 1;
-
-    this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
-
-    if (navigator.isCocoonJS && this.view.screencanvas)
-    {
-        this.context.fillStyle = 'black';
-        this.context.clear();
+    if (!this.view){
+      return;
     }
 
-    if (this.clearBeforeRender)
+     // can be handy to know!
+    this.renderingToScreen = !renderTexture;
+
+    this.emit('prerender');
+
+    if(renderTexture)
     {
-        if (this.transparent)
+        renderTexture = renderTexture.baseTexture || renderTexture;
+
+        if(!renderTexture._canvasRenderTarget)
         {
-            this.context.clearRect(0, 0, this.width, this.height);
+
+            renderTexture._canvasRenderTarget = new CanvasRenderTarget(renderTexture.width, renderTexture.height, renderTexture.resolution);
+            renderTexture.source = renderTexture._canvasRenderTarget.canvas;
+            renderTexture.valid = true;
+        }
+
+        this.context = renderTexture._canvasRenderTarget.context;
+        this.resolution = renderTexture._canvasRenderTarget.resolution;
+    }
+    else
+    {
+
+        this.context = this.rootContext;
+        this.resolution = this.rootResolution;
+    }
+
+    var context = this.context;
+
+    if(!renderTexture)
+    {
+        this._lastObjectRendered = displayObject;
+    }
+
+
+
+
+    if(!skipUpdateTransform)
+    {
+        // update the scene graph
+        var cacheParent = displayObject.parent;
+        var tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+
+        if(transform)
+        {
+            transform.copy(tempWt);
         }
         else
         {
-            this.context.fillStyle = this._backgroundColorString;
-            this.context.fillRect(0, 0, this.width , this.height);
+            tempWt.identity();
         }
+
+        displayObject.parent = this._tempDisplayObjectParent;
+        displayObject.updateTransform();
+        displayObject.parent = cacheParent;
+       // displayObject.hitArea = //TODO add a temp hit area
     }
 
-    this.renderDisplayObject(object, this.context);
+
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
+
+    if (navigator.isCocoonJS && this.view.screencanvas)
+    {
+        context.fillStyle = 'black';
+        context.clear();
+    }
+
+    if(clear !== undefined ? clear : this.clearBeforeRender)
+    {
+        if (this.renderingToScreen) {
+            if (this.transparent) {
+                context.clearRect(0, 0, this.width, this.height);
+            }
+            else {
+                context.fillStyle = this._backgroundColorString;
+                context.fillRect(0, 0, this.width, this.height);
+            }
+        } //else {
+            //TODO: implement background for CanvasRenderTarget or RenderTexture?
+        //}
+    }
+
+    // TODO RENDER TARGET STUFF HERE..
+    var tempContext = this.context;
+
+    this.context = context;
+    displayObject.renderCanvas(this);
+    this.context = tempContext;
 
     this.emit('postrender');
+};
+
+
+CanvasRenderer.prototype.setBlendMode = function (blendMode)
+{
+    if(this._activeBlendMode === blendMode) {
+      return;
+    }
+
+    this.context.globalCompositeOperation = this.blendModes[blendMode];
 };
 
 /**
@@ -177,90 +242,22 @@ CanvasRenderer.prototype.destroy = function (removeView)
 };
 
 /**
- * Renders a display object
+ * Resizes the canvas view to the specified width and height.
  *
- * @param displayObject {PIXI.DisplayObject} The displayObject to render
- * @private
- */
-CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
-{
-    var tempContext = this.context;
-
-    this.context = context;
-    displayObject.renderCanvas(this);
-    this.context = tempContext;
-};
-
-/**
  * @extends PIXI.SystemRenderer#resize
  *
- * @param {number} w
- * @param {number} h
+ * @param width {number} The new width of the canvas view
+ * @param height {number} The new height of the canvas view
  */
-CanvasRenderer.prototype.resize = function (w, h)
+CanvasRenderer.prototype.resize = function (width, height)
 {
-    SystemRenderer.prototype.resize.call(this, w, h);
+    SystemRenderer.prototype.resize.call(this, width, height);
 
     //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
     //surely a browser bug?? Let pixi fix that for you..
     if(this.smoothProperty)
     {
-        this.context[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
+        this.rootContext[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
     }
 
-};
-
-/**
- * Maps Pixi blend modes to canvas blend modes.
- *
- * @private
- */
-CanvasRenderer.prototype._mapBlendModes = function ()
-{
-    if (!this.blendModes)
-    {
-        this.blendModes = {};
-
-        if (utils.canUseNewCanvasBlendModes())
-        {
-            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'multiply';
-            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'screen';
-            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'overlay';
-            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'darken';
-            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'lighten';
-            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'color-dodge';
-            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'color-burn';
-            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'hard-light';
-            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'soft-light';
-            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'difference';
-            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'exclusion';
-            this.blendModes[CONST.BLEND_MODES.HUE]           = 'hue';
-            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'saturate';
-            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'color';
-            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'luminosity';
-        }
-        else
-        {
-            // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
-            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.HUE]           = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'source-over';
-            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'source-over';
-        }
-    }
 };

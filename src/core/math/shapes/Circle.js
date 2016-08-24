@@ -34,6 +34,9 @@ function Circle(x, y, radius)
      * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
+     * @readOnly
+     * @default CONST.SHAPES.CIRC
+     * @see PIXI.SHAPES
      */
     this.type = CONST.SHAPES.CIRC;
 }

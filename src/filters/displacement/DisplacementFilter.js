@@ -1,6 +1,5 @@
 var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var glslify  = require('glslify');
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -8,30 +7,31 @@ var fs = require('fs');
  * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
- * @param sprite {PIXI.Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
+ * @param sprite {PIXI.Sprite} The sprite used for the displacement map. (make sure its added to the scene!)
+ * @param scale {number} The scale of the displacement
  */
 function DisplacementFilter(sprite, scale)
 {
     var maskMatrix = new core.Matrix();
     sprite.renderable = false;
 
-    core.AbstractFilter.call(this,
+    core.Filter.call(this,
         // vertex shader
-        fs.readFileSync(__dirname + '/displacement.vert', 'utf8'),
+//        glslify('./displacement.vert'),
+        glslify('../fragments/default-filter-matrix.vert'),
         // fragment shader
-        fs.readFileSync(__dirname + '/displacement.frag', 'utf8'),
-        // uniforms
-        {
-            mapSampler:     { type: 'sampler2D', value: sprite.texture },
-            otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) },
-            scale:          { type: 'v2', value: { x: 1, y: 1 } }
-        }
+        glslify('./displacement.frag')
+
     );
 
     this.maskSprite = sprite;
     this.maskMatrix = maskMatrix;
+
+    this.uniforms.mapSampler = sprite.texture;
+    this.uniforms.filterMatrix = maskMatrix.toArray(true);
+    this.uniforms.scale = { x: 1, y: 1 };
 
     if (scale === null || scale === undefined)
     {
@@ -41,23 +41,20 @@ function DisplacementFilter(sprite, scale)
     this.scale = new core.Point(scale, scale);
 }
 
-DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
+DisplacementFilter.prototype = Object.create(core.Filter.prototype);
 DisplacementFilter.prototype.constructor = DisplacementFilter;
 module.exports = DisplacementFilter;
 
-DisplacementFilter.prototype.applyFilter = function (renderer, input, output)
+DisplacementFilter.prototype.apply = function (filterManager, input, output)
 {
-    var filterManager = renderer.filterManager;
+    var ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
-    filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
+    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
+    this.uniforms.scale.x = this.scale.x * ratio;
+    this.uniforms.scale.y = this.scale.y * ratio;
 
-    this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
-    this.uniforms.scale.value.x = this.scale.x * (1/input.frame.width);
-    this.uniforms.scale.value.y = this.scale.y * (1/input.frame.height);
-
-    var shader = this.getShader(renderer);
      // draw the filter...
-    filterManager.applyFilter(shader, input, output);
+    filterManager.applyFilter(this, input, output);
 };
 
 
@@ -71,11 +68,11 @@ Object.defineProperties(DisplacementFilter.prototype, {
     map: {
         get: function ()
         {
-            return this.uniforms.mapSampler.value;
+            return this.uniforms.mapSampler;
         },
         set: function (value)
         {
-            this.uniforms.mapSampler.value = value;
+            this.uniforms.mapSampler = value;
 
         }
     }

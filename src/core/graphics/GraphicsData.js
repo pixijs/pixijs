@@ -9,7 +9,7 @@
  * @param fillColor {number} the color of the fill
  * @param fillAlpha {number} the alpha of the fill
  * @param fill      {boolean} whether or not the shape is filled with a colour
- * @param shape     {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
+ * @param shape     {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} The shape object to draw.
  */
 function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
 {
@@ -22,10 +22,12 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      * @member {number} the color of the line to draw
      */
     this.lineColor = lineColor;
+
     /*
      * @member {number} the alpha of the line to draw
      */
     this.lineAlpha = lineAlpha;
+
     /*
      * @member {number} cached tint of the line to draw
      */
@@ -51,8 +53,10 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
      */
     this.fill = fill;
 
+    this.holes = [];
+
     /*
-     * @member {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Line|PIXI.Polygon} The shape object to draw.
+     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
      */
     this.shape = shape;
 
@@ -68,7 +72,7 @@ module.exports = GraphicsData;
 /**
  * Creates a new GraphicsData object with the same values as this one.
  *
- * @return {PIXI.GraphicsData}
+ * @return {PIXI.GraphicsData} Cloned GraphicsData object
  */
 GraphicsData.prototype.clone = function ()
 {
@@ -84,8 +88,18 @@ GraphicsData.prototype.clone = function ()
 };
 
 /**
+ *
+ *
+ */
+GraphicsData.prototype.addHole = function (shape)
+{
+    this.holes.push(shape);
+};
+
+/**
  * Destroys the Graphics data.
  */
 GraphicsData.prototype.destroy = function () {
     this.shape = null;
+    this.holes = null;
 };

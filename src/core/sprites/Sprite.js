@@ -1,12 +1,9 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
-    CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const'),
-    tempPoint = new math.Point(),
-    GroupD8 = math.GroupD8,
-    canvasRenderWorldTransform = new math.Matrix();
+    tempPoint = new math.Point();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -32,9 +29,9 @@ function Sprite(texture)
      * Setting the anchor to 0.5,0.5 means the texture's origin is centered
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
-     * @member {PIXI.Point}
+     * @member {PIXI.ObservablePoint}
      */
-    this.anchor = new math.Point();
+    this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
      * The texture that the sprite is using
@@ -66,6 +63,8 @@ function Sprite(texture)
      * @member {number}
      * @default 0xFFFFFF
      */
+    this._tint = null;
+    this._tintRGB = null;
     this.tint = 0xFFFFFF;
 
     /**
@@ -89,11 +88,27 @@ function Sprite(texture)
      *
      * @member {number}
      * @default 0xFFFFFF
+     * @private
      */
     this.cachedTint = 0xFFFFFF;
 
     // call texture setter
     this.texture = texture || Texture.EMPTY;
+
+    /**
+     * this is used to store the vertex data of the sprite (basically a quad)
+     * @type {Float32Array}
+     */
+    this.vertexData = new Float32Array(8);
+
+    /**
+     * this is used to calculate the bounds of the object IF it is a trimmed sprite
+     * @type {Float32Array}
+     */
+    this.vertexTrimmedData = null;
+
+    this._transformID = -1;
+    this._textureID = -1;
 }
 
 // constructor
@@ -111,12 +126,12 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return Math.abs(this.scale.x) * this.texture._frame.width;
+            return Math.abs(this.scale.x) * this.texture.orig.width;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture._frame.width;
+            this.scale.x = sign * value / this.texture.orig.width;
             this._width = value;
         }
     },
@@ -130,13 +145,25 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  Math.abs(this.scale.y) * this.texture._frame.height;
+            return  Math.abs(this.scale.y) * this.texture.orig.height;
         },
         set: function (value)
         {
             var sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture._frame.height;
+            this.scale.y = sign * value / this.texture.orig.height;
             this._height = value;
+        }
+    },
+
+    tint: {
+        get: function ()
+        {
+            return  this._tint;
+        },
+        set: function (value)
+        {
+            this._tint = value;
+            this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
         }
     },
 
@@ -161,6 +188,8 @@ Object.defineProperties(Sprite.prototype, {
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
+            this._textureID = -1;
+
             if (value)
             {
                 // wait for the texture to load
@@ -184,16 +213,126 @@ Object.defineProperties(Sprite.prototype, {
  */
 Sprite.prototype._onTextureUpdate = function ()
 {
+    this._textureID = -1;
+
     // so if _width is 0 then width was not set..
     if (this._width)
     {
-        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.frame.width;
+        this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
     }
 
     if (this._height)
     {
-        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.frame.height;
+        this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
     }
+};
+
+Sprite.prototype.onAnchorUpdate = function()
+{
+    this._transformID = -1;
+};
+
+/**
+ * calculates worldTransform * vertices, store it in vertexData
+ */
+Sprite.prototype.calculateVertices = function ()
+{
+    if(this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+    {
+        return;
+    }
+
+    this._transformID = this.transform._worldID;
+    this._textureID = this._texture._updateID;
+
+    // set the vertex data
+
+    var texture = this._texture,
+        wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        vertexData = this.vertexData,
+        w0, w1, h0, h1,
+        trim = texture.trim,
+        orig = texture.orig;
+
+    if (trim)
+    {
+        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+        w1 = trim.x - this.anchor._x * orig.width;
+        w0 = w1 + trim.width;
+
+        h1 = trim.y - this.anchor._y * orig.height;
+        h0 = h1 + trim.height;
+
+    }
+    else
+    {
+        w0 = orig.width * (1-this.anchor._x);
+        w1 = orig.width * -this.anchor._x;
+
+        h0 = orig.height * (1-this.anchor._y);
+        h1 = orig.height * -this.anchor._y;
+    }
+
+    // xy
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
+
+     // xy
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
+};
+
+/**
+ * calculates worldTransform * vertices for a non texture with a trim. store it in vertexTrimmedData
+ * This is used to ensure that the true width and height of a trimmed texture is respected
+ */
+Sprite.prototype.calculateTrimmedVertices = function ()
+{
+    if(!this.vertexTrimmedData)
+    {
+        this.vertexTrimmedData = new Float32Array(8);
+    }
+
+    // lets do some special trim code!
+    var texture = this._texture,
+        vertexData = this.vertexTrimmedData,
+        orig = texture.orig;
+
+    // lets calculate the new untrimmed bounds..
+    var wt = this.transform.worldTransform,
+        a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
+        w0, w1, h0, h1;
+
+    w0 = (orig.width ) * (1-this.anchor._x);
+    w1 = (orig.width ) * -this.anchor._x;
+
+    h0 = orig.height * (1-this.anchor._y);
+    h1 = orig.height * -this.anchor._y;
+
+    // xy
+    vertexData[0] = a * w1 + c * h1 + tx;
+    vertexData[1] = d * h1 + b * w1 + ty;
+
+    // xy
+    vertexData[2] = a * w0 + c * h1 + tx;
+    vertexData[3] = d * h1 + b * w0 + ty;
+
+    // xy
+    vertexData[4] = a * w0 + c * h0 + tx;
+    vertexData[5] = d * h0 + b * w0 + ty;
+
+    // xy
+    vertexData[6] = a * w1 + c * h0 + tx;
+    vertexData[7] = d * h0 + b * w1 + ty;
 };
 
 /**
@@ -205,147 +344,78 @@ Sprite.prototype._onTextureUpdate = function ()
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
+    this.calculateVertices();
+
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
 };
 
 /**
- * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {PIXI.Matrix} the transformation matrix of the sprite
- * @return {PIXI.Rectangle} the framing rectangle
- */
-Sprite.prototype.getBounds = function (matrix)
+* Renders the object using the Canvas renderer
+*
+* @param renderer {PIXI.CanvasRenderer} The renderer
+* @private
+*/
+Sprite.prototype._renderCanvas = function (renderer)
 {
-    if(!this._currentBounds)
-    {
+    renderer.plugins.sprite.render(this);
+};
 
-        var width = this._texture._frame.width;
-        var height = this._texture._frame.height;
 
-        var w0 = width * (1-this.anchor.x);
-        var w1 = width * -this.anchor.x;
+Sprite.prototype._calculateBounds = function ()
+{
 
-        var h0 = height * (1-this.anchor.y);
-        var h1 = height * -this.anchor.y;
+    var trim = this._texture.trim,
+        orig = this._texture.orig;
 
-        var worldTransform = matrix || this.worldTransform ;
+    //First lets check to see if the current texture has a trim..
+    if (!trim || trim.width === orig.width && trim.height === orig.height) {
 
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
-        var minX,
-            maxX,
-            minY,
-            maxY;
-
-        //TODO - I am SURE this can be optimised, but the below is not accurate enough..
-        /*
-        if (b === 0 && c === 0)
-        {
-            // scale may be negative!
-            if (a < 0)
-            {
-                a *= -1;
-            }
-
-            if (d < 0)
-            {
-                d *= -1;
-            }
-
-            // this means there is no rotation going on right? RIGHT?
-            // if thats the case then we can avoid checking the bound values! yay
-            minX = a * w1 + tx;
-            maxX = a * w0 + tx;
-            minY = d * h1 + ty;
-            maxY = d * h0 + ty;
-        }
-        else
-        {
-        */
-
-        var x1 = a * w1 + c * h1 + tx;
-        var y1 = d * h1 + b * w1 + ty;
-
-        var x2 = a * w0 + c * h1 + tx;
-        var y2 = d * h1 + b * w0 + ty;
-
-        var x3 = a * w0 + c * h0 + tx;
-        var y3 = d * h0 + b * w0 + ty;
-
-        var x4 =  a * w1 + c * h0 + tx;
-        var y4 =  d * h0 + b * w1 + ty;
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        //}
-
-        // check for children
-        if(this.children.length)
-        {
-            var childBounds = this.containerGetBounds();
-
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
+        // no trim! lets use the usual calculations..
+        this.calculateVertices();
+        this._bounds.addQuad(this.vertexData);
     }
-
-    return this._currentBounds;
+    else
+    {
+        // lets calculate a special trimmed bounds...
+        this.calculateTrimmedVertices();
+        this._bounds.addQuad(this.vertexTrimmedData);
+    }
 };
 
 /**
  * Gets the local bounds of the sprite object.
  *
  */
-Sprite.prototype.getLocalBounds = function ()
+
+Sprite.prototype.getLocalBounds = function (rect)
 {
-    this._bounds.x = -this._texture._frame.width * this.anchor.x;
-    this._bounds.y = -this._texture._frame.height * this.anchor.y;
-    this._bounds.width = this._texture._frame.width;
-    this._bounds.height = this._texture._frame.height;
-    return this._bounds;
+    // we can do a fast local bounds if the sprite has no children!
+    if(this.children.length === 0)
+    {
+
+        this._bounds.minX = -this._texture.orig.width * this.anchor._x;
+        this._bounds.minY = -this._texture.orig.height * this.anchor._y;
+        this._bounds.maxX = this._texture.orig.width;
+        this._bounds.maxY = this._texture.orig.height;
+
+        if(!rect)
+        {
+            if(!this._localBoundsRect)
+            {
+                this._localBoundsRect = new math.Rectangle();
+            }
+
+            rect = this._localBoundsRect;
+        }
+
+        return this._bounds.getRectangle(rect);
+    }
+    else
+    {
+        return Container.prototype.getLocalBounds.call(this, rect);
+    }
+
 };
 
 /**
@@ -358,8 +428,8 @@ Sprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
+    var width = this._texture.orig.width;
+    var height = this._texture.orig.height;
     var x1 = -width * this.anchor.x;
     var y1;
 
@@ -376,152 +446,27 @@ Sprite.prototype.containsPoint = function( point )
     return false;
 };
 
-/**
-* Renders the object using the Canvas renderer
-*
-* @param renderer {PIXI.CanvasRenderer} The renderer
-* @private
-*/
-Sprite.prototype._renderCanvas = function (renderer)
-{
-    if (this.texture.crop.width <= 0 || this.texture.crop.height <= 0)
-    {
-        return;
-    }
-
-    var compositeOperation = renderer.blendModes[this.blendMode];
-    if (compositeOperation !== renderer.context.globalCompositeOperation)
-    {
-        renderer.context.globalCompositeOperation = compositeOperation;
-    }
-
-    //  Ignore null sources
-    if (this.texture.valid)
-    {
-        var texture = this._texture,
-            wt = this.worldTransform,
-            dx,
-            dy,
-            width = texture.crop.width,
-            height = texture.crop.height;
-
-        renderer.context.globalAlpha = this.worldAlpha;
-
-        // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
-        if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
-        {
-            renderer.context[renderer.smoothProperty] = smoothingEnabled;
-        }
-
-        //inline GroupD8.isSwapWidthHeight
-        if ((texture.rotate & 3) === 2) {
-            width = texture.crop.height;
-            height = texture.crop.width;
-        }
-        if (texture.trim) {
-            dx = texture.crop.width/2 + texture.trim.x - this.anchor.x * texture.trim.width;
-            dy = texture.crop.height/2 + texture.trim.y - this.anchor.y * texture.trim.height;
-        } else {
-            dx = (0.5 - this.anchor.x) * texture._frame.width;
-            dy = (0.5 - this.anchor.y) * texture._frame.height;
-        }
-        if(texture.rotate) {
-            wt.copy(canvasRenderWorldTransform);
-            wt = canvasRenderWorldTransform;
-            GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
-            // the anchor has already been applied above, so lets set it to zero
-            dx = 0;
-            dy = 0;
-        }
-        dx -= width/2;
-        dy -= height/2;
-        // Allow for pixel rounding
-        if (renderer.roundPixels)
-        {
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                (wt.tx * renderer.resolution) | 0,
-                (wt.ty * renderer.resolution) | 0
-            );
-
-            dx = dx | 0;
-            dy = dy | 0;
-        }
-        else
-        {
-
-            renderer.context.setTransform(
-                wt.a,
-                wt.b,
-                wt.c,
-                wt.d,
-                wt.tx * renderer.resolution,
-                wt.ty * renderer.resolution
-            );
-
-
-        }
-
-        var resolution = texture.baseTexture.resolution;
-
-        if (this.tint !== 0xFFFFFF)
-        {
-            if (this.cachedTint !== this.tint)
-            {
-                this.cachedTint = this.tint;
-
-                // TODO clean up caching - how to clean up the caches?
-                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
-            }
-
-            renderer.context.drawImage(
-                this.tintedTexture,
-                0,
-                0,
-                width * resolution,
-                height * resolution,
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
-            );
-        }
-        else
-        {
-            renderer.context.drawImage(
-                texture.baseTexture.source,
-                texture.crop.x * resolution,
-                texture.crop.y * resolution,
-                width * resolution,
-                height * resolution,
-                dx  * renderer.resolution,
-                dy  * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
-            );
-        }
-    }
-};
 
 /**
- * Destroys this sprite and optionally its texture
+ * Destroys this sprite and optionally its texture and children
  *
- * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
- * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
+ * @param [options.texture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [options.baseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+Sprite.prototype.destroy = function (options)
 {
-    Container.prototype.destroy.call(this);
+    Container.prototype.destroy.call(this, options);
 
     this.anchor = null;
 
+    var destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
     if (destroyTexture)
     {
-        this._texture.destroy(destroyBaseTexture);
+        var destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+        this._texture.destroy(!!destroyBaseTexture);
     }
 
     this._texture = null;
@@ -531,13 +476,24 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 // some helper functions..
 
 /**
+ * Helper function that creates a new sprite based on the source you provide.
+ * The source can be - frame id, image url, video url, canvas element, video element, base texture
+ *
+ * @static
+ * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+ * @return {PIXI.Texture} The newly created texture
+ */
+Sprite.from = function (source)
+{
+    return new Sprite(Texture.from(source));
+};
+
+/**
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
  *
  * @static
  * @param frameId {string} The frame Id of the texture in the cache
- * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 Sprite.fromFrame = function (frameId)
@@ -558,6 +514,8 @@ Sprite.fromFrame = function (frameId)
  *
  * @static
  * @param imageId {string} The image url of the texture
+ * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
+ * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} if you want to specify the scale mode, see {@link PIXI.SCALE_MODES} for possible values
  * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 Sprite.fromImage = function (imageId, crossorigin, scaleMode)

@@ -7,29 +7,36 @@ var core = require('../../core'),
  * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurFilter()
+function BlurFilter(strength, quality, resolution)
 {
-    core.AbstractFilter.call(this);
+    core.Filter.call(this);
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
+    this.resolution = 1;
+
+    this.padding = 0;
+    this.resolution = resolution || 1;
+    this.quality = quality || 4;
+    this.blur = strength || 8;
 }
 
-BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
+BlurFilter.prototype = Object.create(core.Filter.prototype);
 BlurFilter.prototype.constructor = BlurFilter;
 module.exports = BlurFilter;
 
-BlurFilter.prototype.applyFilter = function (renderer, input, output)
+BlurFilter.prototype.apply = function (filterManager, input, output)
 {
-    var renderTarget = renderer.filterManager.getRenderTarget(true);
 
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-    this.blurYFilter.applyFilter(renderer, renderTarget, output);
+    var renderTarget = filterManager.getRenderTarget(true);
 
-    renderer.filterManager.returnRenderTarget(renderTarget);
+    this.blurXFilter.apply(filterManager, input, renderTarget, true);
+    this.blurYFilter.apply(filterManager, renderTarget, output, false);
+
+    filterManager.returnRenderTarget(renderTarget);
 };
 
 Object.defineProperties(BlurFilter.prototype, {
@@ -47,8 +54,8 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = Math.abs(value) * 0.5;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     },
 
@@ -59,14 +66,15 @@ Object.defineProperties(BlurFilter.prototype, {
      * @memberof PIXI.filters.BlurYFilter#
      * @default 1
      */
-    passes: {
+    quality: {
         get: function ()
         {
-            return  this.blurXFilter.passes;
+            return  this.blurXFilter.quality;
         },
         set: function (value)
         {
-            this.blurXFilter.passes = this.blurYFilter.passes = value;
+
+            this.blurXFilter.quality = this.blurYFilter.quality = value;
         }
     },
 
@@ -85,6 +93,7 @@ Object.defineProperties(BlurFilter.prototype, {
         set: function (value)
         {
             this.blurXFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     },
 
@@ -103,6 +112,7 @@ Object.defineProperties(BlurFilter.prototype, {
         set: function (value)
         {
             this.blurYFilter.blur = value;
+            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
         }
     }
 });

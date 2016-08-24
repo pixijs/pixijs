@@ -1,11 +1,10 @@
 Pixi.js — A 2D JavaScript Renderer
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
 
-[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
 
-## Pixi.js ##
+
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
@@ -21,6 +20,8 @@ as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
+[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
+
 ### What to Use Pixi.js for and When to Use It
 
 Pixi.js is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
@@ -28,6 +29,30 @@ Pixi.js is a rendering library that will allow you to create rich, interactive g
 Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, Pixi.js is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degredation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some Pixi.js magic!
 
 **Boost your development and feel free to use your imagination!**
+
+### Installation ###
+
+Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [NPM](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page. 
+
+#### Bower Install
+
+```
+$> bower install pixi.js
+```
+
+#### NPM Install
+
+```
+$> npm install pixi.js
+```
+
+#### CDN Install (via cdnjs)
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js"></script>
+```
+_Note: `3.0.11` can be replaced any [released](/pixijs/pixi.js/releases) version._
+
 
 ### Demos ###
 
@@ -96,7 +121,6 @@ document.body.appendChild(renderer.view);
 // You need to create a root container that will hold the scene you want to draw.
 var stage = new PIXI.Container();
 
-
 // Declare a global variable for our sprite so that the animate function can access it.
 var bunny = null;
 
@@ -137,14 +161,8 @@ Note that for most users you don't need to build this project. If all you want i
 just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
 the only time you should need to build pixi.js is if you are developing it.
 
-If you don't already have Node.js and NPM, go install them. Once you do, you can then install the gulp
-executable:
-
-```
-$> npm install -g gulp
-```
-
-Then, in the folder where you have cloned the repository, install the build dependencies using npm:
+If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned 
+the repository, install the build dependencies using npm:
 
 ```
 $> npm install
@@ -153,7 +171,7 @@ $> npm install
 Then, to build the source, run:
 
 ```
-$> gulp build
+$> npm run build
 ```
 
 This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
@@ -162,13 +180,13 @@ with all the plugins in the pixi.js project.
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> gulp build --exclude extras --exclude interaction
+$> npm run build -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> gulp build -e extras -e interaction -e filters
+$> npm run build -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
@@ -179,14 +197,7 @@ The docs can be generated using npm:
 $> npm run docs
 ```
 
-There is also a gulp task to generate them if you want to:
-
-```
-$> gulp jsdoc
-```
-
-The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration
-file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/pixijs/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
+The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
 
 ### License ###
 

@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI.interaction
+ * @namespace PIXI.AccessibilityManager
  */
 module.exports = {
     accessibleTarget:     require('./accessibleTarget'),

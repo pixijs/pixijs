@@ -1,6 +1,5 @@
 var core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-var fs = require('fs');
+var glslify  = require('glslify');
 
 /**
  * @author Vico @vicocotea
@@ -11,24 +10,22 @@ var fs = require('fs');
  * A Noise effect filter.
  *
  * @class
- * @extends PIXI.AbstractFilter
+ * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 function NoiseFilter()
 {
-    core.AbstractFilter.call(this,
+    core.Filter.call(this,
         // vertex shader
-        null,
+        glslify('../fragments/default.vert'),
         // fragment shader
-        fs.readFileSync(__dirname + '/noise.frag', 'utf8'),
-        // custom uniforms
-        {
-            noise: { type: '1f', value: 0.5 }
-        }
+        glslify('./noise.frag')
     );
+
+    this.noise = 0.5;
 }
 
-NoiseFilter.prototype = Object.create(core.AbstractFilter.prototype);
+NoiseFilter.prototype = Object.create(core.Filter.prototype);
 NoiseFilter.prototype.constructor = NoiseFilter;
 module.exports = NoiseFilter;
 
@@ -43,11 +40,11 @@ Object.defineProperties(NoiseFilter.prototype, {
     noise: {
         get: function ()
         {
-            return this.uniforms.noise.value;
+            return this.uniforms.noise;
         },
         set: function (value)
         {
-            this.uniforms.noise.value = value;
+            this.uniforms.noise = value;
         }
     }
 });

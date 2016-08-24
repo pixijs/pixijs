@@ -1,8 +1,5 @@
-var math = require('../math'),
-    utils = require('../utils'),
-    DisplayObject = require('./DisplayObject'),
-    RenderTexture = require('../textures/RenderTexture'),
-    _tempMatrix = new math.Matrix();
+var utils = require('../utils'),
+    DisplayObject = require('./DisplayObject');
 
 /**
  * A Container represents a collection of display objects.
@@ -103,14 +100,14 @@ Object.defineProperties(Container.prototype, {
 Container.prototype.onChildrenChange = function () {};
 
 /**
- * Adds a child to the container.
- * 
- * You can also add multple items like so: myContainer.addChild(thinkOne, thingTwo, thingThree)
- * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
- * @return {PIXI.DisplayObject} The child that was added.
+ * Adds a child or multiple children to the container.
+ *
+ * Multple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
+ * @param child {...PIXI.DisplayObject} The DisplayObject(s) to add to the container
+ * @return {PIXI.DisplayObject} The first child that was added.
  */
 Container.prototype.addChild = function (child)
-{ 
+{
     var argumentsLength = arguments.length;
 
     // if there is only one argument we can bypass looping through the them
@@ -122,7 +119,7 @@ Container.prototype.addChild = function (child)
         {
             this.addChild( arguments[i] );
         }
-    }     
+    }
     else
     {
         // if the child has a parent then lets remove it as Pixi objects can only exist in one place
@@ -132,7 +129,10 @@ Container.prototype.addChild = function (child)
         }
 
         child.parent = this;
-        
+
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
+
         this.children.push(child);
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -178,8 +178,8 @@ Container.prototype.addChildAt = function (child, index)
 /**
  * Swaps the position of 2 Display Objects within this container.
  *
- * @param child {PIXI.DisplayObject}
- * @param child2 {PIXI.DisplayObject}
+ * @param child {PIXI.DisplayObject} First display object to swap
+ * @param child2 {PIXI.DisplayObject} Second display object to swap
  */
 Container.prototype.swapChildren = function (child, child2)
 {
@@ -318,8 +318,8 @@ Container.prototype.removeChildAt = function (index)
 /**
  * Removes all children from this container that are within the begin and end indexes.
  *
- * @param beginIndex {number} The beginning position. Default value is 0.
- * @param endIndex {number} The ending position. Default value is size of the container.
+ * @param [beginIndex=0] {number} The beginning position.
+ * @param [endIndex=this.children.length] {number} The ending position. Default value is size of the container.
  */
 Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
@@ -356,29 +356,6 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     }
 };
 
-/**
- * Useful function that returns a texture of the display object that can then be used to create sprites
- * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
- *
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used to generate the texture.
- * @param resolution {number} The resolution of the texture being generated
- * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
- * @return {PIXI.Texture} a texture of the display object
- */
-Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
-{
-    var bounds = this.getLocalBounds();
-
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, scaleMode, resolution);
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    renderTexture.render(this, _tempMatrix);
-
-    return renderTexture;
-};
-
 /*
  * Updates the transform on all children of this container for rendering
  *
@@ -386,12 +363,17 @@ Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
  */
 Container.prototype.updateTransform = function ()
 {
+    this._boundsID++;
+
     if (!this.visible)
     {
         return;
     }
 
-    this.displayObjectUpdateTransform();
+    this.transform.updateTransform(this.parent.transform);
+
+    //TODO: check render flags, how to process stuff here
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -402,103 +384,33 @@ Container.prototype.updateTransform = function ()
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-/**
- * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
- *
- * @return {PIXI.Rectangle} The rectangular bounding area
- */
-Container.prototype.getBounds = function ()
+
+Container.prototype.calculateBounds = function ()
 {
-    if(!this._currentBounds)
+    this._bounds.clear();
+
+    if(!this.visible)
     {
-
-        if (this.children.length === 0)
-        {
-            return math.Rectangle.EMPTY;
-        }
-
-        // TODO the bounds have already been calculated this render session so return what we have
-
-        var minX = Infinity;
-        var minY = Infinity;
-
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var childBounds;
-        var childMaxX;
-        var childMaxY;
-
-        var childVisible = false;
-
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            var child = this.children[i];
-
-            if (!child.visible)
-            {
-                continue;
-            }
-
-            childBounds = this.children[i].getBounds();
-            if (childBounds === math.Rectangle.EMPTY) {
-                continue;
-            }
-            childVisible = true;
-
-            minX = minX < childBounds.x ? minX : childBounds.x;
-            minY = minY < childBounds.y ? minY : childBounds.y;
-
-            childMaxX = childBounds.width + childBounds.x;
-            childMaxY = childBounds.height + childBounds.y;
-
-            maxX = maxX > childMaxX ? maxX : childMaxX;
-            maxY = maxY > childMaxY ? maxY : childMaxY;
-        }
-
-        if (!childVisible)
-        {
-            this._currentBounds = math.Rectangle.EMPTY;
-            return this._currentBounds;
-        }
-
-        var bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-
-        this._currentBounds = bounds;
+        return;
     }
 
-    return this._currentBounds;
+    this._calculateBounds();
+
+    for (var i = 0; i < this.children.length; i++)
+    {
+        var child = this.children[i];
+
+        child.calculateBounds();
+
+        this._bounds.addBounds(child._bounds);
+    }
+
+    this._boundsID = this._lastBoundsID;
 };
 
-Container.prototype.containerGetBounds = Container.prototype.getBounds;
-
-/**
- * Retrieves the non-global local bounds of the Container as a rectangle.
- * The calculation takes all visible children into consideration.
- *
- * @return {PIXI.Rectangle} The rectangular bounding area
- */
-Container.prototype.getLocalBounds = function ()
+Container.prototype._calculateBounds = function ()
 {
-    var matrixCache = this.worldTransform;
-
-    this.worldTransform = math.Matrix.IDENTITY;
-
-    for (var i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].updateTransform();
-    }
-
-    this.worldTransform = matrixCache;
-
-    this._currentBounds = null;
-
-    return this.getBounds( math.Matrix.IDENTITY );
+    //FILL IN//
 };
 
 /**
@@ -512,62 +424,89 @@ Container.prototype.renderWebGL = function (renderer)
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
+
         return;
     }
 
-    var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters)
     {
-        renderer.currentRenderer.flush();
-
-        // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters && this._filters.length)
-        {
-            renderer.filterManager.pushFilter(this, this._filters);
-        }
-
-        if (this._mask)
-        {
-            renderer.maskManager.pushMask(this, this._mask);
-        }
-
-        renderer.currentRenderer.start();
-
-        // add this object to the batch, only rendered if it has a texture.
-        this._renderWebGL(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
-
-        renderer.currentRenderer.flush();
-
-        if (this._mask)
-        {
-            renderer.maskManager.popMask(this, this._mask);
-        }
-
-        if (this._filters)
-        {
-            renderer.filterManager.popFilter();
-
-        }
-        renderer.currentRenderer.start();
+        this.renderAdvancedWebGL(renderer);
     }
     else
     {
         this._renderWebGL(renderer);
 
         // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i)
+        for (var i = 0, j = this.children.length; i < j; ++i)
         {
             this.children[i].renderWebGL(renderer);
         }
     }
+};
+
+Container.prototype.renderAdvancedWebGL = function (renderer)
+{
+    renderer.currentRenderer.flush();
+
+    var filters = this._filters;
+    var mask = this._mask;
+    var i, j;
+
+    // push filter first as we need to ensure the stencil buffer is correct for any masking
+    if ( filters )
+    {
+        if(!this._enabledFilters)
+        {
+            this._enabledFilters = [];
+        }
+
+        this._enabledFilters.length = 0;
+
+        for (i = 0; i < filters.length; i++)
+        {
+            if(filters[i].enabled)
+            {
+                this._enabledFilters.push( filters[i] );
+            }
+        }
+
+        if( this._enabledFilters.length )
+        {
+            renderer.filterManager.pushFilter(this, this._enabledFilters);
+        }
+    }
+
+    if ( mask )
+    {
+        renderer.maskManager.pushMask(this, this._mask);
+    }
+
+    renderer.currentRenderer.start();
+
+    // add this object to the batch, only rendered if it has a texture.
+    this._renderWebGL(renderer);
+
+    // now loop through the children and make sure they get rendered
+    for (i = 0, j = this.children.length; i < j; i++)
+    {
+        this.children[i].renderWebGL(renderer);
+    }
+
+    renderer.currentRenderer.flush();
+
+    if ( mask )
+    {
+        renderer.maskManager.popMask(this, this._mask);
+    }
+
+    if ( filters && this._enabledFilters && this._enabledFilters.length )
+    {
+        renderer.filterManager.popFilter();
+    }
+
+    renderer.currentRenderer.start();
 };
 
 /**
@@ -608,7 +547,7 @@ Container.prototype.renderCanvas = function (renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask, renderer);
+        renderer.maskManager.pushMask(this._mask);
     }
 
     this._renderCanvas(renderer);
@@ -624,22 +563,28 @@ Container.prototype.renderCanvas = function (renderer)
 };
 
 /**
- * Destroys the container
- * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ * Removes all internal references and listeners as well as removes children from the display list. 
+ * Do not use a Container after calling `destroy`.
+ * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
+ * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
+ *      method called as well. 'options' will be passed on to those calls.
  */
-Container.prototype.destroy = function (destroyChildren)
+Container.prototype.destroy = function (options)
 {
     DisplayObject.prototype.destroy.call(this);
 
+    var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+
+    var oldChildren = this.children;
+    this.children = null;
+
     if (destroyChildren)
     {
-        for (var i = 0, j = this.children.length; i < j; ++i)
+        for (var i = oldChildren.length - 1; i >= 0; i--)
         {
-            this.children[i].destroy(destroyChildren);
+            var child = oldChildren[i];
+            child.parent = null;
+            child.destroy(options);
         }
     }
-
-    this.removeChildren();
-
-    this.children = null;
 };

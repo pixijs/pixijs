@@ -90,7 +90,7 @@ function Ticker()
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
      *
-     * @member {DOMHighResTimeStamp|number}
+     * @member {number}
      * @default 1 / TARGET_FPMS
      */
     this.elapsedMS = 1 / CONST.TARGET_FPMS; // default to target frame time
@@ -102,7 +102,7 @@ function Ticker()
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
      *
-     * @member {DOMHighResTimeStamp|number}
+     * @member {number}
      * @default 0
      */
     this.lastTime = 0;
@@ -141,7 +141,6 @@ Object.defineProperties(Ticker.prototype, {
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
@@ -160,7 +159,6 @@ Object.defineProperties(Ticker.prototype, {
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.TARGET_FPMS * 1000`.
      *
-     * @member
      * @memberof PIXI.ticker.Ticker#
      * @default 10
      */
@@ -238,7 +236,7 @@ Ticker.prototype._startIfPossible = function _startIfPossible()
  *
  * @param fn {Function} The listener function to be added for updates
  * @param [context] {Function} The listener context
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.add = function add(fn, context)
 {
@@ -256,7 +254,7 @@ Ticker.prototype.add = function add(fn, context)
  *
  * @param fn {Function} The listener function to be added for one update
  * @param [context] {Function} The listener context
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.addOnce = function addOnce(fn, context)
 {
@@ -274,7 +272,7 @@ Ticker.prototype.addOnce = function addOnce(fn, context)
  *
  * @param [fn] {Function} The listener function to be removed
  * @param [context] {Function} The listener context to be removed
- * @returns {PIXI.ticker.Ticker} this
+ * @returns {PIXI.ticker.Ticker} This instance of a ticker
  */
 Ticker.prototype.remove = function remove(fn, context)
 {
@@ -325,7 +323,7 @@ Ticker.prototype.stop = function stop()
  * frame callbacks if the ticker instance has been started
  * and listeners are added.
  *
- * @param [currentTime=performance.now()] {DOMHighResTimeStamp|number} the current time of execution
+ * @param [currentTime=performance.now()] {number} the current time of execution
  */
 Ticker.prototype.update = function update(currentTime)
 {
@@ -333,19 +331,42 @@ Ticker.prototype.update = function update(currentTime)
 
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
-    // Save uncapped elapsedMS for measurement
-    elapsedMS = this.elapsedMS = currentTime - this.lastTime;
 
-    // cap the milliseconds elapsed used for deltaTime
-    if (elapsedMS > this._maxElapsedMS)
+    // If the difference in time is zero or negative, we ignore most of the work done here.
+    // If there is no valid difference, then should be no reason to let anyone know about it.
+    // A zero delta, is exactly that, nothing should update.
+    //
+    // The difference in time can be negative, and no this does not mean time traveling.
+    // This can be the result of a race condition between when an animation frame is requested
+    // on the current JavaScript engine event loop, and when the ticker's start method is invoked
+    // (which invokes the internal _requestIfNeeded method). If a frame is requested before
+    // _requestIfNeeded is invoked, then the callback for the animation frame the ticker requests,
+    // can receive a time argument that can be less than the lastTime value that was set within
+    // _requestIfNeeded. This difference is in microseconds, but this is enough to cause problems.
+    //
+    // This check covers this browser engine timing issue, as well as if consumers pass an invalid
+    // currentTime value. This may happen if consumers opt-out of the autoStart, and update themselves.
+
+    if (currentTime > this.lastTime)
     {
-        elapsedMS = this._maxElapsedMS;
+        // Save uncapped elapsedMS for measurement
+        elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+
+        // cap the milliseconds elapsed used for deltaTime
+        if (elapsedMS > this._maxElapsedMS)
+        {
+            elapsedMS = this._maxElapsedMS;
+        }
+
+        this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
+
+        // Invoke listeners added to internal emitter
+        this._emitter.emit(TICK, this.deltaTime);
     }
-
-    this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
-
-    // Invoke listeners added to internal emitter
-    this._emitter.emit(TICK, this.deltaTime);
+    else
+    {
+        this.deltaTime = this.elapsedMS = 0;
+    }
 
     this.lastTime = currentTime;
 };

@@ -20,10 +20,11 @@ var ResourceLoader = require('resource-loader'),
  * ```
  *
  * @class
- * @extends PIXI.ResourceLoader
+ * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
  * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
  * @param [concurrency=10] {number} The number of resources to load concurrently.
+ * @see https://github.com/englercj/resource-loader
  */
 function Loader(baseUrl, concurrency)
 {
