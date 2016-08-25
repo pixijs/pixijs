@@ -578,7 +578,7 @@ Container.prototype.destroy = function (options)
     var oldChildren = this.children;
     this.children = null;
 
-    if (destroyChildren)
+    if (destroyChildren && oldChildren)
     {
         for (var i = oldChildren.length - 1; i >= 0; i--)
         {
