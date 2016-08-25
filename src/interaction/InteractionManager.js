@@ -561,8 +561,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     {
         var children = displayObject.children;
 
-        // its a good idea to check if a child still exists at this point.
-        // it could have been removed whilst looping
+        // its a good idea to check if children still exists at this point.
+        // it could have been destroyed whilst looping
         if (children)
         {
             for (var i = children.length-1; i >= 0; i--)
