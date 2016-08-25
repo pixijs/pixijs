@@ -560,34 +560,38 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     if(displayObject.interactiveChildren)
     {
         var children = displayObject.children;
-
-        for (var i = children.length-1; i >= 0; i--)
+        // its a good idea to check if a child still exists at this point.
+        // it could have been removed whilst looping
+        if (children)
         {
-            var child = children[i];
+           for (var i = children.length-1; i >= 0; i--)
+           {
+                var child = children[i];
 
-            // time to get recursive.. if this function will return if somthing is hit..
-            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
-            {
-                // its a good idea to check if a child has lost its parent.
-                // this means it has been removed whilst looping so its best
-                if(!child.parent)
+                // time to get recursive.. if this function will return if somthing is hit..
+                if(this.processInteractive(point, child, func, hitTest, interactiveParent))
                 {
-                    continue;
+                    // its a good idea to check if a child has lost its parent.
+                    // this means it has been removed whilst looping so its best
+                    if(!child.parent)
+                    {
+                        continue;
+                    }
+    
+                    hit = true;
+    
+                    // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
+                    interactiveParent = false;
+    
+                    // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
+                    // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
+    
+                    //{
+                    hitTest = false;
+                    //}
+    
+                    // we can break now as we have hit an object.
                 }
-
-                hit = true;
-
-                // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
-                interactiveParent = false;
-
-                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
-                // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-
-                //{
-                hitTest = false;
-                //}
-
-                // we can break now as we have hit an object.
             }
         }
     }
