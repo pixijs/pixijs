@@ -140,9 +140,9 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture.orig.height;
+            this._height = value;
         }
     },
 

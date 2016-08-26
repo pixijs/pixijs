@@ -49,5 +49,23 @@ describe('PIXI.Text', function () {
             text.destroy({children: true, texture: true});
             expect(childDestroyOpts).to.deep.equal({children: true, texture: true, baseTexture:true});
         });
+
+        it('should modify the height of the object when setting height', function () {
+
+             var text = new PIXI.Text("foo");
+             text.height = 300;
+
+             expect(text.height).to.equal(300);
+
+        });
+
+        it('should modify the width of the object when setting width', function () {
+
+             var text = new PIXI.Text("foo");
+             text.width = 300;
+
+             expect(text.width).to.equal(300);
+
+        });
     });
 });
