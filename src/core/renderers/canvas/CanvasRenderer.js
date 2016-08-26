@@ -38,7 +38,6 @@ function CanvasRenderer(width, height, options)
      * @member {CanvasRenderingContext2D}
      */
     this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
-    this.rootResolution = this.resolution;
 
     /**
      * Boolean flag controlling canvas refresh.
@@ -139,7 +138,6 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     {
 
         this.context = this.rootContext;
-        this.resolution = this.rootResolution;
     }
 
     var context = this.context;

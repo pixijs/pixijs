@@ -74,7 +74,6 @@ CanvasExtract.prototype.canvas = function ( target )
     else
     {
         context = renderer.rootContext;
-        resolution = renderer.rootResolution;
 
         frame = tempRect;
         frame.width = this.renderer.width;
@@ -127,7 +126,6 @@ CanvasExtract.prototype.pixels = function ( target )
     else
     {
         context = renderer.rootContext;
-        resolution = renderer.rootResolution;
 
         frame = tempRect;
         frame.width = renderer.width;
