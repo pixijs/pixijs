@@ -432,7 +432,7 @@ Text.prototype.updateTexture = function ()
     texture.trim.x = -style.padding;
     texture.trim.y = -style.padding;
 
-    texture.orig.width = texture._frame.width;
+    texture.orig.width = texture._frame.width- style.padding*2;
     texture.orig.height = texture._frame.height - style.padding*2;
 
     //call sprite onTextureUpdate to update scale if _width or _height were set
