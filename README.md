@@ -51,7 +51,7 @@ $> npm install pixi.js
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js"></script>
 ```
-_Note: `3.0.11` can be replaced any [released](/pixijs/pixi.js/releases) version._
+_Note: `3.0.11` can be replaced by any [released](/pixijs/pixi.js/releases) version._
 
 
 ### Demos ###
