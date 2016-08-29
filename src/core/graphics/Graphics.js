@@ -5,12 +5,15 @@ var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
+    utils = require('../utils'),
     Bounds = require('../display/Bounds'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
     tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    tempColor1 = new Float32Array(4),
+    tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -736,7 +739,18 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
     }
-    this._spriteRect.tint = this.graphicsData[0].fillColor;
+    if (this.tint === 0xffffff) {
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    } else {
+        var t1 = tempColor1;
+        var t2 = tempColor2;
+        utils.hex2rgb(this.graphicsData[0].fillColor, t1);
+        utils.hex2rgb(this.tint, t2);
+        t1[0] *= t2[0];
+        t1[1] *= t2[1];
+        t1[2] *= t2[2];
+        this._spriteRect.tint = utils.rgb2hex(t1);
+    }
     this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
