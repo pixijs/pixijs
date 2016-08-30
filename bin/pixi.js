@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v4.0.0
- * Compiled Tue Aug 30 2016 18:43:41 GMT+0100 (BST)
+ * Compiled Tue Aug 30 2016 21:39:07 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -4701,25 +4701,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -4740,6 +4755,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -10691,12 +10711,15 @@ var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
+    utils = require('../utils'),
     Bounds = require('../display/Bounds'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
     tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    tempColor1 = new Float32Array(4),
+    tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -11422,7 +11445,18 @@ Graphics.prototype._renderSpriteRect = function (renderer)
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
     }
-    this._spriteRect.tint = this.graphicsData[0].fillColor;
+    if (this.tint === 0xffffff) {
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    } else {
+        var t1 = tempColor1;
+        var t2 = tempColor2;
+        utils.hex2rgb(this.graphicsData[0].fillColor, t1);
+        utils.hex2rgb(this.tint, t2);
+        t1[0] *= t2[0];
+        t1[1] *= t2[1];
+        t1[2] *= t2[2];
+        this._spriteRect.tint = utils.rgb2hex(t1);
+    }
     this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
@@ -11725,7 +11759,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":78,"../display/Bounds":79,"../display/Container":80,"../math":102,"../renderers/canvas/CanvasRenderer":109,"../sprites/Sprite":133,"../textures/RenderTexture":143,"../textures/Texture":144,"./GraphicsData":86,"./utils/bezierCurveTo":88}],86:[function(require,module,exports){
+},{"../const":78,"../display/Bounds":79,"../display/Container":80,"../math":102,"../renderers/canvas/CanvasRenderer":109,"../sprites/Sprite":133,"../textures/RenderTexture":143,"../textures/Texture":144,"../utils":151,"./GraphicsData":86,"./utils/bezierCurveTo":88}],86:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -15523,6 +15557,24 @@ CanvasRenderTarget.prototype.destroy = function ()
 
 },{"../../../const":78}],112:[function(require,module,exports){
 
+
+/**
+ * Creates a little colored canvas
+ * @return {canvas} a small canvas element
+ */
+var createColoredCanvas = function(color)
+{
+    var canvas = document.createElement('canvas');
+    canvas.width = 6;
+    canvas.height = 1;
+
+    var context = canvas.getContext('2d');
+    context.fillStyle = color;
+    context.fillRect(0,0,6,1);
+    return canvas;
+};
+
+
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
  *
@@ -15535,14 +15587,8 @@ var canUseNewCanvasBlendModes = function ()
         return false;
     }
 
-    var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
-    var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
-
-    var magenta = new Image();
-    magenta.src = pngHead + 'AP804Oa6' + pngEnd;
-
-    var yellow = new Image();
-    yellow.src = pngHead + '/wCKxvRF' + pngEnd;
+    var magenta = createColoredCanvas('#ff00ff');
+    var yellow = createColoredCanvas('#ffff00');
 
     var canvas = document.createElement('canvas');
     canvas.width = 6;
@@ -15554,16 +15600,17 @@ var canUseNewCanvasBlendModes = function ()
     context.drawImage(yellow, 2, 0);
 
     var imageData = context.getImageData(2,0,1,1);
-    
+
     if (!imageData)
     {
         return false;
     }
-    
+
     var data = imageData.data;
-    
+
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
 };
+
 
 module.exports = canUseNewCanvasBlendModes;
 
@@ -22808,6 +22855,12 @@ VideoBaseTexture.prototype._onUpdate = function ()
  */
 VideoBaseTexture.prototype._onPlayStart = function ()
 {
+    // Just in case the video has not recieved its can play even yet..
+    if(!this.hasLoaded)
+    {
+        this._onCanPlay();
+    }
+
     if (!this.autoUpdate)
     {
         window.requestAnimationFrame(this._onUpdate);
