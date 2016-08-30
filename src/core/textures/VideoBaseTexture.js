@@ -95,6 +95,12 @@ VideoBaseTexture.prototype._onUpdate = function ()
  */
 VideoBaseTexture.prototype._onPlayStart = function ()
 {
+    // Just in case the video has not recieved its can play even yet..
+    if(!this.hasLoaded)
+    {
+        this._onCanPlay();
+    }
+
     if (!this.autoUpdate)
     {
         window.requestAnimationFrame(this._onUpdate);
