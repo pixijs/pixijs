@@ -75,6 +75,7 @@ those last 2 examples and allowing us to share the source code :)
 
 ### Resources ###
 
+- Learning Pixi - a brilliant guide [here](https://github.com/kittykatattack/learningPixi)
 - API Documentation is [here](http://pixijs.github.io/docs).
 - Feature Examples are [here](https://pixijs.github.io/examples).
 - The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
