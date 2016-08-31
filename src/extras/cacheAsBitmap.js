@@ -137,6 +137,10 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
         return;
     }
 
+    // make sure alpha is set to 1 otherwise it will get rendered as invisible!
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
     //this.filters= [];
@@ -149,11 +153,8 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     if(this._filters)
     {
         var padding = this._filters[0].padding;
-        bounds.x -= padding;
-        bounds.y -= padding;
 
-        bounds.width += padding * 2;
-        bounds.height += padding * 2;
+        bounds.pad(padding);
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
@@ -177,6 +178,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._cacheData.originalRenderWebGL;
 
+
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
 
@@ -196,6 +198,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite.alpha = cacheAlpha;
 
     this._cacheData.sprite = cachedSprite;
 
