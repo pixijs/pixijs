@@ -24,10 +24,8 @@ core.prepare        = require('./prepare');
  */
 core.loader = new core.loaders.Loader();
 
-// @if DEBUG
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
-// @endif
 
 // Always export pixi globally.
 global.PIXI = core;
