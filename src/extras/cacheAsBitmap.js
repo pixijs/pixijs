@@ -270,7 +270,6 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this.updateTransform = this.displayObjectUpdateTransform;
     this.getBounds  = this._getCachedBounds;
 
     this._mask = null;
@@ -283,6 +282,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
     this.updateTransform();
+    this.updateTransform = this.displayObjectUpdateTransform;
 
     this._cacheData.sprite = cachedSprite;
 
