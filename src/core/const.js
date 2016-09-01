@@ -198,7 +198,7 @@ var CONST = {
      * @property {number} MANUAL - Garbage collection will need to be called manually
      */
     GC_MODES: {
-        DEFAULT:        1,
+        DEFAULT:        0,
         AUTO:           0,
         MANUAL:         1,
     },
