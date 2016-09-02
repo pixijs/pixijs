@@ -177,7 +177,7 @@ function Graphics()
      */
 }
 
-Graphics._SPRITE_TEXTURE = null;
+Graphics._SPRITE_TEXTURES = [];
 
 // constructor
 Graphics.prototype = Object.create(Container.prototype);
@@ -727,17 +727,17 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     var rect = this.graphicsData[0].shape;
     if(!this._spriteRect)
     {
-        if(!Graphics._SPRITE_TEXTURE)
+        if(!Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID])
         {
-            Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+            Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID] = RenderTexture.create(10, 10);
 
             var currentRenderTarget = renderer._activeRenderTarget;
-            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
+            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID]);
             renderer.clear([1,1,1,1]);
             renderer.bindRenderTarget(currentRenderTarget);
         }
 
-        this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
+        this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID]);
     }
     if (this.tint === 0xffffff) {
         this._spriteRect.tint = this.graphicsData[0].fillColor;
@@ -754,8 +754,8 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
-    Graphics._SPRITE_TEXTURE._frame.width = rect.width;
-    Graphics._SPRITE_TEXTURE._frame.height = rect.height;
+    Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID]._frame.width = rect.width;
+    Graphics._SPRITE_TEXTURES[renderer.CONTEXT_UID]._frame.height = rect.height;
 
     this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
