@@ -12,6 +12,8 @@ var CacheData = function(){
 
     this.originalRenderWebGL = null;
     this.originalRenderCanvas = null;
+    this.originalCalculateBounds = null;
+    this.originalGetLocalBounds = null;
 
     this.originalUpdateTransform = null;
     this.originalHitTest = null;
@@ -62,7 +64,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
-                data.originalGetBounds = this.getBounds;
+                data.originalCalculateBounds = this._calculateBounds;
+                data.originalGetLocalBounds = this.getLocalBounds;
 
                 data.originalDestroy = this.destroy;
 
@@ -91,7 +94,8 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = data.originalRenderWebGL;
                 this.renderCanvas = data.originalRenderCanvas;
-                this.getBounds = data.originalGetBounds;
+                this._calculateBounds = data.originalCalculateBounds;
+                this.getLocalBounds = data.originalGetLocalBounds;
 
                 this.destroy = data.originalDestroy;
 
@@ -188,7 +192,6 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this.renderWebGL     = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds       = this._getCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -199,6 +202,10 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
     cachedSprite.alpha = cacheAlpha;
+
+    //easy bounds..
+    this._calculateBounds  = this._getCachedBounds;
+    this.getLocalBounds  = this._getCachedLocalBounds;
 
     this._cacheData.sprite = cachedSprite;
 
@@ -270,7 +277,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this.getBounds  = this._getCachedBounds;
+    this._calculateBounds  = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -294,11 +301,14 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 *
 * @private
 */
-DisplayObject.prototype._getCachedBounds = function ()
+DisplayObject.prototype._calculateCachedBounds = function ()
 {
-    this._cacheData.sprite._currentBounds = null;
+    return this._cacheData.sprite._calculateBounds();
+};
 
-    return this._cacheData.sprite.getBounds();
+DisplayObject.prototype._getCachedLocalBounds = function ()
+{
+    return this._cacheData.sprite.getLocalBounds();
 };
 
 /**
