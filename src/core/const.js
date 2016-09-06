@@ -200,7 +200,7 @@ var CONST = {
     GC_MODES: {
         DEFAULT:        1,
         AUTO:           0,
-        MANUAL:         1,
+        MANUAL:         1
     },
 
     /**

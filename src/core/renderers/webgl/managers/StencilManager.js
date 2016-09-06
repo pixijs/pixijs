@@ -9,6 +9,7 @@ function StencilManager(renderer)
 {
     WebGLManager.call(this, renderer);
     this.stencilMaskStack = null;
+    this.currentStencilTest = false;
 }
 
 StencilManager.prototype = Object.create(WebGLManager.prototype);
@@ -28,11 +29,19 @@ StencilManager.prototype.setMaskStack = function ( stencilMaskStack )
 
     if (stencilMaskStack.length === 0)
     {
-        gl.disable(gl.STENCIL_TEST);
+        if (this.currentStencilTest)
+        {
+            gl.disable(gl.STENCIL_TEST);
+            this.currentStencilTest = false;
+        }
     }
     else
     {
-        gl.enable(gl.STENCIL_TEST);
+        if (!this.currentStencilTest)
+        {
+            gl.enable(gl.STENCIL_TEST);
+            this.currentStencilTest = true;
+        }
     }
 };
 
