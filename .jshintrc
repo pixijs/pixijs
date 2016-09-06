@@ -34,6 +34,7 @@
     "maxparams"     : 8,        // Prohibit having more than X number of params in a function.
     "maxdepth"      : 8,        // Prohibit nested blocks from going more than X levels deep.
     "maxlen"        : 220,      // Require that all lines are 100 characters or less.
+    "esversion"     : 6,        // ECMAScript 2015 syntax allowed
     "globals"       : {         // Register globals that are used in the code.
         "performance": false   // Depends on polyfill, simplifies usage
     },
