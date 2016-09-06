@@ -158,11 +158,9 @@ function WebGLRenderer(width, height, options)
      */
     this._activeRenderTarget = null;
     this._activeTextureLocation = 999;
-    this._activeTexture = null;
+    this._activeTextures = [];
 
     this.setBlendMode(0);
-
-
 }
 
 // constructor
@@ -358,20 +356,22 @@ WebGLRenderer.prototype.bindRenderTexture = function (renderTexture, transform)
 
         if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
         {
-
             this.textureManager.updateTexture(baseTexture);
-            gl.bindTexture(gl.TEXTURE_2D, null);
         }
         else
         {
-            // the texture needs to be unbound if its being rendererd too..
-            this._activeTextureLocation = baseTexture._id;
-            gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
-            gl.bindTexture(gl.TEXTURE_2D, null);
+            // the texture needs to be unbound if its being rendered to..
+            if(this._activeTextureLocation !== baseTexture._id)
+            {
+                this._activeTextureLocation = baseTexture._id;
+                gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
+            }
         }
 
+        baseTexture._glTextures[this.CONTEXT_UID].isBound = false;
+        gl.bindTexture(gl.TEXTURE_2D, null);
 
-        renderTarget =  baseTexture._glRenderTargets[this.CONTEXT_UID];
+        renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
         renderTarget.setFrame(renderTexture.frame);
     }
     else
@@ -439,25 +439,34 @@ WebGLRenderer.prototype.bindTexture = function (texture, location)
 {
     texture = texture.baseTexture || texture;
 
-    var gl = this.gl;
-
     //TODO test perf of cache?
     location = location || 0;
 
-    if(this._activeTextureLocation !== location)//
+    var current = this._activeTextures[location];
+    if(current)
     {
-        this._activeTextureLocation = location;
-        gl.activeTexture(gl.TEXTURE0 + location );
+        if(current === texture)
+        {
+            return this;
+        }
+
+        current._glTextures[this.CONTEXT_UID].isBound = false;
     }
 
-    //TODO - can we cache this texture too?
-    this._activeTexture = texture;
+    this._activeTextures[location] = texture;
 
-    if (!texture._glTextures[this.CONTEXT_UID])
+    var gl = this.gl;
+
+    if(this._activeTextureLocation !== location)
+    {
+        this._activeTextureLocation = location;
+        gl.activeTexture(gl.TEXTURE0 + location);
+    }
+
+    if(!texture._glTextures[this.CONTEXT_UID])
     {
         // this will also bind the texture..
         this.textureManager.updateTexture(texture);
-
     }
     else
     {
@@ -483,8 +492,20 @@ WebGLRenderer.prototype.reset = function ()
 
     this._activeShader = null;
     this._activeRenderTarget = this.rootRenderTarget;
+
+    for(var i = 0; i < this._activeTextures.length; i++)
+    {
+        if(this._activeTextures[i])
+        {
+            this.gl.activeTexture(this.gl.TEXTURE0 + i);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+
+            this._activeTextures[i]._glTextures[this.CONTEXT_UID].isBound = false;
+            this._activeTextures[i] = null;
+        }
+    }
+
     this._activeTextureLocation = 999;
-    this._activeTexture = null;
 
     // bind the main frame buffer (the screen);
     this.rootRenderTarget.activate();
