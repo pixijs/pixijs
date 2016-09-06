@@ -109,6 +109,14 @@ function InteractionManager(renderer, options)
      */
     this.eventsAdded = false;
 
+     /**
+     * Is the mouse hovering over the renderer?
+     *
+     * @member {boolean}
+     * @private
+     */
+    this.mouseOverRenderer = false;
+
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -786,6 +794,8 @@ InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
  */
 InteractionManager.prototype.onMouseOut = function (event)
 {
+    this.mouseOverRenderer = false;
+
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
@@ -812,7 +822,7 @@ InteractionManager.prototype.onMouseOut = function (event)
  */
 InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit )
 {
-    if(hit)
+    if(hit && this.mouseOverRenderer)
     {
         if(!displayObject._over)
         {
@@ -843,6 +853,8 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
  */
 InteractionManager.prototype.onMouseOver = function(event)
 {
+    this.mouseOverRenderer = true;
+
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
