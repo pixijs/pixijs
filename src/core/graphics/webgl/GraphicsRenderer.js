@@ -152,7 +152,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
         }
 
         // clear the array and reset the index..
-        webGL.data = [];
+        webGL.data.length = 0;
         webGL.lastIndex = 0;
     }
 
