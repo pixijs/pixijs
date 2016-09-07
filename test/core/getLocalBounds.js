@@ -114,4 +114,29 @@ describe('getLocalBounds', function () {
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
     });
+
+    it('should register correct local-bounds with a cachAsBitmap item inside after a render', function() {
+        var parent = new PIXI.Container();
+
+        var graphic = new PIXI.Graphics();
+
+        graphic.beginFill(0xffffff);
+        graphic.drawRect(0,0,100,100);
+        graphic.endFill();
+        graphic.cacheAsBitmap=true;
+
+        parent.addChild(graphic);
+
+
+        var renderer = new PIXI.CanvasRenderer(100, 100);
+        renderer.sayHello = function(){};
+        renderer.render(parent);
+
+        var bounds = parent.getLocalBounds();
+
+        expect(bounds.x).to.equal(0);
+        expect(bounds.y).to.equal(0);
+        expect(bounds.width).to.equal(100);
+        expect(bounds.height).to.equal(100);
+    });
 });

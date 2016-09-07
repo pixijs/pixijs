@@ -17,7 +17,7 @@ var Sprite = require('../sprites/Sprite'),
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * var text = new PIXI.Text('This is a pixi text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class
@@ -140,9 +140,9 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture.orig.height;
+            this._height = value;
         }
     },
 
@@ -432,7 +432,7 @@ Text.prototype.updateTexture = function ()
     texture.trim.x = -style.padding;
     texture.trim.y = -style.padding;
 
-    texture.orig.width = texture._frame.width;
+    texture.orig.width = texture._frame.width- style.padding*2;
     texture.orig.height = texture._frame.height - style.padding*2;
 
     //call sprite onTextureUpdate to update scale if _width or _height were set

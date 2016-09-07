@@ -600,4 +600,7 @@ DisplayObject.prototype.destroy = function ()
     this._mask = null;
 
     this.filterArea = null;
+
+    this.interactive = false;
+    this.interactiveChildren = false;
 };

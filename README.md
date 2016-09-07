@@ -49,9 +49,9 @@ $> npm install pixi.js
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.0.0/pixi.min.js"></script>
 ```
-_Note: `3.0.11` can be replaced any [released](/pixijs/pixi.js/releases) version._
+_Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 
 ### Demos ###
@@ -75,6 +75,7 @@ those last 2 examples and allowing us to share the source code :)
 
 ### Resources ###
 
+- Learning Pixi - a brilliant guide [here](https://github.com/kittykatattack/learningPixi)
 - API Documentation is [here](http://pixijs.github.io/docs).
 - Feature Examples are [here](https://pixijs.github.io/examples).
 - The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).

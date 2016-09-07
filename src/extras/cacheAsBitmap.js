@@ -12,6 +12,8 @@ var CacheData = function(){
 
     this.originalRenderWebGL = null;
     this.originalRenderCanvas = null;
+    this.originalCalculateBounds = null;
+    this.originalGetLocalBounds = null;
 
     this.originalUpdateTransform = null;
     this.originalHitTest = null;
@@ -62,7 +64,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
-                data.originalGetBounds = this.getBounds;
+                data.originalCalculateBounds = this._calculateBounds;
+                data.originalGetLocalBounds = this.getLocalBounds;
 
                 data.originalDestroy = this.destroy;
 
@@ -91,7 +94,8 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = data.originalRenderWebGL;
                 this.renderCanvas = data.originalRenderCanvas;
-                this.getBounds = data.originalGetBounds;
+                this._calculateBounds = data.originalCalculateBounds;
+                this.getLocalBounds = data.originalGetLocalBounds;
 
                 this.destroy = data.originalDestroy;
 
@@ -137,6 +141,10 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
         return;
     }
 
+    // make sure alpha is set to 1 otherwise it will get rendered as invisible!
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
     //this.filters= [];
@@ -149,11 +157,8 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     if(this._filters)
     {
         var padding = this._filters[0].padding;
-        bounds.x -= padding;
-        bounds.y -= padding;
 
-        bounds.width += padding * 2;
-        bounds.height += padding * 2;
+        bounds.pad(padding);
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
@@ -177,6 +182,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._cacheData.originalRenderWebGL;
 
+
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
 
@@ -186,7 +192,6 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this.renderWebGL     = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds       = this._getCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -196,6 +201,12 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite.alpha = cacheAlpha;
+    cachedSprite._bounds =  this._bounds;
+
+    //easy bounds..
+    this._calculateBounds  = this._calculateCachedBounds;
+    this.getLocalBounds  = this._getCachedLocalBounds;
 
     this._cacheData.sprite = cachedSprite;
 
@@ -244,6 +255,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     //get bounds actually transforms the object for us already!
     var bounds = this.getLocalBounds();
 
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     var cachedRenderTarget = renderer.context;
 
     var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
@@ -267,8 +281,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds  = this._getCachedBounds;
+    this._calculateBounds  = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -278,12 +291,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite._bounds =  this._bounds;
+    cachedSprite.alpha = cacheAlpha;
 
     this.updateTransform();
+    this.updateTransform = this.displayObjectUpdateTransform;
 
     this._cacheData.sprite = cachedSprite;
 
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
+
+
 };
 
 /**
@@ -291,11 +309,14 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 *
 * @private
 */
-DisplayObject.prototype._getCachedBounds = function ()
+DisplayObject.prototype._calculateCachedBounds = function ()
 {
-    this._cacheData.sprite._currentBounds = null;
+    return this._cacheData.sprite._calculateBounds();
+};
 
-    return this._cacheData.sprite.getBounds();
+DisplayObject.prototype._getCachedLocalBounds = function ()
+{
+    return this._cacheData.sprite.getLocalBounds();
 };
 
 /**

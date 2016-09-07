@@ -18,9 +18,8 @@ var buildPoly = function (graphicsData, webGLData)
 
     var points = graphicsData.points;
 
-    if(graphicsData.fill && points.length > 6)
+    if(graphicsData.fill && points.length >= 6)
     {
-
         var holeArray = [];
              // Process holes..
         var holes = graphicsData.holes;

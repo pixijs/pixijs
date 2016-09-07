@@ -26,9 +26,10 @@ before_script:
 
 script:
     - xvfb-maybe npm run build
+    - npm run docs
 
 deploy:
-    provider: s3
+  - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
     bucket: "pixi.js"
@@ -36,6 +37,17 @@ deploy:
     acl: public_read
     local_dir: bin
     upload-dir: "$TRAVIS_BRANCH"
+    region: eu-west-1
+    on:
+        all_branches: true
+  - provider: s3
+    access_key_id: $S3_ACCESS_KEY_ID
+    secret_access_key: $S3_SECRET_ACCESS_KEY
+    bucket: "pixi.js"
+    skip_cleanup: true
+    acl: public_read
+    local_dir: docs
+    upload-dir: "$TRAVIS_BRANCH/docs"
     region: eu-west-1
     on:
         all_branches: true
