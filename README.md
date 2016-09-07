@@ -20,7 +20,7 @@ as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
-[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
+[![gallery](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/gallery/)
 
 ### What to Use Pixi.js for and When to Use It
 
@@ -51,6 +51,7 @@ $> npm install pixi.js
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.0.0/pixi.min.js"></script>
 ```
+
 _Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 
