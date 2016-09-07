@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.0.0
- * Compiled Wed Sep 07 2016 17:49:10 GMT+0100 (BST)
+ * pixi.js - v4.0.1
+ * Compiled Wed Sep 07 2016 17:54:28 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -8511,7 +8511,7 @@ var CONST = {
      * @constant
      * @type {string}
      */
-    VERSION: '4.0.0',
+    VERSION: '4.0.1',
 
     /**
      * Two Pi.
