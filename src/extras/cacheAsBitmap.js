@@ -202,9 +202,10 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
     cachedSprite.alpha = cacheAlpha;
+    cachedSprite._bounds =  this._bounds;
 
     //easy bounds..
-    this._calculateBounds  = this._getCachedBounds;
+    this._calculateBounds  = this._calculateCachedBounds;
     this.getLocalBounds  = this._getCachedLocalBounds;
 
     this._cacheData.sprite = cachedSprite;
@@ -254,6 +255,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     //get bounds actually transforms the object for us already!
     var bounds = this.getLocalBounds();
 
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     var cachedRenderTarget = renderer.context;
 
     var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
@@ -287,6 +291,8 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite._bounds =  this._bounds;
+    cachedSprite.alpha = cacheAlpha;
 
     this.updateTransform();
     this.updateTransform = this.displayObjectUpdateTransform;
@@ -294,6 +300,8 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     this._cacheData.sprite = cachedSprite;
 
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
+
+
 };
 
 /**
