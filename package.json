@@ -4,6 +4,8 @@
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
+    "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
+    "Matt Karl <matt@mattkarl.com>",
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
@@ -16,10 +18,18 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "start": "gulp && gulp watch",
-    "test": "gulp && testem ci",
-    "build": "gulp",
-    "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
+    "clean": "rimraf bin && mkdirp bin",
+    "prestart": "npm run clean",
+    "start": "parallelshell \"npm run watch:lint\" \"npm run watch\"",
+    "watch": "pixify -n PIXI -o pixi -w",
+    "watch:lint": "watch \"jshint --reporter=scripts/reporter.js scripts src test || exit 0\" src",
+    "test": "floss --path test/index.js",
+    "test:debug": "npm test -- --debug",
+    "lint": "jshint --reporter=scripts/reporter.js scripts src test",
+    "prebuild": "npm run lint && npm run clean",
+    "build": "pixify -n PIXI -o pixi",
+    "postbuild": "npm test",
+    "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
   },
   "files": [
     "bin/",
@@ -30,7 +40,6 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "^1.5.2",
     "bit-twiddle": "^1.0.2",
     "earcut": "^2.0.7",
     "eventemitter3": "^1.1.1",
@@ -38,37 +47,24 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.2",
-    "resource-loader": "^1.6.4"
+    "resource-loader": "^1.6.4",
+    "browserify-versionify": "^1.0.6"
   },
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "browserify-versionify": "^1.0.6",
-    "chai": "^3.5.0",
     "del": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-cached": "^1.1.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-debug": "^2.1.2",
-    "gulp-header": "^1.8.2",
-    "gulp-jshint": "^2.0.1",
-    "gulp-mirror": "^1.0.0",
-    "gulp-plumber": "^1.1.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.7",
-    "jaguarjs-jsdoc": "^1.0.0",
+    "electron-prebuilt": "^1.3.2",
+    "floss": "^0.7.1",
+    "jaguarjs-jsdoc": "^1.0.1",
     "jsdoc": "^3.4.0",
     "jshint": "^2.9.2",
-    "jshint-summary": "^0.4.0",
+    "jshint-stylish": "^2.2.0",
+    "jshint-stylish-summary": "^0.1.2",
     "minimist": "^1.2.0",
-    "mocha": "^2.5.3",
-    "require-dir": "^0.3.0",
-    "run-sequence": "^1.2.1",
-    "testem": "^1.8.1",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.7.0"
+    "mkdirp": "^0.5.1",
+    "parallelshell": "^2.0.0",
+    "pixify": "^1.4.0",
+    "rimraf": "^2.5.3",
+    "watch": "^0.19.1"
   },
   "browserify": {
     "transform": [

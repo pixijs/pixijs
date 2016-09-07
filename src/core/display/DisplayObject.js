@@ -1,10 +1,10 @@
-var math = require('../math'),
-    EventEmitter = require('eventemitter3'),
+var EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
+    Bounds = require('./Bounds'),
+    math = require('../math'),
     _tempDisplayObjectParent = new DisplayObject();
-
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -26,7 +26,7 @@ function DisplayObject()
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
      *
-     * @member {PIXI.Transform|PIXI.TransformStatic}
+     * @member {PIXI.TransformBase}
      */
     this.transform =  new TransformClass();
 
@@ -79,21 +79,20 @@ function DisplayObject()
      */
     this.filterArea = null;
 
-    /**
-     * The original, cached bounds of the object
-     *
-     * @member {PIXI.Rectangle}
-     * @private
-     */
-    this._bounds = new math.Rectangle(0, 0, 1, 1);
+    this._filters = null;
+    this._enabledFilters = null;
 
     /**
-     * The most up-to-date bounds of the object
+     * The bounds object, this is used to calculate and store the bounds of the displayObject
      *
      * @member {PIXI.Rectangle}
      * @private
      */
-    this._currentBounds = null;
+    this._bounds = new Bounds();
+    this._boundsID = 0;
+    this._lastBoundsID = -1;
+    this._boundsRect = null;
+    this._localBoundsRect = null;
 
     /**
      * The original, cached mask of the object
@@ -102,6 +101,8 @@ function DisplayObject()
      * @private
      */
     this._mask = null;
+
+
 }
 
 // constructor
@@ -344,31 +345,103 @@ DisplayObject.prototype.updateTransform = function ()
     this.transform.updateTransform(this.parent.transform);
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    this._bounds.updateID++;
 };
 
 // performance increase to avoid using call.. (10x faster)
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
 /**
+ * recursively updates transform of all objects from the root to this one
+ * internal function for toLocal()
+ */
+DisplayObject.prototype._recursivePostUpdateTransform = function()
+{
+    if (this.parent)
+    {
+        this.parent._recursivePostUpdateTransform();
+        this.transform.updateTransform(this.parent.transform);
+    }
+    else
+    {
+        this.transform.updateTransform(_tempDisplayObjectParent.transform);
+    }
+};
+
+/**
  *
  *
- * Retrieves the bounds of the displayObject as a rectangle object
- *
+ * Retrieves the bounds of the displayObject as a rectangle object.
+ * @param skipUpdate {boolean} setting to true will stop the transforms of the scene graph from being updated. This means the calculation returned MAY be out of date BUT will give you a nice performance boost
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function () // jshint unused:false
+DisplayObject.prototype.getBounds = function (skipUpdate, rect)
 {
-    return math.Rectangle.EMPTY;
+    if(!skipUpdate)
+    {
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.parent.transform._worldID++;
+            this.updateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this._recursivePostUpdateTransform();
+            this.updateTransform();
+        }
+    }
+
+    if(this._boundsID !== this._lastBoundsID)
+    {
+        this.calculateBounds();
+    }
+
+    if(!rect)
+    {
+        if(!this._boundsRect)
+        {
+            this._boundsRect = new math.Rectangle();
+        }
+
+        rect = this._boundsRect;
+    }
+
+    return this._bounds.getRectangle(rect);
 };
 
 /**
  * Retrieves the local bounds of the displayObject as a rectangle object
- *
+ * @param rect {PIXI.Rectangle} Optional rectangle to store the result of the bounds calculation
  * @return {PIXI.Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getLocalBounds = function ()
+DisplayObject.prototype.getLocalBounds = function (rect)
 {
-    return this.getBounds(math.Matrix.IDENTITY);
+    var transformRef = this.transform;
+    var parentRef = this.parent;
+
+    this.parent = null;
+    this.transform = _tempDisplayObjectParent.transform;
+
+    if(!rect)
+    {
+        if(!this._localBoundsRect)
+        {
+            this._localBoundsRect = new math.Rectangle();
+        }
+
+        rect = this._localBoundsRect;
+    }
+
+    var bounds = this.getBounds(false, rect);
+
+    this.parent = parentRef;
+    this.transform = transformRef;
+
+    return bounds;
 };
 
 /**
@@ -377,24 +450,29 @@ DisplayObject.prototype.getLocalBounds = function ()
  * @param position {PIXI.Point} The world origin to calculate from
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position)
+DisplayObject.prototype.toGlobal = function (position, point, skipUpdate)
 {
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
+    if(!skipUpdate)
     {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.displayObjectUpdateTransform();
+        this._recursivePostUpdateTransform();
+
+        // this parent check is for just in case the item is a root object.
+        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.displayObjectUpdateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this.displayObjectUpdateTransform();
+        }
     }
 
     // don't need to update the lot
-    return this.worldTransform.apply(position);
+    return this.worldTransform.apply(position, point);
 };
 
 /**
@@ -405,25 +483,30 @@ DisplayObject.prototype.toGlobal = function (position)
  * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
  * @return {PIXI.Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from, point)
+DisplayObject.prototype.toLocal = function (position, from, point, skipUpdate)
 {
     if (from)
     {
-        position = from.toGlobal(position);
+        position = from.toGlobal(position, point, skipUpdate);
     }
 
-    // this parent check is for just in case the item is a root object.
-    // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
-    // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-    if(!this.parent)
+    if(! skipUpdate)
     {
-        this.parent = _tempDisplayObjectParent;
-        this.displayObjectUpdateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.displayObjectUpdateTransform();
+        this._recursivePostUpdateTransform();
+
+        // this parent check is for just in case the item is a root object.
+        // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
+        // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
+        if(!this.parent)
+        {
+            this.parent = _tempDisplayObjectParent;
+            this.displayObjectUpdateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this.displayObjectUpdateTransform();
+        }
     }
 
     // simply apply the matrix..
@@ -496,11 +579,18 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
 };
 
 /**
- * Base destroy method for generic display objects
- *
+ * Base destroy method for generic display objects. This will automatically
+ * remove the display object from its parent Container as well as remove
+ * all current event listeners and internal references. Do not use a DisplayObject 
+ * after calling `destroy`.
  */
 DisplayObject.prototype.destroy = function ()
 {
+    this.removeAllListeners();
+    if (this.parent)
+    {
+        this.parent.removeChild(this);
+    }
     this.transform = null;
 
     this.parent = null;
@@ -509,6 +599,8 @@ DisplayObject.prototype.destroy = function ()
     this._currentBounds = null;
     this._mask = null;
 
-    this.worldTransform = null;
     this.filterArea = null;
+
+    this.interactive = false;
+    this.interactiveChildren = false;
 };

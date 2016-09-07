@@ -198,7 +198,7 @@ var CONST = {
      * @property {number} MANUAL - Garbage collection will need to be called manually
      */
     GC_MODES: {
-        DEFAULT:        1,
+        DEFAULT:        0,
         AUTO:           0,
         MANUAL:         1,
     },
@@ -362,16 +362,7 @@ var CONST = {
      * @constant
      * @type {number}
      */
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32),
-
-    /**
-     * Name of the event that fires when a text style is changed.
-     *
-     * @static
-     * @constant
-     * @type {string}
-     */
-    TEXT_STYLE_CHANGED: 'changed'
+    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
 };
 
 module.exports = CONST;

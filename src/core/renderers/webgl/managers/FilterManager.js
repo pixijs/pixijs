@@ -35,6 +35,8 @@ function FilterManager(renderer)
     this.shaderCache = {};
     // todo add default!
     this.pool = {};
+
+    this.filterData = null;
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -74,20 +76,34 @@ FilterManager.prototype.pushFilter = function(target, filters)
     // for now we go off the filter of the first resolution..
     var resolution = filters[0].resolution;
     var padding = filters[0].padding;
-    var targetBounds = target.filterArea || target.getBounds();
-
+    var targetBounds = target.filterArea || target.getBounds(true);
     var sourceFrame = currentState.sourceFrame;
     var destinationFrame = currentState.destinationFrame;
 
-    sourceFrame.x = (((targetBounds.x - padding) * resolution) | 0) / resolution;
-    sourceFrame.y = (((targetBounds.y - padding) * resolution) | 0) / resolution;
-    sourceFrame.width = (((targetBounds.width + padding*2) * resolution) | 0) / resolution;
-    sourceFrame.height = (((targetBounds.height + padding*2)* resolution) | 0) / resolution;
+    sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
+    sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
+    sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
+    sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
-    sourceFrame.fit(filterData.stack[0].destinationFrame);
+    if(filterData.stack[0].renderTarget.transform)
+    {//jshint ignore:line
+
+        // TODO we should fit the rect around the transform..
+    }
+    else
+    {
+
+        sourceFrame.fit(filterData.stack[0].destinationFrame);
+    }
+
 
     destinationFrame.width = sourceFrame.width;
     destinationFrame.height = sourceFrame.height;
+
+
+    // lets pplay the padding After we fit the element to the screen.
+    // this should stop the strange side effects that can occour when cropping to the edges
+    sourceFrame.pad(padding);
 
     var renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
@@ -256,7 +272,22 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
         if(uniformData[i].type === 'sampler2D')
         {
             shader.uniforms[i] = textureCount;
-            this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+
+            if(uniforms[i].baseTexture)
+            {
+                this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+            }
+            else
+            {
+                // this is helpful as renderTargets can also be set.
+                // Although thinking about it, we could probably
+                // make the filter texture cache return a RenderTexture
+                // rather than a renderTarget
+                var gl = this.renderer.gl;
+                this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
+                gl.activeTexture(gl.TEXTURE0 + textureCount );
+                uniforms[i].texture.bind();
+            }
 
             textureCount++;
         }
@@ -302,10 +333,10 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 };
 
 
-FilterManager.prototype.getRenderTarget = function()
+FilterManager.prototype.getRenderTarget = function(clear, resolution)
 {
     var currentState = this.filterData.stack[this.filterData.index];
-    var renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
+    var renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, resolution || currentState.resolution);
     renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
     return renderTarget;
@@ -367,7 +398,6 @@ FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, r
 
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
- //   console.log(minWidth + "  " + minHeight)
     if(!this.pool[key]) {
       this.pool[key] = [];
     }
@@ -379,7 +409,6 @@ FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, r
     renderTarget.resolution = resolution;
     renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
     renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
-
     return renderTarget;
 };
 

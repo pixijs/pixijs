@@ -8,7 +8,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     glCore = require('pixi-gl-core'),
     bitTwiddle = require('bit-twiddle');
 
-
+    var TICK = 0;
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -64,13 +64,12 @@ function SpriteRenderer(renderer)
      * The default shaders that is used if a sprite doesn't have a more specific one.
      * there is a shader for each number of textures that can be rendererd.
      * These shaders will also be generated on the fly as required.
-     * @member {PIXI.Shader}
+     * @member {PIXI.Shader[]}
      */
     this.shaders = null;
 
-    this.textureCount = 0;
     this.currentIndex = 0;
-    this.tick =0;
+    TICK =0;
     this.groups = [];
 
     for (var k = 0; k < this.size; k++)
@@ -211,7 +210,7 @@ SpriteRenderer.prototype.flush = function ()
     currentGroup.start = 0;
     currentGroup.blend = blendMode;
 
-    this.tick++;
+    TICK++;
 
     for (var i = 0; i < this.currentIndex; i++)
     {
@@ -228,18 +227,18 @@ SpriteRenderer.prototype.flush = function ()
             // force the batch to break!
             currentTexture = null;
             textureCount = this.MAX_TEXTURES;
-            this.tick++;
+            TICK++;
         }
 
         if(currentTexture !== nextTexture)
         {
             currentTexture = nextTexture;
 
-            if(nextTexture._enabled !== this.tick)
+            if(nextTexture._enabled !== TICK)
             {
                 if(textureCount === this.MAX_TEXTURES)
                 {
-                    this.tick++;
+                    TICK++;
 
                     textureCount = 0;
 
@@ -251,7 +250,7 @@ SpriteRenderer.prototype.flush = function ()
                     currentGroup.start = i;
                 }
 
-                nextTexture._enabled = this.tick;
+                nextTexture._enabled = TICK;
                 nextTexture._id = textureCount;
 
                 currentGroup.textures[currentGroup.textureCount++] = nextTexture;
@@ -263,37 +262,59 @@ SpriteRenderer.prototype.flush = function ()
         vertexData = sprite.vertexData;
 
         //TODO this sum does not need to be set each frame..
-        tint = (sprite.tint >> 16) + (sprite.tint & 0xff00) + ((sprite.tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
+        tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
         uvs = sprite._texture._uvs.uvsUint32;
         textureId = nextTexture._id;
 
-        //xy
-        float32View[index++] = vertexData[0];
-        float32View[index++] = vertexData[1];
-        uint32View[index++] = uvs[0];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+        if (this.renderer.roundPixels)
+        {
+            var resolution = this.renderer.resolution;
 
-        // xy
-        float32View[index++] = vertexData[2];
-        float32View[index++] = vertexData[3];
-        uint32View[index++] = uvs[1];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+            //xy
+            float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
+            float32View[index+1] = ((vertexData[1] * resolution) | 0) / resolution;
 
-         // xy
-        float32View[index++] = vertexData[4];
-        float32View[index++] = vertexData[5];
-        uint32View[index++] = uvs[2];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+            // xy
+            float32View[index+5] = ((vertexData[2] * resolution) | 0) / resolution;
+            float32View[index+6] = ((vertexData[3] * resolution) | 0) / resolution;
 
-        // xy
-        float32View[index++] = vertexData[6];
-        float32View[index++] = vertexData[7];
-        uint32View[index++] = uvs[3];
-        uint32View[index++] = tint;
-        float32View[index++] = textureId;
+             // xy
+            float32View[index+10] = ((vertexData[4] * resolution) | 0) / resolution;
+            float32View[index+11] = ((vertexData[5] * resolution) | 0) / resolution;
+
+            // xy
+            float32View[index+15] = ((vertexData[6] * resolution) | 0) / resolution;
+            float32View[index+16] = ((vertexData[7] * resolution) | 0) / resolution;
+
+        }
+        else
+        {
+            //xy
+            float32View[index] = vertexData[0];
+            float32View[index+1] = vertexData[1];
+
+            // xy
+            float32View[index+5] = vertexData[2];
+            float32View[index+6] = vertexData[3];
+
+             // xy
+            float32View[index+10] = vertexData[4];
+            float32View[index+11] = vertexData[5];
+
+            // xy
+            float32View[index+15] = vertexData[6];
+            float32View[index+16] = vertexData[7];
+        }
+
+        uint32View[index+2] = uvs[0];
+        uint32View[index+7] = uvs[1];
+        uint32View[index+12] = uvs[2];
+        uint32View[index+17] = uvs[3];
+
+        uint32View[index+3] = uint32View[index+8] = uint32View[index+13] = uint32View[index+18] = tint;
+        float32View[index+4] = float32View[index+9] = float32View[index+14] = float32View[index+19] = textureId;
+
+        index += 20;
     }
 
     currentGroup.size = i - currentGroup.start;
@@ -353,8 +374,8 @@ SpriteRenderer.prototype.flush = function ()
  */
 SpriteRenderer.prototype.start = function ()
 {
- //   this.renderer.bindShader(this.shader);
-    this.tick %= 1000;
+    //this.renderer.bindShader(this.shader);
+    //TICK %= 1000;
 };
 
 SpriteRenderer.prototype.stop = function ()
@@ -368,7 +389,7 @@ SpriteRenderer.prototype.stop = function ()
  */
 SpriteRenderer.prototype.destroy = function ()
 {
-    for (var i = 0; i < this.vertexCount; i++) {
+    for (var i = 0; i < this.vaoMax; i++) {
         this.vertexBuffers[i].destroy();
         this.vaos[i].destroy();
     }

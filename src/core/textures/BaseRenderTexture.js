@@ -49,10 +49,14 @@ function BaseRenderTexture(width, height, scaleMode, resolution)
 {
     BaseTexture.call(this, null, scaleMode);
 
+    this.resolution = resolution || CONST.RESOLUTION;
+
     this.width = width || 100;
     this.height = height || 100;
 
-    this.resolution = resolution || CONST.RESOLUTION;
+    this.realWidth = this.width * this.resolution;
+    this.realHeight = this.height * this.resolution;
+
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     this.hasLoaded = true;
 
@@ -103,6 +107,9 @@ BaseRenderTexture.prototype.resize = function (width, height)
     this.width = width;
     this.height = height;
 
+    this.realWidth = this.width * this.resolution;
+    this.realHeight = this.height * this.resolution;
+
     if (!this.valid)
     {
         return;
@@ -110,11 +117,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 
     this.emit('update', this);
 
-    //TODO - remove this!
-    if(this.filterManager)
-    {
-        this.filterManager.resize(this.width, this.height);
-    }
 };
 
 /**
@@ -124,13 +126,6 @@ BaseRenderTexture.prototype.resize = function (width, height)
 BaseRenderTexture.prototype.destroy = function ()
 {
     BaseTexture.prototype.destroy.call(this, true);
-
-    // destroy the filtermanager..
-    if(this.filterManager)
-    {
-        this.filterManager.destroy();
-    }
-
     this.renderer = null;
 };
 
