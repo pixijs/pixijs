@@ -37,13 +37,39 @@ var CONST = require('../const'),
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
  */
-function TextStyle(style)
-{
-    this.styleID = 0;
-    Object.assign(this, this._defaults, style);
+class TextStyle {
+    constructor(style)
+    {
+        this.styleID = 0;
+        Object.assign(this, this._defaults, style);
+    }
+
+    /**
+     * Creates a new TextStyle object with the same values as this one.
+     * Note that the only the properties of the object are cloned.
+     *
+     * @return {PIXI.TextStyle} New cloned TextStyle object
+     */
+    clone()
+    {
+        var clonedProperties = {};
+        for (var key in this._defaults)
+        {
+            clonedProperties[key] = this[key];
+        }
+        return new TextStyle(clonedProperties);
+    }
+
+    /**
+     * Resets all properties to the defaults specified in TextStyle.prototype._default
+     */
+    reset()
+    {
+        Object.assign(this, this._defaults);
+    }
+
 }
 
-TextStyle.prototype.constructor = TextStyle;
 module.exports = TextStyle;
 
 // Default settings. Explained in the constructor.
@@ -72,30 +98,6 @@ TextStyle.prototype._defaults = {
     textBaseline: 'alphabetic',
     wordWrap: false,
     wordWrapWidth: 100
-};
-
-/**
- * Creates a new TextStyle object with the same values as this one.
- * Note that the only the properties of the object are cloned.
- *
- * @return {PIXI.TextStyle} New cloned TextStyle object
- */
-TextStyle.prototype.clone = function ()
-{
-    var clonedProperties = {};
-    for (var key in this._defaults)
-    {
-        clonedProperties[key] = this[key];
-    }
-    return new TextStyle(clonedProperties);
-};
-
-/**
- * Resets all properties to the defaults specified in TextStyle.prototype._default
- */
-TextStyle.prototype.reset = function ()
-{
-    Object.assign(this, this._defaults);
 };
 
 /**

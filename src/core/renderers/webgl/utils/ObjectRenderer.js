@@ -8,49 +8,49 @@ var WebGLManager = require('../managers/WebGLManager');
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-function ObjectRenderer(renderer)
-{
-    WebGLManager.call(this, renderer);
+class ObjectRenderer extends WebGLManager {
+    constructor(renderer)
+    {
+        super(renderer);
+    }
+
+    /**
+     * Starts the renderer and sets the shader
+     *
+     */
+    start()
+    {
+        // set the shader..
+    }
+
+    /**
+     * Stops the renderer
+     *
+     */
+    stop()
+    {
+        this.flush();
+    }
+
+    /**
+     * Stub method for rendering content and emptying the current batch.
+     *
+     */
+    flush()
+    {
+        // flush!
+    }
+
+    /**
+     * Renders an object
+     *
+     * @param object {PIXI.DisplayObject} The object to render.
+     */
+    render(object) // jshint unused:false
+    {
+        // render the object
+    }
+
 }
 
-
-ObjectRenderer.prototype = Object.create(WebGLManager.prototype);
-ObjectRenderer.prototype.constructor = ObjectRenderer;
 module.exports = ObjectRenderer;
-
-/**
- * Starts the renderer and sets the shader
- *
- */
-ObjectRenderer.prototype.start = function ()
-{
-    // set the shader..
-};
-
-/**
- * Stops the renderer
- *
- */
-ObjectRenderer.prototype.stop = function ()
-{
-    this.flush();
-};
-
-/**
- * Stub method for rendering content and emptying the current batch.
- *
- */
-ObjectRenderer.prototype.flush = function ()
-{
-    // flush!
-};
-
-/**
- * Renders an object
- *
- * @param object {PIXI.DisplayObject} The object to render.
- */
-ObjectRenderer.prototype.render = function (object) // jshint unused:false
-{
-    // render the object
-};
