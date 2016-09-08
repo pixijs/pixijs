@@ -10,18 +10,52 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function ObservablePoint(cb, scope, x, y)
-{
-    this._x = x || 0;
-    this._y = y || 0;
+class ObservablePoint {
+    constructor(cb, scope, x, y)
+    {
+        this._x = x || 0;
+        this._y = y || 0;
 
-    this.cb = cb;
-    this.scope = scope;
+        this.cb = cb;
+        this.scope = scope;
+    }
+
+    /**
+     * Sets the point to a new x and y position.
+     * If y is omitted, both x and y will be set to x.
+     *
+     * @param [x=0] {number} position of the point on the x axis
+     * @param [y=0] {number} position of the point on the y axis
+     */
+    set(x, y)
+    {
+        var _x = x || 0;
+        var _y = y || ( (y !== 0) ? _x : 0 );
+        if (this._x !== _x || this._y !== _y)
+        {
+            this._x = _x;
+            this._y = _y;
+            this.cb.call(this.scope);
+        }
+    }
+
+    /**
+     * Copies the data from another point
+     *
+     * @param point {PIXI.Point|PIXI.ObservablePoint} point to copy from
+     */
+    copy(point)
+    {
+        if (this._x !== point.x || this._y !== point.y)
+        {
+            this._x = point.x;
+            this._y = point.y;
+            this.cb.call(this.scope);
+        }
+    }
 }
 
-ObservablePoint.prototype.constructor = ObservablePoint;
 module.exports = ObservablePoint;
-
 
 
 Object.defineProperties(ObservablePoint.prototype, {
@@ -64,37 +98,3 @@ Object.defineProperties(ObservablePoint.prototype, {
         }
     }
 });
-
-/**
- * Sets the point to a new x and y position.
- * If y is omitted, both x and y will be set to x.
- *
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
- */
-ObservablePoint.prototype.set = function (x, y)
-{
-    var _x = x || 0;
-    var _y = y || ( (y !== 0) ? _x : 0 );
-    if (this._x !== _x || this._y !== _y)
-    {
-        this._x = _x;
-        this._y = _y;
-        this.cb.call(this.scope);
-    }
-};
-
-/**
- * Copies the data from another point
- *
- * @param point {PIXI.Point|PIXI.ObservablePoint} point to copy from
- */
-ObservablePoint.prototype.copy = function (point)
-{
-    if (this._x !== point.x || this._y !== point.y)
-    {
-        this._x = point.x;
-        this._y = point.y;
-        this.cb.call(this.scope);
-    }
-};
