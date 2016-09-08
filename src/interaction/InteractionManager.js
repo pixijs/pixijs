@@ -438,6 +438,11 @@ InteractionManager.prototype.update = function (deltaTime)
 
     this.cursor = this.defaultCursorStyle;
 
+    // Resets the flag as set by a stopPropagation call. This flag is usually reset by a user interaction of any kind,
+    // but there was a scenario of a display object moving under a static mouse cursor.
+    // In this case, mouseover and mouseevents would not pass the flag test in dispatchEvent function
+    this.eventData.stopped = false;
+
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
     if (this.currentCursorStyle !== this.cursor)
