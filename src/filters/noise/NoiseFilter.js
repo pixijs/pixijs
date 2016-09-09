@@ -13,20 +13,20 @@ var glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function NoiseFilter()
-{
-    core.Filter.call(this,
-        // vertex shader
-        glslify('../fragments/default.vert'),
-        // fragment shader
-        glslify('./noise.frag')
-    );
+class NoiseFilter extends core.Filter {
+    constructor()
+    {
+        super(
+            // vertex shader
+            glslify('../fragments/default.vert'),
+            // fragment shader
+            glslify('./noise.frag')
+        );
 
-    this.noise = 0.5;
+        this.noise = 0.5;
+    }
 }
 
-NoiseFilter.prototype = Object.create(core.Filter.prototype);
-NoiseFilter.prototype.constructor = NoiseFilter;
 module.exports = NoiseFilter;
 
 Object.defineProperties(NoiseFilter.prototype, {

@@ -10,34 +10,35 @@ var core = require('../../core'),
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurFilter(strength, quality, resolution)
-{
-    core.Filter.call(this);
+class BlurFilter extends core.Filter {
+    constructor(strength, quality, resolution)
+    {
+        super();
 
-    this.blurXFilter = new BlurXFilter();
-    this.blurYFilter = new BlurYFilter();
-    this.resolution = 1;
+        this.blurXFilter = new BlurXFilter();
+        this.blurYFilter = new BlurYFilter();
+        this.resolution = 1;
 
-    this.padding = 0;
-    this.resolution = resolution || 1;
-    this.quality = quality || 4;
-    this.blur = strength || 8;
+        this.padding = 0;
+        this.resolution = resolution || 1;
+        this.quality = quality || 4;
+        this.blur = strength || 8;
+    }
+
+    apply(filterManager, input, output)
+    {
+
+        var renderTarget = filterManager.getRenderTarget(true);
+
+        this.blurXFilter.apply(filterManager, input, renderTarget, true);
+        this.blurYFilter.apply(filterManager, renderTarget, output, false);
+
+        filterManager.returnRenderTarget(renderTarget);
+    }
+
 }
 
-BlurFilter.prototype = Object.create(core.Filter.prototype);
-BlurFilter.prototype.constructor = BlurFilter;
 module.exports = BlurFilter;
-
-BlurFilter.prototype.apply = function (filterManager, input, output)
-{
-
-    var renderTarget = filterManager.getRenderTarget(true);
-
-    this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output, false);
-
-    filterManager.returnRenderTarget(renderTarget);
-};
 
 Object.defineProperties(BlurFilter.prototype, {
     /**

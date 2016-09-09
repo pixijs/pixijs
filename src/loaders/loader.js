@@ -26,17 +26,17 @@ var ResourceLoader = require('resource-loader'),
  * @param [concurrency=10] {number} The number of resources to load concurrently.
  * @see https://github.com/englercj/resource-loader
  */
-function Loader(baseUrl, concurrency)
-{
-    ResourceLoader.call(this, baseUrl, concurrency);
+class Loader extends ResourceLoader {
+    constructor(baseUrl, concurrency)
+    {
+        super(baseUrl, concurrency);
 
-    for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
-        this.use(Loader._pixiMiddleware[i]());
+        for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
+            this.use(Loader._pixiMiddleware[i]());
+        }
     }
-}
 
-Loader.prototype = Object.create(ResourceLoader.prototype);
-Loader.prototype.constructor = Loader;
+}
 
 module.exports = Loader;
 
