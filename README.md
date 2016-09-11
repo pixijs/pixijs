@@ -30,6 +30,19 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 
 **Boost your development and feel free to use your imagination!**
 
+### Learn ###
+- Website: Find out more about Pixi on the [offical website](http://www.pixijs.com/).
+- Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+- Examples: Get stuck right in and play around with pixi code and features right [here](http://pixijs.github.io/examples/)!
+- Docs: Get to know the Pixi API by checking out the [docs](https://pixijs.github.io/docs/).
+- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
+
+### Community ###
+- Forums: Check out the [forum] (http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow] (http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
+- Inspiration: Check out the [gallery](http://www.pixijs.com/gallery) to see some of the amazing things people have created!
+- Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about Pixi. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
+
+
 ### Installation ###
 
 Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [NPM](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page. 
@@ -73,14 +86,6 @@ _Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.
 
 Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
 those last 2 examples and allowing us to share the source code :)
-
-### Resources ###
-
-- Learning Pixi - a brilliant guide [here](https://github.com/kittykatattack/learningPixi)
-- API Documentation is [here](http://pixijs.github.io/docs).
-- Feature Examples are [here](https://pixijs.github.io/examples).
-- The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
-- Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
 
 ### Contribute ###
 
