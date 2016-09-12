@@ -18,7 +18,7 @@ Object.assign(
  */
 function AccessibilityManager(renderer)
 {
-	if(Device.tablet || Device.phone)
+	if((Device.tablet || Device.phone) && !navigator.isCocoonJS)
 	{
 		this.createTouchHook();
 	}
