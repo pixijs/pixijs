@@ -1,5 +1,5 @@
-let core = require('../../core');
-let glslify  = require('glslify');
+import core from '../../core';
+const glslify = require('glslify');
 
 /**
  * @author Vico @vicocotea
@@ -13,7 +13,8 @@ let glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class NoiseFilter extends core.Filter {
+class NoiseFilter extends core.Filter
+{
     constructor()
     {
         super(
@@ -25,11 +26,7 @@ class NoiseFilter extends core.Filter {
 
         this.noise = 0.5;
     }
-}
 
-module.exports = NoiseFilter;
-
-Object.defineProperties(NoiseFilter.prototype, {
     /**
      * The amount of noise to apply.
      *
@@ -37,14 +34,14 @@ Object.defineProperties(NoiseFilter.prototype, {
      * @memberof PIXI.filters.NoiseFilter#
      * @default 0.5
      */
-    noise: {
-        get: function ()
-        {
-            return this.uniforms.noise;
-        },
-        set: function (value)
-        {
-            this.uniforms.noise = value;
-        }
+    get noise()
+    {
+        return this.uniforms.noise;
     }
-});
+    set noise(value)
+    {
+        this.uniforms.noise = value;
+    }
+}
+
+export default NoiseFilter;

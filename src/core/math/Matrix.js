@@ -2,7 +2,7 @@
 // should either fix it or change the jshint config
 // jshint -W072
 
-let Point = require('./Point');
+import Point from './Point';
 
 /**
  * The pixi Matrix class as an object, which makes it a lot faster,
@@ -14,7 +14,8 @@ let Point = require('./Point');
  * @class
  * @memberof PIXI
  */
-class Matrix {
+class Matrix
+{
     constructor()
     {
         /**
@@ -490,4 +491,4 @@ class Matrix {
     }
 }
 
-module.exports = Matrix;
+export default Matrix;

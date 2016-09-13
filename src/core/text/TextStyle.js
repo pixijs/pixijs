@@ -1,5 +1,5 @@
-let CONST = require('../const'),
-    utils = require('../utils');
+import CONST from '../const';
+import utils from '../utils';
 
 /**
  * A TextStyle Object decorates a Text Object. It can be shared between
@@ -37,7 +37,8 @@ let CONST = require('../const'),
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
  */
-class TextStyle {
+class TextStyle
+{
     constructor(style)
     {
         this.styleID = 0;
@@ -68,405 +69,357 @@ class TextStyle {
         Object.assign(this, this._defaults);
     }
 
-}
-
-module.exports = TextStyle;
-
-// Default settings. Explained in the constructor.
-TextStyle.prototype._defaults = {
-    align: 'left',
-    breakWords: false,
-    dropShadow: false,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowBlur: 0,
-    dropShadowColor: '#000000',
-    dropShadowDistance: 5,
-    fill: 'black',
-    fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
-    fontFamily: 'Arial',
-    fontSize: 26,
-    fontStyle: 'normal',
-    fontVariant: 'normal',
-    fontWeight: 'normal',
-    letterSpacing: 0,
-    lineHeight: 0,
-    lineJoin: 'miter',
-    miterLimit: 10,
-    padding: 0,
-    stroke: 'black',
-    strokeThickness: 0,
-    textBaseline: 'alphabetic',
-    wordWrap: false,
-    wordWrapWidth: 100
-};
+    // Default settings. Explained in the constructor.
+    get _defaults()
+    {
+        return {
+            align: 'left',
+            breakWords: false,
+            dropShadow: false,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowBlur: 0,
+            dropShadowColor: '#000000',
+            dropShadowDistance: 5,
+            fill: 'black',
+            fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
+            fontFamily: 'Arial',
+            fontSize: 26,
+            fontStyle: 'normal',
+            fontVariant: 'normal',
+            fontWeight: 'normal',
+            letterSpacing: 0,
+            lineHeight: 0,
+            lineJoin: 'miter',
+            miterLimit: 10,
+            padding: 0,
+            stroke: 'black',
+            strokeThickness: 0,
+            textBaseline: 'alphabetic',
+            wordWrap: false,
+            wordWrapWidth: 100
+        };
+    }
 
 /**
  * Create setters and getters for each of the style properties. Converts colors where necessary.
  */
-Object.defineProperties(TextStyle.prototype, {
-     align: {
-        get: function ()
-        {
-            return this._align;
-        },
-        set: function (align)
-        {
-            if (this._align !== align)
-            {
-                this._align = align;
-                this.styleID++;
-            }
-        }
-    },
 
-    breakWords: {
-        get: function ()
+    get align()
+    {
+        return this._align;
+    }
+    set align(align)
+    {
+        if (this._align !== align)
         {
-            return this._breakWords;
-        },
-        set: function (breakWords)
-        {
-            if (this._breakWords !== breakWords)
-            {
-                this._breakWords = breakWords;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadow: {
-        get: function ()
-        {
-            return this._dropShadow;
-        },
-        set: function (dropShadow)
-        {
-            if (this._dropShadow !== dropShadow)
-            {
-                this._dropShadow = dropShadow;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowAngle: {
-        get: function ()
-        {
-            return this._dropShadowAngle;
-        },
-        set: function (dropShadowAngle)
-        {
-            if (this._dropShadowAngle !== dropShadowAngle)
-            {
-                this._dropShadowAngle = dropShadowAngle;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowBlur: {
-        get: function ()
-        {
-            return this._dropShadowBlur;
-        },
-        set: function (dropShadowBlur)
-        {
-            if (this._dropShadowBlur !== dropShadowBlur)
-            {
-                this._dropShadowBlur = dropShadowBlur;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowColor: {
-        get: function ()
-        {
-            return this._dropShadowColor;
-        },
-        set: function (dropShadowColor)
-        {
-            let outputColor = getColor(dropShadowColor);
-            if (this._dropShadowColor !== outputColor)
-            {
-                this._dropShadowColor = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowDistance: {
-        get: function ()
-        {
-            return this._dropShadowDistance;
-        },
-        set: function (dropShadowDistance)
-        {
-            if (this._dropShadowDistance !== dropShadowDistance)
-            {
-                this._dropShadowDistance = dropShadowDistance;
-                this.styleID++;
-            }
-        }
-    },
-
-    fill: {
-        get: function ()
-        {
-            return this._fill;
-        },
-        set: function (fill)
-        {
-            let outputColor = getColor(fill);
-            if (this._fill !== outputColor)
-            {
-                this._fill = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    fillGradientType: {
-        get: function ()
-        {
-            return this._fillGradientType;
-        },
-        set: function (fillGradientType)
-        {
-            if (this._fillGradientType !== fillGradientType)
-            {
-                this._fillGradientType = fillGradientType;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontFamily: {
-        get: function ()
-        {
-            return this._fontFamily;
-        },
-        set: function (fontFamily)
-        {
-            if (this.fontFamily !== fontFamily)
-            {
-                this._fontFamily = fontFamily;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontSize: {
-        get: function ()
-        {
-            return this._fontSize;
-        },
-        set: function (fontSize)
-        {
-            if (this._fontSize !== fontSize)
-            {
-                this._fontSize = fontSize;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontStyle: {
-        get: function ()
-        {
-            return this._fontStyle;
-        },
-        set: function (fontStyle)
-        {
-            if (this._fontStyle !== fontStyle)
-            {
-                this._fontStyle = fontStyle;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontVariant: {
-        get: function ()
-        {
-            return this._fontVariant;
-        },
-        set: function (fontVariant)
-        {
-            if (this._fontVariant !== fontVariant)
-            {
-                this._fontVariant = fontVariant;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontWeight: {
-        get: function ()
-        {
-            return this._fontWeight;
-        },
-        set: function (fontWeight)
-        {
-            if (this._fontWeight !== fontWeight)
-            {
-                this._fontWeight = fontWeight;
-                this.styleID++;
-            }
-        }
-    },
-
-    letterSpacing: {
-        get: function ()
-        {
-            return this._letterSpacing;
-        },
-        set: function (letterSpacing)
-        {
-            if (this._letterSpacing !== letterSpacing)
-            {
-                this._letterSpacing = letterSpacing;
-                this.styleID++;
-            }
-        }
-    },
-
-    lineHeight: {
-        get: function ()
-        {
-            return this._lineHeight;
-        },
-        set: function (lineHeight)
-        {
-            if (this._lineHeight !== lineHeight)
-            {
-                this._lineHeight = lineHeight;
-                this.styleID++;
-            }
-        }
-    },
-
-    lineJoin: {
-        get: function ()
-        {
-            return this._lineJoin;
-        },
-        set: function (lineJoin)
-        {
-            if (this._lineJoin !== lineJoin)
-            {
-                this._lineJoin = lineJoin;
-                this.styleID++;
-            }
-        }
-    },
-
-    miterLimit: {
-        get: function ()
-        {
-            return this._miterLimit;
-        },
-        set: function (miterLimit)
-        {
-            if (this._miterLimit !== miterLimit)
-            {
-                this._miterLimit = miterLimit;
-                this.styleID++;
-            }
-        }
-    },
-
-    padding: {
-        get: function ()
-        {
-            return this._padding;
-        },
-        set: function (padding)
-        {
-            if (this._padding !== padding)
-            {
-                this._padding = padding;
-                this.styleID++;
-            }
-        }
-    },
-
-    stroke: {
-        get: function ()
-        {
-            return this._stroke;
-        },
-        set: function (stroke)
-        {
-            let outputColor = getColor(stroke);
-            if (this._stroke !== outputColor)
-            {
-                this._stroke = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    strokeThickness: {
-        get: function ()
-        {
-            return this._strokeThickness;
-        },
-        set: function (strokeThickness)
-        {
-            if (this._strokeThickness !== strokeThickness)
-            {
-                this._strokeThickness = strokeThickness;
-                this.styleID++;
-            }
-        }
-    },
-
-    textBaseline: {
-        get: function ()
-        {
-            return this._textBaseline;
-        },
-        set: function (textBaseline)
-        {
-            if (this._textBaseline !== textBaseline)
-            {
-                this._textBaseline = textBaseline;
-                this.styleID++;
-            }
-        }
-    },
-
-    wordWrap: {
-        get: function ()
-        {
-            return this._wordWrap;
-        },
-        set: function (wordWrap)
-        {
-            if (this._wordWrap !== wordWrap)
-            {
-                this._wordWrap = wordWrap;
-                this.styleID++;
-            }
-        }
-    },
-
-    wordWrapWidth: {
-        get: function ()
-        {
-            return this._wordWrapWidth;
-        },
-        set: function (wordWrapWidth)
-        {
-            if (this._wordWrapWidth !== wordWrapWidth)
-            {
-                this._wordWrapWidth = wordWrapWidth;
-                this.styleID++;
-            }
+            this._align = align;
+            this.styleID++;
         }
     }
-});
+
+    get breakWords()
+    {
+        return this._breakWords;
+    }
+    set breakWords(breakWords)
+    {
+        if (this._breakWords !== breakWords)
+        {
+            this._breakWords = breakWords;
+            this.styleID++;
+        }
+    }
+
+    get dropShadow()
+    {
+        return this._dropShadow;
+    }
+    set dropShadow(dropShadow)
+    {
+        if (this._dropShadow !== dropShadow)
+        {
+            this._dropShadow = dropShadow;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowAngle()
+    {
+        return this._dropShadowAngle;
+    }
+    set dropShadowAngle(dropShadowAngle)
+    {
+        if (this._dropShadowAngle !== dropShadowAngle)
+        {
+            this._dropShadowAngle = dropShadowAngle;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowBlur()
+    {
+        return this._dropShadowBlur;
+    }
+    set dropShadowBlur(dropShadowBlur)
+    {
+        if (this._dropShadowBlur !== dropShadowBlur)
+        {
+            this._dropShadowBlur = dropShadowBlur;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowColor()
+    {
+        return this._dropShadowColor;
+    }
+    set dropShadowColor(dropShadowColor)
+    {
+        let outputColor = getColor(dropShadowColor);
+        if (this._dropShadowColor !== outputColor)
+        {
+            this._dropShadowColor = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowDistance()
+    {
+        return this._dropShadowDistance;
+    }
+    set dropShadowDistance(dropShadowDistance)
+    {
+        if (this._dropShadowDistance !== dropShadowDistance)
+        {
+            this._dropShadowDistance = dropShadowDistance;
+            this.styleID++;
+        }
+    }
+
+    get fill()
+    {
+        return this._fill;
+    }
+    set fill(fill)
+    {
+        let outputColor = getColor(fill);
+        if (this._fill !== outputColor)
+        {
+            this._fill = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get fillGradientType()
+    {
+        return this._fillGradientType;
+    }
+    set fillGradientType(fillGradientType)
+    {
+        if (this._fillGradientType !== fillGradientType)
+        {
+            this._fillGradientType = fillGradientType;
+            this.styleID++;
+        }
+    }
+
+    get fontFamily()
+    {
+        return this._fontFamily;
+    }
+    set fontFamily(fontFamily)
+    {
+        if (this.fontFamily !== fontFamily)
+        {
+            this._fontFamily = fontFamily;
+            this.styleID++;
+        }
+    }
+
+    get fontSize()
+    {
+        return this._fontSize;
+    }
+    set fontSize(fontSize)
+    {
+        if (this._fontSize !== fontSize)
+        {
+            this._fontSize = fontSize;
+            this.styleID++;
+        }
+    }
+
+    get fontStyle()
+    {
+        return this._fontStyle;
+    }
+    set fontStyle(fontStyle)
+    {
+        if (this._fontStyle !== fontStyle)
+        {
+            this._fontStyle = fontStyle;
+            this.styleID++;
+        }
+    }
+
+    get fontVariant()
+    {
+        return this._fontVariant;
+    }
+    set fontVariant(fontVariant)
+    {
+        if (this._fontVariant !== fontVariant)
+        {
+            this._fontVariant = fontVariant;
+            this.styleID++;
+        }
+    }
+
+    get fontWeight()
+    {
+        return this._fontWeight;
+    }
+    set fontWeight(fontWeight)
+    {
+        if (this._fontWeight !== fontWeight)
+        {
+            this._fontWeight = fontWeight;
+            this.styleID++;
+        }
+    }
+
+    get letterSpacing()
+    {
+        return this._letterSpacing;
+    }
+    set letterSpacing(letterSpacing)
+    {
+        if (this._letterSpacing !== letterSpacing)
+        {
+            this._letterSpacing = letterSpacing;
+            this.styleID++;
+        }
+    }
+
+    get lineHeight()
+    {
+        return this._lineHeight;
+    }
+    set lineHeight(lineHeight)
+    {
+        if (this._lineHeight !== lineHeight)
+        {
+            this._lineHeight = lineHeight;
+            this.styleID++;
+        }
+    }
+
+    get lineJoin()
+    {
+        return this._lineJoin;
+    }
+    set lineJoin(lineJoin)
+    {
+        if (this._lineJoin !== lineJoin)
+        {
+            this._lineJoin = lineJoin;
+            this.styleID++;
+        }
+    }
+
+    get miterLimit()
+    {
+        return this._miterLimit;
+    }
+    set miterLimit(miterLimit)
+    {
+        if (this._miterLimit !== miterLimit)
+        {
+            this._miterLimit = miterLimit;
+            this.styleID++;
+        }
+    }
+
+    get padding()
+    {
+        return this._padding;
+    }
+    set padding(padding)
+    {
+        if (this._padding !== padding)
+        {
+            this._padding = padding;
+            this.styleID++;
+        }
+    }
+
+    get stroke()
+    {
+        return this._stroke;
+    }
+    set stroke(stroke)
+    {
+        let outputColor = getColor(stroke);
+        if (this._stroke !== outputColor)
+        {
+            this._stroke = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get strokeThickness()
+    {
+        return this._strokeThickness;
+    }
+    set strokeThickness(strokeThickness)
+    {
+        if (this._strokeThickness !== strokeThickness)
+        {
+            this._strokeThickness = strokeThickness;
+            this.styleID++;
+        }
+    }
+
+    get textBaseline()
+    {
+        return this._textBaseline;
+    }
+    set textBaseline(textBaseline)
+    {
+        if (this._textBaseline !== textBaseline)
+        {
+            this._textBaseline = textBaseline;
+            this.styleID++;
+        }
+    }
+
+    get wordWrap()
+    {
+        return this._wordWrap;
+    }
+    set wordWrap(wordWrap)
+    {
+        if (this._wordWrap !== wordWrap)
+        {
+            this._wordWrap = wordWrap;
+            this.styleID++;
+        }
+    }
+
+    get wordWrapWidth()
+    {
+        return this._wordWrapWidth;
+    }
+    set wordWrapWidth(wordWrapWidth)
+    {
+        if (this._wordWrapWidth !== wordWrapWidth)
+        {
+            this._wordWrapWidth = wordWrapWidth;
+            this.styleID++;
+        }
+    }
+}
+
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
@@ -492,3 +445,5 @@ function getColor(color)
 
     return color;
 }
+
+export default TextStyle;

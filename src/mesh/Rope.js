@@ -1,5 +1,5 @@
-let Mesh = require('./Mesh');
-let core = require('../core');
+import Mesh from './Mesh';
+import core from '../core';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -18,7 +18,8 @@ let core = require('../core');
  * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
  *
  */
-class Rope extends Mesh {
+class Rope extends Mesh
+{
     constructor(texture, points)
     {
         super(texture);
@@ -209,4 +210,4 @@ class Rope extends Mesh {
 
 }
 
-module.exports = Rope;
+export default Rope;

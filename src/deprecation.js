@@ -1,9 +1,9 @@
 /*global console */
-let core = require('./core'),
-    mesh = require('./mesh'),
-    particles = require('./particles'),
-    extras = require('./extras'),
-    filters = require('./filters');
+import core from './core';
+import mesh from './mesh';
+import particles from './particles';
+import extras from './extras';
+import filters from './filters';
 
 // @if DEBUG
 // provide method to give a stack track for warnings

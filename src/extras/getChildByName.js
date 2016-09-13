@@ -1,4 +1,4 @@
-let core = require('../core');
+import core from '../core';
 
 /**
  * The instance name of the object.

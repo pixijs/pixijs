@@ -1,4 +1,4 @@
-let CONST = require('../../../const');
+import CONST from '../../../const';
 
 /**
  * Creates a Canvas element of the given size.
@@ -9,7 +9,8 @@ let CONST = require('../../../const');
  * @param height {number} the height for the newly created canvas
  * @param [resolution=1] The resolution / device pixel ratio of the canvas
  */
-class CanvasRenderTarget {
+class CanvasRenderTarget
+{
     constructor(width, height, resolution)
     {
         /**
@@ -65,41 +66,35 @@ class CanvasRenderTarget {
         this.canvas = null;
     }
 
-}
-
-module.exports = CanvasRenderTarget;
-
-Object.defineProperties(CanvasRenderTarget.prototype, {
     /**
      * The width of the canvas buffer in pixels.
      *
      * @member {number}
      * @memberof PIXI.CanvasRenderTarget#
      */
-    width: {
-        get: function ()
-        {
-            return this.canvas.width;
-        },
-        set: function (val)
-        {
-            this.canvas.width = val;
-        }
-    },
+    get width()
+    {
+        return this.canvas.width;
+    }
+    set width(val)
+    {
+        this.canvas.width = val;
+    }
+
     /**
      * The height of the canvas buffer in pixels.
      *
      * @member {number}
      * @memberof PIXI.CanvasRenderTarget#
      */
-    height: {
-        get: function ()
-        {
-            return this.canvas.height;
-        },
-        set: function (val)
-        {
-            this.canvas.height = val;
-        }
+    get height()
+    {
+        return this.canvas.height;
     }
-});
+    set height(val)
+    {
+        this.canvas.height = val;
+    }
+}
+
+export default CanvasRenderTarget;

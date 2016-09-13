@@ -1,7 +1,8 @@
-let extractUniformsFromSrc = require('./extractUniformsFromSrc'),
-    utils = require('../../../utils'),
-    CONST = require('../../../const'),
-    SOURCE_KEY_MAP = {};
+import extractUniformsFromSrc from './extractUniformsFromSrc';
+import utils from '../../../utils';
+import CONST from '../../../const';
+
+const SOURCE_KEY_MAP = {};
 
 // let math = require('../../../math');
 /**
@@ -12,7 +13,8 @@ let extractUniformsFromSrc = require('./extractUniformsFromSrc'),
  * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-class Filter {
+class Filter
+{
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
 
@@ -147,4 +149,4 @@ class Filter {
     
 }
 
-module.exports = Filter;
+export default Filter;

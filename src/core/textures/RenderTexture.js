@@ -1,5 +1,5 @@
-let BaseRenderTexture = require('./BaseRenderTexture'),
-    Texture = require('./Texture');
+import BaseRenderTexture from './BaseRenderTexture';
+import Texture from './Texture';
 
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -40,7 +40,8 @@ let BaseRenderTexture = require('./BaseRenderTexture'),
  * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  */
-class RenderTexture extends Texture {
+class RenderTexture extends Texture
+{
     constructor(baseRenderTexture, frame)
     {
         // suport for legacy..
@@ -119,7 +120,6 @@ class RenderTexture extends Texture {
     {
         return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
     }
-
 }
 
-module.exports = RenderTexture;
+export default RenderTexture;

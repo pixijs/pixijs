@@ -1,4 +1,4 @@
-let mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
+import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
 
 let BLEND = 0,
     DEPTH_TEST = 1,
@@ -13,7 +13,8 @@ let BLEND = 0,
  * @class
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  */
-class WebGLState {
+class WebGLState
+{
     constructor(gl)
     {
         /**
@@ -278,7 +279,6 @@ class WebGLState {
 
         this.setState(this.defaultState);
     }
-
 }
 
-module.exports = WebGLState;
+export default WebGLState;

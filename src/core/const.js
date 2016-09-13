@@ -1,10 +1,11 @@
+import maxRecommendedTextures from './utils/maxRecommendedTextures';
 
 /**
  * Constant values used in pixi
  *
  * @lends PIXI
  */
-let CONST = {
+const CONST = {
     /**
      * String of the current PIXI version.
      *
@@ -362,7 +363,7 @@ let CONST = {
      * @constant
      * @type {number}
      */
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
+    SPRITE_MAX_TEXTURES: maxRecommendedTextures(32)
 };
 
-module.exports = CONST;
+export default CONST;

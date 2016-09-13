@@ -1,12 +1,12 @@
-let utils = require('../../utils'),
-    canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
+import utils from '../../utils';
+import canUseNewCanvasBlendModes from '../../renderers/canvas/utils/canUseNewCanvasBlendModes';
 
 /**
  * Utility methods for Sprite/Texture tinting.
  *
  * @namespace PIXI.CanvasTinter
  */
-let CanvasTinter = module.exports = {
+const CanvasTinter = {
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
      *
@@ -266,3 +266,5 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
+
+export default CanvasTinter;

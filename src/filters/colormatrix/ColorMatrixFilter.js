@@ -1,6 +1,5 @@
-let core = require('../../core');
-// @see https://github.com/substack/brfs/issues/25
-let glslify  = require('glslify');
+import core from '../../core';
+const glslify = require('glslify');
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
@@ -17,7 +16,8 @@ let glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class ColorMatrixFilter extends core.Filter {
+class ColorMatrixFilter extends core.Filter
+{
     constructor()
     {
         super(
@@ -32,8 +32,6 @@ class ColorMatrixFilter extends core.Filter {
                         0, 1, 0, 0, 0,
                         0, 0, 1, 0, 0,
                         0, 0, 0, 1, 0];
-
-
     }
 
 
@@ -528,14 +526,6 @@ class ColorMatrixFilter extends core.Filter {
         this._loadMatrix(matrix, false);
     }
 
-}
-
-//Americanized alias
-ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
-
-module.exports = ColorMatrixFilter;
-
-Object.defineProperties(ColorMatrixFilter.prototype, {
     /**
      * Sets the matrix of the color matrix filter
      *
@@ -543,14 +533,17 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
      * @memberof PIXI.filters.ColorMatrixFilter#
      * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
      */
-    matrix: {
-        get: function ()
-        {
-            return this.uniforms.m;
-        },
-        set: function (value)
-        {
-            this.uniforms.m = value;
-        }
+    get matrix()
+    {
+        return this.uniforms.m;
     }
-});
+    set matrix(value)
+    {
+        this.uniforms.m = value;
+    }
+}
+
+//Americanized alias
+ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
+
+export default ColorMatrixFilter;

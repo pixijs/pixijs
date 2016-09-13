@@ -1,4 +1,4 @@
-let core = require('../core');
+import core from '../core';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -32,7 +32,8 @@ let core = require('../core');
  * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
  * @param [batchSize=15000] {number} Number of particles per batch.
  */
-class ParticleContainer extends core.Container {
+class ParticleContainer extends core.Container
+{
     constructor(maxSize, properties, batchSize)
     {
         super();
@@ -330,4 +331,4 @@ class ParticleContainer extends core.Container {
 
 }
 
-module.exports = ParticleContainer;
+export default ParticleContainer;

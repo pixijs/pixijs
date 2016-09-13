@@ -1,19 +1,20 @@
-let Container = require('../display/Container'),
-    RenderTexture = require('../textures/RenderTexture'),
-    Texture = require('../textures/Texture'),
-    GraphicsData = require('./GraphicsData'),
-    Sprite = require('../sprites/Sprite'),
-    math = require('../math'),
-    CONST = require('../const'),
-    utils = require('../utils'),
-    Bounds = require('../display/Bounds'),
-    bezierCurveTo = require('./utils/bezierCurveTo'),
-    CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
-    canvasRenderer,
-    tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point(),
-    tempColor1 = new Float32Array(4),
-    tempColor2 = new Float32Array(4);
+import Container from '../display/Container';
+import RenderTexture from '../textures/RenderTexture';
+import Texture from '../textures/Texture';
+import GraphicsData from './GraphicsData';
+import Sprite from '../sprites/Sprite';
+import math from '../math';
+import CONST from '../const';
+import utils from '../utils';
+import Bounds from '../display/Bounds';
+import bezierCurveTo from './utils/bezierCurveTo';
+import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
+
+let canvasRenderer;
+const tempMatrix = new math.Matrix();
+const tempPoint = new math.Point();
+const tempColor1 = new Float32Array(4);
+const tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -23,7 +24,8 @@ let Container = require('../display/Container'),
  * @extends PIXI.Container
  * @memberof PIXI
  */
-class Graphics extends Container {
+class Graphics extends Container
+{
     constructor()
     {
         super();
@@ -1051,4 +1053,4 @@ class Graphics extends Container {
 
 Graphics._SPRITE_TEXTURE = null;
 
-module.exports = Graphics;
+export default Graphics;

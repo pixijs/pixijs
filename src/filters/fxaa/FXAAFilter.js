@@ -1,5 +1,5 @@
-let core = require('../../core');
-let glslify  = require('glslify');
+import core from '../../core';
+const glslify = require('glslify');
 
 /**
  *
@@ -14,7 +14,8 @@ let glslify  = require('glslify');
  * @memberof PIXI
  *
  */
-class FXAAFilter extends core.Filter {
+class FXAAFilter extends core.Filter
+{
     constructor()
     {
         //TODO - needs work
@@ -28,4 +29,4 @@ class FXAAFilter extends core.Filter {
     }
 }
 
-module.exports = FXAAFilter;
+export default FXAAFilter;

@@ -1,5 +1,5 @@
-let Rectangle = require('./Rectangle'),
-    CONST = require('../../const');
+import Rectangle from './Rectangle';
+import CONST from '../../const';
 
 /**
  * The Ellipse object can be used to specify a hit area for displayObjects
@@ -11,7 +11,8 @@ let Rectangle = require('./Rectangle'),
  * @param width {number} The half width of this ellipse
  * @param height {number} The half height of this ellipse
  */
-class Ellipse {
+class Ellipse
+{
     constructor(x, y, width, height)
     {
         /**
@@ -94,4 +95,4 @@ class Ellipse {
     }
 }
 
-module.exports = Ellipse;
+export default Ellipse;

@@ -1,4 +1,4 @@
-let Shader = require('../../core/Shader');
+import Shader from '../../core/Shader';
 
 /**
  * @class
@@ -6,7 +6,8 @@ let Shader = require('../../core/Shader');
  * @memberof PIXI
  * @param gl {PIXI.Shader} The webgl shader manager this shader works for.
  */
-class ParticleShader extends Shader {
+class ParticleShader extends Shader
+{
     constructor(gl)
     {
         super(
@@ -60,4 +61,4 @@ class ParticleShader extends Shader {
     }
 }
 
-module.exports = ParticleShader;
+export default ParticleShader;

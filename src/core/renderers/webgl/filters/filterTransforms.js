@@ -1,4 +1,4 @@
-let math = require('../../../math');
+import math from '../../../math';
 
 /*
  * Calculates the mapped matrix
@@ -8,7 +8,7 @@ let math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-let calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+const calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
      //let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
@@ -24,7 +24,7 @@ let calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
 };
 
-let calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+const calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
     let mappedMatrix = outputMatrix.identity();
 
@@ -39,7 +39,7 @@ let calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 };
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
-let calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
+const calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
     let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
@@ -76,8 +76,8 @@ let calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
     return mappedMatrix;
 };
 
-module.exports = {
-    calculateScreenSpaceMatrix:calculateScreenSpaceMatrix,
-    calculateNormalizedScreenSpaceMatrix:calculateNormalizedScreenSpaceMatrix,
-    calculateSpriteMatrix:calculateSpriteMatrix
+export default {
+    calculateScreenSpaceMatrix,
+    calculateNormalizedScreenSpaceMatrix,
+    calculateSpriteMatrix
 };

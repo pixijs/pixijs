@@ -1,9 +1,9 @@
-let BaseTexture = require('./BaseTexture'),
-    VideoBaseTexture = require('./VideoBaseTexture'),
-    TextureUvs = require('./TextureUvs'),
-    EventEmitter = require('eventemitter3'),
-    math = require('../math'),
-    utils = require('../utils');
+import BaseTexture from './BaseTexture';
+import VideoBaseTexture from './VideoBaseTexture';
+import TextureUvs from './TextureUvs';
+import EventEmitter from 'eventemitter3';
+import math from '../math';
+import utils from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -25,7 +25,8 @@ let BaseTexture = require('./BaseTexture'),
  * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
  * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
-class Texture extends EventEmitter {
+class Texture extends EventEmitter
+{
     constructor(baseTexture, frame, orig, trim, rotate)
     {
         super();
@@ -420,47 +421,41 @@ class Texture extends EventEmitter {
         return texture;
     }
 
-}
-
-module.exports = Texture;
-
-Object.defineProperties(Texture.prototype, {
     /**
      * The frame specifies the region of the base texture that this texture uses.
      *
      * @member {PIXI.Rectangle}
      * @memberof PIXI.Texture#
      */
-    frame: {
-        get: function ()
+    get frame()
+    {
+        return this._frame;
+    }
+    set frame(frame)
+    {
+        this._frame = frame;
+
+        this.noFrame = false;
+
+        if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
         {
-            return this._frame;
-        },
-        set: function (frame)
-        {
-            this._frame = frame;
-
-            this.noFrame = false;
-
-            if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
-            {
-                throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
-            }
-
-            //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
-            this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
-
-            if (!this.trim && !this.rotate)
-            {
-                this.orig = frame;
-            }
-
-            if (this.valid)
-            {
-                this._updateUvs();
-            }
+            throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
         }
-    },
+
+        //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
+
+        if (!this.trim && !this.rotate)
+        {
+            this.orig = frame;
+        }
+
+        if (this.valid)
+        {
+            this._updateUvs();
+        }
+    }
+
     /**
      * Indicates whether the texture is rotated inside the atlas
      * set to 2 to compensate for texture packer rotation
@@ -470,43 +465,37 @@ Object.defineProperties(Texture.prototype, {
      *
      * @member {number}
      */
-    rotate: {
-        get: function ()
+    get rotate()
+    {
+        return this._rotate;
+    }
+    set rotate(rotate)
+    {
+        this._rotate = rotate;
+        if (this.valid)
         {
-            return this._rotate;
-        },
-        set: function (rotate)
-        {
-            this._rotate = rotate;
-            if (this.valid)
-            {
-                this._updateUvs();
-            }
+            this._updateUvs();
         }
-    },
+    }
 
     /**
      * The width of the Texture in pixels.
      *
      * @member {number}
      */
-    width: {
-        get: function() {
-            return this.orig ? this.orig.width : 0;
-        }
-    },
+    get width() {
+        return this.orig ? this.orig.width : 0;
+    }
 
     /**
      * The height of the Texture in pixels.
      *
      * @member {number}
      */
-    height: {
-        get: function() {
-            return this.orig ? this.orig.height : 0;
-        }
+    get height() {
+        return this.orig ? this.orig.height : 0;
     }
-});
+}
 
 /**
  * An empty texture, used often to not have to create multiple empty textures.
@@ -521,3 +510,4 @@ Texture.EMPTY.on = function() {};
 Texture.EMPTY.once = function() {};
 Texture.EMPTY.emit = function() {};
 
+export default Texture;

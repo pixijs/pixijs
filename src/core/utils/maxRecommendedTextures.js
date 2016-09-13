@@ -1,10 +1,7 @@
+import Device from 'ismobilejs';
 
-
-let  Device = require('ismobilejs');
-
-let maxRecommendedTextures = function(max)
+const maxRecommendedTextures = function(max)
 {
-
 	if(Device.tablet || Device.phone)
 	{
 		// check if the res is iphone 6 or higher..
@@ -17,4 +14,4 @@ let maxRecommendedTextures = function(max)
 	}
 };
 
-module.exports = maxRecommendedTextures;
+export default maxRecommendedTextures;

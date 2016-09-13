@@ -1,5 +1,5 @@
-let Rectangle = require('./Rectangle'),
-    CONST = require('../../const');
+import Rectangle from './Rectangle';
+import CONST from '../../const';
 
 /**
  * The Circle object can be used to specify a hit area for displayObjects
@@ -10,7 +10,8 @@ let Rectangle = require('./Rectangle'),
  * @param y {number} The Y coordinate of the center of this circle
  * @param radius {number} The radius of the circle
  */
-class Circle {
+class Circle
+{
     constructor(x, y, radius)
     {
         /**
@@ -85,7 +86,6 @@ class Circle {
     {
         return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
-
 }
 
-module.exports = Circle;
+export default Circle;

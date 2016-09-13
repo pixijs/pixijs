@@ -1,7 +1,8 @@
-let CONST = require('../const'),
-    EventEmitter = require('eventemitter3'),
-    // Internal event used by composed emitter
-    TICK = 'tick';
+import CONST from '../const';
+import EventEmitter from 'eventemitter3';
+
+// Internal event used by composed emitter
+const TICK = 'tick';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
@@ -13,7 +14,8 @@ let CONST = require('../const'),
  * @class
  * @memberof PIXI.ticker
  */
-class Ticker {
+class Ticker
+{
     constructor()
     {
         /**
@@ -104,6 +106,9 @@ class Ticker {
          * @default false
          */
         this.started = false;
+
+        // Bind tick
+        this._tick = this._tick.bind(this);
     }
 
     /**
@@ -116,20 +121,18 @@ class Ticker {
      *
      * @private
      */
-    _tick(time) {
+    _tick(time)
+    {
+        this._requestId = null;
 
-        let _this = this;
-
-        _this._requestId = null;
-
-        if (_this.started)
+        if (this.started)
         {
             // Invoke listeners now
-            _this.update(time);
+            this.update(time);
             // Listener side effects may have modified ticker state.
-            if (_this.started && _this._requestId === null && _this._emitter.listeners(TICK, true))
+            if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
             {
-                _this._requestId = requestAnimationFrame(_this._tick);
+                this._requestId = requestAnimationFrame(this._tick);
             }
         }
     }
@@ -329,9 +332,6 @@ class Ticker {
         this.lastTime = currentTime;
     }
 
-}
-
-Object.defineProperties(Ticker.prototype, {
     /**
      * The frames per second at which this ticker is running.
      * The default is approximately 60 in most modern browsers.
@@ -342,12 +342,10 @@ Object.defineProperties(Ticker.prototype, {
      * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
-    FPS: {
-        get: function()
-        {
-            return 1000 / this.elapsedMS;
-        }
-    },
+    get FPS()
+    {
+        return 1000 / this.elapsedMS;
+    }
 
     /**
      * Manages the maximum amount of milliseconds allowed to
@@ -360,18 +358,16 @@ Object.defineProperties(Ticker.prototype, {
      * @memberof PIXI.ticker.Ticker#
      * @default 10
      */
-    minFPS: {
-        get: function()
-        {
-            return 1000 / this._maxElapsedMS;
-        },
-        set: function(fps)
-        {
-            // Clamp: 0 to TARGET_FPMS
-            let minFPMS = Math.min(Math.max(0, fps) / 1000, CONST.TARGET_FPMS);
-            this._maxElapsedMS = 1 / minFPMS;
-        }
+    get minFPS()
+    {
+        return 1000 / this._maxElapsedMS;
     }
-});
+    set minFPS(fps)
+    {
+        // Clamp: 0 to TARGET_FPMS
+        let minFPMS = Math.min(Math.max(0, fps) / 1000, CONST.TARGET_FPMS);
+        this._maxElapsedMS = 1 / minFPMS;
+    }
+}
 
-module.exports = Ticker;
+export default Ticker;

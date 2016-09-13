@@ -1,5 +1,5 @@
-let utils = require('../utils'),
-    DisplayObject = require('./DisplayObject');
+import utils from '../utils';
+import DisplayObject from './DisplayObject';
 
 /**
  * A Container represents a collection of display objects.
@@ -13,7 +13,8 @@ let utils = require('../utils'),
  * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
-class Container extends DisplayObject { 
+class Container extends DisplayObject
+{ 
     constructor()
     {
         super();
@@ -519,40 +520,33 @@ class Container extends DisplayObject {
         }
     }
 
-}
-
-module.exports = Container;
-
-Object.defineProperties(Container.prototype, {
     /**
      * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Container#
      */
-    width: {
-        get: function ()
+    get width()
+    {
+        return this.scale.x * this.getLocalBounds().width;
+    }
+    set width(value)
+    {
+
+        let width = this.getLocalBounds().width;
+
+        if (width !== 0)
         {
-            return this.scale.x * this.getLocalBounds().width;
-        },
-        set: function (value)
-        {
-
-            let width = this.getLocalBounds().width;
-
-            if (width !== 0)
-            {
-                this.scale.x = value / width;
-            }
-            else
-            {
-                this.scale.x = 1;
-            }
-
-
-            this._width = value;
+            this.scale.x = value / width;
         }
-    },
+        else
+        {
+            this.scale.x = 1;
+        }
+
+
+        this._width = value;
+    }
 
     /**
      * The height of the Container, setting this will actually modify the scale to achieve the value set
@@ -560,29 +554,29 @@ Object.defineProperties(Container.prototype, {
      * @member {number}
      * @memberof PIXI.Container#
      */
-    height: {
-        get: function ()
-        {
-            return  this.scale.y * this.getLocalBounds().height;
-        },
-        set: function (value)
-        {
-
-            let height = this.getLocalBounds().height;
-
-            if (height !== 0)
-            {
-                this.scale.y = value / height ;
-            }
-            else
-            {
-                this.scale.y = 1;
-            }
-
-            this._height = value;
-        }
+    get height()
+    {
+        return  this.scale.y * this.getLocalBounds().height;
     }
-});
+    set height(value)
+    {
+
+        let height = this.getLocalBounds().height;
+
+        if (height !== 0)
+        {
+            this.scale.y = value / height ;
+        }
+        else
+        {
+            this.scale.y = 1;
+        }
+
+        this._height = value;
+    }
+}
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
+
+export default Container;

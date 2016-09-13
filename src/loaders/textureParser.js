@@ -1,6 +1,6 @@
-let core = require('../core');
+import core from '../core';
 
-module.exports = function ()
+export default function ()
 {
     return function (resource, next)
     {
@@ -17,4 +17,4 @@ module.exports = function ()
 
         next();
     };
-};
+}

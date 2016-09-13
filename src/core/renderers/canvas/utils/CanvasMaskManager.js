@@ -1,11 +1,13 @@
-let CONST = require('../../../const');
+import CONST from '../../../const';
+
 /**
  * A set of functions used to handle masking.
  *
  * @class
  * @memberof PIXI
  */
-class CanvasMaskManager {
+class CanvasMaskManager
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -156,7 +158,6 @@ class CanvasMaskManager {
     }
 
     destroy() {}
-
 }
 
-module.exports = CanvasMaskManager;
+export default CanvasMaskManager;

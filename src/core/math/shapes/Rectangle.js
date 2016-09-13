@@ -1,4 +1,4 @@
-let CONST = require('../../const');
+import CONST from '../../const';
 
 /**
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
@@ -10,7 +10,8 @@ let CONST = require('../../const');
  * @param width {number} The overall width of this rectangle
  * @param height {number} The overall height of this rectangle
  */
-class Rectangle {
+class Rectangle
+{
     constructor(x, y, width, height)
     {
         /**
@@ -170,7 +171,6 @@ class Rectangle {
         this.y = y1;
         this.height = y2 - y1;
     }
-
 }
 
-module.exports = Rectangle;
+export default Rectangle;

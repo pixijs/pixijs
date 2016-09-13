@@ -1,7 +1,7 @@
-let GLTexture = require('pixi-gl-core').GLTexture,
-    CONST = require('../../const'),
-    RenderTarget = require('./utils/RenderTarget'),
-	utils = require('../../utils');
+import {GLTexture} from 'pixi-gl-core';
+import CONST from '../../const';
+import RenderTarget from './utils/RenderTarget';
+import utils from '../../utils';
 
 /**
  * Helper class to create a webGL Texture
@@ -10,7 +10,8 @@ let GLTexture = require('pixi-gl-core').GLTexture,
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-class TextureManager {
+class TextureManager
+{
     constructor(renderer)
     {
         /**
@@ -202,7 +203,6 @@ class TextureManager {
 
         this._managedTextures = null;
     }
-
 }
 
-module.exports = TextureManager;
+export default TextureManager;

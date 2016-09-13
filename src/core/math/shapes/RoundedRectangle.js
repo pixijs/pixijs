@@ -1,4 +1,4 @@
-let CONST = require('../../const');
+import CONST from '../../const';
 
 /**
  * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height and its radius.
@@ -11,7 +11,8 @@ let CONST = require('../../const');
  * @param height {number} The overall height of this rounded rectangle
  * @param radius {number} Controls the radius of the rounded corners
  */
-class RoundedRectangle {
+class RoundedRectangle
+{
     constructor(x, y, width, height, radius)
     {
         /**
@@ -89,7 +90,6 @@ class RoundedRectangle {
 
         return false;
     }
-    
 }
 
-module.exports = RoundedRectangle;
+export default RoundedRectangle;

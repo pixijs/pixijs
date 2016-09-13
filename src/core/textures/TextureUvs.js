@@ -1,4 +1,4 @@
-let GroupD8 = require('../math/GroupD8');
+import GroupD8 from '../math/GroupD8';
 
 /**
  * A standard object to store the Uvs of a texture
@@ -7,7 +7,8 @@ let GroupD8 = require('../math/GroupD8');
  * @private
  * @memberof PIXI
  */
-class TextureUvs {
+class TextureUvs
+{
     constructor()
     {
         this.x0 = 0;
@@ -79,7 +80,6 @@ class TextureUvs {
         this.uvsUint32[2] = (((this.y2 * 65535) & 0xFFFF) << 16) | ((this.x2 * 65535) & 0xFFFF);
         this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
     }
-
 }
 
-module.exports = TextureUvs;
+export default TextureUvs;

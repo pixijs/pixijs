@@ -1,5 +1,5 @@
-let Shader = require('../../core/Shader');
-let glslify  = require('glslify');
+import Shader from '../../core/Shader';
+const glslify = require('glslify');
 
 /**
  * @class
@@ -7,7 +7,8 @@ let glslify  = require('glslify');
  * @memberof PIXI.mesh
  * @param gl {PIXI.Shader} The WebGL shader manager this shader works for.
  */
-class TilingShader extends Shader {
+class TilingShader extends Shader
+{
     constructor(gl)
     {
         super(
@@ -18,4 +19,4 @@ class TilingShader extends Shader {
     }
 }
 
-module.exports = TilingShader;
+export default TilingShader;

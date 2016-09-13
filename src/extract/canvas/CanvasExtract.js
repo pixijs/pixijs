@@ -1,5 +1,5 @@
-let core = require('../../core'),
-    tempRect = new core.Rectangle();
+import core from '../../core';
+const tempRect = new core.Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers
@@ -7,7 +7,8 @@ let core = require('../../core'),
  * @memberof PIXI
  * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-class CanvasExtract {
+class CanvasExtract
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -143,9 +144,8 @@ class CanvasExtract {
         this.renderer.extract = null;
         this.renderer = null;
     }
-
 }
 
-module.exports = CanvasExtract;
-
 core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
+
+export default CanvasExtract;

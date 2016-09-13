@@ -1,12 +1,13 @@
-let WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
+import WebGLManager from './WebGLManager';
+import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class MaskManager extends WebGLManager {
+class MaskManager extends WebGLManager
+{
     constructor(renderer)
     {
         super(renderer);
@@ -188,7 +189,6 @@ class MaskManager extends WebGLManager {
         let gl = this.renderer.gl;
         gl.disable(gl.SCISSOR_TEST);
     }
-
 }
 
-module.exports = MaskManager;
+export default MaskManager;

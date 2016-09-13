@@ -1,6 +1,7 @@
-let core = require('../core'),
-    DisplayObject = core.DisplayObject,
-    _tempMatrix = new core.Matrix();
+import core from '../core';
+
+const DisplayObject = core.DisplayObject;
+const _tempMatrix = new core.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = false;

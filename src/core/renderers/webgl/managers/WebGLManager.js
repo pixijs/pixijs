@@ -3,7 +3,8 @@
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class WebGLManager {
+class WebGLManager
+{
     constructor(renderer)
     {
         /**
@@ -35,7 +36,6 @@ class WebGLManager {
 
         this.renderer = null;
     }
-
 }
 
-module.exports = WebGLManager;
+export default WebGLManager;

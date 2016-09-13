@@ -1,5 +1,5 @@
-let glCore = require('pixi-gl-core'),
-    createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
+import glCore from 'pixi-gl-core';
+import createIndicesForQuads from '../../core/utils/createIndicesForQuads';
 
 /**
  * @author Mat Groves
@@ -19,7 +19,8 @@ let glCore = require('pixi-gl-core'),
  * @private
  * @memberof PIXI
  */
-class ParticleBuffer {
+class ParticleBuffer
+{
     constructor(gl, properties, dynamicPropertyFlags, size)
     {
         /**
@@ -228,4 +229,4 @@ class ParticleBuffer {
 
 }
 
-module.exports = ParticleBuffer;
+export default ParticleBuffer;

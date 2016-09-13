@@ -1,7 +1,7 @@
-let core = require('../../core');
-let generateBlurVertSource  = require('./generateBlurVertSource');
-let generateBlurFragSource  = require('./generateBlurFragSource');
-let getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
+import core from '../../core';
+import generateBlurVertSource from './generateBlurVertSource';
+import generateBlurFragSource from './generateBlurFragSource';
+import getMaxBlurKernelSize from './getMaxBlurKernelSize';
 
 /**
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
@@ -10,7 +10,8 @@ let getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class BlurYFilter extends core.Filter {
+class BlurYFilter extends core.Filter
+{
     constructor(strength, quality, resolution)
     {
         let vertSrc = generateBlurVertSource(5, false);
@@ -76,11 +77,6 @@ class BlurYFilter extends core.Filter {
         }
     }
 
-}
-
-module.exports = BlurYFilter;
-
-Object.defineProperties(BlurYFilter.prototype, {
     /**
      * Sets the strength of both the blur.
      *
@@ -88,17 +84,15 @@ Object.defineProperties(BlurYFilter.prototype, {
      * @memberof PIXI.filters.BlurYFilter#
      * @default 2
      */
-    blur: {
-        get: function ()
-        {
-            return  this.strength;
-        },
-        set: function (value)
-        {
-            this.padding = Math.abs(value) * 2;
-            this.strength = value;
-        }
-    },
+    get blur()
+    {
+        return  this.strength;
+    }
+    set blur(value)
+    {
+        this.padding = Math.abs(value) * 2;
+        this.strength = value;
+    }
 
     /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
@@ -107,15 +101,15 @@ Object.defineProperties(BlurYFilter.prototype, {
      * @memberof PIXI.filters.BlurXFilter#
      * @default 4
      */
-    quality: {
-        get: function ()
-        {
-            return  this._quality;
-        },
-        set: function (value)
-        {
-            this._quality = value;
-            this.passes = value;
-        }
+    get quality()
+    {
+        return  this._quality;
     }
-});
+    set quality(value)
+    {
+        this._quality = value;
+        this.passes = value;
+    }
+}
+
+export default BlurYFilter;   

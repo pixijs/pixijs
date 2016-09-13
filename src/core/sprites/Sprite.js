@@ -1,9 +1,10 @@
-let math = require('../math'),
-    Texture = require('../textures/Texture'),
-    Container = require('../display/Container'),
-    utils = require('../utils'),
-    CONST = require('../const'),
-    tempPoint = new math.Point();
+import math from '../math';
+import Texture from '../textures/Texture';
+import Container from '../display/Container';
+import utils from '../utils';
+import CONST from '../const';
+
+const tempPoint = new math.Point();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -19,7 +20,8 @@ let math = require('../math'),
  * @memberof PIXI
  * @param texture {PIXI.Texture} The texture for this sprite
  */
-class Sprite extends Container {
+class Sprite extends Container
+{
     constructor(texture)
     {
         super();
@@ -429,29 +431,22 @@ class Sprite extends Container {
         return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
     }
 
-}
-
-module.exports = Sprite;
-
-Object.defineProperties(Sprite.prototype, {
     /**
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Sprite#
      */
-    width: {
-        get: function ()
-        {
-            return Math.abs(this.scale.x) * this.texture.orig.width;
-        },
-        set: function (value)
-        {
-            let sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
-        }
-    },
+    get width()
+    {
+        return Math.abs(this.scale.x) * this.texture.orig.width;
+    }
+    set width(value)
+    {
+        let sign = utils.sign(this.scale.x) || 1;
+        this.scale.x = sign * value / this.texture.orig.width;
+        this._width = value;
+    }
 
     /**
      * The height of the sprite, setting this will actually modify the scale to achieve the value set
@@ -459,30 +454,26 @@ Object.defineProperties(Sprite.prototype, {
      * @member {number}
      * @memberof PIXI.Sprite#
      */
-    height: {
-        get: function ()
-        {
-            return  Math.abs(this.scale.y) * this.texture.orig.height;
-        },
-        set: function (value)
-        {
-            let sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
-            this._height = value;
-        }
-    },
+    get height()
+    {
+        return  Math.abs(this.scale.y) * this.texture.orig.height;
+    }
+    set height(value)
+    {
+        let sign = utils.sign(this.scale.y) || 1;
+        this.scale.y = sign * value / this.texture.orig.height;
+        this._height = value;
+    }
 
-    tint: {
-        get: function ()
-        {
-            return  this._tint;
-        },
-        set: function (value)
-        {
-            this._tint = value;
-            this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
-        }
-    },
+    get tint()
+    {
+        return  this._tint;
+    }
+    set tint(value)
+    {
+        this._tint = value;
+        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+    }
 
     /**
      * The texture that the sprite is using
@@ -490,35 +481,35 @@ Object.defineProperties(Sprite.prototype, {
      * @member {PIXI.Texture}
      * @memberof PIXI.Sprite#
      */
-    texture: {
-        get: function ()
+    get texture()
+    {
+        return  this._texture;
+    }
+    set texture(value)
+    {
+        if (this._texture === value)
         {
-            return  this._texture;
-        },
-        set: function (value)
+            return;
+        }
+
+        this._texture = value;
+        this.cachedTint = 0xFFFFFF;
+
+        this._textureID = -1;
+
+        if (value)
         {
-            if (this._texture === value)
+            // wait for the texture to load
+            if (value.baseTexture.hasLoaded)
             {
-                return;
+                this._onTextureUpdate();
             }
-
-            this._texture = value;
-            this.cachedTint = 0xFFFFFF;
-
-            this._textureID = -1;
-
-            if (value)
+            else
             {
-                // wait for the texture to load
-                if (value.baseTexture.hasLoaded)
-                {
-                    this._onTextureUpdate();
-                }
-                else
-                {
-                    value.once('update', this._onTextureUpdate, this);
-                }
+                value.once('update', this._onTextureUpdate, this);
             }
         }
     }
-});
+}
+
+export default Sprite;

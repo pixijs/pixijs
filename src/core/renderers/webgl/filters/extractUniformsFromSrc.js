@@ -1,4 +1,6 @@
-let defaultValue = require('pixi-gl-core').shader.defaultValue;
+import glCore from 'pixi-gl-core';
+
+let defaultValue = glCore.shader.defaultValue;
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
@@ -57,4 +59,4 @@ function extractUniformsFromString(string)
     return uniforms;
 }
 
-module.exports = extractUniformsFromSrc;
+export default extractUniformsFromSrc;

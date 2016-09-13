@@ -1,5 +1,5 @@
-let math = require('../math'),
-    Rectangle = math.Rectangle;
+import math from '../math';
+const Rectangle = math.Rectangle;
 
 /**
  * 'Builder' pattern for bounds rectangles
@@ -9,7 +9,8 @@ let math = require('../math'),
  * @class
  * @memberof PIXI
  */
-class Bounds { 
+class Bounds
+{ 
     constructor()
     {
         /**
@@ -221,4 +222,4 @@ class Bounds {
     }
 }    
 
-module.exports = Bounds;
+export default Bounds;

@@ -55,7 +55,7 @@ function pluginTarget(obj)
 }
 
 
-module.exports = {
+export default {
     /**
      * Mixes in the properties of the pluginTarget into another object
      *

@@ -1,5 +1,5 @@
-let core = require('../core'),
-    ObservablePoint = require('../core/math/ObservablePoint');
+import core from '../core';
+import ObservablePoint from '../core/math/ObservablePoint';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -28,7 +28,8 @@ let core = require('../core'),
  *      single line text
  * @param [style.tint=0xFFFFFF] {number} The tint color
  */
-class BitmapText extends core.Container {
+class BitmapText extends core.Container
+{
     constructor(text, style)
     {
         super();
@@ -310,29 +311,22 @@ class BitmapText extends core.Container {
         this.dirty = true;
     }
 
-}
-
-module.exports = BitmapText;
-
-Object.defineProperties(BitmapText.prototype, {
     /**
      * The tint of the BitmapText object
      *
      * @member {number}
      * @memberof PIXI.extras.BitmapText#
      */
-    tint: {
-        get: function ()
-        {
-            return this._font.tint;
-        },
-        set: function (value)
-        {
-            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+    get tint()
+    {
+        return this._font.tint;
+    }
+    set tint(value)
+    {
+        this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
-            this.dirty = true;
-        }
-    },
+        this.dirty = true;
+    }
 
     /**
      * The alignment of the BitmapText object
@@ -341,18 +335,16 @@ Object.defineProperties(BitmapText.prototype, {
      * @default 'left'
      * @memberof PIXI.extras.BitmapText#
      */
-    align: {
-        get: function ()
-        {
-            return this._font.align;
-        },
-        set: function (value)
-        {
-            this._font.align = value || 'left';
+    get align()
+    {
+        return this._font.align;
+    }
+    set align(value)
+    {
+        this._font.align = value || 'left';
 
-            this.dirty = true;
-        }
-    },
+        this.dirty = true;
+    }
 
     /**
      * The anchor sets the origin point of the text.
@@ -363,19 +355,17 @@ Object.defineProperties(BitmapText.prototype, {
      * @member {PIXI.Point | number}
      * @memberof PIXI.extras.BitmapText#
      */
-    anchor: {
-        get : function() {
-            return this._anchor;
-        },
-        set: function(value) {
-            if (typeof value === 'number'){
-                 this._anchor.set(value);
-            }
-            else {
-                this._anchor.copy(value);
-            }
+    get anchor() {
+        return this._anchor;
+    }
+    set anchor(value) {
+        if (typeof value === 'number'){
+             this._anchor.set(value);
         }
-    },
+        else {
+            this._anchor.copy(value);
+        }
+    }
 
     /**
      * The font descriptor of the BitmapText object
@@ -383,31 +373,29 @@ Object.defineProperties(BitmapText.prototype, {
      * @member {string|object}
      * @memberof PIXI.extras.BitmapText#
      */
-    font: {
-        get: function ()
-        {
-            return this._font;
-        },
-        set: function (value)
-        {
-            if (!value) {
-                return;
-            }
-
-            if (typeof value === 'string') {
-                value = value.split(' ');
-
-                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
-                this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
-            }
-            else {
-                this._font.name = value.name;
-                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
-            }
-
-            this.dirty = true;
+    get font()
+    {
+        return this._font;
+    }
+    set font(value)
+    {
+        if (!value) {
+            return;
         }
-    },
+
+        if (typeof value === 'string') {
+            value = value.split(' ');
+
+            this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+            this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
+        }
+        else {
+            this._font.name = value.name;
+            this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+        }
+
+        this.dirty = true;
+    }
 
     /**
      * The text of the BitmapText object
@@ -415,22 +403,22 @@ Object.defineProperties(BitmapText.prototype, {
      * @member {string}
      * @memberof PIXI.extras.BitmapText#
      */
-    text: {
-        get: function ()
-        {
-            return this._text;
-        },
-        set: function (value)
-        {
-            value = value.toString() || ' ';
-            if (this._text === value)
-            {
-                return;
-            }
-            this._text = value;
-            this.dirty = true;
-        }
+    get text()
+    {
+        return this._text;
     }
-});
+    set text(value)
+    {
+        value = value.toString() || ' ';
+        if (this._text === value)
+        {
+            return;
+        }
+        this._text = value;
+        this.dirty = true;
+    }
+}
+
+export default BitmapText;
 
 BitmapText.fonts = {};

@@ -1,4 +1,4 @@
-let Mesh = require('./Mesh');
+import Mesh from './Mesh';
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -18,7 +18,8 @@ let Mesh = require('./Mesh');
  * @param {number} verticesY - The number of vertices in the y-axis
  *
  */
-class Plane extends Mesh {
+class Plane extends Mesh
+{
     constructor(texture, verticesX, verticesY)
     {
         super(texture);
@@ -118,4 +119,4 @@ class Plane extends Mesh {
 
 }
 
-module.exports = Plane;
+export default Plane;

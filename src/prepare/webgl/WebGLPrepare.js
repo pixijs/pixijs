@@ -1,5 +1,5 @@
-let core = require('../../core'),
-    SharedTicker = core.ticker.shared;
+import core from '../../core';
+const SharedTicker = core.ticker.shared;
 
 /**
  * The prepare manager provides functionality to upload content to the GPU
@@ -7,7 +7,8 @@ let core = require('../../core'),
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-class WebGLPrepare {
+class WebGLPrepare
+{
     constructor(renderer)
     {
         /**
@@ -221,8 +222,6 @@ class WebGLPrepare {
  */
 WebGLPrepare.UPLOADS_PER_FRAME = 4;
 
-module.exports = WebGLPrepare;
-
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU
  * @private
@@ -303,3 +302,5 @@ function findGraphics(item, queue)
 }
 
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
+
+export default WebGLPrepare;

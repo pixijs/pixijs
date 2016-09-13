@@ -1,4 +1,4 @@
-let core = require('../core');
+import core from '../core';
 
 /**
 * Returns the global position of the displayObject

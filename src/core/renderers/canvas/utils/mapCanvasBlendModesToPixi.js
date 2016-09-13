@@ -1,5 +1,5 @@
-let CONST = require('../../../const'),
-canUseNewCanvasBlendModes = require('./canUseNewCanvasBlendModes');
+import CONST from '../../../const';
+import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
 
 /**
  * Maps blend combinations to Canvas
@@ -56,4 +56,4 @@ function mapCanvasBlendModesToPixi(array)
     return array;
 }
 
-module.exports = mapCanvasBlendModesToPixi;
+export default mapCanvasBlendModesToPixi;

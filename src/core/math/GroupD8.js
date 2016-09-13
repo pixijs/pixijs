@@ -1,11 +1,11 @@
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
+import Matrix from './Matrix';
 
 let ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
 let uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
 let vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
 let vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
 let tempMatrices = [];
-let Matrix = require('./Matrix');
 
 let mul = [];
 
@@ -58,7 +58,7 @@ init();
  *
  * @namespace PIXI.GroupD8
  */
-let GroupD8 = {
+const GroupD8 = {
     E: 0,
     SE: 1,
     S: 2,
@@ -159,4 +159,4 @@ let GroupD8 = {
     }
 };
 
-module.exports = GroupD8;
+export default GroupD8;

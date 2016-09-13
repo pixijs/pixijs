@@ -1,9 +1,9 @@
-let SystemRenderer = require('../SystemRenderer'),
-    CanvasMaskManager = require('./utils/CanvasMaskManager'),
-    CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
-    mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
-    utils = require('../../utils'),
-    CONST = require('../../const');
+import SystemRenderer from '../SystemRenderer';
+import CanvasMaskManager from './utils/CanvasMaskManager';
+import CanvasRenderTarget from './utils/CanvasRenderTarget';
+import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
+import utils from '../../utils';
+import CONST from '../../const';
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -24,7 +24,8 @@ let SystemRenderer = require('../SystemRenderer'),
  *      not before the new render pass.
  * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
-class CanvasRenderer extends SystemRenderer {
+class CanvasRenderer extends SystemRenderer
+{
     constructor(width, height, options)
     {
         options = options || {};
@@ -253,10 +254,9 @@ class CanvasRenderer extends SystemRenderer {
         {
             this.rootContext[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
         }
-
     }
-
 }
 
-module.exports = CanvasRenderer;
 utils.pluginTarget.mixin(CanvasRenderer);
+
+export default CanvasRenderer;

@@ -1,10 +1,6 @@
-let math = require('../../../math'),
-    CONST = require('../../../const'),
-    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+import math from '../../../math';
+import CONST from '../../../const';
+import {GLFramebuffer} from 'pixi-gl-core';
 
 /**
  * @class
@@ -16,7 +12,8 @@ let math = require('../../../math'),
  * @param [resolution=1] {number} The current resolution / device pixel ratio
  * @param [root=false] {boolean} Whether this object is the root element or not
  */
-class RenderTarget {
+class RenderTarget
+{
     constructor(gl, width, height, scaleMode, resolution, root)
     {
         //TODO Resolution could go here ( eg low res blurs )
@@ -314,7 +311,6 @@ class RenderTarget {
         this.frameBuffer = null;
         this.texture = null;
     }
-
 }
 
-module.exports = RenderTarget;
+export default RenderTarget;

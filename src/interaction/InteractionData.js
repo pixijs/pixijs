@@ -1,4 +1,4 @@
-let core = require('../core');
+import core from '../core';
 
 /**
  * Holds all information related to an Interaction event
@@ -6,7 +6,8 @@ let core = require('../core');
  * @class
  * @memberof PIXI.interaction
  */
-class InteractionData {
+class InteractionData
+{
     constructor()
     {
         /**
@@ -43,7 +44,6 @@ class InteractionData {
     {
         return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
     }
-
 }
 
-module.exports = InteractionData;
+export default InteractionData;

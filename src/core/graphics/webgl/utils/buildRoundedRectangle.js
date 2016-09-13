@@ -1,6 +1,6 @@
-let earcut = require('earcut'),
-    buildLine = require('./buildLine'),
-    utils = require('../../../utils');
+import earcut from 'earcut';
+import buildLine from './buildLine';
+import utils from '../../../utils';
 
 /**
  * Builds a rounded rectangle to draw
@@ -130,5 +130,4 @@ let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// js
     return points;
 };
 
-
-module.exports = buildRoundedRectangle;
+export default buildRoundedRectangle;

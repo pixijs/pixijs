@@ -1,7 +1,7 @@
-let ResourceLoader = require('resource-loader'),
-    textureParser = require('./textureParser'),
-    spritesheetParser = require('./spritesheetParser'),
-    bitmapFontParser = require('./bitmapFontParser');
+import ResourceLoader from 'resource-loader';
+import textureParser from './textureParser';
+import spritesheetParser from './spritesheetParser';
+import bitmapFontParser from './bitmapFontParser';
 
 /**
  *
@@ -26,7 +26,8 @@ let ResourceLoader = require('resource-loader'),
  * @param [concurrency=10] {number} The number of resources to load concurrently.
  * @see https://github.com/englercj/resource-loader
  */
-class Loader extends ResourceLoader {
+class Loader extends ResourceLoader
+{
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
@@ -36,9 +37,10 @@ class Loader extends ResourceLoader {
         }
     }
 
+    static addPixiMiddleware(fn) {
+        Loader._pixiMiddleware.push(fn);
+    }
 }
-
-module.exports = Loader;
 
 Loader._pixiMiddleware = [
     // parse any blob into more usable objects (e.g. Image)
@@ -51,11 +53,9 @@ Loader._pixiMiddleware = [
     bitmapFontParser
 ];
 
-Loader.addPixiMiddleware = function (fn) {
-    Loader._pixiMiddleware.push(fn);
-};
-
 // Add custom extentions
-let Resource = ResourceLoader.Resource;
+const Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
+
+export default Loader;

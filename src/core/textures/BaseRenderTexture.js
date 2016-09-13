@@ -1,5 +1,5 @@
-let BaseTexture = require('./BaseTexture'),
-    CONST = require('../const');
+import BaseTexture from './BaseTexture';
+import CONST from '../const';
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -45,7 +45,8 @@ let BaseTexture = require('./BaseTexture'),
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
-class BaseRenderTexture extends BaseTexture {
+class BaseRenderTexture extends BaseTexture
+{
     constructor(width, height, scaleMode, resolution)
     {
         super(null, scaleMode);
@@ -125,7 +126,6 @@ class BaseRenderTexture extends BaseTexture {
         super.destroy(true);
         this.renderer = null;
     }
-
 }
 
-module.exports = BaseRenderTexture;
+export default BaseRenderTexture;

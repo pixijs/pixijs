@@ -1,5 +1,3 @@
-
-
 function validateContext(gl)
 {
 	let attributes = gl.getContextAttributes();
@@ -11,4 +9,4 @@ function validateContext(gl)
 	}
 }
 
-module.exports = validateContext;
+export default validateContext;

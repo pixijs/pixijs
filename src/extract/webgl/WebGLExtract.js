@@ -1,5 +1,5 @@
-let core = require('../../core'),
-    tempRect = new core.Rectangle();
+import core from '../../core';
+const tempRect = new core.Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers
@@ -7,7 +7,8 @@ let core = require('../../core'),
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-class WebGLExtract {
+class WebGLExtract
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -188,9 +189,8 @@ class WebGLExtract {
         this.renderer.extract = null;
         this.renderer = null;
     }
-
 }
 
-module.exports = WebGLExtract;
-
 core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
+
+export default WebGLExtract;

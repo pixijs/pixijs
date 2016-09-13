@@ -1,5 +1,5 @@
-let buildLine = require('./buildLine'),
-    utils = require('../../../utils');
+import buildLine from './buildLine';
+import utils from '../../../utils';
 
 /**
  * Builds a rectangle to draw
@@ -70,4 +70,4 @@ let buildRectangle = function (graphicsData, webGLData)
     }
 };
 
-module.exports = buildRectangle;
+export default buildRectangle;

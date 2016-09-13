@@ -1,5 +1,5 @@
-let math = require('../../../math'),
-    utils = require('../../../utils');
+import math from '../../../math';
+import utils from '../../../utils';
 
 /**
  * Builds a line to draw
@@ -11,7 +11,7 @@ let math = require('../../../math'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildLine = function (graphicsData, webGLData)
+const buildLine = function (graphicsData, webGLData)
 {
     // TODO OPTIMISE!
     let i = 0;
@@ -219,4 +219,4 @@ let buildLine = function (graphicsData, webGLData)
     indices.push(indexStart-1);
 };
 
-module.exports = buildLine;
+export default buildLine;

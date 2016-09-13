@@ -1,8 +1,8 @@
-let utils = require('../utils'),
-    CONST = require('../const'),
-    EventEmitter = require('eventemitter3'),
-    determineCrossOrigin = require('../utils/determineCrossOrigin'),
-    bitTwiddle = require('bit-twiddle');
+import utils from '../utils';
+import CONST from '../const';
+import EventEmitter from 'eventemitter3';
+import determineCrossOrigin from '../utils/determineCrossOrigin';
+import bitTwiddle from 'bit-twiddle';
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -13,7 +13,8 @@ let utils = require('../utils'),
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture
  */
-class BaseTexture extends EventEmitter {
+class BaseTexture extends EventEmitter
+{
     constructor(source, scaleMode, resolution)
     {
         super();
@@ -443,7 +444,6 @@ class BaseTexture extends EventEmitter {
 
         return baseTexture;
     }
-
 }
 
-module.exports = BaseTexture;
+export default BaseTexture;

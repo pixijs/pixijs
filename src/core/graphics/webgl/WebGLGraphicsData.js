@@ -1,5 +1,4 @@
-let glCore = require('pixi-gl-core');
-
+import glCore from 'pixi-gl-core';
 
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
@@ -11,7 +10,8 @@ let glCore = require('pixi-gl-core');
  * @param shader {PIXI.Shader} The shader
  * @param attribsState {object} The state for the VAO
  */
-class WebGLGraphicsData {
+class WebGLGraphicsData
+{
     constructor(gl, shader, attribsState)
     {
 
@@ -119,7 +119,6 @@ class WebGLGraphicsData {
         this.glPoints = null;
         this.glIndices = null;
     }
-
 }
 
-module.exports = WebGLGraphicsData;
+export default WebGLGraphicsData;

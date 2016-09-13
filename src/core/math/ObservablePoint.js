@@ -10,7 +10,8 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-class ObservablePoint {
+class ObservablePoint
+{
     constructor(cb, scope, x, y)
     {
         this._x = x || 0;
@@ -53,48 +54,42 @@ class ObservablePoint {
             this.cb.call(this.scope);
         }
     }
-}
 
-module.exports = ObservablePoint;
-
-
-Object.defineProperties(ObservablePoint.prototype, {
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
      * @member {number}
      * @memberof PIXI.ObservablePoint#
      */
-    x: {
-        get: function ()
-        {
-            return this._x;
-        },
-        set: function (value)
-        {
-            if (this._x !== value) {
-                this._x = value;
-                this.cb.call(this.scope);
-            }
-        }
-    },
-    /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
-     *
-     * @member {number}
-     * @memberof PIXI.ObservablePoint#
-     */
-    y: {
-        get: function ()
-        {
-            return this._y;
-        },
-        set: function (value)
-        {
-            if (this._y !== value) {
-                this._y = value;
-                this.cb.call(this.scope);
-            }
+    get x()
+    {
+        return this._x;
+    }
+    set x(value)
+    {
+        if (this._x !== value) {
+            this._x = value;
+            this.cb.call(this.scope);
         }
     }
-});
+
+    /**
+     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     *
+     * @member {number}
+     * @memberof PIXI.ObservablePoint#
+     */
+    get y()
+    {
+        return this._y;
+    }
+    set y(value)
+    {
+        if (this._y !== value) {
+            this._y = value;
+            this.cb.call(this.scope);
+        }
+    }
+}
+
+export default ObservablePoint;

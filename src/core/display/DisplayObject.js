@@ -1,10 +1,10 @@
-let EventEmitter = require('eventemitter3'),
-    CONST = require('../const'),
-    TransformStatic = require('./TransformStatic'),
-    Transform = require('./Transform'),
-    Bounds = require('./Bounds'),
-    math = require('../math');//,
-    //_tempDisplayObjectParent = new DisplayObject();
+import EventEmitter from 'eventemitter3';
+import CONST from '../const';
+import TransformStatic from './TransformStatic';
+import Transform from './Transform';
+import Bounds from './Bounds';
+import math from '../math';
+//_tempDisplayObjectParent = new DisplayObject();
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -15,7 +15,8 @@ let EventEmitter = require('eventemitter3'),
  * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
-class DisplayObject extends EventEmitter {
+class DisplayObject extends EventEmitter
+{
     constructor()
     {
         super();
@@ -380,13 +381,6 @@ class DisplayObject extends EventEmitter {
         this.interactive = false;
         this.interactiveChildren = false;
     }
-
-}
-
-module.exports = DisplayObject;
-
-
-Object.defineProperties(DisplayObject.prototype, {
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
@@ -394,16 +388,14 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {number}
      * @memberof PIXI.DisplayObject#
      */
-    x: {
-        get: function ()
-        {
-            return this.position.x;
-        },
-        set: function (value)
-        {
-            this.transform.position.x = value;
-        }
-    },
+    get x()
+    {
+        return this.position.x;
+    }
+    set x(value)
+    {
+        this.transform.position.x = value;
+    }
 
     /**
      * The position of the displayObject on the y axis relative to the local coordinates of the parent.
@@ -412,16 +404,14 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {number}
      * @memberof PIXI.DisplayObject#
      */
-    y: {
-        get: function ()
-        {
-            return this.position.y;
-        },
-        set: function (value)
-        {
-            this.transform.position.y = value;
-        }
-    },
+    get y()
+    {
+        return this.position.y;
+    }
+    set y(value)
+    {
+        this.transform.position.y = value;
+    }
 
     /**
      * Current transform of the object based on world (parent) factors
@@ -430,12 +420,10 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof PIXI.DisplayObject#
      * @readonly
      */
-    worldTransform: {
-        get: function ()
-        {
-            return this.transform.worldTransform;
-        }
-    },
+    get worldTransform()
+    {
+        return this.transform.worldTransform;
+    }
 
     /**
      * Current transform of the object based on local factors: position, scale, other stuff
@@ -444,12 +432,10 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof PIXI.DisplayObject#
      * @readonly
      */
-    localTransform: {
-        get: function ()
-        {
-            return this.transform.localTransform;
-        }
-    },
+    get localTransform()
+    {
+        return this.transform.localTransform;
+    }
 
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
@@ -458,15 +444,13 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    position: {
-        get: function()
-        {
-            return this.transform.position;
-        },
-        set: function(value) {
-            this.transform.position.copy(value);
-        }
-    },
+    get position()
+    {
+        return this.transform.position;
+    }
+    set position(value) {
+        this.transform.position.copy(value);
+    }
 
     /**
      * The scale factor of the object.
@@ -475,14 +459,12 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    scale: {
-        get: function() {
-            return this.transform.scale;
-        },
-        set: function(value) {
-            this.transform.scale.copy(value);
-        }
-    },
+    get scale() {
+        return this.transform.scale;
+    }
+    set scale(value) {
+        this.transform.scale.copy(value);
+    }
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -491,14 +473,12 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    pivot: {
-        get: function() {
-            return this.transform.pivot;
-        },
-        set: function(value) {
-            this.transform.pivot.copy(value);
-        }
-    },
+    get pivot() {
+        return this.transform.pivot;
+    }
+    set pivot(value) {
+        this.transform.pivot.copy(value);
+    }
 
     /**
      * The skew factor for the object in radians.
@@ -507,14 +487,12 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    skew: {
-        get: function() {
-            return this.transform.skew;
-        },
-        set: function(value) {
-            this.transform.skew.copy(value);
-        }
-    },
+    get skew() {
+        return this.transform.skew;
+    }
+    set skew(value) {
+        this.transform.skew.copy(value);
+    }
 
     /**
      * The rotation of the object in radians.
@@ -522,16 +500,14 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {number}
      * @memberof PIXI.DisplayObject#
      */
-    rotation: {
-        get: function ()
-        {
-            return this.transform.rotation;
-        },
-        set: function (value)
-        {
-            this.transform.rotation = value;
-        }
-    },
+    get rotation()
+    {
+        return this.transform.rotation;
+    }
+    set rotation(value)
+    {
+        this.transform.rotation = value;
+    }
 
     /**
      * Indicates if the sprite is globally visible.
@@ -540,24 +516,22 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof PIXI.DisplayObject#
      * @readonly
      */
-    worldVisible: {
-        get: function ()
-        {
-            let item = this;
+    get worldVisible()
+    {
+        let item = this;
 
-            do {
-                if (!item.visible)
-                {
-                    return false;
-                }
+        do {
+            if (!item.visible)
+            {
+                return false;
+            }
 
-                item = item.parent;
-            } while (item);
+            item = item.parent;
+        } while (item);
 
-            return true;
-        }
-    },
-
+        return true;
+    }
+    
     /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
@@ -568,26 +542,24 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.Graphics|PIXI.Sprite}
      * @memberof PIXI.DisplayObject#
      */
-    mask: {
-        get: function ()
+    get mask()
+    {
+        return this._mask;
+    }
+    set mask(value)
+    {
+        if (this._mask)
         {
-            return this._mask;
-        },
-        set: function (value)
-        {
-            if (this._mask)
-            {
-                this._mask.renderable = true;
-            }
-
-            this._mask = value;
-
-            if (this._mask)
-            {
-                this._mask.renderable = false;
-            }
+            this._mask.renderable = true;
         }
-    },
+
+        this._mask = value;
+
+        if (this._mask)
+        {
+            this._mask.renderable = false;
+        }
+    }
 
     /**
      * Sets the filters for the displayObject.
@@ -597,18 +569,17 @@ Object.defineProperties(DisplayObject.prototype, {
      * @member {PIXI.AbstractFilter[]}
      * @memberof PIXI.DisplayObject#
      */
-    filters: {
-        get: function ()
-        {
-            return this._filters && this._filters.slice();
-        },
-        set: function (value)
-        {
-            this._filters = value && value.slice();
-        }
+    get filters()
+    {
+        return this._filters && this._filters.slice();
     }
-
-});
+    set filters(value)
+    {
+        this._filters = value && value.slice();
+    }
+}
 
 // performance increase to avoid using call.. (10x faster)
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
+
+export default DisplayObject;

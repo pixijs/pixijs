@@ -1,5 +1,5 @@
-let BaseTexture = require('./BaseTexture'),
-    utils = require('../utils');
+import BaseTexture from './BaseTexture';
+import utils from '../utils';
 
 /**
  * A texture of a [playing] Video.
@@ -29,7 +29,8 @@ let BaseTexture = require('./BaseTexture'),
  * @param source {HTMLVideoElement} Video source
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  */
-class VideoBaseTexture extends BaseTexture {
+class VideoBaseTexture extends BaseTexture
+{
     constructor(source, scaleMode)
     {
         if (!source)
@@ -219,10 +220,7 @@ class VideoBaseTexture extends BaseTexture {
 
         return VideoBaseTexture.fromVideo(video, scaleMode);
     }
-
 }
-
-module.exports = VideoBaseTexture;
 
 VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
 
@@ -240,3 +238,5 @@ function createSource(path, type)
 
     return source;
 }
+
+export default VideoBaseTexture;

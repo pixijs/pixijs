@@ -1,10 +1,10 @@
-let Resource = require('resource-loader').Resource,
-    path = require('path'),
-    core = require('../core');
+import {Resource} from 'resource-loader';
+import path from 'path';
+import core from '../core';
 
-let BATCH_SIZE = 1000;
+const BATCH_SIZE = 1000;
 
-module.exports = function ()
+export default function ()
 {
     return function (resource, next)
     {
@@ -121,4 +121,4 @@ module.exports = function ()
             }
         });
     };
-};
+}

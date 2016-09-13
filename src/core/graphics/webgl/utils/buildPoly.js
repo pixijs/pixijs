@@ -1,6 +1,6 @@
-let buildLine = require('./buildLine'),
-    utils = require('../../../utils'),
-    earcut = require('earcut');
+import buildLine from './buildLine';
+import utils from '../../../utils';
+import earcut from 'earcut';
 
 /**
  * Builds a polygon to draw
@@ -12,7 +12,7 @@ let buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildPoly = function (graphicsData, webGLData)
+const buildPoly = function (graphicsData, webGLData)
 {
     graphicsData.points = graphicsData.shape.points.slice();
 
@@ -75,5 +75,4 @@ let buildPoly = function (graphicsData, webGLData)
     }
 };
 
-
-module.exports = buildPoly;
+export default buildPoly;

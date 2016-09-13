@@ -1,8 +1,7 @@
-let Resource = require('resource-loader').Resource,
-    core = require('../core'),
-    extras = require('../extras'),
-    path = require('path');
-
+import {Resource} from 'resource-loader';
+import core from '../core';
+import extras from '../extras';
+import path from 'path';
 
 function parse(resource, texture) {
     let data = {};
@@ -60,7 +59,7 @@ function parse(resource, texture) {
 }
 
 
-module.exports = function ()
+export default function ()
 {
     return function (resource, next)
     {
@@ -122,4 +121,4 @@ module.exports = function ()
             });
         }
     };
-};
+}

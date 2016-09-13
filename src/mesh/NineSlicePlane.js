@@ -1,6 +1,6 @@
-let DEFAULT_BORDER_SIZE= 10;
+import Plane from './Plane';
 
-let Plane = require('./Plane');
+const DEFAULT_BORDER_SIZE = 10;
 
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
@@ -38,7 +38,8 @@ let Plane = require('./Plane');
  * @param {int} [bottomHeight=10] size of the bottom horizontal bar (D)
  *
  */
-class NineSlicePlane extends Plane {
+class NineSlicePlane extends Plane
+{
     constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
     {
         super(texture, 4, 4);
@@ -196,11 +197,6 @@ class NineSlicePlane extends Plane {
         context.drawImage(textureSource, uvs[x1] * w, uvs[y1] * h, sw, sh, vertices[x1], vertices[y1], dw, dh);
     }
 
-}
-
-module.exports = NineSlicePlane;
-
-Object.defineProperties(NineSlicePlane.prototype, {
     /**
      * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
      *
@@ -208,17 +204,16 @@ Object.defineProperties(NineSlicePlane.prototype, {
      * @memberof PIXI.NineSlicePlane#
      * @override
      */
-    width: {
-        get: function ()
-        {
-            return this._width;
-        },
-        set: function (value)
-        {
-            this._width = value;
-            this.updateVerticalVertices();
-        }
-    },
+    get width()
+    {
+        return this._width;
+    }
+    set width(value)
+    {
+        this._width = value;
+        this.updateVerticalVertices();
+    }
+    
 
     /**
      * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
@@ -227,96 +222,93 @@ Object.defineProperties(NineSlicePlane.prototype, {
      * @memberof PIXI.NineSlicePlane#
      * @override
      */
-    height: {
-        get: function ()
-        {
-            return  this._height;
-        },
-        set: function (value)
-        {
-            this._height = value;
-            this.updateHorizontalVertices();
-        }
-    },
+    get height()
+    {
+        return  this._height;
+    }
+    set height(value)
+    {
+        this._height = value;
+        this.updateHorizontalVertices();
+    }
+    
 
     /**
      * The width of the left column
      *
      * @member {number}
      */
-    leftWidth: {
-        get: function()
-        {
-            return this._leftWidth;
-        },
-        set: function (value)
-        {
-            this._leftWidth = value;
-            let uvs = this.uvs;
-            let vertices = this.vertices;
-            uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
-            vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
-            this.dirty=true;
-        }
-    },
+    get leftWidth()
+    {
+        return this._leftWidth;
+    }
+    set leftWidth (value)
+    {
+        this._leftWidth = value;
+        let uvs = this.uvs;
+        let vertices = this.vertices;
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
+        vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
+        this.dirty=true;
+    }
+    
     /**
      * The width of the right column
      *
      * @member {number}
      */
-    rightWidth: {
-        get: function()
-        {
-            return this._rightWidth;
-        },
-        set: function (value)
-        {
-            this._rightWidth = value;
-            let uvs = this.uvs;
-            let vertices = this.vertices;
-            uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
-            vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
-            this.dirty=true;
-        }
-    },
+    get rightWidth()
+    {
+        return this._rightWidth;
+    }
+    set rightWidth(value)
+    {
+        this._rightWidth = value;
+        let uvs = this.uvs;
+        let vertices = this.vertices;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
+        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
+        this.dirty=true;
+    }
+    
+
     /**
      * The height of the top row
      *
      * @member {number}
      */
-    topHeight: {
-        get: function()
-        {
-            return this._topHeight;
-        },
-        set: function (value)
-        {
-            this._topHeight = value;
-            let uvs = this.uvs;
-            let vertices = this.vertices;
-            uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
-            vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
-            this.dirty=true;
-        }
-    },
+    get topHeight()
+    {
+        return this._topHeight;
+    }
+    set topHeight(value)
+    {
+        this._topHeight = value;
+        let uvs = this.uvs;
+        let vertices = this.vertices;
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
+        vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
+        this.dirty=true;
+    }
+    
     /**
      * The height of the bottom row
      *
      * @member {number}
      */
-    bottomHeight: {
-        get: function()
-        {
-            return this._bottomHeight;
-        },
-        set: function (value)
-        {
-            this._bottomHeight = value;
-            let uvs = this.uvs;
-            let vertices = this.vertices;
-            uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
-            vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
-            this.dirty=true;
-        }
+    get bottomHeight()
+    {
+        return this._bottomHeight;
     }
-});
+    set bottomHeight(value)
+    {
+        this._bottomHeight = value;
+        let uvs = this.uvs;
+        let vertices = this.vertices;
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
+        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
+        this.dirty=true;
+    }
+}
+
+export default NineSlicePlane;

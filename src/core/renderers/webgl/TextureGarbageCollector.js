@@ -1,5 +1,4 @@
-
-let CONST = require('../../const');
+import CONST from '../../const';
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged up with textures that are no longer being used.
@@ -8,7 +7,8 @@ let CONST = require('../../const');
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class TextureGarbageCollector {
+class TextureGarbageCollector
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -105,7 +105,6 @@ class TextureGarbageCollector {
 
         }
     }
-
 }
 
-module.exports = TextureGarbageCollector;
+export default TextureGarbageCollector;

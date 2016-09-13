@@ -1,5 +1,4 @@
-
-let vertTemplate = [
+const vertTemplate = [
 	'attribute vec2 aVertexPosition;',
 	'attribute vec2 aTextureCoord;',
 
@@ -15,7 +14,7 @@ let vertTemplate = [
 	'}'
 ].join('\n');
 
-let generateVertBlurSource = function(kernelSize, x)
+const generateVertBlurSource = function(kernelSize, x)
 {
     let halfLength = Math.ceil(kernelSize/2);
 
@@ -59,6 +58,4 @@ let generateVertBlurSource = function(kernelSize, x)
     return vertSource;
 };
 
-
-
-module.exports = generateVertBlurSource;
+export default generateVertBlurSource;

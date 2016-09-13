@@ -1,4 +1,4 @@
-let WebGLManager = require('../managers/WebGLManager');
+import WebGLManager from '../managers/WebGLManager';
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.
@@ -8,7 +8,8 @@ let WebGLManager = require('../managers/WebGLManager');
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-class ObjectRenderer extends WebGLManager {
+class ObjectRenderer extends WebGLManager
+{
     constructor(renderer)
     {
         super(renderer);
@@ -50,7 +51,6 @@ class ObjectRenderer extends WebGLManager {
     {
         // render the object
     }
-
 }
 
-module.exports = ObjectRenderer;
+export default ObjectRenderer;

@@ -1,5 +1,5 @@
-let Point = require('../Point'),
-    CONST = require('../../const');
+import Point from '../Point';
+import CONST from '../../const';
 
 /**
  * @class
@@ -10,7 +10,8 @@ let Point = require('../Point'),
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
  */
-class Polygon {
+class Polygon
+{
     constructor(points_)
     {
         // prevents an argument assignment deopt
@@ -113,7 +114,6 @@ class Polygon {
 
         return inside;
     }
-
 }
 
-module.exports = Polygon;
+export default Polygon;

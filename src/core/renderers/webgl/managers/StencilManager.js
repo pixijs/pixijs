@@ -1,11 +1,12 @@
-let WebGLManager = require('./WebGLManager');
+import WebGLManager from './WebGLManager';
 
 /**
  * @class
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class StencilManager extends WebGLManager {
+class StencilManager extends WebGLManager
+{
     constructor(renderer)
     {
         super(renderer);
@@ -106,7 +107,6 @@ class StencilManager extends WebGLManager {
 
         this.stencilMaskStack.stencilStack = null;
     }
-
 }
 
-module.exports = StencilManager;
+export default StencilManager;

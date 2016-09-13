@@ -1,4 +1,4 @@
-let CONST = require('../../../const');
+import CONST from '../../../const';
 
 /**
  * Maps gl blend combinations to WebGL
@@ -34,4 +34,4 @@ function mapWebGLBlendModesToPixi(gl, array)
     return array;
 }
 
-module.exports = mapWebGLBlendModesToPixi;
+export default mapWebGLBlendModesToPixi;

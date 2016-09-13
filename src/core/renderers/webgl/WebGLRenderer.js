@@ -1,18 +1,18 @@
-let SystemRenderer = require('../SystemRenderer'),
-    MaskManager = require('./managers/MaskManager'),
-    StencilManager = require('./managers/StencilManager'),
-    FilterManager = require('./managers/FilterManager'),
-    RenderTarget = require('./utils/RenderTarget'),
-    ObjectRenderer = require('./utils/ObjectRenderer'),
-    TextureManager = require('./TextureManager'),
-    TextureGarbageCollector = require('./TextureGarbageCollector'),
-    WebGLState = require('./WebGLState'),
-    createContext = require('pixi-gl-core').createContext,
-    mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
-    validateContext = require('./utils/validateContext'),
-    utils = require('../../utils'),
-    glCore = require('pixi-gl-core'),
-    CONST = require('../../const');
+import SystemRenderer from '../SystemRenderer';
+import MaskManager from './managers/MaskManager';
+import StencilManager from './managers/StencilManager';
+import FilterManager from './managers/FilterManager';
+import RenderTarget from './utils/RenderTarget';
+import ObjectRenderer from './utils/ObjectRenderer';
+import TextureManager from './TextureManager';
+import TextureGarbageCollector from './TextureGarbageCollector';
+import WebGLState from './WebGLState';
+import {createContext} from 'pixi-gl-core';
+import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
+import validateContext from './utils/validateContext';
+import utils from '../../utils';
+import glCore from 'pixi-gl-core';
+import CONST from '../../const';
 
 let CONTEXT_UID = 0;
 
@@ -40,7 +40,8 @@ let CONTEXT_UID = 0;
  *      you need to call toDataUrl on the webgl context.
  * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
-class WebGLRenderer extends SystemRenderer {
+class WebGLRenderer extends SystemRenderer
+{
     constructor(width, height, options)
     {
         options = options || {};
@@ -554,8 +555,8 @@ class WebGLRenderer extends SystemRenderer {
 
         // this = null;
     }
-
 }
 
-module.exports = WebGLRenderer;
 utils.pluginTarget.mixin(WebGLRenderer);
+
+export default WebGLRenderer;

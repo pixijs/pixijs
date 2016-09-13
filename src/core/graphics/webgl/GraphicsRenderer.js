@@ -1,17 +1,14 @@
-let utils = require('../../utils'),
-    CONST = require('../../const'),
-    ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData'),
-    PrimitiveShader = require('./shaders/PrimitiveShader'),
+import utils from '../../utils';
+import CONST from '../../const';
+import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
+import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
+import WebGLGraphicsData from './WebGLGraphicsData';
+import PrimitiveShader from './shaders/PrimitiveShader';
 
-    // some drawing functions..
-    buildPoly = require('./utils/buildPoly'),
-    buildRectangle = require('./utils/buildRectangle'),
-    buildRoundedRectangle = require('./utils/buildRoundedRectangle'),
-    buildCircle = require('./utils/buildCircle');
-
-
+import buildPoly from './utils/buildPoly';
+import buildRectangle from './utils/buildRectangle';
+import buildRoundedRectangle from './utils/buildRoundedRectangle';
+import buildCircle from './utils/buildCircle';
 
 /**
  * Renders the graphics object.
@@ -21,7 +18,8 @@ let utils = require('../../utils'),
  * @extends PIXI.ObjectRenderer
  * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-class GraphicsRenderer extends ObjectRenderer {
+class GraphicsRenderer extends ObjectRenderer
+{
     constructor(renderer)
     {
         super(renderer);
@@ -216,9 +214,8 @@ class GraphicsRenderer extends ObjectRenderer {
 
         return webGLData;
     }
-
 }
 
-module.exports = GraphicsRenderer;
-
 WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
+
+export default GraphicsRenderer;

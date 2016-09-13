@@ -1,5 +1,5 @@
-let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const');
+import CanvasRenderer from '../../renderers/canvas/CanvasRenderer';
+import CONST from '../../const';
 
 /**
  * @author Mat Groves
@@ -21,7 +21,8 @@ let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
  * @extends PIXI.ObjectRenderer
  * @param renderer {PIXI.SystemRenderer} The current PIXI renderer.
  */
-class CanvasGraphicsRenderer {
+class CanvasGraphicsRenderer
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -269,9 +270,8 @@ class CanvasGraphicsRenderer {
     {
       this.renderer = null;
     }
-
 }
 
-module.exports = CanvasGraphicsRenderer;
-
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
+
+export default CanvasGraphicsRenderer;

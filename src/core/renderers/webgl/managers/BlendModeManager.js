@@ -1,4 +1,4 @@
-let WebGLManager = require('./WebGLManager');
+import WebGLManager from './WebGLManager';
 
 /**
  * @class
@@ -6,7 +6,8 @@ let WebGLManager = require('./WebGLManager');
  * @extends PIXI.WebGLManager
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class BlendModeManager extends WebGLManager {
+class BlendModeManager extends WebGLManager
+{
     constructor(renderer)
     {
         super(renderer);
@@ -37,7 +38,6 @@ class BlendModeManager extends WebGLManager {
 
         return true;
     }
-
 }
 
-module.exports = BlendModeManager;
+export default BlendModeManager;

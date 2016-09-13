@@ -1,6 +1,6 @@
-let core = require('../../core');
+import core from '../../core';
 // @see https://github.com/substack/brfs/issues/25
-let glslify  = require('glslify');
+const glslify = require('glslify');
 
 /**
  * Does nothing. Very handy.
@@ -9,7 +9,8 @@ let glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class VoidFilter extends core.Filter {
+class VoidFilter extends core.Filter
+{
     constructor()
     {
         super(
@@ -23,4 +24,4 @@ class VoidFilter extends core.Filter {
     }
 }
 
-module.exports = VoidFilter;
+export default VoidFilter;

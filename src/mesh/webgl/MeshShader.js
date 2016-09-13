@@ -1,4 +1,4 @@
-let Shader = require('../../core/Shader');
+import Shader from '../../core/Shader';
 
 /**
  * @class
@@ -6,7 +6,8 @@ let Shader = require('../../core/Shader');
  * @memberof PIXI.mesh
  * @param gl {PIXI.Shader} TODO: Find a good explanation for this.
  */
-class MeshShader extends Shader {
+class MeshShader extends Shader
+{
     constructor(gl)
     {
         super(
@@ -42,4 +43,4 @@ class MeshShader extends Shader {
     }
 }
 
-module.exports = MeshShader;
+export default MeshShader;

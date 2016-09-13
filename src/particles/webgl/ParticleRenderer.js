@@ -1,6 +1,6 @@
-let core = require('../../core'),
-    ParticleShader = require('./ParticleShader'),
-    ParticleBuffer = require('./ParticleBuffer');
+import core from '../../core';
+import ParticleShader from './ParticleShader';
+import ParticleBuffer from './ParticleBuffer';
 
 /**
  * @author Mat Groves
@@ -20,7 +20,8 @@ let core = require('../../core'),
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
-class ParticleRenderer extends core.ObjectRenderer {
+class ParticleRenderer extends core.ObjectRenderer
+{
     constructor(renderer)
     {
         super(renderer);
@@ -426,6 +427,6 @@ class ParticleRenderer extends core.ObjectRenderer {
 
 }
 
-module.exports = ParticleRenderer;
+export default ParticleRenderer;
 
 core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);

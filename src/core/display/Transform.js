@@ -1,5 +1,5 @@
-let math = require('../math'),
-    TransformBase = require('./TransformBase');
+import math from '../math';
+import TransformBase from './TransformBase';
 
 
 /**
@@ -10,7 +10,8 @@ let math = require('../math'),
  * @extends PIXI.TransformBase
  * @memberof PIXI
  */
-class Transform extends TransformBase {
+class Transform extends TransformBase
+{
     constructor()
     {
         super();
@@ -130,25 +131,20 @@ class Transform extends TransformBase {
         matrix.decompose(this);
     }
 
-}
-
-Object.defineProperties(Transform.prototype, {
     /**
      * The rotation of the object in radians.
      *
      * @member {number}
      * @memberof PIXI.Transform#
      */
-    rotation: {
-        get: function () {
-            return this._rotation;
-        },
-        set: function (value) {
-            this._rotation = value;
-            this._sr = Math.sin(value);
-            this._cr = Math.cos(value);
-        }
+    get rotation() {
+        return this._rotation;
     }
-});
+    set rotation(value) {
+        this._rotation = value;
+        this._sr = Math.sin(value);
+        this._cr = Math.cos(value);
+    }
+}
 
-module.exports = Transform;
+export default Transform;

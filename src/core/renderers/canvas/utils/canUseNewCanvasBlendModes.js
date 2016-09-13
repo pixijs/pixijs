@@ -4,7 +4,7 @@
  * Creates a little colored canvas
  * @return {canvas} a small canvas element
  */
-let createColoredCanvas = function(color)
+const createColoredCanvas = function(color)
 {
     let canvas = document.createElement('canvas');
     canvas.width = 6;
@@ -22,7 +22,7 @@ let createColoredCanvas = function(color)
  *
  * @return {boolean} whether they are supported
  */
-let canUseNewCanvasBlendModes = function ()
+const canUseNewCanvasBlendModes = function ()
 {
     if (typeof document === 'undefined')
     {
@@ -53,5 +53,4 @@ let canUseNewCanvasBlendModes = function ()
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
 };
 
-
-module.exports = canUseNewCanvasBlendModes;
+export default canUseNewCanvasBlendModes;

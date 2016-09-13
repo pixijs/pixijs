@@ -1,14 +1,15 @@
-let ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    createIndicesForQuads = require('../../utils/createIndicesForQuads'),
-    generateMultiTextureShader = require('./generateMultiTextureShader'),
-    checkMaxIfStatmentsInShader = require('../../renderers/webgl/utils/checkMaxIfStatmentsInShader'),
-    Buffer = require('./BatchBuffer'),
-    CONST = require('../../const'),
-    glCore = require('pixi-gl-core'),
-    bitTwiddle = require('bit-twiddle');
+import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
+import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
+import createIndicesForQuads from '../../utils/createIndicesForQuads';
+import generateMultiTextureShader from './generateMultiTextureShader';
+import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
+import Buffer from './BatchBuffer';
+import CONST from '../../const';
+import glCore from 'pixi-gl-core';
+import bitTwiddle from 'bit-twiddle';
 
-    let TICK = 0;
+let TICK = 0;
+
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -18,7 +19,8 @@ let ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * @extends PIXI.ObjectRenderer
  * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
-class SpriteRenderer extends ObjectRenderer {
+class SpriteRenderer extends ObjectRenderer
+{
     constructor(renderer)
     {
         super(renderer);
@@ -415,11 +417,9 @@ class SpriteRenderer extends ObjectRenderer {
         for (let i = 0; i < this.buffers.length; i++) {
             this.buffers[i].destroy();
         }
-
     }
-
 }
 
-module.exports = SpriteRenderer;
-
 WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
+
+export default SpriteRenderer;

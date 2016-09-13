@@ -1,5 +1,5 @@
-let core = require('../../core');
-let glslify  = require('glslify');
+import core from '../../core';
+const glslify = require('glslify');
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -12,7 +12,8 @@ let glslify  = require('glslify');
  * @param sprite {PIXI.Sprite} The sprite used for the displacement map. (make sure its added to the scene!)
  * @param scale {number} The scale of the displacement
  */
-class DisplacementFilter extends core.Filter {
+class DisplacementFilter extends core.Filter
+{
     constructor(sprite, scale)
     {
         let maskMatrix = new core.Matrix();
@@ -54,26 +55,20 @@ class DisplacementFilter extends core.Filter {
         filterManager.applyFilter(this, input, output);
     }
 
-}
-
-module.exports = DisplacementFilter;
-
-Object.defineProperties(DisplacementFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
      * @member {PIXI.Texture}
      * @memberof PIXI.filters.DisplacementFilter#
      */
-    map: {
-        get: function ()
-        {
-            return this.uniforms.mapSampler;
-        },
-        set: function (value)
-        {
-            this.uniforms.mapSampler = value;
-
-        }
+    get map()
+    {
+        return this.uniforms.mapSampler;
     }
-});
+    set map(value)
+    {
+        this.uniforms.mapSampler = value;
+    }
+}
+
+export default DisplacementFilter;

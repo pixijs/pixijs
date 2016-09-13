@@ -1,4 +1,4 @@
-let core = require('../../core');
+import core from '../../core';
 
 /**
  * Prepare uploads elements to the GPU. The CanvasRenderer version of prepare
@@ -7,7 +7,8 @@ let core = require('../../core');
  * @memberof PIXI
  * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-class CanvasPrepare {
+class CanvasPrepare
+{
     constructor()
     {
     }
@@ -53,9 +54,8 @@ class CanvasPrepare {
     destroy()
     {
     }
-
 }
 
-module.exports = CanvasPrepare;
-
 core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+
+export default CanvasPrepare;

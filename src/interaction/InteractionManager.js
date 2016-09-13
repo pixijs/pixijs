@@ -1,6 +1,6 @@
-let core = require('../core'),
-    InteractionData = require('./InteractionData'),
-    EventEmitter = require('eventemitter3');
+import core from '../core';
+import InteractionData from './InteractionData';
+import EventEmitter from 'eventemitter3';
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
@@ -21,7 +21,8 @@ Object.assign(
  * @param [options.autoPreventDefault=true] {boolean} Should the manager automatically prevent default browser actions.
  * @param [options.interactionFrequency=10] {number} Frequency increases the interaction events will be checked.
  */
-class InteractionManager extends EventEmitter {
+class InteractionManager extends EventEmitter
+{
     constructor(renderer, options)
     {
         super();
@@ -1103,10 +1104,9 @@ class InteractionManager extends EventEmitter {
 
         this._tempPoint = null;
     }
-
 }
-
-module.exports = InteractionManager;
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
+
+export default InteractionManager;

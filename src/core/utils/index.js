@@ -1,14 +1,16 @@
-let CONST = require('../const');
+import CONST from '../const';
+import EventEmitter from 'eventemitter3';
+import pluginTarget from './pluginTarget';
 
 /**
  * @namespace PIXI.utils
  */
-let utils = module.exports = {
+const utils = {
     _uid: 0,
     _saidHello: false,
 
-    EventEmitter:   require('eventemitter3'),
-    pluginTarget:   require('./pluginTarget'),
+    EventEmitter,
+    pluginTarget,
 
     /**
      * Gets the next unique identifier
@@ -225,3 +227,5 @@ let utils = module.exports = {
      */
     BaseTextureCache: {}
 };
+
+export default utils;

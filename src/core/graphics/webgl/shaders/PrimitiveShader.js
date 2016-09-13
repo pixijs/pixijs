@@ -1,4 +1,4 @@
-let Shader = require('../../../Shader');
+import Shader from '../../../Shader';
 
 /**
  * This shader is used to draw simple primitive shapes for {@link PIXI.Graphics}.
@@ -8,7 +8,8 @@ let Shader = require('../../../Shader');
  * @extends PIXI.Shader
  * @param gl {WebGLRenderingContext} The webgl shader manager this shader works for.
  */
-class PrimitiveShader extends Shader {
+class PrimitiveShader extends Shader
+{
     constructor(gl)
     {
         super(gl,
@@ -42,4 +43,4 @@ class PrimitiveShader extends Shader {
     }
 }
 
-module.exports = PrimitiveShader;
+export default PrimitiveShader;

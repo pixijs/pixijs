@@ -1,6 +1,6 @@
-let buildLine = require('./buildLine'),
-    CONST = require('../../../const'),
-    utils = require('../../../utils');
+import buildLine from './buildLine';
+import CONST from '../../../const';
+import utils from '../../../utils';
 
 /**
  * Builds a circle to draw
@@ -12,7 +12,7 @@ let buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object to draw
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildCircle = function (graphicsData, webGLData)
+const buildCircle = function (graphicsData, webGLData)
 {
     // need to convert points to a nice regular data
     let circleData = graphicsData.shape;
@@ -86,5 +86,4 @@ let buildCircle = function (graphicsData, webGLData)
     }
 };
 
-
-module.exports = buildCircle;
+export default buildCircle;

@@ -1,13 +1,13 @@
+import WebGLManager from './WebGLManager';
+import RenderTarget from '../utils/RenderTarget';
+import Quad from '../utils/Quad';
+import math from '../../../math';
+import Shader from '../../../Shader';
+import filterTransforms from '../filters/filterTransforms';
+import bitTwiddle from 'bit-twiddle';
 
-let WebGLManager = require('./WebGLManager'),
-    RenderTarget = require('../utils/RenderTarget'),
-    Quad = require('../utils/Quad'),
-    math =  require('../../../math'),
-    Shader = require('../../../Shader'),
-    filterTransforms = require('../filters/filterTransforms'),
-    bitTwiddle = require('bit-twiddle');
-
-class FilterState {
+class FilterState
+{
     constructor()
     {
         this.renderTarget = null;
@@ -25,7 +25,8 @@ class FilterState {
  * @extends PIXI.WebGLManager
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class FilterManager extends WebGLManager {
+class FilterManager extends WebGLManager
+{
     constructor(renderer)
     {
         super(renderer);
@@ -437,7 +438,6 @@ class FilterManager extends WebGLManager {
         let key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
         this.pool[key].push(renderTarget);
     }
-
 }
 
-module.exports = FilterManager;
+export default FilterManager;

@@ -1,8 +1,9 @@
-let core = require('../core'),
-    glCore = require('pixi-gl-core'),
-    Shader = require('./webgl/MeshShader'),
-    tempPoint = new core.Point(),
-    tempPolygon = new core.Polygon();
+import core from '../core';
+import glCore from 'pixi-gl-core';
+import Shader from './webgl/MeshShader';
+
+const tempPoint = new core.Point();
+const tempPolygon = new core.Polygon();
 
 /**
  * Base mesh class
@@ -15,7 +16,8 @@ let core = require('../core'),
  * @param [indices] {Uint16Array} if you want to specify the indices
  * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
-class Mesh extends core.Container {
+class Mesh extends core.Container
+{
     constructor(texture, vertices, uvs, indices, drawMode)
     {
         super();
@@ -430,45 +432,39 @@ class Mesh extends core.Container {
         return false;
     }
 
-}
-
-module.exports = Mesh;
-
-Object.defineProperties(Mesh.prototype, {
     /**
      * The texture that the sprite is using
      *
      * @member {PIXI.Texture}
      * @memberof PIXI.mesh.Mesh#
      */
-    texture: {
-        get: function ()
+    get texture()
+    {
+        return  this._texture;
+    }
+    set texture(value)
+    {
+        if (this._texture === value)
         {
-            return  this._texture;
-        },
-        set: function (value)
+            return;
+        }
+
+        this._texture = value;
+
+        if (value)
         {
-            if (this._texture === value)
+            // wait for the texture to load
+            if (value.baseTexture.hasLoaded)
             {
-                return;
+                this._onTextureUpdate();
             }
-
-            this._texture = value;
-
-            if (value)
+            else
             {
-                // wait for the texture to load
-                if (value.baseTexture.hasLoaded)
-                {
-                    this._onTextureUpdate();
-                }
-                else
-                {
-                    value.once('update', this._onTextureUpdate, this);
-                }
+                value.once('update', this._onTextureUpdate, this);
             }
         }
-    },
+    }
+
     /**
      * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
@@ -476,15 +472,15 @@ Object.defineProperties(Mesh.prototype, {
      * @memberof PIXI.mesh.Mesh#
      * @default 0xFFFFFF
      */
-    tint: {
-        get: function() {
-            return core.utils.rgb2hex(this.tintRgb);
-        },
-        set: function(value) {
-            this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
-        }
+    get tint() {
+        return core.utils.rgb2hex(this.tintRgb);
     }
-});
+    set tint(value) {
+        this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+    }
+}
+
+export default Mesh;
 
 /**
  * Different drawing buffer modes supported

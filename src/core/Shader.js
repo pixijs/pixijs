@@ -1,15 +1,21 @@
-let GLShader = require('pixi-gl-core').GLShader;
-let Const = require('./const');
+import {GLShader} from 'pixi-gl-core';
+import Const from './const';
 
-function checkPrecision(src) {
-    if (src instanceof Array) {
-        if (src[0].substring(0,9) !== 'precision') {
+function checkPrecision(src)
+{
+    if (src instanceof Array)
+    {
+        if (src[0].substring(0,9) !== 'precision')
+        {
             let copy = src.slice(0);
             copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
             return copy;
         }
-    } else {
-        if (src.substring(0,9) !== 'precision') {
+    }
+    else 
+    {
+        if (src.substring(0,9) !== 'precision')
+        {
             return 'precision ' + Const.PRECISION.DEFAULT + ' float;\n' + src;
         }
     }
@@ -26,10 +32,12 @@ function checkPrecision(src) {
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  */
-class Shader extends GLShader {
-    constructor(gl, vertexSrc, fragmentSrc) {
+class Shader extends GLShader
+{
+    constructor(gl, vertexSrc, fragmentSrc) 
+    {
         super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
     }
 }
 
-module.exports = Shader;
+export default Shader;

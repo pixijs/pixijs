@@ -1,5 +1,5 @@
-let glCore = require('pixi-gl-core'),
-    createIndicesForQuads = require('../../../utils/createIndicesForQuads');
+import glCore from 'pixi-gl-core';
+import createIndicesForQuads from '../../../utils/createIndicesForQuads';
 
 /**
  * Helper class to create a quad
@@ -9,7 +9,8 @@ let glCore = require('pixi-gl-core'),
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  * @param state {object} TODO: Description
  */
-class Quad {
+class Quad
+{
     constructor(gl, state)
     {
         /*
@@ -166,7 +167,6 @@ class Quad {
          gl.deleteBuffer(this.vertexBuffer);
          gl.deleteBuffer(this.indexBuffer);
     }
-
 }
 
-module.exports = Quad;
+export default Quad;

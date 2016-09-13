@@ -1,10 +1,12 @@
-let utils = require('../utils'),
-    math = require('../math'),
-    CONST = require('../const'),
-    Container = require('../display/Container'),
-    RenderTexture = require('../textures/RenderTexture'),
-    EventEmitter = require('eventemitter3'),
-    tempMatrix = new math.Matrix();
+import utils from '../utils';
+import math from '../math';
+import CONST from '../const';
+import Container from '../display/Container';
+import RenderTexture from '../textures/RenderTexture';
+import EventEmitter from 'eventemitter3';
+
+const tempMatrix = new math.Matrix();
+
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
@@ -25,7 +27,8 @@ let utils = require('../utils'),
  * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
  * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
-class SystemRenderer extends EventEmitter {
+class SystemRenderer extends EventEmitter
+{
     constructor(system, width, height, options)
     {
         super();
@@ -261,28 +264,22 @@ class SystemRenderer extends EventEmitter {
         this._lastObjectRendered = null;
     }
 
-}
-
-module.exports = SystemRenderer;
-
-Object.defineProperties(SystemRenderer.prototype, {
     /**
      * The background color to fill if not transparent
      *
      * @member {number}
      * @memberof PIXI.SystemRenderer#
      */
-    backgroundColor:
+    get backgroundColor()
     {
-        get: function ()
-        {
-            return this._backgroundColor;
-        },
-        set: function (val)
-        {
-            this._backgroundColor = val;
-            this._backgroundColorString = utils.hex2string(val);
-            utils.hex2rgb(val, this._backgroundColorRgba);
-        }
+        return this._backgroundColor;
     }
-});
+    set backgroundColor(val)
+    {
+        this._backgroundColor = val;
+        this._backgroundColorString = utils.hex2string(val);
+        utils.hex2rgb(val, this._backgroundColorRgba);
+    }
+}
+
+export default SystemRenderer;

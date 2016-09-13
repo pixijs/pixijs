@@ -1,5 +1,5 @@
-let core = require('../core');
-let  Device = require('ismobilejs');
+import core from '../core';
+import Device from 'ismobilejs';
 
 // add some extra variables to the container..
 Object.assign(
@@ -15,7 +15,8 @@ Object.assign(
  * @memberof PIXI
  * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
  */
-class AccessibilityManager {
+class AccessibilityManager
+{
     constructor(renderer)
     {
 	    if(Device.tablet || Device.phone)
@@ -447,7 +448,7 @@ class AccessibilityManager {
     }
 }
 
-module.exports = AccessibilityManager;
-
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+
+export default AccessibilityManager;

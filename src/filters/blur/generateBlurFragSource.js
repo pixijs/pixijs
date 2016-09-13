@@ -1,4 +1,4 @@
-let GAUSSIAN_VALUES = {
+const GAUSSIAN_VALUES = {
 	5:[0.153388, 0.221461, 0.250301],
 	7:[0.071303, 0.131514, 0.189879, 0.214607],
 	9:[0.028532, 0.067234, 0.124009, 0.179044, 0.20236],
@@ -7,7 +7,7 @@ let GAUSSIAN_VALUES = {
     15:[0.000489, 0.002403, 0.009246, 0.02784, 0.065602, 0.120999, 0.174697, 0.197448]
 };
 
-let fragTemplate = [
+const fragTemplate = [
 	'varying vec2 vBlurTexCoords[%size%];',
 	'uniform sampler2D uSampler;',
 
@@ -19,7 +19,7 @@ let fragTemplate = [
 
 ].join('\n');
 
-let generateFragBlurSource = function(kernelSize)
+const generateFragBlurSource = function(kernelSize)
 {
     let kernel = GAUSSIAN_VALUES[kernelSize];
     let halfLength = kernel.length;
@@ -55,6 +55,4 @@ let generateFragBlurSource = function(kernelSize)
     return fragSource;
 };
 
-
-
-module.exports = generateFragBlurSource;
+export default generateFragBlurSource;

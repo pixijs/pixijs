@@ -1,6 +1,6 @@
-let core = require('../../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
+import core from '../../core';
+import BlurXFilter from './BlurXFilter';
+import BlurYFilter from './BlurYFilter';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -10,7 +10,8 @@ let core = require('../../core'),
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class BlurFilter extends core.Filter {
+class BlurFilter extends core.Filter
+{
     constructor(strength, quality, resolution)
     {
         super();
@@ -36,11 +37,6 @@ class BlurFilter extends core.Filter {
         filterManager.returnRenderTarget(renderTarget);
     }
 
-}
-
-module.exports = BlurFilter;
-
-Object.defineProperties(BlurFilter.prototype, {
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
@@ -48,17 +44,15 @@ Object.defineProperties(BlurFilter.prototype, {
      * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blur: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = this.blurYFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
-    },
+    get blur()
+    {
+        return this.blurXFilter.blur;
+    }
+    set blur(value)
+    {
+        this.blurXFilter.blur = this.blurYFilter.blur = value;
+        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+    }
 
     /**
      * Sets the number of passes for blur. More passes means higher quaility bluring.
@@ -67,17 +61,14 @@ Object.defineProperties(BlurFilter.prototype, {
      * @memberof PIXI.filters.BlurYFilter#
      * @default 1
      */
-    quality: {
-        get: function ()
-        {
-            return  this.blurXFilter.quality;
-        },
-        set: function (value)
-        {
-
-            this.blurXFilter.quality = this.blurYFilter.quality = value;
-        }
-    },
+    get quality()
+    {
+        return  this.blurXFilter.quality;
+    }
+    set quality(value)
+    {
+        this.blurXFilter.quality = this.blurYFilter.quality = value;
+    }
 
     /**
      * Sets the strength of the blurX property
@@ -86,17 +77,15 @@ Object.defineProperties(BlurFilter.prototype, {
      * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blurX: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
-    },
+    get blurX()
+    {
+        return this.blurXFilter.blur;
+    }
+    set blurX(value)
+    {
+        this.blurXFilter.blur = value;
+        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+    }
 
     /**
      * Sets the strength of the blurY property
@@ -105,15 +94,15 @@ Object.defineProperties(BlurFilter.prototype, {
      * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
+    get blurY()
+    {
+        return this.blurYFilter.blur;
     }
-});
+    set blurY(value)
+    {
+        this.blurYFilter.blur = value;
+        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+    }
+}
+
+export default BlurFilter;

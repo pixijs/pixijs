@@ -1,7 +1,7 @@
-let Shader = require('../../Shader');
-let glslify  = require('glslify');
+import Shader from '../../Shader';
+const glslify = require('glslify');
 
-let fragTemplate = [
+const fragTemplate = [
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
@@ -67,6 +67,4 @@ function generateSampleSrc(maxTextures)
     return src;
 }
 
-
-
-module.exports = generateMultiTextureShader;
+export default generateMultiTextureShader;

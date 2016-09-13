@@ -12,7 +12,7 @@
  *          PIXI.accessibility.accessibleTarget
  *      );
  */
-let accessibleTarget = {
+const accessibleTarget = {
 
     /**
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
@@ -54,4 +54,4 @@ let accessibleTarget = {
 
 };
 
-module.exports = accessibleTarget;
+export default accessibleTarget;

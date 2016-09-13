@@ -1,15 +1,16 @@
-let Sprite = require('../sprites/Sprite'),
-    Texture = require('../textures/Texture'),
-    math = require('../math'),
-    utils = require('../utils'),
-    CONST = require('../const'),
-    TextStyle = require('./TextStyle');
+import Sprite from '../sprites/Sprite';
+import Texture from '../textures/Texture';
+import math from '../math';
+import utils from '../utils';
+import CONST from '../const';
+import TextStyle from './TextStyle';
 
-    let defaultDestroyOptions = {
-            texture:true,
-            children:false,
-            baseTexture:true
-    };
+const defaultDestroyOptions = {
+    texture:true,
+    children:false,
+    baseTexture:true
+};
+
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
@@ -26,7 +27,8 @@ let Sprite = require('../sprites/Sprite'),
  * @param text {string} The string that you would like the text to display
  * @param [style] {object|PIXI.TextStyle} The style parameters
  */
-class Text extends Sprite { 
+class Text extends Sprite
+{ 
     constructor(text, style)
     {
         let texture = Texture.fromCanvas(document.createElement('canvas'));
@@ -662,37 +664,26 @@ class Text extends Sprite {
         this._style = null;
     }
 
-}
-
-module.exports = Text;
-
-Text.fontPropertiesCache = {};
-Text.fontPropertiesCanvas = document.createElement('canvas');
-Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
-
-Object.defineProperties(Text.prototype, {
     /**
      * The width of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.Text#
      */
-    width: {
-        get: function ()
-        {
-            this.updateText(true);
+    get width()
+    {
+        this.updateText(true);
 
-            return Math.abs(this.scale.x) * this.texture.orig.width;
-        },
-        set: function (value)
-        {
-            this.updateText(true);
+        return Math.abs(this.scale.x) * this.texture.orig.width;
+    }
+    set width(value)
+    {
+        this.updateText(true);
 
-            let sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
-        }
-    },
+        let sign = utils.sign(this.scale.x) || 1;
+        this.scale.x = sign * value / this.texture.orig.width;
+        this._width = value;
+    }
 
     /**
      * The height of the Text, setting this will actually modify the scale to achieve the value set
@@ -700,22 +691,20 @@ Object.defineProperties(Text.prototype, {
      * @member {number}
      * @memberof PIXI.Text#
      */
-    height: {
-        get: function ()
-        {
-            this.updateText(true);
+    get height()
+    {
+        this.updateText(true);
 
-            return Math.abs(this.scale.y) * this._texture.orig.height;
-        },
-        set: function (value)
-        {
-            this.updateText(true);
+        return Math.abs(this.scale.y) * this._texture.orig.height;
+    }
+    set height(value)
+    {
+        this.updateText(true);
 
-            let sign = utils.sign(this.scale.y) || 1;
-            this.scale.y = sign * value / this.texture.orig.height;
-            this._height = value;
-        }
-    },
+        let sign = utils.sign(this.scale.y) || 1;
+        this.scale.y = sign * value / this.texture.orig.height;
+        this._height = value;
+    }
 
     /**
      * Set the style of the text. Set up an event listener to listen for changes on the style object and mark the text as dirty.
@@ -723,28 +712,26 @@ Object.defineProperties(Text.prototype, {
      * @member {object|PIXI.TextStyle}
      * @memberof PIXI.Text#
      */
-    style: {
-        get: function ()
-        {
-            return this._style;
-        },
-        set: function (style)
-        {
+    get style()
+    {
+        return this._style;
+    }
+    set style(style)
+    {
 
-            style = style || {};
-            if (style instanceof TextStyle)
-            {
-                this._style = style;
-            }
-            else
-            {
-                this._style = new TextStyle(style);
-            }
-
-            this.localStyleID = -1;
-            this.dirty = true;
+        style = style || {};
+        if (style instanceof TextStyle)
+        {
+            this._style = style;
         }
-    },
+        else
+        {
+            this._style = new TextStyle(style);
+        }
+
+        this.localStyleID = -1;
+        this.dirty = true;
+    }
 
     /**
      * Set the copy for the text object. To split a line you can use '\n'.
@@ -752,22 +739,27 @@ Object.defineProperties(Text.prototype, {
      * @member {string}
      * @memberof PIXI.Text#
      */
-    text: {
-        get: function()
-        {
-            return this._text;
-        },
-        set: function (text){
-
-            text = text || ' ';
-            text = text.toString();
-
-            if (this._text === text)
-            {
-                return;
-            }
-            this._text = text;
-            this.dirty = true;
-        }
+    get text()
+    {
+        return this._text;
     }
-});
+    set text(text)
+    {
+
+        text = text || ' ';
+        text = text.toString();
+
+        if (this._text === text)
+        {
+            return;
+        }
+        this._text = text;
+        this.dirty = true;
+    }
+}
+
+Text.fontPropertiesCache = {};
+Text.fontPropertiesCanvas = document.createElement('canvas');
+Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
+
+export default Text;

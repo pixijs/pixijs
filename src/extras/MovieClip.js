@@ -1,4 +1,4 @@
-let core = require('../core');
+import core from '../core';
 
 /**
  * @typedef FrameObject
@@ -29,7 +29,8 @@ let core = require('../core');
  * @memberof PIXI.extras
  * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
-class MovieClip extends core.Sprite {
+class MovieClip extends core.Sprite
+{
     constructor(textures)
     {
         super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
@@ -252,11 +253,6 @@ class MovieClip extends core.Sprite {
         return new MovieClip(textures);
     }
 
-}
-
-module.exports = MovieClip;
-
-Object.defineProperties(MovieClip.prototype, {
     /**
      * totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
      * assigned to the MovieClip.
@@ -266,12 +262,10 @@ Object.defineProperties(MovieClip.prototype, {
      * @default 0
      * @readonly
      */
-    totalFrames: {
-        get: function()
-        {
-            return this._textures.length;
-        }
-    },
+    get totalFrames()
+    {
+        return this._textures.length;
+    }
 
     /**
      * The array of textures used for this MovieClip
@@ -280,30 +274,28 @@ Object.defineProperties(MovieClip.prototype, {
      * @memberof PIXI.extras.MovieClip#
      *
      */
-    textures: {
-        get: function ()
+    get textures()
+    {
+        return this._textures;
+    }
+    set textures(value)
+    {
+        if(value[0] instanceof core.Texture)
         {
-            return this._textures;
-        },
-        set: function (value)
+            this._textures = value;
+            this._durations = null;
+        }
+        else
         {
-            if(value[0] instanceof core.Texture)
+            this._textures = [];
+            this._durations = [];
+            for(let i = 0; i < value.length; i++)
             {
-                this._textures = value;
-                this._durations = null;
-            }
-            else
-            {
-                this._textures = [];
-                this._durations = [];
-                for(let i = 0; i < value.length; i++)
-                {
-                    this._textures.push(value[i].texture);
-                    this._durations.push(value[i].time);
-                }
+                this._textures.push(value[i].texture);
+                this._durations.push(value[i].time);
             }
         }
-    },
+    }
 
     /**
     * The MovieClips current frame index
@@ -312,16 +304,15 @@ Object.defineProperties(MovieClip.prototype, {
     * @memberof PIXI.extras.MovieClip#
     * @readonly
     */
-    currentFrame: {
-        get: function ()
+    get currentFrame()
+    {
+        let currentFrame = Math.floor(this._currentTime) % this._textures.length;
+        if (currentFrame < 0)
         {
-            let currentFrame = Math.floor(this._currentTime) % this._textures.length;
-            if (currentFrame < 0)
-            {
-                currentFrame += this._textures.length;
-            }
-            return currentFrame;
+            currentFrame += this._textures.length;
         }
+        return currentFrame;
     }
+}
 
-});
+export default MovieClip;

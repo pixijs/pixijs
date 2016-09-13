@@ -1,4 +1,4 @@
-let math = require('../math');
+import math from '../math';
 
 
 /**
@@ -7,7 +7,8 @@ let math = require('../math');
  * @class
  * @memberof PIXI
  */
-class TransformBase { 
+class TransformBase
+{ 
     constructor()
     {
         /**
@@ -66,4 +67,4 @@ TransformBase.prototype.updateWorldTransform = TransformBase.prototype.updateTra
 
 TransformBase.IDENTITY = new TransformBase();
 
-module.exports = TransformBase;
+export default TransformBase;

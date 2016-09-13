@@ -1,9 +1,10 @@
-let core = require('../core'),
-    tempPoint = new core.Point(),
-    Texture = require('../core/textures/Texture'),
-    CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader'),
-    tempArray = new Float32Array(4);
+import core from '../core';
+import Texture from '../core/textures/Texture';
+import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
+import TilingShader from './webgl/TilingShader';
+
+const tempArray = new Float32Array(4);
+const tempPoint = new core.Point();
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -14,7 +15,8 @@ let core = require('../core'),
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
-class TilingSprite extends core.Sprite {
+class TilingSprite extends core.Sprite
+{
     constructor(texture, width, height)
     {
         super(texture);
@@ -414,27 +416,20 @@ class TilingSprite extends core.Sprite {
         return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
     }
 
-}
-
-module.exports = TilingSprite;
-
-Object.defineProperties(TilingSprite.prototype, {
     /**
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
      * @memberof PIXI.extras.TilingSprite#
      */
-    width: {
-        get: function ()
-        {
-            return this._width;
-        },
-        set: function (value)
-        {
-            this._width = value;
-        }
-    },
+    get width()
+    {
+        return this._width;
+    }
+    set width(value)
+    {
+        this._width = value;
+    }
 
     /**
      * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
@@ -442,14 +437,14 @@ Object.defineProperties(TilingSprite.prototype, {
      * @member {number}
      * @memberof PIXI.extras.TilingSprite#
      */
-    height: {
-        get: function ()
-        {
-            return this._height;
-        },
-        set: function (value)
-        {
-            this._height = value;
-        }
+    get height()
+    {
+        return this._height;
     }
-});
+    set height(value)
+    {
+        this._height = value;
+    }
+}
+
+export default TilingSprite;

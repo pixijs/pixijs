@@ -1,8 +1,9 @@
-let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const'),
-    math = require('../../math'),
-    canvasRenderWorldTransform = new math.Matrix(),
-    CanvasTinter = require('./CanvasTinter');
+import CanvasRenderer from '../../renderers/canvas/CanvasRenderer';
+import CONST from '../../const';
+import math from '../../math';
+import CanvasTinter from './CanvasTinter';
+
+const canvasRenderWorldTransform = new math.Matrix();
 
 /**
  * @author Mat Groves
@@ -24,7 +25,8 @@ let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
  * @extends PIXI.ObjectRenderer
  * @param renderer {PIXI.WebGLRenderer} The renderer sprite this batch works for.
  */
-class CanvasSpriteRenderer {
+class CanvasSpriteRenderer
+{
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -154,12 +156,12 @@ class CanvasSpriteRenderer {
      * destroy the sprite object.
      *
      */
-    destroy() {
-      this.renderer = null;
+    destroy()
+    {
+        this.renderer = null;
     }
-
 }
 
-module.exports = CanvasSpriteRenderer;
-
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+
+export default CanvasSpriteRenderer;

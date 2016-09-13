@@ -1,6 +1,4 @@
-let utils = require('../../../utils');
-
-
+import utils from '../../../utils';
 
 /**
  * Builds a complex polygon to draw
@@ -12,7 +10,7 @@ let utils = require('../../../utils');
  * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildComplexPoly = function (graphicsData, webGLData)
+const buildComplexPoly = function (graphicsData, webGLData)
 {
     //TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
     let points = graphicsData.points.slice();
@@ -64,9 +62,6 @@ let buildComplexPoly = function (graphicsData, webGLData)
     {
         indices.push( i );
     }
-
 };
 
-
-
-module.exports = buildComplexPoly;
+export default buildComplexPoly;

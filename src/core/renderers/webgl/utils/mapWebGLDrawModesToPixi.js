@@ -1,4 +1,4 @@
-let CONST = require('../../../const');
+import CONST from '../../../const';
 
 /**
  * Generic Mask Stack data structure
@@ -18,7 +18,6 @@ function mapWebGLDrawModesToPixi(gl, object)
     object[CONST.DRAW_MODES.TRIANGLES]      = gl.TRIANGLES;
     object[CONST.DRAW_MODES.TRIANGLE_STRIP] = gl.TRIANGLE_STRIP;
     object[CONST.DRAW_MODES.TRIANGLE_FAN]   = gl.TRIANGLE_FAN;
-
 }
 
-module.exports = mapWebGLDrawModesToPixi;
+export default mapWebGLDrawModesToPixi;

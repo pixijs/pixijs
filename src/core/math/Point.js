@@ -7,7 +7,8 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-class Point {
+class Point
+{
     constructor(x, y)
     {
         /**
@@ -67,4 +68,4 @@ class Point {
 
 }
 
-module.exports = Point;
+export default Point;

@@ -11,7 +11,8 @@
  * @param fill      {boolean} whether or not the shape is filled with a colour
  * @param shape     {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} The shape object to draw.
  */
-class GraphicsData {
+class GraphicsData
+{
     constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
     {
         /*
@@ -103,4 +104,4 @@ class GraphicsData {
 	}
 }
 
-module.exports = GraphicsData;
+export default GraphicsData;

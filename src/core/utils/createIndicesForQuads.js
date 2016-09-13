@@ -5,7 +5,7 @@
  * @param size {number} Number of quads
  * @return {Uint16Array} indices
  */
-let createIndicesForQuads = function (size)
+const createIndicesForQuads = function (size)
 {
     // the total number of indices in our array, there are 6 points per quad.
 
@@ -27,4 +27,4 @@ let createIndicesForQuads = function (size)
     return indices;
 };
 
-module.exports = createIndicesForQuads;
+export default createIndicesForQuads;

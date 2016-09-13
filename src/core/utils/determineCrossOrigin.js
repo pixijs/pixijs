@@ -1,5 +1,6 @@
+import _url from 'url';
+
 let tempAnchor;
-let _url = require('url');
 
 /**
  * Sets the `crossOrigin` property for this resource based on if the url
@@ -11,7 +12,7 @@ let _url = require('url');
  * @param loc [location=window.location] {object} The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
-let determineCrossOrigin = function (url, loc) {
+const determineCrossOrigin = function (url, loc) {
     // data: and javascript: urls are considered same-origin
     if (url.indexOf('data:') === 0) {
         return '';
@@ -40,4 +41,4 @@ let determineCrossOrigin = function (url, loc) {
     return '';
 };
 
-module.exports = determineCrossOrigin;
+export default determineCrossOrigin;
