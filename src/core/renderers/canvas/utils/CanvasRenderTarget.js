@@ -9,28 +9,64 @@ var CONST = require('../../../const');
  * @param height {number} the height for the newly created canvas
  * @param [resolution=1] The resolution / device pixel ratio of the canvas
  */
-function CanvasRenderTarget(width, height, resolution)
-{
-    /**
-     * The Canvas object that belongs to this CanvasRenderTarget.
-     *
-     * @member {HTMLCanvasElement}
-     */
-    this.canvas = document.createElement('canvas');
+class CanvasRenderTarget {
+    constructor(width, height, resolution)
+    {
+        /**
+         * The Canvas object that belongs to this CanvasRenderTarget.
+         *
+         * @member {HTMLCanvasElement}
+         */
+        this.canvas = document.createElement('canvas');
+
+        /**
+         * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
+         *
+         * @member {CanvasRenderingContext2D}
+         */
+        this.context = this.canvas.getContext('2d');
+
+        this.resolution = resolution || CONST.RESOLUTION;
+
+        this.resize(width, height);
+    }
 
     /**
-     * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
+     * Clears the canvas that was created by the CanvasRenderTarget class.
      *
-     * @member {CanvasRenderingContext2D}
+     * @private
      */
-    this.context = this.canvas.getContext('2d');
+    clear()
+    {
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
+    }
 
-    this.resolution = resolution || CONST.RESOLUTION;
+    /**
+     * Resizes the canvas to the specified width and height.
+     *
+     * @param width {number} the new width of the canvas
+     * @param height {number} the new height of the canvas
+     */
+    resize(width, height)
+    {
 
-    this.resize(width, height);
+        this.canvas.width = width * this.resolution;
+        this.canvas.height = height * this.resolution;
+    }
+
+    /**
+     * Destroys this canvas.
+     *
+     */
+    destroy()
+    {
+        this.context = null;
+        this.canvas = null;
+    }
+
 }
 
-CanvasRenderTarget.prototype.constructor = CanvasRenderTarget;
 module.exports = CanvasRenderTarget;
 
 Object.defineProperties(CanvasRenderTarget.prototype, {
@@ -67,37 +103,3 @@ Object.defineProperties(CanvasRenderTarget.prototype, {
         }
     }
 });
-
-/**
- * Clears the canvas that was created by the CanvasRenderTarget class.
- *
- * @private
- */
-CanvasRenderTarget.prototype.clear = function ()
-{
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
-};
-
-/**
- * Resizes the canvas to the specified width and height.
- *
- * @param width {number} the new width of the canvas
- * @param height {number} the new height of the canvas
- */
-CanvasRenderTarget.prototype.resize = function (width, height)
-{
-
-    this.canvas.width = width * this.resolution;
-    this.canvas.height = height * this.resolution;
-};
-
-/**
- * Destroys this canvas.
- *
- */
-CanvasRenderTarget.prototype.destroy = function ()
-{
-    this.context = null;
-    this.canvas = null;
-};

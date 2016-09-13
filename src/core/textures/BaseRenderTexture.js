@@ -45,87 +45,87 @@ var BaseTexture = require('./BaseTexture'),
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
-function BaseRenderTexture(width, height, scaleMode, resolution)
-{
-    BaseTexture.call(this, null, scaleMode);
+class BaseRenderTexture extends BaseTexture {
+    constructor(width, height, scaleMode, resolution)
+    {
+        super(null, scaleMode);
 
-    this.resolution = resolution || CONST.RESOLUTION;
+        this.resolution = resolution || CONST.RESOLUTION;
 
-    this.width = width || 100;
-    this.height = height || 100;
+        this.width = width || 100;
+        this.height = height || 100;
 
-    this.realWidth = this.width * this.resolution;
-    this.realHeight = this.height * this.resolution;
+        this.realWidth = this.width * this.resolution;
+        this.realHeight = this.height * this.resolution;
 
-    this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
-    this.hasLoaded = true;
+        this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
+        this.hasLoaded = true;
+
+        /**
+         * A map of renderer IDs to webgl renderTargets
+         *
+         * @member {object<number, WebGLTexture>}
+         * @private
+         */
+        this._glRenderTargets = [];
+
+        /**
+         * A reference to the canvas render target (we only need one as this can be shared accross renderers)
+         *
+         * @member {object<number, WebGLTexture>}
+         * @private
+         */
+        this._canvasRenderTarget = null;
+
+        /**
+         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
+         *
+         * @member {boolean}
+         */
+        this.valid = false;
+    }
 
     /**
-     * A map of renderer IDs to webgl renderTargets
+     * Resizes the BaseRenderTexture.
      *
-     * @member {object<number, WebGLTexture>}
-     * @private
+     * @param width {number} The width to resize to.
+     * @param height {number} The height to resize to.
      */
-    this._glRenderTargets = [];
+    resize(width, height)
+    {
+
+        if (width === this.width && height === this.height)
+        {
+            return;
+        }
+
+        this.valid = (width > 0 && height > 0);
+
+        this.width = width;
+        this.height = height;
+
+        this.realWidth = this.width * this.resolution;
+        this.realHeight = this.height * this.resolution;
+
+        if (!this.valid)
+        {
+            return;
+        }
+
+        this.emit('update', this);
+
+    }
 
     /**
-     * A reference to the canvas render target (we only need one as this can be shared accross renderers)
+     * Destroys this texture
      *
-     * @member {object<number, WebGLTexture>}
-     * @private
      */
-    this._canvasRenderTarget = null;
+    destroy()
+    {
+        super.destroy(true);
+        this.renderer = null;
+    }
 
-    /**
-     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-     *
-     * @member {boolean}
-     */
-    this.valid = false;
 }
 
-BaseRenderTexture.prototype = Object.create(BaseTexture.prototype);
-BaseRenderTexture.prototype.constructor = BaseRenderTexture;
 module.exports = BaseRenderTexture;
-
-/**
- * Resizes the BaseRenderTexture.
- *
- * @param width {number} The width to resize to.
- * @param height {number} The height to resize to.
- */
-BaseRenderTexture.prototype.resize = function (width, height)
-{
-
-    if (width === this.width && height === this.height)
-    {
-        return;
-    }
-
-    this.valid = (width > 0 && height > 0);
-
-    this.width = width;
-    this.height = height;
-
-    this.realWidth = this.width * this.resolution;
-    this.realHeight = this.height * this.resolution;
-
-    if (!this.valid)
-    {
-        return;
-    }
-
-    this.emit('update', this);
-
-};
-
-/**
- * Destroys this texture
- *
- */
-BaseRenderTexture.prototype.destroy = function ()
-{
-    BaseTexture.prototype.destroy.call(this, true);
-    this.renderer = null;
-};
-

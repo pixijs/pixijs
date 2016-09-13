@@ -26,10 +26,10 @@ function checkPrecision(src) {
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  */
-var Shader = function(gl, vertexSrc, fragmentSrc) {
-    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
-};
+class Shader extends GLShader {
+    constructor(gl, vertexSrc, fragmentSrc) {
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+    }
+}
 
-Shader.prototype = Object.create(GLShader.prototype);
-Shader.prototype.constructor = Shader;
 module.exports = Shader;

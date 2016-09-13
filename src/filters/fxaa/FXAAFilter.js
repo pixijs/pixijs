@@ -14,20 +14,18 @@ var glslify  = require('glslify');
  * @memberof PIXI
  *
  */
-function FXAAFilter()
-{
-    //TODO - needs work
-    core.Filter.call(this,
+class FXAAFilter extends core.Filter {
+    constructor()
+    {
+        //TODO - needs work
+        super(
+            // vertex shader
+            glslify('./fxaa.vert'),
+            // fragment shader
+            glslify('./fxaa.frag')
+        );
 
-        // vertex shader
-        glslify('./fxaa.vert'),
-        // fragment shader
-        glslify('./fxaa.frag')
-    );
-
+    }
 }
-
-FXAAFilter.prototype = Object.create(core.Filter.prototype);
-FXAAFilter.prototype.constructor = FXAAFilter;
 
 module.exports = FXAAFilter;

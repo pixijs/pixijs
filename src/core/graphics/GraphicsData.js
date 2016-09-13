@@ -11,95 +11,96 @@
  * @param fill      {boolean} whether or not the shape is filled with a colour
  * @param shape     {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} The shape object to draw.
  */
-function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
-{
-    /*
-     * @member {number} the width of the line to draw
-     */
-    this.lineWidth = lineWidth;
+class GraphicsData {
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
+    {
+        /*
+         * @member {number} the width of the line to draw
+         */
+        this.lineWidth = lineWidth;
 
-    /*
-     * @member {number} the color of the line to draw
-     */
-    this.lineColor = lineColor;
+        /*
+         * @member {number} the color of the line to draw
+         */
+        this.lineColor = lineColor;
 
-    /*
-     * @member {number} the alpha of the line to draw
-     */
-    this.lineAlpha = lineAlpha;
+        /*
+         * @member {number} the alpha of the line to draw
+         */
+        this.lineAlpha = lineAlpha;
 
-    /*
-     * @member {number} cached tint of the line to draw
-     */
-    this._lineTint = lineColor;
+        /*
+         * @member {number} cached tint of the line to draw
+         */
+        this._lineTint = lineColor;
 
-    /*
-     * @member {number} the color of the fill
-     */
-    this.fillColor = fillColor;
+        /*
+         * @member {number} the color of the fill
+         */
+        this.fillColor = fillColor;
 
-    /*
-     * @member {number} the alpha of the fill
-     */
-    this.fillAlpha = fillAlpha;
+        /*
+         * @member {number} the alpha of the fill
+         */
+        this.fillAlpha = fillAlpha;
 
-    /*
-     * @member {number} cached tint of the fill
-     */
-    this._fillTint = fillColor;
+        /*
+         * @member {number} cached tint of the fill
+         */
+        this._fillTint = fillColor;
 
-    /*
-     * @member {boolean} whether or not the shape is filled with a colour
-     */
-    this.fill = fill;
+        /*
+         * @member {boolean} whether or not the shape is filled with a colour
+         */
+        this.fill = fill;
 
-    this.holes = [];
+        this.holes = [];
 
-    /*
-     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
-     */
-    this.shape = shape;
+        /*
+         * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+         */
+        this.shape = shape;
 
-    /*
-     * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
-     */
-    this.type = shape.type;
+        /*
+         * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
+         */
+        this.type = shape.type;
+    }
+
+	/**
+	 * Creates a new GraphicsData object with the same values as this one.
+	 *
+	 * @return {PIXI.GraphicsData} Cloned GraphicsData object
+	 */
+	clone()
+	{
+	    return new GraphicsData(
+	        this.lineWidth,
+	        this.lineColor,
+	        this.lineAlpha,
+	        this.fillColor,
+	        this.fillAlpha,
+	        this.fill,
+	        this.shape
+	    );
+	}
+
+	/**
+	 *
+	 *
+	 */
+	addHole(shape)
+	{
+	    this.holes.push(shape);
+	}
+
+	/**
+	 * Destroys the Graphics data.
+	 */
+	destroy() {
+	    this.shape = null;
+	    this.holes = null;
+	}
 }
 
-GraphicsData.prototype.constructor = GraphicsData;
 module.exports = GraphicsData;
-
-/**
- * Creates a new GraphicsData object with the same values as this one.
- *
- * @return {PIXI.GraphicsData} Cloned GraphicsData object
- */
-GraphicsData.prototype.clone = function ()
-{
-    return new GraphicsData(
-        this.lineWidth,
-        this.lineColor,
-        this.lineAlpha,
-        this.fillColor,
-        this.fillAlpha,
-        this.fill,
-        this.shape
-    );
-};
-
-/**
- *
- *
- */
-GraphicsData.prototype.addHole = function (shape)
-{
-    this.holes.push(shape);
-};
-
-/**
- * Destroys the Graphics data.
- */
-GraphicsData.prototype.destroy = function () {
-    this.shape = null;
-    this.holes = null;
-};

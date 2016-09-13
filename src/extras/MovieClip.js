@@ -29,66 +29,231 @@ var core = require('../core');
  * @memberof PIXI.extras
  * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
-function MovieClip(textures)
-{
-    core.Sprite.call(this, textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+class MovieClip extends core.Sprite {
+    constructor(textures)
+    {
+        super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+
+        /**
+         * @private
+         */
+        this._textures = null;
+
+        /**
+         * @private
+         */
+        this._durations = null;
+
+        this.textures = textures;
+
+        /**
+         * The speed that the MovieClip will play at. Higher is faster, lower is slower
+         *
+         * @member {number}
+         * @default 1
+         */
+        this.animationSpeed = 1;
+
+        /**
+         * Whether or not the movie clip repeats after playing.
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.loop = true;
+
+        /**
+         * Function to call when a MovieClip finishes playing
+         *
+         * @method
+         * @memberof PIXI.extras.MovieClip#
+         */
+        this.onComplete = null;
+
+        /**
+         * Elapsed time since animation has been started, used internally to display current texture
+         *
+         * @member {number}
+         * @private
+         */
+        this._currentTime = 0;
+
+        /**
+         * Indicates if the MovieClip is currently playing
+         *
+         * @member {boolean}
+         * @readonly
+         */
+        this.playing = false;
+    }
 
     /**
+     * Stops the MovieClip
+     *
+     */
+    stop()
+    {
+        if(!this.playing)
+        {
+            return;
+        }
+
+        this.playing = false;
+        core.ticker.shared.remove(this.update, this);
+    }
+
+    /**
+     * Plays the MovieClip
+     *
+     */
+    play()
+    {
+        if(this.playing)
+        {
+            return;
+        }
+
+        this.playing = true;
+        core.ticker.shared.add(this.update, this);
+    }
+
+    /**
+     * Stops the MovieClip and goes to a specific frame
+     *
+     * @param frameNumber {number} frame index to stop at
+     */
+    gotoAndStop(frameNumber)
+    {
+        this.stop();
+
+        this._currentTime = frameNumber;
+
+        this._texture = this._textures[this.currentFrame];
+        this._textureID = -1;
+    }
+
+    /**
+     * Goes to a specific frame and begins playing the MovieClip
+     *
+     * @param frameNumber {number} frame index to start at
+     */
+    gotoAndPlay(frameNumber)
+    {
+        this._currentTime = frameNumber;
+
+        this.play();
+    }
+
+    /*
+     * Updates the object transform for rendering
      * @private
      */
-    this._textures = null;
+    update(deltaTime)
+    {
+        var elapsed = this.animationSpeed * deltaTime;
 
-    /**
-     * @private
-     */
-    this._durations = null;
+        if (this._durations !== null)
+        {
+            var lag = this._currentTime % 1 * this._durations[this.currentFrame];
 
-    this.textures = textures;
+            lag += elapsed / 60 * 1000;
 
-    /**
-     * The speed that the MovieClip will play at. Higher is faster, lower is slower
+            while (lag < 0)
+            {
+                this._currentTime--;
+                lag += this._durations[this.currentFrame];
+            }
+
+            var sign = Math.sign(this.animationSpeed * deltaTime);
+            this._currentTime = Math.floor(this._currentTime);
+
+            while (lag >= this._durations[this.currentFrame])
+            {
+                lag -= this._durations[this.currentFrame] * sign;
+                this._currentTime += sign;
+            }
+
+            this._currentTime += lag / this._durations[this.currentFrame];
+        }
+        else
+        {
+            this._currentTime += elapsed;
+        }
+
+        if (this._currentTime < 0 && !this.loop)
+        {
+            this.gotoAndStop(0);
+
+            if (this.onComplete)
+            {
+                this.onComplete();
+            }
+        }
+        else if (this._currentTime >= this._textures.length && !this.loop)
+        {
+            this.gotoAndStop(this._textures.length - 1);
+
+            if (this.onComplete)
+            {
+                this.onComplete();
+            }
+        }
+        else
+        {
+            this._texture = this._textures[this.currentFrame];
+            this._textureID = -1;
+        }
+
+    }
+
+    /*
+     * Stops the MovieClip and destroys it
      *
-     * @member {number}
-     * @default 1
      */
-    this.animationSpeed = 1;
+    destroy( )
+    {
+        this.stop();
+        super.destroy();
+    }
 
     /**
-     * Whether or not the movie clip repeats after playing.
+     * A short hand way of creating a movieclip from an array of frame ids
      *
-     * @member {boolean}
-     * @default true
+     * @static
+     * @param frames {string[]} the array of frames ids the movieclip will use as its texture frames
      */
-    this.loop = true;
+    static fromFrames(frames)
+    {
+        var textures = [];
+
+        for (var i = 0; i < frames.length; ++i)
+        {
+            textures.push(core.Texture.fromFrame(frames[i]));
+        }
+
+        return new MovieClip(textures);
+    }
 
     /**
-     * Function to call when a MovieClip finishes playing
+     * A short hand way of creating a movieclip from an array of image ids
      *
-     * @method
-     * @memberof PIXI.extras.MovieClip#
+     * @static
+     * @param images {string[]} the array of image urls the movieclip will use as its texture frames
      */
-    this.onComplete = null;
+    static fromImages(images)
+    {
+        var textures = [];
 
-    /**
-     * Elapsed time since animation has been started, used internally to display current texture
-     *
-     * @member {number}
-     * @private
-     */
-    this._currentTime = 0;
+        for (var i = 0; i < images.length; ++i)
+        {
+            textures.push(core.Texture.fromImage(images[i]));
+        }
 
-    /**
-     * Indicates if the MovieClip is currently playing
-     *
-     * @member {boolean}
-     * @readonly
-     */
-    this.playing = false;
+        return new MovieClip(textures);
+    }
+
 }
 
-// constructor
-MovieClip.prototype = Object.create(core.Sprite.prototype);
-MovieClip.prototype.constructor = MovieClip;
 module.exports = MovieClip;
 
 Object.defineProperties(MovieClip.prototype, {
@@ -160,168 +325,3 @@ Object.defineProperties(MovieClip.prototype, {
     }
 
 });
-
-/**
- * Stops the MovieClip
- *
- */
-MovieClip.prototype.stop = function ()
-{
-    if(!this.playing)
-    {
-        return;
-    }
-
-    this.playing = false;
-    core.ticker.shared.remove(this.update, this);
-};
-
-/**
- * Plays the MovieClip
- *
- */
-MovieClip.prototype.play = function ()
-{
-    if(this.playing)
-    {
-        return;
-    }
-
-    this.playing = true;
-    core.ticker.shared.add(this.update, this);
-};
-
-/**
- * Stops the MovieClip and goes to a specific frame
- *
- * @param frameNumber {number} frame index to stop at
- */
-MovieClip.prototype.gotoAndStop = function (frameNumber)
-{
-    this.stop();
-
-    this._currentTime = frameNumber;
-
-    this._texture = this._textures[this.currentFrame];
-    this._textureID = -1;
-};
-
-/**
- * Goes to a specific frame and begins playing the MovieClip
- *
- * @param frameNumber {number} frame index to start at
- */
-MovieClip.prototype.gotoAndPlay = function (frameNumber)
-{
-    this._currentTime = frameNumber;
-
-    this.play();
-};
-
-/*
- * Updates the object transform for rendering
- * @private
- */
-MovieClip.prototype.update = function (deltaTime)
-{
-    var elapsed = this.animationSpeed * deltaTime;
-
-    if (this._durations !== null)
-    {
-        var lag = this._currentTime % 1 * this._durations[this.currentFrame];
-
-        lag += elapsed / 60 * 1000;
-
-        while (lag < 0)
-        {
-            this._currentTime--;
-            lag += this._durations[this.currentFrame];
-        }
-
-        var sign = Math.sign(this.animationSpeed * deltaTime);
-        this._currentTime = Math.floor(this._currentTime);
-
-        while (lag >= this._durations[this.currentFrame])
-        {
-            lag -= this._durations[this.currentFrame] * sign;
-            this._currentTime += sign;
-        }
-
-        this._currentTime += lag / this._durations[this.currentFrame];
-    }
-    else
-    {
-        this._currentTime += elapsed;
-    }
-
-    if (this._currentTime < 0 && !this.loop)
-    {
-        this.gotoAndStop(0);
-
-        if (this.onComplete)
-        {
-            this.onComplete();
-        }
-    }
-    else if (this._currentTime >= this._textures.length && !this.loop)
-    {
-        this.gotoAndStop(this._textures.length - 1);
-
-        if (this.onComplete)
-        {
-            this.onComplete();
-        }
-    }
-    else
-    {
-        this._texture = this._textures[this.currentFrame];
-        this._textureID = -1;
-    }
-
-};
-
-/*
- * Stops the MovieClip and destroys it
- *
- */
-MovieClip.prototype.destroy = function ( )
-{
-    this.stop();
-    core.Sprite.prototype.destroy.call(this);
-};
-
-/**
- * A short hand way of creating a movieclip from an array of frame ids
- *
- * @static
- * @param frames {string[]} the array of frames ids the movieclip will use as its texture frames
- */
-MovieClip.fromFrames = function (frames)
-{
-    var textures = [];
-
-    for (var i = 0; i < frames.length; ++i)
-    {
-        textures.push(core.Texture.fromFrame(frames[i]));
-    }
-
-    return new MovieClip(textures);
-};
-
-/**
- * A short hand way of creating a movieclip from an array of image ids
- *
- * @static
- * @param images {string[]} the array of image urls the movieclip will use as its texture frames
- */
-MovieClip.fromImages = function (images)
-{
-    var textures = [];
-
-    for (var i = 0; i < images.length; ++i)
-    {
-        textures.push(core.Texture.fromImage(images[i]));
-    }
-
-    return new MovieClip(textures);
-};

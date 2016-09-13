@@ -7,16 +7,15 @@ var glslify  = require('glslify');
  * @memberof PIXI.mesh
  * @param gl {PIXI.Shader} The WebGL shader manager this shader works for.
  */
-function TilingShader(gl)
-{
-    Shader.call(this,
-        gl,
-        glslify('./tilingSprite.vert'),
-        glslify('./tilingSprite.frag')
-    );
+class TilingShader extends Shader {
+    constructor(gl)
+    {
+        super(
+            gl,
+            glslify('./tilingSprite.vert'),
+            glslify('./tilingSprite.frag')
+        );
+    }
 }
 
-TilingShader.prototype = Object.create(Shader.prototype);
-TilingShader.prototype.constructor = TilingShader;
 module.exports = TilingShader;
-
