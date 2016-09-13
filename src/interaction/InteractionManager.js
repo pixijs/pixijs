@@ -1,4 +1,4 @@
-var core = require('../core'),
+let core = require('../core'),
     InteractionData = require('./InteractionData'),
     EventEmitter = require('eventemitter3');
 
@@ -183,7 +183,7 @@ class InteractionManager extends EventEmitter {
         this.currentCursorStyle = 'inherit';
 
         /**
-         * Internal cached var
+         * Internal cached let
          * @member {PIXI.Point}
          * @private
          */
@@ -480,7 +480,7 @@ class InteractionManager extends EventEmitter {
      */
     mapPositionToPoint( point, x, y )
     {
-        var rect;
+        let rect;
         // IE 11 fix
         if(!this.interactionDOMElement.parentElement)
         {
@@ -522,11 +522,10 @@ class InteractionManager extends EventEmitter {
         // As another little optimisation once an interactive object has been hit we can carry on through the scenegraph, but we know that there will be no more hits! So we can avoid extra hit tests
         // A final optimisation is that an object is not hit test directly if a child has already been hit.
 
-        var hit = false,
-            interactiveParent = interactive = displayObject.interactive || interactive;
+        interactive = displayObject.interactive || interactive;
 
-
-
+        let hit = false,
+            interactiveParent = interactive;
 
         // if the displayobject has a hitArea, then it does not need to hitTest children.
         if(displayObject.hitArea)
@@ -556,11 +555,11 @@ class InteractionManager extends EventEmitter {
         // This will allow pixi to completly ignore and bypass checking the displayObjects children.
         if(displayObject.interactiveChildren)
         {
-            var children = displayObject.children;
+            let children = displayObject.children;
 
-            for (var i = children.length-1; i >= 0; i--)
+            for (let i = children.length-1; i >= 0; i--)
             {
-                var child = children[i];
+                let child = children[i];
 
                 // time to get recursive.. if this function will return if somthing is hit..
                 if(this.processInteractive(point, child, func, hitTest, interactiveParent))
@@ -645,7 +644,7 @@ class InteractionManager extends EventEmitter {
 
         this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 
-        var isRightButton = event.button === 2 || event.which === 3;
+        let isRightButton = event.button === 2 || event.which === 3;
         this.emit(isRightButton ? 'rightdown' : 'mousedown', this.eventData);
     }
 
@@ -658,9 +657,9 @@ class InteractionManager extends EventEmitter {
      */
     processMouseDown( displayObject, hit )
     {
-        var e = this.mouse.originalEvent;
+        let e = this.mouse.originalEvent;
 
-        var isRightButton = e.button === 2 || e.which === 3;
+        let isRightButton = e.button === 2 || e.which === 3;
 
         if(hit)
         {
@@ -686,7 +685,7 @@ class InteractionManager extends EventEmitter {
 
         this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 
-        var isRightButton = event.button === 2 || event.which === 3;
+        let isRightButton = event.button === 2 || event.which === 3;
         this.emit(isRightButton ? 'rightup' : 'mouseup', this.eventData);
     }
 
@@ -699,10 +698,10 @@ class InteractionManager extends EventEmitter {
      */
     processMouseUp( displayObject, hit )
     {
-        var e = this.mouse.originalEvent;
+        let e = this.mouse.originalEvent;
 
-        var isRightButton = e.button === 2 || e.which === 3;
-        var isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
+        let isRightButton = e.button === 2 || e.which === 3;
+        let isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
 
         if(hit)
         {
@@ -861,14 +860,14 @@ class InteractionManager extends EventEmitter {
             event.preventDefault();
         }
 
-        var changedTouches = event.changedTouches;
-        var cLength = changedTouches.length;
+        let changedTouches = event.changedTouches;
+        let cLength = changedTouches.length;
 
-        for (var i=0; i < cLength; i++)
+        for (let i=0; i < cLength; i++)
         {
-            var touchEvent = changedTouches[i];
+            let touchEvent = changedTouches[i];
             //TODO POOL
-            var touchData = this.getTouchData( touchEvent );
+            let touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -913,14 +912,14 @@ class InteractionManager extends EventEmitter {
             event.preventDefault();
         }
 
-        var changedTouches = event.changedTouches;
-        var cLength = changedTouches.length;
+        let changedTouches = event.changedTouches;
+        let cLength = changedTouches.length;
 
-        for (var i=0; i < cLength; i++)
+        for (let i=0; i < cLength; i++)
         {
-            var touchEvent = changedTouches[i];
+            let touchEvent = changedTouches[i];
 
-            var touchData = this.getTouchData( touchEvent );
+            let touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -979,14 +978,14 @@ class InteractionManager extends EventEmitter {
             event.preventDefault();
         }
 
-        var changedTouches = event.changedTouches;
-        var cLength = changedTouches.length;
+        let changedTouches = event.changedTouches;
+        let cLength = changedTouches.length;
 
-        for (var i=0; i < cLength; i++)
+        for (let i=0; i < cLength; i++)
         {
-            var touchEvent = changedTouches[i];
+            let touchEvent = changedTouches[i];
 
-            var touchData = this.getTouchData( touchEvent );
+            let touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -1025,7 +1024,7 @@ class InteractionManager extends EventEmitter {
      */
     getTouchData(touchEvent)
     {
-        var touchData = this.interactiveDataPool.pop();
+        let touchData = this.interactiveDataPool.pop();
 
         if(!touchData)
         {

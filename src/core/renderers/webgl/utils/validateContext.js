@@ -2,7 +2,7 @@
 
 function validateContext(gl)
 {
-	var attributes = gl.getContextAttributes();
+	let attributes = gl.getContextAttributes();
 
 	// this is going to be fairly simple for now.. but at least we have rom to grow!
 	if(!attributes.stencil)

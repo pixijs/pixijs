@@ -1,10 +1,10 @@
-var GLShader = require('pixi-gl-core').GLShader;
-var Const = require('./const');
+let GLShader = require('pixi-gl-core').GLShader;
+let Const = require('./const');
 
 function checkPrecision(src) {
     if (src instanceof Array) {
         if (src[0].substring(0,9) !== 'precision') {
-            var copy = src.slice(0);
+            let copy = src.slice(0);
             copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
             return copy;
         }

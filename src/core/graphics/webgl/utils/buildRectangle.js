@@ -1,4 +1,4 @@
-var buildLine = require('./buildLine'),
+let buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
 /**
@@ -11,30 +11,30 @@ var buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-var buildRectangle = function (graphicsData, webGLData)
+let buildRectangle = function (graphicsData, webGLData)
 {
     // --- //
     // need to convert points to a nice regular data
     //
-    var rectData = graphicsData.shape;
-    var x = rectData.x;
-    var y = rectData.y;
-    var width = rectData.width;
-    var height = rectData.height;
+    let rectData = graphicsData.shape;
+    let x = rectData.x;
+    let y = rectData.y;
+    let width = rectData.width;
+    let height = rectData.height;
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        let color = utils.hex2rgb(graphicsData.fillColor);
+        let alpha = graphicsData.fillAlpha;
 
-        var r = color[0] * alpha;
-        var g = color[1] * alpha;
-        var b = color[2] * alpha;
+        let r = color[0] * alpha;
+        let g = color[1] * alpha;
+        let b = color[2] * alpha;
 
-        var verts = webGLData.points;
-        var indices = webGLData.indices;
+        let verts = webGLData.points;
+        let indices = webGLData.indices;
 
-        var vertPos = verts.length/6;
+        let vertPos = verts.length/6;
 
         // start
         verts.push(x, y);
@@ -55,7 +55,7 @@ var buildRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        var tempPoints = graphicsData.points;
+        let tempPoints = graphicsData.points;
 
         graphicsData.points = [x, y,
                   x + width, y,

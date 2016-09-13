@@ -1,4 +1,4 @@
-var core = require('../core');
+let core = require('../core');
 
 /**
  * @typedef FrameObject
@@ -11,16 +11,16 @@ var core = require('../core');
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
- * var alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
- * var textureArray = [];
+ * let alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
+ * let textureArray = [];
  *
- * for (var i=0; i < 4; i++)
+ * for (let i=0; i < 4; i++)
  * {
- *      var texture = PIXI.Texture.fromImage(alienImages[i]);
+ *      let texture = PIXI.Texture.fromImage(alienImages[i]);
  *      textureArray.push(texture);
  * };
  *
- * var mc = new PIXI.MovieClip(textureArray);
+ * let mc = new PIXI.MovieClip(textureArray);
  * ```
  *
  *
@@ -150,11 +150,11 @@ class MovieClip extends core.Sprite {
      */
     update(deltaTime)
     {
-        var elapsed = this.animationSpeed * deltaTime;
+        let elapsed = this.animationSpeed * deltaTime;
 
         if (this._durations !== null)
         {
-            var lag = this._currentTime % 1 * this._durations[this.currentFrame];
+            let lag = this._currentTime % 1 * this._durations[this.currentFrame];
 
             lag += elapsed / 60 * 1000;
 
@@ -164,7 +164,7 @@ class MovieClip extends core.Sprite {
                 lag += this._durations[this.currentFrame];
             }
 
-            var sign = Math.sign(this.animationSpeed * deltaTime);
+            let sign = Math.sign(this.animationSpeed * deltaTime);
             this._currentTime = Math.floor(this._currentTime);
 
             while (lag >= this._durations[this.currentFrame])
@@ -224,9 +224,9 @@ class MovieClip extends core.Sprite {
      */
     static fromFrames(frames)
     {
-        var textures = [];
+        let textures = [];
 
-        for (var i = 0; i < frames.length; ++i)
+        for (let i = 0; i < frames.length; ++i)
         {
             textures.push(core.Texture.fromFrame(frames[i]));
         }
@@ -242,9 +242,9 @@ class MovieClip extends core.Sprite {
      */
     static fromImages(images)
     {
-        var textures = [];
+        let textures = [];
 
-        for (var i = 0; i < images.length; ++i)
+        for (let i = 0; i < images.length; ++i)
         {
             textures.push(core.Texture.fromImage(images[i]));
         }
@@ -296,7 +296,7 @@ Object.defineProperties(MovieClip.prototype, {
             {
                 this._textures = [];
                 this._durations = [];
-                for(var i = 0; i < value.length; i++)
+                for(let i = 0; i < value.length; i++)
                 {
                     this._textures.push(value[i].texture);
                     this._durations.push(value[i].time);
@@ -315,7 +315,7 @@ Object.defineProperties(MovieClip.prototype, {
     currentFrame: {
         get: function ()
         {
-            var currentFrame = Math.floor(this._currentTime) % this._textures.length;
+            let currentFrame = Math.floor(this._currentTime) % this._textures.length;
             if (currentFrame < 0)
             {
                 currentFrame += this._textures.length;

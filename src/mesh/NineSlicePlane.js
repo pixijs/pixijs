@@ -1,13 +1,13 @@
-var DEFAULT_BORDER_SIZE= 10;
+let DEFAULT_BORDER_SIZE= 10;
 
-var Plane = require('./Plane');
+let Plane = require('./Plane');
 
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *  
  *```js
- * var Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
  * <pre>
  *      A                          B
@@ -43,7 +43,7 @@ class NineSlicePlane extends Plane {
     {
         super(texture, 4, 4);
 
-        var uvs = this.uvs;
+        let uvs = this.uvs;
         // right and bottom uv's are always 1
         uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
         uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
@@ -101,14 +101,14 @@ class NineSlicePlane extends Plane {
     }
 
     updateHorizontalVertices() {
-        var vertices = this.vertices;
+        let vertices = this.vertices;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
     updateVerticalVertices() {
-        var vertices = this.vertices;
+        let vertices = this.vertices;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width ;
@@ -122,11 +122,11 @@ class NineSlicePlane extends Plane {
      */
     _renderCanvas(renderer)
     {
-        var context = renderer.context;
+        let context = renderer.context;
         context.globalAlpha = this.worldAlpha;
 
-        var transform = this.worldTransform;
-        var res = renderer.resolution;
+        let transform = this.worldTransform;
+        let res = renderer.resolution;
 
         if (renderer.roundPixels)
         {
@@ -137,10 +137,10 @@ class NineSlicePlane extends Plane {
             context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
         }
             
-        var base = this._texture.baseTexture;
-        var textureSource = base.source;
-        var w = base.width;
-        var h = base.height;
+        let base = this._texture.baseTexture;
+        let textureSource = base.source;
+        let w = base.width;
+        let h = base.height;
         
         this.drawSegment(context, textureSource, w, h, 0, 1, 10, 11);
         this.drawSegment(context, textureSource, w, h, 2, 3, 12, 13);
@@ -171,13 +171,13 @@ class NineSlicePlane extends Plane {
     drawSegment(context, textureSource, w, h, x1, y1, x2, y2)
     {
         // otherwise you get weird results when using slices of that are 0 wide or high.
-        var uvs = this.uvs;
-        var vertices = this.vertices;
+        let uvs = this.uvs;
+        let vertices = this.vertices;
         
-        var sw = (uvs[x2]-uvs[x1]) * w;
-        var sh = (uvs[y2]-uvs[y1]) * h;
-        var dw = vertices[x2] - vertices[x1];
-        var dh = vertices[y2] - vertices[y1];
+        let sw = (uvs[x2]-uvs[x1]) * w;
+        let sh = (uvs[y2]-uvs[y1]) * h;
+        let dw = vertices[x2] - vertices[x1];
+        let dh = vertices[y2] - vertices[y1];
         
         // make sure the source is at least 1 pixel wide and high, otherwise nothing will be drawn.
         if (sw<1) {
@@ -252,8 +252,8 @@ Object.defineProperties(NineSlicePlane.prototype, {
         set: function (value)
         {
             this._leftWidth = value;
-            var uvs = this.uvs;
-            var vertices = this.vertices;
+            let uvs = this.uvs;
+            let vertices = this.vertices;
             uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
             vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
             this.dirty=true;
@@ -272,8 +272,8 @@ Object.defineProperties(NineSlicePlane.prototype, {
         set: function (value)
         {
             this._rightWidth = value;
-            var uvs = this.uvs;
-            var vertices = this.vertices;
+            let uvs = this.uvs;
+            let vertices = this.vertices;
             uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
             vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
             this.dirty=true;
@@ -292,8 +292,8 @@ Object.defineProperties(NineSlicePlane.prototype, {
         set: function (value)
         {
             this._topHeight = value;
-            var uvs = this.uvs;
-            var vertices = this.vertices;
+            let uvs = this.uvs;
+            let vertices = this.vertices;
             uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
             vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
             this.dirty=true;
@@ -312,8 +312,8 @@ Object.defineProperties(NineSlicePlane.prototype, {
         set: function (value)
         {
             this._bottomHeight = value;
-            var uvs = this.uvs;
-            var vertices = this.vertices;
+            let uvs = this.uvs;
+            let vertices = this.vertices;
             uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
             vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
             this.dirty=true;

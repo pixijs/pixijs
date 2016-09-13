@@ -1,7 +1,7 @@
-var core = require('../../core');
-var generateBlurVertSource  = require('./generateBlurVertSource');
-var generateBlurFragSource  = require('./generateBlurFragSource');
-var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
+let core = require('../../core');
+let generateBlurVertSource  = require('./generateBlurVertSource');
+let generateBlurFragSource  = require('./generateBlurFragSource');
+let getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
@@ -13,8 +13,8 @@ var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
 class BlurXFilter extends core.Filter {
     constructor(strength, quality, resolution)
     {
-        var vertSrc = generateBlurVertSource(5, true);
-        var fragSrc = generateBlurFragSource(5);
+        let vertSrc = generateBlurVertSource(5, true);
+        let fragSrc = generateBlurFragSource(5);
 
         super(
             // vertex shader
@@ -38,8 +38,8 @@ class BlurXFilter extends core.Filter {
     {
         if(this.firstRun)
         {
-            var gl = filterManager.renderer.gl;
-            var kernelSize = getMaxBlurKernelSize(gl);
+            let gl = filterManager.renderer.gl;
+            let kernelSize = getMaxBlurKernelSize(gl);
 
             this.vertexSrc = generateBlurVertSource(kernelSize, true);
             this.fragmentSrc = generateBlurFragSource(kernelSize);
@@ -59,15 +59,15 @@ class BlurXFilter extends core.Filter {
         }
         else
         {
-            var renderTarget = filterManager.getRenderTarget(true);
-            var flip = input;
-            var flop = renderTarget;
+            let renderTarget = filterManager.getRenderTarget(true);
+            let flip = input;
+            let flop = renderTarget;
 
-            for(var i = 0; i < this.passes-1; i++)
+            for(let i = 0; i < this.passes-1; i++)
             {
                 filterManager.applyFilter(this, flip, flop, true);
 
-               var temp = flop;
+               let temp = flop;
                flop = flip;
                flip = temp;
             }

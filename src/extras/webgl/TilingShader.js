@@ -1,5 +1,5 @@
-var Shader = require('../../core/Shader');
-var glslify  = require('glslify');
+let Shader = require('../../core/Shader');
+let glslify  = require('glslify');
 
 /**
  * @class

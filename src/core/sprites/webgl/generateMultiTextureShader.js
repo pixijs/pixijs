@@ -1,7 +1,7 @@
-var Shader = require('../../Shader');
-var glslify  = require('glslify');
+let Shader = require('../../Shader');
+let glslify  = require('glslify');
 
-var fragTemplate = [
+let fragTemplate = [
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
     'varying float vTextureId;',
@@ -17,16 +17,16 @@ var fragTemplate = [
 
 function generateMultiTextureShader(gl, maxTextures)
 {
-    var vertexSrc = glslify('./texture.vert');
-    var fragmentSrc = fragTemplate;
+    let vertexSrc = glslify('./texture.vert');
+    let fragmentSrc = fragTemplate;
 
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    var shader = new Shader(gl, vertexSrc, fragmentSrc);
+    let shader = new Shader(gl, vertexSrc, fragmentSrc);
 
-    var sampleValues = [];
-    for (var i = 0; i < maxTextures; i++)
+    let sampleValues = [];
+    for (let i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
     }
@@ -39,12 +39,12 @@ function generateMultiTextureShader(gl, maxTextures)
 
 function generateSampleSrc(maxTextures)
 {
-    var src = '';
+    let src = '';
 
     src += '\n';
     src += '\n';
 
-    for (var i = 0; i < maxTextures; i++)
+    for (let i = 0; i < maxTextures; i++)
     {
         if(i > 0)
         {

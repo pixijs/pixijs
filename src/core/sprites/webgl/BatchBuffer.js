@@ -1,6 +1,6 @@
 
 
- var Buffer = function(size)
+ let Buffer = function(size)
  {
 
      this.vertices = new ArrayBuffer(size);

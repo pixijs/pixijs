@@ -1,4 +1,4 @@
-var core = require('../core');
+let core = require('../core');
 
 /**
  * Holds all information related to an Interaction event

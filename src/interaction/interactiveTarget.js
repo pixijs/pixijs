@@ -12,7 +12,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-var interactiveTarget = {
+let interactiveTarget = {
     /**
      * Determines if the displayObject be clicked/touched
      * 

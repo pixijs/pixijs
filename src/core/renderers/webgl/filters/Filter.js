@@ -1,9 +1,9 @@
-var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
+let extractUniformsFromSrc = require('./extractUniformsFromSrc'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
     SOURCE_KEY_MAP = {};
 
-// var math = require('../../../math');
+// let math = require('../../../math');
 /**
  * @class
  * @memberof PIXI
@@ -38,7 +38,7 @@ class Filter {
 
         this.uniforms = {};
 
-        for (var i in this.uniformData)
+        for (let i in this.uniformData)
         {
             this.uniforms[i] = this.uniformData[i].value;
         }
@@ -73,7 +73,7 @@ class Filter {
         this.enabled = true;
     }
 
-    // var tempMatrix = new math.Matrix();
+    // let tempMatrix = new math.Matrix();
 
     apply(filterManager, input, output, clear)
     {

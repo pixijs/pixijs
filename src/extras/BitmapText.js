@@ -1,4 +1,4 @@
-var core = require('../core'),
+let core = require('../core'),
     ObservablePoint = require('../core/math/ObservablePoint');
 
 /**
@@ -9,7 +9,7 @@ var core = require('../core'),
  *
  * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * var bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * let bitmapText = new PIXI.extras.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
  *
  * http://www.angelcode.com/products/bmfont/ for windows or
@@ -130,22 +130,22 @@ class BitmapText extends core.Container {
      */
     updateText()
     {
-        var data = BitmapText.fonts[this._font.name];
-        var pos = new core.Point();
-        var prevCharCode = null;
-        var chars = [];
-        var lastLineWidth = 0;
-        var maxLineWidth = 0;
-        var lineWidths = [];
-        var line = 0;
-        var scale = this._font.size / data.size;
-        var lastSpace = -1;
-        var lastSpaceWidth = 0;
-        var maxLineHeight = 0;
+        let data = BitmapText.fonts[this._font.name];
+        let pos = new core.Point();
+        let prevCharCode = null;
+        let chars = [];
+        let lastLineWidth = 0;
+        let maxLineWidth = 0;
+        let lineWidths = [];
+        let line = 0;
+        let scale = this._font.size / data.size;
+        let lastSpace = -1;
+        let lastSpaceWidth = 0;
+        let maxLineHeight = 0;
 
-        for (var i = 0; i < this.text.length; i++)
+        for (let i = 0; i < this.text.length; i++)
         {
-            var charCode = this.text.charCodeAt(i);
+            let charCode = this.text.charCodeAt(i);
             
             if(/(\s)/.test(this.text.charAt(i))){
                 lastSpace = i;
@@ -180,7 +180,7 @@ class BitmapText extends core.Container {
                 continue;
             }
 
-            var charData = data.chars[charCode];
+            let charData = data.chars[charCode];
 
             if (!charData)
             {
@@ -202,11 +202,11 @@ class BitmapText extends core.Container {
         lineWidths.push(lastLineWidth);
         maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
 
-        var lineAlignOffsets = [];
+        let lineAlignOffsets = [];
 
-        for (i = 0; i <= line; i++)
+        for (let i = 0; i <= line; i++)
         {
-            var alignOffset = 0;
+            let alignOffset = 0;
 
             if (this._font.align === 'right')
             {
@@ -220,12 +220,12 @@ class BitmapText extends core.Container {
             lineAlignOffsets.push(alignOffset);
         }
 
-        var lenChars = chars.length;
-        var tint = this.tint;
+        let lenChars = chars.length;
+        let tint = this.tint;
 
-        for (i = 0; i < lenChars; i++)
+        for (let i = 0; i < lenChars; i++)
         {
-            var c = this._glyphs[i]; // get the next glyph sprite
+            let c = this._glyphs[i]; // get the next glyph sprite
 
             if (c)
             {
@@ -249,7 +249,7 @@ class BitmapText extends core.Container {
         }
 
         // remove unnecessary children.
-        for (i = lenChars; i < this._glyphs.length; ++i)
+        for (let i = lenChars; i < this._glyphs.length; ++i)
         {
             this.removeChild(this._glyphs[i]);
         }
@@ -260,7 +260,7 @@ class BitmapText extends core.Container {
         // apply anchor
         if (this.anchor.x !== 0 || this.anchor.y !== 0)
         {
-            for (i = 0; i < lenChars; i++)
+            for (let i = 0; i < lenChars; i++)
             {
                 this._glyphs[i].x -= this.textWidth * this.anchor.x;
                 this._glyphs[i].y -= this.textHeight * this.anchor.y;

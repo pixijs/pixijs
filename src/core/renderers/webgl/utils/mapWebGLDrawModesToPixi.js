@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+let CONST = require('../../../const');
 
 /**
  * Generic Mask Stack data structure

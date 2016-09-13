@@ -9,7 +9,7 @@
  * @namespace PIXI
  */
 // export core and const. We assign core to const so that the non-reference types in const remain in-tact
-var core = module.exports = Object.assign(require('./const'), require('./math'), {
+let core = module.exports = Object.assign(require('./const'), require('./math'), {
     // utils
     utils: require('./utils'),
     ticker: require('./ticker'),

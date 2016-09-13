@@ -1,4 +1,4 @@
-var GroupD8 = require('../math/GroupD8');
+let GroupD8 = require('../math/GroupD8');
 
 /**
  * A standard object to store the Uvs of a texture
@@ -34,17 +34,17 @@ class TextureUvs {
      */
     set(frame, baseFrame, rotate)
     {
-        var tw = baseFrame.width;
-        var th = baseFrame.height;
+        let tw = baseFrame.width;
+        let th = baseFrame.height;
 
         if(rotate)
         {
             //width and height div 2 div baseFrame size
-            var w2 = frame.width / 2 / tw;
-            var h2 = frame.height / 2 / th;
+            let w2 = frame.width / 2 / tw;
+            let h2 = frame.height / 2 / th;
             //coordinates of center
-            var cX = frame.x / tw + w2;
-            var cY = frame.y / th + h2;
+            let cX = frame.x / tw + w2;
+            let cY = frame.y / th + h2;
             rotate = GroupD8.add(rotate, GroupD8.NW); //NW is top-left corner
             this.x0 = cX + w2 * GroupD8.uX(rotate);
             this.y0 = cY + h2 * GroupD8.uY(rotate);

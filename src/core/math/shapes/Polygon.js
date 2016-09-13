@@ -1,4 +1,4 @@
-var Point = require('../Point'),
+let Point = require('../Point'),
     CONST = require('../../const');
 
 /**
@@ -15,7 +15,7 @@ class Polygon {
     {
         // prevents an argument assignment deopt
         // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
-        var points = points_;
+        let points = points_;
 
         //if points isn't an array, use arguments as the array
         if (!Array.isArray(points))
@@ -24,7 +24,7 @@ class Polygon {
             // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
             points = new Array(arguments.length);
 
-            for (var a = 0; a < points.length; ++a) {
+            for (let a = 0; a < points.length; ++a) {
                 points[a] = arguments[a];
             }
         }
@@ -32,8 +32,8 @@ class Polygon {
         // if this is an array of points, convert it to a flat array of numbers
         if (points[0] instanceof Point)
         {
-            var p = [];
-            for (var i = 0, il = points.length; i < il; i++)
+            let p = [];
+            for (let i = 0, il = points.length; i < il; i++)
             {
                 p.push(points[i].x, points[i].y);
             }
@@ -75,7 +75,7 @@ class Polygon {
 
     close()
     {
-        var points = this.points;
+        let points = this.points;
 
         // close the poly if the value is true!
         if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])
@@ -93,15 +93,15 @@ class Polygon {
      */
     contains(x, y)
     {
-        var inside = false;
+        let inside = false;
 
         // use some raycasting to test hits
         // https://github.com/substack/point-in-polygon/blob/master/index.js
-        var length = this.points.length / 2;
+        let length = this.points.length / 2;
 
-        for (var i = 0, j = length - 1; i < length; j = i++)
+        for (let i = 0, j = length - 1; i < length; j = i++)
         {
-            var xi = this.points[i * 2], yi = this.points[i * 2 + 1],
+            let xi = this.points[i * 2], yi = this.points[i * 2 + 1],
                 xj = this.points[j * 2], yj = this.points[j * 2 + 1],
                 intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 

@@ -1,6 +1,6 @@
-var glCore = require('pixi-gl-core');
+let glCore = require('pixi-gl-core');
 
-var fragTemplate = [
+let fragTemplate = [
     'precision mediump float;',
     'void main(void){',
         'float test = 0.1;',
@@ -9,24 +9,24 @@ var fragTemplate = [
     '}'
 ].join('\n');
 
-var checkMaxIfStatmentsInShader = function(maxIfs, gl)
+let checkMaxIfStatmentsInShader = function(maxIfs, gl)
 {
-    var createTempContext = !gl;
+    let createTempContext = !gl;
 
     if(createTempContext)
     {
-        var tinyCanvas = document.createElement('canvas');
+        let tinyCanvas = document.createElement('canvas');
         tinyCanvas.width = 1;
         tinyCanvas.height = 1;
 
         gl = glCore.createContext(tinyCanvas);
     }
 
-    var shader = gl.createShader(gl.FRAGMENT_SHADER);
+    let shader = gl.createShader(gl.FRAGMENT_SHADER);
 
     while(true)
     {
-        var fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
+        let fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);
@@ -58,9 +58,9 @@ var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
 function generateIfTestSrc(maxIfs)
 {
-    var src = '';
+    let src = '';
 
-    for (var i = 0; i < maxIfs; i++)
+    for (let i = 0; i < maxIfs; i++)
     {
         if(i > 0)
         {

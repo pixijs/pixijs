@@ -1,4 +1,4 @@
-var Container = require('../display/Container'),
+let Container = require('../display/Container'),
     RenderTexture = require('../textures/RenderTexture'),
     Texture = require('../textures/Texture'),
     GraphicsData = require('./GraphicsData'),
@@ -186,7 +186,7 @@ class Graphics extends Container {
      */
     clone()
     {
-        var clone = new Graphics();
+        let clone = new Graphics();
 
         clone.renderable    = this.renderable;
         clone.fillAlpha     = this.fillAlpha;
@@ -200,7 +200,7 @@ class Graphics extends Container {
         clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
         // copy graphics data
-        for (var i = 0; i < this.graphicsData.length; ++i)
+        for (let i = 0; i < this.graphicsData.length; ++i)
         {
             clone.graphicsData.push(this.graphicsData[i].clone());
         }
@@ -231,7 +231,7 @@ class Graphics extends Container {
             if (this.currentPath.shape.points.length)
             {
                 // halfway through a line? start a new one!
-                var shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
+                let shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
                 shape.closed = false;
                 this.drawShape(shape);
             }
@@ -256,7 +256,7 @@ class Graphics extends Container {
      */
     moveTo(x, y)
     {
-        var shape = new math.Polygon([x,y]);
+        let shape = new math.Polygon([x,y]);
         shape.closed = false;
         this.drawShape(shape);
 
@@ -304,7 +304,7 @@ class Graphics extends Container {
         }
 
 
-        var xa,
+        let xa,
             ya,
             n = 20,
             points = this.currentPath.shape.points;
@@ -314,11 +314,11 @@ class Graphics extends Container {
             this.moveTo(0, 0);
         }
 
-        var fromX = points[points.length-2];
-        var fromY = points[points.length-1];
+        let fromX = points[points.length-2];
+        let fromY = points[points.length-1];
 
-        var j = 0;
-        for (var i = 1; i <= n; ++i)
+        let j = 0;
+        for (let i = 1; i <= n; ++i)
         {
             j = i / n;
 
@@ -359,10 +359,10 @@ class Graphics extends Container {
             this.moveTo(0,0);
         }
 
-        var points = this.currentPath.shape.points;
+        let points = this.currentPath.shape.points;
 
-        var fromX = points[points.length-2];
-        var fromY = points[points.length-1];
+        let fromX = points[points.length-2];
+        let fromY = points[points.length-1];
 
         points.length -= 2;
 
@@ -399,7 +399,7 @@ class Graphics extends Container {
             this.moveTo(x1, y1);
         }
 
-        var points = this.currentPath.shape.points,
+        let points = this.currentPath.shape.points,
             fromX = points[points.length-2],
             fromY = points[points.length-1],
             a1 = fromY - y1,
@@ -417,7 +417,7 @@ class Graphics extends Container {
         }
         else
         {
-            var dd = a1 * a1 + b1 * b1,
+            let dd = a1 * a1 + b1 * b1,
                 cc = a2 * a2 + b2 * b2,
                 tt = a1 * a2 + b1 * b2,
                 k1 = radius * Math.sqrt(dd) / mm,
@@ -470,16 +470,16 @@ class Graphics extends Container {
             startAngle += Math.PI * 2;
         }
 
-        var sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
-        var segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
+        let sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
+        let segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
         if(sweep === 0)
         {
             return this;
         }
 
-        var startX = cx + Math.cos(startAngle) * radius;
-        var startY = cy + Math.sin(startAngle) * radius;
+        let startX = cx + Math.cos(startAngle) * radius;
+        let startY = cy + Math.sin(startAngle) * radius;
 
         if (this.currentPath)
         {
@@ -490,27 +490,27 @@ class Graphics extends Container {
             this.moveTo(startX, startY);
         }
 
-        var points = this.currentPath.shape.points;
+        let points = this.currentPath.shape.points;
 
-        var theta = sweep/(segs*2);
-        var theta2 = theta*2;
+        let theta = sweep/(segs*2);
+        let theta2 = theta*2;
 
-        var cTheta = Math.cos(theta);
-        var sTheta = Math.sin(theta);
+        let cTheta = Math.cos(theta);
+        let sTheta = Math.sin(theta);
 
-        var segMinus = segs - 1;
+        let segMinus = segs - 1;
 
-        var remainder = ( segMinus % 1 ) / segMinus;
+        let remainder = ( segMinus % 1 ) / segMinus;
 
-        for(var i=0; i<=segMinus; i++)
+        for(let i=0; i<=segMinus; i++)
         {
-            var real =  i + remainder * i;
+            let real =  i + remainder * i;
 
 
-            var angle = ((theta) + startAngle + (theta2 * real));
+            let angle = ((theta) + startAngle + (theta2 * real));
 
-            var c = Math.cos(angle);
-            var s = -Math.sin(angle);
+            let c = Math.cos(angle);
+            let s = -Math.sin(angle);
 
             points.push(( (cTheta *  c) + (sTheta * s) ) * radius + cx,
                         ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
@@ -633,9 +633,9 @@ class Graphics extends Container {
     {
         // prevents an argument assignment deopt
         // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
-        var points = path;
+        let points = path;
 
-        var closed = true;
+        let closed = true;
 
         if (points instanceof math.Polygon)
         {
@@ -649,13 +649,13 @@ class Graphics extends Container {
             // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
             points = new Array(arguments.length);
 
-            for (var i = 0; i < points.length; ++i)
+            for (let i = 0; i < points.length; ++i)
             {
                 points[i] = arguments[i];
             }
         }
 
-        var shape = new math.Polygon(points);
+        let shape = new math.Polygon(points);
         shape.closed = closed;
 
         this.drawShape(shape);
@@ -718,14 +718,14 @@ class Graphics extends Container {
 
     _renderSpriteRect(renderer)
     {
-        var rect = this.graphicsData[0].shape;
+        let rect = this.graphicsData[0].shape;
         if(!this._spriteRect)
         {
             if(!Graphics._SPRITE_TEXTURE)
             {
                 Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
 
-                var currentRenderTarget = renderer._activeRenderTarget;
+                let currentRenderTarget = renderer._activeRenderTarget;
                 renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
                 renderer.clear([1,1,1,1]);
                 renderer.bindRenderTarget(currentRenderTarget);
@@ -736,8 +736,8 @@ class Graphics extends Container {
         if (this.tint === 0xffffff) {
             this._spriteRect.tint = this.graphicsData[0].fillColor;
         } else {
-            var t1 = tempColor1;
-            var t2 = tempColor2;
+            let t1 = tempColor1;
+            let t2 = tempColor2;
             utils.hex2rgb(this.graphicsData[0].fillColor, t1);
             utils.hex2rgb(this.tint, t2);
             t1[0] *= t2[0];
@@ -798,7 +798,7 @@ class Graphics extends Container {
             this.cachedSpriteDirty = true;
         }
 
-        var lb = this._localBounds;
+        let lb = this._localBounds;
         this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
     }
 
@@ -812,11 +812,11 @@ class Graphics extends Container {
     {
         this.worldTransform.applyInverse(point,  tempPoint);
 
-        var graphicsData = this.graphicsData;
+        let graphicsData = this.graphicsData;
 
-        for (var i = 0; i < graphicsData.length; i++)
+        for (let i = 0; i < graphicsData.length; i++)
         {
-            var data = graphicsData[i];
+            let data = graphicsData[i];
 
             if (!data.fill)
             {
@@ -842,21 +842,21 @@ class Graphics extends Container {
      */
     updateLocalBounds()
     {
-        var minX = Infinity;
-        var maxX = -Infinity;
+        let minX = Infinity;
+        let maxX = -Infinity;
 
-        var minY = Infinity;
-        var maxY = -Infinity;
+        let minY = Infinity;
+        let maxY = -Infinity;
 
         if (this.graphicsData.length)
         {
-            var shape, points, x, y, w, h;
+            let shape, points, x, y, w, h;
 
-            for (var i = 0; i < this.graphicsData.length; i++)
+            for (let i = 0; i < this.graphicsData.length; i++)
             {
-                var data = this.graphicsData[i];
-                var type = data.type;
-                var lineWidth = data.lineWidth;
+                let data = this.graphicsData[i];
+                let type = data.type;
+                let lineWidth = data.lineWidth;
                 shape = data.shape;
 
                 if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
@@ -903,7 +903,7 @@ class Graphics extends Container {
                     // POLY
                     points = shape.points;
 
-                    for (var j = 0; j < points.length; j += 2)
+                    for (let j = 0; j < points.length; j += 2)
                     {
                         x = points[j];
                         y = points[j+1];
@@ -925,7 +925,7 @@ class Graphics extends Container {
             maxY = 0;
         }
 
-        var padding = this.boundsPadding;
+        let padding = this.boundsPadding;
 
         this._localBounds.minX = minX - padding;
         this._localBounds.maxX = maxX + padding * 2;
@@ -954,7 +954,7 @@ class Graphics extends Container {
 
         this.currentPath = null;
 
-        var data = new GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
+        let data = new GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
 
         this.graphicsData.push(data);
 
@@ -973,9 +973,9 @@ class Graphics extends Container {
     {
         resolution = resolution || 1;
 
-        var bounds = this.getLocalBounds();
+        let bounds = this.getLocalBounds();
 
-        var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+        let canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
         if(!canvasRenderer)
         {
@@ -987,7 +987,7 @@ class Graphics extends Container {
 
         canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
 
-        var texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+        let texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
         texture.baseTexture.resolution = resolution;
 
         return texture;
@@ -996,7 +996,7 @@ class Graphics extends Container {
     closePath()
     {
         // ok so close path assumes next one is a hole!
-        var currentPath = this.currentPath;
+        let currentPath = this.currentPath;
         if (currentPath && currentPath.shape)
         {
             currentPath.shape.close();
@@ -1007,7 +1007,7 @@ class Graphics extends Container {
     addHole()
     {
         // this is a hole!
-        var hole = this.graphicsData.pop();
+        let hole = this.graphicsData.pop();
 
         this.currentPath = this.graphicsData[this.graphicsData.length-1];
 
@@ -1025,13 +1025,13 @@ class Graphics extends Container {
         super.destroy(arguments);
 
         // destroy each of the GraphicsData objects
-        for (var i = 0; i < this.graphicsData.length; ++i) {
+        for (let i = 0; i < this.graphicsData.length; ++i) {
             this.graphicsData[i].destroy();
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (var id in this._webgl) {
-            for (var j = 0; j < this._webgl[id].data.length; ++j) {
+        for (let id in this._webgl) {
+            for (let j = 0; j < this._webgl[id].data.length; ++j) {
                 this._webgl[id].data[j].destroy();
             }
         }

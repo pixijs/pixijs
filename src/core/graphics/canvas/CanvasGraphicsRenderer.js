@@ -1,4 +1,4 @@
-var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
+let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const');
 
 /**
@@ -35,11 +35,11 @@ class CanvasGraphicsRenderer {
      */
     render(graphics)
     {
-        var renderer = this.renderer;
-        var context = renderer.context;
-        var worldAlpha = graphics.worldAlpha;
-        var transform = graphics.transform.worldTransform;
-        var resolution = renderer.resolution;
+        let renderer = this.renderer;
+        let context = renderer.context;
+        let worldAlpha = graphics.worldAlpha;
+        let transform = graphics.transform.worldTransform;
+        let resolution = renderer.resolution;
 
          // if the tint has changed, set the graphics object to dirty.
         if (this._prevTint !== this.tint) {
@@ -64,13 +64,13 @@ class CanvasGraphicsRenderer {
 
         renderer.setBlendMode(graphics.blendMode);
 
-        for (var i = 0; i < graphics.graphicsData.length; i++)
+        for (let i = 0; i < graphics.graphicsData.length; i++)
         {
-            var data = graphics.graphicsData[i];
-            var shape = data.shape;
+            let data = graphics.graphicsData[i];
+            let shape = data.shape;
 
-            var fillColor = data._fillTint;
-            var lineColor = data._lineTint;
+            let fillColor = data._fillTint;
+            let lineColor = data._lineTint;
 
             context.lineWidth = data.lineWidth;
 
@@ -80,9 +80,9 @@ class CanvasGraphicsRenderer {
 
                 this.renderPolygon(shape.points, shape.closed, context);
 
-                for (var j = 0; j < data.holes.length; j++)
+                for (let j = 0; j < data.holes.length; j++)
                 {
-                    var hole = data.holes[j];
+                    let hole = data.holes[j];
                     this.renderPolygon(hole.points, true, context);
                 }
 
@@ -141,15 +141,15 @@ class CanvasGraphicsRenderer {
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                var w = shape.width * 2;
-                var h = shape.height * 2;
+                let w = shape.width * 2;
+                let h = shape.height * 2;
 
-                var x = shape.x - w/2;
-                var y = shape.y - h/2;
+                let x = shape.x - w/2;
+                let y = shape.y - h/2;
 
                 context.beginPath();
 
-                var kappa = 0.5522848,
+                let kappa = 0.5522848,
                     ox = (w / 2) * kappa, // control point offset horizontal
                     oy = (h / 2) * kappa, // control point offset vertical
                     xe = x + w,           // x-end
@@ -180,13 +180,13 @@ class CanvasGraphicsRenderer {
             }
             else if (data.type === CONST.SHAPES.RREC)
             {
-                var rx = shape.x;
-                var ry = shape.y;
-                var width = shape.width;
-                var height = shape.height;
-                var radius = shape.radius;
+                let rx = shape.x;
+                let ry = shape.y;
+                let width = shape.width;
+                let height = shape.height;
+                let radius = shape.radius;
 
-                var maxRadius = Math.min(width, height) / 2 | 0;
+                let maxRadius = Math.min(width, height) / 2 | 0;
                 radius = radius > maxRadius ? maxRadius : radius;
 
                 context.beginPath();
@@ -229,16 +229,16 @@ class CanvasGraphicsRenderer {
     {
         graphics._prevTint = graphics.tint;
 
-        var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-        var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-        var tintB = (graphics.tint & 0xFF)/ 255;
+        let tintR = (graphics.tint >> 16 & 0xFF) / 255;
+        let tintG = (graphics.tint >> 8 & 0xFF) / 255;
+        let tintB = (graphics.tint & 0xFF)/ 255;
 
-        for (var i = 0; i < graphics.graphicsData.length; i++)
+        for (let i = 0; i < graphics.graphicsData.length; i++)
         {
-            var data = graphics.graphicsData[i];
+            let data = graphics.graphicsData[i];
 
-            var fillColor = data.fillColor | 0;
-            var lineColor = data.lineColor | 0;
+            let fillColor = data.fillColor | 0;
+            let lineColor = data.lineColor | 0;
 
             // super inline cos im an optimization NAZI :)
             data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
@@ -250,7 +250,7 @@ class CanvasGraphicsRenderer {
     {
         context.moveTo(points[0], points[1]);
 
-        for (var j=1; j < points.length/2; j++)
+        for (let j=1; j < points.length/2; j++)
         {
             context.lineTo(points[j * 2], points[j * 2 + 1]);
         }

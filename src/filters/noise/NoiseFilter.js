@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+let core = require('../../core');
+let glslify  = require('glslify');
 
 /**
  * @author Vico @vicocotea

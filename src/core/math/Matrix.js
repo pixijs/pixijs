@@ -2,7 +2,7 @@
 // should either fix it or change the jshint config
 // jshint -W072
 
-var Point = require('./Point');
+let Point = require('./Point');
 
 /**
  * The pixi Matrix class as an object, which makes it a lot faster,
@@ -118,7 +118,7 @@ class Matrix {
            this.array = new Float32Array(9);
        }
 
-       var array = out || this.array;
+       let array = out || this.array;
 
        if (transpose)
        {
@@ -160,8 +160,8 @@ class Matrix {
    {
        newPos = newPos || new Point();
 
-       var x = pos.x;
-       var y = pos.y;
+       let x = pos.x;
+       let y = pos.y;
 
        newPos.x = this.a * x + this.c * y + this.tx;
        newPos.y = this.b * x + this.d * y + this.ty;
@@ -181,10 +181,10 @@ class Matrix {
    {
        newPos = newPos || new Point();
 
-       var id = 1 / (this.a * this.d + this.c * -this.b);
+       let id = 1 / (this.a * this.d + this.c * -this.b);
 
-       var x = pos.x;
-       var y = pos.y;
+       let x = pos.x;
+       let y = pos.y;
 
        newPos.x = this.d * id * x + -this.c * id * y + (this.ty * this.c - this.tx * this.d) * id;
        newPos.y = this.a * id * y + -this.b * id * x + (-this.ty * this.a + this.tx * this.b) * id;
@@ -235,12 +235,12 @@ class Matrix {
     */
    rotate(angle)
    {
-       var cos = Math.cos( angle );
-       var sin = Math.sin( angle );
+       let cos = Math.cos( angle );
+       let sin = Math.sin( angle );
 
-       var a1 = this.a;
-       var c1 = this.c;
-       var tx1 = this.tx;
+       let a1 = this.a;
+       let c1 = this.c;
+       let tx1 = this.tx;
 
        this.a = a1 * cos-this.b * sin;
        this.b = a1 * sin+this.b * cos;
@@ -260,10 +260,10 @@ class Matrix {
     */
    append(matrix)
    {
-       var a1 = this.a;
-       var b1 = this.b;
-       var c1 = this.c;
-       var d1 = this.d;
+       let a1 = this.a;
+       let b1 = this.b;
+       let c1 = this.c;
+       let d1 = this.d;
 
        this.a  = matrix.a * a1 + matrix.b * c1;
        this.b  = matrix.a * b1 + matrix.b * d1;
@@ -293,7 +293,7 @@ class Matrix {
     */
    setTransform(x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
    {
-       var a, b, c, d, sr, cr, cy, sy, nsx, cx;
+       let a, b, c, d, sr, cr, cy, sy, nsx, cx;
 
        sr  = Math.sin(rotation);
        cr  = Math.cos(rotation);
@@ -326,12 +326,12 @@ class Matrix {
     */
    prepend(matrix)
    {
-       var tx1 = this.tx;
+       let tx1 = this.tx;
 
        if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1)
        {
-           var a1 = this.a;
-           var c1 = this.c;
+           let a1 = this.a;
+           let c1 = this.c;
            this.a  = a1*matrix.a+this.b*matrix.c;
            this.b  = a1*matrix.b+this.b*matrix.d;
            this.c  = c1*matrix.a+this.d*matrix.c;
@@ -352,15 +352,15 @@ class Matrix {
    decompose(transform)
    {
        // sort out rotation / skew..
-       var a = this.a,
+       let a = this.a,
            b = this.b,
            c = this.c,
            d = this.d;
 
-       var skewX = Math.atan2(-c, d);
-       var skewY = Math.atan2(b, a);
+       let skewX = Math.atan2(-c, d);
+       let skewY = Math.atan2(b, a);
 
-       var delta = Math.abs(1-skewX/skewY);
+       let delta = Math.abs(1-skewX/skewY);
 
        if (delta < 0.00001)
        {
@@ -399,12 +399,12 @@ class Matrix {
     */
    invert()
    {
-       var a1 = this.a;
-       var b1 = this.b;
-       var c1 = this.c;
-       var d1 = this.d;
-       var tx1 = this.tx;
-       var n = a1*d1-b1*c1;
+       let a1 = this.a;
+       let b1 = this.b;
+       let c1 = this.c;
+       let d1 = this.d;
+       let tx1 = this.tx;
+       let n = a1*d1-b1*c1;
 
        this.a = d1/n;
        this.b = -b1/n;
@@ -441,7 +441,7 @@ class Matrix {
      */
     clone()
     {
-        var matrix = new Matrix();
+        let matrix = new Matrix();
         matrix.a = this.a;
         matrix.b = this.b;
         matrix.c = this.c;

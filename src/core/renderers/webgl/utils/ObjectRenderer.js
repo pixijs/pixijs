@@ -1,4 +1,4 @@
-var WebGLManager = require('../managers/WebGLManager');
+let WebGLManager = require('../managers/WebGLManager');
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.

@@ -1,4 +1,4 @@
-var math = require('../math');
+let math = require('../math');
 
 
 /**
@@ -40,9 +40,9 @@ class TransformBase {
      */
     updateTransform(parentTransform)
     {
-        var pt = parentTransform.worldTransform;
-        var wt = this.worldTransform;
-        var lt = this.localTransform;
+        let pt = parentTransform.worldTransform;
+        let wt = this.worldTransform;
+        let lt = this.localTransform;
 
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;

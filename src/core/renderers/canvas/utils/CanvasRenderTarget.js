@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+let CONST = require('../../../const');
 
 /**
  * Creates a Canvas element of the given size.

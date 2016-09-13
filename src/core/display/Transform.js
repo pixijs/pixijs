@@ -1,4 +1,4 @@
-var math = require('../math'),
+let math = require('../math'),
     TransformBase = require('./TransformBase');
 
 
@@ -71,8 +71,8 @@ class Transform extends TransformBase {
      * Updates only local matrix
      */
     updateLocalTransform() {
-        var lt = this.localTransform;
-        var a, b, c, d;
+        let lt = this.localTransform;
+        let a, b, c, d;
 
         a  =  this._cr * this.scale.x;
         b  =  this._sr * this.scale.x;
@@ -92,10 +92,10 @@ class Transform extends TransformBase {
     updateTransform(parentTransform)
     {
 
-        var pt = parentTransform.worldTransform;
-        var wt = this.worldTransform;
-        var lt = this.localTransform;
-        var a, b, c, d;
+        let pt = parentTransform.worldTransform;
+        let wt = this.worldTransform;
+        let lt = this.localTransform;
+        let a, b, c, d;
 
         a  =  this._cr * this.scale.x;
         b  =  this._sr * this.scale.x;

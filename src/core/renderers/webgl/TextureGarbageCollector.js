@@ -1,5 +1,5 @@
 
-var CONST = require('../../const');
+let CONST = require('../../const');
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged up with textures that are no longer being used.
@@ -51,14 +51,14 @@ class TextureGarbageCollector {
      */
     run()
     {
-        var tm = this.renderer.textureManager;
-        var managedTextures =  tm._managedTextures;
-        var wasRemoved = false;
-        var i,j;
+        let tm = this.renderer.textureManager;
+        let managedTextures =  tm._managedTextures;
+        let wasRemoved = false;
+        let i,j;
 
         for (i = 0; i < managedTextures.length; i++)
         {
-            var texture = managedTextures[i];
+            let texture = managedTextures[i];
 
             // only supports non generated textures at the moment!
             if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle)
@@ -92,14 +92,14 @@ class TextureGarbageCollector {
      */
     unload( displayObject )
     {
-        var tm = this.renderer.textureManager;
+        let tm = this.renderer.textureManager;
 
         if(displayObject._texture)
         {
             tm.destroyTexture(displayObject._texture, true);
         }
 
-        for (var i = displayObject.children.length - 1; i >= 0; i--) {
+        for (let i = displayObject.children.length - 1; i >= 0; i--) {
 
             this.unload(displayObject.children[i]);
 

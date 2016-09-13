@@ -1,4 +1,4 @@
-var Rectangle = require('./Rectangle'),
+let Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
 /**
@@ -74,7 +74,7 @@ class Ellipse {
         }
 
         //normalize the coords to an ellipse with center 0,0
-        var normx = ((x - this.x) / this.width),
+        let normx = ((x - this.x) / this.width),
             normy = ((y - this.y) / this.height);
 
         normx *= normx;

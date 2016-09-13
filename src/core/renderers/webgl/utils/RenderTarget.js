@@ -1,4 +1,4 @@
-var math = require('../../../math'),
+let math = require('../../../math'),
     CONST = require('../../../const'),
     GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
 
@@ -175,7 +175,7 @@ class RenderTarget {
      */
     clear(clearColor)
     {
-        var cc = clearColor || this.clearColor;
+        let cc = clearColor || this.clearColor;
         this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3]);//r,g,b,a);
     }
 
@@ -209,7 +209,7 @@ class RenderTarget {
     activate()
     {
         //TOOD refactor usage of frame..
-        var gl = this.gl;
+        let gl = this.gl;
 
         // make surethe texture is unbound!
         this.frameBuffer.bind();
@@ -247,7 +247,7 @@ class RenderTarget {
      */
     calculateProjection(destinationFrame, sourceFrame)
     {
-        var pm = this.projectionMatrix;
+        let pm = this.projectionMatrix;
 
         sourceFrame = sourceFrame || destinationFrame;
 
@@ -298,7 +298,7 @@ class RenderTarget {
 
         this.frameBuffer.resize(width * this.resolution, height * this.resolution);
 
-        var projectionFrame = this.frame || this.size;
+        let projectionFrame = this.frame || this.size;
 
         this.calculateProjection( projectionFrame );
     }

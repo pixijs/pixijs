@@ -1,4 +1,4 @@
-var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
+let CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
     CONST = require('../../const'),
     math = require('../../math'),
     canvasRenderWorldTransform = new math.Matrix(),
@@ -37,7 +37,7 @@ class CanvasSpriteRenderer {
      */
     render(sprite)
     {
-        var texture = sprite._texture,
+        let texture = sprite._texture,
             renderer = this.renderer,
             wt = sprite.transform.worldTransform,
             dx,
@@ -58,7 +58,7 @@ class CanvasSpriteRenderer {
             renderer.context.globalAlpha = sprite.worldAlpha;
 
             // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
-            var smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
+            let smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
             if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
             {
                 renderer.context[renderer.smoothProperty] = smoothingEnabled;
@@ -108,7 +108,7 @@ class CanvasSpriteRenderer {
                 );
             }
 
-            var resolution = texture.baseTexture.resolution;
+            let resolution = texture.baseTexture.resolution;
 
             if (sprite.tint !== 0xFFFFFF)
             {

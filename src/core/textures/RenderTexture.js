@@ -1,4 +1,4 @@
-var BaseRenderTexture = require('./BaseRenderTexture'),
+let BaseRenderTexture = require('./BaseRenderTexture'),
     Texture = require('./Texture');
 
 /**
@@ -11,9 +11,9 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var renderTexture = PIXI.RenderTexture.create(800, 600);
- * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
+ * let renderTexture = PIXI.RenderTexture.create(800, 600);
+ * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -27,7 +27,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * position a Container should be used:
  *
  * ```js
- * var doc = new PIXI.Container();
+ * let doc = new PIXI.Container();
  *
  * doc.addChild(sprite);
  *
@@ -48,10 +48,10 @@ class RenderTexture extends Texture {
 
         if( !(baseRenderTexture instanceof BaseRenderTexture) )
         {
-            var width = arguments[1];
-            var height = arguments[2];
-            var scaleMode = arguments[3] || 0;
-            var resolution = arguments[4] || 1;
+            let width = arguments[1];
+            let height = arguments[2];
+            let scaleMode = arguments[3] || 0;
+            let resolution = arguments[4] || 1;
 
             // we have an old render texture..
             console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line

@@ -1,7 +1,7 @@
 // run the polyfills
 require('./polyfill');
 
-var core = module.exports = require('./core');
+let core = module.exports = require('./core');
 
 // add core plugins.
 core.extras         = require('./extras');

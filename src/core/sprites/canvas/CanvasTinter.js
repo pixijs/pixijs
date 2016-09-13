@@ -1,4 +1,4 @@
-var utils = require('../../utils'),
+let utils = require('../../utils'),
     canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
 
 /**
@@ -6,7 +6,7 @@ var utils = require('../../utils'),
  *
  * @namespace PIXI.CanvasTinter
  */
-var CanvasTinter = module.exports = {
+let CanvasTinter = module.exports = {
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
      *
@@ -17,11 +17,11 @@ var CanvasTinter = module.exports = {
      */
     getTintedTexture: function (sprite, color)
     {
-        var texture = sprite.texture;
+        let texture = sprite.texture;
 
         color = CanvasTinter.roundColor(color);
 
-        var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        let stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
         texture.tintCache = texture.tintCache || {};
 
@@ -31,7 +31,7 @@ var CanvasTinter = module.exports = {
         }
 
         // clone texture..
-        var canvas = CanvasTinter.canvas || document.createElement('canvas');
+        let canvas = CanvasTinter.canvas || document.createElement('canvas');
 
         //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
         CanvasTinter.tintMethod(texture, color, canvas);
@@ -39,7 +39,7 @@ var CanvasTinter = module.exports = {
         if (CanvasTinter.convertTintToImage)
         {
             // is this better?
-            var tintImage = new Image();
+            let tintImage = new Image();
             tintImage.src = canvas.toDataURL();
 
             texture.tintCache[stringColor] = tintImage;
@@ -64,9 +64,9 @@ var CanvasTinter = module.exports = {
      */
     tintWithMultiply: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        let context = canvas.getContext( '2d' );
+        let crop = texture._frame.clone();
+        let resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -119,9 +119,9 @@ var CanvasTinter = module.exports = {
      */
     tintWithOverlay: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        let context = canvas.getContext( '2d' );
+        let crop = texture._frame.clone();
+        let resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -161,9 +161,9 @@ var CanvasTinter = module.exports = {
      */
     tintWithPerPixel: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        let context = canvas.getContext( '2d' );
+        let crop = texture._frame.clone();
+        let resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -186,14 +186,14 @@ var CanvasTinter = module.exports = {
             crop.height
         );
 
-        var rgbValues = utils.hex2rgb(color);
-        var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
+        let rgbValues = utils.hex2rgb(color);
+        let r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-        var pixelData = context.getImageData(0, 0, crop.width, crop.height);
+        let pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
-        var pixels = pixelData.data;
+        let pixels = pixelData.data;
 
-        for (var i = 0; i < pixels.length; i += 4)
+        for (let i = 0; i < pixels.length; i += 4)
         {
             pixels[i+0] *= r;
             pixels[i+1] *= g;
@@ -211,9 +211,9 @@ var CanvasTinter = module.exports = {
      */
     roundColor: function (color)
     {
-        var step = CanvasTinter.cacheStepsPerColorChannel;
+        let step = CanvasTinter.cacheStepsPerColorChannel;
 
-        var rgbValues = utils.hex2rgb(color);
+        let rgbValues = utils.hex2rgb(color);
 
         rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
         rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);

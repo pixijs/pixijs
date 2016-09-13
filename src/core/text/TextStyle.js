@@ -1,4 +1,4 @@
-var CONST = require('../const'),
+let CONST = require('../const'),
     utils = require('../utils');
 
 /**
@@ -52,8 +52,8 @@ class TextStyle {
      */
     clone()
     {
-        var clonedProperties = {};
-        for (var key in this._defaults)
+        let clonedProperties = {};
+        for (let key in this._defaults)
         {
             clonedProperties[key] = this[key];
         }
@@ -186,7 +186,7 @@ Object.defineProperties(TextStyle.prototype, {
         },
         set: function (dropShadowColor)
         {
-            var outputColor = getColor(dropShadowColor);
+            let outputColor = getColor(dropShadowColor);
             if (this._dropShadowColor !== outputColor)
             {
                 this._dropShadowColor = outputColor;
@@ -217,7 +217,7 @@ Object.defineProperties(TextStyle.prototype, {
         },
         set: function (fill)
         {
-            var outputColor = getColor(fill);
+            let outputColor = getColor(fill);
             if (this._fill !== outputColor)
             {
                 this._fill = outputColor;
@@ -398,7 +398,7 @@ Object.defineProperties(TextStyle.prototype, {
         },
         set: function (stroke)
         {
-            var outputColor = getColor(stroke);
+            let outputColor = getColor(stroke);
             if (this._stroke !== outputColor)
             {
                 this._stroke = outputColor;
@@ -481,7 +481,7 @@ function getColor(color)
     }
     else if (Array.isArray(color))
     {
-        for (var i = 0; i < color.length; ++i)
+        for (let i = 0; i < color.length; ++i)
         {
             if (typeof color[i] === 'number')
             {

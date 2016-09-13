@@ -4,7 +4,7 @@
  *
  * @lends PIXI
  */
-var CONST = {
+let CONST = {
     /**
      * String of the current PIXI version.
      *

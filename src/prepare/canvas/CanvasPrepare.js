@@ -1,4 +1,4 @@
-var core = require('../../core');
+let core = require('../../core');
 
 /**
  * Prepare uploads elements to the GPU. The CanvasRenderer version of prepare

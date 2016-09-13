@@ -1,6 +1,6 @@
-var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
+let mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
 
-var BLEND = 0,
+let BLEND = 0,
     DEPTH_TEST = 1,
     FRONT_FACE = 2,
     CULL_FACE = 3,
@@ -77,7 +77,7 @@ class WebGLState {
     push()
     {
         // next state..
-        var state = this.stack[++this.stackIndex];
+        let state = this.stack[++this.stackIndex];
 
         if(!state)
         {
@@ -86,7 +86,7 @@ class WebGLState {
 
         // copy state..
         // set active state so we can force overrides of gl state
-        for (var i = 0; i < this.activeState.length; i++)
+        for (let i = 0; i < this.activeState.length; i++)
         {
             this.activeState[i] = state[i];
         }
@@ -97,7 +97,7 @@ class WebGLState {
      */
     pop()
     {
-        var state = this.stack[--this.stackIndex];
+        let state = this.stack[--this.stackIndex];
         this.setState(state);
     }
 
@@ -126,7 +126,7 @@ class WebGLState {
 
         this.activeState[BLEND] = value|0;
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         if(value)
         {
@@ -165,7 +165,7 @@ class WebGLState {
 
         this.activeState[DEPTH_TEST] = value|0;
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         if(value)
         {
@@ -189,7 +189,7 @@ class WebGLState {
 
         this.activeState[CULL_FACE] = value|0;
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         if(value)
         {
@@ -213,7 +213,7 @@ class WebGLState {
 
         this.activeState[FRONT_FACE] = value|0;
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         if(value)
         {
@@ -230,7 +230,7 @@ class WebGLState {
      */
     resetAttributes()
     {
-        var i;
+        let i;
 
         for ( i = 0; i < this.attribState.tempAttribState.length; i++) {
             this.attribState.tempAttribState[i] = 0;
@@ -240,7 +240,7 @@ class WebGLState {
             this.attribState.attribState[i] = 0;
         }
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         // im going to assume one is always active for performance reasons.
         for (i = 1; i < this.maxAttribs; i++)
@@ -267,12 +267,12 @@ class WebGLState {
         this.resetAttributes();
 
         // set active state so we can force overrides of gl state
-        for (var i = 0; i < this.activeState.length; i++)
+        for (let i = 0; i < this.activeState.length; i++)
         {
             this.activeState[i] = 32;
         }
 
-        var gl = this.gl;
+        let gl = this.gl;
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
 

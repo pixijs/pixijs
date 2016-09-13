@@ -1,5 +1,5 @@
 
-var vertTemplate = [
+let vertTemplate = [
 	'attribute vec2 aVertexPosition;',
 	'attribute vec2 aTextureCoord;',
 
@@ -15,15 +15,15 @@ var vertTemplate = [
 	'}'
 ].join('\n');
 
-var generateVertBlurSource = function(kernelSize, x)
+let generateVertBlurSource = function(kernelSize, x)
 {
-    var halfLength = Math.ceil(kernelSize/2);
+    let halfLength = Math.ceil(kernelSize/2);
 
-    var vertSource = vertTemplate;
+    let vertSource = vertTemplate;
 
-    var blurLoop = '';
-    var template;
-    var value;
+    let blurLoop = '';
+    let template;
+    let value;
 
     if(x)
     {
@@ -36,9 +36,9 @@ var generateVertBlurSource = function(kernelSize, x)
     }
 
 
-    for (var i = 0; i < kernelSize; i++)
+    for (let i = 0; i < kernelSize; i++)
     {
-    	var blur = template.replace('%index%', i);
+    	let blur = template.replace('%index%', i);
 
     	value = i;
 

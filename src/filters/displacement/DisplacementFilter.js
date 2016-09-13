@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+let core = require('../../core');
+let glslify  = require('glslify');
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -15,7 +15,7 @@ var glslify  = require('glslify');
 class DisplacementFilter extends core.Filter {
     constructor(sprite, scale)
     {
-        var maskMatrix = new core.Matrix();
+        let maskMatrix = new core.Matrix();
         sprite.renderable = false;
 
         super(
@@ -44,7 +44,7 @@ class DisplacementFilter extends core.Filter {
 
     apply(filterManager, input, output)
     {
-        var ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+        let ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x * ratio;

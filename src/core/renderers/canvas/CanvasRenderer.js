@@ -1,4 +1,4 @@
-var SystemRenderer = require('../SystemRenderer'),
+let SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
     mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
@@ -136,7 +136,7 @@ class CanvasRenderer extends SystemRenderer {
             this.resolution = this.rootResolution;
         }
 
-        var context = this.context;
+        let context = this.context;
 
         if(!renderTexture)
         {
@@ -149,8 +149,8 @@ class CanvasRenderer extends SystemRenderer {
         if(!skipUpdateTransform)
         {
             // update the scene graph
-            var cacheParent = displayObject.parent;
-            var tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+            let cacheParent = displayObject.parent;
+            let tempWt = this._tempDisplayObjectParent.transform.worldTransform;
 
             if(transform)
             {
@@ -194,7 +194,7 @@ class CanvasRenderer extends SystemRenderer {
         }
 
         // TODO RENDER TARGET STUFF HERE..
-        var tempContext = this.context;
+        let tempContext = this.context;
 
         this.context = context;
         displayObject.renderCanvas(this);

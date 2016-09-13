@@ -1,4 +1,4 @@
-var WebGLManager = require('./WebGLManager');
+let WebGLManager = require('./WebGLManager');
 
 /**
  * @class
@@ -32,7 +32,7 @@ class BlendModeManager extends WebGLManager {
 
         this.currentBlendMode = blendMode;
 
-        var mode = this.renderer.blendModes[this.currentBlendMode];
+        let mode = this.renderer.blendModes[this.currentBlendMode];
         this.renderer.gl.blendFunc(mode[0], mode[1]);
 
         return true;

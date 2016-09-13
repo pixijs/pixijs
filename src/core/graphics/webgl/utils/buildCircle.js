@@ -1,4 +1,4 @@
-var buildLine = require('./buildLine'),
+let buildLine = require('./buildLine'),
     CONST = require('../../../const'),
     utils = require('../../../utils');
 
@@ -12,14 +12,14 @@ var buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object to draw
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-var buildCircle = function (graphicsData, webGLData)
+let buildCircle = function (graphicsData, webGLData)
 {
     // need to convert points to a nice regular data
-    var circleData = graphicsData.shape;
-    var x = circleData.x;
-    var y = circleData.y;
-    var width;
-    var height;
+    let circleData = graphicsData.shape;
+    let x = circleData.x;
+    let y = circleData.y;
+    let width;
+    let height;
 
     // TODO - bit hacky??
     if (graphicsData.type === CONST.SHAPES.CIRC)
@@ -33,24 +33,24 @@ var buildCircle = function (graphicsData, webGLData)
         height = circleData.height;
     }
 
-    var totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
-    var seg = (Math.PI * 2) / totalSegs ;
+    let totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+    let seg = (Math.PI * 2) / totalSegs ;
 
-    var i = 0;
+    let i = 0;
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        let color = utils.hex2rgb(graphicsData.fillColor);
+        let alpha = graphicsData.fillAlpha;
 
-        var r = color[0] * alpha;
-        var g = color[1] * alpha;
-        var b = color[2] * alpha;
+        let r = color[0] * alpha;
+        let g = color[1] * alpha;
+        let b = color[2] * alpha;
 
-        var verts = webGLData.points;
-        var indices = webGLData.indices;
+        let verts = webGLData.points;
+        let indices = webGLData.indices;
 
-        var vecPos = verts.length/6;
+        let vecPos = verts.length/6;
 
         indices.push(vecPos);
 
@@ -70,7 +70,7 @@ var buildCircle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        var tempPoints = graphicsData.points;
+        let tempPoints = graphicsData.points;
 
         graphicsData.points = [];
 

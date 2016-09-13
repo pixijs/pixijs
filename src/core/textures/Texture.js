@@ -1,4 +1,4 @@
-var BaseTexture = require('./BaseTexture'),
+let BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
     EventEmitter = require('eventemitter3'),
@@ -12,9 +12,9 @@ var BaseTexture = require('./BaseTexture'),
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * var texture = PIXI.Texture.fromImage('assets/image.png');
- * var sprite1 = new PIXI.Sprite(texture);
- * var sprite2 = new PIXI.Sprite(texture);
+ * let texture = PIXI.Texture.fromImage('assets/image.png');
+ * let sprite1 = new PIXI.Sprite(texture);
+ * let sprite2 = new PIXI.Sprite(texture);
  * ```
  *
  * @class
@@ -264,7 +264,7 @@ class Texture extends EventEmitter {
      */
     static fromImage(imageUrl, crossorigin, scaleMode)
     {
-        var texture = utils.TextureCache[imageUrl];
+        let texture = utils.TextureCache[imageUrl];
 
         if (!texture)
         {
@@ -285,7 +285,7 @@ class Texture extends EventEmitter {
      */
     static fromFrame(frameId)
     {
-        var texture = utils.TextureCache[frameId];
+        let texture = utils.TextureCache[frameId];
 
         if (!texture)
         {
@@ -355,12 +355,12 @@ class Texture extends EventEmitter {
         //TODO pass in scale mode?
         if(typeof source === 'string')
         {
-            var texture = utils.TextureCache[source];
+            let texture = utils.TextureCache[source];
 
             if (!texture)
             {
                 // check if its a video..
-                var isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
+                let isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
                 if(isVideo)
                 {
                     return Texture.fromVideoUrl(source);
@@ -412,7 +412,7 @@ class Texture extends EventEmitter {
      */
     static removeTextureFromCache(id)
     {
-        var texture = utils.TextureCache[id];
+        let texture = utils.TextureCache[id];
 
         delete utils.TextureCache[id];
         delete utils.BaseTextureCache[id];

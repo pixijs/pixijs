@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+let CONST = require('../../../const');
 /**
  * A set of functions used to handle masking.
  *
@@ -18,13 +18,13 @@ class CanvasMaskManager {
      */
     pushMask(maskData)
     {
-        var renderer = this.renderer;
+        let renderer = this.renderer;
 
         renderer.context.save();
 
-        var cacheAlpha = maskData.alpha;
-        var transform = maskData.transform.worldTransform;
-        var resolution = renderer.resolution;
+        let cacheAlpha = maskData.alpha;
+        let transform = maskData.transform.worldTransform;
+        let resolution = renderer.resolution;
 
         renderer.context.setTransform(
             transform.a * resolution,
@@ -48,8 +48,8 @@ class CanvasMaskManager {
 
     renderGraphicsShape(graphics)
     {
-        var context = this.renderer.context;
-        var len = graphics.graphicsData.length;
+        let context = this.renderer.context;
+        let len = graphics.graphicsData.length;
 
         if (len === 0)
         {
@@ -58,19 +58,19 @@ class CanvasMaskManager {
 
         context.beginPath();
 
-        for (var i = 0; i < len; i++)
+        for (let i = 0; i < len; i++)
         {
-            var data = graphics.graphicsData[i];
-            var shape = data.shape;
+            let data = graphics.graphicsData[i];
+            let shape = data.shape;
 
             if (data.type === CONST.SHAPES.POLY)
             {
 
-                var points = shape.points;
+                let points = shape.points;
 
                 context.moveTo(points[0], points[1]);
 
-                for (var j=1; j < points.length/2; j++)
+                for (let j=1; j < points.length/2; j++)
                 {
                     context.lineTo(points[j * 2], points[j * 2 + 1]);
                 }
@@ -98,13 +98,13 @@ class CanvasMaskManager {
 
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                var w = shape.width * 2;
-                var h = shape.height * 2;
+                let w = shape.width * 2;
+                let h = shape.height * 2;
 
-                var x = shape.x - w/2;
-                var y = shape.y - h/2;
+                let x = shape.x - w/2;
+                let y = shape.y - h/2;
 
-                var kappa = 0.5522848,
+                let kappa = 0.5522848,
                     ox = (w / 2) * kappa, // control point offset horizontal
                     oy = (h / 2) * kappa, // control point offset vertical
                     xe = x + w,           // x-end
@@ -122,13 +122,13 @@ class CanvasMaskManager {
             else if (data.type === CONST.SHAPES.RREC)
             {
 
-                var rx = shape.x;
-                var ry = shape.y;
-                var width = shape.width;
-                var height = shape.height;
-                var radius = shape.radius;
+                let rx = shape.x;
+                let ry = shape.y;
+                let width = shape.width;
+                let height = shape.height;
+                let radius = shape.radius;
 
-                var maxRadius = Math.min(width, height) / 2 | 0;
+                let maxRadius = Math.min(width, height) / 2 | 0;
                 radius = radius > maxRadius ? maxRadius : radius;
 
                 context.moveTo(rx, ry + radius);

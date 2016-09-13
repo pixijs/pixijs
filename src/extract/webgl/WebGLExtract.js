@@ -1,4 +1,4 @@
-var core = require('../../core'),
+let core = require('../../core'),
     tempRect = new core.Rectangle();
 
 /**
@@ -22,7 +22,7 @@ class WebGLExtract {
      */
     image( target )
     {
-	    var image = new Image();
+	    let image = new Image();
         image.src = this.base64( target );
         return image;
     }
@@ -44,12 +44,12 @@ class WebGLExtract {
      */
     canvas( target )
     {
-	    var renderer = this.renderer;
-	    var textureBuffer;
-	    var resolution;
-        var frame;
-        var flipY = false;
-        var renderTexture;
+	    let renderer = this.renderer;
+	    let textureBuffer;
+	    let resolution;
+        let frame;
+        let flipY = false;
+        let renderTexture;
 
         if(target)
         {
@@ -85,10 +85,10 @@ class WebGLExtract {
 
 
 
-        var width = frame.width * resolution;
-        var height = frame.height * resolution;
+        let width = frame.width * resolution;
+        let height = frame.height * resolution;
 
-       	var canvasBuffer = new core.CanvasRenderTarget(width, height);
+       	let canvasBuffer = new core.CanvasRenderTarget(width, height);
 
         if(textureBuffer)
         {
@@ -96,14 +96,14 @@ class WebGLExtract {
             renderer.bindRenderTarget(textureBuffer);
 
             // set up an array of pixels
-            var webGLPixels = new Uint8Array(4 * width * height);
+            let webGLPixels = new Uint8Array(4 * width * height);
 
             // read pixels to the array
-            var gl = renderer.gl;
+            let gl = renderer.gl;
             gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
 
             // add the pixels to the canvas
-            var canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+            let canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
             canvasData.data.set(webGLPixels);
 
             canvasBuffer.context.putImageData(canvasData, 0, 0);
@@ -127,11 +127,11 @@ class WebGLExtract {
      */
     pixels( target )
     {
-        var renderer = this.renderer;
-        var textureBuffer;
-        var resolution;
-        var frame;
-        var renderTexture;
+        let renderer = this.renderer;
+        let textureBuffer;
+        let resolution;
+        let frame;
+        let renderTexture;
 
         if(target)
         {
@@ -162,17 +162,17 @@ class WebGLExtract {
             frame.height = textureBuffer.size.height;
         }
 
-        var width = frame.width * resolution;
-        var height = frame.height * resolution;
+        let width = frame.width * resolution;
+        let height = frame.height * resolution;
 
-        var webGLPixels = new Uint8Array(4 * width * height);
+        let webGLPixels = new Uint8Array(4 * width * height);
 
         if(textureBuffer)
         {
             // bind the buffer
             renderer.bindRenderTarget(textureBuffer);
             // read pixels to the array
-            var gl = renderer.gl;
+            let gl = renderer.gl;
             gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
         }
 

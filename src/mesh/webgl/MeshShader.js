@@ -1,4 +1,4 @@
-var Shader = require('../../core/Shader');
+let Shader = require('../../core/Shader');
 
 /**
  * @class

@@ -1,5 +1,5 @@
-var core = require('../core');
-var  Device = require('ismobilejs');
+let core = require('../core');
+let  Device = require('ismobilejs');
 
 // add some extra variables to the container..
 Object.assign(
@@ -24,7 +24,7 @@ class AccessibilityManager {
 	    }
 
 	    // first we create a div that will sit over the pixi element. This is where the div overlays will go.
-        var div = document.createElement('div');
+        let div = document.createElement('div');
 
         div.style.width = 100 + 'px';
         div.style.height = 100 + 'px';
@@ -103,7 +103,7 @@ class AccessibilityManager {
 
     createTouchHook()
     {
-        var hookDiv = document.createElement('button');
+        let hookDiv = document.createElement('button');
 	    hookDiv.style.width = 1 + 'px';
         hookDiv.style.height = 1 + 'px';
         hookDiv.style.position = 'absolute';
@@ -197,9 +197,9 @@ class AccessibilityManager {
 	       	displayObject.renderId = this.renderId;
 	    }
 
-	    var children = displayObject.children;
+	    let children = displayObject.children;
 
-	    for (var i = children.length - 1; i >= 0; i--) {
+	    for (let i = children.length - 1; i >= 0; i--) {
 
 		    this.updateAccessibleObjects(children[i]);
 	    }
@@ -219,21 +219,21 @@ class AccessibilityManager {
 	    // update children...
 	    this.updateAccessibleObjects(this.renderer._lastObjectRendered);
 
-	    var rect = this.renderer.view.getBoundingClientRect();
-	    var sx = rect.width  / this.renderer.width;
-	    var sy = rect.height / this.renderer.height;
+	    let rect = this.renderer.view.getBoundingClientRect();
+	    let sx = rect.width  / this.renderer.width;
+	    let sy = rect.height / this.renderer.height;
 
-	    var div = this.div;
+	    let div = this.div;
 
 	    div.style.left = rect.left + 'px';
 	    div.style.top = rect.top + 'px';
 	    div.style.width = this.renderer.width + 'px';
 	    div.style.height = this.renderer.height + 'px';
 
-	    for (var i = 0; i < this.children.length; i++)
+	    for (let i = 0; i < this.children.length; i++)
 	    {
 
-		    var child = this.children[i];
+		    let child = this.children[i];
 
 		    if(child.renderId !== this.renderId)
 		    {
@@ -255,8 +255,8 @@ class AccessibilityManager {
 		    {
 			    // map div to display..
 			    div = child._accessibleDiv;
-			    var hitArea = child.hitArea;
-			    var wt = child.worldTransform;
+			    let hitArea = child.hitArea;
+			    let wt = child.worldTransform;
 
 			    if(child.hitArea)
 			    {
@@ -319,7 +319,7 @@ class AccessibilityManager {
     {
     //	this.activate();
 
-	    var div = this.pool.pop();
+	    let div = this.pool.pop();
 
 	    if(!div)
 	    {
@@ -373,7 +373,7 @@ class AccessibilityManager {
      */
     _onClick(e)
     {
-	    var interactionManager = this.renderer.plugins.interaction;
+	    let interactionManager = this.renderer.plugins.interaction;
 	    interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
     }
 
@@ -383,7 +383,7 @@ class AccessibilityManager {
      */
     _onFocus(e)
     {
-	    var interactionManager = this.renderer.plugins.interaction;
+	    let interactionManager = this.renderer.plugins.interaction;
 	    interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
     }
 
@@ -393,7 +393,7 @@ class AccessibilityManager {
      */
     _onFocusOut(e)
     {
-	    var interactionManager = this.renderer.plugins.interaction;
+	    let interactionManager = this.renderer.plugins.interaction;
 	    interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
     }
 
@@ -431,7 +431,7 @@ class AccessibilityManager {
     {
 	    this.div = null;
 
-	    for (var i = 0; i < this.children.length; i++)
+	    for (let i = 0; i < this.children.length; i++)
 	    {
 		    this.children[i].div = null;
 	    }

@@ -1,8 +1,8 @@
 
 
-var  Device = require('ismobilejs');
+let  Device = require('ismobilejs');
 
-var maxRecommendedTextures = function(max)
+let maxRecommendedTextures = function(max)
 {
 
 	if(Device.tablet || Device.phone)

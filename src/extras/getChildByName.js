@@ -1,4 +1,4 @@
-var core = require('../core');
+let core = require('../core');
 
 /**
  * The instance name of the object.
@@ -17,7 +17,7 @@ core.DisplayObject.prototype.name = null;
 */
 core.Container.prototype.getChildByName = function (name)
 {
-    for (var i = 0; i < this.children.length; i++)
+    for (let i = 0; i < this.children.length; i++)
     {
         if (this.children[i].name === name)
         {

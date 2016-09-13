@@ -1,4 +1,4 @@
-var SystemRenderer = require('../SystemRenderer'),
+let SystemRenderer = require('../SystemRenderer'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
@@ -14,7 +14,7 @@ var SystemRenderer = require('../SystemRenderer'),
     glCore = require('pixi-gl-core'),
     CONST = require('../../const');
 
-var CONTEXT_UID = 0;
+let CONTEXT_UID = 0;
 
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
@@ -172,7 +172,7 @@ class WebGLRenderer extends SystemRenderer {
      */
     _initContext()
     {
-        var gl = this.gl;
+        let gl = this.gl;
 
         // create a texture manager...
         this.textureManager = new TextureManager(this);
@@ -224,7 +224,7 @@ class WebGLRenderer extends SystemRenderer {
         if(!skipUpdateTransform)
         {
             // update the scene graph
-            var cacheParent = displayObject.parent;
+            let cacheParent = displayObject.parent;
             displayObject.parent = this._tempDisplayObjectParent;
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
@@ -343,12 +343,12 @@ class WebGLRenderer extends SystemRenderer {
      */
     bindRenderTexture(renderTexture, transform)
     {
-        var renderTarget;
+        let renderTarget;
 
         if(renderTexture)
         {
-            var baseTexture = renderTexture.baseTexture;
-            var gl = this.gl;
+            let baseTexture = renderTexture.baseTexture;
+            let gl = this.gl;
 
             if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {
@@ -433,7 +433,7 @@ class WebGLRenderer extends SystemRenderer {
     {
         texture = texture.baseTexture || texture;
 
-        var gl = this.gl;
+        let gl = this.gl;
 
         //TODO test perf of cache?
         location = location || 0;

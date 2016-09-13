@@ -12,7 +12,7 @@
  *          PIXI.accessibility.accessibleTarget
  *      );
  */
-var accessibleTarget = {
+let accessibleTarget = {
 
     /**
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a

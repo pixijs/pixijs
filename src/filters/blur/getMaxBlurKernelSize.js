@@ -1,9 +1,9 @@
 
 
-var getMaxKernelSize = function(gl)
+let getMaxKernelSize = function(gl)
 {
-    var maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) );
-    var kernelSize = 15;
+    let maxVaryings = ( gl.getParameter(gl.MAX_VARYING_VECTORS) );
+    let kernelSize = 15;
 
     while(kernelSize > maxVaryings)
     {

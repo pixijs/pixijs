@@ -1,9 +1,9 @@
-var CONST = require('../const');
+let CONST = require('../const');
 
 /**
  * @namespace PIXI.utils
  */
-var utils = module.exports = {
+let utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
@@ -78,7 +78,7 @@ var utils = module.exports = {
      */
     getResolutionOfUrl: function (url)
     {
-        var resolution = CONST.RETINA_PREFIX.exec(url);
+        let resolution = CONST.RETINA_PREFIX.exec(url);
 
         if (resolution)
         {
@@ -108,7 +108,7 @@ var utils = module.exports = {
 
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
-            var args = [
+            let args = [
                 '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
                 'background: #ff66a5; padding:5px 0;',
                 'background: #ff66a5; padding:5px 0;',
@@ -139,7 +139,7 @@ var utils = module.exports = {
      */
     isWebGLSupported: function ()
     {
-        var contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
+        let contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
         try
         {
             if (!window.WebGLRenderingContext)
@@ -147,13 +147,13 @@ var utils = module.exports = {
                 return false;
             }
 
-            var canvas = document.createElement('canvas'),
+            let canvas = document.createElement('canvas'),
                 gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
-            var success = !!(gl && gl.getContextAttributes().stencil);
+            let success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                var loseContext = gl.getExtension('WEBGL_lose_context');
+                let loseContext = gl.getExtension('WEBGL_lose_context');
 
                 if(loseContext)
                 {
@@ -192,7 +192,7 @@ var utils = module.exports = {
      */
     removeItems: function (arr, startIdx, removeCount)
     {
-        var length = arr.length;
+        let length = arr.length;
 
         if (startIdx >= length || removeCount === 0)
         {
@@ -200,7 +200,8 @@ var utils = module.exports = {
         }
 
         removeCount = (startIdx+removeCount > length ? length-startIdx : removeCount);
-        for (var i = startIdx, len = length-removeCount; i < len; ++i)
+        let len = length-removeCount;
+        for (let i = startIdx; i < len; ++i)
         {
             arr[i] = arr[i + removeCount];
         }

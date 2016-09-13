@@ -1,4 +1,4 @@
-var math = require('../../../math');
+let math = require('../../../math');
 
 /*
  * Calculates the mapped matrix
@@ -8,13 +8,13 @@ var math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+let calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    // var texture = {width:1136, height:700};//sprite._texture.baseTexture;
+     //let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
-    var mappedMatrix = outputMatrix.identity();
+    let mappedMatrix = outputMatrix.identity();
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
@@ -24,14 +24,14 @@ var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize
 
 };
 
-var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+let calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-    var mappedMatrix = outputMatrix.identity();
+    let mappedMatrix = outputMatrix.identity();
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
-    var translateScaleX = (textureSize.width / filterArea.width);
-    var translateScaleY = (textureSize.height / filterArea.height);
+    let translateScaleX = (textureSize.width / filterArea.width);
+    let translateScaleY = (textureSize.height / filterArea.height);
 
     mappedMatrix.scale( translateScaleX , translateScaleY );
 
@@ -39,23 +39,23 @@ var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 };
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
-var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
+let calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
 
     // TODO unwrap?
-    var mappedMatrix = outputMatrix.identity();
+    let mappedMatrix = outputMatrix.identity();
 
     // scale..
-    var ratio = textureSize.height / textureSize.width;
+    let ratio = textureSize.height / textureSize.width;
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
     mappedMatrix.scale(1 , ratio);
 
-    var translateScaleX = (textureSize.width / texture.width);
-    var translateScaleY = (textureSize.height / texture.height);
+    let translateScaleX = (textureSize.width / texture.width);
+    let translateScaleY = (textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
 

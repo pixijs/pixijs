@@ -5,16 +5,16 @@
  * @param size {number} Number of quads
  * @return {Uint16Array} indices
  */
-var createIndicesForQuads = function (size)
+let createIndicesForQuads = function (size)
 {
     // the total number of indices in our array, there are 6 points per quad.
 
-    var totalIndices = size * 6;
+    let totalIndices = size * 6;
 
-    var indices = new Uint16Array(totalIndices);
+    let indices = new Uint16Array(totalIndices);
 
 	// fill the indices with the quads to draw
-    for (var i=0, j=0; i < totalIndices; i += 6, j += 4)
+    for (let i=0, j=0; i < totalIndices; i += 6, j += 4)
     {
         indices[i + 0] = j + 0;
         indices[i + 1] = j + 1;

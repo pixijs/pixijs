@@ -1,4 +1,4 @@
-var earcut = require('earcut'),
+let earcut = require('earcut'),
     buildLine = require('./buildLine'),
     utils = require('../../../utils');
 
@@ -12,17 +12,17 @@ var earcut = require('earcut'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-var buildRoundedRectangle = function (graphicsData, webGLData)
+let buildRoundedRectangle = function (graphicsData, webGLData)
 {
-    var rrectData = graphicsData.shape;
-    var x = rrectData.x;
-    var y = rrectData.y;
-    var width = rrectData.width;
-    var height = rrectData.height;
+    let rrectData = graphicsData.shape;
+    let x = rrectData.x;
+    let y = rrectData.y;
+    let width = rrectData.width;
+    let height = rrectData.height;
 
-    var radius = rrectData.radius;
+    let radius = rrectData.radius;
 
-    var recPoints = [];
+    let recPoints = [];
     recPoints.push(x, y + radius);
     quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
     quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
@@ -34,21 +34,21 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        let color = utils.hex2rgb(graphicsData.fillColor);
+        let alpha = graphicsData.fillAlpha;
 
-        var r = color[0] * alpha;
-        var g = color[1] * alpha;
-        var b = color[2] * alpha;
+        let r = color[0] * alpha;
+        let g = color[1] * alpha;
+        let b = color[2] * alpha;
 
-        var verts = webGLData.points;
-        var indices = webGLData.indices;
+        let verts = webGLData.points;
+        let indices = webGLData.indices;
 
-        var vecPos = verts.length/6;
+        let vecPos = verts.length/6;
 
-        var triangles = earcut(recPoints, null, 2);
+        let triangles = earcut(recPoints, null, 2);
 
-        var i = 0;
+        let i = 0;
         for (i = 0; i < triangles.length; i+=3)
         {
             indices.push(triangles[i] + vecPos);
@@ -66,7 +66,7 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        var tempPoints = graphicsData.points;
+        let tempPoints = graphicsData.points;
 
         graphicsData.points = recPoints;
 
@@ -93,9 +93,9 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
  * @param [out] {number[]} The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// jshint ignore:line
+let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// jshint ignore:line
 {
-    var xa,
+    let xa,
         ya,
         xb,
         yb,
@@ -105,13 +105,13 @@ var quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out)// js
         points = out || [];
 
     function getPt(n1 , n2, perc) {
-        var diff = n2 - n1;
+        let diff = n2 - n1;
 
         return n1 + ( diff * perc );
     }
 
-    var j = 0;
-    for (var i = 0; i <= n; i++ ) {
+    let j = 0;
+    for (let i = 0; i <= n; i++ ) {
         j = i / n;
 
         // The Green Line

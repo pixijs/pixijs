@@ -1,4 +1,4 @@
-var CONST = require('../../const');
+let CONST = require('../../const');
 
 /**
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
@@ -161,10 +161,10 @@ class Rectangle {
             return;
         }
 
-        var x1 = Math.min(this.x, rect.x);
-        var x2 = Math.max(this.x + this.width, rect.x + rect.width);
-        var y1 = Math.min(this.y, rect.y);
-        var y2 = Math.max(this.y + this.height, rect.y + rect.height);
+        let x1 = Math.min(this.x, rect.x);
+        let x2 = Math.max(this.x + this.width, rect.x + rect.width);
+        let y1 = Math.min(this.y, rect.y);
+        let y2 = Math.max(this.y + this.height, rect.y + rect.height);
         this.x = x1;
         this.width = x2 - x1;
         this.y = y1;

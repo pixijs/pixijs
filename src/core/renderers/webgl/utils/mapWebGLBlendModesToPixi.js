@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+let CONST = require('../../../const');
 
 /**
  * Maps gl blend combinations to WebGL

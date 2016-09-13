@@ -1,4 +1,4 @@
-var GLTexture = require('pixi-gl-core').GLTexture,
+let GLTexture = require('pixi-gl-core').GLTexture,
     CONST = require('../../const'),
     RenderTarget = require('./utils/RenderTarget'),
 	utils = require('../../utils');
@@ -54,20 +54,20 @@ class TextureManager {
     {
 	    texture = texture.baseTexture || texture;
 
-        var isRenderTexture = !!texture._glRenderTargets;
+        let isRenderTexture = !!texture._glRenderTargets;
 
 	    if (!texture.hasLoaded)
         {
             return;
         }
 
-        var glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
+        let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
         if (!glTexture)
         {
             if(isRenderTexture)
             {
-                var renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+                let renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
                 renderTarget.resize(texture.width, texture.height);
                 texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
                 glTexture = renderTarget.texture;
@@ -162,7 +162,7 @@ class TextureManager {
 
             if (!skipRemove)
             {
-                var i = this._managedTextures.indexOf(texture);
+                let i = this._managedTextures.indexOf(texture);
                 if (i !== -1) {
                     utils.removeItems(this._managedTextures, i, 1);
                 }
@@ -176,9 +176,9 @@ class TextureManager {
     removeAll()
     {
 	    // empty all the old gl textures as they are useless now
-        for (var i = 0; i < this._managedTextures.length; ++i)
+        for (let i = 0; i < this._managedTextures.length; ++i)
         {
-            var texture = this._managedTextures[i];
+            let texture = this._managedTextures[i];
             if (texture._glTextures[this.renderer.CONTEXT_UID])
             {
                 delete texture._glTextures[this.renderer.CONTEXT_UID];
@@ -192,9 +192,9 @@ class TextureManager {
     destroy()
     {
         // destroy managed textures
-        for (var i = 0; i < this._managedTextures.length; ++i)
+        for (let i = 0; i < this._managedTextures.length; ++i)
         {
-            var texture = this._managedTextures[i];
+            let texture = this._managedTextures[i];
             this.destroyTexture(texture, true);
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);

@@ -1,4 +1,4 @@
-var Rectangle = require('./Rectangle'),
+let Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
 /**
@@ -66,7 +66,7 @@ class Circle {
             return false;
         }
 
-        var dx = (this.x - x),
+        let dx = (this.x - x),
             dy = (this.y - y),
             r2 = this.radius * this.radius;
 

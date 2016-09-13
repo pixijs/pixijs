@@ -1,13 +1,13 @@
-var Resource = require('resource-loader').Resource,
+let Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
     path = require('path');
 
 
 function parse(resource, texture) {
-    var data = {};
-    var info = resource.data.getElementsByTagName('info')[0];
-    var common = resource.data.getElementsByTagName('common')[0];
+    let data = {};
+    let info = resource.data.getElementsByTagName('info')[0];
+    let common = resource.data.getElementsByTagName('common')[0];
 
     data.font = info.getAttribute('face');
     data.size = parseInt(info.getAttribute('size'), 10);
@@ -15,13 +15,13 @@ function parse(resource, texture) {
     data.chars = {};
 
     //parse letters
-    var letters = resource.data.getElementsByTagName('char');
+    let letters = resource.data.getElementsByTagName('char');
 
-    for (var i = 0; i < letters.length; i++)
+    for (let i = 0; i < letters.length; i++)
     {
-        var charCode = parseInt(letters[i].getAttribute('id'), 10);
+        let charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-        var textureRect = new core.Rectangle(
+        let textureRect = new core.Rectangle(
             parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
             parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
             parseInt(letters[i].getAttribute('width'), 10),
@@ -39,12 +39,12 @@ function parse(resource, texture) {
     }
 
     //parse kernings
-    var kernings = resource.data.getElementsByTagName('kerning');
-    for (i = 0; i < kernings.length; i++)
+    let kernings = resource.data.getElementsByTagName('kerning');
+    for (let i = 0; i < kernings.length; i++)
     {
-        var first = parseInt(kernings[i].getAttribute('first'), 10);
-        var second = parseInt(kernings[i].getAttribute('second'), 10);
-        var amount = parseInt(kernings[i].getAttribute('amount'), 10);
+        let first = parseInt(kernings[i].getAttribute('first'), 10);
+        let second = parseInt(kernings[i].getAttribute('second'), 10);
+        let amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
         if(data.chars[second])
         {
@@ -80,7 +80,7 @@ module.exports = function ()
             return next();
         }
 
-        var xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
+        let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
         if (resource.isDataUrl) {
             if (xmlUrl === '.') {
@@ -103,14 +103,14 @@ module.exports = function ()
             xmlUrl += '/';
         }
         
-        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        let textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         if (core.utils.TextureCache[textureUrl]) {
             //reuse existing texture
             parse(resource, core.utils.TextureCache[textureUrl]);
             next();
         }
         else {
-            var loadOptions = {
+            let loadOptions = {
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE,
                 metadata: resource.metadata.imageMetadata

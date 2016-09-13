@@ -1,4 +1,4 @@
-var EventEmitter = require('eventemitter3'),
+let EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     TransformStatic = require('./TransformStatic'),
     Transform = require('./Transform'),
@@ -20,7 +20,7 @@ class DisplayObject extends EventEmitter {
     {
         super();
 
-        var TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+        let TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
         this.tempDisplayObjectParent = null;
         
@@ -196,8 +196,8 @@ class DisplayObject extends EventEmitter {
      */
     getLocalBounds(rect)
     {
-        var transformRef = this.transform;
-        var parentRef = this.parent;
+        let transformRef = this.transform;
+        let parentRef = this.parent;
 
         this.parent = null;
         this.transform = this._tempDisplayObjectParent.transform;
@@ -212,7 +212,7 @@ class DisplayObject extends EventEmitter {
             rect = this._localBoundsRect;
         }
 
-        var bounds = this.getBounds(false, rect);
+        let bounds = this.getBounds(false, rect);
 
         this.parent = parentRef;
         this.transform = transformRef;
@@ -543,7 +543,7 @@ Object.defineProperties(DisplayObject.prototype, {
     worldVisible: {
         get: function ()
         {
-            var item = this;
+            let item = this;
 
             do {
                 if (!item.visible)

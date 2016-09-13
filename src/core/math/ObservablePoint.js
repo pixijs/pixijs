@@ -29,8 +29,8 @@ class ObservablePoint {
      */
     set(x, y)
     {
-        var _x = x || 0;
-        var _y = y || ( (y !== 0) ? _x : 0 );
+        let _x = x || 0;
+        let _y = y || ( (y !== 0) ? _x : 0 );
         if (this._x !== _x || this._y !== _y)
         {
             this._x = _x;

@@ -1,4 +1,4 @@
-var glCore = require('pixi-gl-core'),
+let glCore = require('pixi-gl-core'),
     createIndicesForQuads = require('../../../utils/createIndicesForQuads');
 
 /**
@@ -45,7 +45,7 @@ class Quad {
 
         this.interleaved = new Float32Array(8 * 2);
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             this.interleaved[i*4] = this.vertices[(i*2)];
             this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
             this.interleaved[(i*4)+2] = this.uvs[i*2];
@@ -93,8 +93,8 @@ class Quad {
      */
     map(targetTextureFrame, destinationFrame)
     {
-        var x = 0; //destinationFrame.x / targetTextureFrame.width;
-        var y = 0; //destinationFrame.y / targetTextureFrame.height;
+        let x = 0; //destinationFrame.x / targetTextureFrame.width;
+        let y = 0; //destinationFrame.y / targetTextureFrame.height;
 
         this.uvs[0] = x;
         this.uvs[1] = y;
@@ -144,7 +144,7 @@ class Quad {
      */
     upload()
     {
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             this.interleaved[i*4] = this.vertices[(i*2)];
             this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
             this.interleaved[(i*4)+2] = this.uvs[i*2];
@@ -161,7 +161,7 @@ class Quad {
      */
     destroy()
     {
-        var gl = this.gl;
+        let gl = this.gl;
 
          gl.deleteBuffer(this.vertexBuffer);
          gl.deleteBuffer(this.indexBuffer);

@@ -1,13 +1,13 @@
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
 
-var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
-var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
-var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
-var vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
-var tempMatrices = [];
-var Matrix = require('./Matrix');
+let ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
+let uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
+let vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
+let vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
+let tempMatrices = [];
+let Matrix = require('./Matrix');
 
-var mul = [];
+let mul = [];
 
 function signum(x) {
     if (x < 0) {
@@ -20,15 +20,15 @@ function signum(x) {
 }
 
 function init() {
-    for (var i = 0; i < 16; i++) {
-        var row = [];
+    for (let i = 0; i < 16; i++) {
+        let row = [];
         mul.push(row);
-        for (var j = 0; j < 16; j++) {
-            var _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
-            var _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
-            var _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
-            var _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
-            for (var k = 0; k < 16; k++) {
+        for (let j = 0; j < 16; j++) {
+            let _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
+            let _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
+            let _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
+            let _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
+            for (let k = 0; k < 16; k++) {
                 if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy) {
                     row.push(k);
                     break;
@@ -37,8 +37,8 @@ function init() {
         }
     }
 
-    for (i=0;i<16;i++) {
-        var mat = new Matrix();
+    for (let i=0;i<16;i++) {
+        let mat = new Matrix();
         mat.set(ux[i], uy[i], vx[i], vy[i], 0, 0);
         tempMatrices.push(mat);
     }
@@ -58,7 +58,7 @@ init();
  *
  * @namespace PIXI.GroupD8
  */
-var GroupD8 = {
+let GroupD8 = {
     E: 0,
     SE: 1,
     S: 2,
@@ -150,7 +150,7 @@ var GroupD8 = {
      */
     matrixAppendRotationInv: function (matrix, rotation, tx, ty) {
         //Packer used "rotation", we use "inv(rotation)"
-        var mat = tempMatrices[GroupD8.inv(rotation)];
+        let mat = tempMatrices[GroupD8.inv(rotation)];
         tx = tx || 0;
         ty = ty || 0;
         mat.tx = tx;

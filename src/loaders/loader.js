@@ -1,4 +1,4 @@
-var ResourceLoader = require('resource-loader'),
+let ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
     bitmapFontParser = require('./bitmapFontParser');
@@ -8,9 +8,9 @@ var ResourceLoader = require('resource-loader'),
  * The new loader, extends Resource Loader by Chad Engler : https://github.com/englercj/resource-loader
  *
  * ```js
- * var loader = PIXI.loader; // pixi exposes a premade instance for you to use.
+ * let loader = PIXI.loader; // pixi exposes a premade instance for you to use.
  * //or
- * var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
+ * let loader = new PIXI.loaders.Loader(); // you can also create your own if you want
  *
  * loader.add('bunny',"data/bunny.png");
  *
@@ -31,7 +31,7 @@ class Loader extends ResourceLoader {
     {
         super(baseUrl, concurrency);
 
-        for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
+        for (let i = 0; i < Loader._pixiMiddleware.length; ++i) {
             this.use(Loader._pixiMiddleware[i]());
         }
     }
@@ -56,6 +56,6 @@ Loader.addPixiMiddleware = function (fn) {
 };
 
 // Add custom extentions
-var Resource = ResourceLoader.Resource;
+let Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);

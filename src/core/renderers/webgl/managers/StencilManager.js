@@ -1,4 +1,4 @@
-var WebGLManager = require('./WebGLManager');
+let WebGLManager = require('./WebGLManager');
 
 /**
  * @class
@@ -21,7 +21,7 @@ class StencilManager extends WebGLManager {
     {
         this.stencilMaskStack = stencilMaskStack;
 
-        var gl = this.renderer.gl;
+        let gl = this.renderer.gl;
 
         if (stencilMaskStack.length === 0)
         {
@@ -44,7 +44,7 @@ class StencilManager extends WebGLManager {
 
         this.renderer._activeRenderTarget.attachStencilBuffer();
 
-        var gl = this.renderer.gl,
+        let gl = this.renderer.gl,
             sms = this.stencilMaskStack;
 
         if (sms.length === 0)
@@ -73,10 +73,10 @@ class StencilManager extends WebGLManager {
     {
         this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
-        var gl = this.renderer.gl,
+        let gl = this.renderer.gl,
             sms = this.stencilMaskStack;
 
-        var graphics = sms.pop();
+        let graphics = sms.pop();
 
         if (sms.length === 0)
         {

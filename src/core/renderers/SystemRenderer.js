@@ -1,4 +1,4 @@
-var utils = require('../utils'),
+let utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
     Container = require('../display/Container'),
@@ -35,7 +35,7 @@ class SystemRenderer extends EventEmitter {
         // prepare options
         if (options)
         {
-            for (var i in CONST.DEFAULT_RENDER_OPTIONS)
+            for (let i in CONST.DEFAULT_RENDER_OPTIONS)
             {
                 if (typeof options[i] === 'undefined')
                 {
@@ -209,9 +209,9 @@ class SystemRenderer extends EventEmitter {
      */
     generateTexture(displayObject, scaleMode, resolution) {
 
-        var bounds = displayObject.getLocalBounds();
+        let bounds = displayObject.getLocalBounds();
 
-        var renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+        let renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 
         tempMatrix.tx = -bounds.x;
         tempMatrix.ty = -bounds.y;

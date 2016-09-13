@@ -1,4 +1,4 @@
-var core = require('../core');
+let core = require('../core');
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -9,11 +9,11 @@ var core = require('../core');
  * It's extremely easy to use :
  *
  * ```js
- * var container = new ParticleContainer();
+ * let container = new ParticleContainer();
  *
- * for (var i = 0; i < 100; ++i)
+ * for (let i = 0; i < 100; ++i)
  * {
- *     var sprite = new PIXI.Sprite.fromImage("myImage.png");
+ *     let sprite = new PIXI.Sprite.fromImage("myImage.png");
  *     container.addChild(sprite);
  * }
  * ```
@@ -43,7 +43,7 @@ class ParticleContainer extends core.Container {
         // Making sure the batch size is valid
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
         // so max number of particles is 65536 / 4 = 16384
-        var maxBatchSize = 16384;
+        let maxBatchSize = 16384;
         if (batchSize > maxBatchSize) {
             batchSize = maxBatchSize;
         }
@@ -178,7 +178,7 @@ class ParticleContainer extends core.Container {
      */
     onChildrenChange(smallestChildIndex)
     {
-        var bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
+        let bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
         if (bufferIndex < this._bufferToUpdate) {
             this._bufferToUpdate = bufferIndex;
         }
@@ -197,17 +197,17 @@ class ParticleContainer extends core.Container {
             return;
         }
 
-        var context = renderer.context;
-        var transform = this.worldTransform;
-        var isRotated = true;
+        let context = renderer.context;
+        let transform = this.worldTransform;
+        let isRotated = true;
 
-        var positionX = 0;
-        var positionY = 0;
+        let positionX = 0;
+        let positionY = 0;
 
-        var finalWidth = 0;
-        var finalHeight = 0;
+        let finalWidth = 0;
+        let finalHeight = 0;
 
-        var compositeOperation = renderer.blendModes[this.blendMode];
+        let compositeOperation = renderer.blendModes[this.blendMode];
         if (compositeOperation !== context.globalCompositeOperation)
         {
             context.globalCompositeOperation = compositeOperation;
@@ -217,16 +217,16 @@ class ParticleContainer extends core.Container {
 
         this.displayObjectUpdateTransform();
 
-        for (var i = 0; i < this.children.length; ++i)
+        for (let i = 0; i < this.children.length; ++i)
         {
-            var child = this.children[i];
+            let child = this.children[i];
 
             if (!child.visible)
             {
                 continue;
             }
 
-            var frame = child.texture.frame;
+            let frame = child.texture.frame;
 
             context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -263,7 +263,7 @@ class ParticleContainer extends core.Container {
 
                 child.displayObjectUpdateTransform();
 
-                var childTransform = child.worldTransform;
+                let childTransform = child.worldTransform;
 
                 if (renderer.roundPixels)
                 {
@@ -295,7 +295,7 @@ class ParticleContainer extends core.Container {
                 finalHeight = frame.height;
             }
 
-            var resolution = child.texture.baseTexture.resolution;
+            let resolution = child.texture.baseTexture.resolution;
 
             context.drawImage(
                 child.texture.baseTexture.source,
@@ -319,7 +319,7 @@ class ParticleContainer extends core.Container {
         super.destroy(arguments);
 
         if (this._buffers) {
-            for (var i = 0; i < this._buffers.length; ++i) {
+            for (let i = 0; i < this._buffers.length; ++i) {
                 this._buffers[i].destroy();
             }
         }

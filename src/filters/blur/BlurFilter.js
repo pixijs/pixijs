@@ -1,4 +1,4 @@
-var core = require('../../core'),
+let core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
 
@@ -28,7 +28,7 @@ class BlurFilter extends core.Filter {
     apply(filterManager, input, output)
     {
 
-        var renderTarget = filterManager.getRenderTarget(true);
+        let renderTarget = filterManager.getRenderTarget(true);
 
         this.blurXFilter.apply(filterManager, input, renderTarget, true);
         this.blurYFilter.apply(filterManager, renderTarget, output, false);

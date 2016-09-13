@@ -1,4 +1,4 @@
-var BaseTexture = require('./BaseTexture'),
+let BaseTexture = require('./BaseTexture'),
     CONST = require('../const');
 
 /**
@@ -11,9 +11,9 @@ var BaseTexture = require('./BaseTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
- * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
+ * let BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
+ * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -27,12 +27,12 @@ var BaseTexture = require('./BaseTexture'),
  * position a Container should be used:
  *
  * ```js
- * var doc = new PIXI.Container();
+ * let doc = new PIXI.Container();
  *
  * doc.addChild(sprite);
  *
- * var baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
- * var renderTexture = new PIXI.RenderTexture(baseRenderTexture);
+ * let baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
  * ```

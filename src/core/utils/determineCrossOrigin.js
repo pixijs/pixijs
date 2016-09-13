@@ -1,5 +1,5 @@
-var tempAnchor;
-var _url = require('url');
+let tempAnchor;
+let _url = require('url');
 
 /**
  * Sets the `crossOrigin` property for this resource based on if the url
@@ -11,7 +11,7 @@ var _url = require('url');
  * @param loc [location=window.location] {object} The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
-var determineCrossOrigin = function (url, loc) {
+let determineCrossOrigin = function (url, loc) {
     // data: and javascript: urls are considered same-origin
     if (url.indexOf('data:') === 0) {
         return '';
@@ -30,7 +30,7 @@ var determineCrossOrigin = function (url, loc) {
     tempAnchor.href = url;
     url = _url.parse(tempAnchor.href);
 
-    var samePort = (!url.port && loc.port === '') || (url.port === loc.port);
+    let samePort = (!url.port && loc.port === '') || (url.port === loc.port);
 
     // if cross origin
     if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol) {

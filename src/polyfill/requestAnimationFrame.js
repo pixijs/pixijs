@@ -18,7 +18,7 @@ if (!(Date.now && Date.prototype.getTime)) {
 
 // performance.now
 if (!(global.performance && global.performance.now)) {
-    var startTime = Date.now();
+    let startTime = Date.now();
     if (!global.performance) {
         global.performance = {};
     }
@@ -28,10 +28,10 @@ if (!(global.performance && global.performance.now)) {
 }
 
 // requestAnimationFrame
-var lastTime = Date.now();
-var vendors = ['ms', 'moz', 'webkit', 'o'];
+let lastTime = Date.now();
+let vendors = ['ms', 'moz', 'webkit', 'o'];
 
-for(var x = 0; x < vendors.length && !global.requestAnimationFrame; ++x) {
+for(let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x) {
     global.requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];
     global.cancelAnimationFrame = global[vendors[x] + 'CancelAnimationFrame'] ||
         global[vendors[x] + 'CancelRequestAnimationFrame'];
@@ -43,7 +43,7 @@ if (!global.requestAnimationFrame) {
             throw new TypeError(callback + 'is not a function');
         }
 
-        var currentTime = Date.now(),
+        let currentTime = Date.now(),
             delay = 16 + lastTime - currentTime;
 
         if (delay < 0) {

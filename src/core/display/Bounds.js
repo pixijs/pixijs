@@ -1,4 +1,4 @@
-var math = require('../math'),
+let math = require('../math'),
     Rectangle = math.Rectangle;
 
 /**
@@ -95,10 +95,10 @@ class Bounds {
      */
     addQuad(vertices)
     {
-        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
-        var x = vertices[0];
-        var y = vertices[1];
+        let x = vertices[0];
+        let y = vertices[1];
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
@@ -141,12 +141,12 @@ class Bounds {
      */
     addFrame(transform, x0, y0, x1, y1)
     {
-        var matrix = transform.worldTransform;
-        var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
-        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        let matrix = transform.worldTransform;
+        let a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
+        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
-        var x = a * x0 + c * y0 + tx;
-        var y = b * x0 + d * y0 + ty;
+        let x = a * x0 + c * y0 + tx;
+        let y = b * x0 + d * y0 + ty;
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
@@ -188,15 +188,15 @@ class Bounds {
      */
     addVertices(transform, vertices, beginOffset, endOffset)
     {
-        var matrix = transform.worldTransform;
-        var a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
-        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        let matrix = transform.worldTransform;
+        let a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
+        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
-        for (var i = beginOffset; i < endOffset; i += 2)
+        for (let i = beginOffset; i < endOffset; i += 2)
         {
-            var rawX = vertices[i], rawY = vertices[i + 1];
-            var x = (a * rawX) + (c * rawY) + tx;
-            var y = (d * rawY) + (b * rawX) + ty;
+            let rawX = vertices[i], rawY = vertices[i + 1];
+            let x = (a * rawX) + (c * rawY) + tx;
+            let y = (d * rawY) + (b * rawX) + ty;
 
             minX = x < minX ? x : minX;
             minY = y < minY ? y : minY;
@@ -212,7 +212,7 @@ class Bounds {
 
     addBounds(bounds)
     {
-        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
         this.minX = bounds.minX < minX ? bounds.minX : minX;
         this.minY = bounds.minY < minY ? bounds.minY : minY;
