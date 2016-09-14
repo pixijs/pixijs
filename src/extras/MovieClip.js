@@ -218,7 +218,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
         if (this.onFrameChange)
         {
-            this.onFrameChange();
+            this.onFrameChange(this.currentFrame);
         }
     }
 };
@@ -299,7 +299,7 @@ MovieClip.prototype.update = function (deltaTime)
 
             if (this.onFrameChange)
             {
-                this.onFrameChange();
+                this.onFrameChange(this.currentFrame);
             }
         }
     }
