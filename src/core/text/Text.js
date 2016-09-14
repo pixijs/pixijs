@@ -270,11 +270,7 @@ Text.prototype.updateText = function (respectDirty)
 
     this.context.scale( this.resolution, this.resolution);
 
-    if (navigator.isCocoonJS)
-    {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    }
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 //    this.context.fillStyle="#FF0000";
 //    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
