@@ -31,7 +31,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * doc.addChild(sprite);
  *
- * var baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * var baseRenderTexture = new PIXI.BaseRenderTexture(100, 100);
  * var renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
