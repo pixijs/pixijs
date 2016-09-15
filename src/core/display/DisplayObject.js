@@ -26,6 +26,7 @@ function DisplayObject()
      * World transform and local transform of this object.
      * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
      *
+     *
      * @member {PIXI.TransformBase}
      */
     this.transform =  new TransformClass();
@@ -41,13 +42,17 @@ function DisplayObject()
      * The visibility of the object. If false the object will not be drawn, and
      * the updateTransform function will not be called.
      *
+     * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually
+     *
      * @member {boolean}
      */
     this.visible = true;
 
     /**
      * Can this object be rendered, if false the object will not be drawn but the updateTransform
-     * methods will still be called.
+     * methods will still be called. Object will not be included into parent's bounds
+     *
+     * Only affects recursive calls from parent. You can ask for bounds manually
      *
      * @member {boolean}
      */
@@ -581,7 +586,7 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
 /**
  * Base destroy method for generic display objects. This will automatically
  * remove the display object from its parent Container as well as remove
- * all current event listeners and internal references. Do not use a DisplayObject 
+ * all current event listeners and internal references. Do not use a DisplayObject
  * after calling `destroy`.
  */
 DisplayObject.prototype.destroy = function ()
