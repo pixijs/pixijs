@@ -790,11 +790,6 @@ Graphics.prototype._renderCanvas = function (renderer)
  */
 Graphics.prototype._calculateBounds = function ()
 {
-    if (!this.renderable)
-    {
-        return;
-    }
-
     if (this.boundsDirty !== this.dirty)
     {
         this.boundsDirty = this.dirty;

@@ -365,11 +365,6 @@ Container.prototype.updateTransform = function ()
 {
     this._boundsID++;
 
-    if (!this.visible)
-    {
-        return;
-    }
-
     this.transform.updateTransform(this.parent.transform);
 
     //TODO: check render flags, how to process stuff here
@@ -377,22 +372,20 @@ Container.prototype.updateTransform = function ()
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].updateTransform();
+        var child = this.children[i];
+        if (child.visible)
+        {
+            child.updateTransform();
+        }
     }
 };
 
 // performance increase to avoid using call.. (10x faster)
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-
 Container.prototype.calculateBounds = function ()
 {
     this._bounds.clear();
-
-    if(!this.visible)
-    {
-        return;
-    }
 
     this._calculateBounds();
 
@@ -400,12 +393,27 @@ Container.prototype.calculateBounds = function ()
     {
         var child = this.children[i];
 
+        if (!child.visible || !child.renderable) {
+            continue;
+        }
+
         child.calculateBounds();
 
-        this._bounds.addBounds(child._bounds);
+        //TODO: filter+mask, need to mask both somehow
+        if (child._mask)
+        {
+            child._mask.calculateBounds();
+            this._bounds.addBoundsMask(child._bounds, child._mask._bounds);
+        } else if (child.filterArea)
+        {
+            this._bounds.addBoundsArea(child._bounds, child.filterArea);
+        } else
+        {
+            this._bounds.addBounds(child._bounds);
+        }
     }
 
-    this._boundsID = this._lastBoundsID;
+    this._lastBoundsID = this._boundsID;
 };
 
 Container.prototype._calculateBounds = function ()
@@ -563,7 +571,7 @@ Container.prototype.renderCanvas = function (renderer)
 };
 
 /**
- * Removes all internal references and listeners as well as removes children from the display list. 
+ * Removes all internal references and listeners as well as removes children from the display list.
  * Do not use a Container after calling `destroy`.
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy

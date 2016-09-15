@@ -212,6 +212,10 @@ Bounds.prototype.addVertices = function(transform, vertices, beginOffset, endOff
     this.maxY = maxY;
 };
 
+/**
+ * adds other Bounds
+ * @param bounds {PIXI.Bounds}
+ */
 Bounds.prototype.addBounds = function(bounds)
 {
     var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
@@ -220,4 +224,46 @@ Bounds.prototype.addBounds = function(bounds)
     this.minY = bounds.minY < minY ? bounds.minY : minY;
     this.maxX = bounds.maxX > maxX ? bounds.maxX : maxX;
     this.maxY = bounds.maxY > maxY ? bounds.maxY : maxY;
+};
+
+/**
+ * adds other Bounds, masked with Bounds
+ * @param bounds {PIXI.Bounds}
+ * @param mask {PIXI.Bounds}
+ */
+Bounds.prototype.addBoundsMask = function(bounds, mask)
+{
+    var _minX = bounds.minX > mask.minX ? bounds.minX : mask.minX;
+    var _minY = bounds.minY > mask.minY ? bounds.minY : mask.minY;
+    var _maxX = bounds.maxX < mask.maxX ? bounds.maxX : mask.maxX;
+    var _maxY = bounds.maxY < mask.maxY ? bounds.maxY : mask.maxY;
+    if (_minX <= _maxX && _minY <= _maxY)
+    {
+        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        this.minX = _minX < minX ? _minX : minX;
+        this.minY = _minY < minY ? _minY : minY;
+        this.maxX = _maxX > maxX ? _maxX : maxX;
+        this.maxY = _maxY > maxY ? _maxY : maxY;
+    }
+};
+
+/**
+ * adds other Bounds, masked with Rectangle
+ * @param bounds {PIXI.Bounds}
+ * @param area {PIXI.Rectangle}
+ */
+Bounds.prototype.addBoundsArea = function(bounds, area)
+{
+    var _minX = bounds.minX > area.x ? bounds.minX : area.x;
+    var _minY = bounds.minY > area.y ? bounds.minY : area.y;
+    var _maxX = bounds.maxX < area.x + area.width ? bounds.maxX : (area.x + area.width);
+    var _maxY = bounds.maxY < area.y + area.height ? bounds.maxY : (area.y + area.height);
+    if (_minX <= _maxX && _minY <= _maxY)
+    {
+        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        this.minX = _minX < minX ? _minX : minX;
+        this.minY = _minY < minY ? _minY : minY;
+        this.maxX = _maxX > maxX ? _maxX : maxX;
+        this.maxY = _maxY > maxY ? _maxY : maxY;
+    }
 };
