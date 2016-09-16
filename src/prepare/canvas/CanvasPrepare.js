@@ -23,7 +23,7 @@ function CanvasPrepare(renderer)
      * @type {HTMLCanvasElement}
      * @private
      */
-    this.canvas = document.createElement( "canvas" );
+    this.canvas = document.createElement( 'canvas' );
     this.canvas.width = 16;
     this.canvas.height = 16;
 
@@ -32,7 +32,7 @@ function CanvasPrepare(renderer)
      * @type {CanvasRenderingContext2D}
      * @private
      */
-    this.ctx = canvas.getContext( '2d' );
+    this.ctx = this.canvas.getContext( '2d' );
 
     /**
      * Collection of items to uploads at once.
@@ -144,7 +144,7 @@ CanvasPrepare.prototype.tick = function()
         var uploaded = false;
         for (i = 0, len = this.uploadHooks.length; i < len; i++)
         {
-            if (this.uploadHooks[i](this.renderer, item))
+            if (this.uploadHooks[i](this, item))
             {
                 this.numLeft--;
                 this.queue.shift();
@@ -250,7 +250,7 @@ CanvasPrepare.prototype.destroy = function()
  * @param {*} item Item to check
  * @return {boolean} If item was uploaded.
  */
-function uploadBaseTextures(renderer, item)
+function uploadBaseTextures(prepare, item)
 {
     if (item instanceof core.BaseTexture)
     {
@@ -258,12 +258,12 @@ function uploadBaseTextures(renderer, item)
 
         // Sometimes images (like atlas images) report a size of zero, causing errors on windows phone. So if the width or height is equal to zero then use the canvas size
         // Otherwise use whatever is smaller, the image dimensions or the canvas dimensions.
-        var imageWidth = image.width === 0 ? this.canvas.width : Math.min( canvas.width, image.width );
-		var imageHeight = image.height === 0 ? this.canvas.height : Math.min( canvas.height, image.height );
+        var imageWidth = image.width === 0 ? prepare.canvas.width : Math.min( prepare.canvas.width, image.width );
+		var imageHeight = image.height === 0 ? prepare.canvas.height : Math.min( prepare.canvas.height, image.height );
 
         // Only a small subsections is required to be drawn to have the whole texture uploaded to the GPU
         // A smaller draw can be faster.
-		this.ctx.drawImage( image, 0, 0, imageWidth, imageHeight, 0, 0, this.canvas.width, this.canvas.height );
+		prepare.ctx.drawImage( image, 0, 0, imageWidth, imageHeight, 0, 0, prepare.canvas.width, prepare.canvas.height );
         return true;
     }
     return false;
