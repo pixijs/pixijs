@@ -96,11 +96,10 @@ class Rope extends Mesh
         indices[1] = 1;
 
         let total = points.length,
-            point, index, amount;
+            index, amount;
 
         for (let i = 1; i < total; i++)
         {
-            point = points[i];
             index = i * 4;
             // time to do some smart drawing!
             amount = i / (total-1);

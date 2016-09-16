@@ -26,15 +26,15 @@ class TextureManager
          *
          * @member {WebGLRenderingContext}
          */
-	    this.gl = renderer.gl;
+        this.gl = renderer.gl;
 
-	    /**
+        /**
          * Track textures in the renderer so we can no longer listen to them on destruction.
          *
          * @member {Array<*>}
          * @private
          */
-	    this._managedTextures = [];
+        this._managedTextures = [];
     }
 
     bindTexture()
@@ -53,11 +53,11 @@ class TextureManager
      */
     updateTexture(texture)
     {
-	    texture = texture.baseTexture || texture;
+        texture = texture.baseTexture || texture;
 
         let isRenderTexture = !!texture._glRenderTargets;
 
-	    if (!texture.hasLoaded)
+        if (!texture.hasLoaded)
         {
             return;
         }
@@ -145,7 +145,7 @@ class TextureManager
      */
     destroyTexture(texture, skipRemove)
     {
-	    texture = texture.baseTexture || texture;
+        texture = texture.baseTexture || texture;
 
         if (!texture.hasLoaded)
         {
@@ -176,7 +176,7 @@ class TextureManager
      */
     removeAll()
     {
-	    // empty all the old gl textures as they are useless now
+        // empty all the old gl textures as they are useless now
         for (let i = 0; i < this._managedTextures.length; ++i)
         {
             let texture = this._managedTextures[i];

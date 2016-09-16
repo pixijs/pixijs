@@ -161,10 +161,10 @@ class NineSlicePlane extends Plane
      *
      * @param context
      * @param textureSource
-     * @param w	width of the texture
+     * @param w    width of the texture
      * @param h height of the texture
      * @param x1 
-     * @param y1	
+     * @param y1    
      * @param x2
      * @param y2
      * @private

@@ -295,7 +295,7 @@ class DisplayObject extends EventEmitter
      *
      * @param renderer {PIXI.WebGLRenderer} The renderer
      */
-    renderWebGL(renderer) // jshint unused:false
+    renderWebGL(renderer) // eslint-disable-line no-unused-vars
     {
         // OVERWRITE;
     }
@@ -305,7 +305,7 @@ class DisplayObject extends EventEmitter
      *
      * @param renderer {PIXI.CanvasRenderer} The renderer
      */
-    renderCanvas(renderer) // jshint unused:false
+    renderCanvas(renderer) // eslint-disable-line no-unused-vars
     {
         // OVERWRITE;
     }

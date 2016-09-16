@@ -47,7 +47,7 @@ class ObjectRenderer extends WebGLManager
      *
      * @param object {PIXI.DisplayObject} The object to render.
      */
-    render(object) // jshint unused:false
+    render(object) // eslint-disable-line no-unused-vars
     {
         // render the object
     }

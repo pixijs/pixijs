@@ -355,10 +355,10 @@ describe('getBounds', function () {
 
         var localBounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(localBounds.x).to.equal(0);
+        expect(localBounds.y).to.equal(0);
+        expect(localBounds.width).to.equal(10);
+        expect(localBounds.height).to.equal(10);
     });
 
     it('should ensure bounds respect the trim of a texture ', function() {

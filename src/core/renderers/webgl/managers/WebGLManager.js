@@ -23,7 +23,7 @@ class WebGLManager
      */
     onContextChange()
     {
-	    // do some codes init!
+        // do some codes init!
     }
 
     /**

@@ -480,12 +480,12 @@ class Matrix
        return new Matrix();
     }
 
-	/**
-	 * A temp matrix
-	 *
-	 * @static
-	 * @const
-	 */
+    /**
+     * A temp matrix
+     *
+     * @static
+     * @const
+     */
     static get TEMP_MATRIX() {
        return new Matrix();
     }

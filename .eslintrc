@@ -1,0 +1,23 @@
+{
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": 0,
+    "no-debugger": 1
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "PIXI": true,
+    "Float32Array": true,
+    "Uint16Array": true,
+    "Uint8Array": true,
+    "Uint32Array": true,
+    "ArrayBuffer": true
+  }
+}

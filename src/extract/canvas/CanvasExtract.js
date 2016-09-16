@@ -23,7 +23,7 @@ class CanvasExtract
      */
     image( target )
     {
-	    let image = new Image();
+        let image = new Image();
         image.src = this.base64( target );
         return image;
     }
@@ -45,9 +45,9 @@ class CanvasExtract
      */
     canvas( target )
     {
-	    let renderer = this.renderer;
-	    let context;
-	    let resolution;
+        let renderer = this.renderer;
+        let context;
+        let resolution;
         let frame;
         let renderTexture;
 
@@ -63,7 +63,7 @@ class CanvasExtract
             }
         }
 
-	    if(renderTexture)
+        if(renderTexture)
         {
             context = renderTexture.baseTexture._canvasRenderTarget.context;
             resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
@@ -82,7 +82,7 @@ class CanvasExtract
         let width = frame.width * resolution;
         let height = frame.height * resolution;
 
-       	let canvasBuffer = new core.CanvasRenderTarget(width, height);
+           let canvasBuffer = new core.CanvasRenderTarget(width, height);
         let canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 

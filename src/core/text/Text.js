@@ -217,7 +217,7 @@ class Text extends Sprite
                         this.context.strokeStyle = style.dropShadowColor;
                         this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
                         this.context.strokeStyle = style.stroke;
-			        }
+                    }
                 }
             }
         }

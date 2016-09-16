@@ -68,40 +68,40 @@ class GraphicsData
         this.type = shape.type;
     }
 
-	/**
-	 * Creates a new GraphicsData object with the same values as this one.
-	 *
-	 * @return {PIXI.GraphicsData} Cloned GraphicsData object
-	 */
-	clone()
-	{
-	    return new GraphicsData(
-	        this.lineWidth,
-	        this.lineColor,
-	        this.lineAlpha,
-	        this.fillColor,
-	        this.fillAlpha,
-	        this.fill,
-	        this.shape
-	    );
-	}
+    /**
+     * Creates a new GraphicsData object with the same values as this one.
+     *
+     * @return {PIXI.GraphicsData} Cloned GraphicsData object
+     */
+    clone()
+    {
+        return new GraphicsData(
+            this.lineWidth,
+            this.lineColor,
+            this.lineAlpha,
+            this.fillColor,
+            this.fillAlpha,
+            this.fill,
+            this.shape
+        );
+    }
 
-	/**
-	 *
-	 *
-	 */
-	addHole(shape)
-	{
-	    this.holes.push(shape);
-	}
+    /**
+     *
+     *
+     */
+    addHole(shape)
+    {
+        this.holes.push(shape);
+    }
 
-	/**
-	 * Destroys the Graphics data.
-	 */
-	destroy() {
-	    this.shape = null;
-	    this.holes = null;
-	}
+    /**
+     * Destroys the Graphics data.
+     */
+    destroy() {
+        this.shape = null;
+        this.holes = null;
+    }
 }
 
 export default GraphicsData;

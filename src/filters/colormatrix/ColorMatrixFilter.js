@@ -274,7 +274,7 @@ class ColorMatrixFilter extends core.Filter
      * Call the saturate function
      *
      */
-    desaturate() // jshint unused:false
+    desaturate() // eslint-disable-line no-unused-vars
     {
         this.saturate(-1);
     }

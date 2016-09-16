@@ -24,7 +24,7 @@ const checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     let shader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    while(true)
+    while(true) // eslint-disable-line no-constant-condition
     {
         let fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 

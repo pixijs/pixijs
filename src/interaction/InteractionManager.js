@@ -844,7 +844,7 @@ class InteractionManager extends EventEmitter
         this.eventData.data = this.mouse;
         this.eventData.stopped = false;
 
-	    this.emit('mouseover', this.eventData);
+        this.emit('mouseover', this.eventData);
     }
 
 

@@ -5,6 +5,6 @@ import ParticleRenderer from './webgl/ParticleRenderer';
  * @namespace PIXI.particles
  */
 export default {
-	ParticleContainer,
+    ParticleContainer,
     ParticleRenderer
 };

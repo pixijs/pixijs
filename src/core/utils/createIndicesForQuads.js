@@ -13,7 +13,7 @@ const createIndicesForQuads = function (size)
 
     let indices = new Uint16Array(totalIndices);
 
-	// fill the indices with the quads to draw
+    // fill the indices with the quads to draw
     for (let i=0, j=0; i < totalIndices; i += 6, j += 4)
     {
         indices[i + 0] = j + 0;

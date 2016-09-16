@@ -447,7 +447,7 @@ class Container extends DisplayObject
      * @param renderer {PIXI.WebGLRenderer} The renderer
      * @private
      */
-    _renderWebGL(renderer) // jshint unused:false
+    _renderWebGL(renderer) // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
     }
@@ -458,7 +458,7 @@ class Container extends DisplayObject
      * @param renderer {PIXI.CanvasRenderer} The renderer
      * @private
      */
-    _renderCanvas(renderer) // jshint unused:false
+    _renderCanvas(renderer) // eslint-disable-line no-unused-vars
     {
         // this is where content itself gets rendered...
     }
