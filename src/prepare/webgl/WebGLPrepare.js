@@ -72,7 +72,7 @@ module.exports = WebGLPrepare;
  * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
  *        the container or display object to search for items to upload or
  *        the callback function, if items have been added using `prepare.add`.
- * @param {Function} done When completed
+ * @param {Function} [done] Optional callback when all queued uploads have completed
  */
 WebGLPrepare.prototype.upload = function(item, done)
 {
@@ -93,7 +93,10 @@ WebGLPrepare.prototype.upload = function(item, done)
     if (this.queue.length)
     {
         this.numLeft = WebGLPrepare.UPLOADS_PER_FRAME;
-        this.completes.push(done);
+        if (done)
+        {
+            this.completes.push(done);
+        }
         if (!this.ticking)
         {
             this.ticking = true;
@@ -102,7 +105,10 @@ WebGLPrepare.prototype.upload = function(item, done)
     }
     else
     {
-        done();
+        if (done)
+        {
+            done();
+        }
     }
 };
 
