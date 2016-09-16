@@ -1,10 +1,11 @@
 import core from '../core';
 import Device from 'ismobilejs';
+import accessibleTarget from './accessibleTarget';
 
 // add some extra variables to the container..
 Object.assign(
     core.DisplayObject.prototype,
-    require('./accessibleTarget')
+    accessibleTarget
 );
 
 /**

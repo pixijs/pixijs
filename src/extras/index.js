@@ -2,9 +2,10 @@ import MovieClip from './MovieClip';
 import TilingSprite from './TilingSprite';
 import BitmapText from './BitmapText';
 
-require('./cacheAsBitmap');
-require('./getChildByName');
-require('./getGlobalPosition');
+import cacheAsBitmap from './cacheAsBitmap';
+import getChildByName from './getChildByName';
+import getGlobalPosition from './getGlobalPosition';
+
 
 /**
  * @namespace PIXI.extras
@@ -12,5 +13,8 @@ require('./getGlobalPosition');
 export default {
     MovieClip,
     TilingSprite,
-    BitmapText
+    BitmapText,
+    cacheAsBitmap,
+    getChildByName,
+    getGlobalPosition
 };
