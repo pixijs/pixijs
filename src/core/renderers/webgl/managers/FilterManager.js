@@ -88,22 +88,21 @@ FilterManager.prototype.pushFilter = function(target, filters)
     if(filterData.stack[0].renderTarget.transform)
     {//jshint ignore:line
 
-        // TODO we should fit the rect around the transform..
+
     }
     else
     {
-
         sourceFrame.fit(filterData.stack[0].destinationFrame);
     }
-
-
-    destinationFrame.width = sourceFrame.width;
-    destinationFrame.height = sourceFrame.height;
-
 
     // lets pplay the padding After we fit the element to the screen.
     // this should stop the strange side effects that can occour when cropping to the edges
     sourceFrame.pad(padding);
+
+
+
+    destinationFrame.width = sourceFrame.width;
+    destinationFrame.height = sourceFrame.height;
 
     var renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
