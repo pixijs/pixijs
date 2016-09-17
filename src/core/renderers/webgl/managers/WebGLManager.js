@@ -12,7 +12,7 @@ function WebGLManager(renderer)
      */
     this.renderer = renderer;
 
-    this.renderer.on('context', this.onContextChange, this);
+    this.renderer.on("context", this.onContextChange, this);
 }
 
 WebGLManager.prototype.constructor = WebGLManager;
@@ -24,7 +24,7 @@ module.exports = WebGLManager;
  */
 WebGLManager.prototype.onContextChange = function ()
 {
-	// do some codes init!
+    // do some codes init!
 };
 
 /**
@@ -33,7 +33,7 @@ WebGLManager.prototype.onContextChange = function ()
  */
 WebGLManager.prototype.destroy = function ()
 {
-    this.renderer.off('context', this.onContextChange, this);
+    this.renderer.off("context", this.onContextChange, this);
 
     this.renderer = null;
 };

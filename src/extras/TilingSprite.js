@@ -1,8 +1,8 @@
-var core = require('../core'),
+var core = require("../core"),
     tempPoint = new core.Point(),
-    Texture = require('../core/textures/Texture'),
-    CanvasTinter = require('../core/sprites/canvas/CanvasTinter'),
-    TilingShader = require('./webgl/TilingShader'),
+    Texture = require("../core/textures/Texture"),
+    CanvasTinter = require("../core/sprites/canvas/CanvasTinter"),
+    TilingShader = require("./webgl/TilingShader"),
     tempArray = new Float32Array(4);
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -211,7 +211,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     if (!texture.baseTexture.hasLoaded)
     {
-      return;
+        return;
     }
 
     var context = renderer.context,
@@ -243,7 +243,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         {
             tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
         }
-        this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
+        this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, "repeat" );
     }
 
     // set context state..
@@ -432,7 +432,7 @@ TilingSprite.fromFrame = function (frameId,width,height)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+        throw new Error("The frameId \"" + frameId + "\" does not exist in the texture cache " + this);
     }
 
     return new TilingSprite(texture,width,height);

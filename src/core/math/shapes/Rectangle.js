@@ -1,4 +1,4 @@
-var CONST = require('../../const');
+var CONST = require("../../const");
 
 /**
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
@@ -122,7 +122,7 @@ Rectangle.prototype.fit = function (rectangle)
     {
         this.width += this.x;
         if(this.width < 0) {
-          this.width = 0;
+            this.width = 0;
         }
 
         this.x = rectangle.x;
@@ -132,7 +132,7 @@ Rectangle.prototype.fit = function (rectangle)
     {
         this.height += this.y;
         if(this.height < 0) {
-          this.height = 0;
+            this.height = 0;
         }
         this.y = rectangle.y;
     }
@@ -141,7 +141,7 @@ Rectangle.prototype.fit = function (rectangle)
     {
         this.width = rectangle.width - this.x;
         if(this.width < 0) {
-          this.width = 0;
+            this.width = 0;
         }
     }
 
@@ -149,7 +149,7 @@ Rectangle.prototype.fit = function (rectangle)
     {
         this.height = rectangle.height - this.y;
         if(this.height < 0) {
-          this.height = 0;
+            this.height = 0;
         }
     }
 };

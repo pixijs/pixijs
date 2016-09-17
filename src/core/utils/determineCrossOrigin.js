@@ -1,5 +1,5 @@
 var tempAnchor;
-var _url = require('url');
+var _url = require("url");
 
 /**
  * Sets the `crossOrigin` property for this resource based on if the url
@@ -13,15 +13,15 @@ var _url = require('url');
  */
 var determineCrossOrigin = function (url, loc) {
     // data: and javascript: urls are considered same-origin
-    if (url.indexOf('data:') === 0) {
-        return '';
+    if (url.indexOf("data:") === 0) {
+        return "";
     }
 
     // default is window.location
     loc = loc || window.location;
 
     if (!tempAnchor) {
-        tempAnchor = document.createElement('a');
+        tempAnchor = document.createElement("a");
     }
 
     // let the browser determine the full href for the url of this resource and then
@@ -30,14 +30,14 @@ var determineCrossOrigin = function (url, loc) {
     tempAnchor.href = url;
     url = _url.parse(tempAnchor.href);
 
-    var samePort = (!url.port && loc.port === '') || (url.port === loc.port);
+    var samePort = (!url.port && loc.port === "") || (url.port === loc.port);
 
     // if cross origin
     if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol) {
-        return 'anonymous';
+        return "anonymous";
     }
 
-    return '';
+    return "";
 };
 
 module.exports = determineCrossOrigin;

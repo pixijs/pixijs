@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+var core = require("../../core");
+var glslify  = require("glslify");
 
 /**
  *
@@ -20,9 +20,9 @@ function FXAAFilter()
     core.Filter.call(this,
 
         // vertex shader
-        glslify('./fxaa.vert'),
+        glslify("./fxaa.vert"),
         // fragment shader
-        glslify('./fxaa.frag')
+        glslify("./fxaa.frag")
     );
 
 }

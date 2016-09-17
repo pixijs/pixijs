@@ -1,8 +1,8 @@
-var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const'),
-    math = require('../../math'),
+var CanvasRenderer = require("../../renderers/canvas/CanvasRenderer"),
+    CONST = require("../../const"),
+    math = require("../../math"),
     canvasRenderWorldTransform = new math.Matrix(),
-    CanvasTinter = require('./CanvasTinter');
+    CanvasTinter = require("./CanvasTinter");
 
 /**
  * @author Mat Groves
@@ -33,7 +33,7 @@ function CanvasSpriteRenderer(renderer)
 CanvasSpriteRenderer.prototype.constructor = CanvasSpriteRenderer;
 module.exports = CanvasSpriteRenderer;
 
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+CanvasRenderer.registerPlugin("sprite", CanvasSpriteRenderer);
 
 /**
  * Renders the sprite object.
@@ -160,5 +160,5 @@ CanvasSpriteRenderer.prototype.render = function (sprite)
  *
  */
 CanvasSpriteRenderer.prototype.destroy = function (){
-  this.renderer = null;
+    this.renderer = null;
 };

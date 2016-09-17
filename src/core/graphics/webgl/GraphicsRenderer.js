@@ -1,15 +1,15 @@
-var utils = require('../../utils'),
-    CONST = require('../../const'),
-    ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData'),
-    PrimitiveShader = require('./shaders/PrimitiveShader'),
+var utils = require("../../utils"),
+    CONST = require("../../const"),
+    ObjectRenderer = require("../../renderers/webgl/utils/ObjectRenderer"),
+    WebGLRenderer = require("../../renderers/webgl/WebGLRenderer"),
+    WebGLGraphicsData = require("./WebGLGraphicsData"),
+    PrimitiveShader = require("./shaders/PrimitiveShader"),
 
     // some drawing functions..
-    buildPoly = require('./utils/buildPoly'),
-    buildRectangle = require('./utils/buildRectangle'),
-    buildRoundedRectangle = require('./utils/buildRoundedRectangle'),
-    buildCircle = require('./utils/buildCircle');
+    buildPoly = require("./utils/buildPoly"),
+    buildRectangle = require("./utils/buildRectangle"),
+    buildRoundedRectangle = require("./utils/buildRoundedRectangle"),
+    buildCircle = require("./utils/buildCircle");
 
 
 
@@ -39,7 +39,7 @@ GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
 GraphicsRenderer.prototype.constructor = GraphicsRenderer;
 module.exports = GraphicsRenderer;
 
-WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
+WebGLRenderer.registerPlugin("graphics", GraphicsRenderer);
 
 /**
  * Called when there is a WebGL context change

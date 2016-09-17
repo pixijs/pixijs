@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+var CONST = require("../../../const");
 
 /**
  * Creates a Canvas element of the given size.
@@ -16,14 +16,14 @@ function CanvasRenderTarget(width, height, resolution)
      *
      * @member {HTMLCanvasElement}
      */
-    this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement("canvas");
 
     /**
      * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.canvas.getContext('2d');
+    this.context = this.canvas.getContext("2d");
 
     this.resolution = resolution || CONST.RESOLUTION;
 

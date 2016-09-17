@@ -1,5 +1,5 @@
-var glCore = require('pixi-gl-core'),
-    createIndicesForQuads = require('../../../utils/createIndicesForQuads');
+var glCore = require("pixi-gl-core"),
+    createIndicesForQuads = require("../../../utils/createIndicesForQuads");
 
 /**
  * Helper class to create a quad
@@ -164,8 +164,8 @@ Quad.prototype.destroy = function()
 {
     var gl = this.gl;
 
-     gl.deleteBuffer(this.vertexBuffer);
-     gl.deleteBuffer(this.indexBuffer);
+    gl.deleteBuffer(this.vertexBuffer);
+    gl.deleteBuffer(this.indexBuffer);
 };
 
 module.exports = Quad;

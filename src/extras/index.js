@@ -5,15 +5,15 @@
  * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-require('./cacheAsBitmap');
-require('./getChildByName');
-require('./getGlobalPosition');
+require("./cacheAsBitmap");
+require("./getChildByName");
+require("./getGlobalPosition");
 
 /**
  * @namespace PIXI.extras
  */
 module.exports = {
-    MovieClip:      require('./MovieClip'),
-    TilingSprite:   require('./TilingSprite'),
-    BitmapText:     require('./BitmapText')
+    MovieClip:      require("./MovieClip"),
+    TilingSprite:   require("./TilingSprite"),
+    BitmapText:     require("./BitmapText")
 };

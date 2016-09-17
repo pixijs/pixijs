@@ -1,9 +1,9 @@
-var BaseTexture = require('./BaseTexture'),
-    VideoBaseTexture = require('./VideoBaseTexture'),
-    TextureUvs = require('./TextureUvs'),
-    EventEmitter = require('eventemitter3'),
-    math = require('../math'),
-    utils = require('../utils');
+var BaseTexture = require("./BaseTexture"),
+    VideoBaseTexture = require("./VideoBaseTexture"),
+    TextureUvs = require("./TextureUvs"),
+    EventEmitter = require("eventemitter3"),
+    math = require("../math"),
+    utils = require("../utils");
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -105,7 +105,7 @@ function Texture(baseTexture, frame, orig, trim, rotate)
         this._rotate = 2;
     } else {
         if (this._rotate % 2 !== 0) {
-            throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
+            throw "attempt to use diamond-shaped UVs. If you are sure, set rotation manually";
         }
     }
 
@@ -116,13 +116,13 @@ function Texture(baseTexture, frame, orig, trim, rotate)
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
 
             // if there is no frame we should monitor for any base texture changes..
-            baseTexture.on('update', this.onBaseTextureUpdated, this);
+            baseTexture.on("update", this.onBaseTextureUpdated, this);
         }
         this.frame = frame;
     }
     else
     {
-        baseTexture.once('loaded', this.onBaseTextureLoaded, this);
+        baseTexture.once("loaded", this.onBaseTextureLoaded, this);
     }
 
     /**
@@ -161,7 +161,7 @@ Object.defineProperties(Texture.prototype, {
 
             if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
             {
-                throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
+                throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
             }
 
             //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
@@ -253,8 +253,8 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
         this.frame = this._frame;
     }
 
-    this.baseTexture.on('update', this.onBaseTextureUpdated, this);
-    this.emit('update', this);
+    this.baseTexture.on("update", this.onBaseTextureUpdated, this);
+    this.emit("update", this);
 
 };
 
@@ -270,7 +270,7 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
-    this.emit('update', this);
+    this.emit("update", this);
 };
 
 /**
@@ -295,8 +295,8 @@ Texture.prototype.destroy = function (destroyBase)
             this.baseTexture.destroy();
         }
 
-        this.baseTexture.off('update', this.onBaseTextureUpdated, this);
-        this.baseTexture.off('loaded', this.onBaseTextureLoaded, this);
+        this.baseTexture.off("update", this.onBaseTextureUpdated, this);
+        this.baseTexture.off("loaded", this.onBaseTextureLoaded, this);
 
         this.baseTexture = null;
     }
@@ -308,8 +308,8 @@ Texture.prototype.destroy = function (destroyBase)
 
     this.valid = false;
 
-    this.off('dispose', this.dispose, this);
-    this.off('update', this.update, this);
+    this.off("dispose", this.dispose, this);
+    this.off("update", this.update, this);
 };
 
 /**
@@ -376,7 +376,7 @@ Texture.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
+        throw new Error("The frameId \"" + frameId + "\" does not exist in the texture cache");
     }
 
     return texture;
@@ -405,7 +405,7 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    if (typeof video === 'string')
+    if (typeof video === "string")
     {
         return Texture.fromVideoUrl(video, scaleMode);
     }
@@ -440,7 +440,7 @@ Texture.from = function (source)
 {
     //TODO auto detect cross origin..
     //TODO pass in scale mode?
-    if(typeof source === 'string')
+    if(typeof source === "string")
     {
         var texture = utils.TextureCache[source];
 

@@ -12,7 +12,7 @@ var CONST = {
      * @constant
      * @type {string}
      */
-    VERSION: '__VERSION__',
+    VERSION: "__VERSION__",
 
     /**
      * Two Pi.
@@ -304,10 +304,10 @@ var CONST = {
      * @property {number} HIGH='highp'
      */
     PRECISION: {
-        DEFAULT: 'mediump',
-        LOW: 'lowp',
-        MEDIUM: 'mediump',
-        HIGH: 'highp'
+        DEFAULT: "mediump",
+        LOW: "lowp",
+        MEDIUM: "mediump",
+        HIGH: "highp"
     },
 
     /**
@@ -362,7 +362,7 @@ var CONST = {
      * @constant
      * @type {number}
      */
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
+    SPRITE_MAX_TEXTURES: require("./utils/maxRecommendedTextures")(32)
 };
 
 module.exports = CONST;

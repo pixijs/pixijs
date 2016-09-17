@@ -1,5 +1,5 @@
-var Rectangle = require('./Rectangle'),
-    CONST = require('../../const');
+var Rectangle = require("./Rectangle"),
+    CONST = require("../../const");
 
 /**
  * The Ellipse object can be used to specify a hit area for displayObjects

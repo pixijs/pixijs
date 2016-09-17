@@ -1,4 +1,4 @@
-var math = require('../../../math');
+var math = require("../../../math");
 
 /*
  * Calculates the mapped matrix
@@ -42,7 +42,7 @@ var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
     var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite._texture.baseTexture;
+        texture = sprite._texture.baseTexture;
 
     // TODO unwrap?
     var mappedMatrix = outputMatrix.identity();

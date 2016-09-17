@@ -1,4 +1,4 @@
-var math = require('../math');
+var math = require("../math");
 
 
 /**
@@ -17,7 +17,7 @@ function TransformBase()
     this.worldTransform = new math.Matrix();
     /**
      * The local matrix transform
-     * 
+     *
      * @member {PIXI.Matrix}
      */
     this.localTransform = new math.Matrix();

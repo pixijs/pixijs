@@ -1,7 +1,7 @@
-var ResourceLoader = require('resource-loader'),
-    textureParser = require('./textureParser'),
-    spritesheetParser = require('./spritesheetParser'),
-    bitmapFontParser = require('./bitmapFontParser');
+var ResourceLoader = require("resource-loader"),
+    textureParser = require("./textureParser"),
+    spritesheetParser = require("./spritesheetParser"),
+    bitmapFontParser = require("./bitmapFontParser");
 
 /**
  *
@@ -58,4 +58,4 @@ Loader.addPixiMiddleware = function (fn) {
 // Add custom extentions
 var Resource = ResourceLoader.Resource;
 
-Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
+Resource.setExtensionXhrType("fnt", Resource.XHR_RESPONSE_TYPE.DOCUMENT);

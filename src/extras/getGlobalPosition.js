@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require("../core");
 
 /**
 * Returns the global position of the displayObject

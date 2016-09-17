@@ -7,7 +7,7 @@ var getMaxKernelSize = function(gl)
 
     while(kernelSize > maxVaryings)
     {
-       kernelSize -= 2;
+        kernelSize -= 2;
     }
 
     return kernelSize;

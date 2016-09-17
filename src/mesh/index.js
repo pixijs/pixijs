@@ -9,9 +9,9 @@
  * @namespace PIXI.mesh
  */
 module.exports = {
-    Mesh:           require('./Mesh'),
-    Plane:           require('./Plane'),
-    NineSlicePlane: require('./NineSlicePlane'),
-    Rope:           require('./Rope'),
-    MeshShader:     require('./webgl/MeshShader')
+    Mesh:           require("./Mesh"),
+    Plane:           require("./Plane"),
+    NineSlicePlane: require("./NineSlicePlane"),
+    Rope:           require("./Rope"),
+    MeshShader:     require("./webgl/MeshShader")
 };

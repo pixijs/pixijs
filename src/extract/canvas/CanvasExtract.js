@@ -1,4 +1,4 @@
-var core = require('../../core'),
+var core = require("../../core"),
     tempRect = new core.Rectangle();
 
 /**
@@ -25,7 +25,7 @@ module.exports = CanvasExtract;
  */
 CanvasExtract.prototype.image = function ( target )
 {
-	var image = new Image();
+    var image = new Image();
     image.src = this.base64( target );
     return image;
 };
@@ -47,9 +47,9 @@ CanvasExtract.prototype.base64 = function ( target )
  */
 CanvasExtract.prototype.canvas = function ( target )
 {
-	var renderer = this.renderer;
-	var context;
-	var resolution;
+    var renderer = this.renderer;
+    var context;
+    var resolution;
     var frame;
     var renderTexture;
 
@@ -65,7 +65,7 @@ CanvasExtract.prototype.canvas = function ( target )
         }
     }
 
-	if(renderTexture)
+    if(renderTexture)
     {
         context = renderTexture.baseTexture._canvasRenderTarget.context;
         resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
@@ -84,7 +84,7 @@ CanvasExtract.prototype.canvas = function ( target )
     var width = frame.width * resolution;
     var height = frame.height * resolution;
 
-   	var canvasBuffer = new core.CanvasRenderTarget(width, height);
+    var canvasBuffer = new core.CanvasRenderTarget(width, height);
     var canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
     canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -147,4 +147,4 @@ CanvasExtract.prototype.destroy = function ()
     this.renderer = null;
 };
 
-core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
+core.CanvasRenderer.registerPlugin("extract", CanvasExtract);

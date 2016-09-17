@@ -1,5 +1,5 @@
-var CanvasRenderer = require('../../renderers/canvas/CanvasRenderer'),
-    CONST = require('../../const');
+var CanvasRenderer = require("../../renderers/canvas/CanvasRenderer"),
+    CONST = require("../../const");
 
 /**
  * @author Mat Groves
@@ -30,7 +30,7 @@ function CanvasGraphicsRenderer(renderer)
 CanvasGraphicsRenderer.prototype.constructor = CanvasGraphicsRenderer;
 module.exports = CanvasGraphicsRenderer;
 
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
+CanvasRenderer.registerPlugin("graphics", CanvasGraphicsRenderer);
 
 /*
  * Renders a Graphics object to a canvas.
@@ -95,13 +95,13 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
             if (data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = "#" + ("00000" + ( fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeStyle = "#" + ("00000" + ( lineColor | 0).toString(16)).substr(-6);
                 context.stroke();
             }
         }
@@ -111,14 +111,14 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
             if (data.fillColor || data.fillColor === 0)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = "#" + ("00000" + ( fillColor | 0).toString(16)).substr(-6);
                 context.fillRect(shape.x, shape.y, shape.width, shape.height);
 
             }
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeStyle = "#" + ("00000" + ( lineColor | 0).toString(16)).substr(-6);
                 context.strokeRect(shape.x, shape.y, shape.width, shape.height);
             }
         }
@@ -132,13 +132,13 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
             if (data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = "#" + ("00000" + ( fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeStyle = "#" + ("00000" + ( lineColor | 0).toString(16)).substr(-6);
                 context.stroke();
             }
         }
@@ -173,13 +173,13 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
             if (data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = "#" + ("00000" + ( fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeStyle = "#" + ("00000" + ( lineColor | 0).toString(16)).substr(-6);
                 context.stroke();
             }
         }
@@ -209,14 +209,14 @@ CanvasGraphicsRenderer.prototype.render = function (graphics)
             if (data.fillColor || data.fillColor === 0)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = "#" + ("00000" + ( fillColor | 0).toString(16)).substr(-6);
                 context.fill();
 
             }
             if (data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                context.strokeStyle = "#" + ("00000" + ( lineColor | 0).toString(16)).substr(-6);
                 context.stroke();
             }
         }
@@ -272,5 +272,5 @@ CanvasGraphicsRenderer.prototype.renderPolygon = function (points, close, contex
  */
 CanvasGraphicsRenderer.prototype.destroy = function ()
 {
-  this.renderer = null;
+    this.renderer = null;
 };

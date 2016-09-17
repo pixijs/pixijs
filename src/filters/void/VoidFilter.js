@@ -1,6 +1,6 @@
-var core = require('../../core');
+var core = require("../../core");
 // @see https://github.com/substack/brfs/issues/25
-var glslify  = require('glslify');
+var glslify  = require("glslify");
 
 /**
  * Does nothing. Very handy.
@@ -13,12 +13,12 @@ function VoidFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('../fragments/default.vert'),
+        glslify("../fragments/default.vert"),
         // fragment shader
-        glslify('./void.frag')
+        glslify("./void.frag")
     );
 
-    this.glShaderKey = 'void';
+    this.glShaderKey = "void";
 }
 
 VoidFilter.prototype = Object.create(core.Filter.prototype);

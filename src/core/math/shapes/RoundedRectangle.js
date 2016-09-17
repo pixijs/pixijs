@@ -1,4 +1,4 @@
-var CONST = require('../../const');
+var CONST = require("../../const");
 
 /**
  * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height and its radius.

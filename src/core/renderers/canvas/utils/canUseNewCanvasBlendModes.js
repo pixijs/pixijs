@@ -6,11 +6,11 @@
  */
 var createColoredCanvas = function(color)
 {
-    var canvas = document.createElement('canvas');
+    var canvas = document.createElement("canvas");
     canvas.width = 6;
     canvas.height = 1;
 
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext("2d");
     context.fillStyle = color;
     context.fillRect(0,0,6,1);
     return canvas;
@@ -24,20 +24,20 @@ var createColoredCanvas = function(color)
  */
 var canUseNewCanvasBlendModes = function ()
 {
-    if (typeof document === 'undefined')
+    if (typeof document === "undefined")
     {
         return false;
     }
 
-    var magenta = createColoredCanvas('#ff00ff');
-    var yellow = createColoredCanvas('#ffff00');
+    var magenta = createColoredCanvas("#ff00ff");
+    var yellow = createColoredCanvas("#ffff00");
 
-    var canvas = document.createElement('canvas');
+    var canvas = document.createElement("canvas");
     canvas.width = 6;
     canvas.height = 1;
 
-    var context = canvas.getContext('2d');
-    context.globalCompositeOperation = 'multiply';
+    var context = canvas.getContext("2d");
+    context.globalCompositeOperation = "multiply";
     context.drawImage(magenta, 0, 0);
     context.drawImage(yellow, 2, 0);
 

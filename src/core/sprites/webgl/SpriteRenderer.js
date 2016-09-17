@@ -1,14 +1,14 @@
-var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    createIndicesForQuads = require('../../utils/createIndicesForQuads'),
-    generateMultiTextureShader = require('./generateMultiTextureShader'),
-    checkMaxIfStatmentsInShader = require('../../renderers/webgl/utils/checkMaxIfStatmentsInShader'),
-    Buffer = require('./BatchBuffer'),
-    CONST = require('../../const'),
-    glCore = require('pixi-gl-core'),
-    bitTwiddle = require('bit-twiddle');
+var ObjectRenderer = require("../../renderers/webgl/utils/ObjectRenderer"),
+    WebGLRenderer = require("../../renderers/webgl/WebGLRenderer"),
+    createIndicesForQuads = require("../../utils/createIndicesForQuads"),
+    generateMultiTextureShader = require("./generateMultiTextureShader"),
+    checkMaxIfStatmentsInShader = require("../../renderers/webgl/utils/checkMaxIfStatmentsInShader"),
+    Buffer = require("./BatchBuffer"),
+    CONST = require("../../const"),
+    glCore = require("pixi-gl-core"),
+    bitTwiddle = require("bit-twiddle");
 
-    var TICK = 0;
+var TICK = 0;
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -85,7 +85,7 @@ function SpriteRenderer(renderer)
     this.vaoMax = 2;
     this.vertexCount = 0;
 
-    this.renderer.on('prerender', this.onPrerender, this);
+    this.renderer.on("prerender", this.onPrerender, this);
 }
 
 
@@ -93,7 +93,7 @@ SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
 module.exports = SpriteRenderer;
 
-WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
+WebGLRenderer.registerPlugin("sprite", SpriteRenderer);
 
 /**
  * Sets up the renderer context and necessary buffers.
@@ -178,7 +178,7 @@ SpriteRenderer.prototype.render = function (sprite)
 SpriteRenderer.prototype.flush = function ()
 {
     if (this.currentIndex === 0) {
-      return;
+        return;
     }
 
     var gl = this.renderer.gl;
@@ -396,7 +396,7 @@ SpriteRenderer.prototype.destroy = function ()
 
     this.indexBuffer.destroy();
 
-    this.renderer.off('prerender', this.onPrerender, this);
+    this.renderer.off("prerender", this.onPrerender, this);
     ObjectRenderer.prototype.destroy.call(this);
 
     for (i = 0; i < this.shaders.length; i++) {

@@ -1,5 +1,5 @@
-var utils = require('../../utils'),
-    canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
+var utils = require("../../utils"),
+    canUseNewCanvasBlendModes = require("../../renderers/canvas/utils/canUseNewCanvasBlendModes");
 
 /**
  * Utility methods for Sprite/Texture tinting.
@@ -21,7 +21,7 @@ var CanvasTinter = module.exports = {
 
         color = CanvasTinter.roundColor(color);
 
-        var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        var stringColor = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
 
         texture.tintCache = texture.tintCache || {};
 
@@ -31,7 +31,7 @@ var CanvasTinter = module.exports = {
         }
 
         // clone texture..
-        var canvas = CanvasTinter.canvas || document.createElement('canvas');
+        var canvas = CanvasTinter.canvas || document.createElement("canvas");
 
         //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
         CanvasTinter.tintMethod(texture, color, canvas);
@@ -64,7 +64,7 @@ var CanvasTinter = module.exports = {
      */
     tintWithMultiply: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
+        var context = canvas.getContext( "2d" );
         var crop = texture._frame.clone();
         var resolution = texture.baseTexture.resolution;
 
@@ -76,11 +76,11 @@ var CanvasTinter = module.exports = {
         canvas.width = crop.width;
         canvas.height = crop.height;
 
-        context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        context.fillStyle = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
 
         context.fillRect(0, 0, crop.width, crop.height);
 
-        context.globalCompositeOperation = 'multiply';
+        context.globalCompositeOperation = "multiply";
 
         context.drawImage(
             texture.baseTexture.source,
@@ -94,7 +94,7 @@ var CanvasTinter = module.exports = {
             crop.height
         );
 
-        context.globalCompositeOperation = 'destination-atop';
+        context.globalCompositeOperation = "destination-atop";
 
         context.drawImage(
             texture.baseTexture.source,
@@ -119,7 +119,7 @@ var CanvasTinter = module.exports = {
      */
     tintWithOverlay: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
+        var context = canvas.getContext( "2d" );
         var crop = texture._frame.clone();
         var resolution = texture.baseTexture.resolution;
 
@@ -131,11 +131,11 @@ var CanvasTinter = module.exports = {
         canvas.width = crop.width;
         canvas.height = crop.height;
 
-        context.globalCompositeOperation = 'copy';
-        context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        context.globalCompositeOperation = "copy";
+        context.fillStyle = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
         context.fillRect(0, 0, crop.width, crop.height);
 
-        context.globalCompositeOperation = 'destination-atop';
+        context.globalCompositeOperation = "destination-atop";
         context.drawImage(
             texture.baseTexture.source,
             crop.x,
@@ -161,7 +161,7 @@ var CanvasTinter = module.exports = {
      */
     tintWithPerPixel: function (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
+        var context = canvas.getContext( "2d" );
         var crop = texture._frame.clone();
         var resolution = texture.baseTexture.resolution;
 
@@ -173,7 +173,7 @@ var CanvasTinter = module.exports = {
         canvas.width = crop.width;
         canvas.height = crop.height;
 
-        context.globalCompositeOperation = 'copy';
+        context.globalCompositeOperation = "copy";
         context.drawImage(
             texture.baseTexture.source,
             crop.x,

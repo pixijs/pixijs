@@ -1,4 +1,4 @@
-var core = require('../../core'),
+var core = require("../../core"),
     tempRect = new core.Rectangle();
 
 /**
@@ -25,7 +25,7 @@ module.exports = WebGLExtract;
  */
 WebGLExtract.prototype.image = function ( target )
 {
-	var image = new Image();
+    var image = new Image();
     image.src = this.base64( target );
     return image;
 };
@@ -47,9 +47,9 @@ WebGLExtract.prototype.base64 = function ( target )
  */
 WebGLExtract.prototype.canvas = function ( target )
 {
-	var renderer = this.renderer;
-	var textureBuffer;
-	var resolution;
+    var renderer = this.renderer;
+    var textureBuffer;
+    var resolution;
     var frame;
     var flipY = false;
     var renderTexture;
@@ -67,31 +67,31 @@ WebGLExtract.prototype.canvas = function ( target )
         }
     }
 
-	if(renderTexture)
-	{
-		textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
-		resolution = textureBuffer.resolution;
-	    frame = renderTexture.frame;
+    if(renderTexture)
+    {
+        textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
+        resolution = textureBuffer.resolution;
+        frame = renderTexture.frame;
         flipY = false;
     }
-	else
-	{
-		textureBuffer = this.renderer.rootRenderTarget;
-		resolution = textureBuffer.resolution;
+    else
+    {
+        textureBuffer = this.renderer.rootRenderTarget;
+        resolution = textureBuffer.resolution;
         flipY = true;
 
         frame = tempRect;
         frame.width = textureBuffer.size.width;
         frame.height = textureBuffer.size.height;
 
-	}
+    }
 
 
 
     var width = frame.width * resolution;
     var height = frame.height * resolution;
 
-   	var canvasBuffer = new core.CanvasRenderTarget(width, height);
+    var canvasBuffer = new core.CanvasRenderTarget(width, height);
 
     if(textureBuffer)
     {
@@ -192,4 +192,4 @@ WebGLExtract.prototype.destroy = function ()
     this.renderer = null;
 };
 
-core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
+core.WebGLRenderer.registerPlugin("extract", WebGLExtract);

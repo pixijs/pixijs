@@ -1,5 +1,5 @@
-var BaseRenderTexture = require('./BaseRenderTexture'),
-    Texture = require('./Texture');
+var BaseRenderTexture = require("./BaseRenderTexture"),
+    Texture = require("./Texture");
 
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -42,7 +42,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  */
 function RenderTexture(baseRenderTexture, frame)
 {
-    // suport for legacy..
+    // support for legacy..
     this.legacyRenderer = null;
 
     if( !(baseRenderTexture instanceof BaseRenderTexture) )
@@ -53,7 +53,7 @@ function RenderTexture(baseRenderTexture, frame)
         var resolution = arguments[4] || 1;
 
         // we have an old render texture..
-        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line
+        console.warn("v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create("+width+", "+height+")");  // jshint ignore:line
         this.legacyRenderer = arguments[0];
 
         frame = null;

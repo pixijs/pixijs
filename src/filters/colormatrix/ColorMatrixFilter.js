@@ -1,6 +1,6 @@
-var core = require('../../core');
+var core = require("../../core");
 // @see https://github.com/substack/brfs/issues/25
-var glslify  = require('glslify');
+var glslify  = require("glslify");
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
@@ -21,16 +21,17 @@ function ColorMatrixFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('../fragments/default.vert'),
+        glslify("../fragments/default.vert"),
         // fragment shader
-        glslify('./colorMatrix.frag')
+        glslify("./colorMatrix.frag")
     );
-
+    /*eslint-disable indent*/
     this.uniforms.m = [
                     1, 0, 0, 0, 0,
                     0, 1, 0, 0, 0,
                     0, 0, 1, 0, 0,
                     0, 0, 0, 1, 0];
+    /*eslint-enable indent*/
 
 
 }
@@ -218,13 +219,14 @@ ColorMatrixFilter.prototype.hue = function (rotation, multiply)
     var a21 = w * (1.0 - cosR) + sqrW * sinR;
     var a22 = cosR + w * (1.0 - cosR);
 
-
+    /*eslint-disable indent*/
     var matrix = [
-      a00, a01, a02, 0, 0,
-      a10, a11, a12, 0, 0,
-      a20, a21, a22, 0, 0,
-      0, 0, 0, 1, 0,
+        a00, a01, a02, 0, 0,
+        a10, a11, a12, 0, 0,
+        a20, a21, a22, 0, 0,
+        0, 0, 0, 1, 0,
     ];
+    /*eslint-enable indent*/
 
     this._loadMatrix(matrix, multiply);
 };

@@ -1,6 +1,6 @@
-var extractUniformsFromSrc = require('./extractUniformsFromSrc'),
-    utils = require('../../../utils'),
-    CONST = require('../../../const'),
+var extractUniformsFromSrc = require("./extractUniformsFromSrc"),
+    utils = require("../../../utils"),
+    CONST = require("../../../const"),
     SOURCE_KEY_MAP = {};
 
 // var math = require('../../../math');
@@ -33,7 +33,7 @@ function Filter(vertexSrc, fragmentSrc, uniforms)
 
     // pull out the vertex and shader uniforms if they are not specified..
     // currently this does not extract structs only default types
-    this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+    this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, "projectionMatrix|uSampler");
 
     this.uniforms = {};
 
@@ -97,21 +97,21 @@ Filter.prototype.apply = function(filterManager, input, output, clear)
  * @constant
  */
 Filter.defaultVertexSrc = [
-    'attribute vec2 aVertexPosition;',
-    'attribute vec2 aTextureCoord;',
+    "attribute vec2 aVertexPosition;",
+    "attribute vec2 aTextureCoord;",
 
-    'uniform mat3 projectionMatrix;',
-    'uniform mat3 filterMatrix;',
+    "uniform mat3 projectionMatrix;",
+    "uniform mat3 filterMatrix;",
 
-    'varying vec2 vTextureCoord;',
-    'varying vec2 vFilterCoord;',
+    "varying vec2 vTextureCoord;",
+    "varying vec2 vFilterCoord;",
 
-    'void main(void){',
-    '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-    '   vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;',
-    '   vTextureCoord = aTextureCoord ;',
-    '}'
-].join('\n');
+    "void main(void){",
+    "   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);",
+    "   vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;",
+    "   vTextureCoord = aTextureCoord ;",
+    "}"
+].join("\n");
 
 /**
  * The default fragment shader source
@@ -120,26 +120,26 @@ Filter.defaultVertexSrc = [
  * @constant
  */
 Filter.defaultFragmentSrc = [
-    'varying vec2 vTextureCoord;',
-    'varying vec2 vFilterCoord;',
+    "varying vec2 vTextureCoord;",
+    "varying vec2 vFilterCoord;",
 
-    'uniform sampler2D uSampler;',
-    'uniform sampler2D filterSampler;',
+    "uniform sampler2D uSampler;",
+    "uniform sampler2D filterSampler;",
 
-    'void main(void){',
-    '   vec4 masky = texture2D(filterSampler, vFilterCoord);',
-    '   vec4 sample = texture2D(uSampler, vTextureCoord);',
-    '   vec4 color;',
-    '   if(mod(vFilterCoord.x, 1.0) > 0.5)',
-    '   {',
-    '     color = vec4(1.0, 0.0, 0.0, 1.0);',
-    '   }',
-    '   else',
-    '   {',
-    '     color = vec4(0.0, 1.0, 0.0, 1.0);',
-    '   }',
+    "void main(void){",
+    "   vec4 masky = texture2D(filterSampler, vFilterCoord);",
+    "   vec4 sample = texture2D(uSampler, vTextureCoord);",
+    "   vec4 color;",
+    "   if(mod(vFilterCoord.x, 1.0) > 0.5)",
+    "   {",
+    "     color = vec4(1.0, 0.0, 0.0, 1.0);",
+    "   }",
+    "   else",
+    "   {",
+    "     color = vec4(0.0, 1.0, 0.0, 1.0);",
+    "   }",
    // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
-    '   gl_FragColor = mix(sample, masky, 0.5);',
-    '   gl_FragColor *= sample.a;',
-    '}'
-].join('\n');
+    "   gl_FragColor = mix(sample, masky, 0.5);",
+    "   gl_FragColor *= sample.a;",
+    "}"
+].join("\n");

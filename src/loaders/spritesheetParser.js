@@ -1,6 +1,6 @@
-var Resource = require('resource-loader').Resource,
-    path = require('path'),
-    core = require('../core');
+var Resource = require("resource-loader").Resource,
+    path = require("path"),
+    core = require("../core");
 
 var BATCH_SIZE = 1000;
 
@@ -9,7 +9,7 @@ module.exports = function ()
     return function (resource, next)
     {
         var resourcePath;
-        var imageResourceName = resource.name + '_image';
+        var imageResourceName = resource.name + "_image";
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
@@ -30,7 +30,7 @@ module.exports = function ()
         }
         else
         {
-            resourcePath = path.dirname(resource.url.replace(this.baseUrl, '')) + '/' + resource.data.meta.image;
+            resourcePath = path.dirname(resource.url.replace(this.baseUrl, "")) + "/" + resource.data.meta.image;
         }
 
         // load the image for this sheet

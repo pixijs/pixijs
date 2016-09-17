@@ -25,7 +25,7 @@ function TextureUvs()
 
 module.exports = TextureUvs;
 
-var GroupD8 = require('../math/GroupD8');
+var GroupD8 = require("../math/GroupD8");
 
 /**
  * Sets the texture Uvs based on the given frame information

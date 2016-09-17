@@ -9,12 +9,12 @@
  * @namespace PIXI.filters
  */
 module.exports = {
-    FXAAFilter:          require('./fxaa/FXAAFilter'),
-    NoiseFilter:        require('./noise/NoiseFilter'),
-    DisplacementFilter: require('./displacement/DisplacementFilter'),
-    BlurFilter:         require('./blur/BlurFilter'),
-    BlurXFilter:        require('./blur/BlurXFilter'),
-    BlurYFilter:        require('./blur/BlurYFilter'),
-    ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
-    VoidFilter:         require('./void/VoidFilter')
+    FXAAFilter:          require("./fxaa/FXAAFilter"),
+    NoiseFilter:        require("./noise/NoiseFilter"),
+    DisplacementFilter: require("./displacement/DisplacementFilter"),
+    BlurFilter:         require("./blur/BlurFilter"),
+    BlurXFilter:        require("./blur/BlurXFilter"),
+    BlurYFilter:        require("./blur/BlurYFilter"),
+    ColorMatrixFilter:  require("./colormatrix/ColorMatrixFilter"),
+    VoidFilter:         require("./void/VoidFilter")
 };

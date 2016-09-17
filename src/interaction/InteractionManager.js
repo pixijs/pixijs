@@ -1,11 +1,11 @@
-var core = require('../core'),
-    InteractionData = require('./InteractionData'),
-    EventEmitter = require('eventemitter3');
+var core = require("../core"),
+    InteractionData = require("./InteractionData"),
+    EventEmitter = require("eventemitter3");
 
 // Mix interactiveTarget into core.DisplayObject.prototype
 Object.assign(
     core.DisplayObject.prototype,
-    require('./interactiveTarget')
+    require("./interactiveTarget")
 );
 
 /**
@@ -173,13 +173,13 @@ function InteractionManager(renderer, options)
      * @member {string}
      * @default 'inherit'
      */
-    this.defaultCursorStyle = 'inherit';
+    this.defaultCursorStyle = "inherit";
 
     /**
      * The css style of the cursor that is being used
      * @member {string}
      */
-    this.currentCursorStyle = 'inherit';
+    this.currentCursorStyle = "inherit";
 
     /**
      * Internal cached var
@@ -200,113 +200,113 @@ function InteractionManager(renderer, options)
 
     /**
      * Fired when a pointing device button (usually a mouse button) is pressed on the display object.
-     * 
+     *
      * @memberof PIXI.interaction.InteractionManager#
      * @event mousedown
      */
 
     /**
      * Fired when a pointing device secondary button (usually a mouse right-button) is pressed on the display object.
-     * 
+     *
      * @memberof PIXI.interaction.InteractionManager#
      * @event rightdown
      */
 
     /**
      * Fired when a pointing device button (usually a mouse button) is released over the display object.
-     * 
+     *
      * @memberof PIXI.interaction.InteractionManager#
      * @event mouseup
      */
 
     /**
      * Fired when a pointing device secondary button (usually a mouse right-button) is released over the display object.
-     * 
+     *
      * @memberof PIXI.interaction.InteractionManager#
      * @event rightup
      */
 
     /**
      * Fired when a pointing device button (usually a mouse button) is pressed and released on the display object.
-     * 
+     *
      * @event click
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a pointing device secondary button (usually a mouse right-button) is pressed and released on the display object.
-     * 
+     *
      * @event rightclick
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a pointing device button (usually a mouse button) is released outside the display object that initially registered a [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
-     * 
+     *
      * @event mouseupoutside
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
-     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially 
+     * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially
      * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
-     * 
+     *
      * @event rightupoutside
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a pointing device (usually a mouse) is moved while over the display object
-     * 
+     *
      * @event mousemove
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a pointing device (usually a mouse) is moved onto the display object
-     * 
+     *
      * @event mouseover
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a pointing device (usually a mouse) is moved off the display object
-     * 
+     *
      * @event mouseout
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a touch point is placed on the display object.
-     * 
+     *
      * @event touchstart
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a touch point is removed from the display object.
-     * 
+     *
      * @event touchend
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a touch point is placed and removed from the display object.
-     * 
+     *
      * @event tap
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a touch point is removed outside of the display object that initially registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
-     * 
+     *
      * @event touchendoutside
      * @memberof PIXI.interaction.InteractionManager#
      */
 
     /**
      * Fired when a touch point is moved along the display object.
-     * 
+     *
      * @event touchmove
      * @memberof PIXI.interaction.InteractionManager#
      */
@@ -352,20 +352,20 @@ InteractionManager.prototype.addEvents = function ()
 
     if (window.navigator.msPointerEnabled)
     {
-        this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
-        this.interactionDOMElement.style['-ms-touch-action'] = 'none';
+        this.interactionDOMElement.style["-ms-content-zooming"] = "none";
+        this.interactionDOMElement.style["-ms-touch-action"] = "none";
     }
 
-    window.document.addEventListener('mousemove',    this.onMouseMove, true);
-    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
-    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
-    this.interactionDOMElement.addEventListener('mouseover',    this.onMouseOver, true);
+    window.document.addEventListener("mousemove",    this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener("mousedown",    this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener("mouseout",     this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener("mouseover",    this.onMouseOver, true);
 
-    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
-    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
-    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
+    this.interactionDOMElement.addEventListener("touchstart",   this.onTouchStart, true);
+    this.interactionDOMElement.addEventListener("touchend",     this.onTouchEnd, true);
+    this.interactionDOMElement.addEventListener("touchmove",    this.onTouchMove, true);
 
-    window.addEventListener('mouseup',  this.onMouseUp, true);
+    window.addEventListener("mouseup",  this.onMouseUp, true);
 
     this.eventsAdded = true;
 };
@@ -386,22 +386,22 @@ InteractionManager.prototype.removeEvents = function ()
 
     if (window.navigator.msPointerEnabled)
     {
-        this.interactionDOMElement.style['-ms-content-zooming'] = '';
-        this.interactionDOMElement.style['-ms-touch-action'] = '';
+        this.interactionDOMElement.style["-ms-content-zooming"] = "";
+        this.interactionDOMElement.style["-ms-touch-action"] = "";
     }
 
-    window.document.removeEventListener('mousemove', this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
-    this.interactionDOMElement.removeEventListener('mouseover', this.onMouseOver, true);
+    window.document.removeEventListener("mousemove", this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener("mousedown", this.onMouseDown, true);
+    this.interactionDOMElement.removeEventListener("mouseout",  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener("mouseover", this.onMouseOver, true);
 
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.removeEventListener("touchstart", this.onTouchStart, true);
+    this.interactionDOMElement.removeEventListener("touchend",  this.onTouchEnd, true);
+    this.interactionDOMElement.removeEventListener("touchmove", this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
+    window.removeEventListener("mouseup",  this.onMouseUp, true);
 
     this.eventsAdded = false;
 };
@@ -649,7 +649,7 @@ InteractionManager.prototype.onMouseDown = function (event)
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 
     var isRightButton = event.button === 2 || event.which === 3;
-    this.emit(isRightButton ? 'rightdown' : 'mousedown', this.eventData);
+    this.emit(isRightButton ? "rightdown" : "mousedown", this.eventData);
 };
 
 /**
@@ -667,8 +667,8 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 
     if(hit)
     {
-        displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
-        this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
+        displayObject[ isRightButton ? "_isRightDown" : "_isLeftDown" ] = true;
+        this.dispatchEvent( displayObject, isRightButton ? "rightdown" : "mousedown", this.eventData );
     }
 };
 
@@ -690,7 +690,7 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 
     var isRightButton = event.button === 2 || event.which === 3;
-    this.emit(isRightButton ? 'rightup' : 'mouseup', this.eventData);
+    this.emit(isRightButton ? "rightup" : "mouseup", this.eventData);
 };
 
 /**
@@ -705,16 +705,16 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
     var e = this.mouse.originalEvent;
 
     var isRightButton = e.button === 2 || e.which === 3;
-    var isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
+    var isDown =  isRightButton ? "_isRightDown" : "_isLeftDown";
 
     if(hit)
     {
-        this.dispatchEvent( displayObject, isRightButton ? 'rightup' : 'mouseup', this.eventData );
+        this.dispatchEvent( displayObject, isRightButton ? "rightup" : "mouseup", this.eventData );
 
         if( displayObject[ isDown ] )
         {
             displayObject[ isDown ] = false;
-            this.dispatchEvent( displayObject, isRightButton ? 'rightclick' : 'click', this.eventData );
+            this.dispatchEvent( displayObject, isRightButton ? "rightclick" : "click", this.eventData );
         }
     }
     else
@@ -722,7 +722,7 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
         if( displayObject[ isDown ] )
         {
             displayObject[ isDown ] = false;
-            this.dispatchEvent( displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', this.eventData );
+            this.dispatchEvent( displayObject, isRightButton ? "rightupoutside" : "mouseupoutside", this.eventData );
         }
     }
 };
@@ -748,7 +748,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
 
-    this.emit('mousemove', this.eventData);
+    this.emit("mousemove", this.eventData);
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -773,7 +773,7 @@ InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
     // only display on mouse over
     if(!this.moveWhenInside || hit)
     {
-        this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+        this.dispatchEvent( displayObject, "mousemove", this.eventData);
     }
 };
 
@@ -800,7 +800,7 @@ InteractionManager.prototype.onMouseOut = function (event)
 
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
 
-    this.emit('mouseout', this.eventData);
+    this.emit("mouseout", this.eventData);
 };
 
 /**
@@ -817,7 +817,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         if(!displayObject._over)
         {
             displayObject._over = true;
-            this.dispatchEvent( displayObject, 'mouseover', this.eventData );
+            this.dispatchEvent( displayObject, "mouseover", this.eventData );
         }
 
         if (displayObject.buttonMode)
@@ -830,7 +830,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         if(displayObject._over)
         {
             displayObject._over = false;
-            this.dispatchEvent( displayObject, 'mouseout', this.eventData);
+            this.dispatchEvent( displayObject, "mouseout", this.eventData);
         }
     }
 };
@@ -847,7 +847,7 @@ InteractionManager.prototype.onMouseOver = function(event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
-	this.emit('mouseover', this.eventData);
+    this.emit("mouseover", this.eventData);
 };
 
 
@@ -880,7 +880,7 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
-        this.emit('touchstart', this.eventData);
+        this.emit("touchstart", this.eventData);
 
         this.returnTouchData( touchData );
     }
@@ -898,7 +898,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
     if(hit)
     {
         displayObject._touchDown = true;
-        this.dispatchEvent( displayObject, 'touchstart', this.eventData );
+        this.dispatchEvent( displayObject, "touchstart", this.eventData );
     }
 };
 
@@ -934,7 +934,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
-        this.emit('touchend', this.eventData);
+        this.emit("touchend", this.eventData);
 
         this.returnTouchData( touchData );
     }
@@ -951,12 +951,12 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
 {
     if(hit)
     {
-        this.dispatchEvent( displayObject, 'touchend', this.eventData );
+        this.dispatchEvent( displayObject, "touchend", this.eventData );
 
         if( displayObject._touchDown )
         {
             displayObject._touchDown = false;
-            this.dispatchEvent( displayObject, 'tap', this.eventData );
+            this.dispatchEvent( displayObject, "tap", this.eventData );
         }
     }
     else
@@ -964,7 +964,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
         if( displayObject._touchDown )
         {
             displayObject._touchDown = false;
-            this.dispatchEvent( displayObject, 'touchendoutside', this.eventData );
+            this.dispatchEvent( displayObject, "touchendoutside", this.eventData );
         }
     }
 };
@@ -998,7 +998,7 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside );
 
-        this.emit('touchmove', this.eventData);
+        this.emit("touchmove", this.eventData);
 
         this.returnTouchData( touchData );
     }
@@ -1015,7 +1015,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 {
     if(!this.moveWhenInside || hit)
     {
-        this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+        this.dispatchEvent( displayObject, "touchmove", this.eventData);
     }
 };
 
@@ -1108,5 +1108,5 @@ InteractionManager.prototype.destroy = function () {
     this._tempPoint = null;
 };
 
-core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
-core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
+core.WebGLRenderer.registerPlugin("interaction", InteractionManager);
+core.CanvasRenderer.registerPlugin("interaction", InteractionManager);

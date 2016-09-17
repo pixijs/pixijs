@@ -1,4 +1,4 @@
-var mapWebGLBlendModesToPixi = require('./utils/mapWebGLBlendModesToPixi');
+var mapWebGLBlendModesToPixi = require("./utils/mapWebGLBlendModesToPixi");
 
 /**
  * A WebGL state machines
@@ -58,9 +58,9 @@ function WebGLState(gl)
 
     // check we have vao..
     this.nativeVaoExtension = (
-        gl.getExtension('OES_vertex_array_object') ||
-        gl.getExtension('MOZ_OES_vertex_array_object') ||
-        gl.getExtension('WEBKIT_OES_vertex_array_object')
+        gl.getExtension("OES_vertex_array_object") ||
+        gl.getExtension("MOZ_OES_vertex_array_object") ||
+        gl.getExtension("WEBKIT_OES_vertex_array_object")
     );
 }
 

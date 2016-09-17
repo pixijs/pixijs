@@ -1,11 +1,11 @@
 var DEFAULT_BORDER_SIZE= 10;
 
-var Plane = require('./Plane');
+var Plane = require("./Plane");
 
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
- *  
+ *
  *```js
  * var Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
@@ -78,25 +78,25 @@ function NineSlicePlane(texture, leftWidth, topHeight, rightWidth, bottomHeight)
      *
      * @member {number}
      */
-    this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
+    this.leftWidth = typeof leftWidth !== "undefined" ? leftWidth : DEFAULT_BORDER_SIZE;
     /**
      * The width of the right column (b)
      *
      * @member {number}
      */
-    this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
+    this.rightWidth = typeof rightWidth !== "undefined" ? rightWidth : DEFAULT_BORDER_SIZE;
     /**
      * The height of the top row (c)
      *
      * @member {number}
      */
-    this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
+    this.topHeight = typeof topHeight !== "undefined" ? topHeight : DEFAULT_BORDER_SIZE;
     /**
      * The height of the bottom row (d)
      *
      * @member {number}
      */
-    this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+    this.bottomHeight = typeof bottomHeight !== "undefined" ? bottomHeight : DEFAULT_BORDER_SIZE;
 }
 
 
@@ -262,12 +262,12 @@ NineSlicePlane.prototype._renderCanvas= function (renderer)
     {
         context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
     }
-        
+
     var base = this._texture.baseTexture;
     var textureSource = base.source;
     var w = base.width;
     var h = base.height;
-    
+
     this.drawSegment(context, textureSource, w, h, 0, 1, 10, 11);
     this.drawSegment(context, textureSource, w, h, 2, 3, 12, 13);
     this.drawSegment(context, textureSource, w, h, 4, 5, 14, 15);
@@ -286,10 +286,10 @@ NineSlicePlane.prototype._renderCanvas= function (renderer)
  *
  * @param context
  * @param textureSource
- * @param w	width of the texture
+ * @param w    width of the texture
  * @param h height of the texture
- * @param x1 
- * @param y1	
+ * @param x1
+ * @param y1
  * @param x2
  * @param y2
  * @private
@@ -299,12 +299,12 @@ NineSlicePlane.prototype.drawSegment= function (context, textureSource, w, h, x1
     // otherwise you get weird results when using slices of that are 0 wide or high.
     var uvs = this.uvs;
     var vertices = this.vertices;
-    
+
     var sw = (uvs[x2]-uvs[x1]) * w;
     var sh = (uvs[y2]-uvs[y1]) * h;
     var dw = vertices[x2] - vertices[x1];
     var dh = vertices[y2] - vertices[y1];
-    
+
     // make sure the source is at least 1 pixel wide and high, otherwise nothing will be drawn.
     if (sw<1) {
         sw=1;

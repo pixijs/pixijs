@@ -1,4 +1,4 @@
-var core = require('../../core');
+var core = require("../../core");
 
 /**
  * Prepare uploads elements to the GPU. The CanvasRenderer version of prepare
@@ -23,7 +23,7 @@ module.exports = CanvasPrepare;
  */
 CanvasPrepare.prototype.upload = function(displayObject, done)
 {
-    if (typeof displayObject === 'function')
+    if (typeof displayObject === "function")
     {
         done = displayObject;
         displayObject = null;
@@ -56,4 +56,4 @@ CanvasPrepare.prototype.destroy = function()
 {
 };
 
-core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+core.CanvasRenderer.registerPlugin("prepare", CanvasPrepare);

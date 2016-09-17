@@ -1,5 +1,5 @@
-var glCore = require('pixi-gl-core'),
-    createIndicesForQuads = require('../../core/utils/createIndicesForQuads');
+var glCore = require("pixi-gl-core"),
+    createIndicesForQuads = require("../../core/utils/createIndicesForQuads");
 
 /**
  * @author Mat Groves
@@ -69,7 +69,7 @@ function ParticleBuffer(gl, properties, dynamicPropertyFlags, size)
 
         // Make copy of properties object so that when we edit the offset it doesn't
         // change all other instances of the object literal
-        property = 
+        property =
         {
             attribute:property.attribute,
             size:property.size,

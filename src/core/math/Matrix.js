@@ -2,7 +2,7 @@
 // should either fix it or change the jshint config
 // jshint -W072
 
-var Point = require('./Point');
+var Point = require("./Point");
 
 /**
  * The pixi Matrix class as an object, which makes it a lot faster,
@@ -293,7 +293,7 @@ Matrix.prototype.append = function (matrix)
  *
  * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+Matrix.prototype.setTransform = function (x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY) // eslint-disable-line max-params
 {
     var a, b, c, d, sr, cr, cy, sy, nsx, cx;
 

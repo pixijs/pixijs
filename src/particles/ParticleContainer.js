@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require("../core");
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -99,7 +99,7 @@ function ParticleContainer(maxSize, properties, batchSize)
     this.blendMode = core.BLEND_MODES.NORMAL;
 
     /**
-     * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
+     * Used for canvas rendering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
      *
      * @member {boolean}
      * @default true;
@@ -123,11 +123,11 @@ module.exports = ParticleContainer;
 ParticleContainer.prototype.setProperties = function(properties)
 {
     if ( properties ) {
-        this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
-        this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
-        this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
-        this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
-        this._properties[4] = 'alpha' in properties ? !!properties.alpha : this._properties[4];
+        this._properties[0] = "scale" in properties ? !!properties.scale : this._properties[0];
+        this._properties[1] = "position" in properties ? !!properties.position : this._properties[1];
+        this._properties[2] = "rotation" in properties ? !!properties.rotation : this._properties[2];
+        this._properties[3] = "uvs" in properties ? !!properties.uvs : this._properties[3];
+        this._properties[4] = "alpha" in properties ? !!properties.alpha : this._properties[4];
     }
 };
 
@@ -163,7 +163,7 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
         this.baseTexture = this.children[0]._texture.baseTexture;
         if(!this.baseTexture.hasLoaded)
         {
-            this.baseTexture.once('update', function(){
+            this.baseTexture.once("update", function(){
                 this.onChildrenChange(0);
             }, this);
         }

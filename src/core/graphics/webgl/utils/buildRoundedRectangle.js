@@ -1,6 +1,6 @@
-var earcut = require('earcut'),
-    buildLine = require('./buildLine'),
-    utils = require('../../../utils');
+var earcut = require("earcut"),
+    buildLine = require("./buildLine"),
+    utils = require("../../../utils");
 
 /**
  * Builds a rounded rectangle to draw
@@ -22,12 +22,14 @@ var buildRoundedRectangle = function (graphicsData, webGLData)
 
     var radius = rrectData.radius;
 
+    /*eslint-disable no-use-before-define*/
     var recPoints = [];
     recPoints.push(x, y + radius);
     quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
     quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
     quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
     quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+    /*eslint-enable no-use-before-define*/
 
     // this tiny number deals with the issue that occurs when points overlap and earcut fails to triangulate the item.
     // TODO - fix this properly, this is not very elegant.. but it works for now.

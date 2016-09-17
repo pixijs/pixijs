@@ -1,5 +1,5 @@
-var math = require('../math'),
-    TransformBase = require('./TransformBase');
+var math = require("../math"),
+    TransformBase = require("./TransformBase");
 
 /**
  * Transform that takes care about its versions

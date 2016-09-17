@@ -1,5 +1,21 @@
-var BaseTexture = require('./BaseTexture'),
-    utils = require('../utils');
+var BaseTexture = require("./BaseTexture"),
+    utils = require("../utils");
+
+//private function
+function createSource(path, type)
+{
+    if (!type)
+    {
+        type = "video/" + path.substr(path.lastIndexOf(".") + 1);
+    }
+
+    var source = document.createElement("source");
+
+    source.src = path;
+    source.type = type;
+
+    return source;
+}
 
 /**
  * A texture of a [playing] Video.
@@ -33,7 +49,7 @@ function VideoBaseTexture(source, scaleMode)
 {
     if (!source)
     {
-        throw new Error('No video source element specified.');
+        throw new Error("No video source element specified.");
     }
 
     // hook in here to check if video is already available.
@@ -59,12 +75,12 @@ function VideoBaseTexture(source, scaleMode)
 
     if (!source.complete)
     {
-        source.addEventListener('canplay', this._onCanPlay);
-        source.addEventListener('canplaythrough', this._onCanPlay);
+        source.addEventListener("canplay", this._onCanPlay);
+        source.addEventListener("canplaythrough", this._onCanPlay);
 
         // started playing..
-        source.addEventListener('play', this._onPlayStart.bind(this));
-        source.addEventListener('pause', this._onPlayStop.bind(this));
+        source.addEventListener("play", this._onPlayStart.bind(this));
+        source.addEventListener("pause", this._onPlayStop.bind(this));
     }
 
     this.__loaded = false;
@@ -129,8 +145,8 @@ VideoBaseTexture.prototype._onCanPlay = function ()
 
     if (this.source)
     {
-        this.source.removeEventListener('canplay', this._onCanPlay);
-        this.source.removeEventListener('canplaythrough', this._onCanPlay);
+        this.source.removeEventListener("canplay", this._onCanPlay);
+        this.source.removeEventListener("canplaythrough", this._onCanPlay);
 
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
@@ -141,7 +157,7 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         if (!this.__loaded)
         {
             this.__loaded = true;
-            this.emit('loaded', this);
+            this.emit("loaded", this);
         }
     }
 };
@@ -173,7 +189,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
 {
     if (!video._pixiId)
     {
-        video._pixiId = 'video_' + utils.uid();
+        video._pixiId = "video_" + utils.uid();
     }
 
     var baseTexture = utils.BaseTextureCache[video._pixiId];
@@ -201,7 +217,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
 {
-    var video = document.createElement('video');
+    var video = document.createElement("video");
 
     // array of objects or strings
     if (Array.isArray(videoSrc))
@@ -225,17 +241,3 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
 
 VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
 
-function createSource(path, type)
-{
-    if (!type)
-    {
-        type = 'video/' + path.substr(path.lastIndexOf('.') + 1);
-    }
-
-    var source = document.createElement('source');
-
-    source.src = path;
-    source.type = type;
-
-    return source;
-}

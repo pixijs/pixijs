@@ -1,6 +1,6 @@
-var core = require('../../core'),
-    ParticleShader = require('./ParticleShader'),
-    ParticleBuffer = require('./ParticleBuffer');
+var core = require("../../core"),
+    ParticleShader = require("./ParticleShader"),
+    ParticleBuffer = require("./ParticleBuffer");
 
 /**
  * @author Mat Groves
@@ -50,7 +50,7 @@ ParticleRenderer.prototype = Object.create(core.ObjectRenderer.prototype);
 ParticleRenderer.prototype.constructor = ParticleRenderer;
 module.exports = ParticleRenderer;
 
-core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
+core.WebGLRenderer.registerPlugin("particle", ParticleRenderer);
 
 /**
  * When there is a WebGL context change
@@ -215,7 +215,7 @@ ParticleRenderer.prototype.generateBuffers = function (container)
 };
 
 /**
- * Uploads the verticies.
+ * Uploads the vertices.
  *
  * @param children {PIXI.DisplayObject[]} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
@@ -245,7 +245,7 @@ ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amou
 
         if (trim)
         {
-            // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
+            // if the sprite is trimmed and is not a TilingSprite then we need to add the extra space before transforming the sprite coords..
             w1 = trim.x - sprite.anchor.x * orig.width;
             w0 = w1 + trim.width;
 
@@ -398,8 +398,7 @@ ParticleRenderer.prototype.uploadUvs = function (children,startIndex, amount, ar
  */
 ParticleRenderer.prototype.uploadAlpha = function (children,startIndex, amount, array, stride, offset)
 {
-     for (var i = 0; i < amount; i++)
-     {
+    for (var i = 0; i < amount; i++) {
         var spriteAlpha = children[startIndex + i].alpha;
 
         array[offset] = spriteAlpha;

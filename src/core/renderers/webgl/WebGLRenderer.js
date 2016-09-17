@@ -1,18 +1,18 @@
-var SystemRenderer = require('../SystemRenderer'),
-    MaskManager = require('./managers/MaskManager'),
-    StencilManager = require('./managers/StencilManager'),
-    FilterManager = require('./managers/FilterManager'),
-    RenderTarget = require('./utils/RenderTarget'),
-    ObjectRenderer = require('./utils/ObjectRenderer'),
-    TextureManager = require('./TextureManager'),
-    TextureGarbageCollector = require('./TextureGarbageCollector'),
-    WebGLState = require('./WebGLState'),
-    createContext = require('pixi-gl-core').createContext,
-    mapWebGLDrawModesToPixi = require('./utils/mapWebGLDrawModesToPixi'),
-    validateContext = require('./utils/validateContext'),
-    utils = require('../../utils'),
-    glCore = require('pixi-gl-core'),
-    CONST = require('../../const');
+var SystemRenderer = require("../SystemRenderer"),
+    MaskManager = require("./managers/MaskManager"),
+    StencilManager = require("./managers/StencilManager"),
+    FilterManager = require("./managers/FilterManager"),
+    RenderTarget = require("./utils/RenderTarget"),
+    ObjectRenderer = require("./utils/ObjectRenderer"),
+    TextureManager = require("./TextureManager"),
+    TextureGarbageCollector = require("./TextureGarbageCollector"),
+    WebGLState = require("./WebGLState"),
+    createContext = require("pixi-gl-core").createContext,
+    mapWebGLDrawModesToPixi = require("./utils/mapWebGLDrawModesToPixi"),
+    validateContext = require("./utils/validateContext"),
+    utils = require("../../utils"),
+    glCore = require("pixi-gl-core"),
+    CONST = require("../../const");
 
 var CONTEXT_UID = 0;
 
@@ -44,7 +44,7 @@ function WebGLRenderer(width, height, options)
 {
     options = options || {};
 
-    SystemRenderer.call(this, 'WebGL', width, height, options);
+    SystemRenderer.call(this, "WebGL", width, height, options);
     /**
      * The type of this renderer as a standardised const
      *
@@ -56,8 +56,8 @@ function WebGLRenderer(width, height, options)
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
 
-    this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
-    this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+    this.view.addEventListener("webglcontextlost", this.handleContextLost, false);
+    this.view.addEventListener("webglcontextrestored", this.handleContextRestored, false);
 
     /**
      * The options passed in to create a new webgl context.
@@ -68,7 +68,7 @@ function WebGLRenderer(width, height, options)
     this._contextOptions = {
         alpha: this.transparent,
         antialias: options.antialias,
-        premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
+        premultipliedAlpha: this.transparent && this.transparent !== "notMultiplied",
         stencil: true,
         preserveDrawingBuffer: options.preserveDrawingBuffer
     };
@@ -192,7 +192,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.bindRenderTarget(this.rootRenderTarget);
 
-    this.emit('context', gl);
+    this.emit("context", gl);
 
     // setup the width/height properties and gl viewport
     this.resize(this.width, this.height);
@@ -213,7 +213,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
     // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
-    this.emit('prerender');
+    this.emit("prerender");
 
 
     // no point rendering if our context has been blown up!
@@ -255,7 +255,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     this.textureGC.update();
 
-    this.emit('postrender');
+    this.emit("postrender");
 };
 
 /**
@@ -525,8 +525,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.destroyPlugins();
 
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this.handleContextLost);
-    this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    this.view.removeEventListener("webglcontextlost", this.handleContextLost);
+    this.view.removeEventListener("webglcontextrestored", this.handleContextRestored);
 
     this.textureManager.destroy();
 
@@ -551,9 +551,9 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this._contextOptions = null;
     this.gl.useProgram(null);
 
-    if(this.gl.getExtension('WEBGL_lose_context'))
+    if(this.gl.getExtension("WEBGL_lose_context"))
     {
-        this.gl.getExtension('WEBGL_lose_context').loseContext();
+        this.gl.getExtension("WEBGL_lose_context").loseContext();
     }
 
     this.gl = null;

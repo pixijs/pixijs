@@ -1,15 +1,15 @@
-var Sprite = require('../sprites/Sprite'),
-    Texture = require('../textures/Texture'),
-    math = require('../math'),
-    utils = require('../utils'),
-    CONST = require('../const'),
-    TextStyle = require('./TextStyle');
+var Sprite = require("../sprites/Sprite"),
+    Texture = require("../textures/Texture"),
+    math = require("../math"),
+    utils = require("../utils"),
+    CONST = require("../const"),
+    TextStyle = require("./TextStyle");
 
-    var defaultDestroyOptions = {
-            texture:true,
-            children:false,
-            baseTexture:true
-    };
+var defaultDestroyOptions = {
+    texture:true,
+    children:false,
+    baseTexture:true
+};
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
@@ -33,13 +33,13 @@ function Text(text, style)
      *
      * @member {HTMLCanvasElement}
      */
-    this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement("canvas");
 
     /**
      * The canvas 2d context that everything is drawn with
      * @member {HTMLCanvasElement}
      */
-    this.context = this.canvas.getContext('2d');
+    this.context = this.canvas.getContext("2d");
 
     /**
      * The resolution / device pixel ratio of the canvas. This is set automatically by the renderer.
@@ -77,7 +77,7 @@ function Text(text, style)
      * @member {string}
      * @private
      */
-    this._font = '';
+    this._font = "";
 
     var texture = Texture.fromCanvas(this.canvas);
     texture.orig = new math.Rectangle();
@@ -96,8 +96,8 @@ Text.prototype.constructor = Text;
 module.exports = Text;
 
 Text.fontPropertiesCache = {};
-Text.fontPropertiesCanvas = document.createElement('canvas');
-Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
+Text.fontPropertiesCanvas = document.createElement("canvas");
+Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext("2d");
 
 Object.defineProperties(Text.prototype, {
     /**
@@ -188,7 +188,7 @@ Object.defineProperties(Text.prototype, {
         },
         set: function (text){
 
-            text = text || ' ';
+            text = text || " ";
             text = text.toString();
 
             if (this._text === text)
@@ -222,8 +222,8 @@ Text.prototype.updateText = function (respectDirty)
     }
 
     // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
-    var fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
-    this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
+    var fontSizeString = (typeof style.fontSize === "number") ? style.fontSize + "px" : style.fontSize;
+    this._font = style.fontStyle + " " + style.fontVariant + " " + style.fontWeight + " " + fontSizeString + " " + style.fontFamily;
 
     this.context.font = this._font;
 
@@ -306,11 +306,11 @@ Text.prototype.updateText = function (respectDirty)
             linePositionX = style.strokeThickness / 2;
             linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-            if (style.align === 'right')
+            if (style.align === "right")
             {
                 linePositionX += maxLineWidth - lineWidths[i];
             }
-            else if (style.align === 'center')
+            else if (style.align === "center")
             {
                 linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
@@ -324,7 +324,7 @@ Text.prototype.updateText = function (respectDirty)
                     this.context.strokeStyle = style.dropShadowColor;
                     this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
                     this.context.strokeStyle = style.stroke;
-			    }
+                }
             }
         }
     }
@@ -338,11 +338,11 @@ Text.prototype.updateText = function (respectDirty)
         linePositionX = style.strokeThickness / 2;
         linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-        if (style.align === 'right')
+        if (style.align === "right")
         {
             linePositionX += maxLineWidth - lineWidths[i];
         }
-        else if (style.align === 'center')
+        else if (style.align === "center")
         {
             linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
@@ -389,7 +389,7 @@ Text.prototype.drawLetterSpacing = function(text, x, y, isStroke)
         return;
     }
 
-    var characters = String.prototype.split.call(text, ''),
+    var characters = String.prototype.split.call(text, ""),
         index = 0,
         current,
         currentPosition = x;
@@ -438,7 +438,7 @@ Text.prototype.updateTexture = function ()
     //call sprite onTextureUpdate to update scale if _width or _height were set
     this._onTextureUpdate();
 
-    texture.baseTexture.emit('update',  texture.baseTexture);
+    texture.baseTexture.emit("update",  texture.baseTexture);
 
     this.dirty = false;
 };
@@ -500,8 +500,8 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|MÉq').width);
-        var baseline = Math.ceil(context.measureText('M').width);
+        var width = Math.ceil(context.measureText("|MÉq").width);
+        var baseline = Math.ceil(context.measureText("M").width);
         var height = 2 * baseline;
 
         baseline = baseline * 1.4 | 0;
@@ -509,14 +509,14 @@ Text.prototype.determineFontProperties = function (fontStyle)
         canvas.width = width;
         canvas.height = height;
 
-        context.fillStyle = '#f00';
+        context.fillStyle = "#f00";
         context.fillRect(0, 0, width, height);
 
         context.font = fontStyle;
 
-        context.textBaseline = 'alphabetic';
-        context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
+        context.textBaseline = "alphabetic";
+        context.fillStyle = "#000";
+        context.fillText("|MÉq", 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
@@ -595,49 +595,49 @@ Text.prototype.wordWrap = function (text)
 {
     // Greedy wrapping algorithm that will wrap words as the line grows longer
     // than its horizontal bounds.
-    var result = '';
-    var lines = text.split('\n');
+    var result = "";
+    var lines = text.split("\n");
     var wordWrapWidth = this._style.wordWrapWidth;
     for (var i = 0; i < lines.length; i++)
     {
         var spaceLeft = wordWrapWidth;
-        var words = lines[i].split(' ');
+        var words = lines[i].split(" ");
         for (var j = 0; j < words.length; j++)
         {
             var wordWidth = this.context.measureText(words[j]).width;
             if (this._style.breakWords && wordWidth > wordWrapWidth)
             {
                 // Word should be split in the middle
-                var characters = words[j].split('');
+                var characters = words[j].split("");
                 for (var c = 0; c < characters.length; c++)
                 {
-                  var characterWidth = this.context.measureText(characters[c]).width;
-                  if (characterWidth > spaceLeft)
+                    var characterWidth = this.context.measureText(characters[c]).width;
+                    if (characterWidth > spaceLeft)
                   {
-                    result += '\n' + characters[c];
-                    spaceLeft = wordWrapWidth - characterWidth;
-                  }
-                  else
-                  {
-                    if (c === 0)
-                    {
-                      result += ' ';
+                        result += "\n" + characters[c];
+                        spaceLeft = wordWrapWidth - characterWidth;
                     }
-                    result += characters[c];
-                    spaceLeft -= characterWidth;
-                  }
+                    else
+                  {
+                        if (c === 0)
+                    {
+                            result += " ";
+                        }
+                        result += characters[c];
+                        spaceLeft -= characterWidth;
+                    }
                 }
             }
             else
             {
-                var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                var wordWidthWithSpace = wordWidth + this.context.measureText(" ").width;
                 if (j === 0 || wordWidthWithSpace > spaceLeft)
                 {
                     // Skip printing the newline if it's the first word of the line that is
                     // greater than the word wrap width.
                     if (j > 0)
                     {
-                        result += '\n';
+                        result += "\n";
                     }
                     result += words[j];
                     spaceLeft = wordWrapWidth - wordWidth;
@@ -645,14 +645,14 @@ Text.prototype.wordWrap = function (text)
                 else
                 {
                     spaceLeft -= wordWidthWithSpace;
-                    result += ' ' + words[j];
+                    result += " " + words[j];
                 }
             }
         }
 
         if (i < lines.length-1)
         {
-            result += '\n';
+            result += "\n";
         }
     }
     return result;
@@ -756,7 +756,7 @@ Text.prototype._generateFillStyle = function (style, lines)
  */
 Text.prototype.destroy = function (options)
 {
-    if (typeof options === 'boolean') {
+    if (typeof options === "boolean") {
         options = { children: options };
     }
 

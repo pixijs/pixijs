@@ -1,4 +1,4 @@
-var core = require('../core'),
+var core = require("../core"),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
 
@@ -260,7 +260,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     var cachedRenderTarget = renderer.context;
 
-    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;

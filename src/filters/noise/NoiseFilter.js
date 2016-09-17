@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+var core = require("../../core");
+var glslify  = require("glslify");
 
 /**
  * @author Vico @vicocotea
@@ -17,9 +17,9 @@ function NoiseFilter()
 {
     core.Filter.call(this,
         // vertex shader
-        glslify('../fragments/default.vert'),
+        glslify("../fragments/default.vert"),
         // fragment shader
-        glslify('./noise.frag')
+        glslify("./noise.frag")
     );
 
     this.noise = 0.5;

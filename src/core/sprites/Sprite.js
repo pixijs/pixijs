@@ -1,8 +1,8 @@
-var math = require('../math'),
-    Texture = require('../textures/Texture'),
-    Container = require('../display/Container'),
-    utils = require('../utils'),
-    CONST = require('../const'),
+var math = require("../math"),
+    Texture = require("../textures/Texture"),
+    Container = require("../display/Container"),
+    utils = require("../utils"),
+    CONST = require("../const"),
     tempPoint = new math.Point();
 
 /**
@@ -199,7 +199,7 @@ Object.defineProperties(Sprite.prototype, {
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate, this);
+                    value.once("update", this._onTextureUpdate, this);
                 }
             }
         }
@@ -462,10 +462,10 @@ Sprite.prototype.destroy = function (options)
 
     this.anchor = null;
 
-    var destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
+    var destroyTexture = typeof options === "boolean" ? options : options && options.texture;
     if (destroyTexture)
     {
-        var destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+        var destroyBaseTexture = typeof options === "boolean" ? options : options && options.baseTexture;
         this._texture.destroy(!!destroyBaseTexture);
     }
 
@@ -502,7 +502,7 @@ Sprite.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
+        throw new Error("The frameId \"" + frameId + "\" does not exist in the texture cache");
     }
 
     return new Sprite(texture);

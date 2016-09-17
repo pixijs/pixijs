@@ -1,9 +1,9 @@
-var utils = require('../utils'),
-    math = require('../math'),
-    CONST = require('../const'),
-    Container = require('../display/Container'),
-    RenderTexture = require('../textures/RenderTexture'),
-    EventEmitter = require('eventemitter3'),
+var utils = require("../utils"),
+    math = require("../math"),
+    CONST = require("../const"),
+    Container = require("../display/Container"),
+    RenderTexture = require("../textures/RenderTexture"),
+    EventEmitter = require("eventemitter3"),
     tempMatrix = new math.Matrix();
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -36,7 +36,7 @@ function SystemRenderer(system, width, height, options)
     {
         for (var i in CONST.DEFAULT_RENDER_OPTIONS)
         {
-            if (typeof options[i] === 'undefined')
+            if (typeof options[i] === "undefined")
             {
                 options[i] = CONST.DEFAULT_RENDER_OPTIONS[i];
             }
@@ -77,7 +77,7 @@ function SystemRenderer(system, width, height, options)
      *
      * @member {HTMLCanvasElement}
      */
-    this.view = options.view || document.createElement('canvas');
+    this.view = options.view || document.createElement("canvas");
 
     /**
      * The resolution / device pixel ratio of the renderer
@@ -156,7 +156,7 @@ function SystemRenderer(system, width, height, options)
      * @member {string}
      * @private
      */
-    this._backgroundColorString = '#000000';
+    this._backgroundColorString = "#000000";
 
     this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
 
@@ -219,8 +219,8 @@ SystemRenderer.prototype.resize = function (width, height) {
 
     if (this.autoResize)
     {
-        this.view.style.width = this.width / this.resolution + 'px';
-        this.view.style.height = this.height / this.resolution + 'px';
+        this.view.style.width = this.width / this.resolution + "px";
+        this.view.style.height = this.height / this.resolution + "px";
     }
 };
 

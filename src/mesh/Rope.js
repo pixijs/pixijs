@@ -1,5 +1,5 @@
-var Mesh = require('./Mesh');
-var core = require('../core');
+var Mesh = require("./Mesh");
+var core = require("../core");
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -54,9 +54,9 @@ function Rope(texture, points)
      * @member {boolean}
      * @private
      */
-     this._ready = true;
+    this._ready = true;
 
-     this.refresh();
+    this.refresh();
 }
 
 
@@ -100,11 +100,10 @@ Rope.prototype.refresh = function ()
     indices[1] = 1;
 
     var total = points.length,
-        point, index, amount;
+        index, amount;
 
     for (var i = 1; i < total; i++)
     {
-        point = points[i];
         index = i * 4;
         // time to do some smart drawing!
         amount = i / (total-1);

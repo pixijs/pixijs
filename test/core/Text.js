@@ -1,6 +1,6 @@
-describe('PIXI.Text', function () {
-    describe('destroy', function () {
-        it('should call through to Sprite.destroy', function () {
+describe("PIXI.Text", function () {
+    describe("destroy", function () {
+        it("should call through to Sprite.destroy", function () {
             var text = new PIXI.Text("foo");
 
             expect(text.anchor).to.not.equal(null);
@@ -8,7 +8,7 @@ describe('PIXI.Text', function () {
             expect(text.anchor).to.equal(null);
         });
 
-        it('should set context to null', function () {
+        it("should set context to null", function () {
             var text = new PIXI.Text("foo");
 
             expect(text.style).to.not.equal(null);
@@ -16,7 +16,7 @@ describe('PIXI.Text', function () {
             expect(text.style).to.equal(null);
         });
 
-        it('should destroy children if children flag is set', function () {
+        it("should destroy children if children flag is set", function () {
             var text = new PIXI.Text("foo"),
                 child = new PIXI.DisplayObject();
 
@@ -26,7 +26,7 @@ describe('PIXI.Text', function () {
             expect(child.transform).to.equal(null);
         });
 
-        it('should accept options correctly', function () {
+        it("should accept options correctly", function () {
             var text = new PIXI.Text("foo"),
                 child = new PIXI.DisplayObject();
 
@@ -36,7 +36,7 @@ describe('PIXI.Text', function () {
             expect(child.transform).to.equal(null);
         });
 
-        it('should pass opts on to children if children flag is set', function () {
+        it("should pass opts on to children if children flag is set", function () {
             var text = new PIXI.Text("foo"),
                 child = new PIXI.DisplayObject(),
                 childDestroyOpts;
@@ -50,21 +50,21 @@ describe('PIXI.Text', function () {
             expect(childDestroyOpts).to.deep.equal({children: true, texture: true, baseTexture:true});
         });
 
-        it('should modify the height of the object when setting height', function () {
+        it("should modify the height of the object when setting height", function () {
 
-             var text = new PIXI.Text("foo");
-             text.height = 300;
+            var text = new PIXI.Text("foo");
+            text.height = 300;
 
-             expect(text.height).to.equal(300);
+            expect(text.height).to.equal(300);
 
         });
 
-        it('should modify the width of the object when setting width', function () {
+        it("should modify the width of the object when setting width", function () {
 
-             var text = new PIXI.Text("foo");
-             text.width = 300;
+            var text = new PIXI.Text("foo");
+            text.width = 300;
 
-             expect(text.width).to.equal(300);
+            expect(text.width).to.equal(300);
 
         });
     });

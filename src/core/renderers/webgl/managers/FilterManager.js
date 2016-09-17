@@ -1,11 +1,11 @@
 
-var WebGLManager = require('./WebGLManager'),
-    RenderTarget = require('../utils/RenderTarget'),
-    Quad = require('../utils/Quad'),
-    math =  require('../../../math'),
-    Shader = require('../../../Shader'),
-    filterTransforms = require('../filters/filterTransforms'),
-    bitTwiddle = require('bit-twiddle');
+var WebGLManager = require("./WebGLManager"),
+    RenderTarget = require("../utils/RenderTarget"),
+    Quad = require("../utils/Quad"),
+    math =  require("../../../math"),
+    Shader = require("../../../Shader"),
+    filterTransforms = require("../filters/filterTransforms"),
+    bitTwiddle = require("bit-twiddle");
 
 var FilterState = function()
 {
@@ -269,7 +269,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
     //TODO Cacheing layer..
     for(var i in uniformData)
     {
-        if(uniformData[i].type === 'sampler2D')
+        if(uniformData[i].type === "sampler2D")
         {
             shader.uniforms[i] = textureCount;
 
@@ -291,7 +291,7 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
 
             textureCount++;
         }
-        else if(uniformData[i].type === 'mat3')
+        else if(uniformData[i].type === "mat3")
         {
             // check if its pixi matrix..
             if(uniforms[i].a !== undefined)
@@ -303,22 +303,22 @@ FilterManager.prototype.syncUniforms = function (shader, filter)
                 shader.uniforms[i] = uniforms[i];
             }
         }
-        else if(uniformData[i].type === 'vec2')
+        else if(uniformData[i].type === "vec2")
         {
             //check if its a point..
-           if(uniforms[i].x !== undefined)
-           {
+            if(uniforms[i].x !== undefined)
+            {
                 val = shader.uniforms[i] || new Float32Array(2);
                 val[0] = uniforms[i].x;
                 val[1] = uniforms[i].y;
                 shader.uniforms[i] = val;
-           }
-           else
-           {
+            }
+            else
+            {
                 shader.uniforms[i] = uniforms[i];
-           }
+            }
         }
-        else if(uniformData[i].type === 'float')
+        else if(uniformData[i].type === "float")
         {
             if(shader.uniforms.data[i].value !== uniformData[i])
             {
@@ -382,8 +382,8 @@ FilterManager.prototype.calculateSpriteMatrix = function (outputMatrix, sprite)
 
 FilterManager.prototype.destroy = function()
 {
-     this.shaderCache = [];
-     this.emptyPool();
+    this.shaderCache = [];
+    this.emptyPool();
 };
 
 
@@ -399,7 +399,7 @@ FilterManager.prototype.getPotRenderTarget = function(gl, minWidth, minHeight, r
     var key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
     if(!this.pool[key]) {
-      this.pool[key] = [];
+        this.pool[key] = [];
     }
 
     var renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);

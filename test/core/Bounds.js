@@ -1,6 +1,6 @@
-describe('getBounds', function () {
+describe("getBounds", function () {
 
-    it('should register correct width and height with a LOADED Sprite', function() {
+    it("should register correct width and height with a LOADED Sprite", function() {
         var parent = new PIXI.Container();
         var texture = PIXI.RenderTexture.create(10, 10);
 
@@ -40,7 +40,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with Graphics', function() {
+    it("should register correct width and height with Graphics", function() {
         var parent = new PIXI.Container();
 
         var graphics = new PIXI.Graphics();
@@ -87,7 +87,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with an empty Container', function() {
+    it("should register correct width and height with an empty Container", function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -118,7 +118,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with a Container', function() {
+    it("should register correct width and height with a Container", function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -166,7 +166,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with an item that has already had its parent Container transformed', function() {
+    it("should register correct width and height with an item that has already had its parent Container transformed", function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -197,7 +197,7 @@ describe('getBounds', function () {
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct width and height with a Mesh', function() {
+    it("should register correct width and height with a Mesh", function() {
         var parent = new PIXI.Container();
 
         var texture = PIXI.RenderTexture.create(10, 10);
@@ -230,7 +230,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with an a DisplayObject is visible false', function() {
+    it("should register correct width and height with an a DisplayObject is visible false", function() {
 
         var parent = new PIXI.Container();
 
@@ -274,7 +274,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with an a DisplayObject parent has moved', function() {
+    it("should register correct width and height with an a DisplayObject parent has moved", function() {
 
         var parent = new PIXI.Container();
 
@@ -301,13 +301,13 @@ describe('getBounds', function () {
 
     });
 
-    it('should register correct width and height with an a Text Object', function() {
+    it("should register correct width and height with an a Text Object", function() {
 
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var text = new PIXI.Text('i am some text');
+        var text = new PIXI.Text("i am some text");
 
         container.addChild(text);
 
@@ -323,7 +323,7 @@ describe('getBounds', function () {
         expect(bounds.width).to.be.greaterThan(0);
         expect(bounds.height).to.greaterThan(0);
 
-        text.text = 'hello!';
+        text.text = "hello!";
 
         bounds = text.getBounds();
 
@@ -332,7 +332,7 @@ describe('getBounds', function () {
 
     });
 
-    it('should return a different rectangle if getting local bounds after global bounds ', function() {
+    it("should return a different rectangle if getting local bounds after global bounds ", function() {
 
         var parent = new PIXI.Container();
         var texture = PIXI.RenderTexture.create(10, 10);
@@ -355,13 +355,13 @@ describe('getBounds', function () {
 
         var localBounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(localBounds.x).to.equal(20);
+        expect(localBounds.y).to.equal(20);
+        expect(localBounds.width).to.equal(20);
+        expect(localBounds.height).to.equal(20);
     });
 
-    it('should ensure bounds respect the trim of a texture ', function() {
+    it("should ensure bounds respect the trim of a texture ", function() {
 
         var parent = new PIXI.Container();
         var baseTexture = new PIXI.BaseRenderTexture(100, 100);

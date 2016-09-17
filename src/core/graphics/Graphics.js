@@ -1,14 +1,14 @@
-var Container = require('../display/Container'),
-    RenderTexture = require('../textures/RenderTexture'),
-    Texture = require('../textures/Texture'),
-    GraphicsData = require('./GraphicsData'),
-    Sprite = require('../sprites/Sprite'),
-    math = require('../math'),
-    CONST = require('../const'),
-    utils = require('../utils'),
-    Bounds = require('../display/Bounds'),
-    bezierCurveTo = require('./utils/bezierCurveTo'),
-    CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
+var Container = require("../display/Container"),
+    RenderTexture = require("../textures/RenderTexture"),
+    Texture = require("../textures/Texture"),
+    GraphicsData = require("./GraphicsData"),
+    Sprite = require("../sprites/Sprite"),
+    math = require("../math"),
+    CONST = require("../const"),
+    utils = require("../utils"),
+    Bounds = require("../display/Bounds"),
+    bezierCurveTo = require("./utils/bezierCurveTo"),
+    CanvasRenderer = require("../renderers/canvas/CanvasRenderer"),
     canvasRenderer,
     tempMatrix = new math.Matrix(),
     tempPoint = new math.Point(),
@@ -981,7 +981,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
 
     var bounds = this.getLocalBounds();
 
-    var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+    var canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
     if(!canvasRenderer)
     {

@@ -1,9 +1,9 @@
-var SystemRenderer = require('../SystemRenderer'),
-    CanvasMaskManager = require('./utils/CanvasMaskManager'),
-    CanvasRenderTarget = require('./utils/CanvasRenderTarget'),
-    mapCanvasBlendModesToPixi = require('./utils/mapCanvasBlendModesToPixi'),
-    utils = require('../../utils'),
-    CONST = require('../../const');
+var SystemRenderer = require("../SystemRenderer"),
+    CanvasMaskManager = require("./utils/CanvasMaskManager"),
+    CanvasRenderTarget = require("./utils/CanvasRenderTarget"),
+    mapCanvasBlendModesToPixi = require("./utils/mapCanvasBlendModesToPixi"),
+    utils = require("../../utils"),
+    CONST = require("../../const");
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -28,7 +28,7 @@ function CanvasRenderer(width, height, options)
 {
     options = options || {};
 
-    SystemRenderer.call(this, 'Canvas', width, height, options);
+    SystemRenderer.call(this, "Canvas", width, height, options);
 
     this.type = CONST.RENDERER_TYPE.CANVAS;
 
@@ -37,7 +37,7 @@ function CanvasRenderer(width, height, options)
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+    this.rootContext = this.view.getContext("2d", { alpha: this.transparent });
     this.rootResolution = this.resolution;
 
     /**
@@ -59,25 +59,25 @@ function CanvasRenderer(width, height, options)
      *
      * @member {string}
      */
-    this.smoothProperty = 'imageSmoothingEnabled';
+    this.smoothProperty = "imageSmoothingEnabled";
 
     if (!this.rootContext.imageSmoothingEnabled)
     {
         if (this.rootContext.webkitImageSmoothingEnabled)
         {
-            this.smoothProperty = 'webkitImageSmoothingEnabled';
+            this.smoothProperty = "webkitImageSmoothingEnabled";
         }
         else if (this.rootContext.mozImageSmoothingEnabled)
         {
-            this.smoothProperty = 'mozImageSmoothingEnabled';
+            this.smoothProperty = "mozImageSmoothingEnabled";
         }
         else if (this.rootContext.oImageSmoothingEnabled)
         {
-            this.smoothProperty = 'oImageSmoothingEnabled';
+            this.smoothProperty = "oImageSmoothingEnabled";
         }
         else if (this.rootContext.msImageSmoothingEnabled)
         {
-            this.smoothProperty = 'msImageSmoothingEnabled';
+            this.smoothProperty = "msImageSmoothingEnabled";
         }
     }
 
@@ -112,13 +112,13 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 {
 
     if (!this.view){
-      return;
+        return;
     }
 
      // can be handy to know!
     this.renderingToScreen = !renderTexture;
 
-    this.emit('prerender');
+    this.emit("prerender");
 
     if(renderTexture)
     {
@@ -180,7 +180,7 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
 
     if (navigator.isCocoonJS && this.view.screencanvas)
     {
-        context.fillStyle = 'black';
+        context.fillStyle = "black";
         context.clear();
     }
 
@@ -206,14 +206,14 @@ CanvasRenderer.prototype.render = function (displayObject, renderTexture, clear,
     displayObject.renderCanvas(this);
     this.context = tempContext;
 
-    this.emit('postrender');
+    this.emit("postrender");
 };
 
 
 CanvasRenderer.prototype.setBlendMode = function (blendMode)
 {
     if(this._activeBlendMode === blendMode) {
-      return;
+        return;
     }
 
     this.context.globalCompositeOperation = this.blendModes[blendMode];

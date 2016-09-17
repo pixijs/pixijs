@@ -1,6 +1,6 @@
-var buildLine = require('./buildLine'),
-    utils = require('../../../utils'),
-    earcut = require('earcut');
+var buildLine = require("./buildLine"),
+    utils = require("../../../utils"),
+    earcut = require("earcut");
 
 /**
  * Builds a polygon to draw

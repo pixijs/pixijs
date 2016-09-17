@@ -1,5 +1,5 @@
 
 module.exports = {
-    webGL: require('./webgl/WebGLExtract'),
-    canvas: require('./canvas/CanvasExtract')
+    webGL: require("./webgl/WebGLExtract"),
+    canvas: require("./canvas/CanvasExtract")
 };

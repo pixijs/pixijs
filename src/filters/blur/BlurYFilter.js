@@ -1,7 +1,7 @@
-var core = require('../../core');
-var generateBlurVertSource  = require('./generateBlurVertSource');
-var generateBlurFragSource  = require('./generateBlurFragSource');
-var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
+var core = require("../../core");
+var generateBlurVertSource  = require("./generateBlurVertSource");
+var generateBlurFragSource  = require("./generateBlurFragSource");
+var getMaxBlurKernelSize    = require("./getMaxBlurKernelSize");
 
 /**
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
@@ -68,9 +68,9 @@ BlurYFilter.prototype.apply = function (filterManager, input, output, clear)
         {
             filterManager.applyFilter(this, flip, flop, true);
 
-           var temp = flop;
-           flop = flip;
-           flip = temp;
+            var temp = flop;
+            flop = flip;
+            flip = temp;
         }
 
         filterManager.applyFilter(this, flip, output, clear);

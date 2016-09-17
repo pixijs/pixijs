@@ -1,4 +1,4 @@
-var WebGLManager = require('../managers/WebGLManager');
+var WebGLManager = require("../managers/WebGLManager");
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.
@@ -45,6 +45,7 @@ ObjectRenderer.prototype.flush = function ()
     // flush!
 };
 
+/* eslint-disable no-unused-vars */
 /**
  * Renders an object
  *
@@ -54,3 +55,4 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
 {
     // render the object
 };
+/* eslint-enable no-unused-vars */

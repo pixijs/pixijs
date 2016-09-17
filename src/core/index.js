@@ -9,58 +9,58 @@
  * @namespace PIXI
  */
 // export core and const. We assign core to const so that the non-reference types in const remain in-tact
-var core = module.exports = Object.assign(require('./const'), require('./math'), {
+var core = module.exports = Object.assign(require("./const"), require("./math"), {
     // utils
-    utils: require('./utils'),
-    ticker: require('./ticker'),
+    utils: require("./utils"),
+    ticker: require("./ticker"),
 
     // display
-    DisplayObject:          require('./display/DisplayObject'),
-    Container:              require('./display/Container'),
-    Transform:              require('./display/Transform'),
-    TransformStatic:        require('./display/TransformStatic'),
-    TransformBase:          require('./display/TransformBase'),
+    DisplayObject:          require("./display/DisplayObject"),
+    Container:              require("./display/Container"),
+    Transform:              require("./display/Transform"),
+    TransformStatic:        require("./display/TransformStatic"),
+    TransformBase:          require("./display/TransformBase"),
 
     // sprites
-    Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRenderer:     require('./sprites/canvas/CanvasSpriteRenderer'),
-    CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
-    SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
+    Sprite:                 require("./sprites/Sprite"),
+    CanvasSpriteRenderer:     require("./sprites/canvas/CanvasSpriteRenderer"),
+    CanvasTinter:           require("./sprites/canvas/CanvasTinter"),
+    SpriteRenderer:         require("./sprites/webgl/SpriteRenderer"),
 
     // text
-    Text:                   require('./text/Text'),
-    TextStyle:              require('./text/TextStyle'),
+    Text:                   require("./text/Text"),
+    TextStyle:              require("./text/TextStyle"),
     // primitives
-    Graphics:               require('./graphics/Graphics'),
-    GraphicsData:           require('./graphics/GraphicsData'),
-    GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
-    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
+    Graphics:               require("./graphics/Graphics"),
+    GraphicsData:           require("./graphics/GraphicsData"),
+    GraphicsRenderer:       require("./graphics/webgl/GraphicsRenderer"),
+    CanvasGraphicsRenderer: require("./graphics/canvas/CanvasGraphicsRenderer"),
 
     // textures
-    Texture:                require('./textures/Texture'),
-    BaseTexture:            require('./textures/BaseTexture'),
-    RenderTexture:          require('./textures/RenderTexture'),
-    BaseRenderTexture:      require('./textures/BaseRenderTexture'),
-    VideoBaseTexture:       require('./textures/VideoBaseTexture'),
-    TextureUvs:             require('./textures/TextureUvs'),
+    Texture:                require("./textures/Texture"),
+    BaseTexture:            require("./textures/BaseTexture"),
+    RenderTexture:          require("./textures/RenderTexture"),
+    BaseRenderTexture:      require("./textures/BaseRenderTexture"),
+    VideoBaseTexture:       require("./textures/VideoBaseTexture"),
+    TextureUvs:             require("./textures/TextureUvs"),
 
     // renderers - canvas
-    CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
+    CanvasRenderer:         require("./renderers/canvas/CanvasRenderer"),
+    CanvasRenderTarget:     require("./renderers/canvas/utils/CanvasRenderTarget"),
 
     // renderers - webgl
-    Shader:                 require('./Shader'),
-    WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
-    ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
-    RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
-    Quad:                   require('./renderers/webgl/utils/Quad'),
+    Shader:                 require("./Shader"),
+    WebGLRenderer:          require("./renderers/webgl/WebGLRenderer"),
+    WebGLManager:           require("./renderers/webgl/managers/WebGLManager"),
+    ObjectRenderer:         require("./renderers/webgl/utils/ObjectRenderer"),
+    RenderTarget:           require("./renderers/webgl/utils/RenderTarget"),
+    Quad:                   require("./renderers/webgl/utils/Quad"),
 
     // filters - webgl
-    SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),
-    Filter:                 require('./renderers/webgl/filters/Filter'),
+    SpriteMaskFilter:       require("./renderers/webgl/filters/spriteMask/SpriteMaskFilter"),
+    Filter:                 require("./renderers/webgl/filters/Filter"),
 
-    glCore:                   require('pixi-gl-core'),
+    glCore:                   require("pixi-gl-core"),
 
     /**
      * This helper function will automatically detect which renderer you should be using.

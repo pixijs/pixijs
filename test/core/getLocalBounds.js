@@ -1,7 +1,7 @@
-describe('getLocalBounds', function () {
+describe("getLocalBounds", function () {
 
 
-    it('should register correct local-bounds with a LOADED Sprite', function() {
+    it("should register correct local-bounds with a LOADED Sprite", function() {
         var parent = new PIXI.Container();
         var texture = PIXI.RenderTexture.create(10, 10);
 
@@ -33,7 +33,7 @@ describe('getLocalBounds', function () {
 
     });
 
-    it('should register correct local-bounds with Graphics', function() {
+    it("should register correct local-bounds with Graphics", function() {
         var parent = new PIXI.Container();
 
         var graphics = new PIXI.Graphics();
@@ -53,7 +53,7 @@ describe('getLocalBounds', function () {
 
     });
 
-    it('should register correct local-bounds with an empty Container', function() {
+    it("should register correct local-bounds with an empty Container", function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -70,7 +70,7 @@ describe('getLocalBounds', function () {
 
     });
 
-    it('should register correct local-bounds with an item that has already had its parent Container transformed', function() {
+    it("should register correct local-bounds with an item that has already had its parent Container transformed", function() {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -95,7 +95,7 @@ describe('getLocalBounds', function () {
 
     });
 
-    it('should register correct local-bounds with a Mesh', function() {
+    it("should register correct local-bounds with a Mesh", function() {
         var parent = new PIXI.Container();
 
         var texture = PIXI.RenderTexture.create(10, 10);
@@ -115,7 +115,7 @@ describe('getLocalBounds', function () {
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with a cachAsBitmap item inside after a render', function() {
+    it("should register correct local-bounds with a cachAsBitmap item inside after a render", function() {
         var parent = new PIXI.Container();
 
         var graphic = new PIXI.Graphics();

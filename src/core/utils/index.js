@@ -1,4 +1,4 @@
-var CONST = require('../const');
+var CONST = require("../const");
 
 /**
  * @namespace PIXI.utils
@@ -7,8 +7,8 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
-    EventEmitter:   require('eventemitter3'),
-    pluginTarget:   require('./pluginTarget'),
+    EventEmitter:   require("eventemitter3"),
+    pluginTarget:   require("./pluginTarget"),
 
     /**
      * Gets the next unique identifier
@@ -50,9 +50,9 @@ var utils = module.exports = {
     hex2string: function (hex)
     {
         hex = hex.toString(16);
-        hex = '000000'.substr(0, 6 - hex.length) + hex;
+        hex = "000000".substr(0, 6 - hex.length) + hex;
 
-        return '#' + hex;
+        return "#" + hex;
     },
 
     /**
@@ -82,7 +82,7 @@ var utils = module.exports = {
 
         if (resolution)
         {
-           return parseFloat(resolution[1]);
+            return parseFloat(resolution[1]);
         }
 
         return 1;
@@ -106,26 +106,26 @@ var utils = module.exports = {
             return;
         }
 
-        if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+        if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1)
         {
             var args = [
-                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
-                'background: #ff66a5; padding:5px 0;',
-                'background: #ff66a5; padding:5px 0;',
-                'color: #ff66a5; background: #030307; padding:5px 0;',
-                'background: #ff66a5; padding:5px 0;',
-                'background: #ffc3dc; padding:5px 0;',
-                'background: #ff66a5; padding:5px 0;',
-                'color: #ff2424; background: #fff; padding:5px 0;',
-                'color: #ff2424; background: #fff; padding:5px 0;',
-                'color: #ff2424; background: #fff; padding:5px 0;'
+                "\n %c %c %c Pixi.js " + CONST.VERSION + " - ✰ " + type + " ✰  %c " + " %c " + " http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n",
+                "background: #ff66a5; padding:5px 0;",
+                "background: #ff66a5; padding:5px 0;",
+                "color: #ff66a5; background: #030307; padding:5px 0;",
+                "background: #ff66a5; padding:5px 0;",
+                "background: #ffc3dc; padding:5px 0;",
+                "background: #ff66a5; padding:5px 0;",
+                "color: #ff2424; background: #fff; padding:5px 0;",
+                "color: #ff2424; background: #fff; padding:5px 0;",
+                "color: #ff2424; background: #fff; padding:5px 0;"
             ];
 
             window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)
         {
-            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log("Pixi.js " + CONST.VERSION + " - " + type + " - http://www.pixijs.com/"); //jshint ignore:line
         }
 
         utils._saidHello = true;
@@ -147,13 +147,13 @@ var utils = module.exports = {
                 return false;
             }
 
-            var canvas = document.createElement('canvas'),
-                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+            var canvas = document.createElement("canvas"),
+                gl = canvas.getContext("webgl", contextOptions) || canvas.getContext("experimental-webgl", contextOptions);
 
             var success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                var loseContext = gl.getExtension('WEBGL_lose_context');
+                var loseContext = gl.getExtension("WEBGL_lose_context");
 
                 if(loseContext)
                 {

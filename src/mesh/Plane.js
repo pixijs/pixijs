@@ -1,4 +1,4 @@
-var Mesh = require('./Mesh');
+var Mesh = require("./Mesh");
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -76,7 +76,7 @@ Plane.prototype.refresh = function()
 
         // this works for rectangular textures.
         uvs.push(texture._uvs.x0 + (texture._uvs.x1 - texture._uvs.x0) * (x / (this.verticesX-1)), texture._uvs.y0 + (texture._uvs.y3-texture._uvs.y0) * (y/ (this.verticesY-1)));
-      }
+    }
 
     //  cons
 

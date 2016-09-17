@@ -1,6 +1,6 @@
-describe('PIXI.Sprite', function () {
-    describe('width', function () {
-        it('should not be negative for nagative scale.x', function () {
+describe("PIXI.Sprite", function () {
+    describe("width", function () {
+        it("should not be negative for nagative scale.x", function () {
             var sprite = new PIXI.Sprite();
 
             sprite.width = 100;
@@ -9,7 +9,7 @@ describe('PIXI.Sprite', function () {
             expect(sprite.width).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.x', function () {
+        it("should not change sign of scale.x", function () {
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 
@@ -26,8 +26,8 @@ describe('PIXI.Sprite', function () {
         });
     });
 
-    describe('height', function () {
-        it('should not be negative for nagative scale.y', function () {
+    describe("height", function () {
+        it("should not be negative for nagative scale.y", function () {
             var sprite = new PIXI.Sprite();
 
             sprite.height = 100;
@@ -36,7 +36,7 @@ describe('PIXI.Sprite', function () {
             expect(sprite.height).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.y', function () {
+        it("should not change sign of scale.y", function () {
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 

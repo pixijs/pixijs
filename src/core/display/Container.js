@@ -1,5 +1,5 @@
-var utils = require('../utils'),
-    DisplayObject = require('./DisplayObject');
+var utils = require("../utils"),
+    DisplayObject = require("./DisplayObject");
 
 /**
  * A Container represents a collection of display objects.
@@ -102,7 +102,7 @@ Container.prototype.onChildrenChange = function () {};
 /**
  * Adds a child or multiple children to the container.
  *
- * Multple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
+ * Multiple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
  * @param child {...PIXI.DisplayObject} The DisplayObject(s) to add to the container
  * @return {PIXI.DisplayObject} The first child that was added.
  */
@@ -137,7 +137,7 @@ Container.prototype.addChild = function (child)
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(this.children.length-1);
-        child.emit('added', this);
+        child.emit("added", this);
     }
 
     return child;
@@ -165,13 +165,13 @@ Container.prototype.addChildAt = function (child, index)
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
-        child.emit('added', this);
+        child.emit("added", this);
 
         return child;
     }
     else
     {
-        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
+        throw new Error(child + "addChildAt: The index "+ index +" supplied is out of bounds " + this.children.length);
     }
 };
 
@@ -193,7 +193,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     if (index1 < 0 || index2 < 0)
     {
-        throw new Error('swapChildren: Both the supplied DisplayObjects must be children of the caller.');
+        throw new Error("swapChildren: Both the supplied DisplayObjects must be children of the caller.");
     }
 
     this.children[index1] = child2;
@@ -213,7 +213,7 @@ Container.prototype.getChildIndex = function (child)
 
     if (index === -1)
     {
-        throw new Error('The supplied DisplayObject must be a child of the caller');
+        throw new Error("The supplied DisplayObject must be a child of the caller");
     }
 
     return index;
@@ -229,7 +229,7 @@ Container.prototype.setChildIndex = function (child, index)
 {
     if (index < 0 || index >= this.children.length)
     {
-        throw new Error('The supplied index is out of bounds');
+        throw new Error("The supplied index is out of bounds");
     }
 
     var currentIndex = this.getChildIndex(child);
@@ -249,7 +249,7 @@ Container.prototype.getChildAt = function (index)
 {
     if (index < 0 || index >= this.children.length)
     {
-        throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject is not a child of the caller');
+        throw new Error("getChildAt: Supplied index " + index + " does not exist in the child list, or the supplied DisplayObject is not a child of the caller");
     }
 
     return this.children[index];
@@ -289,7 +289,7 @@ Container.prototype.removeChild = function (child)
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
-        child.emit('removed', this);
+        child.emit("removed", this);
     }
 
     return child;
@@ -310,7 +310,7 @@ Container.prototype.removeChildAt = function (index)
 
     // TODO - lets either do all callbacks or all events.. not both!
     this.onChildrenChange(index);
-    child.emit('removed', this);
+    child.emit("removed", this);
 
     return child;
 };
@@ -324,7 +324,7 @@ Container.prototype.removeChildAt = function (index)
 Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
     var begin = beginIndex || 0;
-    var end = typeof endIndex === 'number' ? endIndex : this.children.length;
+    var end = typeof endIndex === "number" ? endIndex : this.children.length;
     var range = end - begin;
     var removed, i;
 
@@ -341,7 +341,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
 
         for (i = 0; i < removed.length; ++i)
         {
-            removed[i].emit('removed', this);
+            removed[i].emit("removed", this);
         }
 
         return removed;
@@ -352,7 +352,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
     }
     else
     {
-        throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
+        throw new RangeError("removeChildren: numeric values are outside the acceptable range.");
     }
 };
 
@@ -508,7 +508,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
 
     renderer.currentRenderer.start();
 };
-
+/* eslint-disable no-unused-vars */
 /**
  * To be overridden by the subclass
  *
@@ -530,7 +530,7 @@ Container.prototype._renderCanvas = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
-
+/* eslint-enable no-unused-vars */
 
 /**
  * Renders the object using the Canvas renderer
@@ -563,7 +563,7 @@ Container.prototype.renderCanvas = function (renderer)
 };
 
 /**
- * Removes all internal references and listeners as well as removes children from the display list. 
+ * Removes all internal references and listeners as well as removes children from the display list.
  * Do not use a Container after calling `destroy`.
  * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
  * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
@@ -573,7 +573,7 @@ Container.prototype.destroy = function (options)
 {
     DisplayObject.prototype.destroy.call(this);
 
-    var destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+    var destroyChildren = typeof options === "boolean" ? options : options && options.children;
 
     var oldChildren = this.children;
     this.children = null;

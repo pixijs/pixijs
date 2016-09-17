@@ -1,5 +1,5 @@
-var math = require('../../../math'),
-    utils = require('../../../utils');
+var math = require("../../../math"),
+    utils = require("../../../utils");
 
 /**
  * Builds a line to draw

@@ -1,6 +1,6 @@
-var buildLine = require('./buildLine'),
-    CONST = require('../../../const'),
-    utils = require('../../../utils');
+var buildLine = require("./buildLine"),
+    CONST = require("../../../const"),
+    utils = require("../../../utils");
 
 /**
  * Builds a circle to draw

@@ -1,6 +1,6 @@
-var math = require('../../../math'),
-    CONST = require('../../../const'),
-    GLFramebuffer = require('pixi-gl-core').GLFramebuffer;
+var math = require("../../../math"),
+    CONST = require("../../../const"),
+    GLFramebuffer = require("pixi-gl-core").GLFramebuffer;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23

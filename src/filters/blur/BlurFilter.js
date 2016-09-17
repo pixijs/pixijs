@@ -1,6 +1,6 @@
-var core = require('../../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
+var core = require("../../core"),
+    BlurXFilter = require("./BlurXFilter"),
+    BlurYFilter = require("./BlurYFilter");
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -60,7 +60,7 @@ Object.defineProperties(BlurFilter.prototype, {
     },
 
     /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     * Sets the number of passes for blur. More passes means higher quality blurring.
      *
      * @member {number}
      * @memberof PIXI.filters.BlurYFilter#

@@ -1,1 +1,1 @@
-require('./InteractionData');
+require("./InteractionData");

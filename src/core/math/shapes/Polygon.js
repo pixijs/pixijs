@@ -1,5 +1,5 @@
-var Point = require('../Point'),
-    CONST = require('../../const');
+var Point = require("../Point"),
+    CONST = require("../../const");
 
 /**
  * @class

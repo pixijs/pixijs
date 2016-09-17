@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require("../core");
 
 /**
  * The instance name of the object.

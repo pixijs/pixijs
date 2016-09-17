@@ -1,18 +1,18 @@
 // run the polyfills
-require('./polyfill');
+require("./polyfill");
 
-var core = module.exports = require('./core');
+var core = module.exports = require("./core");
 
 // add core plugins.
-core.extras         = require('./extras');
-core.filters        = require('./filters');
-core.interaction    = require('./interaction');
-core.loaders        = require('./loaders');
-core.mesh           = require('./mesh');
-core.particles      = require('./particles');
-core.accessibility  = require('./accessibility');
-core.extract        = require('./extract');
-core.prepare        = require('./prepare');
+core.extras         = require("./extras");
+core.filters        = require("./filters");
+core.interaction    = require("./interaction");
+core.loaders        = require("./loaders");
+core.mesh           = require("./mesh");
+core.particles      = require("./particles");
+core.accessibility  = require("./accessibility");
+core.extract        = require("./extract");
+core.prepare        = require("./prepare");
 
 // export a premade loader instance
 /**
@@ -25,7 +25,7 @@ core.prepare        = require('./prepare');
 core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
+Object.assign(core, require("./deprecation"));
 
 // Always export pixi globally.
 global.PIXI = core;

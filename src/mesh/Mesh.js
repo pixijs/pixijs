@@ -1,6 +1,6 @@
-var core = require('../core'),
-    glCore = require('pixi-gl-core'),
-    Shader = require('./webgl/MeshShader'),
+var core = require("../core"),
+    glCore = require("pixi-gl-core"),
+    Shader = require("./webgl/MeshShader"),
     tempPoint = new core.Point(),
     tempPolygon = new core.Polygon();
 
@@ -142,7 +142,7 @@ Object.defineProperties(Mesh.prototype, {
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate, this);
+                    value.once("update", this._onTextureUpdate, this);
                 }
             }
         }
@@ -426,7 +426,7 @@ Mesh.prototype.renderMeshFlat = function (Mesh)
         context.lineTo(x2, y2);
     }
 
-    context.fillStyle = '#FF0000';
+    context.fillStyle = "#FF0000";
     context.fill();
     context.closePath();
 };

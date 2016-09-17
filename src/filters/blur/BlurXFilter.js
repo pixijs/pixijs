@@ -1,7 +1,7 @@
-var core = require('../../core');
-var generateBlurVertSource  = require('./generateBlurVertSource');
-var generateBlurFragSource  = require('./generateBlurFragSource');
-var getMaxBlurKernelSize    = require('./getMaxBlurKernelSize');
+var core = require("../../core");
+var generateBlurVertSource  = require("./generateBlurVertSource");
+var generateBlurFragSource  = require("./generateBlurFragSource");
+var getMaxBlurKernelSize    = require("./getMaxBlurKernelSize");
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
@@ -70,9 +70,9 @@ BlurXFilter.prototype.apply = function (filterManager, input, output, clear)
         {
             filterManager.applyFilter(this, flip, flop, true);
 
-           var temp = flop;
-           flop = flip;
-           flip = temp;
+            var temp = flop;
+            flop = flip;
+            flip = temp;
         }
 
         filterManager.applyFilter(this, flip, output, clear);
@@ -103,7 +103,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     },
 
      /**
-     * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
+     * Sets the quality of the blur by modifying the number of passes. More passes means higher quality blurring but the lower the performance.
      *
      * @member {number}
      * @memberof PIXI.filters.BlurXFilter#

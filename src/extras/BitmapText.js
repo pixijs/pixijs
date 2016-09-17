@@ -1,5 +1,5 @@
-var core = require('../core'),
-    ObservablePoint = require('../core/math/ObservablePoint');
+var core = require("../core"),
+    ObservablePoint = require("../core/math/ObservablePoint");
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -68,7 +68,7 @@ function BitmapText(text, style)
      */
     this._font = {
         tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
-        align: style.align || 'left',
+        align: style.align || "left",
         name: null,
         size: 0
     };
@@ -141,7 +141,7 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+            this._font.tint = (typeof value === "number" && value >= 0) ? value : 0xFFFFFF;
 
             this.dirty = true;
         }
@@ -161,7 +161,7 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            this._font.align = value || 'left';
+            this._font.align = value || "left";
 
             this.dirty = true;
         }
@@ -181,8 +181,8 @@ Object.defineProperties(BitmapText.prototype, {
             return this._anchor;
         },
         set: function(value) {
-            if (typeof value === 'number'){
-                 this._anchor.set(value);
+            if (typeof value === "number"){
+                this._anchor.set(value);
             }
             else {
                 this._anchor.copy(value);
@@ -207,15 +207,15 @@ Object.defineProperties(BitmapText.prototype, {
                 return;
             }
 
-            if (typeof value === 'string') {
-                value = value.split(' ');
+            if (typeof value === "string") {
+                value = value.split(" ");
 
-                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(" ");
                 this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
             }
             else {
                 this._font.name = value.name;
-                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+                this._font.size = typeof value.size === "number" ? value.size : parseInt(value.size, 10);
             }
 
             this.dirty = true;
@@ -235,7 +235,7 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            value = value.toString() || ' ';
+            value = value.toString() || " ";
             if (this._text === value)
             {
                 return;
@@ -269,7 +269,7 @@ BitmapText.prototype.updateText = function ()
     for (var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        
+
         if(/(\s)/.test(this.text.charAt(i))){
             lastSpace = i;
             lastSpaceWidth = lastLineWidth;
@@ -331,11 +331,11 @@ BitmapText.prototype.updateText = function ()
     {
         var alignOffset = 0;
 
-        if (this._font.align === 'right')
+        if (this._font.align === "right")
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if (this._font.align === 'center')
+        else if (this._font.align === "center")
         {
             alignOffset = (maxLineWidth - lineWidths[i]) / 2;
         }

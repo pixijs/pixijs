@@ -1,4 +1,4 @@
-var glCore = require('pixi-gl-core');
+var glCore = require("pixi-gl-core");
 
 
 /**

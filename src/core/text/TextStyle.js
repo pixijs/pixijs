@@ -1,5 +1,30 @@
-var CONST = require('../const'),
-    utils = require('../utils');
+var CONST = require("../const"),
+    utils = require("../utils");
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ *
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (typeof color === "number")
+    {
+        return utils.hex2string(color);
+    }
+    else if (Array.isArray(color))
+    {
+        for (var i = 0; i < color.length; ++i)
+        {
+            if (typeof color[i] === "number")
+            {
+                color[i] = utils.hex2string(color[i]);
+            }
+        }
+    }
+
+    return color;
+}
 
 /**
  * A TextStyle Object decorates a Text Object. It can be shared between
@@ -48,28 +73,28 @@ module.exports = TextStyle;
 
 // Default settings. Explained in the constructor.
 TextStyle.prototype._defaults = {
-    align: 'left',
+    align: "left",
     breakWords: false,
     dropShadow: false,
     dropShadowAngle: Math.PI / 6,
     dropShadowBlur: 0,
-    dropShadowColor: '#000000',
+    dropShadowColor: "#000000",
     dropShadowDistance: 5,
-    fill: 'black',
+    fill: "black",
     fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 26,
-    fontStyle: 'normal',
-    fontVariant: 'normal',
-    fontWeight: 'normal',
+    fontStyle: "normal",
+    fontVariant: "normal",
+    fontWeight: "normal",
     letterSpacing: 0,
     lineHeight: 0,
-    lineJoin: 'miter',
+    lineJoin: "miter",
     miterLimit: 10,
     padding: 0,
-    stroke: 'black',
+    stroke: "black",
     strokeThickness: 0,
-    textBaseline: 'alphabetic',
+    textBaseline: "alphabetic",
     wordWrap: false,
     wordWrapWidth: 100
 };
@@ -102,7 +127,7 @@ TextStyle.prototype.reset = function ()
  * Create setters and getters for each of the style properties. Converts colors where necessary.
  */
 Object.defineProperties(TextStyle.prototype, {
-     align: {
+    align: {
         get: function ()
         {
             return this._align;
@@ -466,27 +491,4 @@ Object.defineProperties(TextStyle.prototype, {
     }
 });
 
-/**
- * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
- *
- * @return {string} The color as a string.
- */
-function getColor(color)
-{
-    if (typeof color === 'number')
-    {
-        return utils.hex2string(color);
-    }
-    else if (Array.isArray(color))
-    {
-        for (var i = 0; i < color.length; ++i)
-        {
-            if (typeof color[i] === 'number')
-            {
-                color[i] = utils.hex2string(color[i]);
-            }
-        }
-    }
 
-    return color;
-}

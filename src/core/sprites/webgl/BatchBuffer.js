@@ -23,8 +23,8 @@
  module.exports = Buffer;
 
  Buffer.prototype.destroy = function(){
-   this.vertices = null;
-   this.positions = null;
-   this.uvs = null;
-   this.colors  = null;
+     this.vertices = null;
+     this.positions = null;
+     this.uvs = null;
+     this.colors  = null;
  };

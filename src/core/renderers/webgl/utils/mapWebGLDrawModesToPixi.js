@@ -1,4 +1,4 @@
-var CONST = require('../../../const');
+var CONST = require("../../../const");
 
 /**
  * Generic Mask Stack data structure
@@ -9,7 +9,7 @@ var CONST = require('../../../const');
  */
 function mapWebGLDrawModesToPixi(gl, object)
 {
-	object= object || {};
+    object= object || {};
 
     object[CONST.DRAW_MODES.POINTS]         = gl.POINTS;
     object[CONST.DRAW_MODES.LINES]          = gl.LINES;

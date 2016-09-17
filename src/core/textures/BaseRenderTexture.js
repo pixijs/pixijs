@@ -1,5 +1,5 @@
-var BaseTexture = require('./BaseTexture'),
-    CONST = require('../const');
+var BaseTexture = require("./BaseTexture"),
+    CONST = require("../const");
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -115,7 +115,7 @@ BaseRenderTexture.prototype.resize = function (width, height)
         return;
     }
 
-    this.emit('update', this);
+    this.emit("update", this);
 
 };
 

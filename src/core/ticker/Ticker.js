@@ -1,7 +1,7 @@
-var CONST = require('../const'),
-    EventEmitter = require('eventemitter3'),
+var CONST = require("../const"),
+    EventEmitter = require("eventemitter3"),
     // Internal event used by composed emitter
-    TICK = 'tick';
+    TICK = "tick";
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.

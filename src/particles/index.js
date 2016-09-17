@@ -9,6 +9,6 @@
  * @namespace PIXI.particles
  */
 module.exports = {
-	ParticleContainer:           require('./ParticleContainer'),
-    ParticleRenderer: 			 require('./webgl/ParticleRenderer')
+    ParticleContainer:           require("./ParticleContainer"),
+    ParticleRenderer:              require("./webgl/ParticleRenderer")
 };

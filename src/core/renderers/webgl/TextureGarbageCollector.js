@@ -1,5 +1,5 @@
 
-var CONST = require('../../const');
+var CONST = require("../../const");
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged up with textures that are no longer being used.

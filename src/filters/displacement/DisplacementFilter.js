@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+var core = require("../../core");
+var glslify  = require("glslify");
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -20,9 +20,9 @@ function DisplacementFilter(sprite, scale)
     core.Filter.call(this,
         // vertex shader
 //        glslify('./displacement.vert'),
-        glslify('../fragments/default-filter-matrix.vert'),
+        glslify("../fragments/default-filter-matrix.vert"),
         // fragment shader
-        glslify('./displacement.frag')
+        glslify("./displacement.frag")
 
     );
 

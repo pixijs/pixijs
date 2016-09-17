@@ -1,8 +1,8 @@
-var utils = require('../utils'),
-    CONST = require('../const'),
-    EventEmitter = require('eventemitter3'),
-    determineCrossOrigin = require('../utils/determineCrossOrigin'),
-    bitTwiddle = require('bit-twiddle');
+var utils = require("../utils"),
+    CONST = require("../const"),
+    EventEmitter = require("eventemitter3"),
+    determineCrossOrigin = require("../utils/determineCrossOrigin"),
+    bitTwiddle = require("bit-twiddle");
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -199,7 +199,7 @@ BaseTexture.prototype.update = function ()
 
     this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
 
-    this.emit('update', this);
+    this.emit("update", this);
 };
 
 /**
@@ -263,7 +263,7 @@ BaseTexture.prototype.loadSource = function (source)
             scope.isLoading = false;
             scope._sourceLoaded();
 
-            scope.emit('loaded', scope);
+            scope.emit("loaded", scope);
         };
 
         source.onerror = function ()
@@ -277,7 +277,7 @@ BaseTexture.prototype.loadSource = function (source)
             }
 
             scope.isLoading = false;
-            scope.emit('error', scope);
+            scope.emit("error", scope);
         };
 
         // Per http://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
@@ -299,7 +299,7 @@ BaseTexture.prototype.loadSource = function (source)
                 // If any previous subscribers possible
                 if (wasLoading)
                 {
-                    this.emit('loaded', this);
+                    this.emit("loaded", this);
                 }
             }
             else
@@ -307,7 +307,7 @@ BaseTexture.prototype.loadSource = function (source)
                 // If any previous subscribers possible
                 if (wasLoading)
                 {
-                    this.emit('error', this);
+                    this.emit("error", this);
                 }
             }
         }
@@ -341,7 +341,7 @@ BaseTexture.prototype.destroy = function ()
 
         if (!navigator.isCocoonJS)
         {
-            this.source.src = '';
+            this.source.src = "";
         }
     }
     else if (this.source && this.source._pixiId)
@@ -362,7 +362,7 @@ BaseTexture.prototype.destroy = function ()
  */
 BaseTexture.prototype.dispose = function ()
 {
-    this.emit('dispose', this);
+    this.emit("dispose", this);
 
     // this should no longer be needed, the renderers should cleanup all the gl textures.
     // this._glTextures = {};
@@ -402,7 +402,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         var image = new Image();//document.createElement('img');
 
 
-        if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
+        if (crossorigin === undefined && imageUrl.indexOf("data:") !== 0)
         {
             image.crossOrigin = determineCrossOrigin(imageUrl);
         }
@@ -433,7 +433,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
 {
     if (!canvas._pixiId)
     {
-        canvas._pixiId = 'canvas_' + utils.uid();
+        canvas._pixiId = "canvas_" + utils.uid();
     }
 
     var baseTexture = utils.BaseTextureCache[canvas._pixiId];

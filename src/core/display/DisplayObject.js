@@ -1,10 +1,10 @@
-var EventEmitter = require('eventemitter3'),
-    CONST = require('../const'),
-    TransformStatic = require('./TransformStatic'),
-    Transform = require('./Transform'),
-    Bounds = require('./Bounds'),
-    math = require('../math'),
-    _tempDisplayObjectParent = new DisplayObject();
+var EventEmitter = require("eventemitter3"),
+    CONST = require("../const"),
+    TransformStatic = require("./TransformStatic"),
+    Transform = require("./Transform"),
+    Bounds = require("./Bounds"),
+    math = require("../math"),
+    _tempDisplayObjectParent = new DisplayObject();// eslint-disable-line no-use-before-define
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -512,7 +512,7 @@ DisplayObject.prototype.toLocal = function (position, from, point, skipUpdate)
     // simply apply the matrix..
     return this.worldTransform.applyInverse(position, point);
 };
-
+/* eslint-disable no-unused-vars */
 /**
  * Renders the object using the WebGL renderer
  *
@@ -532,7 +532,7 @@ DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:fals
 {
     // OVERWRITE;
 };
-
+/* eslint-enable no-unused-vars */
 /**
  * Set the parent Container of this DisplayObject
  *
@@ -543,15 +543,16 @@ DisplayObject.prototype.setParent = function (container)
 {
     if (!container || !container.addChild)
     {
-        throw new Error('setParent: Argument must be a Container');
+        throw new Error("setParent: Argument must be a Container");
     }
 
     container.addChild(this);
     return container;
 };
 
+/* eslint-disable max-params */
 /**
- * Convenience function to set the postion, scale, skew and pivot at once.
+ * Convenience function to set the position, scale, skew and pivot at once.
  *
  * @param [x=0] {number} The X position
  * @param [y=0] {number} The Y position
@@ -577,11 +578,12 @@ DisplayObject.prototype.setTransform = function(x, y, scaleX, scaleY, rotation, 
     this.pivot.y = pivotY || 0;
     return this;
 };
+/* eslint-enable max-params */
 
 /**
  * Base destroy method for generic display objects. This will automatically
  * remove the display object from its parent Container as well as remove
- * all current event listeners and internal references. Do not use a DisplayObject 
+ * all current event listeners and internal references. Do not use a DisplayObject
  * after calling `destroy`.
  */
 DisplayObject.prototype.destroy = function ()

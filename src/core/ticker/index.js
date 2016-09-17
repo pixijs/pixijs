@@ -1,4 +1,4 @@
-var Ticker = require('./Ticker');
+var Ticker = require("./Ticker");
 
 /**
  * The shared ticker instance used by {@link PIXI.extras.MovieClip}.

@@ -1,4 +1,4 @@
-var core = require('../../core'),
+var core = require("../../core"),
     SharedTicker = core.ticker.shared;
 
 /**
@@ -50,10 +50,11 @@ function WebGLPrepare(renderer)
      * @private
      */
     this.ticking = false;
-
+    /*eslint-disable no-use-before-define*/
     // Add textures and graphics to upload
     this.register(findBaseTextures, uploadBaseTextures)
         .register(findGraphics, uploadGraphics);
+    /*eslint-enable no-use-before-define*/
 }
 
 /**
@@ -76,7 +77,7 @@ module.exports = WebGLPrepare;
  */
 WebGLPrepare.prototype.upload = function(item, done)
 {
-    if (typeof item === 'function')
+    if (typeof item === "function")
     {
         done = item;
         item = null;
@@ -193,7 +194,7 @@ WebGLPrepare.prototype.add = function(item)
         }
     }
 
-    // Get childen recursively
+    // Get children recursively
     if (item instanceof core.Container)
     {
         for (i = item.children.length - 1; i >= 0; i--)
@@ -300,4 +301,4 @@ function findGraphics(item, queue)
     return false;
 }
 
-core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
+core.WebGLRenderer.registerPlugin("prepare", WebGLPrepare);

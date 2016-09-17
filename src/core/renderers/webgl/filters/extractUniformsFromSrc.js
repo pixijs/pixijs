@@ -1,17 +1,8 @@
-var defaultValue = require('pixi-gl-core').shader.defaultValue;
-
-function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
-{
-    var vertUniforms = extractUniformsFromString(vertexSrc, mask);
-    var fragUniforms = extractUniformsFromString(fragmentSrc, mask);
-
-    return Object.assign(vertUniforms, fragUniforms);
-}
-
+var defaultValue = require("pixi-gl-core").shader.defaultValue;
 
 function extractUniformsFromString(string)
 {
-    var maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
+    var maskRegex = new RegExp("^(projectionMatrix|uSampler|filterArea)$");
 
     var uniforms = {};
     var nameSplit;
@@ -19,7 +10,7 @@ function extractUniformsFromString(string)
 
     // clean the lines a little - remove extra spaces / teabs etc
     // then split along ';'
-    var lines = string.replace(/\s+/g,' ')
+    var lines = string.replace(/\s+/g," ")
                 .split(/\s*;\s*/);
 
     // loop through..
@@ -27,15 +18,15 @@ function extractUniformsFromString(string)
     {
         var line = lines[i].trim();
 
-        if(line.indexOf('uniform') > -1)
+        if(line.indexOf("uniform") > -1)
         {
-            var splitLine = line.split(' ');
+            var splitLine = line.split(" ");
             var type = splitLine[1];
 
             var name = splitLine[2];
             var size = 1;
 
-            if(name.indexOf('[') > -1)
+            if(name.indexOf("[") > -1)
             {
                 // array!
                 nameSplit = name.split(/\[|\]/);
@@ -55,6 +46,14 @@ function extractUniformsFromString(string)
     }
 
     return uniforms;
+}
+
+function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
+{
+    var vertUniforms = extractUniformsFromString(vertexSrc, mask);
+    var fragUniforms = extractUniformsFromString(fragmentSrc, mask);
+
+    return Object.assign(vertUniforms, fragUniforms);
 }
 
 module.exports = extractUniformsFromSrc;

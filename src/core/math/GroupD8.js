@@ -5,7 +5,7 @@ var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
 var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
 var vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
 var tempMatrices = [];
-var Matrix = require('./Matrix');
+var Matrix = require("./Matrix");
 
 var mul = [];
 
