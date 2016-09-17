@@ -28,13 +28,15 @@ const defaultDestroyOptions = {
  * @param [style] {object|PIXI.TextStyle} The style parameters
  */
 class Text extends Sprite
-{ 
+{
     constructor(text, style)
     {
-        let texture = Texture.fromCanvas(document.createElement('canvas'));
+        let canvas = document.createElement('canvas');
+        let texture = Texture.fromCanvas(canvas);
+
         texture.orig = new math.Rectangle();
         texture.trim = new math.Rectangle();
-        
+
         super(texture);
 
         /**
@@ -42,7 +44,7 @@ class Text extends Sprite
          *
          * @member {HTMLCanvasElement}
          */
-        this.canvas = document.createElement('canvas');
+        this.canvas = canvas;
 
         /**
          * The canvas 2d context that everything is drawn with
