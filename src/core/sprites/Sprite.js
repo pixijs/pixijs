@@ -31,6 +31,7 @@ function Sprite(texture)
      *
      * @member {PIXI.ObservablePoint}
      */
+    this._anchor = null;
     this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
     /**
@@ -117,6 +118,41 @@ Sprite.prototype.constructor = Sprite;
 module.exports = Sprite;
 
 Object.defineProperties(Sprite.prototype, {
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.Sprite#
+     */
+    anchor: {
+        get: function()
+        {
+            return this._anchor;  
+        },
+        set: function(value)
+        {
+            if (this._anchor === value)
+            {
+                return;
+            }
+            
+            if (value)
+            {
+                if (value.cb)
+                {
+                    this._anchor = value; 
+                }
+                else 
+                {
+                    this._anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
+                    this._anchor.set(value.x, value.y);  
+                }
+            }
+        }
+    },
     /**
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
