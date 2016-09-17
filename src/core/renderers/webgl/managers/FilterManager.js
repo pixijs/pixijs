@@ -74,7 +74,7 @@ class FilterManager extends WebGLManager
 
         // for now we go off the filter of the first resolution..
         let resolution = filters[0].resolution;
-        let padding = filters[0].padding;
+        let padding = filters[0].padding | 0;
         let targetBounds = target.filterArea || target.getBounds(true);
         let sourceFrame = currentState.sourceFrame;
         let destinationFrame = currentState.destinationFrame;
@@ -83,6 +83,10 @@ class FilterManager extends WebGLManager
         sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
         sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
         sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
+
+          // lets pplay the padding After we fit the element to the screen.
+        // this should stop the strange side effects that can occour when cropping to the edges
+        sourceFrame.pad(padding);
 
         if(filterData.stack[0].renderTarget.transform)
         {//jshint ignore:line
@@ -100,9 +104,9 @@ class FilterManager extends WebGLManager
         destinationFrame.height = sourceFrame.height;
 
 
-        // lets pplay the padding After we fit the element to the screen.
+        // lets play the padding after we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
-        sourceFrame.pad(padding);
+
 
         let renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
@@ -143,7 +147,7 @@ class FilterManager extends WebGLManager
             let flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
-            let i; 
+            let i;
 
             for (i = 0; i < filters.length-1; i++)
             {
