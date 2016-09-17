@@ -104,7 +104,7 @@ class FilterManager extends WebGLManager
         destinationFrame.height = sourceFrame.height;
 
 
-        // lets pplay the padding After we fit the element to the screen.
+        // lets play the padding after we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
 
 
