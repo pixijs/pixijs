@@ -123,11 +123,11 @@ const utils = {
                 'color: #ff2424; background: #fff; padding:5px 0;'
             ];
 
-            window.console.log.apply(console, args); //jshint ignore:line
+            window.console.log.apply(console, args);
         }
         else if (window.console)
         {
-            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log(`Pixi.js ${CONST.VERSION} - ${type} - http://www.pixijs.com/`);
         }
 
         utils._saidHello = true;

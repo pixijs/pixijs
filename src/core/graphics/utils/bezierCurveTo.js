@@ -16,7 +16,7 @@
  * @param [path=number[]] Path array to push points into
  * @return {PIXI.Graphics}
  */
-const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
+const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path)
 {
     path = path || [];
 
