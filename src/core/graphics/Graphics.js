@@ -982,7 +982,7 @@ Graphics.prototype.generateCanvasTexture = function(scaleMode, resolution)
 
     var bounds = this.getLocalBounds();
 
-    var canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+    var canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
     if(!canvasRenderer)
     {
