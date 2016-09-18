@@ -101,14 +101,20 @@ class FilterManager extends WebGLManager
         destinationFrame.height = sourceFrame.height;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         let renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 =======
 
+=======
+>>>>>>> some more es6 changes
         // lets play the padding after we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
 
 
         const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+<<<<<<< HEAD
+>>>>>>> some more es6 changes
+=======
 >>>>>>> some more es6 changes
 
         currentState.target = target;
