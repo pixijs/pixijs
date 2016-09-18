@@ -23,7 +23,7 @@ function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    let shader = new Shader(gl, vertexSrc, fragmentSrc);
+    let shader = new Shader(gl, vertexSrc, fragmentSrc, {aVertexPosition:3, aColor:2, aTextureCoord:1, aTextureId:0});
 
     let sampleValues = [];
     for (let i = 0; i < maxTextures; i++)
