@@ -16,7 +16,7 @@ class DisplacementFilter extends core.Filter
 {
     constructor(sprite, scale)
     {
-        let maskMatrix = new core.Matrix();
+        const maskMatrix = new core.Matrix();
         sprite.renderable = false;
 
         super(
@@ -45,7 +45,7 @@ class DisplacementFilter extends core.Filter
 
     apply(filterManager, input, output)
     {
-        let ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+        const ratio =  (1/output.destinationFrame.width) * (output.size.width/input.size.width); /// // *  2 //4//this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
         this.uniforms.scale.x = this.scale.x * ratio;

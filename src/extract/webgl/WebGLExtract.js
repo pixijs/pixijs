@@ -23,7 +23,7 @@ class WebGLExtract
      */
     image( target )
     {
-        let image = new Image();
+        const image = new Image();
         image.src = this.base64( target );
         return image;
     }
@@ -45,7 +45,7 @@ class WebGLExtract
      */
     canvas( target )
     {
-        let renderer = this.renderer;
+        const renderer = this.renderer;
         let textureBuffer;
         let resolution;
         let frame;
@@ -86,10 +86,10 @@ class WebGLExtract
 
 
 
-        let width = frame.width * resolution;
-        let height = frame.height * resolution;
+        const width = frame.width * resolution;
+        const height = frame.height * resolution;
 
-           let canvasBuffer = new core.CanvasRenderTarget(width, height);
+        const canvasBuffer = new core.CanvasRenderTarget(width, height);
 
         if(textureBuffer)
         {
@@ -128,7 +128,7 @@ class WebGLExtract
      */
     pixels( target )
     {
-        let renderer = this.renderer;
+        const renderer = this.renderer;
         let textureBuffer;
         let resolution;
         let frame;
@@ -163,10 +163,10 @@ class WebGLExtract
             frame.height = textureBuffer.size.height;
         }
 
-        let width = frame.width * resolution;
-        let height = frame.height * resolution;
+        const width = frame.width * resolution;
+        const height = frame.height * resolution;
 
-        let webGLPixels = new Uint8Array(4 * width * height);
+        const webGLPixels = new Uint8Array(4 * width * height);
 
         if(textureBuffer)
         {

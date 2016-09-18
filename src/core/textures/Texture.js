@@ -286,11 +286,11 @@ class Texture extends EventEmitter
      */
     static fromFrame(frameId)
     {
-        let texture = utils.TextureCache[frameId];
+        const texture = utils.TextureCache[frameId];
 
         if (!texture)
         {
-            throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
+            throw new Error(`The frameId "${frameId}" does not exist in the texture cache`);
         }
 
         return texture;
@@ -356,7 +356,7 @@ class Texture extends EventEmitter
         //TODO pass in scale mode?
         if(typeof source === 'string')
         {
-            let texture = utils.TextureCache[source];
+            const texture = utils.TextureCache[source];
 
             if (!texture)
             {
@@ -413,7 +413,7 @@ class Texture extends EventEmitter
      */
     static removeTextureFromCache(id)
     {
-        let texture = utils.TextureCache[id];
+        const texture = utils.TextureCache[id];
 
         delete utils.TextureCache[id];
         delete utils.BaseTextureCache[id];

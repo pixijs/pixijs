@@ -5,38 +5,38 @@ import CONST from '../../const';
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the upper-left corner of the rectangle
- * @param y {number} The Y coordinate of the upper-left corner of the rectangle
- * @param width {number} The overall width of this rectangle
- * @param height {number} The overall height of this rectangle
+ * @param [x=0] {number} The X coordinate of the upper-left corner of the rectangle
+ * @param [y=0] {number} The Y coordinate of the upper-left corner of the rectangle
+ * @param [width=0] {number} The overall width of this rectangle
+ * @param [height=0] {number} The overall height of this rectangle
  */
 class Rectangle
 {
-    constructor(x, y, width, height)
+    constructor(x=0, y=0, width=0, height=0)
     {
         /**
          * @member {number}
          * @default 0
          */
-        this.x = x || 0;
+        this.x = x;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.y = y || 0;
+        this.y = y;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.width = width || 0;
+        this.width = width;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.height = height || 0;
+        this.height = height;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks

@@ -71,7 +71,7 @@ class ParticleBuffer
 
             // Make copy of properties object so that when we edit the offset it doesn't
             // change all other instances of the object literal
-            property = 
+            property =
             {
                 attribute:property.attribute,
                 size:property.size,
@@ -108,12 +108,9 @@ class ParticleBuffer
      */
     initBuffers()
     {
-        let gl = this.gl;
-        let i;
-        let property;
-
+        const gl = this.gl;
         let dynamicOffset = 0;
-
+        let property;
 
         /**
          * Holds the indices of the geometry (quads) to draw
@@ -126,7 +123,7 @@ class ParticleBuffer
 
         this.dynamicStride = 0;
 
-        for (i = 0; i < this.dynamicProperties.length; i++)
+        for (let i = 0; i < this.dynamicProperties.length; i++)
         {
             property = this.dynamicProperties[i];
 
@@ -142,7 +139,7 @@ class ParticleBuffer
         let staticOffset = 0;
         this.staticStride = 0;
 
-        for (i = 0; i < this.staticProperties.length; i++)
+        for (let i = 0; i < this.staticProperties.length; i++)
         {
             property = this.staticProperties[i];
 
@@ -160,13 +157,13 @@ class ParticleBuffer
         this.vao = new glCore.VertexArrayObject(gl)
         .addIndex(this.indexBuffer);
 
-        for (i = 0; i < this.dynamicProperties.length; i++)
+        for (let i = 0; i < this.dynamicProperties.length; i++)
         {
             property = this.dynamicProperties[i];
             this.vao.addAttribute(this.dynamicBuffer, property.attribute, gl.FLOAT, false, this.dynamicStride * 4, property.offset * 4);
         }
 
-        for (i = 0; i < this.staticProperties.length; i++)
+        for (let i = 0; i < this.staticProperties.length; i++)
         {
             property = this.staticProperties[i];
             this.vao.addAttribute(this.staticBuffer, property.attribute, gl.FLOAT, false, this.staticStride * 4, property.offset * 4);

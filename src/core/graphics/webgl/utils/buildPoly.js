@@ -25,7 +25,7 @@ const buildPoly = function (graphicsData, webGLData)
         let holes = graphicsData.holes;
 
         for (let i = 0; i < holes.length; i++) {
-            let hole = holes[i];
+            const hole = holes[i];
 
             holeArray.push(points.length/2);
 
@@ -33,19 +33,19 @@ const buildPoly = function (graphicsData, webGLData)
         }
 
         // get first and last point.. figure out the middle!
-        let verts = webGLData.points;
-        let indices = webGLData.indices;
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
 
-        let length = points.length / 2;
+        const length = points.length / 2;
 
         // sort color
-        let color = utils.hex2rgb(graphicsData.fillColor);
-        let alpha = graphicsData.fillAlpha;
-        let r = color[0] * alpha;
-        let g = color[1] * alpha;
-        let b = color[2] * alpha;
+        const color = utils.hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
 
-        let triangles = earcut(points, holeArray, 2);
+        const triangles = earcut(points, holeArray, 2);
 
         if (!triangles) {
             return;

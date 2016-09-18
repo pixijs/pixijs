@@ -39,8 +39,8 @@ class BlurXFilter extends core.Filter
     {
         if(this.firstRun)
         {
-            let gl = filterManager.renderer.gl;
-            let kernelSize = getMaxBlurKernelSize(gl);
+            const gl = filterManager.renderer.gl;
+            const kernelSize = getMaxBlurKernelSize(gl);
 
             this.vertexSrc = generateBlurVertSource(kernelSize, true);
             this.fragmentSrc = generateBlurFragSource(kernelSize);
@@ -60,7 +60,7 @@ class BlurXFilter extends core.Filter
         }
         else
         {
-            let renderTarget = filterManager.getRenderTarget(true);
+            const renderTarget = filterManager.getRenderTarget(true);
             let flip = input;
             let flop = renderTarget;
 
@@ -68,7 +68,7 @@ class BlurXFilter extends core.Filter
             {
                 filterManager.applyFilter(this, flip, flop, true);
 
-               let temp = flop;
+               const temp = flop;
                flop = flip;
                flip = temp;
             }
@@ -95,7 +95,7 @@ class BlurXFilter extends core.Filter
         this.padding =  Math.abs(value) * 2;
         this.strength = value;
     }
-    
+
      /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher quaility bluring but the lower the performance.
      *

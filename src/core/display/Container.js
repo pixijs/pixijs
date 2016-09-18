@@ -14,7 +14,7 @@ import DisplayObject from './DisplayObject';
  * @memberof PIXI
  */
 class Container extends DisplayObject
-{ 
+{
     constructor()
     {
         super();
@@ -44,7 +44,7 @@ class Container extends DisplayObject
      */
     addChild(child)
     {
-        let argumentsLength = arguments.length;
+        const argumentsLength = arguments.length;
 
         // if there is only one argument we can bypass looping through the them
         if(argumentsLength > 1)
@@ -124,8 +124,8 @@ class Container extends DisplayObject
             return;
         }
 
-        let index1 = this.getChildIndex(child);
-        let index2 = this.getChildIndex(child2);
+        const index1 = this.getChildIndex(child);
+        const index2 = this.getChildIndex(child2);
 
         if (index1 < 0 || index2 < 0)
         {
@@ -145,7 +145,7 @@ class Container extends DisplayObject
      */
     getChildIndex(child)
     {
-        let index = this.children.indexOf(child);
+        const index = this.children.indexOf(child);
 
         if (index === -1)
         {
@@ -168,7 +168,7 @@ class Container extends DisplayObject
             throw new Error('The supplied index is out of bounds');
         }
 
-        let currentIndex = this.getChildIndex(child);
+        const currentIndex = this.getChildIndex(child);
 
         utils.removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); //add at new position
@@ -199,7 +199,7 @@ class Container extends DisplayObject
      */
     removeChild(child)
     {
-        let argumentsLength = arguments.length;
+        const argumentsLength = arguments.length;
 
         // if there is only one argument we can bypass looping through the them
         if(argumentsLength > 1)
@@ -239,7 +239,7 @@ class Container extends DisplayObject
      */
     removeChildAt(index)
     {
-        let child = this.getChildAt(index);
+        const child = this.getChildAt(index);
 
         child.parent = null;
         utils.removeItems(this.children, index, 1);
@@ -257,25 +257,25 @@ class Container extends DisplayObject
      * @param [beginIndex=0] {number} The beginning position.
      * @param [endIndex=this.children.length] {number} The ending position. Default value is size of the container.
      */
-    removeChildren(beginIndex, endIndex)
+    removeChildren(beginIndex=0, endIndex)
     {
-        let begin = beginIndex || 0;
-        let end = typeof endIndex === 'number' ? endIndex : this.children.length;
-        let range = end - begin;
-        let removed, i;
+        const begin = beginIndex;
+        const end = typeof endIndex === 'number' ? endIndex : this.children.length;
+        const range = end - begin;
+        let removed;
 
         if (range > 0 && range <= end)
         {
             removed = this.children.splice(begin, range);
 
-            for (i = 0; i < removed.length; ++i)
+            for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].parent = null;
             }
 
             this.onChildrenChange(beginIndex);
 
-            for (i = 0; i < removed.length; ++i)
+            for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].emit('removed', this);
             }
@@ -330,7 +330,7 @@ class Container extends DisplayObject
 
         for (let i = 0; i < this.children.length; i++)
         {
-            let child = this.children[i];
+            const child = this.children[i];
 
             child.calculateBounds();
 
@@ -382,9 +382,8 @@ class Container extends DisplayObject
     {
         renderer.currentRenderer.flush();
 
-        let filters = this._filters;
-        let mask = this._mask;
-        let i, j;
+        const filters = this._filters;
+        const mask = this._mask;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if ( filters )
@@ -396,7 +395,7 @@ class Container extends DisplayObject
 
             this._enabledFilters.length = 0;
 
-            for (i = 0; i < filters.length; i++)
+            for (let i = 0; i < filters.length; i++)
             {
                 if(filters[i].enabled)
                 {
@@ -421,7 +420,7 @@ class Container extends DisplayObject
         this._renderWebGL(renderer);
 
         // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++)
+        for (let i = 0, j = this.children.length; i < j; i++)
         {
             this.children[i].renderWebGL(renderer);
         }
@@ -494,7 +493,7 @@ class Container extends DisplayObject
     }
 
     /**
-     * Removes all internal references and listeners as well as removes children from the display list. 
+     * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
      * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
      * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
@@ -504,16 +503,16 @@ class Container extends DisplayObject
     {
         super.destroy();
 
-        let destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+        const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 
-        let oldChildren = this.children;
+        const oldChildren = this.children;
         this.children = null;
 
         if (destroyChildren)
         {
             for (let i = oldChildren.length - 1; i >= 0; i--)
             {
-                let child = oldChildren[i];
+                const child = oldChildren[i];
                 child.parent = null;
                 child.destroy(options);
             }
@@ -533,7 +532,7 @@ class Container extends DisplayObject
     set width(value)
     {
 
-        let width = this.getLocalBounds().width;
+        const width = this.getLocalBounds().width;
 
         if (width !== 0)
         {
@@ -561,7 +560,7 @@ class Container extends DisplayObject
     set height(value)
     {
 
-        let height = this.getLocalBounds().height;
+        const height = this.getLocalBounds().height;
 
         if (height !== 0)
         {

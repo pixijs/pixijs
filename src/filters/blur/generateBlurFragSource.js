@@ -21,14 +21,14 @@ const fragTemplate = [
 
 const generateFragBlurSource = function(kernelSize)
 {
-    let kernel = GAUSSIAN_VALUES[kernelSize];
-    let halfLength = kernel.length;
+    const kernel = GAUSSIAN_VALUES[kernelSize];
+    const halfLength = kernel.length;
 
     let fragSource = fragTemplate;
 
     let blurLoop = '';
-    let template = 'gl_FragColor += texture2D(uSampler, vBlurTexCoords[%index%]) * %value%;';
-        let value;
+    const template = 'gl_FragColor += texture2D(uSampler, vBlurTexCoords[%index%]) * %value%;';
+    let value;
 
     for (let i = 0; i < kernelSize; i++)
     {

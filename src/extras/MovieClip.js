@@ -151,7 +151,7 @@ class MovieClip extends core.Sprite
      */
     update(deltaTime)
     {
-        let elapsed = this.animationSpeed * deltaTime;
+        const elapsed = this.animationSpeed * deltaTime;
 
         if (this._durations !== null)
         {
@@ -225,7 +225,7 @@ class MovieClip extends core.Sprite
      */
     static fromFrames(frames)
     {
-        let textures = [];
+        const textures = [];
 
         for (let i = 0; i < frames.length; ++i)
         {
@@ -243,7 +243,7 @@ class MovieClip extends core.Sprite
      */
     static fromImages(images)
     {
-        let textures = [];
+        const textures = [];
 
         for (let i = 0; i < images.length; ++i)
         {

@@ -55,7 +55,7 @@ class TextureManager
     {
         texture = texture.baseTexture || texture;
 
-        let isRenderTexture = !!texture._glRenderTargets;
+        const isRenderTexture = !!texture._glRenderTargets;
 
         if (!texture.hasLoaded)
         {
@@ -68,7 +68,7 @@ class TextureManager
         {
             if(isRenderTexture)
             {
-                let renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+                const renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
                 renderTarget.resize(texture.width, texture.height);
                 texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
                 glTexture = renderTarget.texture;
@@ -163,7 +163,7 @@ class TextureManager
 
             if (!skipRemove)
             {
-                let i = this._managedTextures.indexOf(texture);
+                const i = this._managedTextures.indexOf(texture);
                 if (i !== -1) {
                     utils.removeItems(this._managedTextures, i, 1);
                 }
@@ -179,7 +179,7 @@ class TextureManager
         // empty all the old gl textures as they are useless now
         for (let i = 0; i < this._managedTextures.length; ++i)
         {
-            let texture = this._managedTextures[i];
+            const texture = this._managedTextures[i];
             if (texture._glTextures[this.renderer.CONTEXT_UID])
             {
                 delete texture._glTextures[this.renderer.CONTEXT_UID];
@@ -195,7 +195,7 @@ class TextureManager
         // destroy managed textures
         for (let i = 0; i < this._managedTextures.length; ++i)
         {
-            let texture = this._managedTextures[i];
+            const texture = this._managedTextures[i];
             this.destroyTexture(texture, true);
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);

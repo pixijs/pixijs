@@ -212,9 +212,9 @@ class SystemRenderer extends EventEmitter
      */
     generateTexture(displayObject, scaleMode, resolution) {
 
-        let bounds = displayObject.getLocalBounds();
+        const bounds = displayObject.getLocalBounds();
 
-        let renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+        const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
 
         tempMatrix.tx = -bounds.x;
         tempMatrix.ty = -bounds.y;

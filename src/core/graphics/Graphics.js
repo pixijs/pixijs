@@ -188,7 +188,7 @@ class Graphics extends Container
      */
     clone()
     {
-        let clone = new Graphics();
+        const clone = new Graphics();
 
         clone.renderable    = this.renderable;
         clone.fillAlpha     = this.fillAlpha;
@@ -233,7 +233,7 @@ class Graphics extends Container
             if (this.currentPath.shape.points.length)
             {
                 // halfway through a line? start a new one!
-                let shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
+                const shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
                 shape.closed = false;
                 this.drawShape(shape);
             }
@@ -258,7 +258,7 @@ class Graphics extends Container
      */
     moveTo(x, y)
     {
-        let shape = new math.Polygon([x,y]);
+        const shape = new math.Polygon([x,y]);
         shape.closed = false;
         this.drawShape(shape);
 
@@ -305,11 +305,9 @@ class Graphics extends Container
             this.moveTo(0,0);
         }
 
-
-        let xa,
-            ya,
-            n = 20,
-            points = this.currentPath.shape.points;
+        const n = 20;
+        const points = this.currentPath.shape.points;
+        let xa, ya;
 
         if (points.length === 0)
         {
@@ -361,10 +359,10 @@ class Graphics extends Container
             this.moveTo(0,0);
         }
 
-        let points = this.currentPath.shape.points;
+        const points = this.currentPath.shape.points;
 
-        let fromX = points[points.length-2];
-        let fromY = points[points.length-1];
+        const fromX = points[points.length-2];
+        const fromY = points[points.length-1];
 
         points.length -= 2;
 
@@ -401,7 +399,7 @@ class Graphics extends Container
             this.moveTo(x1, y1);
         }
 
-        let points = this.currentPath.shape.points,
+        const points = this.currentPath.shape.points,
             fromX = points[points.length-2],
             fromY = points[points.length-1],
             a1 = fromY - y1,
@@ -419,7 +417,7 @@ class Graphics extends Container
         }
         else
         {
-            let dd = a1 * a1 + b1 * b1,
+            const dd = a1 * a1 + b1 * b1,
                 cc = a2 * a2 + b2 * b2,
                 tt = a1 * a2 + b1 * b2,
                 k1 = radius * Math.sqrt(dd) / mm,
@@ -454,9 +452,8 @@ class Graphics extends Container
      * @param [anticlockwise=false] {boolean} Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    arc(cx, cy, radius, startAngle, endAngle, anticlockwise)
+    arc(cx, cy, radius, startAngle, endAngle, anticlockwise=false)
     {
-        anticlockwise = anticlockwise || false;
 
         if (startAngle === endAngle)
         {
@@ -472,16 +469,16 @@ class Graphics extends Container
             startAngle += Math.PI * 2;
         }
 
-        let sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
-        let segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
+        const sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
+        const segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
         if(sweep === 0)
         {
             return this;
         }
 
-        let startX = cx + Math.cos(startAngle) * radius;
-        let startY = cy + Math.sin(startAngle) * radius;
+        const startX = cx + Math.cos(startAngle) * radius;
+        const startY = cy + Math.sin(startAngle) * radius;
 
         if (this.currentPath)
         {
@@ -492,27 +489,26 @@ class Graphics extends Container
             this.moveTo(startX, startY);
         }
 
-        let points = this.currentPath.shape.points;
+        const points = this.currentPath.shape.points;
 
-        let theta = sweep/(segs*2);
-        let theta2 = theta*2;
+        const theta = sweep/(segs*2);
+        const theta2 = theta*2;
 
-        let cTheta = Math.cos(theta);
-        let sTheta = Math.sin(theta);
+        const cTheta = Math.cos(theta);
+        const sTheta = Math.sin(theta);
 
-        let segMinus = segs - 1;
+        const segMinus = segs - 1;
 
-        let remainder = ( segMinus % 1 ) / segMinus;
+        const remainder = ( segMinus % 1 ) / segMinus;
 
         for(let i=0; i<=segMinus; i++)
         {
-            let real =  i + remainder * i;
+            const real =  i + remainder * i;
 
+            const angle = ((theta) + startAngle + (theta2 * real));
 
-            let angle = ((theta) + startAngle + (theta2 * real));
-
-            let c = Math.cos(angle);
-            let s = -Math.sin(angle);
+            const c = Math.cos(angle);
+            const s = -Math.sin(angle);
 
             points.push(( (cTheta *  c) + (sTheta * s) ) * radius + cx,
                         ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
@@ -527,15 +523,15 @@ class Graphics extends Container
      * Specifies a simple one-color fill that subsequent calls to other Graphics methods
      * (such as lineTo() or drawCircle()) use when drawing.
      *
-     * @param color {number} the color of the fill
-     * @param alpha {number} the alpha of the fill
+     * @param [color=0] {number} the color of the fill
+     * @param [alpha=1] {number} the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginFill(color, alpha)
+    beginFill(color=0, alpha=1)
     {
         this.filling = true;
-        this.fillColor = color || 0;
-        this.fillAlpha = (alpha === undefined) ? 1 : alpha;
+        this.fillColor = color;
+        this.fillAlpha = alpha;
 
         if (this.currentPath)
         {
@@ -657,7 +653,7 @@ class Graphics extends Container
             }
         }
 
-        let shape = new math.Polygon(points);
+        const shape = new math.Polygon(points);
         shape.closed = closed;
 
         this.drawShape(shape);
@@ -720,15 +716,15 @@ class Graphics extends Container
 
     _renderSpriteRect(renderer)
     {
-        let rect = this.graphicsData[0].shape;
+        const rect = this.graphicsData[0].shape;
         if(!this._spriteRect)
         {
             if(!Graphics._SPRITE_TEXTURE)
             {
-                let canvas = document.createElement('canvas');
+                const canvas = document.createElement('canvas');
                 canvas.width = 10;
                 canvas.height = 10;
-                let context = canvas.getContext('2d');
+                const context = canvas.getContext('2d');
                 context.fillStyle = 'white';
                 context.fillRect(0, 0, 10, 10);
                 Graphics._SPRITE_TEXTURE = Texture.fromCanvas(canvas);
@@ -739,8 +735,8 @@ class Graphics extends Container
         if (this.tint === 0xffffff) {
             this._spriteRect.tint = this.graphicsData[0].fillColor;
         } else {
-            let t1 = tempColor1;
-            let t2 = tempColor2;
+            const t1 = tempColor1;
+            const t2 = tempColor2;
             utils.hex2rgb(this.graphicsData[0].fillColor, t1);
             utils.hex2rgb(this.tint, t2);
             t1[0] *= t2[0];
@@ -801,7 +797,7 @@ class Graphics extends Container
             this.cachedSpriteDirty = true;
         }
 
-        let lb = this._localBounds;
+        const lb = this._localBounds;
         this._bounds.addFrame(this.transform, lb.minX, lb.minY, lb.maxX, lb.maxY);
     }
 
@@ -815,7 +811,7 @@ class Graphics extends Container
     {
         this.worldTransform.applyInverse(point,  tempPoint);
 
-        let graphicsData = this.graphicsData;
+        const graphicsData = this.graphicsData;
 
         for (let i = 0; i < graphicsData.length; i++)
         {
@@ -857,9 +853,9 @@ class Graphics extends Container
 
             for (let i = 0; i < this.graphicsData.length; i++)
             {
-                let data = this.graphicsData[i];
-                let type = data.type;
-                let lineWidth = data.lineWidth;
+                const data = this.graphicsData[i];
+                const type = data.type;
+                const lineWidth = data.lineWidth;
                 shape = data.shape;
 
                 if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
@@ -957,7 +953,7 @@ class Graphics extends Container
 
         this.currentPath = null;
 
-        let data = new GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
+        const data = new GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
 
         this.graphicsData.push(data);
 
@@ -976,9 +972,9 @@ class Graphics extends Container
     {
         resolution = resolution || 1;
 
-        let bounds = this.getLocalBounds();
+        const bounds = this.getLocalBounds();
 
-        let canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+        const canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
         if(!canvasRenderer)
         {
@@ -990,7 +986,7 @@ class Graphics extends Container
 
         canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
 
-        let texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+        const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
         texture.baseTexture.resolution = resolution;
 
         return texture;
@@ -999,7 +995,7 @@ class Graphics extends Container
     closePath()
     {
         // ok so close path assumes next one is a hole!
-        let currentPath = this.currentPath;
+        const currentPath = this.currentPath;
         if (currentPath && currentPath.shape)
         {
             currentPath.shape.close();
@@ -1010,7 +1006,7 @@ class Graphics extends Container
     addHole()
     {
         // this is a hole!
-        let hole = this.graphicsData.pop();
+        const hole = this.graphicsData.pop();
 
         this.currentPath = this.graphicsData[this.graphicsData.length-1];
 

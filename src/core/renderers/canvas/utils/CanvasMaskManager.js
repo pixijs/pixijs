@@ -20,13 +20,13 @@ class CanvasMaskManager
      */
     pushMask(maskData)
     {
-        let renderer = this.renderer;
+        const renderer = this.renderer;
 
         renderer.context.save();
 
-        let cacheAlpha = maskData.alpha;
-        let transform = maskData.transform.worldTransform;
-        let resolution = renderer.resolution;
+        const cacheAlpha = maskData.alpha;
+        const transform = maskData.transform.worldTransform;
+        const resolution = renderer.resolution;
 
         renderer.context.setTransform(
             transform.a * resolution,
@@ -50,8 +50,8 @@ class CanvasMaskManager
 
     renderGraphicsShape(graphics)
     {
-        let context = this.renderer.context;
-        let len = graphics.graphicsData.length;
+        const context = this.renderer.context;
+        const len = graphics.graphicsData.length;
 
         if (len === 0)
         {
@@ -62,13 +62,13 @@ class CanvasMaskManager
 
         for (let i = 0; i < len; i++)
         {
-            let data = graphics.graphicsData[i];
-            let shape = data.shape;
+            const data = graphics.graphicsData[i];
+            const shape = data.shape;
 
             if (data.type === CONST.SHAPES.POLY)
             {
 
-                let points = shape.points;
+                const points = shape.points;
 
                 context.moveTo(points[0], points[1]);
 
@@ -100,13 +100,13 @@ class CanvasMaskManager
 
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                let w = shape.width * 2;
-                let h = shape.height * 2;
+                const w = shape.width * 2;
+                const h = shape.height * 2;
 
-                let x = shape.x - w/2;
-                let y = shape.y - h/2;
+                const x = shape.x - w/2;
+                const y = shape.y - h/2;
 
-                let kappa = 0.5522848,
+                const kappa = 0.5522848,
                     ox = (w / 2) * kappa, // control point offset horizontal
                     oy = (h / 2) * kappa, // control point offset vertical
                     xe = x + w,           // x-end
@@ -124,13 +124,13 @@ class CanvasMaskManager
             else if (data.type === CONST.SHAPES.RREC)
             {
 
-                let rx = shape.x;
-                let ry = shape.y;
-                let width = shape.width;
-                let height = shape.height;
+                const rx = shape.x;
+                const ry = shape.y;
+                const width = shape.width;
+                const height = shape.height;
                 let radius = shape.radius;
 
-                let maxRadius = Math.min(width, height) / 2 | 0;
+                const maxRadius = Math.min(width, height) / 2 | 0;
                 radius = radius > maxRadius ? maxRadius : radius;
 
                 context.moveTo(rx, ry + radius);

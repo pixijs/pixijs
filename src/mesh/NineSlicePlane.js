@@ -5,7 +5,7 @@ const DEFAULT_BORDER_SIZE = 10;
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
- *  
+ *
  *```js
  * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
@@ -44,7 +44,7 @@ class NineSlicePlane extends Plane
     {
         super(texture, 4, 4);
 
-        let uvs = this.uvs;
+        const uvs = this.uvs;
         // right and bottom uv's are always 1
         uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
         uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
@@ -102,14 +102,14 @@ class NineSlicePlane extends Plane
     }
 
     updateHorizontalVertices() {
-        let vertices = this.vertices;
+        const vertices = this.vertices;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
     updateVerticalVertices() {
-        let vertices = this.vertices;
+        const vertices = this.vertices;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width ;
@@ -123,11 +123,11 @@ class NineSlicePlane extends Plane
      */
     _renderCanvas(renderer)
     {
-        let context = renderer.context;
+        const context = renderer.context;
         context.globalAlpha = this.worldAlpha;
 
-        let transform = this.worldTransform;
-        let res = renderer.resolution;
+        const transform = this.worldTransform;
+        const res = renderer.resolution;
 
         if (renderer.roundPixels)
         {
@@ -137,12 +137,12 @@ class NineSlicePlane extends Plane
         {
             context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
         }
-            
-        let base = this._texture.baseTexture;
-        let textureSource = base.source;
-        let w = base.width;
-        let h = base.height;
-        
+
+        const base = this._texture.baseTexture;
+        const textureSource = base.source;
+        const w = base.width;
+        const h = base.height;
+
         this.drawSegment(context, textureSource, w, h, 0, 1, 10, 11);
         this.drawSegment(context, textureSource, w, h, 2, 3, 12, 13);
         this.drawSegment(context, textureSource, w, h, 4, 5, 14, 15);
@@ -163,8 +163,8 @@ class NineSlicePlane extends Plane
      * @param textureSource
      * @param w    width of the texture
      * @param h height of the texture
-     * @param x1 
-     * @param y1    
+     * @param x1
+     * @param y1
      * @param x2
      * @param y2
      * @private
@@ -172,14 +172,14 @@ class NineSlicePlane extends Plane
     drawSegment(context, textureSource, w, h, x1, y1, x2, y2)
     {
         // otherwise you get weird results when using slices of that are 0 wide or high.
-        let uvs = this.uvs;
-        let vertices = this.vertices;
-        
+        const uvs = this.uvs;
+        const vertices = this.vertices;
+
         let sw = (uvs[x2]-uvs[x1]) * w;
         let sh = (uvs[y2]-uvs[y1]) * h;
         let dw = vertices[x2] - vertices[x1];
         let dh = vertices[y2] - vertices[y1];
-        
+
         // make sure the source is at least 1 pixel wide and high, otherwise nothing will be drawn.
         if (sw<1) {
             sw=1;
@@ -213,7 +213,7 @@ class NineSlicePlane extends Plane
         this._width = value;
         this.updateVerticalVertices();
     }
-    
+
 
     /**
      * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
@@ -231,7 +231,7 @@ class NineSlicePlane extends Plane
         this._height = value;
         this.updateHorizontalVertices();
     }
-    
+
 
     /**
      * The width of the left column
@@ -245,13 +245,13 @@ class NineSlicePlane extends Plane
     set leftWidth (value)
     {
         this._leftWidth = value;
-        let uvs = this.uvs;
-        let vertices = this.vertices;
+        const uvs = this.uvs;
+        const vertices = this.vertices;
         uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
         this.dirty=true;
     }
-    
+
     /**
      * The width of the right column
      *
@@ -264,13 +264,13 @@ class NineSlicePlane extends Plane
     set rightWidth(value)
     {
         this._rightWidth = value;
-        let uvs = this.uvs;
-        let vertices = this.vertices;
+        const uvs = this.uvs;
+        const vertices = this.vertices;
         uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
         this.dirty=true;
     }
-    
+
 
     /**
      * The height of the top row
@@ -284,13 +284,13 @@ class NineSlicePlane extends Plane
     set topHeight(value)
     {
         this._topHeight = value;
-        let uvs = this.uvs;
-        let vertices = this.vertices;
+        const uvs = this.uvs;
+        const vertices = this.vertices;
         uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
         this.dirty=true;
     }
-    
+
     /**
      * The height of the bottom row
      *
@@ -303,8 +303,8 @@ class NineSlicePlane extends Plane
     set bottomHeight(value)
     {
         this._bottomHeight = value;
-        let uvs = this.uvs;
-        let vertices = this.vertices;
+        const uvs = this.uvs;
+        const vertices = this.vertices;
         uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
         this.dirty=true;

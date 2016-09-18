@@ -1,11 +1,11 @@
 import glCore from 'pixi-gl-core';
 
-let defaultValue = glCore.shader.defaultValue;
+const defaultValue = glCore.shader.defaultValue;
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
-    let vertUniforms = extractUniformsFromString(vertexSrc, mask);
-    let fragUniforms = extractUniformsFromString(fragmentSrc, mask);
+    const vertUniforms = extractUniformsFromString(vertexSrc, mask);
+    const fragUniforms = extractUniformsFromString(fragmentSrc, mask);
 
     return Object.assign(vertUniforms, fragUniforms);
 }
@@ -13,15 +13,15 @@ function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 
 function extractUniformsFromString(string)
 {
-    let maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
+    const maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
 
-    let uniforms = {};
+    const uniforms = {};
     let nameSplit;
 
 
     // clean the lines a little - remove extra spaces / teabs etc
     // then split along ';'
-    let lines = string.replace(/\s+/g,' ')
+    const lines = string.replace(/\s+/g,' ')
                 .split(/\s*;\s*/);
 
     // loop through..
@@ -31,8 +31,8 @@ function extractUniformsFromString(string)
 
         if(line.indexOf('uniform') > -1)
         {
-            let splitLine = line.split(' ');
-            let type = splitLine[1];
+            const splitLine = line.split(' ');
+            const type = splitLine[1];
 
             let name = splitLine[2];
             let size = 1;

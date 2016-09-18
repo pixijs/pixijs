@@ -80,7 +80,7 @@ const utils = {
      */
     getResolutionOfUrl: function (url)
     {
-        let resolution = CONST.RETINA_PREFIX.exec(url);
+        const resolution = CONST.RETINA_PREFIX.exec(url);
 
         if (resolution)
         {
@@ -111,7 +111,7 @@ const utils = {
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
             let args = [
-                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
+                `\n %c %c %c Pixi.js ${CONST.VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
                 'background: #ff66a5; padding:5px 0;',
                 'background: #ff66a5; padding:5px 0;',
                 'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -141,7 +141,7 @@ const utils = {
      */
     isWebGLSupported: function ()
     {
-        let contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
+        const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
         try
         {
             if (!window.WebGLRenderingContext)
@@ -149,8 +149,8 @@ const utils = {
                 return false;
             }
 
-            let canvas = document.createElement('canvas'),
-                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+            const canvas = document.createElement('canvas');
+            let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
             let success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)

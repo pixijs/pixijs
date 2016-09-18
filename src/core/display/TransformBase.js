@@ -8,7 +8,7 @@ import math from '../math';
  * @memberof PIXI
  */
 class TransformBase
-{ 
+{
     constructor()
     {
         /**
@@ -19,7 +19,7 @@ class TransformBase
         this.worldTransform = new math.Matrix();
         /**
          * The local matrix transform
-         * 
+         *
          * @member {PIXI.Matrix}
          */
         this.localTransform = new math.Matrix();
@@ -41,9 +41,9 @@ class TransformBase
      */
     updateTransform(parentTransform)
     {
-        let pt = parentTransform.worldTransform;
-        let wt = this.worldTransform;
-        let lt = this.localTransform;
+        const pt = parentTransform.worldTransform;
+        const wt = this.worldTransform;
+        const lt = this.localTransform;
 
         // concat the parent matrix with the objects transform.
         wt.a  = lt.a  * pt.a + lt.b  * pt.c;

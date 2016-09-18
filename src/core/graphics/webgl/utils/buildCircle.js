@@ -15,9 +15,9 @@ import utils from '../../../utils';
 const buildCircle = function (graphicsData, webGLData)
 {
     // need to convert points to a nice regular data
-    let circleData = graphicsData.shape;
-    let x = circleData.x;
-    let y = circleData.y;
+    const circleData = graphicsData.shape;
+    const x = circleData.x;
+    const y = circleData.y;
     let width;
     let height;
 
@@ -33,28 +33,26 @@ const buildCircle = function (graphicsData, webGLData)
         height = circleData.height;
     }
 
-    let totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
-    let seg = (Math.PI * 2) / totalSegs ;
-
-    let i = 0;
+    const totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+    const seg = (Math.PI * 2) / totalSegs ;
 
     if (graphicsData.fill)
     {
-        let color = utils.hex2rgb(graphicsData.fillColor);
-        let alpha = graphicsData.fillAlpha;
+        const color = utils.hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
 
-        let r = color[0] * alpha;
-        let g = color[1] * alpha;
-        let b = color[2] * alpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
 
-        let verts = webGLData.points;
-        let indices = webGLData.indices;
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
 
         let vecPos = verts.length/6;
 
         indices.push(vecPos);
 
-        for (i = 0; i < totalSegs + 1 ; i++)
+        for (let i = 0; i < totalSegs + 1 ; i++)
         {
             verts.push(x,y, r, g, b, alpha);
 
@@ -70,11 +68,11 @@ const buildCircle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        let tempPoints = graphicsData.points;
+        const tempPoints = graphicsData.points;
 
         graphicsData.points = [];
 
-        for (i = 0; i < totalSegs + 1; i++)
+        for (let i = 0; i < totalSegs + 1; i++)
         {
             graphicsData.points.push(x + Math.sin(seg * i) * width,
                                      y + Math.cos(seg * i) * height);

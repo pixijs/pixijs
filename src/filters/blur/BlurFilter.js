@@ -29,7 +29,7 @@ class BlurFilter extends core.Filter
     apply(filterManager, input, output)
     {
 
-        let renderTarget = filterManager.getRenderTarget(true);
+        const renderTarget = filterManager.getRenderTarget(true);
 
         this.blurXFilter.apply(filterManager, input, renderTarget, true);
         this.blurYFilter.apply(filterManager, renderTarget, output, false);

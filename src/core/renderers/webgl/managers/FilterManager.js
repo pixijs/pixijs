@@ -44,7 +44,7 @@ class FilterManager extends WebGLManager
 
     pushFilter(target, filters)
     {
-        let renderer = this.renderer;
+        const renderer = this.renderer;
 
         let filterData = this.filterData;
 
@@ -53,7 +53,7 @@ class FilterManager extends WebGLManager
             filterData = this.renderer._activeRenderTarget.filterStack;
 
             // add new stack
-            let filterState = new FilterState();
+            const filterState = new FilterState();
             filterState.sourceFrame = filterState.destinationFrame = this.renderer._activeRenderTarget.size;
             filterState.renderTarget = renderer._activeRenderTarget;
 
@@ -73,11 +73,11 @@ class FilterManager extends WebGLManager
         }
 
         // for now we go off the filter of the first resolution..
-        let resolution = filters[0].resolution;
-        let padding = filters[0].padding | 0;
-        let targetBounds = target.filterArea || target.getBounds(true);
-        let sourceFrame = currentState.sourceFrame;
-        let destinationFrame = currentState.destinationFrame;
+        const resolution = filters[0].resolution;
+        const padding = filters[0].padding | 0;
+        const targetBounds = target.filterArea || target.getBounds(true);
+        const sourceFrame = currentState.sourceFrame;
+        const destinationFrame = currentState.destinationFrame;
 
         sourceFrame.x = ((targetBounds.x * resolution) | 0) / resolution;
         sourceFrame.y = ((targetBounds.y * resolution) | 0) / resolution;
@@ -100,7 +100,16 @@ class FilterManager extends WebGLManager
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
 
+<<<<<<< HEAD
         let renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+=======
+
+        // lets play the padding after we fit the element to the screen.
+        // this should stop the strange side effects that can occour when cropping to the edges
+
+
+        const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
+>>>>>>> some more es6 changes
 
         currentState.target = target;
         currentState.filters = filters;
@@ -119,14 +128,14 @@ class FilterManager extends WebGLManager
 
     popFilter()
     {
-        let filterData = this.filterData;
+        const filterData = this.filterData;
 
-        let lastState = filterData.stack[filterData.index-1];
-        let currentState = filterData.stack[filterData.index];
+        const lastState = filterData.stack[filterData.index-1];
+        const currentState = filterData.stack[filterData.index];
 
         this.quad.map(currentState.renderTarget.size, currentState.sourceFrame).upload();
 
-        let filters = currentState.filters;
+        const filters = currentState.filters;
 
         if(filters.length === 1)
         {
@@ -139,9 +148,8 @@ class FilterManager extends WebGLManager
             let flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
-            let i;
-
-            for (i = 0; i < filters.length-1; i++)
+            let i=0;
+            for (i; i < filters.length-1; i++)
             {
                 filters[i].apply(this, flip, flop, true);
 
@@ -149,7 +157,6 @@ class FilterManager extends WebGLManager
                 flip = flop;
                 flop = t;
             }
-
             filters[i].apply(this, flip, lastState.renderTarget, false);
 
             this.freePotRenderTarget(flip);
@@ -166,7 +173,7 @@ class FilterManager extends WebGLManager
 
     applyFilter(filter, input, output, clear)
     {
-        let renderer = this.renderer;
+        const renderer = this.renderer;
         let shader = filter.glShaders[renderer.CONTEXT_UID];
 
         // cacheing..
@@ -196,7 +203,7 @@ class FilterManager extends WebGLManager
 
         if(clear)
         {
-            let gl = renderer.gl;
+            const gl = renderer.gl;
 
             gl.disable(gl.SCISSOR_TEST);
             renderer.clear();//[1, 1, 1, 1]);
@@ -227,8 +234,8 @@ class FilterManager extends WebGLManager
     // this returns a matrix that will normalise map filter cords in the filter to screen space
     syncUniforms(shader, filter)
     {
-        let uniformData = filter.uniformData;
-        let uniforms = filter.uniforms;
+        const uniformData = filter.uniformData;
+        const uniforms = filter.uniforms;
 
         // 0 is reserverd for the pixi texture so we start at 1!
         let textureCount = 1;
@@ -280,7 +287,7 @@ class FilterManager extends WebGLManager
                     // Although thinking about it, we could probably
                     // make the filter texture cache return a RenderTexture
                     // rather than a renderTarget
-                    let gl = this.renderer.gl;
+                    const gl = this.renderer.gl;
                     this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
                     gl.activeTexture(gl.TEXTURE0 + textureCount );
                     uniforms[i].texture.bind();
@@ -332,8 +339,8 @@ class FilterManager extends WebGLManager
 
     getRenderTarget(clear, resolution)
     {
-        let currentState = this.filterData.stack[this.filterData.index];
-        let renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, resolution || currentState.resolution);
+        const currentState = this.filterData.stack[this.filterData.index];
+        const renderTarget = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, resolution || currentState.resolution);
         renderTarget.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
         return renderTarget;
@@ -354,7 +361,7 @@ class FilterManager extends WebGLManager
     // thia returns a matrix that will normalise map filter cords in the filter to screen space
     calculateScreenSpaceMatrix(outputMatrix)
     {
-        let currentState = this.filterData.stack[this.filterData.index];
+        const currentState = this.filterData.stack[this.filterData.index];
         return filterTransforms.calculateScreenSpaceMatrix(outputMatrix,  currentState.sourceFrame, currentState.renderTarget.size);
     }
 
@@ -365,7 +372,7 @@ class FilterManager extends WebGLManager
      */
     calculateNormalizedScreenSpaceMatrix(outputMatrix)
     {
-        let currentState = this.filterData.stack[this.filterData.index];
+        const currentState = this.filterData.stack[this.filterData.index];
 
         return filterTransforms.calculateNormalizedScreenSpaceMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, currentState.destinationFrame);
     }
@@ -373,7 +380,7 @@ class FilterManager extends WebGLManager
     // this will map the filter coord so that a texture can be used based on the transform of a sprite
     calculateSpriteMatrix(outputMatrix, sprite)
     {
-        let currentState = this.filterData.stack[this.filterData.index];
+        const currentState = this.filterData.stack[this.filterData.index];
         return filterTransforms.calculateSpriteMatrix(outputMatrix, currentState.sourceFrame, currentState.renderTarget.size, sprite);
     }
 
@@ -393,13 +400,13 @@ class FilterManager extends WebGLManager
         minWidth = bitTwiddle.nextPow2(minWidth * resolution);
         minHeight = bitTwiddle.nextPow2(minHeight * resolution);
 
-        let key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
+        const key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
         if(!this.pool[key]) {
           this.pool[key] = [];
         }
 
-        let renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+        const renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
 
         //manually tweak the resolution...
         //this will not modify the size of the frame buffer, just its resolution.
@@ -428,10 +435,10 @@ class FilterManager extends WebGLManager
 
     freePotRenderTarget(renderTarget)
     {
-        let minWidth = renderTarget.size.width * renderTarget.resolution;
-        let minHeight = renderTarget.size.height * renderTarget.resolution;
+        const minWidth = renderTarget.size.width * renderTarget.resolution;
+        const minHeight = renderTarget.size.height * renderTarget.resolution;
 
-        let key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
+        const key = ((minWidth & 0xFFFF) << 16) | (minHeight & 0xFFFF);
         this.pool[key].push(renderTarget);
     }
 }

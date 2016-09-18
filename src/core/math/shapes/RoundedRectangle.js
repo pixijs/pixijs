@@ -5,45 +5,45 @@ import CONST from '../../const';
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the upper-left corner of the rounded rectangle
- * @param y {number} The Y coordinate of the upper-left corner of the rounded rectangle
- * @param width {number} The overall width of this rounded rectangle
- * @param height {number} The overall height of this rounded rectangle
- * @param radius {number} Controls the radius of the rounded corners
+ * @param [x=0] {number} The X coordinate of the upper-left corner of the rounded rectangle
+ * @param [y=0] {number} The Y coordinate of the upper-left corner of the rounded rectangle
+ * @param [width=0] {number} The overall width of this rounded rectangle
+ * @param [height=0] {number} The overall height of this rounded rectangle
+ * @param [radius=20] {number} Controls the radius of the rounded corners
  */
 class RoundedRectangle
 {
-    constructor(x, y, width, height, radius)
+    constructor(x=0, y=0, width=0, height=0, radius=20)
     {
         /**
          * @member {number}
          * @default 0
          */
-        this.x = x || 0;
+        this.x = x;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.y = y || 0;
+        this.y = y;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.width = width || 0;
+        this.width = width;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.height = height || 0;
+        this.height = height;
 
         /**
          * @member {number}
          * @default 20
          */
-        this.radius = radius || 20;
+        this.radius = radius;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks

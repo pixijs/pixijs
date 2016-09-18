@@ -42,9 +42,8 @@ let CONTEXT_UID = 0;
  */
 class WebGLRenderer extends SystemRenderer
 {
-    constructor(width, height, options)
+    constructor(width, height, options={})
     {
-        options = options || {};
 
         super('WebGL', width, height, options);
         /**
@@ -173,7 +172,7 @@ class WebGLRenderer extends SystemRenderer
      */
     _initContext()
     {
-        let gl = this.gl;
+        const gl = this.gl;
 
         // create a texture manager...
         this.textureManager = new TextureManager(this);
@@ -225,7 +224,7 @@ class WebGLRenderer extends SystemRenderer
         if(!skipUpdateTransform)
         {
             // update the scene graph
-            let cacheParent = displayObject.parent;
+            const cacheParent = displayObject.parent;
             displayObject.parent = this._tempDisplayObjectParent;
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
@@ -348,8 +347,8 @@ class WebGLRenderer extends SystemRenderer
 
         if(renderTexture)
         {
-            let baseTexture = renderTexture.baseTexture;
-            let gl = this.gl;
+            const baseTexture = renderTexture.baseTexture;
+            const gl = this.gl;
 
             if(!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {
@@ -430,14 +429,13 @@ class WebGLRenderer extends SystemRenderer
      * @param texture {PIXI.Texture} the new texture
      * @param location {number} the texture location
      */
-    bindTexture(texture, location)
+    bindTexture(texture, location=0)
     {
         texture = texture.baseTexture || texture;
 
-        let gl = this.gl;
+        const gl = this.gl;
 
         //TODO test perf of cache?
-        location = location || 0;
 
         if(this._activeTextureLocation !== location)//
         {

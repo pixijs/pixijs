@@ -6,31 +6,31 @@ import CONST from '../../const';
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the center of this circle
- * @param y {number} The Y coordinate of the center of this circle
- * @param radius {number} The radius of the circle
+ * @param [x=0] {number} The X coordinate of the center of this circle
+ * @param [y=0] {number} The Y coordinate of the center of this circle
+ * @param [radius=0] {number} The radius of the circle
  */
 class Circle
 {
-    constructor(x, y, radius)
+    constructor(x=0, y=0, radius=0)
     {
         /**
          * @member {number}
          * @default 0
          */
-        this.x = x || 0;
+        this.x = x;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.y = y || 0;
+        this.y = y;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.radius = radius || 0;
+        this.radius = radius;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
@@ -67,9 +67,9 @@ class Circle
             return false;
         }
 
+        const r2 = this.radius * this.radius;
         let dx = (this.x - x),
-            dy = (this.y - y),
-            r2 = this.radius * this.radius;
+            dy = (this.y - y);
 
         dx *= dx;
         dy *= dy;

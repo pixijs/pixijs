@@ -122,7 +122,7 @@ class Mesh extends core.Container
         renderer.flush();
 
         //  renderer.plugins.mesh.render(this);
-        let gl = renderer.gl;
+        const gl = renderer.gl;
         let glData = this._glDatas[renderer.CONTEXT_UID];
 
         if(!glData)
@@ -172,7 +172,7 @@ class Mesh extends core.Container
         glData.shader.uniforms.alpha = this.worldAlpha;
         glData.shader.uniforms.tint = this.tintRgb;
 
-        let drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+        const drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
         glData.vao.bind()
         .draw(drawMode, this.indices.length)
@@ -187,10 +187,10 @@ class Mesh extends core.Container
      */
     _renderCanvas(renderer)
     {
-        let context = renderer.context;
+        const context = renderer.context;
 
-        let transform = this.worldTransform;
-        let res = renderer.resolution;
+        const transform = this.worldTransform;
+        const res = renderer.resolution;
 
         if (renderer.roundPixels)
         {
@@ -220,16 +220,16 @@ class Mesh extends core.Container
     _renderCanvasTriangleMesh(context)
     {
         // draw triangles!!
-        let vertices = this.vertices;
-        let uvs = this.uvs;
+        const vertices = this.vertices;
+        const uvs = this.uvs;
 
-        let length = vertices.length / 2;
+        const length = vertices.length / 2;
         // this.count++;
 
         for (let i = 0; i < length - 2; i++)
         {
             // draw some triangles!
-            let index = i * 2;
+            const index = i * 2;
             this._renderCanvasDrawTriangle(context, vertices, uvs, index, (index + 2), (index + 4));
         }
     }
@@ -243,17 +243,17 @@ class Mesh extends core.Container
     _renderCanvasTriangles(context)
     {
         // draw triangles!!
-        let vertices = this.vertices;
-        let uvs = this.uvs;
-        let indices = this.indices;
+        const vertices = this.vertices;
+        const uvs = this.uvs;
+        const indices = this.indices;
 
-        let length = indices.length;
+        const length = indices.length;
         // this.count++;
 
         for (let i = 0; i < length; i += 3)
         {
             // draw some triangles!
-            let index0 = indices[i] * 2, index1 = indices[i + 1] * 2, index2 = indices[i + 2] * 2;
+            const index0 = indices[i] * 2, index1 = indices[i + 1] * 2, index2 = indices[i + 2] * 2;
             this._renderCanvasDrawTriangle(context, vertices, uvs, index0, index1, index2);
         }
     }
@@ -271,23 +271,23 @@ class Mesh extends core.Container
      */
     _renderCanvasDrawTriangle(context, vertices, uvs, index0, index1, index2)
     {
-        let base = this._texture.baseTexture;
-        let textureSource = base.source;
-        let textureWidth = base.width;
-        let textureHeight = base.height;
+        const base = this._texture.baseTexture;
+        const textureSource = base.source;
+        const textureWidth = base.width;
+        const textureHeight = base.height;
 
         let x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
         let y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
 
-        let u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
-        let v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
+        const u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
+        const v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
 
         if (this.canvasPadding > 0)
         {
-            let paddingX = this.canvasPadding / this.worldTransform.a;
-            let paddingY = this.canvasPadding / this.worldTransform.d;
-            let centerX = (x0 + x1 + x2) / 3;
-            let centerY = (y0 + y1 + y2) / 3;
+            const paddingX = this.canvasPadding / this.worldTransform.a;
+            const paddingY = this.canvasPadding / this.worldTransform.d;
+            const centerX = (x0 + x1 + x2) / 3;
+            const centerY = (y0 + y1 + y2) / 3;
 
             let normX = x0 - centerX;
             let normY = y0 - centerY;
@@ -326,13 +326,13 @@ class Mesh extends core.Container
         context.clip();
 
         // Compute matrix transform
-        let delta =  (u0 * v1)      + (v0 * u2)      + (u1 * v2)      - (v1 * u2)      - (v0 * u1)      - (u0 * v2);
-        let deltaA = (x0 * v1)      + (v0 * x2)      + (x1 * v2)      - (v1 * x2)      - (v0 * x1)      - (x0 * v2);
-        let deltaB = (u0 * x1)      + (x0 * u2)      + (u1 * x2)      - (x1 * u2)      - (x0 * u1)      - (u0 * x2);
-        let deltaC = (u0 * v1 * x2) + (v0 * x1 * u2) + (x0 * u1 * v2) - (x0 * v1 * u2) - (v0 * u1 * x2) - (u0 * x1 * v2);
-        let deltaD = (y0 * v1)      + (v0 * y2)      + (y1 * v2)      - (v1 * y2)      - (v0 * y1)      - (y0 * v2);
-        let deltaE = (u0 * y1)      + (y0 * u2)      + (u1 * y2)      - (y1 * u2)      - (y0 * u1)      - (u0 * y2);
-        let deltaF = (u0 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2) - (u0 * y1 * v2);
+        const delta =  (u0 * v1)      + (v0 * u2)      + (u1 * v2)      - (v1 * u2)      - (v0 * u1)      - (u0 * v2);
+        const deltaA = (x0 * v1)      + (v0 * x2)      + (x1 * v2)      - (v1 * x2)      - (v0 * x1)      - (x0 * v2);
+        const deltaB = (u0 * x1)      + (x0 * u2)      + (u1 * x2)      - (x1 * u2)      - (x0 * u1)      - (u0 * x2);
+        const deltaC = (u0 * v1 * x2) + (v0 * x1 * u2) + (x0 * u1 * v2) - (x0 * v1 * u2) - (v0 * u1 * x2) - (u0 * x1 * v2);
+        const deltaD = (y0 * v1)      + (v0 * y2)      + (y1 * v2)      - (v1 * y2)      - (v0 * y1)      - (y0 * v2);
+        const deltaE = (u0 * y1)      + (y0 * u2)      + (u1 * y2)      - (y1 * u2)      - (y0 * u1)      - (u0 * y2);
+        const deltaF = (u0 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2) - (u0 * y1 * v2);
 
         context.transform(deltaA / delta, deltaD / delta,
             deltaB / delta, deltaE / delta,
@@ -352,20 +352,20 @@ class Mesh extends core.Container
      */
     renderMeshFlat(Mesh)
     {
-        let context = this.context;
-        let vertices = Mesh.vertices;
+        const context = this.context;
+        const vertices = Mesh.vertices;
 
-        let length = vertices.length/2;
+        const length = vertices.length/2;
         // this.count++;
 
         context.beginPath();
         for (let i=1; i < length-2; i++)
         {
             // draw some triangles!
-            let index = i*2;
+            const index = i*2;
 
-            let x0 = vertices[index],   x1 = vertices[index+2], x2 = vertices[index+4];
-            let y0 = vertices[index+1], y1 = vertices[index+3], y2 = vertices[index+5];
+            const x0 = vertices[index],   x1 = vertices[index+2], x2 = vertices[index+4];
+            const y0 = vertices[index+1], y1 = vertices[index+3], y2 = vertices[index+5];
 
             context.moveTo(x0, y0);
             context.lineTo(x1, y1);

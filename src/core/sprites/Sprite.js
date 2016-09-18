@@ -155,13 +155,14 @@ class Sprite extends Container
 
         // set the vertex data
 
-        let texture = this._texture,
+        const texture = this._texture,
             wt = this.transform.worldTransform,
             a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
             vertexData = this.vertexData,
-            w0, w1, h0, h1,
             trim = texture.trim,
             orig = texture.orig;
+        let w0, w1, h0, h1;
+
 
         if (trim)
         {
@@ -216,9 +217,9 @@ class Sprite extends Container
             orig = texture.orig;
 
         // lets calculate the new untrimmed bounds..
-        let wt = this.transform.worldTransform,
-            a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty,
-            w0, w1, h0, h1;
+        const wt = this.transform.worldTransform,
+            a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty;
+        let w0, w1, h0, h1;
 
         w0 = (orig.width ) * (1-this.anchor._x);
         w1 = (orig.width ) * -this.anchor._x;
@@ -273,7 +274,7 @@ class Sprite extends Container
     _calculateBounds()
     {
 
-        let trim = this._texture.trim,
+        const trim = this._texture.trim,
             orig = this._texture.orig;
 
         //First lets check to see if the current texture has a trim..
@@ -336,9 +337,9 @@ class Sprite extends Container
     {
         this.worldTransform.applyInverse(point,  tempPoint);
 
-        let width = this._texture.orig.width;
-        let height = this._texture.orig.height;
-        let x1 = -width * this.anchor.x;
+        const width = this._texture.orig.width;
+        const height = this._texture.orig.height;
+        const x1 = -width * this.anchor.x;
         let y1;
 
         if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
@@ -370,10 +371,10 @@ class Sprite extends Container
 
         this.anchor = null;
 
-        let destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
+        const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
         if (destroyTexture)
         {
-            let destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+            const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
             this._texture.destroy(!!destroyBaseTexture);
         }
 
@@ -406,11 +407,11 @@ class Sprite extends Container
      */
     static fromFrame(frameId)
     {
-        let texture = utils.TextureCache[frameId];
+        const texture = utils.TextureCache[frameId];
 
         if (!texture)
         {
-            throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
+            throw new Error(`The frameId "${frameId}" does not exist in the texture cache`);
         }
 
         return new Sprite(texture);
@@ -443,7 +444,7 @@ class Sprite extends Container
     }
     set width(value)
     {
-        let sign = utils.sign(this.scale.x) || 1;
+        const sign = utils.sign(this.scale.x) || 1;
         this.scale.x = sign * value / this.texture.orig.width;
         this._width = value;
     }
@@ -460,7 +461,7 @@ class Sprite extends Container
     }
     set height(value)
     {
-        let sign = utils.sign(this.scale.y) || 1;
+        const sign = utils.sign(this.scale.y) || 1;
         this.scale.y = sign * value / this.texture.orig.height;
         this._height = value;
     }

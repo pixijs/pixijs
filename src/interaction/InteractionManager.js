@@ -324,13 +324,13 @@ class InteractionManager extends EventEmitter
      * @param [resolution=1] {number} The resolution / device pixel ratio of the new element (relative to the canvas).
      * @private
      */
-    setTargetElement(element, resolution)
+    setTargetElement(element, resolution=1)
     {
         this.removeEvents();
 
         this.interactionDOMElement = element;
 
-        this.resolution = resolution || 1;
+        this.resolution = resolution;
 
         this.addEvents();
     }
@@ -557,7 +557,7 @@ class InteractionManager extends EventEmitter
         // This will allow pixi to completly ignore and bypass checking the displayObjects children.
         if(displayObject.interactiveChildren)
         {
-            let children = displayObject.children;
+            const children = displayObject.children;
 
             for (let i = children.length-1; i >= 0; i--)
             {
@@ -700,10 +700,10 @@ class InteractionManager extends EventEmitter
      */
     processMouseUp( displayObject, hit )
     {
-        let e = this.mouse.originalEvent;
+        const e = this.mouse.originalEvent;
 
-        let isRightButton = e.button === 2 || e.which === 3;
-        let isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
+        const isRightButton = e.button === 2 || e.which === 3;
+        const isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
 
         if(hit)
         {
@@ -862,14 +862,14 @@ class InteractionManager extends EventEmitter
             event.preventDefault();
         }
 
-        let changedTouches = event.changedTouches;
-        let cLength = changedTouches.length;
+        const changedTouches = event.changedTouches;
+        const cLength = changedTouches.length;
 
         for (let i=0; i < cLength; i++)
         {
-            let touchEvent = changedTouches[i];
+            const touchEvent = changedTouches[i];
             //TODO POOL
-            let touchData = this.getTouchData( touchEvent );
+            const touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -914,14 +914,14 @@ class InteractionManager extends EventEmitter
             event.preventDefault();
         }
 
-        let changedTouches = event.changedTouches;
-        let cLength = changedTouches.length;
+        const changedTouches = event.changedTouches;
+        const cLength = changedTouches.length;
 
         for (let i=0; i < cLength; i++)
         {
-            let touchEvent = changedTouches[i];
+            const touchEvent = changedTouches[i];
 
-            let touchData = this.getTouchData( touchEvent );
+            const touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -980,14 +980,14 @@ class InteractionManager extends EventEmitter
             event.preventDefault();
         }
 
-        let changedTouches = event.changedTouches;
-        let cLength = changedTouches.length;
+        const changedTouches = event.changedTouches;
+        const cLength = changedTouches.length;
 
         for (let i=0; i < cLength; i++)
         {
-            let touchEvent = changedTouches[i];
+            const touchEvent = changedTouches[i];
 
-            let touchData = this.getTouchData( touchEvent );
+            const touchData = this.getTouchData( touchEvent );
 
             touchData.originalEvent = event;
 
@@ -1026,12 +1026,7 @@ class InteractionManager extends EventEmitter
      */
     getTouchData(touchEvent)
     {
-        let touchData = this.interactiveDataPool.pop();
-
-        if(!touchData)
-        {
-            touchData = new InteractionData();
-        }
+        const touchData = this.interactiveDataPool.pop() || new InteractionData();
 
         touchData.identifier = touchEvent.identifier;
         this.mapPositionToPoint( touchData.global, touchEvent.clientX, touchEvent.clientY );

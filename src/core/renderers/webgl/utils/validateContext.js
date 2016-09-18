@@ -1,6 +1,6 @@
 function validateContext(gl)
 {
-    let attributes = gl.getContextAttributes();
+    const attributes = gl.getContextAttributes();
 
     // this is going to be fairly simple for now.. but at least we have rom to grow!
     if(!attributes.stencil)

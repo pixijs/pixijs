@@ -51,12 +51,11 @@ class TextureGarbageCollector
      */
     run()
     {
-        let tm = this.renderer.textureManager;
-        let managedTextures =  tm._managedTextures;
+        const tm = this.renderer.textureManager;
+        const managedTextures =  tm._managedTextures;
         let wasRemoved = false;
-        let i,j;
 
-        for (i = 0; i < managedTextures.length; i++)
+        for (let i = 0; i < managedTextures.length; i++)
         {
             let texture = managedTextures[i];
 
@@ -71,9 +70,8 @@ class TextureGarbageCollector
 
         if (wasRemoved)
         {
-            j = 0;
-
-            for (i = 0; i < managedTextures.length; i++)
+            let j=0;
+            for (let i = 0; i < managedTextures.length; i++)
             {
                 if (managedTextures[i] !== null)
                 {
@@ -92,7 +90,7 @@ class TextureGarbageCollector
      */
     unload( displayObject )
     {
-        let tm = this.renderer.textureManager;
+        const tm = this.renderer.textureManager;
 
         if(displayObject._texture)
         {

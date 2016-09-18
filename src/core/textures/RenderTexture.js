@@ -49,13 +49,17 @@ class RenderTexture extends Texture
 
         if( !(baseRenderTexture instanceof BaseRenderTexture) )
         {
-            let width = arguments[1];
-            let height = arguments[2];
-            let scaleMode = arguments[3] || 0;
-            let resolution = arguments[4] || 1;
+            const width = arguments[1];
+            const height = arguments[2];
+            const scaleMode = arguments[3] || 0;
+            const resolution = arguments[4] || 1;
 
             // we have an old render texture..
+<<<<<<< HEAD
             console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);
+=======
+            console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);  // jshint ignore:line
+>>>>>>> some more es6 changes
             _legacyRenderer = arguments[0];
 
             frame = null;

@@ -417,7 +417,7 @@ extras.BitmapText.prototype.setText = function(text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text';`);
     // @endif
 };
 
@@ -431,7 +431,7 @@ core.Text.prototype.setText = function(text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myText.text = 'my text';`);
     // @endif
 };
 
@@ -460,15 +460,15 @@ Object.defineProperties(core.TextStyle.prototype, {
         get: function ()
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
-            let fontSizeString = (typeof this._fontSize === 'number') ? this._fontSize + 'px' : this._fontSize;
-            return this._fontStyle + ' ' + this._fontVariant + ' ' + this._fontWeight + ' ' + fontSizeString + ' ' + this._fontFamily;
+            let fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
+            return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
         set: function (font)
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
 
             // can work out fontStyle from search of whole string
@@ -497,11 +497,10 @@ Object.defineProperties(core.TextStyle.prototype, {
 
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
             let splits = font.split(' ');
-            let i;
             let fontSizeIndex = -1;
 
             this._fontSize = 26;
-            for ( i = 0; i < splits.length; ++i )
+            for ( let i = 0; i < splits.length; ++i )
             {
                 if ( splits[i].match( /(px|pt|em|%)/ ) )
                 {
@@ -513,7 +512,7 @@ Object.defineProperties(core.TextStyle.prototype, {
 
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
-            for ( i = 0; i < fontSizeIndex; ++i )
+            for ( let i = 0; i < fontSizeIndex; ++i )
             {
                 if ( splits[i].match( /(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/ ) )
                 {
@@ -526,7 +525,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
             {
                 this._fontFamily = '';
-                for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+                for ( let i = fontSizeIndex + 1; i < splits.length; ++i )
                 {
                     this._fontFamily += splits[i] + ' ';
                 }

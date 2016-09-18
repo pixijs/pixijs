@@ -11,7 +11,7 @@ const fragTemplate = [
 
 const checkMaxIfStatmentsInShader = function(maxIfs, gl)
 {
-    let createTempContext = !gl;
+    const createTempContext = !gl;
 
     if(createTempContext)
     {
@@ -22,11 +22,11 @@ const checkMaxIfStatmentsInShader = function(maxIfs, gl)
         gl = glCore.createContext(tinyCanvas);
     }
 
-    let shader = gl.createShader(gl.FRAGMENT_SHADER);
+    const shader = gl.createShader(gl.FRAGMENT_SHADER);
 
     while(true) // eslint-disable-line no-constant-condition
     {
-        let fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
+        const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);
@@ -68,7 +68,7 @@ function generateIfTestSrc(maxIfs)
 
         if(i < maxIfs-1)
         {
-            src += 'if(test == ' + i + '.0){}';
+            src += `if(test == ${i}.0){}`;
         }
     }
 
