@@ -192,7 +192,7 @@ class BitmapText extends core.Container
                 pos.x += charData.kerning[prevCharCode];
             }
 
-            chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+            chars.push({texture:charData.texture, line, charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
             lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
             pos.x += charData.xAdvance;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));

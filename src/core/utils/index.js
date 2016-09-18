@@ -18,7 +18,7 @@ const utils = {
      * @memberof PIXI.utils
      * @return {number} The next unique identifier to use.
      */
-    uid: function ()
+    uid ()
     {
         return ++utils._uid;
     },
@@ -31,7 +31,7 @@ const utils = {
      * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
-    hex2rgb: function (hex, out)
+    hex2rgb (hex, out)
     {
         out = out || [];
 
@@ -49,7 +49,7 @@ const utils = {
      * @param hex {number} Number in hex
      * @return {string} The string color.
      */
-    hex2string: function (hex)
+    hex2string (hex)
     {
         hex = hex.toString(16);
         hex = '000000'.substr(0, 6 - hex.length) + hex;
@@ -64,7 +64,7 @@ const utils = {
      * @param rgb {number[]} rgb array
      * @return {number} The color number
      */
-    rgb2hex: function (rgb)
+    rgb2hex (rgb)
     {
         return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
     },
@@ -78,7 +78,7 @@ const utils = {
      * @param url {string} the image path
      * @return {number} resolution / device pixel ratio of an asset
      */
-    getResolutionOfUrl: function (url)
+    getResolutionOfUrl (url)
     {
         const resolution = CONST.RETINA_PREFIX.exec(url);
 
@@ -101,7 +101,7 @@ const utils = {
      * @constant
      * @static
      */
-    sayHello: function (type)
+    sayHello (type)
     {
         if (utils._saidHello)
         {
@@ -139,7 +139,7 @@ const utils = {
      * @memberof PIXI.utils
      * @return {boolean} is webgl supported
      */
-    isWebGLSupported: function ()
+    isWebGLSupported ()
     {
         const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
         try
@@ -179,7 +179,7 @@ const utils = {
      * @param n {number}
      * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
      */
-    sign: function (n)
+    sign (n)
     {
         return n ? (n < 0 ? -1 : 1) : 0;
     },
@@ -192,7 +192,7 @@ const utils = {
      * @param {number} startIdx The index to begin removing from (inclusive)
      * @param {number} removeCount How many items to remove
      */
-    removeItems: function (arr, startIdx, removeCount)
+    removeItems (arr, startIdx, removeCount)
     {
         let length = arr.length;
 

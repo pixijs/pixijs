@@ -74,7 +74,7 @@ class InteractionManager extends EventEmitter
             target: null,
             type: null,
             data: this.mouse,
-            stopPropagation:function(){
+            stopPropagation(){
                 this.stopped = true;
             }
         };

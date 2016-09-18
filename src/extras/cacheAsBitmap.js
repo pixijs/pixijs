@@ -36,11 +36,11 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof PIXI.DisplayObject#
      */
     cacheAsBitmap: {
-        get: function ()
+        get ()
         {
             return this._cacheAsBitmap;
         },
-        set: function (value)
+        set (value)
         {
             if (this._cacheAsBitmap === value)
             {

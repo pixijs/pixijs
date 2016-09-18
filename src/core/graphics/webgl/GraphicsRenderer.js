@@ -123,7 +123,7 @@ class GraphicsRenderer extends ObjectRenderer
         // if the graphics object does not exist in the webGL context time to create it!
         if (!webGL)
         {
-            webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl:gl, clearDirty:-1, dirty:-1};
+            webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl, clearDirty:-1, dirty:-1};
 
         }
 

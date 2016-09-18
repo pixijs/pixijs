@@ -111,7 +111,7 @@ const core = Object.assign(consts, math, {
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function (width=800, height=600, options, noWebGL)
+    autoDetectRenderer (width=800, height=600, options, noWebGL)
     {
 
         if (!noWebGL && core.utils.isWebGLSupported())

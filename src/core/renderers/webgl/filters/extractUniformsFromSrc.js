@@ -49,8 +49,8 @@ function extractUniformsFromString(string)
             {
                 uniforms[name] = {
                     value:defaultValue(type, size),
-                    name:name,
-                    type:type
+                    name,
+                    type
                 };
             }
         }

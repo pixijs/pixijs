@@ -72,7 +72,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Stage: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
@@ -90,7 +90,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     DisplayObjectContainer: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
@@ -108,7 +108,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Strip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
@@ -126,7 +126,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Rope: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
@@ -144,7 +144,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     ParticleContainer: {
-        get: function() {
+        get() {
             // @if DEBUG
             warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             // @endif
@@ -161,7 +161,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     MovieClip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
@@ -179,7 +179,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TilingSprite: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
@@ -197,7 +197,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BitmapText: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
@@ -215,7 +215,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     blendModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
@@ -233,7 +233,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     scaleModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
@@ -251,7 +251,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BaseTextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
@@ -269,7 +269,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
@@ -287,7 +287,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     math: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The math namespace is deprecated, please access members already accessible on PIXI.');
@@ -304,7 +304,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -321,7 +321,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     TransformManual: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
@@ -457,7 +457,7 @@ Object.defineProperties(core.TextStyle.prototype, {
      * @deprecated since version 4.0.0
      */
     font: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
@@ -465,7 +465,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             let fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
             return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
-        set: function (font)
+        set (font)
         {
             // @if DEBUG
             warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
@@ -566,7 +566,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -583,7 +583,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     SpriteMaskFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');

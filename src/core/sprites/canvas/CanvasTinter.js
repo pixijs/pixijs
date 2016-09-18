@@ -115,7 +115,7 @@ const CanvasTinter = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithOverlay: function (texture, color, canvas)
+    tintWithOverlay (texture, color, canvas)
     {
         const context = canvas.getContext( '2d' );
         const crop = texture._frame.clone();
