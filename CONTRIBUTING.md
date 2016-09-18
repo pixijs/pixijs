@@ -34,9 +34,9 @@ changes and submit a Pull Request. When submitting a PR follow these guidlines:
 - **Send Pull Requests to the `dev` branch.** All Pull Requests must be sent to the `dev` branch,
 `master` is the latest release and PRs to that branch will be closed.
 
-- **Ensure changes are jshint validated.** After making a change be sure to run the build process
+- **Ensure changes are eslint validated.** After making a change be sure to run the build process
 to ensure that you didn't break anything. You can do this with `npm test` which will run
-jshint, rebuild, then run the test suite.
+eslint, rebuild, then run the test suite.
 
 - **Never commit new builds.** When making a code change, you should always run `npm run build` which will
 rebuild the project, *however* please do not commit these new builds or your PR will be closed.
@@ -53,7 +53,7 @@ changing only whitespace or trash files will likely get your PR closed.
 
 - Always favor strict equals `===` unless you *need* to use type coercion.
 
-- Follow conventions already in the code, and listen to jshint.
+- Follow conventions already in the code, and listen to eslint.
 
 [0]: https://github.com/pixijs/pixi.js/issues
 [1]: http://jsfiddle.net

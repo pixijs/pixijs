@@ -89,7 +89,7 @@ class FilterManager extends WebGLManager
         sourceFrame.pad(padding);
 
         if(filterData.stack[0].renderTarget.transform)
-        {//jshint ignore:line
+        {
 
             // TODO we should fit the rect around the transform..
         }
