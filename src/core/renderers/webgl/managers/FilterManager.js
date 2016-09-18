@@ -88,11 +88,7 @@ class FilterManager extends WebGLManager
         // this should stop the strange side effects that can occour when cropping to the edges
         sourceFrame.pad(padding);
 
-        if(filterData.stack[0].renderTarget.transform)
-        {
-
-        }
-        else
+        if(!filterData.stack[0].renderTarget.transform)
         {
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
