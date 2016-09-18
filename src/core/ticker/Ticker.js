@@ -107,34 +107,31 @@ class Ticker
          */
         this.started = false;
 
-        // Bind tick
-        this._tick = this._tick.bind(this);
-    }
+        /**
+         * Internal tick method bound to ticker instance.
+         * This is because in early 2015, Function.bind
+         * is still 60% slower in high performance scenarios.
+         * Also separating frame requests from update method
+         * so listeners may be called at any time and with
+         * any animation API, just invoke ticker.update(time).
+         *
+         * @private
+         */
+        this._tick = (time) => {
 
-    /**
-     * Internal tick method bound to ticker instance.
-     * This is because in early 2015, Function.bind
-     * is still 60% slower in high performance scenarios.
-     * Also separating frame requests from update method
-     * so listeners may be called at any time and with
-     * any animation API, just invoke ticker.update(time).
-     *
-     * @private
-     */
-    _tick(time)
-    {
-        this._requestId = null;
+            this._requestId = null;
 
-        if (this.started)
-        {
-            // Invoke listeners now
-            this.update(time);
-            // Listener side effects may have modified ticker state.
-            if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
+            if (this.started)
             {
-                this._requestId = requestAnimationFrame(this._tick);
+                // Invoke listeners now
+                this.update(time);
+                // Listener side effects may have modified ticker state.
+                if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
+                {
+                    this._requestId = requestAnimationFrame(this._tick);
+                }
             }
-        }
+        };
     }
 
     /**
