@@ -24,7 +24,7 @@ class DisplayObject extends EventEmitter
         let TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
         this.tempDisplayObjectParent = null;
-        
+
         //TODO: need to create Transform from factory
         /**
          * World transform and local transform of this object.
@@ -111,8 +111,8 @@ class DisplayObject extends EventEmitter
     get _tempDisplayObjectParent() {
         if (this.tempDisplayObjectParent === null) {
             this.tempDisplayObjectParent = new DisplayObject();
-        }    
-        return this.tempDisplayObjectParent;        
+        }
+        return this.tempDisplayObjectParent;
     }
 
     /*
@@ -341,7 +341,7 @@ class DisplayObject extends EventEmitter
      * @param [pivotY=0] {number} The Y pivot value
      * @return {PIXI.DisplayObject} The DisplayObject instance
      */
-    setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
+    setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
     {
         this.position.x = x || 0;
         this.position.y = y || 0;
@@ -358,7 +358,7 @@ class DisplayObject extends EventEmitter
     /**
      * Base destroy method for generic display objects. This will automatically
      * remove the display object from its parent Container as well as remove
-     * all current event listeners and internal references. Do not use a DisplayObject 
+     * all current event listeners and internal references. Do not use a DisplayObject
      * after calling `destroy`.
      */
     destroy()
@@ -531,7 +531,7 @@ class DisplayObject extends EventEmitter
 
         return true;
     }
-    
+
     /**
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
      * In PIXI a regular mask must be a PIXI.Graphics or a PIXI.Sprite object. This allows for much faster masking in canvas as it utilises shape clipping.
