@@ -721,13 +721,12 @@ class Graphics extends Container
         {
             if(!Graphics._SPRITE_TEXTURE)
             {
-                const canvas = document.createElement('canvas');
-                canvas.width = 10;
-                canvas.height = 10;
-                const context = canvas.getContext('2d');
-                context.fillStyle = 'white';
-                context.fillRect(0, 0, 10, 10);
-                Graphics._SPRITE_TEXTURE = Texture.fromCanvas(canvas);
+                Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+
+                const currentRenderTarget = renderer._activeRenderTarget;
+                renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
+                renderer.clear([1,1,1,1]);
+                renderer.bindRenderTarget(currentRenderTarget);
             }
 
             this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);

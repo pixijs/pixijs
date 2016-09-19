@@ -56,10 +56,14 @@ class RenderTexture extends Texture
 
             // we have an old render texture..
 <<<<<<< HEAD
+<<<<<<< HEAD
             console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);
 =======
             console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);  // jshint ignore:line
 >>>>>>> some more es6 changes
+=======
+            console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);  // jshint ignore:line
+>>>>>>> Revert "Merge branch 'dev-es6' into dev-es6-sb"
             _legacyRenderer = arguments[0];
 
             frame = null;

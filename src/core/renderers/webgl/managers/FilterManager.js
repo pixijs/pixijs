@@ -88,34 +88,25 @@ class FilterManager extends WebGLManager
         // this should stop the strange side effects that can occour when cropping to the edges
         sourceFrame.pad(padding);
 
-        if(!filterData.stack[0].renderTarget.transform)
+        if(filterData.stack[0].renderTarget.transform)
+        {//jshint ignore:line
+
+            // TODO we should fit the rect around the transform..
+        }
+        else
         {
+
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
 
-        // lets pplay the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occour when cropping to the edges
-        sourceFrame.pad(padding);
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        let renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
-=======
-
-=======
->>>>>>> some more es6 changes
         // lets play the padding after we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
 
-
         const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
-<<<<<<< HEAD
->>>>>>> some more es6 changes
-=======
->>>>>>> some more es6 changes
 
         currentState.target = target;
         currentState.filters = filters;

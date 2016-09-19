@@ -1,3 +1,7 @@
+// @todo - ignore the too many parameters warning for now
+// should either fix it or change the jshint config
+// jshint -W072
+
 import Point from './Point';
 
 /**
