@@ -13,7 +13,7 @@
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @param [path=[]] {number[]} Path array to push points intogit c
+ * @param [path=[]] {number[]} Path array to push points into
  * @return {number[]}
  */
 const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path=[]) // jshint ignore:line
