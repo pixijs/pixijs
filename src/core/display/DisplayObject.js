@@ -348,8 +348,8 @@ class DisplayObject extends EventEmitter
     {
         this.position.x = x;
         this.position.y = y;
-        this.scale.x = scaleX;
-        this.scale.y = scaleY;
+        this.scale.x = !scaleX ? 1 : scaleX;
+        this.scale.y = !scaleY ? 1 : scaleY;
         this.rotation = rotation;
         this.skew.x = skewX;
         this.skew.y = skewY;
