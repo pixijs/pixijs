@@ -55,7 +55,7 @@ class RenderTexture extends Texture
             const resolution = arguments[4] || 1;
 
             // we have an old render texture..
-            console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);  // jshint ignore:line
+            console.warn(`v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(${width}, ${height})`);
             _legacyRenderer = arguments[0];
 
             frame = null;

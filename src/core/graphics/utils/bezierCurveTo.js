@@ -16,7 +16,7 @@
  * @param [path=[]] {number[]} Path array to push points into
  * @return {number[]}
  */
-const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path=[]) // jshint ignore:line
+const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path=[])
 {
     const n = 20;
     let dt,

@@ -84,12 +84,12 @@ class FilterManager extends WebGLManager
         sourceFrame.width = ((targetBounds.width * resolution) | 0) / resolution;
         sourceFrame.height = ((targetBounds.height * resolution) | 0) / resolution;
 
-          // lets pplay the padding After we fit the element to the screen.
+        // lets pplay the padding After we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
         sourceFrame.pad(padding);
 
         if(filterData.stack[0].renderTarget.transform)
-        {//jshint ignore:line
+        {//
 
             // TODO we should fit the rect around the transform..
         }

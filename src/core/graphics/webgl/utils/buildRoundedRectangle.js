@@ -92,7 +92,7 @@ let buildRoundedRectangle = function (graphicsData, webGLData)
  * @param [out=[]] {number[]} The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])// jshint ignore:line
+let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
 {
     const n = 20,
         points = out;
