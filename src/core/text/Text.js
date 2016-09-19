@@ -383,10 +383,11 @@ class Text extends Sprite
      */
     determineFontProperties(fontStyle)
     {
-        const properties = Text.fontPropertiesCache[fontStyle] || {};
+        let properties = Text.fontPropertiesCache[fontStyle];
 
         if (!properties)
         {
+            properties = {};
 
             const canvas = Text.fontPropertiesCanvas;
             const context = Text.fontPropertiesContext;
