@@ -101,7 +101,7 @@ export default function ()
             }
 
             function iteration() {
-                processNextBatch(()=>{
+                processNextBatch(() => {
                     if (shouldProcessNextBatch()) {
                         iteration();
                     } else {

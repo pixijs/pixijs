@@ -115,7 +115,7 @@ export default function ()
                 metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
-            this.add(resource.name + '_image', textureUrl, loadOptions, res=>{
+            this.add(resource.name + '_image', textureUrl, loadOptions, res => {
                 parse(resource, res.texture);
                 next();
             });

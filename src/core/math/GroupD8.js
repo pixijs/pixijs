@@ -69,31 +69,31 @@ const GroupD8 = {
     NE: 7,
     MIRROR_VERTICAL: 8,
     MIRROR_HORIZONTAL: 12,
-    uX: ind=>ux[ind],
-    uY: ind=>uy[ind],
-    vX: ind=>vx[ind],
-    vY: ind=>vy[ind],
-    inv: rotation=>{
+    uX: ind => ux[ind],
+    uY: ind => uy[ind],
+    vX: ind => vx[ind],
+    vY: ind => vy[ind],
+    inv: rotation => {
         if (rotation & 8) {
             return rotation & 15;
         }
         return (-rotation) & 7;
     },
-    add: (rotationSecond, rotationFirst)=>mul[rotationSecond][rotationFirst],
-    sub: (rotationSecond, rotationFirst)=>mul[rotationSecond][GroupD8.inv(rotationFirst)],
+    add: (rotationSecond, rotationFirst) => mul[rotationSecond][rotationFirst],
+    sub: (rotationSecond, rotationFirst) => mul[rotationSecond][GroupD8.inv(rotationFirst)],
     /**
      * Adds 180 degrees to rotation. Commutative operation
      * @param rotation
      * @returns {number}
      */
-    rotate180: rotation=>rotation ^ 4,
+    rotate180: rotation => rotation ^ 4,
     /**
      * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
      * @param rotation
      * @returns {boolean}
      */
-    isSwapWidthHeight: rotation=>(rotation & 3) === 2,
-    byDirection: (dx, dy)=>{
+    isSwapWidthHeight: rotation => (rotation & 3) === 2,
+    byDirection: (dx, dy) => {
         if (Math.abs(dx) * 2 <= Math.abs(dy)) {
             if (dy >= 0) {
                 return GroupD8.S;
@@ -132,7 +132,7 @@ const GroupD8 = {
      * @param tx {number|*} sprite anchoring
      * @param ty {number|*} sprite anchoring
      */
-    matrixAppendRotationInv: (matrix, rotation, tx, ty)=>{
+    matrixAppendRotationInv: (matrix, rotation, tx, ty) => {
         //Packer used "rotation", we use "inv(rotation)"
         const mat = tempMatrices[GroupD8.inv(rotation)];
         tx = tx || 0;
