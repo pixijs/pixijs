@@ -7,16 +7,16 @@ function checkPrecision(src)
     {
         if (src[0].substring(0,9) !== 'precision')
         {
-            let copy = src.slice(0);
-            copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
+            const copy = src.slice(0);
+            copy.unshift(`precision ${Const.PRECISION.DEFAULT} float;`);
             return copy;
         }
     }
-    else 
+    else
     {
         if (src.substring(0,9) !== 'precision')
         {
-            return 'precision ' + Const.PRECISION.DEFAULT + ' float;\n' + src;
+            return `precision ${Const.PRECISION.DEFAULT} float;\n${src}`;
         }
     }
     return src;
@@ -31,13 +31,12 @@ function checkPrecision(src)
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations.
  */
 class Shader extends GLShader
 {
-    constructor(gl, vertexSrc, fragmentSrc, attributeLocations) 
+    constructor(gl, vertexSrc, fragmentSrc)
     {
-        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc, attributeLocations));
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
     }
 }
 

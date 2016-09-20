@@ -172,7 +172,7 @@ class RenderTarget
      */
     clear(clearColor)
     {
-        let cc = clearColor || this.clearColor;
+        const cc = clearColor || this.clearColor;
         this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3]);//r,g,b,a);
     }
 
@@ -206,7 +206,7 @@ class RenderTarget
     activate()
     {
         //TOOD refactor usage of frame..
-        let gl = this.gl;
+        const gl = this.gl;
 
         // make surethe texture is unbound!
         this.frameBuffer.bind();
@@ -244,7 +244,7 @@ class RenderTarget
      */
     calculateProjection(destinationFrame, sourceFrame)
     {
-        let pm = this.projectionMatrix;
+        const pm = this.projectionMatrix;
 
         sourceFrame = sourceFrame || destinationFrame;
 

@@ -10,7 +10,7 @@ const Rectangle = math.Rectangle;
  * @memberof PIXI
  */
 class Bounds
-{ 
+{
     constructor()
     {
         /**
@@ -58,7 +58,7 @@ class Bounds
     /**
      * Can return Rectangle.EMPTY constant, either construct new rectangle, either use your rectangle
      * It is not guaranteed that it will return tempRect
-     * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
+     * @param rect {PIXI.Rectangle} temporary object will be used if AABB is not empty
      * @returns {PIXI.Rectangle}
      */
     getRectangle(rect)
@@ -142,8 +142,8 @@ class Bounds
      */
     addFrame(transform, x0, y0, x1, y1)
     {
-        let matrix = transform.worldTransform;
-        let a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
+        const matrix = transform.worldTransform;
+        const a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
         let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
         let x = a * x0 + c * y0 + tx;
@@ -189,15 +189,15 @@ class Bounds
      */
     addVertices(transform, vertices, beginOffset, endOffset)
     {
-        let matrix = transform.worldTransform;
-        let a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
+        const matrix = transform.worldTransform;
+        const a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
         let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
         for (let i = beginOffset; i < endOffset; i += 2)
         {
-            let rawX = vertices[i], rawY = vertices[i + 1];
-            let x = (a * rawX) + (c * rawY) + tx;
-            let y = (d * rawY) + (b * rawX) + ty;
+            const rawX = vertices[i], rawY = vertices[i + 1];
+            const x = (a * rawX) + (c * rawY) + tx;
+            const y = (d * rawY) + (b * rawX) + ty;
 
             minX = x < minX ? x : minX;
             minY = y < minY ? y : minY;
@@ -213,13 +213,13 @@ class Bounds
 
     addBounds(bounds)
     {
-        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        const minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
 
         this.minX = bounds.minX < minX ? bounds.minX : minX;
         this.minY = bounds.minY < minY ? bounds.minY : minY;
         this.maxX = bounds.maxX > maxX ? bounds.maxX : maxX;
         this.maxY = bounds.maxY > maxY ? bounds.maxY : maxY;
     }
-}    
+}
 
 export default Bounds;

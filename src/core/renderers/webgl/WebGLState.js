@@ -1,6 +1,6 @@
 import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
 
-let BLEND = 0,
+const BLEND = 0,
     DEPTH_TEST = 1,
     FRONT_FACE = 2,
     CULL_FACE = 3,
@@ -98,7 +98,7 @@ class WebGLState
      */
     pop()
     {
-        let state = this.stack[--this.stackIndex];
+        const state = this.stack[--this.stackIndex];
         this.setState(state);
     }
 
@@ -124,19 +124,8 @@ class WebGLState
         if(this.activeState[BLEND] === value|0) {
             return;
         }
-
         this.activeState[BLEND] = value|0;
-
-        let gl = this.gl;
-
-        if(value)
-        {
-            gl.enable(gl.BLEND);
-        }
-        else
-        {
-            gl.disable(gl.BLEND);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
 
     /**
@@ -165,17 +154,7 @@ class WebGLState
         }
 
         this.activeState[DEPTH_TEST] = value|0;
-
-        let gl = this.gl;
-
-        if(value)
-        {
-            gl.enable(gl.DEPTH_TEST);
-        }
-        else
-        {
-            gl.disable(gl.DEPTH_TEST);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
     }
 
     /**
@@ -189,17 +168,7 @@ class WebGLState
         }
 
         this.activeState[CULL_FACE] = value|0;
-
-        let gl = this.gl;
-
-        if(value)
-        {
-            gl.enable(gl.CULL_FACE);
-        }
-        else
-        {
-            gl.disable(gl.CULL_FACE);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
     }
 
     /**
@@ -213,17 +182,7 @@ class WebGLState
         }
 
         this.activeState[FRONT_FACE] = value|0;
-
-        let gl = this.gl;
-
-        if(value)
-        {
-            gl.frontFace(gl.CW);
-        }
-        else
-        {
-            gl.frontFace(gl.CCW);
-        }
+        this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
     }
 
     /**
@@ -231,22 +190,19 @@ class WebGLState
      */
     resetAttributes()
     {
-        let i;
 
-        for ( i = 0; i < this.attribState.tempAttribState.length; i++) {
+        for (let i = 0; i < this.attribState.tempAttribState.length; i++) {
             this.attribState.tempAttribState[i] = 0;
         }
 
-        for ( i = 0; i < this.attribState.attribState.length; i++) {
+        for (let i = 0; i < this.attribState.attribState.length; i++) {
             this.attribState.attribState[i] = 0;
         }
 
-        let gl = this.gl;
-
         // im going to assume one is always active for performance reasons.
-        for (i = 1; i < this.maxAttribs; i++)
+        for (let i = 1; i < this.maxAttribs; i++)
         {
-            gl.disableVertexAttribArray(i);
+            this.gl.disableVertexAttribArray(i);
         }
     }
 
@@ -273,7 +229,7 @@ class WebGLState
             this.activeState[i] = 32;
         }
 
-        let gl = this.gl;
+        const gl = this.gl;
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
 

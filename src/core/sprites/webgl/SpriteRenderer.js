@@ -52,7 +52,7 @@ class SpriteRenderer extends ObjectRenderer
 
         this.buffers = [];
         for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i*=2) {
-            let numVertsTemp = i * 4 * this.vertByteSize;
+            const numVertsTemp = i * 4 * this.vertByteSize;
             this.buffers.push(new Buffer(numVertsTemp));
         }
 
@@ -98,7 +98,7 @@ class SpriteRenderer extends ObjectRenderer
      */
     onContextChange()
     {
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
         // step 1: first check max textures the GPU can handle.
         this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
@@ -115,7 +115,7 @@ class SpriteRenderer extends ObjectRenderer
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
-        let shader = this.shaders[1];
+        const shader = this.shaders[1];
 
         for (let i = 0; i < this.vaoMax; i++) {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
@@ -177,17 +177,17 @@ class SpriteRenderer extends ObjectRenderer
           return;
         }
 
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
-        let np2 = bitTwiddle.nextPow2(this.currentIndex);
-        let log2 = bitTwiddle.log2(np2);
-        let buffer = this.buffers[log2];
+        const np2 = bitTwiddle.nextPow2(this.currentIndex);
+        const log2 = bitTwiddle.log2(np2);
+        const buffer = this.buffers[log2];
 
-        let sprites = this.sprites;
-        let groups = this.groups;
+        const sprites = this.sprites;
+        const groups = this.groups;
 
-        let float32View = buffer.float32View;
-        let uint32View = buffer.uint32View;
+        const float32View = buffer.float32View;
+        const uint32View = buffer.uint32View;
 
         let index = 0;
         let nextTexture;
@@ -208,7 +208,7 @@ class SpriteRenderer extends ObjectRenderer
 
         TICK++;
 
-        let i; 
+        let i;
 
         for (i = 0; i < this.currentIndex; i++)
         {
@@ -266,7 +266,7 @@ class SpriteRenderer extends ObjectRenderer
 
             if (this.renderer.roundPixels)
             {
-                let resolution = this.renderer.resolution;
+                const resolution = this.renderer.resolution;
 
                 //xy
                 float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
@@ -339,8 +339,8 @@ class SpriteRenderer extends ObjectRenderer
         /// render the groups..
         for (i = 0; i < groupCount; i++) {
 
-            let group = groups[i];
-            let groupTextureCount = group.textureCount;
+            const group = groups[i];
+            const groupTextureCount = group.textureCount;
             shader = this.shaders[groupTextureCount-1];
 
             if(!shader)

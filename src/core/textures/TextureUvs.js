@@ -35,8 +35,8 @@ class TextureUvs
      */
     set(frame, baseFrame, rotate)
     {
-        let tw = baseFrame.width;
-        let th = baseFrame.height;
+        const tw = baseFrame.width;
+        const th = baseFrame.height;
 
         if(rotate)
         {

@@ -67,7 +67,7 @@ class Rope extends Mesh
      */
     refresh()
     {
-        let points = this.points;
+        const points = this.points;
 
         // if too little points, or texture hasn't got UVs set yet just move on.
         if (points.length < 1 || !this._texture._uvs)
@@ -75,14 +75,14 @@ class Rope extends Mesh
             return;
         }
 
-        let uvs = this.uvs;
+        const uvs = this.uvs;
 
-        let indices = this.indices;
-        let colors = this.colors;
+        const indices = this.indices;
+        const colors = this.colors;
 
-        let textureUvs = this._texture._uvs;
-        let offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        let factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
+        const textureUvs = this._texture._uvs;
+        const offset = new core.Point(textureUvs.x0, textureUvs.y0);
+        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
         uvs[0] = 0 + offset.x;
         uvs[1] = 0 + offset.y;
@@ -95,8 +95,8 @@ class Rope extends Mesh
         indices[0] = 0;
         indices[1] = 1;
 
-        let total = points.length,
-            index, amount;
+        const total = points.length;
+        let index, amount;
 
         for (let i = 1; i < total; i++)
         {

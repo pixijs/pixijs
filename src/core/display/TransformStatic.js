@@ -9,7 +9,7 @@ import TransformBase from './TransformBase';
  * @memberof PIXI
  */
 class TransformStatic extends TransformBase
-{ 
+{
     constructor()
     {
         super();
@@ -73,7 +73,7 @@ class TransformStatic extends TransformBase
      * Updates only local matrix
      */
     updateLocalTransform() {
-        let lt = this.localTransform;
+        const lt = this.localTransform;
         if(this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
@@ -105,9 +105,9 @@ class TransformStatic extends TransformBase
      */
     updateTransform(parentTransform)
     {
-        let pt = parentTransform.worldTransform;
-        let wt = this.worldTransform;
-        let lt = this.localTransform;
+        const pt = parentTransform.worldTransform;
+        const wt = this.worldTransform;
+        const lt = this.localTransform;
 
         if(this._localID !== this._currentLocalID)
         {

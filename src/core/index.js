@@ -98,8 +98,8 @@ const core = Object.assign(consts, math, {
      * the browser then this function will return a canvas renderer
      *
      * @memberof PIXI
-     * @param width=800 {number} the width of the renderers view
-     * @param height=600 {number} the height of the renderers view
+     * @param [width=800] {number} the width of the renderers view
+     * @param [height=600] {number} the height of the renderers view
      * @param [options] {object} The optional renderer parameters
      * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
      * @param [options.transparent=false] {boolean} If the render view is transparent, default false
@@ -111,10 +111,8 @@ const core = Object.assign(consts, math, {
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function (width, height, options, noWebGL)
+    autoDetectRenderer (width=800, height=600, options, noWebGL)
     {
-        width = width || 800;
-        height = height || 600;
 
         if (!noWebGL && core.utils.isWebGLSupported())
         {

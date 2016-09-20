@@ -39,9 +39,9 @@ class CanvasSpriteRenderer
      */
     render(sprite)
     {
-        let texture = sprite._texture,
-            renderer = this.renderer,
-            wt = sprite.transform.worldTransform,
+        const texture = sprite._texture,
+            renderer = this.renderer;
+        let wt = sprite.transform.worldTransform,
             dx,
             dy,
             width = texture._frame.width,
@@ -60,7 +60,7 @@ class CanvasSpriteRenderer
             renderer.context.globalAlpha = sprite.worldAlpha;
 
             // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
-            let smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
+            const smoothingEnabled = texture.baseTexture.scaleMode === CONST.SCALE_MODES.LINEAR;
             if (renderer.smoothProperty && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
             {
                 renderer.context[renderer.smoothProperty] = smoothingEnabled;
@@ -110,7 +110,7 @@ class CanvasSpriteRenderer
                 );
             }
 
-            let resolution = texture.baseTexture.resolution;
+            const resolution = texture.baseTexture.resolution;
 
             if (sprite.tint !== 0xFFFFFF)
             {

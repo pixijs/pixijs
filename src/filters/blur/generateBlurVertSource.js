@@ -16,7 +16,7 @@ const vertTemplate = [
 
 const generateVertBlurSource = function(kernelSize, x)
 {
-    let halfLength = Math.ceil(kernelSize/2);
+    const halfLength = Math.ceil(kernelSize/2);
 
     let vertSource = vertTemplate;
 

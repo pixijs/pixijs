@@ -171,7 +171,7 @@ class VideoBaseTexture extends BaseTexture
     {
         if (!video._pixiId)
         {
-            video._pixiId = 'video_' + utils.uid();
+            video._pixiId = `video_${utils.uid()}`;
         }
 
         let baseTexture = utils.BaseTextureCache[video._pixiId];
@@ -199,7 +199,7 @@ class VideoBaseTexture extends BaseTexture
      */
     static fromUrl(videoSrc, scaleMode)
     {
-        let video = document.createElement('video');
+        const video = document.createElement('video');
 
         // array of objects or strings
         if (Array.isArray(videoSrc))
@@ -228,10 +228,10 @@ function createSource(path, type)
 {
     if (!type)
     {
-        type = 'video/' + path.substr(path.lastIndexOf('.') + 1);
+        type = `video/${path.substr(path.lastIndexOf('.') + 1)}`;
     }
 
-    let source = document.createElement('source');
+    const source = document.createElement('source');
 
     source.src = path;
     source.type = type;

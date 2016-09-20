@@ -5,12 +5,11 @@ import CONST from '../../../const';
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The current WebGL drawing context
- * @param array
+ * @param [array=[]] {array}
+ * @return {array}
  */
-function mapWebGLBlendModesToPixi(gl, array)
+function mapWebGLBlendModesToPixi(gl, array=[])
 {
-    array = array || [];
-
     //TODO - premultiply alpha would be different.
     //add a boolean for that!
     array[CONST.BLEND_MODES.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];

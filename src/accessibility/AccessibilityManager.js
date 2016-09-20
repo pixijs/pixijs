@@ -26,7 +26,7 @@ class AccessibilityManager
         }
 
         // first we create a div that will sit over the pixi element. This is where the div overlays will go.
-        let div = document.createElement('div');
+        const div = document.createElement('div');
 
         div.style.width = 100 + 'px';
         div.style.height = 100 + 'px';
@@ -105,7 +105,7 @@ class AccessibilityManager
 
     createTouchHook()
     {
-        let hookDiv = document.createElement('button');
+        const hookDiv = document.createElement('button');
         hookDiv.style.width = 1 + 'px';
         hookDiv.style.height = 1 + 'px';
         hookDiv.style.position = 'absolute';
@@ -115,13 +115,13 @@ class AccessibilityManager
         hookDiv.style.backgroundColor = '#FF0000';
         hookDiv.title = 'HOOK DIV';
 
-        hookDiv.addEventListener('focus', function(){
+        hookDiv.addEventListener('focus', () => {
 
             this.isMobileAccessabillity = true;
             this.activate();
             document.body.removeChild(hookDiv);
 
-        }.bind(this));
+        });
 
         document.body.appendChild(hookDiv);
 
@@ -199,7 +199,7 @@ class AccessibilityManager
                displayObject.renderId = this.renderId;
         }
 
-        let children = displayObject.children;
+        const children = displayObject.children;
 
         for (let i = children.length - 1; i >= 0; i--) {
 
@@ -221,9 +221,9 @@ class AccessibilityManager
         // update children...
         this.updateAccessibleObjects(this.renderer._lastObjectRendered);
 
-        let rect = this.renderer.view.getBoundingClientRect();
-        let sx = rect.width  / this.renderer.width;
-        let sy = rect.height / this.renderer.height;
+        const rect = this.renderer.view.getBoundingClientRect();
+        const sx = rect.width  / this.renderer.width;
+        const sy = rect.height / this.renderer.height;
 
         let div = this.div;
 
@@ -235,7 +235,7 @@ class AccessibilityManager
         for (let i = 0; i < this.children.length; i++)
         {
 
-            let child = this.children[i];
+            const child = this.children[i];
 
             if(child.renderId !== this.renderId)
             {

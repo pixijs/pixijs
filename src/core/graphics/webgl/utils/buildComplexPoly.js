@@ -13,7 +13,7 @@ import utils from '../../../utils';
 const buildComplexPoly = function (graphicsData, webGLData)
 {
     //TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
-    let points = graphicsData.points.slice();
+    const points = graphicsData.points.slice();
 
     if (points.length < 6)
     {
@@ -21,7 +21,7 @@ const buildComplexPoly = function (graphicsData, webGLData)
     }
 
     // get first and last point.. figure out the middle!
-    let indices = webGLData.indices;
+    const indices = webGLData.indices;
     webGLData.points = points;
     webGLData.alpha = graphicsData.fillAlpha;
     webGLData.color = utils.hex2rgb(graphicsData.fillColor);
@@ -57,7 +57,7 @@ const buildComplexPoly = function (graphicsData, webGLData)
     // push a quad onto the end..
 
     //TODO - this aint needed!
-    let length = points.length / 2;
+    const length = points.length / 2;
     for (let i = 0; i < length; i++)
     {
         indices.push( i );

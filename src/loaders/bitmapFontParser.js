@@ -4,9 +4,9 @@ import extras from '../extras';
 import path from 'path';
 
 function parse(resource, texture) {
-    let data = {};
-    let info = resource.data.getElementsByTagName('info')[0];
-    let common = resource.data.getElementsByTagName('common')[0];
+    const data = {};
+    const info = resource.data.getElementsByTagName('info')[0];
+    const common = resource.data.getElementsByTagName('common')[0];
 
     data.font = info.getAttribute('face');
     data.size = parseInt(info.getAttribute('size'), 10);
@@ -18,9 +18,9 @@ function parse(resource, texture) {
 
     for (let i = 0; i < letters.length; i++)
     {
-        let charCode = parseInt(letters[i].getAttribute('id'), 10);
+        const charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-        let textureRect = new core.Rectangle(
+        const textureRect = new core.Rectangle(
             parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
             parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
             parseInt(letters[i].getAttribute('width'), 10),
@@ -38,12 +38,12 @@ function parse(resource, texture) {
     }
 
     //parse kernings
-    let kernings = resource.data.getElementsByTagName('kerning');
+    const kernings = resource.data.getElementsByTagName('kerning');
     for (let i = 0; i < kernings.length; i++)
     {
-        let first = parseInt(kernings[i].getAttribute('first'), 10);
-        let second = parseInt(kernings[i].getAttribute('second'), 10);
-        let amount = parseInt(kernings[i].getAttribute('amount'), 10);
+        const first = parseInt(kernings[i].getAttribute('first'), 10);
+        const second = parseInt(kernings[i].getAttribute('second'), 10);
+        const amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
         if(data.chars[second])
         {
@@ -96,12 +96,12 @@ export default function ()
                 xmlUrl = xmlUrl.replace(this.baseUrl, '');
             }
         }
-        
+
         // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
         if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
             xmlUrl += '/';
         }
-        
+
         let textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         if (core.utils.TextureCache[textureUrl]) {
             //reuse existing texture
@@ -115,7 +115,7 @@ export default function ()
                 metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
-            this.add(resource.name + '_image', textureUrl, loadOptions, function (res) {
+            this.add(resource.name + '_image', textureUrl, loadOptions, res => {
                 parse(resource, res.texture);
                 next();
             });

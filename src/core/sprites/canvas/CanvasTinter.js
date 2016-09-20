@@ -15,13 +15,12 @@ const CanvasTinter = {
      * @param color {number} the color to use to tint the sprite with
      * @return {HTMLCanvasElement} The tinted canvas
      */
-    getTintedTexture: function (sprite, color)
-    {
-        let texture = sprite.texture;
+    getTintedTexture: (sprite, color) => {
+        const texture = sprite.texture;
 
         color = CanvasTinter.roundColor(color);
 
-        let stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        const stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
         texture.tintCache = texture.tintCache || {};
 
@@ -31,7 +30,7 @@ const CanvasTinter = {
         }
 
         // clone texture..
-        let canvas = CanvasTinter.canvas || document.createElement('canvas');
+        const canvas = CanvasTinter.canvas || document.createElement('canvas');
 
         //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
         CanvasTinter.tintMethod(texture, color, canvas);
@@ -39,7 +38,7 @@ const CanvasTinter = {
         if (CanvasTinter.convertTintToImage)
         {
             // is this better?
-            let tintImage = new Image();
+            const tintImage = new Image();
             tintImage.src = canvas.toDataURL();
 
             texture.tintCache[stringColor] = tintImage;
@@ -62,11 +61,10 @@ const CanvasTinter = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithMultiply: function (texture, color, canvas)
-    {
-        let context = canvas.getContext( '2d' );
-        let crop = texture._frame.clone();
-        let resolution = texture.baseTexture.resolution;
+    tintWithMultiply: (texture, color, canvas) => {
+        const context = canvas.getContext( '2d' );
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -117,11 +115,11 @@ const CanvasTinter = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithOverlay: function (texture, color, canvas)
+    tintWithOverlay (texture, color, canvas)
     {
-        let context = canvas.getContext( '2d' );
-        let crop = texture._frame.clone();
-        let resolution = texture.baseTexture.resolution;
+        const context = canvas.getContext( '2d' );
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -159,11 +157,10 @@ const CanvasTinter = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithPerPixel: function (texture, color, canvas)
-    {
-        let context = canvas.getContext( '2d' );
-        let crop = texture._frame.clone();
-        let resolution = texture.baseTexture.resolution;
+    tintWithPerPixel: (texture, color, canvas) => {
+        const context = canvas.getContext( '2d' );
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -186,12 +183,12 @@ const CanvasTinter = {
             crop.height
         );
 
-        let rgbValues = utils.hex2rgb(color);
-        let r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
+        const rgbValues = utils.hex2rgb(color);
+        const r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-        let pixelData = context.getImageData(0, 0, crop.width, crop.height);
+        const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
-        let pixels = pixelData.data;
+        const pixels = pixelData.data;
 
         for (let i = 0; i < pixels.length; i += 4)
         {
@@ -209,11 +206,10 @@ const CanvasTinter = {
      * @memberof PIXI.CanvasTinter
      * @param color {number} the color to round, should be a hex color
      */
-    roundColor: function (color)
-    {
-        let step = CanvasTinter.cacheStepsPerColorChannel;
+    roundColor: (color) => {
+        const step = CanvasTinter.cacheStepsPerColorChannel;
 
-        let rgbValues = utils.hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
 
         rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
         rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);

@@ -39,7 +39,7 @@ class MaskManager extends WebGLManager
         {
             if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect())
             {
-                let matrix = maskData.worldTransform;
+                const matrix = maskData.worldTransform;
 
                 let rot = Math.atan2(matrix.b, matrix.a);
 
@@ -155,9 +155,9 @@ class MaskManager extends WebGLManager
     {
         maskData.renderable = true;
 
-        let renderTarget = this.renderer._activeRenderTarget;
+        const renderTarget = this.renderer._activeRenderTarget;
 
-        let bounds = maskData.getBounds();
+        const bounds = maskData.getBounds();
 
         bounds.fit(renderTarget.size);
         maskData.renderable = false;
@@ -186,7 +186,7 @@ class MaskManager extends WebGLManager
         this.scissor = false;
 
         // must be scissor!
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
         gl.disable(gl.SCISSOR_TEST);
     }
 }

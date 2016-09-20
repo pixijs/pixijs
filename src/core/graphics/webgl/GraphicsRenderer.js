@@ -69,8 +69,8 @@ class GraphicsRenderer extends ObjectRenderer
      */
     render(graphics)
     {
-        let renderer = this.renderer;
-        let gl = renderer.gl;
+        const renderer = this.renderer;
+        const gl = renderer.gl;
 
         let webGLData;
 
@@ -87,14 +87,14 @@ class GraphicsRenderer extends ObjectRenderer
 
 
         // This  could be speeded up for sure!
-        let shader = this.primitiveShader;
+        const shader = this.primitiveShader;
         renderer.bindShader(shader);
         renderer.state.setBlendMode( graphics.blendMode );
 
         for (let i = 0, n = webGL.data.length; i < n; i++)
         {
             webGLData = webGL.data[i];
-            let shaderTemp = webGLData.shader;
+            const shaderTemp = webGLData.shader;
 
             renderer.bindShader(shaderTemp);
             shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
@@ -115,7 +115,7 @@ class GraphicsRenderer extends ObjectRenderer
      */
     updateGraphics(graphics)
     {
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
          // get the contexts graphics object
         let webGL = graphics._webGL[this.CONTEXT_UID];
@@ -123,14 +123,12 @@ class GraphicsRenderer extends ObjectRenderer
         // if the graphics object does not exist in the webGL context time to create it!
         if (!webGL)
         {
-            webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl:gl, clearDirty:-1, dirty:-1};
+            webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl, clearDirty:-1, dirty:-1};
 
         }
 
         // flag the graphics as not dirty as we are about to update it...
         webGL.dirty = graphics.dirty;
-
-        let i;
 
         // if the user cleared the graphics object we will need to clear every object
         if (graphics.clearDirty !== webGL.clearDirty)
@@ -138,7 +136,7 @@ class GraphicsRenderer extends ObjectRenderer
             webGL.clearDirty = graphics.clearDirty;
 
             // loop through and return all the webGLDatas to the object pool so than can be reused later on
-            for (i = 0; i < webGL.data.length; i++)
+            for (let i = 0; i < webGL.data.length; i++)
             {
                 let graphicsData = webGL.data[i];
                 this.graphicsDataPool.push( graphicsData );
@@ -154,7 +152,7 @@ class GraphicsRenderer extends ObjectRenderer
         // loop through the graphics datas and construct each one..
         // if the object is a complex fill then the new stencil buffer technique will be used
         // other wise graphics objects will be pushed into a batch..
-        for (i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
+        for (let i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
         {
             let data = graphics.graphicsData[i];
 
@@ -182,7 +180,7 @@ class GraphicsRenderer extends ObjectRenderer
         }
 
         // upload all the dirty data...
-        for (i = 0; i < webGL.data.length; i++)
+        for (let i = 0; i < webGL.data.length; i++)
         {
             webGLData = webGL.data[i];
 

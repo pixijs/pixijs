@@ -12,12 +12,12 @@ const tempPoint = new core.Point();
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param texture {PIXI.Texture} the texture of the tiling sprite
- * @param width {number}  the width of the tiling sprite
- * @param height {number} the height of the tiling sprite
+ * @param [width=100] {number}  the width of the tiling sprite
+ * @param [height=100] {number} the height of the tiling sprite
  */
 class TilingSprite extends core.Sprite
 {
-    constructor(texture, width, height)
+    constructor(texture, width=100, height=100)
     {
         super(texture);
 
@@ -44,7 +44,7 @@ class TilingSprite extends core.Sprite
          * @member {number}
          * @private
          */
-        this._width = width || 100;
+        this._width = width;
 
         /**
          * The height of the tiling sprite
@@ -52,7 +52,7 @@ class TilingSprite extends core.Sprite
          * @member {number}
          * @private
          */
-        this._height = height || 100;
+        this._height = height;
 
         /**
          * An internal WebGL UV cache.
@@ -83,7 +83,7 @@ class TilingSprite extends core.Sprite
     {
 
         // tweak our texture temporarily..
-        let texture = this._texture;
+        const texture = this._texture;
 
         if(!texture || !texture._uvs)
         {
@@ -93,7 +93,7 @@ class TilingSprite extends core.Sprite
          // get rid of any thing that may be batching.
         renderer.flush();
 
-        let gl = renderer.gl;
+        const gl = renderer.gl;
         let glData = this._glDatas[renderer.CONTEXT_UID];
 
         if(!glData)
@@ -109,7 +109,7 @@ class TilingSprite extends core.Sprite
         }
 
         // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
-        let vertices = glData.quad.vertices;
+        const vertices = glData.quad.vertices;
 
         vertices[0] = vertices[6] = ( this._width ) * -this.anchor.x;
         vertices[1] = vertices[3] = this._height * -this.anchor.y;
@@ -121,25 +121,25 @@ class TilingSprite extends core.Sprite
 
         renderer.bindShader(glData.shader);
 
-        let textureUvs = texture._uvs,
+        const textureUvs = texture._uvs,
             textureWidth = texture._frame.width,
             textureHeight = texture._frame.height,
             textureBaseWidth = texture.baseTexture.width,
             textureBaseHeight = texture.baseTexture.height;
 
-        let uPixelSize = glData.shader.uniforms.uPixelSize;
+        const uPixelSize = glData.shader.uniforms.uPixelSize;
         uPixelSize[0] = 1.0/textureBaseWidth;
         uPixelSize[1] = 1.0/textureBaseHeight;
         glData.shader.uniforms.uPixelSize = uPixelSize;
 
-        let uFrame = glData.shader.uniforms.uFrame;
+        const uFrame = glData.shader.uniforms.uFrame;
         uFrame[0] = textureUvs.x0;
         uFrame[1] = textureUvs.y0;
         uFrame[2] = textureUvs.x1 - textureUvs.x0;
         uFrame[3] = textureUvs.y2 - textureUvs.y0;
         glData.shader.uniforms.uFrame = uFrame;
 
-        let uTransform = glData.shader.uniforms.uTransform;
+        const uTransform = glData.shader.uniforms.uTransform;
         uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / this._width;
         uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / this._height;
         uTransform[2] = ( textureBaseWidth / this._width ) * this.tileScale.x;
@@ -148,7 +148,7 @@ class TilingSprite extends core.Sprite
 
         glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
 
-        let color = tempArray;
+        const color = tempArray;
 
         core.utils.hex2rgb(this.tint, color);
         color[3] = this.worldAlpha;
@@ -169,14 +169,14 @@ class TilingSprite extends core.Sprite
      */
     _renderCanvas(renderer)
     {
-        let texture = this._texture;
+        const texture = this._texture;
 
         if (!texture.baseTexture.hasLoaded)
         {
           return;
         }
 
-        let context = renderer.context,
+        const context = renderer.context,
             transform = this.worldTransform,
             resolution = renderer.resolution,
             baseTexture = texture.baseTexture,
@@ -188,7 +188,7 @@ class TilingSprite extends core.Sprite
         if(!this._canvasPattern)
         {
             // cut an object from a spritesheet..
-            let tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height);
+            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height);
 
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)
@@ -224,7 +224,7 @@ class TilingSprite extends core.Sprite
                           modY + (this.anchor.y * -this._height));
 
         // check blend mode
-        let compositeOperation = renderer.blendModes[this.blendMode];
+        const compositeOperation = renderer.blendModes[this.blendMode];
         if (compositeOperation !== renderer.context.globalCompositeOperation)
         {
             context.globalCompositeOperation = compositeOperation;
@@ -251,35 +251,35 @@ class TilingSprite extends core.Sprite
      */
     getBounds()
     {
-        let width = this._width;
-        let height = this._height;
+        const width = this._width;
+        const height = this._height;
 
-        let w0 = width * (1-this.anchor.x);
-        let w1 = width * -this.anchor.x;
+        const w0 = width * (1-this.anchor.x);
+        const w1 = width * -this.anchor.x;
 
-        let h0 = height * (1-this.anchor.y);
-        let h1 = height * -this.anchor.y;
+        const h0 = height * (1-this.anchor.y);
+        const h1 = height * -this.anchor.y;
 
-        let worldTransform = this.worldTransform;
+        const worldTransform = this.worldTransform;
 
-        let a = worldTransform.a;
-        let b = worldTransform.b;
-        let c = worldTransform.c;
-        let d = worldTransform.d;
-        let tx = worldTransform.tx;
-        let ty = worldTransform.ty;
+        const a = worldTransform.a;
+        const b = worldTransform.b;
+        const c = worldTransform.c;
+        const d = worldTransform.d;
+        const tx = worldTransform.tx;
+        const ty = worldTransform.ty;
 
-        let x1 = a * w1 + c * h1 + tx;
-        let y1 = d * h1 + b * w1 + ty;
+        const x1 = a * w1 + c * h1 + tx;
+        const y1 = d * h1 + b * w1 + ty;
 
-        let x2 = a * w0 + c * h1 + tx;
-        let y2 = d * h1 + b * w0 + ty;
+        const x2 = a * w0 + c * h1 + tx;
+        const y2 = d * h1 + b * w0 + ty;
 
-        let x3 = a * w0 + c * h0 + tx;
-        let y3 = d * h0 + b * w0 + ty;
+        const x3 = a * w0 + c * h0 + tx;
+        const y3 = d * h0 + b * w0 + ty;
 
-        let x4 =  a * w1 + c * h0 + tx;
-        let y4 =  d * h0 + b * w1 + ty;
+        const x4 =  a * w1 + c * h0 + tx;
+        const y4 =  d * h0 + b * w1 + ty;
 
         let minX,
             maxX,
@@ -306,7 +306,7 @@ class TilingSprite extends core.Sprite
         maxY = y3 > maxY ? y3 : maxY;
         maxY = y4 > maxY ? y4 : maxY;
 
-        let bounds = this._bounds;
+        const bounds = this._bounds;
 
         bounds.x = minX;
         bounds.width = maxX - minX;
@@ -331,11 +331,10 @@ class TilingSprite extends core.Sprite
         let width = this._width;
         let height = this._height;
         let x1 = -width * this.anchor.x;
-        let y1;
 
         if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
         {
-            y1 = -height * this.anchor.y;
+            let y1 = -height * this.anchor.y;
 
             if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
             {

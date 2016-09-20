@@ -44,7 +44,7 @@ class ParticleContainer extends core.Container
         // Making sure the batch size is valid
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
         // so max number of particles is 65536 / 4 = 16384
-        let maxBatchSize = 16384;
+        const maxBatchSize = 16384;
         if (batchSize > maxBatchSize) {
             batchSize = maxBatchSize;
         }
@@ -161,9 +161,7 @@ class ParticleContainer extends core.Container
             this.baseTexture = this.children[0]._texture.baseTexture;
             if(!this.baseTexture.hasLoaded)
             {
-                this.baseTexture.once('update', function(){
-                    this.onChildrenChange(0);
-                }, this);
+                this.baseTexture.once('update', () => this.onChildrenChange(0));
             }
         }
 
@@ -179,7 +177,7 @@ class ParticleContainer extends core.Container
      */
     onChildrenChange(smallestChildIndex)
     {
-        let bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
+        const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
         if (bufferIndex < this._bufferToUpdate) {
             this._bufferToUpdate = bufferIndex;
         }
@@ -198,8 +196,8 @@ class ParticleContainer extends core.Container
             return;
         }
 
-        let context = renderer.context;
-        let transform = this.worldTransform;
+        const context = renderer.context;
+        const transform = this.worldTransform;
         let isRotated = true;
 
         let positionX = 0;
@@ -208,7 +206,7 @@ class ParticleContainer extends core.Container
         let finalWidth = 0;
         let finalHeight = 0;
 
-        let compositeOperation = renderer.blendModes[this.blendMode];
+        const compositeOperation = renderer.blendModes[this.blendMode];
         if (compositeOperation !== context.globalCompositeOperation)
         {
             context.globalCompositeOperation = compositeOperation;
@@ -220,14 +218,14 @@ class ParticleContainer extends core.Container
 
         for (let i = 0; i < this.children.length; ++i)
         {
-            let child = this.children[i];
+            const child = this.children[i];
 
             if (!child.visible)
             {
                 continue;
             }
 
-            let frame = child.texture.frame;
+            const frame = child.texture.frame;
 
             context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -264,7 +262,7 @@ class ParticleContainer extends core.Container
 
                 child.displayObjectUpdateTransform();
 
-                let childTransform = child.worldTransform;
+                const childTransform = child.worldTransform;
 
                 if (renderer.roundPixels)
                 {
@@ -296,7 +294,7 @@ class ParticleContainer extends core.Container
                 finalHeight = frame.height;
             }
 
-            let resolution = child.texture.baseTexture.resolution;
+            const resolution = child.texture.baseTexture.resolution;
 
             context.drawImage(
                 child.texture.baseTexture.source,

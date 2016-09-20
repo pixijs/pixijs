@@ -31,8 +31,8 @@ class Text extends Sprite
 {
     constructor(text, style)
     {
-        let canvas = document.createElement('canvas');
-        let texture = Texture.fromCanvas(canvas);
+        const canvas = document.createElement('canvas');
+        const texture = Texture.fromCanvas(canvas);
 
         texture.orig = new math.Rectangle();
         texture.trim = new math.Rectangle();
@@ -103,7 +103,7 @@ class Text extends Sprite
      */
     updateText(respectDirty)
     {
-        let style = this._style;
+        const style = this._style;
 
         // check if style has changed..
         if(this.localStyleID !== style.styleID)
@@ -117,8 +117,8 @@ class Text extends Sprite
         }
 
         // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
-        let fontSizeString = (typeof style.fontSize === 'number') ? style.fontSize + 'px' : style.fontSize;
-        this._font = style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
+        const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
+        this._font = `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${style.fontFamily}`;
 
         this.context.font = this._font;
 
@@ -130,12 +130,11 @@ class Text extends Sprite
         let lines = outputText.split(/(?:\r\n|\r|\n)/);
 
         // calculate text width
-        let lineWidths = new Array(lines.length);
+        const lineWidths = new Array(lines.length);
         let maxLineWidth = 0;
         let fontProperties = this.determineFontProperties(this._font);
 
-        let i;
-        for (i = 0; i < lines.length; i++)
+        for (let i = 0; i < lines.length; i++)
         {
             let lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
             lineWidths[i] = lineWidth;
@@ -196,7 +195,7 @@ class Text extends Sprite
             let xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
             let yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
-            for (i = 0; i < lines.length; i++)
+            for (let i = 0; i < lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
                 linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
@@ -228,7 +227,7 @@ class Text extends Sprite
         this.context.fillStyle = this._generateFillStyle(style, lines);
 
         //draw lines line by line
-        for (i = 0; i < lines.length; i++)
+        for (let i = 0; i < lines.length; i++)
         {
             linePositionX = style.strokeThickness / 2;
             linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
@@ -261,15 +260,15 @@ class Text extends Sprite
      * @param {string} text - The text to draw
      * @param {number} x - Horizontal position to draw the text
      * @param {number} y - Vertical position to draw the text
-     * @param {boolean} isStroke - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
+     * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
      * @private
      */
-    drawLetterSpacing(text, x, y, isStroke)
+    drawLetterSpacing(text, x, y, isStroke=false)
     {
-        let style = this._style;
+        const style = this._style;
 
         // letterSpacing of 0 means normal
-        let letterSpacing = style.letterSpacing;
+        const letterSpacing = style.letterSpacing;
 
         if (letterSpacing === 0)
         {
@@ -284,10 +283,10 @@ class Text extends Sprite
             return;
         }
 
-        let characters = String.prototype.split.call(text, ''),
+        const characters = String.prototype.split.call(text, '');
+        let currentPosition = x,
             index = 0,
-            current,
-            currentPosition = x;
+            current;
 
         while (index < text.length)
         {
@@ -311,8 +310,8 @@ class Text extends Sprite
      */
     updateTexture()
     {
-        let texture = this._texture;
-        let style = this._style;
+        const texture = this._texture;
+        const style = this._style;
 
         texture.baseTexture.hasLoaded = true;
         texture.baseTexture.resolution = this.resolution;
@@ -390,14 +389,14 @@ class Text extends Sprite
         {
             properties = {};
 
-            let canvas = Text.fontPropertiesCanvas;
-            let context = Text.fontPropertiesContext;
+            const canvas = Text.fontPropertiesCanvas;
+            const context = Text.fontPropertiesContext;
 
             context.font = fontStyle;
 
-            let width = Math.ceil(context.measureText('|MÉq').width);
+            const width = Math.ceil(context.measureText('|MÉq').width);
             let baseline = Math.ceil(context.measureText('M').width);
-            let height = 2 * baseline;
+            const height = 2 * baseline;
 
             baseline = baseline * 1.4 | 0;
 
@@ -417,15 +416,14 @@ class Text extends Sprite
             let pixels = imagedata.length;
             let line = width * 4;
 
-            let i, j;
-
             let idx = 0;
             let stop = false;
 
             // ascent. scan from top to bottom until we find a non red pixel
+            let i;
             for (i = 0; i < baseline; i++)
             {
-                for (j = 0; j < line; j += 4)
+                for (let j = 0; j < line; j += 4)
                 {
                     if (imagedata[idx + j] !== 255)
                     {
@@ -451,7 +449,7 @@ class Text extends Sprite
             // descent. scan from bottom to top until we find a non red pixel
             for (i = height; i > baseline; i--)
             {
-                for (j = 0; j < line; j += 4)
+                for (let j = 0; j < line; j += 4)
                 {
                     if (imagedata[idx + j] !== 255)
                     {
@@ -491,8 +489,8 @@ class Text extends Sprite
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
         let result = '';
-        let lines = text.split('\n');
-        let wordWrapWidth = this._style.wordWrapWidth;
+        const lines = text.split('\n');
+        const wordWrapWidth = this._style.wordWrapWidth;
         for (let i = 0; i < lines.length; i++)
         {
             let spaceLeft = wordWrapWidth;
@@ -588,14 +586,13 @@ class Text extends Sprite
         {
             // the gradient will be evenly spaced out according to how large the array is.
             // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-            let i;
             let gradient;
             let totalIterations;
             let currentIteration;
             let stop;
 
-            let width = this.canvas.width / this.resolution;
-            let height = this.canvas.height / this.resolution;
+            const width = this.canvas.width / this.resolution;
+            const height = this.canvas.height / this.resolution;
 
             if (style.fillGradientType === CONST.TEXT_GRADIENT.LINEAR_VERTICAL)
             {
@@ -606,7 +603,7 @@ class Text extends Sprite
                 // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
                 totalIterations = ( style.fill.length + 1 ) * lines.length;
                 currentIteration = 0;
-                for (i = 0; i < lines.length; i++)
+                for (let i = 0; i < lines.length; i++)
                 {
                     currentIteration += 1;
                     for (let j = 0; j < style.fill.length; j++)
@@ -626,7 +623,7 @@ class Text extends Sprite
                 totalIterations = style.fill.length + 1;
                 currentIteration = 1;
 
-                for (i = 0; i < style.fill.length; i++)
+                for (let i = 0; i < style.fill.length; i++)
                 {
                     stop = currentIteration / totalIterations;
                     gradient.addColorStop(stop, style.fill[i]);
@@ -703,7 +700,7 @@ class Text extends Sprite
     {
         this.updateText(true);
 
-        let sign = utils.sign(this.scale.y) || 1;
+        const sign = utils.sign(this.scale.y) || 1;
         this.scale.y = sign * value / this.texture.orig.height;
         this._height = value;
     }

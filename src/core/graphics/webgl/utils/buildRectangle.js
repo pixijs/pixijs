@@ -16,25 +16,25 @@ let buildRectangle = function (graphicsData, webGLData)
     // --- //
     // need to convert points to a nice regular data
     //
-    let rectData = graphicsData.shape;
-    let x = rectData.x;
-    let y = rectData.y;
-    let width = rectData.width;
-    let height = rectData.height;
+    const rectData = graphicsData.shape;
+    const x = rectData.x;
+    const y = rectData.y;
+    const width = rectData.width;
+    const height = rectData.height;
 
     if (graphicsData.fill)
     {
-        let color = utils.hex2rgb(graphicsData.fillColor);
-        let alpha = graphicsData.fillAlpha;
+        const color = utils.hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
 
-        let r = color[0] * alpha;
-        let g = color[1] * alpha;
-        let b = color[2] * alpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
 
-        let verts = webGLData.points;
-        let indices = webGLData.indices;
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
 
-        let vertPos = verts.length/6;
+        const vertPos = verts.length/6;
 
         // start
         verts.push(x, y);

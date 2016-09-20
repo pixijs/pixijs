@@ -5,12 +5,10 @@ import CONST from '../../../const';
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The current WebGL drawing context
- * @param object
+ * @param [object={}] {object}
  */
-function mapWebGLDrawModesToPixi(gl, object)
+function mapWebGLDrawModesToPixi(gl, object={})
 {
-    object= object || {};
-
     object[CONST.DRAW_MODES.POINTS]         = gl.POINTS;
     object[CONST.DRAW_MODES.LINES]          = gl.LINES;
     object[CONST.DRAW_MODES.LINE_LOOP]      = gl.LINE_LOOP;

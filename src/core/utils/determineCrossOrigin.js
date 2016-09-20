@@ -31,7 +31,7 @@ const determineCrossOrigin = function (url, loc) {
     tempAnchor.href = url;
     url = _url.parse(tempAnchor.href);
 
-    let samePort = (!url.port && loc.port === '') || (url.port === loc.port);
+    const samePort = (!url.port && loc.port === '') || (url.port === loc.port);
 
     // if cross origin
     if (url.hostname !== loc.hostname || !samePort || url.protocol !== loc.protocol) {

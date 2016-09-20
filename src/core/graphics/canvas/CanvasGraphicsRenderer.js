@@ -36,11 +36,11 @@ class CanvasGraphicsRenderer
      */
     render(graphics)
     {
-        let renderer = this.renderer;
-        let context = renderer.context;
-        let worldAlpha = graphics.worldAlpha;
-        let transform = graphics.transform.worldTransform;
-        let resolution = renderer.resolution;
+        const renderer = this.renderer;
+        const context = renderer.context;
+        const worldAlpha = graphics.worldAlpha;
+        const transform = graphics.transform.worldTransform;
+        const resolution = renderer.resolution;
 
          // if the tint has changed, set the graphics object to dirty.
         if (this._prevTint !== this.tint) {
@@ -67,11 +67,11 @@ class CanvasGraphicsRenderer
 
         for (let i = 0; i < graphics.graphicsData.length; i++)
         {
-            let data = graphics.graphicsData[i];
-            let shape = data.shape;
+            const data = graphics.graphicsData[i];
+            const shape = data.shape;
 
-            let fillColor = data._fillTint;
-            let lineColor = data._lineTint;
+            const fillColor = data._fillTint;
+            const lineColor = data._lineTint;
 
             context.lineWidth = data.lineWidth;
 
@@ -142,15 +142,15 @@ class CanvasGraphicsRenderer
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-                let w = shape.width * 2;
-                let h = shape.height * 2;
+                const w = shape.width * 2;
+                const h = shape.height * 2;
 
-                let x = shape.x - w/2;
-                let y = shape.y - h/2;
+                const x = shape.x - w/2;
+                const y = shape.y - h/2;
 
                 context.beginPath();
 
-                let kappa = 0.5522848,
+                const kappa = 0.5522848,
                     ox = (w / 2) * kappa, // control point offset horizontal
                     oy = (h / 2) * kappa, // control point offset vertical
                     xe = x + w,           // x-end
@@ -181,13 +181,13 @@ class CanvasGraphicsRenderer
             }
             else if (data.type === CONST.SHAPES.RREC)
             {
-                let rx = shape.x;
-                let ry = shape.y;
-                let width = shape.width;
-                let height = shape.height;
+                const rx = shape.x;
+                const ry = shape.y;
+                const width = shape.width;
+                const height = shape.height;
                 let radius = shape.radius;
 
-                let maxRadius = Math.min(width, height) / 2 | 0;
+                const maxRadius = Math.min(width, height) / 2 | 0;
                 radius = radius > maxRadius ? maxRadius : radius;
 
                 context.beginPath();
@@ -230,16 +230,16 @@ class CanvasGraphicsRenderer
     {
         graphics._prevTint = graphics.tint;
 
-        let tintR = (graphics.tint >> 16 & 0xFF) / 255;
-        let tintG = (graphics.tint >> 8 & 0xFF) / 255;
-        let tintB = (graphics.tint & 0xFF)/ 255;
+        const tintR = (graphics.tint >> 16 & 0xFF) / 255;
+        const tintG = (graphics.tint >> 8 & 0xFF) / 255;
+        const tintB = (graphics.tint & 0xFF)/ 255;
 
         for (let i = 0; i < graphics.graphicsData.length; i++)
         {
-            let data = graphics.graphicsData[i];
+            const data = graphics.graphicsData[i];
 
-            let fillColor = data.fillColor | 0;
-            let lineColor = data.lineColor | 0;
+            const fillColor = data.fillColor | 0;
+            const lineColor = data.lineColor | 0;
 
             // super inline cos im an optimization NAZI :)
             data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);

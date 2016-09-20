@@ -55,7 +55,7 @@ class ParticleRenderer extends core.ObjectRenderer
      */
     onContextChange()
     {
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
@@ -119,10 +119,10 @@ class ParticleRenderer extends core.ObjectRenderer
      */
     render(container)
     {
-        let children = container.children,
-            totalChildren = children.length,
+        const children = container.children,
             maxSize = container._maxSize,
             batchSize = container._batchSize;
+        let totalChildren = children.length;
 
         if(totalChildren === 0)
         {
@@ -143,16 +143,16 @@ class ParticleRenderer extends core.ObjectRenderer
         // if the uvs have not updated then no point rendering just yet!
         this.renderer.setBlendMode(container.blendMode);
 
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
-        let m = container.worldTransform.copy( this.tempMatrix );
+        const m = container.worldTransform.copy( this.tempMatrix );
         m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
         this.shader.uniforms.projectionMatrix = m.toArray(true);
         this.shader.uniforms.uAlpha = container.worldAlpha;
 
 
         // make sure the texture is bound..
-        let baseTexture = children[0]._texture.baseTexture;
+        const baseTexture = children[0]._texture.baseTexture;
 
         this.renderer.bindTexture(baseTexture);
 
@@ -165,7 +165,7 @@ class ParticleRenderer extends core.ObjectRenderer
                 amount = batchSize;
             }
 
-            let buffer = buffers[j];
+            const buffer = buffers[j];
 
             // we always upload the dynamic
             buffer.uploadDynamic(children, i, amount);
@@ -195,14 +195,13 @@ class ParticleRenderer extends core.ObjectRenderer
      */
     generateBuffers(container)
     {
-        let gl = this.renderer.gl,
+        const gl = this.renderer.gl,
             buffers = [],
             size = container._maxSize,
             batchSize = container._batchSize,
-            dynamicPropertyFlags = container._properties,
-            i;
+            dynamicPropertyFlags = container._properties;
 
-        for (i = 0; i < size; i += batchSize)
+        for (let i = 0; i < size; i += batchSize)
         {
             buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize));
         }
@@ -288,7 +287,7 @@ class ParticleRenderer extends core.ObjectRenderer
     {
         for (let i = 0; i < amount; i++)
         {
-            let spritePosition = children[startIndex + i].position;
+            const spritePosition = children[startIndex + i].position;
 
             array[offset] = spritePosition.x;
             array[offset + 1] = spritePosition.y;
@@ -320,7 +319,7 @@ class ParticleRenderer extends core.ObjectRenderer
     {
         for (let i = 0; i < amount; i++)
         {
-            let spriteRotation = children[startIndex + i].rotation;
+            const spriteRotation = children[startIndex + i].rotation;
 
 
             array[offset] = spriteRotation;
@@ -345,7 +344,7 @@ class ParticleRenderer extends core.ObjectRenderer
     {
         for (let i = 0; i < amount; i++)
         {
-            let textureUvs = children[startIndex + i]._texture._uvs;
+            const textureUvs = children[startIndex + i]._texture._uvs;
 
             if (textureUvs)
             {
@@ -396,7 +395,7 @@ class ParticleRenderer extends core.ObjectRenderer
     {
          for (let i = 0; i < amount; i++)
          {
-            let spriteAlpha = children[startIndex + i].alpha;
+            const spriteAlpha = children[startIndex + i].alpha;
 
             array[offset] = spriteAlpha;
             array[offset + stride] = spriteAlpha;

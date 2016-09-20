@@ -2,7 +2,8 @@
   "extends": "eslint:recommended",
   "rules": {
     "no-console": 0,
-    "no-debugger": 1
+    "no-debugger": 1,
+    "arrow-spacing": 1
   },
   "parserOptions": {
     "ecmaVersion": 6,

@@ -14,7 +14,7 @@ const calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSi
     // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
-    let mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
@@ -26,7 +26,7 @@ const calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSi
 
 const calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
 {
-    let mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
@@ -41,21 +41,21 @@ const calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea,
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 const calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
-    let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+    const worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
 
     // TODO unwrap?
-    let mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
     // scale..
-    let ratio = textureSize.height / textureSize.width;
+    const ratio = textureSize.height / textureSize.width;
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
     mappedMatrix.scale(1 , ratio);
 
-    let translateScaleX = (textureSize.width / texture.width);
-    let translateScaleY = (textureSize.height / texture.height);
+    const translateScaleX = (textureSize.width / texture.width);
+    const translateScaleY = (textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
 

@@ -21,7 +21,7 @@ class DisplayObject extends EventEmitter
     {
         super();
 
-        let TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+        const TransformClass = CONST.TRANSFORM_MODE.DEFAULT === CONST.TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
         this.tempDisplayObjectParent = null;
 
@@ -197,8 +197,8 @@ class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect)
     {
-        let transformRef = this.transform;
-        let parentRef = this.parent;
+        const transformRef = this.transform;
+        const parentRef = this.parent;
 
         this.parent = null;
         this.transform = this._tempDisplayObjectParent.transform;
@@ -213,7 +213,7 @@ class DisplayObject extends EventEmitter
             rect = this._localBoundsRect;
         }
 
-        let bounds = this.getBounds(false, rect);
+        const bounds = this.getBounds(false, rect);
 
         this.parent = parentRef;
         this.transform = transformRef;
@@ -225,9 +225,11 @@ class DisplayObject extends EventEmitter
      * Calculates the global position of the display object
      *
      * @param position {PIXI.Point} The world origin to calculate from
+     * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+     * @param [skipUpdate=false] {boolean}
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toGlobal(position, point, skipUpdate)
+    toGlobal(position, point, skipUpdate=false)
     {
         if(!skipUpdate)
         {
@@ -258,6 +260,7 @@ class DisplayObject extends EventEmitter
      * @param position {PIXI.Point} The world origin to calculate from
      * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
      * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+     * @param [skipUpdate=false] {boolean}
      * @return {PIXI.Point} A point object representing the position of this object
      */
     toLocal(position, from, point, skipUpdate)
@@ -341,17 +344,17 @@ class DisplayObject extends EventEmitter
      * @param [pivotY=0] {number} The Y pivot value
      * @return {PIXI.DisplayObject} The DisplayObject instance
      */
-    setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY)
+    setTransform(x=0, y=0, scaleX=1, scaleY=1, rotation=0, skewX=0, skewY=0, pivotX=0, pivotY=0)
     {
-        this.position.x = x || 0;
-        this.position.y = y || 0;
+        this.position.x = x;
+        this.position.y = y;
         this.scale.x = !scaleX ? 1 : scaleX;
         this.scale.y = !scaleY ? 1 : scaleY;
-        this.rotation = rotation || 0;
-        this.skew.x = skewX || 0;
-        this.skew.y = skewY || 0;
-        this.pivot.x = pivotX || 0;
-        this.pivot.y = pivotY || 0;
+        this.rotation = rotation;
+        this.skew.x = skewX;
+        this.skew.y = skewY;
+        this.pivot.x = pivotX;
+        this.pivot.y = pivotY;
         return this;
     }
 

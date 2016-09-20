@@ -30,11 +30,9 @@ import ObservablePoint from '../core/math/ObservablePoint';
  */
 class BitmapText extends core.Container
 {
-    constructor(text, style)
+    constructor(text, style={})
     {
         super();
-
-        style = style || {};
 
         /**
          * The width of the overall text, different from fontSize,
@@ -131,15 +129,16 @@ class BitmapText extends core.Container
      */
     updateText()
     {
-        let data = BitmapText.fonts[this._font.name];
-        let pos = new core.Point();
+        const data = BitmapText.fonts[this._font.name];
+        const scale = this._font.size / data.size;
+        const pos = new core.Point();
+        const chars = [];
+        const lineWidths = [];
+
         let prevCharCode = null;
-        let chars = [];
         let lastLineWidth = 0;
         let maxLineWidth = 0;
-        let lineWidths = [];
         let line = 0;
-        let scale = this._font.size / data.size;
         let lastSpace = -1;
         let lastSpaceWidth = 0;
         let maxLineHeight = 0;
@@ -147,7 +146,7 @@ class BitmapText extends core.Container
         for (let i = 0; i < this.text.length; i++)
         {
             let charCode = this.text.charCodeAt(i);
-            
+
             if(/(\s)/.test(this.text.charAt(i))){
                 lastSpace = i;
                 lastSpaceWidth = lastLineWidth;
@@ -193,7 +192,7 @@ class BitmapText extends core.Container
                 pos.x += charData.kerning[prevCharCode];
             }
 
-            chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+            chars.push({texture:charData.texture, line, charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
             lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
             pos.x += charData.xAdvance;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));

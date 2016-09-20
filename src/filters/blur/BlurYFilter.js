@@ -14,8 +14,8 @@ class BlurYFilter extends core.Filter
 {
     constructor(strength, quality, resolution)
     {
-        let vertSrc = generateBlurVertSource(5, false);
-        let fragSrc = generateBlurFragSource(5);
+        const vertSrc = generateBlurVertSource(5, false);
+        const fragSrc = generateBlurFragSource(5);
 
         super(
             // vertex shader
@@ -38,8 +38,8 @@ class BlurYFilter extends core.Filter
     {
         if(this.firstRun)
         {
-            let gl = filterManager.renderer.gl;
-            let kernelSize = getMaxBlurKernelSize(gl);
+            const gl = filterManager.renderer.gl;
+            const kernelSize = getMaxBlurKernelSize(gl);
 
             this.vertexSrc = generateBlurVertSource(kernelSize, false);
             this.fragmentSrc = generateBlurFragSource(kernelSize);
@@ -58,7 +58,7 @@ class BlurYFilter extends core.Filter
         }
         else
         {
-            let renderTarget = filterManager.getRenderTarget(true);
+            const renderTarget = filterManager.getRenderTarget(true);
             let flip = input;
             let flop = renderTarget;
 
@@ -112,4 +112,4 @@ class BlurYFilter extends core.Filter
     }
 }
 
-export default BlurYFilter;   
+export default BlurYFilter;

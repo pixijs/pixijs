@@ -26,9 +26,8 @@ import CONST from '../../const';
  */
 class CanvasRenderer extends SystemRenderer
 {
-    constructor(width, height, options)
+    constructor(width, height, options={})
     {
-        options = options || {};
 
         super('Canvas', width, height, options);
 
@@ -137,7 +136,7 @@ class CanvasRenderer extends SystemRenderer
             this.resolution = this.rootResolution;
         }
 
-        let context = this.context;
+        const context = this.context;
 
         if(!renderTexture)
         {
@@ -145,13 +144,11 @@ class CanvasRenderer extends SystemRenderer
         }
 
 
-
-
         if(!skipUpdateTransform)
         {
             // update the scene graph
-            let cacheParent = displayObject.parent;
-            let tempWt = this._tempDisplayObjectParent.transform.worldTransform;
+            const cacheParent = displayObject.parent;
+            const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
 
             if(transform)
             {
@@ -195,7 +192,7 @@ class CanvasRenderer extends SystemRenderer
         }
 
         // TODO RENDER TARGET STUFF HERE..
-        let tempContext = this.context;
+        const tempContext = this.context;
 
         this.context = context;
         displayObject.renderCanvas(this);

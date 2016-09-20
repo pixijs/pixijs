@@ -246,7 +246,7 @@ class BaseTexture extends EventEmitter
             // Image fail / not ready
             this.isLoading = true;
 
-            let scope = this;
+            const scope = this;
 
             source.onload = function ()
             {

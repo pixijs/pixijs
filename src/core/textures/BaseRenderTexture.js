@@ -47,14 +47,14 @@ import CONST from '../const';
  */
 class BaseRenderTexture extends BaseTexture
 {
-    constructor(width, height, scaleMode, resolution)
+    constructor(width=100, height=100, scaleMode, resolution)
     {
         super(null, scaleMode);
 
         this.resolution = resolution || CONST.RESOLUTION;
 
-        this.width = width || 100;
-        this.height = height || 100;
+        this.width = width;
+        this.height = height;
 
         this.realWidth = this.width * this.resolution;
         this.realHeight = this.height * this.resolution;

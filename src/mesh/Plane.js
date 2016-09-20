@@ -46,24 +46,23 @@ class Plane extends Mesh
      */
     refresh()
     {
-        let total = this.verticesX * this.verticesY;
-        let verts = [];
-        let colors = [];
-        let uvs = [];
-        let indices = [];
-        let texture = this.texture;
+        const total = this.verticesX * this.verticesY;
+        const verts = [];
+        const colors = [];
+        const uvs = [];
+        const indices = [];
+        const texture = this.texture;
 
-        let segmentsX = this.verticesX - 1;
-        let segmentsY = this.verticesY - 1;
-        let i = 0;
+        const segmentsX = this.verticesX - 1;
+        const segmentsY = this.verticesY - 1;
 
-        let sizeX = texture.width / segmentsX;
-        let sizeY = texture.height / segmentsY;
+        const sizeX = texture.width / segmentsX;
+        const sizeY = texture.height / segmentsY;
 
-        for (i = 0; i < total; i++) {
+        for (let i = 0; i < total; i++) {
 
-            let x = (i % this.verticesX);
-            let y = ( (i / this.verticesX ) | 0 );
+            const x = (i % this.verticesX);
+            const y = ( (i / this.verticesX ) | 0 );
 
 
             verts.push((x * sizeX),
@@ -77,16 +76,16 @@ class Plane extends Mesh
 
         let totalSub = segmentsX * segmentsY;
 
-        for (i = 0; i < totalSub; i++) {
+        for (let i = 0; i < totalSub; i++) {
 
-            let xpos = i % segmentsX;
-            let ypos = (i / segmentsX ) | 0;
+            const xpos = i % segmentsX;
+            const ypos = (i / segmentsX ) | 0;
 
 
-            let  value = (ypos * this.verticesX) + xpos;
-            let  value2 = (ypos * this.verticesX) + xpos + 1;
-            let  value3 = ((ypos+1) * this.verticesX) + xpos;
-            let  value4 = ((ypos+1) * this.verticesX) + xpos + 1;
+            const  value = (ypos * this.verticesX) + xpos;
+            const  value2 = (ypos * this.verticesX) + xpos + 1;
+            const  value3 = ((ypos+1) * this.verticesX) + xpos;
+            const  value4 = ((ypos+1) * this.verticesX) + xpos + 1;
 
             indices.push(value, value2, value3);
             indices.push(value2, value4, value3);

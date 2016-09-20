@@ -17,13 +17,13 @@ const fragTemplate = [
 
 function generateMultiTextureShader(gl, maxTextures)
 {
-    let vertexSrc = glslify('./texture.vert');
+    const vertexSrc = glslify('./texture.vert');
     let fragmentSrc = fragTemplate;
 
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    let shader = new Shader(gl, vertexSrc, fragmentSrc, {aVertexPosition:3, aColor:2, aTextureCoord:1, aTextureId:0});
+    const shader = new Shader(gl, vertexSrc, fragmentSrc);
 
     let sampleValues = [];
     for (let i = 0; i < maxTextures; i++)
@@ -53,11 +53,11 @@ function generateSampleSrc(maxTextures)
 
         if(i < maxTextures-1)
         {
-            src += 'if(textureId == ' + i + '.0)';
+            src += `if(textureId == ${i}.0)`;
         }
 
         src += '\n{';
-        src += '\n\tcolor = texture2D(uSamplers['+i+'], vTextureCoord);';
+        src += `\n\tcolor = texture2D(uSamplers[${i}], vTextureCoord);`;
         src += '\n}';
     }
 

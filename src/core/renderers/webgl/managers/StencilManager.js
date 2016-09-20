@@ -22,7 +22,7 @@ class StencilManager extends WebGLManager
     {
         this.stencilMaskStack = stencilMaskStack;
 
-        let gl = this.renderer.gl;
+        const gl = this.renderer.gl;
 
         if (stencilMaskStack.length === 0)
         {
@@ -45,7 +45,7 @@ class StencilManager extends WebGLManager
 
         this.renderer._activeRenderTarget.attachStencilBuffer();
 
-        let gl = this.renderer.gl,
+        const gl = this.renderer.gl,
             sms = this.stencilMaskStack;
 
         if (sms.length === 0)
@@ -74,10 +74,10 @@ class StencilManager extends WebGLManager
     {
         this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
-        let gl = this.renderer.gl,
+        const gl = this.renderer.gl,
             sms = this.stencilMaskStack;
 
-        let graphics = sms.pop();
+        const graphics = sms.pop();
 
         if (sms.length === 0)
         {

@@ -72,7 +72,7 @@ class Transform extends TransformBase
      * Updates only local matrix
      */
     updateLocalTransform() {
-        let lt = this.localTransform;
+        const lt = this.localTransform;
         let a, b, c, d;
 
         a  =  this._cr * this.scale.x;
@@ -93,9 +93,9 @@ class Transform extends TransformBase
     updateTransform(parentTransform)
     {
 
-        let pt = parentTransform.worldTransform;
-        let wt = this.worldTransform;
-        let lt = this.localTransform;
+        const pt = parentTransform.worldTransform;
+        const wt = this.worldTransform;
+        const lt = this.localTransform;
         let a, b, c, d;
 
         a  =  this._cr * this.scale.x;
@@ -124,7 +124,7 @@ class Transform extends TransformBase
 
     /**
      * Decomposes a matrix and sets the transforms properties based on it.
-     * @param {PIXI.Matrix} The matrix to decompose
+     * @param matrix {PIXI.Matrix} The matrix to decompose
      */
     setFromMatrix(matrix)
     {

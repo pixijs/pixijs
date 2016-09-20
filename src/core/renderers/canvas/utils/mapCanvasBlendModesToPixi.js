@@ -5,12 +5,10 @@ import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
  * Maps blend combinations to Canvas
  * @class
  * @memberof PIXI
- * @param array
+ * @param [array=[]] {array}
  */
-function mapCanvasBlendModesToPixi(array)
+function mapCanvasBlendModesToPixi(array=[])
 {
-    array = array || [];
-
     if (canUseNewCanvasBlendModes())
     {
         array[CONST.BLEND_MODES.NORMAL]        = 'source-over';

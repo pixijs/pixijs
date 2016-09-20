@@ -33,7 +33,7 @@ class Polygon
         // if this is an array of points, convert it to a flat array of numbers
         if (points[0] instanceof Point)
         {
-            let p = [];
+            const p = [];
             for (let i = 0, il = points.length; i < il; i++)
             {
                 p.push(points[i].x, points[i].y);
@@ -98,11 +98,11 @@ class Polygon
 
         // use some raycasting to test hits
         // https://github.com/substack/point-in-polygon/blob/master/index.js
-        let length = this.points.length / 2;
+        const length = this.points.length / 2;
 
         for (let i = 0, j = length - 1; i < length; j = i++)
         {
-            let xi = this.points[i * 2], yi = this.points[i * 2 + 1],
+            const xi = this.points[i * 2], yi = this.points[i * 2 + 1],
                 xj = this.points[j * 2], yj = this.points[j * 2 + 1],
                 intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 

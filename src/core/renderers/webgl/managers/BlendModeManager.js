@@ -33,7 +33,7 @@ class BlendModeManager extends WebGLManager
 
         this.currentBlendMode = blendMode;
 
-        let mode = this.renderer.blendModes[this.currentBlendMode];
+        const mode = this.renderer.blendModes[this.currentBlendMode];
         this.renderer.gl.blendFunc(mode[0], mode[1]);
 
         return true;

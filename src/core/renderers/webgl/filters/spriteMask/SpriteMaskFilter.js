@@ -16,7 +16,7 @@ class SpriteMaskFilter extends Filter
 {
     constructor(sprite)
     {
-        let maskMatrix = new math.Matrix();
+        const maskMatrix = new math.Matrix();
 
         super(
             glslify('./spriteMaskFilter.vert'),
@@ -38,7 +38,7 @@ class SpriteMaskFilter extends Filter
      */
     apply(filterManager, input, output)
     {
-        let maskSprite = this.maskSprite;
+        const maskSprite = this.maskSprite;
 
         this.uniforms.mask = maskSprite._texture;
         this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
