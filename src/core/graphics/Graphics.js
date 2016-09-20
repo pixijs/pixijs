@@ -531,8 +531,8 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
  * Specifies a simple one-color fill that subsequent calls to other Graphics methods
  * (such as lineTo() or drawCircle()) use when drawing.
  *
- * @param color {number} the color of the fill
- * @param alpha {number} the alpha of the fill
+ * @param [color=0] {number} the color of the fill
+ * @param [alpha=1] {number} the alpha of the fill
  * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 Graphics.prototype.beginFill = function (color, alpha)
@@ -676,13 +676,15 @@ Graphics.prototype.drawPolygon = function (path)
  */
 Graphics.prototype.clear = function ()
 {
-    this.lineWidth = 0;
-    this.filling = false;
+    if ( this.lineWidth || this.filling || this.graphicsData.length > 0 )
+    {
+        this.lineWidth = 0;
+        this.filling = false;
 
-    this.dirty++;
-    this.clearDirty++;
-    this.graphicsData = [];
-
+        this.dirty++;
+        this.clearDirty++;
+        this.graphicsData.length = 0;
+    }
     return this;
 };
 
