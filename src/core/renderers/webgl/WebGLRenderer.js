@@ -148,6 +148,7 @@ function WebGLRenderer(width, height, options)
      * Holds the current shader
      *
      * @member {PIXI.Shader}
+     * @private
      */
     this._activeShader = null;
 

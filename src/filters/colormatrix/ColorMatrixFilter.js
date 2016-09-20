@@ -45,6 +45,7 @@ module.exports = ColorMatrixFilter;
  *
  * @param matrix {number[]} (mat 5x4)
  * @param multiply {boolean} if true, current matrix and matrix are multiplied. If false, just set the current matrix with @param matrix
+ * @private
  */
 ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
 {
@@ -68,6 +69,7 @@ ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
  * @param a {number[]} (mat 5x4) the first operand
  * @param b {number[]} (mat 5x4) the second operand
  * @returns out {number[]} (mat 5x4)
+ * @private
  */
 ColorMatrixFilter.prototype._multiply = function (out, a, b)
 {
@@ -108,6 +110,7 @@ ColorMatrixFilter.prototype._multiply = function (out, a, b)
  *
  * @param matrix {number[]} (mat 5x4)
  * @return m {number[]} (mat 5x4) with all values between 0-1
+ * @private
  */
 ColorMatrixFilter.prototype._colorMatrix = function (matrix)
 {
