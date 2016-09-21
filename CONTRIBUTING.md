@@ -21,7 +21,7 @@ of [jsFiddle][fiddle], [jsBin][jsbin], or a link to your live site so that we ca
 4. **Share as much information as possible.** Include browser version affected, your OS, version of
 the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
-## Contributing Changes Changes
+## Contributing Changes
 
 ### Setting Up
 
