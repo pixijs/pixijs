@@ -50,6 +50,50 @@ class Rectangle
     }
 
     /**
+     * returns the left edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle#
+     */
+    get left ()
+    {
+        return this.x;
+    }
+
+    /**
+     * returns the right edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    get right ()
+    {
+        return this.x + this.width;
+    }
+
+    /**
+     * returns the top edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    get top()
+    {
+        return this.y;
+    }
+
+    /**
+     * returns the bottom edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    get bottom()
+    {
+        return this.y + this.height;
+    }
+
+    /**
      * A constant empty rectangle.
      *
      * @static
