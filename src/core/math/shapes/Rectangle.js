@@ -50,6 +50,62 @@ function Rectangle(x, y, width, height)
 Rectangle.prototype.constructor = Rectangle;
 module.exports = Rectangle;
 
+
+Object.defineProperties(Rectangle.prototype, {
+    /**
+     * returns the left edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle#
+     */
+    left: {
+        get: function ()
+        {
+            return this.x;
+        }
+    },
+
+    /**
+     * returns the right edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    right: {
+        get: function ()
+        {
+            return this.x + this.width;
+        }
+    },
+
+    /**
+     * returns the top edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    top: {
+        get: function ()
+        {
+            return this.y;
+        }
+    },
+
+    /**
+     * returns the bottom edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    bottom: {
+        get: function ()
+        {
+            return this.y + this.height;
+        }
+    }
+
+});
+
 /**
  * A constant empty rectangle.
  *
