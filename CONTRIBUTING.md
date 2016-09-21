@@ -47,18 +47,20 @@ Here is our branch breakdown:
 - `dev` - Make your change to `dev` if it is a *non-urgent* bugfix or a backwards-compatible feature.
 - `next` - Make your change to `next` if it is a breaking change, or wild/crazy idea.
 
-You change should be made directly to the branch in your fork, or to a branch in your fork made off of
+Your change should be made directly to the branch in your fork, or to a branch in your fork made off of
 one of the above branches.
 
 ### Testing Your Change
 
-You can test your change first by using the automated tests packaged with pixi.js. You can run these tests
-by running `npm test` from the command line.
+You can test your change by using the automated tests packaged with pixi.js. You can run these tests
+by running `npm test` from the command line. If you fix a bug please add a test that will catch that
+bug if it ever happens again. This prevents regressions from sneaking in.
 
 ### Submitting Your Change
 
-After you have made and tested your change, commit and push it to your fork, then open a Pull Request to
-the branch you used in the `Making a Change` section of this document.
+After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
+from your fork to the main pixi.js repository on the branch you used in the `Making a Change` section
+of this document.
 
 ## Quickie Code Style Guide
 
