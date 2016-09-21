@@ -13,15 +13,13 @@
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @param [path=number[]] Path array to push points into
- * @return {PIXI.Graphics}
+ * @param [path=[]] {number[]} Path array to push points into
+ * @return {number[]}
  */
-var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
+const bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path=[])
 {
-    path = path || [];
-
-    var n = 20,
-        dt,
+    const n = 20;
+    let dt,
         dt2,
         dt3,
         t2,
@@ -29,9 +27,7 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
 
     path.push(fromX, fromY);
 
-    var j = 0;
-
-    for (var i = 1; i <= n; ++i)
+    for (let i = 1, j=0; i <= n; ++i)
     {
         j = i / n;
 
@@ -49,4 +45,4 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
     return path;
 };
 
-module.exports = bezierCurveTo;
+export default bezierCurveTo;

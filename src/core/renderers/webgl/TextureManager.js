@@ -1,7 +1,7 @@
-var GLTexture = require('pixi-gl-core').GLTexture,
-    CONST = require('../../const'),
-    RenderTarget = require('./utils/RenderTarget'),
-	utils = require('../../utils');
+import {GLTexture} from 'pixi-gl-core';
+import CONST from '../../const';
+import RenderTarget from './utils/RenderTarget';
+import utils from '../../utils';
 
 /**
  * Helper class to create a webGL Texture
@@ -10,196 +10,199 @@ var GLTexture = require('pixi-gl-core').GLTexture,
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-var TextureManager = function(renderer)
+class TextureManager
 {
-    /**
-     * A reference to the current renderer
-     *
-     * @member {PIXI.WebGLRenderer}
-     */
-    this.renderer = renderer;
-
-    /**
-     * The current WebGL rendering context
-     *
-     * @member {WebGLRenderingContext}
-     */
-	this.gl = renderer.gl;
-
-	/**
-     * Track textures in the renderer so we can no longer listen to them on destruction.
-     *
-     * @member {Array<*>}
-     * @private
-     */
-	this._managedTextures = [];
-};
-
-TextureManager.prototype.bindTexture = function()
-{
-};
-
-
-TextureManager.prototype.getTexture = function()
-{
-};
-
-/**
- * Updates and/or Creates a WebGL texture for the renderer's context.
- *
- * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to update
- */
-TextureManager.prototype.updateTexture = function(texture)
-{
-	texture = texture.baseTexture || texture;
-
-    var isRenderTexture = !!texture._glRenderTargets;
-
-	if (!texture.hasLoaded)
+    constructor(renderer)
     {
-        return;
+        /**
+         * A reference to the current renderer
+         *
+         * @member {PIXI.WebGLRenderer}
+         */
+        this.renderer = renderer;
+
+        /**
+         * The current WebGL rendering context
+         *
+         * @member {WebGLRenderingContext}
+         */
+        this.gl = renderer.gl;
+
+        /**
+         * Track textures in the renderer so we can no longer listen to them on destruction.
+         *
+         * @member {Array<*>}
+         * @private
+         */
+        this._managedTextures = [];
     }
 
-    var glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
-
-    if (!glTexture)
+    bindTexture()
     {
-        if(isRenderTexture)
+    }
+
+
+    getTexture()
+    {
+    }
+
+    /**
+     * Updates and/or Creates a WebGL texture for the renderer's context.
+     *
+     * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to update
+     */
+    updateTexture(texture)
+    {
+        texture = texture.baseTexture || texture;
+
+        const isRenderTexture = !!texture._glRenderTargets;
+
+        if (!texture.hasLoaded)
         {
-            var renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
-            renderTarget.resize(texture.width, texture.height);
-            texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
-            glTexture = renderTarget.texture;
+            return;
         }
-        else
+
+        let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
+
+        if (!glTexture)
         {
-            glTexture = new GLTexture(this.gl);
-            glTexture.premultiplyAlpha = true;
-            glTexture.upload(texture.source);
-        }
-
-        texture._glTextures[this.renderer.CONTEXT_UID] = glTexture;
-
-        texture.on('update', this.updateTexture, this);
-        texture.on('dispose', this.destroyTexture, this);
-
-        this._managedTextures.push(texture);
-
-        if(texture.isPowerOfTwo)
-        {
-            if(texture.mipmap)
+            if(isRenderTexture)
             {
-                glTexture.enableMipmap();
-            }
-
-            if(texture.wrapMode === CONST.WRAP_MODES.CLAMP)
-            {
-                glTexture.enableWrapClamp();
-            }
-            else if(texture.wrapMode === CONST.WRAP_MODES.REPEAT)
-            {
-                glTexture.enableWrapRepeat();
+                const renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+                renderTarget.resize(texture.width, texture.height);
+                texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
+                glTexture = renderTarget.texture;
             }
             else
             {
-                glTexture.enableWrapMirrorRepeat();
+                glTexture = new GLTexture(this.gl);
+                glTexture.premultiplyAlpha = true;
+                glTexture.upload(texture.source);
+            }
+
+            texture._glTextures[this.renderer.CONTEXT_UID] = glTexture;
+
+            texture.on('update', this.updateTexture, this);
+            texture.on('dispose', this.destroyTexture, this);
+
+            this._managedTextures.push(texture);
+
+            if(texture.isPowerOfTwo)
+            {
+                if(texture.mipmap)
+                {
+                    glTexture.enableMipmap();
+                }
+
+                if(texture.wrapMode === CONST.WRAP_MODES.CLAMP)
+                {
+                    glTexture.enableWrapClamp();
+                }
+                else if(texture.wrapMode === CONST.WRAP_MODES.REPEAT)
+                {
+                    glTexture.enableWrapRepeat();
+                }
+                else
+                {
+                    glTexture.enableWrapMirrorRepeat();
+                }
+            }
+            else
+            {
+                glTexture.enableWrapClamp();
+            }
+
+            if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
+            {
+                glTexture.enableNearestScaling();
+            }
+            else
+            {
+                glTexture.enableLinearScaling();
             }
         }
         else
         {
-            glTexture.enableWrapClamp();
-        }
-
-        if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
-        {
-            glTexture.enableNearestScaling();
-        }
-        else
-        {
-            glTexture.enableLinearScaling();
-        }
-    }
-    else
-    {
-        // the textur ealrady exists so we only need to update it..
-        if(isRenderTexture)
-        {
-            texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
-        }
-        else
-        {
-            glTexture.upload(texture.source);
-        }
-    }
-
-    return  glTexture;
-};
-
-/**
- * Deletes the texture from WebGL
- *
- * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
- * @param [skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
- */
-TextureManager.prototype.destroyTexture = function(texture, skipRemove)
-{
-	texture = texture.baseTexture || texture;
-
-    if (!texture.hasLoaded)
-    {
-        return;
-    }
-
-    if (texture._glTextures[this.renderer.CONTEXT_UID])
-    {
-        texture._glTextures[this.renderer.CONTEXT_UID].destroy();
-        texture.off('update', this.updateTexture, this);
-        texture.off('dispose', this.destroyTexture, this);
-
-
-        delete texture._glTextures[this.renderer.CONTEXT_UID];
-
-        if (!skipRemove)
-        {
-            var i = this._managedTextures.indexOf(texture);
-            if (i !== -1) {
-                utils.removeItems(this._managedTextures, i, 1);
+            // the textur ealrady exists so we only need to update it..
+            if(isRenderTexture)
+            {
+                texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
+            }
+            else
+            {
+                glTexture.upload(texture.source);
             }
         }
-    }
-};
 
-/**
- * Deletes all the textures from WebGL
- */
-TextureManager.prototype.removeAll = function()
-{
-	// empty all the old gl textures as they are useless now
-    for (var i = 0; i < this._managedTextures.length; ++i)
+        return  glTexture;
+    }
+
+    /**
+     * Deletes the texture from WebGL
+     *
+     * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
+     * @param [skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
+     */
+    destroyTexture(texture, skipRemove)
     {
-        var texture = this._managedTextures[i];
+        texture = texture.baseTexture || texture;
+
+        if (!texture.hasLoaded)
+        {
+            return;
+        }
+
         if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
+            texture._glTextures[this.renderer.CONTEXT_UID].destroy();
+            texture.off('update', this.updateTexture, this);
+            texture.off('dispose', this.destroyTexture, this);
+
+
             delete texture._glTextures[this.renderer.CONTEXT_UID];
+
+            if (!skipRemove)
+            {
+                const i = this._managedTextures.indexOf(texture);
+                if (i !== -1) {
+                    utils.removeItems(this._managedTextures, i, 1);
+                }
+            }
         }
     }
-};
 
-/**
- * Destroys this manager and removes all its textures
- */
-TextureManager.prototype.destroy = function()
-{
-    // destroy managed textures
-    for (var i = 0; i < this._managedTextures.length; ++i)
+    /**
+     * Deletes all the textures from WebGL
+     */
+    removeAll()
     {
-        var texture = this._managedTextures[i];
-        this.destroyTexture(texture, true);
-        texture.off('update', this.updateTexture, this);
-        texture.off('dispose', this.destroyTexture, this);
+        // empty all the old gl textures as they are useless now
+        for (let i = 0; i < this._managedTextures.length; ++i)
+        {
+            const texture = this._managedTextures[i];
+            if (texture._glTextures[this.renderer.CONTEXT_UID])
+            {
+                delete texture._glTextures[this.renderer.CONTEXT_UID];
+            }
+        }
     }
 
-    this._managedTextures = null;
-};
+    /**
+     * Destroys this manager and removes all its textures
+     */
+    destroy()
+    {
+        // destroy managed textures
+        for (let i = 0; i < this._managedTextures.length; ++i)
+        {
+            const texture = this._managedTextures[i];
+            this.destroyTexture(texture, true);
+            texture.off('update', this.updateTexture, this);
+            texture.off('dispose', this.destroyTexture, this);
+        }
 
-module.exports = TextureManager;
+        this._managedTextures = null;
+    }
+}
+
+export default TextureManager;

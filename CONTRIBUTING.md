@@ -35,6 +35,7 @@ for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
 3. Next, run `npm install` from within your clone of your fork. That will install dependencies
 necessary to build pixi.js
 
+
 ### Making a Change
 
 Once you have node.js, the repository, and have installed dependencies are you almost ready to make your
@@ -59,8 +60,7 @@ bug if it ever happens again. This prevents regressions from sneaking in.
 ### Submitting Your Change
 
 After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
-from your fork to the main pixi.js repository on the branch you used in the `Making a Change` section
-of this document.
+from your fork to the main pixi.js repository on the branch you used in the `Making a Change` section of this document.
 
 ## Quickie Code Style Guide
 
@@ -68,6 +68,9 @@ of this document.
 - No trailing whitespace, blank lines should have no whitespace.
 - Always favor strict equals `===` unless you *need* to use type coercion.
 - Follow conventions already in the code, and listen to eslint.
+- **Ensure changes are eslint validated.** After making a change be sure to run the build process
+to ensure that you didn't break anything. You can do this with `npm test` which will run
+eslint, rebuild, then run the test suite.
 
 [issues]: https://github.com/pixijs/pixi.js/issues
 [pixi]: https://github.com/pixijs/pixi.js

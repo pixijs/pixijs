@@ -1,8 +1,9 @@
-var Filter = require('../Filter'),
-    math =  require('../../../../math');
+import Filter from '../Filter';
+import math from '../../../../math';
 
 // @see https://github.com/substack/brfs/issues/25
-var glslify  = require('glslify');
+const glslify = require('glslify');
+
 /**
  * The SpriteMaskFilter class
  *
@@ -11,39 +12,40 @@ var glslify  = require('glslify');
  * @memberof PIXI
  * @param sprite {PIXI.Sprite} the target sprite
  */
-function SpriteMaskFilter(sprite)
+class SpriteMaskFilter extends Filter
 {
-    var maskMatrix = new math.Matrix();
+    constructor(sprite)
+    {
+        const maskMatrix = new math.Matrix();
 
-    Filter.call(this,
-        glslify('./spriteMaskFilter.vert'),
-        glslify('./spriteMaskFilter.frag')
-    );
+        super(
+            glslify('./spriteMaskFilter.vert'),
+            glslify('./spriteMaskFilter.frag')
+        );
 
-    sprite.renderable = false;
+        sprite.renderable = false;
 
-    this.maskSprite = sprite;
-    this.maskMatrix = maskMatrix;
+        this.maskSprite = sprite;
+        this.maskMatrix = maskMatrix;
+    }
+
+    /**
+     * Applies the filter
+     *
+     * @param filterManager {PIXI.FilterManager} The renderer to retrieve the filter from
+     * @param input {PIXI.RenderTarget}
+     * @param output {PIXI.RenderTarget}
+     */
+    apply(filterManager, input, output)
+    {
+        const maskSprite = this.maskSprite;
+
+        this.uniforms.mask = maskSprite._texture;
+        this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
+        this.uniforms.alpha = maskSprite.worldAlpha;
+
+        filterManager.applyFilter(this, input, output);
+    }
 }
 
-SpriteMaskFilter.prototype = Object.create(Filter.prototype);
-SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
-module.exports = SpriteMaskFilter;
-
-/**
- * Applies the filter
- *
- * @param filterManager {PIXI.FilterManager} The renderer to retrieve the filter from
- * @param input {PIXI.RenderTarget}
- * @param output {PIXI.RenderTarget}
- */
-SpriteMaskFilter.prototype.apply = function (filterManager, input, output)
-{
-    var maskSprite = this.maskSprite;
-
-    this.uniforms.mask = maskSprite._texture;
-    this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
-    this.uniforms.alpha = maskSprite.worldAlpha;
-
-    filterManager.applyFilter(this, input, output);
-};
+export default SpriteMaskFilter;

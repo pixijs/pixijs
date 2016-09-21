@@ -1,5 +1,5 @@
-var BaseTexture = require('./BaseTexture'),
-    CONST = require('../const');
+import BaseTexture from './BaseTexture';
+import CONST from '../const';
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -11,9 +11,9 @@ var BaseTexture = require('./BaseTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
- * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
+ * let BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
+ * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -27,12 +27,12 @@ var BaseTexture = require('./BaseTexture'),
  * position a Container should be used:
  *
  * ```js
- * var doc = new PIXI.Container();
+ * let doc = new PIXI.Container();
  *
  * doc.addChild(sprite);
  *
- * var baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
- * var renderTexture = new PIXI.RenderTexture(baseRenderTexture);
+ * let baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
  * ```
@@ -45,87 +45,87 @@ var BaseTexture = require('./BaseTexture'),
  * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
-function BaseRenderTexture(width, height, scaleMode, resolution)
+class BaseRenderTexture extends BaseTexture
 {
-    BaseTexture.call(this, null, scaleMode);
+    constructor(width=100, height=100, scaleMode, resolution)
+    {
+        super(null, scaleMode);
 
-    this.resolution = resolution || CONST.RESOLUTION;
+        this.resolution = resolution || CONST.RESOLUTION;
 
-    this.width = width || 100;
-    this.height = height || 100;
+        this.width = width;
+        this.height = height;
 
-    this.realWidth = this.width * this.resolution;
-    this.realHeight = this.height * this.resolution;
+        this.realWidth = this.width * this.resolution;
+        this.realHeight = this.height * this.resolution;
 
-    this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
-    this.hasLoaded = true;
+        this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
+        this.hasLoaded = true;
+
+        /**
+         * A map of renderer IDs to webgl renderTargets
+         *
+         * @member {object<number, WebGLTexture>}
+         * @private
+         */
+        this._glRenderTargets = [];
+
+        /**
+         * A reference to the canvas render target (we only need one as this can be shared accross renderers)
+         *
+         * @member {object<number, WebGLTexture>}
+         * @private
+         */
+        this._canvasRenderTarget = null;
+
+        /**
+         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
+         *
+         * @member {boolean}
+         */
+        this.valid = false;
+    }
 
     /**
-     * A map of renderer IDs to webgl renderTargets
+     * Resizes the BaseRenderTexture.
      *
-     * @member {object<number, WebGLTexture>}
-     * @private
+     * @param width {number} The width to resize to.
+     * @param height {number} The height to resize to.
      */
-    this._glRenderTargets = [];
+    resize(width, height)
+    {
+
+        if (width === this.width && height === this.height)
+        {
+            return;
+        }
+
+        this.valid = (width > 0 && height > 0);
+
+        this.width = width;
+        this.height = height;
+
+        this.realWidth = this.width * this.resolution;
+        this.realHeight = this.height * this.resolution;
+
+        if (!this.valid)
+        {
+            return;
+        }
+
+        this.emit('update', this);
+
+    }
 
     /**
-     * A reference to the canvas render target (we only need one as this can be shared accross renderers)
+     * Destroys this texture
      *
-     * @member {object<number, WebGLTexture>}
-     * @private
      */
-    this._canvasRenderTarget = null;
-
-    /**
-     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-     *
-     * @member {boolean}
-     */
-    this.valid = false;
+    destroy()
+    {
+        super.destroy(true);
+        this.renderer = null;
+    }
 }
 
-BaseRenderTexture.prototype = Object.create(BaseTexture.prototype);
-BaseRenderTexture.prototype.constructor = BaseRenderTexture;
-module.exports = BaseRenderTexture;
-
-/**
- * Resizes the BaseRenderTexture.
- *
- * @param width {number} The width to resize to.
- * @param height {number} The height to resize to.
- */
-BaseRenderTexture.prototype.resize = function (width, height)
-{
-
-    if (width === this.width && height === this.height)
-    {
-        return;
-    }
-
-    this.valid = (width > 0 && height > 0);
-
-    this.width = width;
-    this.height = height;
-
-    this.realWidth = this.width * this.resolution;
-    this.realHeight = this.height * this.resolution;
-
-    if (!this.valid)
-    {
-        return;
-    }
-
-    this.emit('update', this);
-
-};
-
-/**
- * Destroys this texture
- *
- */
-BaseRenderTexture.prototype.destroy = function ()
-{
-    BaseTexture.prototype.destroy.call(this, true);
-    this.renderer = null;
-};
-
+export default BaseRenderTexture;

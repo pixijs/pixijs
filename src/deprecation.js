@@ -1,16 +1,16 @@
 /*global console */
-var core = require('./core'),
-    mesh = require('./mesh'),
-    particles = require('./particles'),
-    extras = require('./extras'),
-    filters = require('./filters');
+import core from './core';
+import mesh from './mesh';
+import particles from './particles';
+import extras from './extras';
+import filters from './filters';
 
 // @if DEBUG
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
 function warn(msg) {
-    var stack = new Error().stack;
+    let stack = new Error().stack;
 
     // Handle IE < 10 and Safari < 6
     if (typeof stack === 'undefined') {
@@ -72,7 +72,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Stage: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
@@ -90,7 +90,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     DisplayObjectContainer: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
@@ -108,7 +108,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Strip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
@@ -126,7 +126,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Rope: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
@@ -144,7 +144,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     ParticleContainer: {
-        get: function() {
+        get() {
             // @if DEBUG
             warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             // @endif
@@ -161,7 +161,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     MovieClip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
@@ -179,7 +179,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TilingSprite: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
@@ -197,7 +197,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BitmapText: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
@@ -215,7 +215,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     blendModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
@@ -233,7 +233,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     scaleModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
@@ -251,7 +251,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BaseTextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
@@ -269,7 +269,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
@@ -287,7 +287,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     math: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The math namespace is deprecated, please access members already accessible on PIXI.');
@@ -304,7 +304,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -321,7 +321,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     TransformManual: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
@@ -417,7 +417,7 @@ extras.BitmapText.prototype.setText = function(text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text';`);
     // @endif
 };
 
@@ -431,7 +431,7 @@ core.Text.prototype.setText = function(text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myText.text = 'my text';`);
     // @endif
 };
 
@@ -457,18 +457,18 @@ Object.defineProperties(core.TextStyle.prototype, {
      * @deprecated since version 4.0.0
      */
     font: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
-            var fontSizeString = (typeof this._fontSize === 'number') ? this._fontSize + 'px' : this._fontSize;
-            return this._fontStyle + ' ' + this._fontVariant + ' ' + this._fontWeight + ' ' + fontSizeString + ' ' + this._fontFamily;
+            let fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
+            return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
-        set: function (font)
+        set (font)
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
 
             // can work out fontStyle from search of whole string
@@ -496,12 +496,11 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
 
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
-            var splits = font.split(' ');
-            var i;
-            var fontSizeIndex = -1;
+            let splits = font.split(' ');
+            let fontSizeIndex = -1;
 
             this._fontSize = 26;
-            for ( i = 0; i < splits.length; ++i )
+            for ( let i = 0; i < splits.length; ++i )
             {
                 if ( splits[i].match( /(px|pt|em|%)/ ) )
                 {
@@ -513,7 +512,7 @@ Object.defineProperties(core.TextStyle.prototype, {
 
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
-            for ( i = 0; i < fontSizeIndex; ++i )
+            for ( let i = 0; i < fontSizeIndex; ++i )
             {
                 if ( splits[i].match( /(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/ ) )
                 {
@@ -526,7 +525,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
             {
                 this._fontFamily = '';
-                for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+                for ( let i = fontSizeIndex + 1; i < splits.length; ++i )
                 {
                     this._fontFamily += splits[i] + ' ';
                 }
@@ -567,7 +566,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -584,7 +583,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     SpriteMaskFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');

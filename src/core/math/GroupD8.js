@@ -1,13 +1,13 @@
 // Your friendly neighbour https://en.wikipedia.org/wiki/Dihedral_group of order 16
+import Matrix from './Matrix';
 
-var ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
-var uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
-var vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
-var vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
-var tempMatrices = [];
-var Matrix = require('./Matrix');
+const ux = [1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1];
+const uy = [0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1];
+const vx = [0, -1, -1, -1, 0, 1, 1, 1, 0, 1, 1, 1, 0, -1, -1, -1];
+const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
+const tempMatrices = [];
 
-var mul = [];
+const mul = [];
 
 function signum(x) {
     if (x < 0) {
@@ -20,15 +20,15 @@ function signum(x) {
 }
 
 function init() {
-    for (var i = 0; i < 16; i++) {
-        var row = [];
+    for (let i = 0; i < 16; i++) {
+        const row = [];
         mul.push(row);
-        for (var j = 0; j < 16; j++) {
-            var _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
-            var _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
-            var _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
-            var _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
-            for (var k = 0; k < 16; k++) {
+        for (let j = 0; j < 16; j++) {
+            const _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
+            const _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
+            const _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
+            const _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
+            for (let k = 0; k < 16; k++) {
                 if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy) {
                     row.push(k);
                     break;
@@ -37,8 +37,8 @@ function init() {
         }
     }
 
-    for (i=0;i<16;i++) {
-        var mat = new Matrix();
+    for (let i=0;i<16;i++) {
+        const mat = new Matrix();
         mat.set(ux[i], uy[i], vx[i], vy[i], 0, 0);
         tempMatrices.push(mat);
     }
@@ -58,7 +58,7 @@ init();
  *
  * @namespace PIXI.GroupD8
  */
-var GroupD8 = {
+const GroupD8 = {
     E: 0,
     SE: 1,
     S: 2,
@@ -69,47 +69,31 @@ var GroupD8 = {
     NE: 7,
     MIRROR_VERTICAL: 8,
     MIRROR_HORIZONTAL: 12,
-    uX: function (ind) {
-        return ux[ind];
-    },
-    uY: function (ind) {
-        return uy[ind];
-    },
-    vX: function (ind) {
-        return vx[ind];
-    },
-    vY: function (ind) {
-        return vy[ind];
-    },
-    inv: function (rotation) {
+    uX: ind => ux[ind],
+    uY: ind => uy[ind],
+    vX: ind => vx[ind],
+    vY: ind => vy[ind],
+    inv: rotation => {
         if (rotation & 8) {
             return rotation & 15;
         }
         return (-rotation) & 7;
     },
-    add: function (rotationSecond, rotationFirst) {
-        return mul[rotationSecond][rotationFirst];
-    },
-    sub: function (rotationSecond, rotationFirst) {
-        return mul[rotationSecond][GroupD8.inv(rotationFirst)];
-    },
+    add: (rotationSecond, rotationFirst) => mul[rotationSecond][rotationFirst],
+    sub: (rotationSecond, rotationFirst) => mul[rotationSecond][GroupD8.inv(rotationFirst)],
     /**
      * Adds 180 degrees to rotation. Commutative operation
      * @param rotation
      * @returns {number}
      */
-    rotate180: function (rotation) {
-        return rotation ^ 4;
-    },
+    rotate180: rotation => rotation ^ 4,
     /**
      * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
      * @param rotation
      * @returns {boolean}
      */
-    isSwapWidthHeight: function(rotation) {
-        return (rotation & 3) === 2;
-    },
-    byDirection: function (dx, dy) {
+    isSwapWidthHeight: rotation => (rotation & 3) === 2,
+    byDirection: (dx, dy) => {
         if (Math.abs(dx) * 2 <= Math.abs(dy)) {
             if (dy >= 0) {
                 return GroupD8.S;
@@ -148,9 +132,9 @@ var GroupD8 = {
      * @param tx {number|*} sprite anchoring
      * @param ty {number|*} sprite anchoring
      */
-    matrixAppendRotationInv: function (matrix, rotation, tx, ty) {
+    matrixAppendRotationInv: (matrix, rotation, tx, ty) => {
         //Packer used "rotation", we use "inv(rotation)"
-        var mat = tempMatrices[GroupD8.inv(rotation)];
+        const mat = tempMatrices[GroupD8.inv(rotation)];
         tx = tx || 0;
         ty = ty || 0;
         mat.tx = tx;
@@ -159,4 +143,4 @@ var GroupD8 = {
     }
 };
 
-module.exports = GroupD8;
+export default GroupD8;

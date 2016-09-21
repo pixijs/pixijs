@@ -1,193 +1,194 @@
-var WebGLManager = require('./WebGLManager'),
-    AlphaMaskFilter = require('../filters/spriteMask/SpriteMaskFilter');
+import WebGLManager from './WebGLManager';
+import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-function MaskManager(renderer)
+class MaskManager extends WebGLManager
 {
-    WebGLManager.call(this, renderer);
-
-    //TODO - we don't need both!
-    this.scissor = false;
-    this.scissorData = null;
-    this.scissorRenderTarget = null;
-
-    this.enableScissor = true;
-
-    this.alphaMaskPool = [];
-    this.alphaMaskIndex = 0;
-}
-
-MaskManager.prototype = Object.create(WebGLManager.prototype);
-MaskManager.prototype.constructor = MaskManager;
-module.exports = MaskManager;
-
-/**
- * Applies the Mask and adds it to the current filter stack.
- *
- * @param target {PIXI.DisplayObject} Display Object to push the mask to
- * @param maskData {PIXI.Sprite|PIXI.Graphics}
- */
-MaskManager.prototype.pushMask = function (target, maskData)
-{
-    if (maskData.texture)
+    constructor(renderer)
     {
-        this.pushSpriteMask(target, maskData);
+        super(renderer);
+
+        //TODO - we don't need both!
+        this.scissor = false;
+        this.scissorData = null;
+        this.scissorRenderTarget = null;
+
+        this.enableScissor = true;
+
+        this.alphaMaskPool = [];
+        this.alphaMaskIndex = 0;
     }
-    else
+
+    /**
+     * Applies the Mask and adds it to the current filter stack.
+     *
+     * @param target {PIXI.DisplayObject} Display Object to push the mask to
+     * @param maskData {PIXI.Sprite|PIXI.Graphics}
+     */
+    pushMask(target, maskData)
     {
-        if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect())
+        if (maskData.texture)
         {
-            var matrix = maskData.worldTransform;
-
-            var rot = Math.atan2(matrix.b, matrix.a);
-
-            // use the nearest degree!
-            rot = Math.round(rot * (180/Math.PI));
-
-            if(rot % 90)
+            this.pushSpriteMask(target, maskData);
+        }
+        else
+        {
+            if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect())
             {
-                this.pushStencilMask(maskData);
+                const matrix = maskData.worldTransform;
+
+                let rot = Math.atan2(matrix.b, matrix.a);
+
+                // use the nearest degree!
+                rot = Math.round(rot * (180/Math.PI));
+
+                if(rot % 90)
+                {
+                    this.pushStencilMask(maskData);
+                }
+                else
+                {
+                    this.pushScissorMask(target, maskData);
+                }
             }
             else
             {
-                this.pushScissorMask(target, maskData);
+                this.pushStencilMask(maskData);
             }
         }
-        else
-        {
-            this.pushStencilMask(maskData);
-        }
     }
-};
 
-/**
- * Removes the last mask from the mask stack and doesn't return it.
- *
- * @param target {PIXI.DisplayObject} Display Object to pop the mask from
- * @param maskData {Array<*>}
- */
-MaskManager.prototype.popMask = function (target, maskData)
-{
-    if (maskData.texture)
+    /**
+     * Removes the last mask from the mask stack and doesn't return it.
+     *
+     * @param target {PIXI.DisplayObject} Display Object to pop the mask from
+     * @param maskData {Array<*>}
+     */
+    popMask(target, maskData)
     {
-        this.popSpriteMask(target, maskData);
-    }
-    else
-    {
-        if(this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
+        if (maskData.texture)
         {
-            this.popScissorMask(target, maskData);
+            this.popSpriteMask(target, maskData);
         }
         else
         {
-            this.popStencilMask(target, maskData);
+            if(this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
+            {
+                this.popScissorMask(target, maskData);
+            }
+            else
+            {
+                this.popStencilMask(target, maskData);
+            }
+
+        }
+    }
+
+    /**
+     * Applies the Mask and adds it to the current filter stack.
+     *
+     * @param target {PIXI.RenderTarget} Display Object to push the sprite mask to
+     * @param maskData {PIXI.Sprite} Sprite to be used as the mask
+     */
+    pushSpriteMask(target, maskData)
+    {
+        let alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
+
+        if (!alphaMaskFilter)
+        {
+            alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
         }
 
+        alphaMaskFilter[0].resolution = this.renderer.resolution;
+        alphaMaskFilter[0].maskSprite = maskData;
+
+        //TODO - may cause issues!
+        target.filterArea = maskData.getBounds(true);
+
+        this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+
+        this.alphaMaskIndex++;
     }
-};
 
-/**
- * Applies the Mask and adds it to the current filter stack.
- *
- * @param target {PIXI.RenderTarget} Display Object to push the sprite mask to
- * @param maskData {PIXI.Sprite} Sprite to be used as the mask
- */
-MaskManager.prototype.pushSpriteMask = function (target, maskData)
-{
-    var alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex];
-
-    if (!alphaMaskFilter)
+    /**
+     * Removes the last filter from the filter stack and doesn't return it.
+     *
+     */
+    popSpriteMask()
     {
-        alphaMaskFilter = this.alphaMaskPool[this.alphaMaskIndex] = [new AlphaMaskFilter(maskData)];
+        this.renderer.filterManager.popFilter();
+        this.alphaMaskIndex--;
     }
 
-    alphaMaskFilter[0].resolution = this.renderer.resolution;
-    alphaMaskFilter[0].maskSprite = maskData;
 
-    //TODO - may cause issues!
-    target.filterArea = maskData.getBounds(true);
+    /**
+     * Applies the Mask and adds it to the current filter stack.
+     *
+     * @param maskData {Array<*>}
+     */
+    pushStencilMask(maskData)
+    {
+        this.renderer.currentRenderer.stop();
+        this.renderer.stencilManager.pushStencil(maskData);
+    }
 
-    this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+    /**
+     * Removes the last filter from the filter stack and doesn't return it.
+     *
+     */
+    popStencilMask()
+    {
+        this.renderer.currentRenderer.stop();
+        this.renderer.stencilManager.popStencil();
+    }
 
-    this.alphaMaskIndex++;
-};
+    /**
+     *
+     * @param target {PIXI.RenderTarget} Display Object to push the scissor mask to
+     * @param maskData
+     */
+    pushScissorMask(target, maskData)
+    {
+        maskData.renderable = true;
 
-/**
- * Removes the last filter from the filter stack and doesn't return it.
- *
- */
-MaskManager.prototype.popSpriteMask = function ()
-{
-    this.renderer.filterManager.popFilter();
-    this.alphaMaskIndex--;
-};
+        const renderTarget = this.renderer._activeRenderTarget;
 
+        const bounds = maskData.getBounds();
 
-/**
- * Applies the Mask and adds it to the current filter stack.
- *
- * @param maskData {Array<*>}
- */
-MaskManager.prototype.pushStencilMask = function (maskData)
-{
-    this.renderer.currentRenderer.stop();
-    this.renderer.stencilManager.pushStencil(maskData);
-};
+        bounds.fit(renderTarget.size);
+        maskData.renderable = false;
 
-/**
- * Removes the last filter from the filter stack and doesn't return it.
- *
- */
-MaskManager.prototype.popStencilMask = function ()
-{
-    this.renderer.currentRenderer.stop();
-    this.renderer.stencilManager.popStencil();
-};
+        this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
-/**
- *
- * @param target {PIXI.RenderTarget} Display Object to push the scissor mask to
- * @param maskData
- */
-MaskManager.prototype.pushScissorMask = function (target, maskData)
-{
-    maskData.renderable = true;
+        let resolution = this.renderer.resolution;
+        this.renderer.gl.scissor(bounds.x * resolution,
+            (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
+                               bounds.width * resolution,
+                               bounds.height * resolution);
 
-    var renderTarget = this.renderer._activeRenderTarget;
+        this.scissorRenderTarget = renderTarget;
+        this.scissorData = maskData;
+        this.scissor = true;
+    }
 
-    var bounds = maskData.getBounds();
+    /**
+     *
+     *
+     */
+    popScissorMask()
+    {
+        this.scissorRenderTarget = null;
+        this.scissorData = null;
+        this.scissor = false;
 
-    bounds.fit(renderTarget.size);
-    maskData.renderable = false;
+        // must be scissor!
+        const gl = this.renderer.gl;
+        gl.disable(gl.SCISSOR_TEST);
+    }
+}
 
-    this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
-
-    var resolution = this.renderer.resolution;
-    this.renderer.gl.scissor(bounds.x * resolution,
-        (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
-                           bounds.width * resolution,
-                           bounds.height * resolution);
-
-    this.scissorRenderTarget = renderTarget;
-    this.scissorData = maskData;
-    this.scissor = true;
-};
-
-/**
- *
- *
- */
-MaskManager.prototype.popScissorMask = function ()
-{
-    this.scissorRenderTarget = null;
-    this.scissorData = null;
-    this.scissor = false;
-
-    // must be scissor!
-    var gl = this.renderer.gl;
-    gl.disable(gl.SCISSOR_TEST);
-};
+export default MaskManager;

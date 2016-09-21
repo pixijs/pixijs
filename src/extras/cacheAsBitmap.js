@@ -1,6 +1,7 @@
-var core = require('../core'),
-    DisplayObject = core.DisplayObject,
-    _tempMatrix = new core.Matrix();
+import core from '../core';
+
+const DisplayObject = core.DisplayObject;
+const _tempMatrix = new core.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = false;
@@ -8,7 +9,7 @@ DisplayObject.prototype._cacheData = false;
 // figured theres no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
 // most objects are not cached as bitmaps.
-var CacheData = function(){
+const CacheData = function(){
 
     this.originalRenderWebGL = null;
     this.originalRenderCanvas = null;
@@ -35,11 +36,11 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof PIXI.DisplayObject#
      */
     cacheAsBitmap: {
-        get: function ()
+        get ()
         {
             return this._cacheAsBitmap;
         },
-        set: function (value)
+        set (value)
         {
             if (this._cacheAsBitmap === value)
             {
@@ -48,7 +49,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
             this._cacheAsBitmap = value;
 
-            var data;
+            let data;
 
             if (value)
             {
@@ -142,7 +143,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     }
 
     // make sure alpha is set to 1 otherwise it will get rendered as invisible!
-    var cacheAlpha = this.alpha;
+    const cacheAlpha = this.alpha;
     this.alpha = 1;
 
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
@@ -151,28 +152,28 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // next we find the dimensions of the untransformed object
     // this function also calls updatetransform on all its children as part of the measuring. This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    var bounds = this.getLocalBounds().clone();
+    const bounds = this.getLocalBounds().clone();
 
     // add some padding!
     if(this._filters)
     {
-        var padding = this._filters[0].padding;
+        const padding = this._filters[0].padding;
 
         bounds.pad(padding);
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..
-    var cachedRenderTarget = renderer._activeRenderTarget;
+    const cachedRenderTarget = renderer._activeRenderTarget;
     // We also store the filter stack - I will definitely look to change how this works a little later down the line.
-    var stack = renderer.filterManager.filterStack;
+    const stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    var renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
-    var m = _tempMatrix;
+    const m = _tempMatrix;
     m.tx = -bounds.x;
     m.ty = -bounds.y;
 
@@ -197,7 +198,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     this.filterArea = null;
 
     // create our cached sprite
-    var cachedSprite = new core.Sprite(renderTexture);
+    const cachedSprite = new core.Sprite(renderTexture);
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -253,17 +254,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     }
 
     //get bounds actually transforms the object for us already!
-    var bounds = this.getLocalBounds();
+    const bounds = this.getLocalBounds();
 
-    var cacheAlpha = this.alpha;
+    const cacheAlpha = this.alpha;
     this.alpha = 1;
 
-    var cachedRenderTarget = renderer.context;
+    const cachedRenderTarget = renderer.context;
 
-    var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
-    var m = _tempMatrix;
+    const m = _tempMatrix;
     this.transform.worldTransform.copy(m);
     m.invert();
 
@@ -287,7 +288,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     this.filterArea = null;
 
     // create our cached sprite
-    var cachedSprite = new core.Sprite(renderTexture);
+    const cachedSprite = new core.Sprite(renderTexture);
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );

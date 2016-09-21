@@ -1,6 +1,6 @@
-var glCore = require('pixi-gl-core');
+import glCore from 'pixi-gl-core';
 
-var fragTemplate = [
+const fragTemplate = [
     'precision mediump float;',
     'void main(void){',
         'float test = 0.1;',
@@ -9,24 +9,24 @@ var fragTemplate = [
     '}'
 ].join('\n');
 
-var checkMaxIfStatmentsInShader = function(maxIfs, gl)
+const checkMaxIfStatmentsInShader = function(maxIfs, gl)
 {
-    var createTempContext = !gl;
+    const createTempContext = !gl;
 
     if(createTempContext)
     {
-        var tinyCanvas = document.createElement('canvas');
+        let tinyCanvas = document.createElement('canvas');
         tinyCanvas.width = 1;
         tinyCanvas.height = 1;
 
         gl = glCore.createContext(tinyCanvas);
     }
 
-    var shader = gl.createShader(gl.FRAGMENT_SHADER);
+    const shader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    while(true)
+    while(true) // eslint-disable-line no-constant-condition
     {
-        var fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
+        const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);
@@ -55,12 +55,11 @@ var checkMaxIfStatmentsInShader = function(maxIfs, gl)
 };
 
 
-
 function generateIfTestSrc(maxIfs)
 {
-    var src = '';
+    let src = '';
 
-    for (var i = 0; i < maxIfs; i++)
+    for (let i = 0; i < maxIfs; i++)
     {
         if(i > 0)
         {
@@ -69,11 +68,11 @@ function generateIfTestSrc(maxIfs)
 
         if(i < maxIfs-1)
         {
-            src += 'if(test == ' + i + '.0){}';
+            src += `if(test == ${i}.0){}`;
         }
     }
 
     return src;
 }
 
-module.exports = checkMaxIfStatmentsInShader;
+export default checkMaxIfStatmentsInShader;

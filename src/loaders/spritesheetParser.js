@@ -1,15 +1,15 @@
-var Resource = require('resource-loader').Resource,
-    path = require('path'),
-    core = require('../core');
+import {Resource} from 'resource-loader';
+import path from 'path';
+import core from '../core';
 
-var BATCH_SIZE = 1000;
+const BATCH_SIZE = 1000;
 
-module.exports = function ()
+export default function ()
 {
     return function (resource, next)
     {
-        var resourcePath;
-        var imageResourceName = resource.name + '_image';
+        let resourcePath;
+        let imageResourceName = `${resource.name}_image`;
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
@@ -17,7 +17,7 @@ module.exports = function ()
             return next();
         }
 
-        var loadOptions = {
+        const loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata
@@ -30,7 +30,7 @@ module.exports = function ()
         }
         else
         {
-            resourcePath = path.dirname(resource.url.replace(this.baseUrl, '')) + '/' + resource.data.meta.image;
+            resourcePath = `${path.dirname(resource.url.replace(this.baseUrl, ''))}/${resource.data.meta.image}`;
         }
 
         // load the image for this sheet
@@ -38,26 +38,26 @@ module.exports = function ()
         {
             resource.textures = {};
 
-            var frames = resource.data.frames;
-            var frameKeys = Object.keys(frames);
-            var resolution = core.utils.getResolutionOfUrl(resource.url);
-            var batchIndex = 0;
+            const frames = resource.data.frames;
+            const frameKeys = Object.keys(frames);
+            const resolution = core.utils.getResolutionOfUrl(resource.url);
+            let batchIndex = 0;
 
             function processFrames(initialFrameIndex, maxFrames)
             {
-                var frameIndex = initialFrameIndex;
+                let frameIndex = initialFrameIndex;
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    var i = frameKeys[frameIndex];
-                    var rect = frames[i].frame;
+                    let i = frameKeys[frameIndex];
+                    const rect = frames[i].frame;
 
                     if (rect)
                     {
 
-                        var frame = null;
-                        var trim = null;
-                        var orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+                        let frame = null;
+                        let trim = null;
+                        const orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
                         if (frames[i].rotated) {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
@@ -101,7 +101,7 @@ module.exports = function ()
             }
 
             function iteration() {
-                processNextBatch(function() {
+                processNextBatch(() => {
                     if (shouldProcessNextBatch()) {
                         iteration();
                     } else {
@@ -121,4 +121,4 @@ module.exports = function ()
             }
         });
     };
-};
+}

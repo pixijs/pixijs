@@ -1,14 +1,16 @@
-var CONST = require('../const');
+import CONST from '../const';
+import EventEmitter from 'eventemitter3';
+import pluginTarget from './pluginTarget';
 
 /**
  * @namespace PIXI.utils
  */
-var utils = module.exports = {
+const utils = {
     _uid: 0,
     _saidHello: false,
 
-    EventEmitter:   require('eventemitter3'),
-    pluginTarget:   require('./pluginTarget'),
+    EventEmitter,
+    pluginTarget,
 
     /**
      * Gets the next unique identifier
@@ -16,7 +18,7 @@ var utils = module.exports = {
      * @memberof PIXI.utils
      * @return {number} The next unique identifier to use.
      */
-    uid: function ()
+    uid ()
     {
         return ++utils._uid;
     },
@@ -29,7 +31,7 @@ var utils = module.exports = {
      * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
-    hex2rgb: function (hex, out)
+    hex2rgb (hex, out)
     {
         out = out || [];
 
@@ -47,7 +49,7 @@ var utils = module.exports = {
      * @param hex {number} Number in hex
      * @return {string} The string color.
      */
-    hex2string: function (hex)
+    hex2string (hex)
     {
         hex = hex.toString(16);
         hex = '000000'.substr(0, 6 - hex.length) + hex;
@@ -62,7 +64,7 @@ var utils = module.exports = {
      * @param rgb {number[]} rgb array
      * @return {number} The color number
      */
-    rgb2hex: function (rgb)
+    rgb2hex (rgb)
     {
         return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
     },
@@ -76,9 +78,9 @@ var utils = module.exports = {
      * @param url {string} the image path
      * @return {number} resolution / device pixel ratio of an asset
      */
-    getResolutionOfUrl: function (url)
+    getResolutionOfUrl (url)
     {
-        var resolution = CONST.RETINA_PREFIX.exec(url);
+        const resolution = CONST.RETINA_PREFIX.exec(url);
 
         if (resolution)
         {
@@ -99,7 +101,7 @@ var utils = module.exports = {
      * @constant
      * @static
      */
-    sayHello: function (type)
+    sayHello (type)
     {
         if (utils._saidHello)
         {
@@ -108,8 +110,8 @@ var utils = module.exports = {
 
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
-            var args = [
-                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
+            let args = [
+                `\n %c %c %c Pixi.js ${CONST.VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
                 'background: #ff66a5; padding:5px 0;',
                 'background: #ff66a5; padding:5px 0;',
                 'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -121,11 +123,11 @@ var utils = module.exports = {
                 'color: #ff2424; background: #fff; padding:5px 0;'
             ];
 
-            window.console.log.apply(console, args); //jshint ignore:line
+            window.console.log.apply(console, args);
         }
         else if (window.console)
         {
-            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log(`Pixi.js ${CONST.VERSION} - ${type} - http://www.pixijs.com/`);
         }
 
         utils._saidHello = true;
@@ -137,9 +139,9 @@ var utils = module.exports = {
      * @memberof PIXI.utils
      * @return {boolean} is webgl supported
      */
-    isWebGLSupported: function ()
+    isWebGLSupported ()
     {
-        var contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
+        const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
         try
         {
             if (!window.WebGLRenderingContext)
@@ -147,13 +149,13 @@ var utils = module.exports = {
                 return false;
             }
 
-            var canvas = document.createElement('canvas'),
-                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+            const canvas = document.createElement('canvas');
+            let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
-            var success = !!(gl && gl.getContextAttributes().stencil);
+            let success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                var loseContext = gl.getExtension('WEBGL_lose_context');
+                let loseContext = gl.getExtension('WEBGL_lose_context');
 
                 if(loseContext)
                 {
@@ -177,7 +179,7 @@ var utils = module.exports = {
      * @param n {number}
      * @returns {number} 0 if n is 0, -1 if n is negative, 1 if n i positive
      */
-    sign: function (n)
+    sign (n)
     {
         return n ? (n < 0 ? -1 : 1) : 0;
     },
@@ -190,9 +192,9 @@ var utils = module.exports = {
      * @param {number} startIdx The index to begin removing from (inclusive)
      * @param {number} removeCount How many items to remove
      */
-    removeItems: function (arr, startIdx, removeCount)
+    removeItems (arr, startIdx, removeCount)
     {
-        var length = arr.length;
+        let length = arr.length;
 
         if (startIdx >= length || removeCount === 0)
         {
@@ -200,7 +202,8 @@ var utils = module.exports = {
         }
 
         removeCount = (startIdx+removeCount > length ? length-startIdx : removeCount);
-        for (var i = startIdx, len = length-removeCount; i < len; ++i)
+        let len = length-removeCount;
+        for (let i = startIdx; i < len; ++i)
         {
             arr[i] = arr[i + removeCount];
         }
@@ -224,3 +227,5 @@ var utils = module.exports = {
      */
     BaseTextureCache: {}
 };
+
+export default utils;

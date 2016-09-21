@@ -1,5 +1,5 @@
-var buildLine = require('./buildLine'),
-    utils = require('../../../utils');
+import buildLine from './buildLine';
+import utils from '../../../utils';
 
 /**
  * Builds a rectangle to draw
@@ -11,30 +11,30 @@ var buildLine = require('./buildLine'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-var buildRectangle = function (graphicsData, webGLData)
+let buildRectangle = function (graphicsData, webGLData)
 {
     // --- //
     // need to convert points to a nice regular data
     //
-    var rectData = graphicsData.shape;
-    var x = rectData.x;
-    var y = rectData.y;
-    var width = rectData.width;
-    var height = rectData.height;
+    const rectData = graphicsData.shape;
+    const x = rectData.x;
+    const y = rectData.y;
+    const width = rectData.width;
+    const height = rectData.height;
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        const color = utils.hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
 
-        var r = color[0] * alpha;
-        var g = color[1] * alpha;
-        var b = color[2] * alpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
 
-        var verts = webGLData.points;
-        var indices = webGLData.indices;
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
 
-        var vertPos = verts.length/6;
+        const vertPos = verts.length/6;
 
         // start
         verts.push(x, y);
@@ -55,7 +55,7 @@ var buildRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        var tempPoints = graphicsData.points;
+        let tempPoints = graphicsData.points;
 
         graphicsData.points = [x, y,
                   x + width, y,
@@ -70,4 +70,4 @@ var buildRectangle = function (graphicsData, webGLData)
     }
 };
 
-module.exports = buildRectangle;
+export default buildRectangle;

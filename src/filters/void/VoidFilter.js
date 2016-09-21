@@ -1,6 +1,6 @@
-var core = require('../../core');
+import core from '../../core';
 // @see https://github.com/substack/brfs/issues/25
-var glslify  = require('glslify');
+const glslify = require('glslify');
 
 /**
  * Does nothing. Very handy.
@@ -9,18 +9,19 @@ var glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function VoidFilter()
+class VoidFilter extends core.Filter
 {
-    core.Filter.call(this,
-        // vertex shader
-        glslify('../fragments/default.vert'),
-        // fragment shader
-        glslify('./void.frag')
-    );
+    constructor()
+    {
+        super(
+            // vertex shader
+            glslify('../fragments/default.vert'),
+            // fragment shader
+            glslify('./void.frag')
+        );
 
-    this.glShaderKey = 'void';
+        this.glShaderKey = 'void';
+    }
 }
 
-VoidFilter.prototype = Object.create(core.Filter.prototype);
-VoidFilter.prototype.constructor = VoidFilter;
-module.exports = VoidFilter;
+export default VoidFilter;

@@ -9,5 +9,6 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-[{package.json,bower.json,*.yml}]
+[{package.json,bower.json,.travis.yml,.eslintrc}]
+
 indent_size = 2

@@ -1,5 +1,5 @@
-var math = require('../../../math'),
-    utils = require('../../../utils');
+import math from '../../../math';
+import utils from '../../../utils';
 
 /**
  * Builds a line to draw
@@ -11,11 +11,10 @@ var math = require('../../../math'),
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-var buildLine = function (graphicsData, webGLData)
+const buildLine = function (graphicsData, webGLData)
 {
     // TODO OPTIMISE!
-    var i = 0;
-    var points = graphicsData.points;
+    let points = graphicsData.points;
 
     if (points.length === 0)
     {
@@ -32,8 +31,8 @@ var buildLine = function (graphicsData, webGLData)
     // }
 
     // get first and last point.. figure out the middle!
-    var firstPoint = new math.Point(points[0], points[1]);
-    var lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
+    const firstPoint = new math.Point(points[0], points[1]);
+    let lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
 
     // if the first point is the last point - gonna have issues :)
     if (firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
@@ -46,33 +45,33 @@ var buildLine = function (graphicsData, webGLData)
 
         lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
 
-        var midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
-        var midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
+        let midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
+        let midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
 
         points.unshift(midPointX, midPointY);
         points.push(midPointX, midPointY);
     }
 
-    var verts = webGLData.points;
-    var indices = webGLData.indices;
-    var length = points.length / 2;
-    var indexCount = points.length;
-    var indexStart = verts.length/6;
+    const verts = webGLData.points;
+    const indices = webGLData.indices;
+    const length = points.length / 2;
+    let indexCount = points.length;
+    let indexStart = verts.length/6;
 
     // DRAW the Line
-    var width = graphicsData.lineWidth / 2;
+    const width = graphicsData.lineWidth / 2;
 
     // sort color
-    var color = utils.hex2rgb(graphicsData.lineColor);
-    var alpha = graphicsData.lineAlpha;
-    var r = color[0] * alpha;
-    var g = color[1] * alpha;
-    var b = color[2] * alpha;
+    const color = utils.hex2rgb(graphicsData.lineColor);
+    const alpha = graphicsData.lineAlpha;
+    const r = color[0] * alpha;
+    const g = color[1] * alpha;
+    const b = color[2] * alpha;
 
-    var px, py, p1x, p1y, p2x, p2y, p3x, p3y;
-    var perpx, perpy, perp2x, perp2y, perp3x, perp3y;
-    var a1, b1, c1, a2, b2, c2;
-    var denom, pdist, dist;
+    let px, py, p1x, p1y, p2x, p2y, p3x, p3y;
+    let perpx, perpy, perp2x, perp2y, perp3x, perp3y;
+    let a1, b1, c1, a2, b2, c2;
+    let denom, pdist, dist;
 
     p1x = points[0];
     p1y = points[1];
@@ -97,7 +96,7 @@ var buildLine = function (graphicsData, webGLData)
     verts.push(p1x + perpx , p1y + perpy,
                 r, g, b, alpha);
 
-    for (i = 1; i < length-1; i++)
+    for (let i = 1; i < length-1; i++)
     {
         p1x = points[(i-1)*2];
         p1y = points[(i-1)*2 + 1];
@@ -211,7 +210,7 @@ var buildLine = function (graphicsData, webGLData)
 
     indices.push(indexStart);
 
-    for (i = 0; i < indexCount; i++)
+    for (let i = 0; i < indexCount; i++)
     {
         indices.push(indexStart++);
     }
@@ -219,4 +218,4 @@ var buildLine = function (graphicsData, webGLData)
     indices.push(indexStart-1);
 };
 
-module.exports = buildLine;
+export default buildLine;

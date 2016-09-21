@@ -1,66 +1,96 @@
-/**
- * @file        Main export of the PIXI core library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
- */
+import consts from './const';
+import math from './math';
+import utils from './utils';
+import ticker from './ticker';
+import DisplayObject from './display/DisplayObject';
+import Container from './display/Container';
+import Transform from './display/Transform';
+import TransformStatic from './display/TransformStatic';
+import TransformBase from './display/TransformBase';
+import Sprite from './sprites/Sprite';
+import CanvasSpriteRenderer from './sprites/canvas/CanvasSpriteRenderer';
+import CanvasTinter from './sprites/canvas/CanvasTinter';
+import SpriteRenderer from './sprites/webgl/SpriteRenderer';
+import Text from './text/Text';
+import TextStyle from './text/TextStyle';
+import Graphics from './graphics/Graphics';
+import GraphicsData from './graphics/GraphicsData';
+import GraphicsRenderer from './graphics/webgl/GraphicsRenderer';
+import CanvasGraphicsRenderer from './graphics/canvas/CanvasGraphicsRenderer';
+import Texture from './textures/Texture';
+import BaseTexture from './textures/BaseTexture';
+import RenderTexture from './textures/RenderTexture';
+import BaseRenderTexture from './textures/BaseRenderTexture';
+import VideoBaseTexture from './textures/VideoBaseTexture';
+import TextureUvs from './textures/TextureUvs';
+import CanvasRenderer from './renderers/canvas/CanvasRenderer';
+import CanvasRenderTarget from './renderers/canvas/utils/CanvasRenderTarget';
+import Shader from './Shader';
+import WebGLRenderer from './renderers/webgl/WebGLRenderer';
+import WebGLManager from './renderers/webgl/managers/WebGLManager';
+import ObjectRenderer from './renderers/webgl/utils/ObjectRenderer';
+import RenderTarget from './renderers/webgl/utils/RenderTarget';
+import Quad from './renderers/webgl/utils/Quad';
+import SpriteMaskFilter from './renderers/webgl/filters/spriteMask/SpriteMaskFilter';
+import Filter from './renderers/webgl/filters/Filter';
+import glCore from 'pixi-gl-core';
 
 /**
  * @namespace PIXI
  */
 // export core and const. We assign core to const so that the non-reference types in const remain in-tact
-var core = module.exports = Object.assign(require('./const'), require('./math'), {
+const core = Object.assign(consts, math, {
     // utils
-    utils: require('./utils'),
-    ticker: require('./ticker'),
+    utils,
+    ticker,
 
     // display
-    DisplayObject:          require('./display/DisplayObject'),
-    Container:              require('./display/Container'),
-    Transform:              require('./display/Transform'),
-    TransformStatic:        require('./display/TransformStatic'),
-    TransformBase:          require('./display/TransformBase'),
+    DisplayObject,
+    Container,
+    Transform,
+    TransformStatic,
+    TransformBase,
 
     // sprites
-    Sprite:                 require('./sprites/Sprite'),
-    CanvasSpriteRenderer:     require('./sprites/canvas/CanvasSpriteRenderer'),
-    CanvasTinter:           require('./sprites/canvas/CanvasTinter'),
-    SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
+    Sprite,
+    CanvasSpriteRenderer,
+    CanvasTinter,
+    SpriteRenderer,
 
     // text
-    Text:                   require('./text/Text'),
-    TextStyle:              require('./text/TextStyle'),
+    Text,
+    TextStyle,
     // primitives
-    Graphics:               require('./graphics/Graphics'),
-    GraphicsData:           require('./graphics/GraphicsData'),
-    GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
-    CanvasGraphicsRenderer: require('./graphics/canvas/CanvasGraphicsRenderer'),
+    Graphics,
+    GraphicsData,
+    GraphicsRenderer,
+    CanvasGraphicsRenderer,
 
     // textures
-    Texture:                require('./textures/Texture'),
-    BaseTexture:            require('./textures/BaseTexture'),
-    RenderTexture:          require('./textures/RenderTexture'),
-    BaseRenderTexture:      require('./textures/BaseRenderTexture'),
-    VideoBaseTexture:       require('./textures/VideoBaseTexture'),
-    TextureUvs:             require('./textures/TextureUvs'),
+    Texture,
+    BaseTexture,
+    RenderTexture,
+    BaseRenderTexture,
+    VideoBaseTexture,
+    TextureUvs,
 
     // renderers - canvas
-    CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasRenderTarget:     require('./renderers/canvas/utils/CanvasRenderTarget'),
+    CanvasRenderer,
+    CanvasRenderTarget,
 
     // renderers - webgl
-    Shader:                 require('./Shader'),
-    WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    WebGLManager:           require('./renderers/webgl/managers/WebGLManager'),
-    ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
-    RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
-    Quad:                   require('./renderers/webgl/utils/Quad'),
+    Shader,
+    WebGLRenderer,
+    WebGLManager,
+    ObjectRenderer,
+    RenderTarget,
+    Quad,
 
     // filters - webgl
-    SpriteMaskFilter:       require('./renderers/webgl/filters/spriteMask/SpriteMaskFilter'),
-    Filter:                 require('./renderers/webgl/filters/Filter'),
+    SpriteMaskFilter,
+    Filter,
 
-    glCore:                   require('pixi-gl-core'),
+    glCore,
 
     /**
      * This helper function will automatically detect which renderer you should be using.
@@ -68,8 +98,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
      * the browser then this function will return a canvas renderer
      *
      * @memberof PIXI
-     * @param width=800 {number} the width of the renderers view
-     * @param height=600 {number} the height of the renderers view
+     * @param [width=800] {number} the width of the renderers view
+     * @param [height=600] {number} the height of the renderers view
      * @param [options] {object} The optional renderer parameters
      * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
      * @param [options.transparent=false] {boolean} If the render view is transparent, default false
@@ -81,10 +111,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function (width, height, options, noWebGL)
+    autoDetectRenderer (width=800, height=600, options, noWebGL)
     {
-        width = width || 800;
-        height = height || 600;
 
         if (!noWebGL && core.utils.isWebGLSupported())
         {
@@ -94,3 +122,5 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
         return new core.CanvasRenderer(width, height, options);
     }
 });
+
+export default core;
