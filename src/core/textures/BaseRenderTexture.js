@@ -12,7 +12,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * ```js
  * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
+ * var baseRenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
  * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
@@ -20,7 +20,7 @@ var BaseTexture = require('./BaseTexture'),
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * BaserenderTexture.render(sprite);
+ * baseRenderTexture.render(sprite);
  * ```
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
@@ -31,7 +31,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * doc.addChild(sprite);
  *
- * var baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * var baseRenderTexture = new PIXI.BaseRenderTexture(100, 100);
  * var renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
