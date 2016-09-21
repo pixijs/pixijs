@@ -201,6 +201,9 @@ class VideoBaseTexture extends BaseTexture
     {
         const video = document.createElement('video');
 
+        video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('playsinline', '');
+
         // array of objects or strings
         if (Array.isArray(videoSrc))
         {
