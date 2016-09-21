@@ -20,7 +20,7 @@ class AccessibilityManager
 {
     constructor(renderer)
     {
-        if(Device.tablet || Device.phone)
+        if((Device.tablet || Device.phone) && !navigator.isCocoonJS)
         {
             this.createTouchHook();
         }
@@ -33,74 +33,73 @@ class AccessibilityManager
         div.style.position = 'absolute';
         div.style.top = 0;
         div.style.left = 0;
-       //
         div.style.zIndex = 2;
 
-           /**
-            * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
-            *
-            * @type {HTMLElement}
-            * @private
-            */
-           this.div = div;
+        /**
+         * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
+         *
+         * @type {HTMLElement}
+         * @private
+         */
+        this.div = div;
 
-           /**
-            * A simple pool for storing divs.
-            *
-            * @type {*}
-            * @private
-            */
-         this.pool = [];
+        /**
+         * A simple pool for storing divs.
+         *
+         * @type {*}
+         * @private
+         */
+        this.pool = [];
 
-         /**
-          * This is a tick used to check if an object is no longer being rendered.
-          *
-          * @type {Number}
-          * @private
-          */
-           this.renderId = 0;
+        /**
+         * This is a tick used to check if an object is no longer being rendered.
+         *
+         * @type {Number}
+         * @private
+         */
+        this.renderId = 0;
 
-           /**
-            * Setting this to true will visually show the divs
-            *
-            * @type {boolean}
-            */
-           this.debug = false;
+        /**
+         * Setting this to true will visually show the divs
+         *
+         * @type {boolean}
+         */
+        this.debug = false;
 
-          /**
+        /**
          * The renderer this accessibility manager works for.
          *
          * @member {PIXI.SystemRenderer}
          */
-           this.renderer = renderer;
+        this.renderer = renderer;
 
-           /**
+        /**
          * The array of currently active accessible items.
          *
          * @member {Array<*>}
          * @private
          */
-           this.children = [];
+        this.children = [];
 
-           /**
+        /**
          * pre-bind the functions
          *
-          * @private
+         * @private
          */
-           this._onKeyDown = this._onKeyDown.bind(this);
-           this._onMouseMove = this._onMouseMove.bind(this);
+        this._onKeyDown = this._onKeyDown.bind(this);
+        this._onMouseMove = this._onMouseMove.bind(this);
 
-           /**
+        /**
          * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
          *
          * @member {Array<*>}
          * @private
          */
-           this.isActive = false;
-           this.isMobileAccessabillity = false;
+        this.isActive = false;
+        this.isMobileAccessabillity = false;
 
-           // let listen for tab.. once pressed we can fire up and show the accessibility layer
-           window.addEventListener('keydown', this._onKeyDown, false);
+        // let listen for tab.. once pressed we can fire up and show the accessibility layer
+        window.addEventListener('keydown', this._onKeyDown, false);
     }
 
     createTouchHook()
