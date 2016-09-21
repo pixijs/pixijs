@@ -57,6 +57,8 @@ function Sprite(texture)
      */
     this._height = 0;
 
+    this._tint = null;
+    this._tintRGB = null;
     /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
@@ -64,8 +66,6 @@ function Sprite(texture)
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
-    this._tint = null;
-    this._tintRGB = null;
 
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
