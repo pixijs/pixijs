@@ -203,6 +203,10 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
 {
     var video = document.createElement('video');
 
+    // allow ios to play inline videos
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('playsinline', '');
+
     // array of objects or strings
     if (Array.isArray(videoSrc))
     {
