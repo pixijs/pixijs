@@ -15,19 +15,19 @@
 var interactiveTarget = {
     /**
      * Determines if the displayObject be clicked/touched
-     * 
+     *
      * @inner {boolean}
      */
     interactive: false,
-    
+
     /**
      * Determines if the children to the displayObject can be clicked/touched
-     * Setting this to false allows pixi to bypass a recursive hitTest function 
-     * 
+     * Setting this to false allows pixi to bypass a recursive hitTest function
+     *
      * @inner {boolean}
      */
     interactiveChildren: true,
-    
+
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
@@ -35,18 +35,18 @@ var interactiveTarget = {
      * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
     hitArea: null,
-    
+
     /**
-     * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive 
+     * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive
      *
      * @inner {boolean}
      */
     buttonMode: false,
-    
+
     /**
      * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor is hovered over the displayObject
      * https://developer.mozilla.org/en/docs/Web/CSS/cursor
-     *  
+     *
      * @inner {string}
      */
     defaultCursor: 'pointer',
@@ -54,35 +54,51 @@ var interactiveTarget = {
     // some internal checks..
     /**
      * Internal check to detect if the mouse cursor is hovered over the displayObject
-     * 
+     *
      * @inner {boolean}
      * @private
      */
-    _over: false,
-        
+    _mouseOver: false,
+
     /**
      * Internal check to detect if the left mouse button is pressed on the displayObject
-     * 
+     *
      * @inner {boolean}
      * @private
      */
     _isLeftDown: false,
-    
+
     /**
      * Internal check to detect if the right mouse button is pressed on the displayObject
-     * 
+     *
      * @inner {boolean}
      * @private
      */
     _isRightDown: false,
-    
+
     /**
      * Internal check to detect if a user has touched the displayObject
-     * 
+     *
      * @inner {boolean}
      * @private
      */
-    _touchDown: false
+    _touchDown: false,
+
+    /**
+     * Internal check to detect if the pointer cursor is hovered over the displayObject
+     *
+     * @inner {boolean}
+     * @private
+     */
+    _pointerOver: false,
+
+    /**
+     * Internal check to detect if a pointer is down on the displayObject
+     *
+     * @inner {boolean}
+     * @private
+     */
+    _pointerDown: false
  };
 
 module.exports = interactiveTarget;
