@@ -57,14 +57,14 @@ function Sprite(texture)
      */
     this._height = 0;
 
+    this._tint = null;
+    this._tintRGB = null;
     /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
      * @default 0xFFFFFF
      */
-    this._tint = null;
-    this._tintRGB = null;
     this.tint = 0xFFFFFF;
 
     /**

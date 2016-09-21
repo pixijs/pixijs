@@ -788,6 +788,7 @@ Graphics.prototype._renderCanvas = function (renderer)
  * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
  *  object's worldTransform.
  * @return {PIXI.Rectangle} the rectangular bounding area
+ * @private
  */
 Graphics.prototype._calculateBounds = function ()
 {

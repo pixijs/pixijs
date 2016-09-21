@@ -446,6 +446,7 @@ Mesh.prototype._onTextureUpdate = function ()
  *
  * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
  * @return {PIXI.Rectangle} the framing rectangle
+ * @private
  */
 Mesh.prototype._calculateBounds = function ()
 {
