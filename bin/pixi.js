@@ -1,11 +1,2317 @@
 /*!
- * pixi.js - v4.0.1
- * Compiled Fri Sep 16 2016 08:58:44 GMT-0400 (EDT)
+ * pixi.js - v4.0.2
+ * Compiled Wed Sep 21 2016 20:03:19 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PIXI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
+
+/**
+ * Helper class to create a webGL buffer
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param type {gl.ARRAY_BUFFER | gl.ELEMENT_ARRAY_BUFFER} @mat
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ * @param drawType {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
+ */
+var Buffer = function(gl, type, data, drawType)
+{
+
+	/**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
+	this.gl = gl;
+
+	/**
+     * The WebGL buffer, created upon instantiation
+     *
+     * @member {WebGLBuffer}
+     */
+	this.buffer = gl.createBuffer();
+
+	/**
+     * The type of the buffer
+     *
+     * @member {gl.ARRAY_BUFFER|gl.ELEMENT_ARRAY_BUFFER}
+     */
+	this.type = type || gl.ARRAY_BUFFER;
+
+	/**
+     * The draw type of the buffer
+     *
+     * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
+     */
+	this.drawType = drawType || gl.STATIC_DRAW;
+
+	/**
+     * The data in the buffer, as a typed array
+     *
+     * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
+     */
+	this.data = EMPTY_ARRAY_BUFFER;
+
+	if(data)
+	{
+		this.upload(data);
+	}
+
+	this._updateID = 0;
+};
+
+/**
+ * Uploads the buffer to the GPU
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
+ * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
+ * @param dontBind {Boolean} whether to bind the buffer before uploading it
+ */
+Buffer.prototype.upload = function(data, offset, dontBind)
+{
+	// todo - needed?
+	if(!dontBind) this.bind();
+
+	var gl = this.gl;
+
+	data = data || this.data;
+	offset = offset || 0;
+
+	if(this.data.byteLength >= data.byteLength)
+	{
+		gl.bufferSubData(this.type, offset, data);
+	}
+	else
+	{
+		gl.bufferData(this.type, data, this.drawType);
+	}
+
+	this.data = data;
+};
+/**
+ * Binds the buffer
+ *
+ */
+Buffer.prototype.bind = function()
+{
+	var gl = this.gl;
+	gl.bindBuffer(this.type, this.buffer);
+};
+
+Buffer.createVertexBuffer = function(gl, data, drawType)
+{
+	return new Buffer(gl, gl.ARRAY_BUFFER, data, drawType);
+};
+
+Buffer.createIndexBuffer = function(gl, data, drawType)
+{
+	return new Buffer(gl, gl.ELEMENT_ARRAY_BUFFER, data, drawType);
+};
+
+Buffer.create = function(gl, type, data, drawType)
+{
+	return new Buffer(gl, type, data, drawType);
+};
+
+/**
+ * Destroys the buffer
+ *
+ */
+Buffer.prototype.destroy = function(){
+	this.gl.deleteBuffer(this.buffer);
+};
+
+module.exports = Buffer;
+
+},{}],2:[function(require,module,exports){
+
+var Texture = require('./GLTexture');
+
+/**
+ * Helper class to create a webGL Framebuffer
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
+ */
+var Framebuffer = function(gl, width, height)
+{
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
+    this.gl = gl;
+
+    /**
+     * The frame buffer
+     *
+     * @member {WebGLFramebuffer}
+     */
+    this.framebuffer = gl.createFramebuffer();
+
+    /**
+     * The stencil buffer
+     *
+     * @member {WebGLRenderbuffer}
+     */
+    this.stencil = null;
+
+    /**
+     * The stencil buffer
+     *
+     * @member {PIXI.glCore.GLTexture}
+     */
+    this.texture = null;
+
+    /**
+     * The width of the drawing area of the buffer
+     *
+     * @member {Number}
+     */
+    this.width = width || 100;
+    /**
+     * The height of the drawing area of the buffer
+     *
+     * @member {Number}
+     */
+    this.height = height || 100;
+};
+
+/**
+ * Adds a texture to the frame buffer
+ * @param texture {PIXI.glCore.GLTexture}
+ */
+Framebuffer.prototype.enableTexture = function(texture)
+{
+    var gl = this.gl;
+
+    this.texture = texture || new Texture(gl);
+
+    this.texture.bind();
+
+    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+    this.bind();
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
+};
+
+/**
+ * Initialises the stencil buffer
+ */
+Framebuffer.prototype.enableStencil = function()
+{
+    if(this.stencil)return;
+
+    var gl = this.gl;
+
+    this.stencil = gl.createRenderbuffer();
+
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
+
+    // TODO.. this is depth AND stencil?
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencil);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
+};
+
+/**
+ * Erases the drawing area and fills it with a colour
+ * @param  r {Number} the red value of the clearing colour
+ * @param  g {Number} the green value of the clearing colour
+ * @param  b {Number} the blue value of the clearing colour
+ * @param  a {Number} the alpha value of the clearing colour
+ */
+Framebuffer.prototype.clear = function( r, g, b, a )
+{
+    this.bind();
+
+    var gl = this.gl;
+
+    gl.clearColor(r, g, b, a);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+};
+
+/**
+ * Binds the frame buffer to the WebGL context
+ */
+Framebuffer.prototype.bind = function()
+{
+    var gl = this.gl;
+
+    if(this.texture)
+    {
+        this.texture.unbind();
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
+};
+
+/**
+ * Unbinds the frame buffer to the WebGL context
+ */
+Framebuffer.prototype.unbind = function()
+{
+    var gl = this.gl;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null );
+};
+/**
+ * Resizes the drawing area of the buffer to the given width and height
+ * @param  width  {Number} the new width
+ * @param  height {Number} the new height
+ */
+Framebuffer.prototype.resize = function(width, height)
+{
+    var gl = this.gl;
+
+    this.width = width;
+    this.height = height;
+
+    if ( this.texture )
+    {
+        this.texture.uploadData(null, width, height);
+    }
+
+    if ( this.stencil )
+    {
+        // update the stencil buffer width and height
+        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
+    }
+};
+
+/**
+ * Destroys this buffer
+ */
+Framebuffer.prototype.destroy = function()
+{
+    var gl = this.gl;
+
+    //TODO
+    if(this.texture)
+    {
+        this.texture.destroy();
+    }
+
+    gl.deleteFramebuffer(this.framebuffer);
+
+    this.gl = null;
+
+    this.stencil = null;
+    this.texture = null;
+};
+
+/**
+ * Creates a frame buffer with a texture containing the given data
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ */
+Framebuffer.createRGBA = function(gl, width, height, data)
+{
+    var texture = Texture.fromData(gl, null, width, height);
+    texture.enableNearestScaling();
+    texture.enableWrapClamp();
+
+    //now create the framebuffer object and attach the texture to it.
+    var fbo = new Framebuffer(gl, width, height);
+    fbo.enableTexture(texture);
+
+    fbo.unbind();
+
+    return fbo;
+};
+
+/**
+ * Creates a frame buffer with a texture containing the given data
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param width {Number} the width of the drawing area of the frame buffer
+ * @param height {Number} the height of the drawing area of the frame buffer
+ * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
+ */
+Framebuffer.createFloat32 = function(gl, width, height, data)
+{
+    // create a new texture..
+    var texture = new Texture.fromData(gl, data, width, height);
+    texture.enableNearestScaling();
+    texture.enableWrapClamp();
+
+    //now create the framebuffer object and attach the texture to it.
+    var fbo = new Framebuffer(gl, width, height);
+    fbo.enableTexture(texture);
+
+    fbo.unbind();
+
+    return fbo;
+};
+
+module.exports = Framebuffer;
+
+},{"./GLTexture":4}],3:[function(require,module,exports){
+
+var compileProgram = require('./shader/compileProgram'),
+	extractAttributes = require('./shader/extractAttributes'),
+	extractUniforms = require('./shader/extractUniforms'),
+	generateUniformAccessObject = require('./shader/generateUniformAccessObject');
+
+/**
+ * Helper class to create a webGL Shader
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param gl {WebGLRenderingContext}
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ */
+var Shader = function(gl, vertexSrc, fragmentSrc, attributeLocations)
+{
+	/**
+	 * The current WebGL rendering context
+	 *
+	 * @member {WebGLRenderingContext}
+	 */
+	this.gl = gl;
+
+	/**
+	 * The shader program
+	 *
+	 * @member {WebGLProgram}
+	 */
+	// First compile the program..
+	this.program = compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations);
+
+
+	/**
+	 * The attributes of the shader as an object containing the following properties
+	 * {
+	 * 	type,
+	 * 	size,
+	 * 	location,
+	 * 	pointer
+	 * }
+	 * @member {Object}
+	 */
+	// next extract the attributes
+	this.attributes = extractAttributes(gl, this.program);
+
+	for(var i in this.attributes)
+	{
+		console.log(i + " : " + this.attributes[i].location)
+	}
+
+	console.log(">>>>>>>");
+
+    var uniformData = extractUniforms(gl, this.program);
+
+	/**
+	 * The uniforms of the shader as an object containing the following properties
+	 * {
+	 * 	gl,
+	 * 	data
+	 * }
+	 * @member {Object}
+	 */
+    this.uniforms = generateUniformAccessObject( gl, uniformData );
+};
+/**
+ * Uses this shader
+ */
+Shader.prototype.bind = function()
+{
+	this.gl.useProgram(this.program);
+};
+
+/**
+ * Destroys this shader
+ * TODO
+ */
+Shader.prototype.destroy = function()
+{
+	// var gl = this.gl;
+};
+
+module.exports = Shader;
+
+},{"./shader/compileProgram":9,"./shader/extractAttributes":11,"./shader/extractUniforms":12,"./shader/generateUniformAccessObject":13}],4:[function(require,module,exports){
+
+/**
+ * Helper class to create a WebGL Texture
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param width {number} the width of the texture
+ * @param height {number} the height of the texture
+ * @param format {number} the pixel format of the texture. defaults to gl.RGBA
+ * @param type {number} the gl type of the texture. defaults to gl.UNSIGNED_BYTE
+ */
+var Texture = function(gl, width, height, format, type)
+{
+	/**
+	 * The current WebGL rendering context
+	 *
+	 * @member {WebGLRenderingContext}
+	 */
+	this.gl = gl;
+
+
+	/**
+	 * The WebGL texture
+	 *
+	 * @member {WebGLTexture}
+	 */
+	this.texture = gl.createTexture();
+
+	/**
+	 * If mipmapping was used for this texture, enable and disable with enableMipmap()
+	 *
+	 * @member {Boolean}
+	 */
+	// some settings..
+	this.mipmap = false;
+
+
+	/**
+	 * Set to true to enable pre-multiplied alpha
+	 *
+	 * @member {Boolean}
+	 */
+	this.premultiplyAlpha = false;
+
+	/**
+	 * The width of texture
+	 *
+	 * @member {Number}
+	 */
+	this.width = width || -1;
+	/**
+	 * The height of texture
+	 *
+	 * @member {Number}
+	 */
+	this.height = height || -1;
+
+	/**
+	 * The pixel format of the texture. defaults to gl.RGBA
+	 *
+	 * @member {Number}
+	 */
+	this.format = format || gl.RGBA;
+
+	/**
+	 * The gl type of the texture. defaults to gl.UNSIGNED_BYTE
+	 *
+	 * @member {Number}
+	 */
+	this.type = type || gl.UNSIGNED_BYTE;
+
+
+};
+
+/**
+ * Uploads this texture to the GPU
+ * @param source {HTMLImageElement|ImageData|HTMLVideoElement} the source image of the texture
+ */
+Texture.prototype.upload = function(source)
+{
+	this.bind();
+
+	var gl = this.gl;
+
+
+	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
+
+	var newWidth = source.videoWidth || source.width;
+	var newHeight = source.videoHeight || source.height;
+
+	if(newHeight !== this.height || newWidth !== this.width)
+	{
+    	gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, source);
+	}
+	else
+	{
+    	gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, this.format, this.type, source);
+	}
+
+	// if the source is a video, we need to use the videoWidth / videoHeight properties as width / height will be incorrect.
+	this.width = newWidth;
+	this.height = newHeight;
+
+};
+
+var FLOATING_POINT_AVAILABLE = false;
+
+/**
+ * Use a data source and uploads this texture to the GPU
+ * @param data {TypedArray} the data to upload to the texture
+ * @param width {number} the new width of the texture
+ * @param height {number} the new height of the texture
+ */
+Texture.prototype.uploadData = function(data, width, height)
+{
+	this.bind();
+
+	var gl = this.gl;
+
+
+	if(data instanceof Float32Array)
+	{
+		if(!FLOATING_POINT_AVAILABLE)
+		{
+			var ext = gl.getExtension("OES_texture_float");
+
+			if(ext)
+			{
+				FLOATING_POINT_AVAILABLE = true;
+			}
+			else
+			{
+				throw new Error('floating point textures not available');
+			}
+		}
+
+		this.type = gl.FLOAT;
+	}
+	else
+	{
+		// TODO support for other types
+		this.type = gl.UNSIGNED_BYTE;
+	}
+
+	// what type of data?
+	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
+
+
+	if(width !== this.width || height !== this.height)
+	{
+		gl.texImage2D(gl.TEXTURE_2D, 0, this.format,  width, height, 0, this.format, this.type, data || null);
+	}
+	else
+	{
+		gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, this.format, this.type, data || null);
+	}
+
+	this.width = width;
+	this.height = height;
+
+
+//	texSubImage2D
+};
+
+/**
+ * Binds the texture
+ * @param  location
+ */
+Texture.prototype.bind = function(location)
+{
+	var gl = this.gl;
+
+	if(location !== undefined)
+	{
+		gl.activeTexture(gl.TEXTURE0 + location);
+	}
+
+	gl.bindTexture(gl.TEXTURE_2D, this.texture);
+};
+
+/**
+ * Unbinds the texture
+ */
+Texture.prototype.unbind = function()
+{
+	var gl = this.gl;
+	gl.bindTexture(gl.TEXTURE_2D, null);
+};
+
+/**
+ * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
+ */
+Texture.prototype.minFilter = function( linear )
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	if(this.mipmap)
+	{
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
+	}
+	else
+	{
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR : gl.NEAREST);
+	}
+};
+
+/**
+ * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
+ */
+Texture.prototype.magFilter = function( linear )
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, linear ? gl.LINEAR : gl.NEAREST);
+};
+
+/**
+ * Enables mipmapping
+ */
+Texture.prototype.enableMipmap = function()
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	this.mipmap = true;
+
+	gl.generateMipmap(gl.TEXTURE_2D);
+};
+
+/**
+ * Enables linear filtering
+ */
+Texture.prototype.enableLinearScaling = function()
+{
+	this.minFilter(true);
+	this.magFilter(true);
+};
+
+/**
+ * Enables nearest neighbour interpolation
+ */
+Texture.prototype.enableNearestScaling = function()
+{
+	this.minFilter(false);
+	this.magFilter(false);
+};
+
+/**
+ * Enables clamping on the texture so WebGL will not repeat it
+ */
+Texture.prototype.enableWrapClamp = function()
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+};
+
+/**
+ * Enable tiling on the texture
+ */
+Texture.prototype.enableWrapRepeat = function()
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+};
+
+Texture.prototype.enableWrapMirrorRepeat = function()
+{
+	var gl = this.gl;
+
+	this.bind();
+
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+};
+
+
+/**
+ * Destroys this texture
+ */
+Texture.prototype.destroy = function()
+{
+	var gl = this.gl;
+	//TODO
+	gl.deleteTexture(this.texture);
+};
+
+/**
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param source {HTMLImageElement|ImageData} the source image of the texture
+ * @param premultiplyAlpha {Boolean} If we want to use pre-multiplied alpha
+ */
+Texture.fromSource = function(gl, source, premultiplyAlpha)
+{
+	var texture = new Texture(gl);
+	texture.premultiplyAlpha = premultiplyAlpha || false;
+	texture.upload(source);
+
+	return texture;
+};
+
+/**
+ * @static
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param data {TypedArray} the data to upload to the texture
+ * @param width {number} the new width of the texture
+ * @param height {number} the new height of the texture
+ */
+Texture.fromData = function(gl, data, width, height)
+{
+	//console.log(data, width, height);
+	var texture = new Texture(gl);
+	texture.uploadData(data, width, height);
+
+	return texture;
+};
+
+
+module.exports = Texture;
+
+},{}],5:[function(require,module,exports){
+
+// state object//
+var setVertexAttribArrays = require( './setVertexAttribArrays' );
+
+/**
+ * Helper class to work with WebGL VertexArrayObjects (vaos)
+ * Only works if WebGL extensions are enabled (they usually are)
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ */
+function VertexArrayObject(gl, state)
+{
+    this.nativeVaoExtension = null;
+
+    if(!VertexArrayObject.FORCE_NATIVE)
+    {
+        this.nativeVaoExtension = gl.getExtension('OES_vertex_array_object') ||
+                                  gl.getExtension('MOZ_OES_vertex_array_object') ||
+                                  gl.getExtension('WEBKIT_OES_vertex_array_object');
+    }
+
+    this.nativeState = state;
+
+    if(this.nativeVaoExtension)
+    {
+        this.nativeVao = this.nativeVaoExtension.createVertexArrayOES();
+
+        var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+
+        // VAO - overwrite the state..
+        this.nativeState = {
+            tempAttribState: new Array(maxAttribs),
+            attribState: new Array(maxAttribs)
+        };
+    }
+
+    /**
+     * The current WebGL rendering context
+     *
+     * @member {WebGLRenderingContext}
+     */
+    this.gl = gl;
+
+    /**
+     * An array of attributes
+     *
+     * @member {Array}
+     */
+    this.attributes = [];
+
+    /**
+     * @member {PIXI.glCore.GLBuffer}
+     */
+    this.indexBuffer = null;
+
+    /**
+     * A boolean flag
+     *
+     * @member {Boolean}
+     */
+    this.dirty = false;
+}
+
+VertexArrayObject.prototype.constructor = VertexArrayObject;
+module.exports = VertexArrayObject;
+
+/**
+* Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
+* If you find on older devices that things have gone a bit weird then set this to true.
+*/
+/**
+ * Lets the VAO know if you should use the WebGL extension or the native methods.
+ * Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
+ * If you find on older devices that things have gone a bit weird then set this to true.
+ * @static
+ * @property {Boolean} FORCE_NATIVE
+ */
+VertexArrayObject.FORCE_NATIVE = true;
+
+/**
+ * Binds the buffer
+ */
+VertexArrayObject.prototype.bind = function()
+{
+    if(this.nativeVao)
+    {
+        this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
+
+        if(this.dirty)
+        {
+            this.dirty = false;
+            this.activate();
+        }
+    }
+    else
+    {
+
+        this.activate();
+    }
+
+    return this;
+};
+
+/**
+ * Unbinds the buffer
+ */
+VertexArrayObject.prototype.unbind = function()
+{
+    if(this.nativeVao)
+    {
+        this.nativeVaoExtension.bindVertexArrayOES(null);
+    }
+
+    return this;
+};
+
+/**
+ * Uses this vao
+ */
+VertexArrayObject.prototype.activate = function()
+{
+
+    var gl = this.gl;
+    var lastBuffer = null;
+
+    for (var i = 0; i < this.attributes.length; i++)
+    {
+        var attrib = this.attributes[i];
+
+        if(lastBuffer !== attrib.buffer)
+        {
+            attrib.buffer.bind();
+            lastBuffer = attrib.buffer;
+        }
+
+
+        //attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start);
+        gl.vertexAttribPointer(attrib.attribute.location,
+                               attrib.attribute.size, attrib.type || gl.FLOAT,
+                               attrib.normalized || false,
+                               attrib.stride || 0,
+                               attrib.start || 0);
+
+
+    }
+
+    setVertexAttribArrays(gl, this.attributes, this.nativeState);
+
+    this.indexBuffer.bind();
+
+    return this;
+};
+
+/**
+ *
+ * @param buffer     {PIXI.gl.GLBuffer}
+ * @param attribute  {*}
+ * @param type       {String}
+ * @param normalized {Boolean}
+ * @param stride     {Number}
+ * @param start      {Number}
+ */
+VertexArrayObject.prototype.addAttribute = function(buffer, attribute, type, normalized, stride, start)
+{
+    this.attributes.push({
+        buffer:     buffer,
+        attribute:  attribute,
+
+        location:   attribute.location,
+        type:       type || this.gl.FLOAT,
+        normalized: normalized || false,
+        stride:     stride || 0,
+        start:      start || 0
+    });
+
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ *
+ * @param buffer   {PIXI.gl.GLBuffer}
+ */
+VertexArrayObject.prototype.addIndex = function(buffer/*, options*/)
+{
+    this.indexBuffer = buffer;
+
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ * Unbinds this vao and disables it
+ */
+VertexArrayObject.prototype.clear = function()
+{
+    // var gl = this.gl;
+
+    // TODO - should this function unbind after clear?
+    // for now, no but lets see what happens in the real world!
+    if(this.nativeVao)
+    {
+        this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
+    }
+
+    this.attributes.length = 0;
+    this.indexBuffer = null;
+
+    return this;
+};
+
+/**
+ * @param type  {Number}
+ * @param size  {Number}
+ * @param start {Number}
+ */
+VertexArrayObject.prototype.draw = function(type, size, start)
+{
+    var gl = this.gl;
+    gl.drawElements(type, size || this.indexBuffer.data.length, gl.UNSIGNED_SHORT, start || 0);
+
+    return this;
+};
+
+/**
+ * Destroy this vao
+ */
+VertexArrayObject.prototype.destroy = function()
+{
+    // lose references
+    this.gl = null;
+    this.indexBuffer = null;
+    this.attributes = null;
+    this.nativeState = null;
+
+    if(this.nativeVao)
+    {
+        this.nativeVaoExtension.deleteVertexArrayOES(this.nativeVao);
+    }
+
+    this.nativeVaoExtension = null;
+    this.nativeVao = null;
+};
+
+},{"./setVertexAttribArrays":8}],6:[function(require,module,exports){
+
+/**
+ * Helper class to create a webGL Context
+ *
+ * @class
+ * @memberof PIXI.glCore
+ * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
+ * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
+ *                         see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
+ * @return {WebGLRenderingContext} the WebGL context
+ */
+var createContext = function(canvas, options)
+{
+    var gl = canvas.getContext('webgl', options) || 
+         canvas.getContext('experimental-webgl', options);
+
+    if (!gl)
+    {
+        // fail, not able to get a context
+        throw new Error('This browser does not support webGL. Try using the canvas renderer');
+    }
+
+    return gl;
+};
+
+module.exports = createContext;
+
+},{}],7:[function(require,module,exports){
+var gl = {
+    createContext:          require('./createContext'),
+    setVertexAttribArrays:  require('./setVertexAttribArrays'),
+    GLBuffer:               require('./GLBuffer'),
+    GLFramebuffer:          require('./GLFramebuffer'),
+    GLShader:               require('./GLShader'),
+    GLTexture:              require('./GLTexture'),
+    VertexArrayObject:      require('./VertexArrayObject'),
+    shader:                 require('./shader')
+};
+
+// Export for Node-compatible environments
+if (typeof module !== 'undefined' && module.exports)
+{
+    // Export the module
+    module.exports = gl;
+}
+
+// Add to the browser window pixi.gl
+if (typeof window !== 'undefined')
+{
+    // add the window object
+    window.PIXI = window.PIXI || {};
+    window.PIXI.glCore = gl;
+}
+
+},{"./GLBuffer":1,"./GLFramebuffer":2,"./GLShader":3,"./GLTexture":4,"./VertexArrayObject":5,"./createContext":6,"./setVertexAttribArrays":8,"./shader":14}],8:[function(require,module,exports){
+// var GL_MAP = {};
+
+/**
+ * @param gl {WebGLRenderingContext} The current WebGL context
+ * @param attribs {*}
+ * @param state {*}
+ */
+var setVertexAttribArrays = function (gl, attribs, state)
+{
+    var i;
+    if(state)
+    {
+        var tempAttribState = state.tempAttribState,
+            attribState = state.attribState;
+
+        for (i = 0; i < tempAttribState.length; i++)
+        {
+            tempAttribState[i] = false;
+        }
+
+        // set the new attribs
+        for (i = 0; i < attribs.length; i++)
+        {
+            tempAttribState[attribs[i].attribute.location] = true;
+        }
+
+        for (i = 0; i < attribState.length; i++)
+        {
+            if (attribState[i] !== tempAttribState[i])
+            {
+                attribState[i] = tempAttribState[i];
+
+                if (state.attribState[i])
+                {
+                    gl.enableVertexAttribArray(i);
+                }
+                else
+                {
+                    gl.disableVertexAttribArray(i);
+                }
+            }
+        }
+
+    }
+    else
+    {
+        for (i = 0; i < attribs.length; i++)
+        {
+            var attrib = attribs[i];
+            gl.enableVertexAttribArray(attrib.attribute.location);
+        }
+    }
+};
+
+module.exports = setVertexAttribArrays;
+
+},{}],9:[function(require,module,exports){
+
+/**
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations
+ * @return {WebGLProgram} the shader program
+ */
+var compileProgram = function(gl, vertexSrc, fragmentSrc, attributeLocations)
+{
+    var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
+    var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+
+    var program = gl.createProgram();
+
+    gl.attachShader(program, glVertShader);
+    gl.attachShader(program, glFragShader);
+
+    // optionally, set the attributes manually for the program rather than letting WebGL decide..
+    if(attributeLocations)
+    {
+        for(var i in attributeLocations)
+        {
+            gl.bindAttribLocation(program, attributeLocations[i], i)
+        }
+    }
+
+
+    gl.linkProgram(program);
+
+    // if linking fails, then log and cleanup
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    {
+        console.error('Pixi.js Error: Could not initialize shader.');
+        console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
+        console.error('gl.getError()', gl.getError());
+
+        // if there is a program info log, log it
+        if (gl.getProgramInfoLog(program) !== '')
+        {
+            console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
+        }
+
+        gl.deleteProgram(program);
+        program = null;
+    }
+
+    // clean up some shaders
+    gl.deleteShader(glVertShader);
+    gl.deleteShader(glFragShader);
+
+    return program;
+};
+
+/**
+ * @private
+ * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
+ * @param type {Number} the type, can be either VERTEX_SHADER or FRAGMENT_SHADER
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @return {WebGLShader} the shader
+ */
+var compileShader = function (gl, type, src)
+{
+    var shader = gl.createShader(type);
+
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+    {
+        console.log(gl.getShaderInfoLog(shader));
+        return null;
+    }
+
+    return shader;
+};
+
+module.exports = compileProgram;
+
+},{}],10:[function(require,module,exports){
+/**
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param type {String} Type of value
+ * @param size {Number}
+ */
+var defaultValue = function(type, size) 
+{
+    switch (type)
+    {
+        case 'float':
+            return 0;
+
+        case 'vec2': 
+            return new Float32Array(2 * size);
+
+        case 'vec3':
+            return new Float32Array(3 * size);
+
+        case 'vec4':     
+            return new Float32Array(4 * size);
+            
+        case 'int':
+        case 'sampler2D':
+            return 0;
+
+        case 'ivec2':   
+            return new Int32Array(2 * size);
+
+        case 'ivec3':
+            return new Int32Array(3 * size);
+
+        case 'ivec4': 
+            return new Int32Array(4 * size);
+
+        case 'bool':     
+            return false;
+
+        case 'bvec2':
+
+            return booleanArray( 2 * size);
+
+        case 'bvec3':
+            return booleanArray(3 * size);
+
+        case 'bvec4':
+            return booleanArray(4 * size);
+
+        case 'mat2':
+            return new Float32Array([1, 0,
+                                     0, 1]);
+
+        case 'mat3': 
+            return new Float32Array([1, 0, 0,
+                                     0, 1, 0,
+                                     0, 0, 1]);
+
+        case 'mat4':
+            return new Float32Array([1, 0, 0, 0,
+                                     0, 1, 0, 0,
+                                     0, 0, 1, 0,
+                                     0, 0, 0, 1]);
+    }
+};
+
+var booleanArray = function(size)
+{
+    var array = new Array(size);
+
+    for (var i = 0; i < array.length; i++) 
+    {
+        array[i] = false;
+    }
+
+    return array;
+};
+
+module.exports = defaultValue;
+
+},{}],11:[function(require,module,exports){
+
+var mapType = require('./mapType');
+var mapSize = require('./mapSize');
+
+/**
+ * Extracts the attributes
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param program {WebGLProgram} The shader program to get the attributes from
+ * @return attributes {Object}
+ */
+var extractAttributes = function(gl, program)
+{
+    var attributes = {};
+
+    var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+
+    for (var i = 0; i < totalAttributes; i++)
+    {
+        var attribData = gl.getActiveAttrib(program, i);
+        var type = mapType(gl, attribData.type);
+
+        attributes[attribData.name] = {
+            type:type,
+            size:mapSize(type),
+            location:gl.getAttribLocation(program, attribData.name),
+            //TODO - make an attribute object
+            pointer: pointer
+        };
+    }
+
+    return attributes;
+};
+
+var pointer = function(type, normalized, stride, start){
+    // console.log(this.location)
+    gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
+};
+
+module.exports = extractAttributes;
+
+},{"./mapSize":15,"./mapType":16}],12:[function(require,module,exports){
+var mapType = require('./mapType');
+var defaultValue = require('./defaultValue');
+
+/**
+ * Extracts the uniforms
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param program {WebGLProgram} The shader program to get the uniforms from
+ * @return uniforms {Object}
+ */
+var extractUniforms = function(gl, program)
+{
+	var uniforms = {};
+
+    var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+
+    for (var i = 0; i < totalUniforms; i++)
+    {
+    	var uniformData = gl.getActiveUniform(program, i);
+    	var name = uniformData.name.replace(/\[.*?\]/, "");
+        var type = mapType(gl, uniformData.type );
+
+    	uniforms[name] = {
+    		type:type,
+    		size:uniformData.size,
+    		location:gl.getUniformLocation(program, name),
+    		value:defaultValue(type, uniformData.size)
+    	};
+    }
+
+	return uniforms;
+};
+
+module.exports = extractUniforms;
+
+},{"./defaultValue":10,"./mapType":16}],13:[function(require,module,exports){
+/**
+ * Extracts the attributes
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param gl {WebGLRenderingContext} The current WebGL rendering context
+ * @param uniforms {Array} @mat ?
+ * @return attributes {Object}
+ */
+var generateUniformAccessObject = function(gl, uniformData)
+{
+    // this is the object we will be sending back.
+    // an object hierachy will be created for structs
+    var uniforms = {data:{}};
+
+    uniforms.gl = gl;
+
+    var uniformKeys= Object.keys(uniformData);
+
+    for (var i = 0; i < uniformKeys.length; i++)
+    {
+        var fullName = uniformKeys[i];
+
+        var nameTokens = fullName.split('.');
+        var name = nameTokens[nameTokens.length - 1];
+
+        var uniformGroup = getUniformGroup(nameTokens, uniforms);
+
+        var uniform =  uniformData[fullName];
+        uniformGroup.data[name] = uniform;
+
+        uniformGroup.gl = gl;
+
+        Object.defineProperty(uniformGroup, name, {
+            get: generateGetter(name),
+            set: generateSetter(name, uniform)
+        });
+    }
+
+    return uniforms;
+};
+
+var generateGetter = function(name)
+{
+	var template = getterTemplate.replace('%%', name);
+	return new Function(template); // jshint ignore:line
+};
+
+var generateSetter = function(name, uniform)
+{
+    var template = setterTemplate.replace(/%%/g, name);
+    var setTemplate;
+
+    if(uniform.size === 1)
+    {
+        setTemplate = GLSL_TO_SINGLE_SETTERS[uniform.type];
+    }
+    else
+    {
+        setTemplate = GLSL_TO_ARRAY_SETTERS[uniform.type];
+    }
+
+    if(setTemplate)
+    {
+        template += "\nthis.gl." + setTemplate + ";";
+    }
+
+  	return new Function('value', template); // jshint ignore:line
+};
+
+var getUniformGroup = function(nameTokens, uniform)
+{
+    var cur = uniform;
+
+    for (var i = 0; i < nameTokens.length - 1; i++)
+    {
+        var o = cur[nameTokens[i]] || {data:{}};
+        cur[nameTokens[i]] = o;
+        cur = o;
+    }
+
+    return cur;
+};
+
+var getterTemplate = [
+    'return this.data.%%.value;',
+].join('\n');
+
+var setterTemplate = [
+    'this.data.%%.value = value;',
+    'var location = this.data.%%.location;'
+].join('\n');
+
+
+var GLSL_TO_SINGLE_SETTERS = {
+
+    'float':    'uniform1f(location, value)',
+
+    'vec2':     'uniform2f(location, value[0], value[1])',
+    'vec3':     'uniform3f(location, value[0], value[1], value[2])',
+    'vec4':     'uniform4f(location, value[0], value[1], value[2], value[3])',
+
+    'int':      'uniform1i(location, value)',
+    'ivec2':    'uniform2i(location, value[0], value[1])',
+    'ivec3':    'uniform3i(location, value[0], value[1], value[2])',
+    'ivec4':    'uniform4i(location, value[0], value[1], value[2], value[3])',
+
+    'bool':     'uniform1i(location, value)',
+    'bvec2':    'uniform2i(location, value[0], value[1])',
+    'bvec3':    'uniform3i(location, value[0], value[1], value[2])',
+    'bvec4':    'uniform4i(location, value[0], value[1], value[2], value[3])',
+
+    'mat2':     'uniformMatrix2fv(location, false, value)',
+    'mat3':     'uniformMatrix3fv(location, false, value)',
+    'mat4':     'uniformMatrix4fv(location, false, value)',
+
+    'sampler2D':'uniform1i(location, value)'
+};
+
+var GLSL_TO_ARRAY_SETTERS = {
+
+    'float':    'uniform1fv(location, value)',
+
+    'vec2':     'uniform2fv(location, value)',
+    'vec3':     'uniform3fv(location, value)',
+    'vec4':     'uniform4fv(location, value)',
+
+    'int':      'uniform1iv(location, value)',
+    'ivec2':    'uniform2iv(location, value)',
+    'ivec3':    'uniform3iv(location, value)',
+    'ivec4':    'uniform4iv(location, value)',
+
+    'bool':     'uniform1iv(location, value)',
+    'bvec2':    'uniform2iv(location, value)',
+    'bvec3':    'uniform3iv(location, value)',
+    'bvec4':    'uniform4iv(location, value)',
+
+    'sampler2D':'uniform1iv(location, value)'
+};
+
+module.exports = generateUniformAccessObject;
+
+},{}],14:[function(require,module,exports){
+module.exports = {
+    compileProgram: require('./compileProgram'),
+    defaultValue: require('./defaultValue'),
+    extractAttributes: require('./extractAttributes'),
+    extractUniforms: require('./extractUniforms'),
+    generateUniformAccessObject: require('./generateUniformAccessObject'),
+    mapSize: require('./mapSize'),
+    mapType: require('./mapType')  
+};
+},{"./compileProgram":9,"./defaultValue":10,"./extractAttributes":11,"./extractUniforms":12,"./generateUniformAccessObject":13,"./mapSize":15,"./mapType":16}],15:[function(require,module,exports){
+/**
+ * @class
+ * @memberof PIXI.glCore.shader
+ * @param type {String}
+ * @return {Number}
+ */
+var mapSize = function(type) 
+{ 
+    return GLSL_TO_SIZE[type];
+};
+
+
+var GLSL_TO_SIZE = {
+    'float':    1,
+    'vec2':     2,
+    'vec3':     3,
+    'vec4':     4,
+
+    'int':      1,
+    'ivec2':    2,
+    'ivec3':    3,
+    'ivec4':    4,
+
+    'bool':     1,
+    'bvec2':    2,
+    'bvec3':    3,
+    'bvec4':    4,
+
+    'mat2':     4,
+    'mat3':     9,
+    'mat4':     16,
+
+    'sampler2D':  1
+};
+
+module.exports = mapSize;
+
+},{}],16:[function(require,module,exports){
+
+
+var mapSize = function(gl, type) 
+{
+    if(!GL_TABLE) 
+    {
+        var typeNames = Object.keys(GL_TO_GLSL_TYPES);
+
+        GL_TABLE = {};
+
+        for(var i = 0; i < typeNames.length; ++i) 
+        {
+            var tn = typeNames[i];
+            GL_TABLE[ gl[tn] ] = GL_TO_GLSL_TYPES[tn];
+        }
+    }
+
+  return GL_TABLE[type];
+};
+
+var GL_TABLE = null;
+
+var GL_TO_GLSL_TYPES = {
+  'FLOAT':       'float',
+  'FLOAT_VEC2':  'vec2',
+  'FLOAT_VEC3':  'vec3',
+  'FLOAT_VEC4':  'vec4',
+
+  'INT':         'int',
+  'INT_VEC2':    'ivec2',
+  'INT_VEC3':    'ivec3',
+  'INT_VEC4':    'ivec4',
+  
+  'BOOL':        'bool',
+  'BOOL_VEC2':   'bvec2',
+  'BOOL_VEC3':   'bvec3',
+  'BOOL_VEC4':   'bvec4',
+  
+  'FLOAT_MAT2':  'mat2',
+  'FLOAT_MAT3':  'mat3',
+  'FLOAT_MAT4':  'mat4',
+  
+  'SAMPLER_2D':  'sampler2D'  
+};
+
+module.exports = mapSize;
+
+},{}],17:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = eachLimit;
+
+var _eachOfLimit = require('./internal/eachOfLimit');
+
+var _eachOfLimit2 = _interopRequireDefault(_eachOfLimit);
+
+var _withoutIndex = require('./internal/withoutIndex');
+
+var _withoutIndex2 = _interopRequireDefault(_withoutIndex);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
+ *
+ * @name eachLimit
+ * @static
+ * @memberOf module:Collections
+ * @method
+ * @see [async.each]{@link module:Collections.each}
+ * @alias forEachLimit
+ * @category Collection
+ * @param {Array|Iterable|Object} coll - A colleciton to iterate over.
+ * @param {number} limit - The maximum number of async operations at a time.
+ * @param {Function} iteratee - A function to apply to each item in `coll`. The
+ * iteratee is passed a `callback(err)` which must be called once it has
+ * completed. If no error has occurred, the `callback` should be run without
+ * arguments or with an explicit `null` argument. The array index is not passed
+ * to the iteratee. Invoked with (item, callback). If you need the index, use
+ * `eachOfLimit`.
+ * @param {Function} [callback] - A callback which is called when all
+ * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ */
+function eachLimit(coll, limit, iteratee, callback) {
+  (0, _eachOfLimit2.default)(limit)(coll, (0, _withoutIndex2.default)(iteratee), callback);
+}
+module.exports = exports['default'];
+},{"./internal/eachOfLimit":21,"./internal/withoutIndex":28}],18:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _eachLimit = require('./eachLimit');
+
+var _eachLimit2 = _interopRequireDefault(_eachLimit);
+
+var _doLimit = require('./internal/doLimit');
+
+var _doLimit2 = _interopRequireDefault(_doLimit);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * The same as [`each`]{@link module:Collections.each} but runs only a single async operation at a time.
+ *
+ * @name eachSeries
+ * @static
+ * @memberOf module:Collections
+ * @method
+ * @see [async.each]{@link module:Collections.each}
+ * @alias forEachSeries
+ * @category Collection
+ * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Function} iteratee - A function to apply to each
+ * item in `coll`. The iteratee is passed a `callback(err)` which must be called
+ * once it has completed. If no error has occurred, the `callback` should be run
+ * without arguments or with an explicit `null` argument. The array index is
+ * not passed to the iteratee. Invoked with (item, callback). If you need the
+ * index, use `eachOfSeries`.
+ * @param {Function} [callback] - A callback which is called when all
+ * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ */
+exports.default = (0, _doLimit2.default)(_eachLimit2.default, 1);
+module.exports = exports['default'];
+},{"./eachLimit":17,"./internal/doLimit":20}],19:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = DLL;
+// Simple doubly linked list (https://en.wikipedia.org/wiki/Doubly_linked_list) implementation
+// used for queues. This implementation assumes that the node provided by the user can be modified
+// to adjust the next and last properties. We implement only the minimal functionality
+// for queue support.
+function DLL() {
+    this.head = this.tail = null;
+    this.length = 0;
+}
+
+function setInitial(dll, node) {
+    dll.length = 1;
+    dll.head = dll.tail = node;
+}
+
+DLL.prototype.removeLink = function (node) {
+    if (node.prev) node.prev.next = node.next;else this.head = node.next;
+    if (node.next) node.next.prev = node.prev;else this.tail = node.prev;
+
+    node.prev = node.next = null;
+    this.length -= 1;
+    return node;
+};
+
+DLL.prototype.empty = DLL;
+
+DLL.prototype.insertAfter = function (node, newNode) {
+    newNode.prev = node;
+    newNode.next = node.next;
+    if (node.next) node.next.prev = newNode;else this.tail = newNode;
+    node.next = newNode;
+    this.length += 1;
+};
+
+DLL.prototype.insertBefore = function (node, newNode) {
+    newNode.prev = node.prev;
+    newNode.next = node;
+    if (node.prev) node.prev.next = newNode;else this.head = newNode;
+    node.prev = newNode;
+    this.length += 1;
+};
+
+DLL.prototype.unshift = function (node) {
+    if (this.head) this.insertBefore(this.head, node);else setInitial(this, node);
+};
+
+DLL.prototype.push = function (node) {
+    if (this.tail) this.insertAfter(this.tail, node);else setInitial(this, node);
+};
+
+DLL.prototype.shift = function () {
+    return this.head && this.removeLink(this.head);
+};
+
+DLL.prototype.pop = function () {
+    return this.tail && this.removeLink(this.tail);
+};
+module.exports = exports['default'];
+},{}],20:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = doLimit;
+function doLimit(fn, limit) {
+    return function (iterable, iteratee, callback) {
+        return fn(iterable, limit, iteratee, callback);
+    };
+}
+module.exports = exports['default'];
+},{}],21:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = _eachOfLimit;
+
+var _noop = require('lodash/noop');
+
+var _noop2 = _interopRequireDefault(_noop);
+
+var _once = require('./once');
+
+var _once2 = _interopRequireDefault(_once);
+
+var _iterator = require('./iterator');
+
+var _iterator2 = _interopRequireDefault(_iterator);
+
+var _onlyOnce = require('./onlyOnce');
+
+var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _eachOfLimit(limit) {
+    return function (obj, iteratee, callback) {
+        callback = (0, _once2.default)(callback || _noop2.default);
+        if (limit <= 0 || !obj) {
+            return callback(null);
+        }
+        var nextElem = (0, _iterator2.default)(obj);
+        var done = false;
+        var running = 0;
+
+        function iterateeCallback(err) {
+            running -= 1;
+            if (err) {
+                done = true;
+                callback(err);
+            } else if (done && running <= 0) {
+                return callback(null);
+            } else {
+                replenish();
+            }
+        }
+
+        function replenish() {
+            while (running < limit && !done) {
+                var elem = nextElem();
+                if (elem === null) {
+                    done = true;
+                    if (running <= 0) {
+                        callback(null);
+                    }
+                    return;
+                }
+                running += 1;
+                iteratee(elem.value, elem.key, (0, _onlyOnce2.default)(iterateeCallback));
+            }
+        }
+
+        replenish();
+    };
+}
+module.exports = exports['default'];
+},{"./iterator":23,"./once":24,"./onlyOnce":25,"lodash/noop":54}],22:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (coll) {
+    return iteratorSymbol && coll[iteratorSymbol] && coll[iteratorSymbol]();
+};
+
+var iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
+
+module.exports = exports['default'];
+},{}],23:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = iterator;
+
+var _isArrayLike = require('lodash/isArrayLike');
+
+var _isArrayLike2 = _interopRequireDefault(_isArrayLike);
+
+var _getIterator = require('./getIterator');
+
+var _getIterator2 = _interopRequireDefault(_getIterator);
+
+var _keys = require('lodash/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function createArrayIterator(coll) {
+    var i = -1;
+    var len = coll.length;
+    return function next() {
+        return ++i < len ? { value: coll[i], key: i } : null;
+    };
+}
+
+function createES2015Iterator(iterator) {
+    var i = -1;
+    return function next() {
+        var item = iterator.next();
+        if (item.done) return null;
+        i++;
+        return { value: item.value, key: i };
+    };
+}
+
+function createObjectIterator(obj) {
+    var okeys = (0, _keys2.default)(obj);
+    var i = -1;
+    var len = okeys.length;
+    return function next() {
+        var key = okeys[++i];
+        return i < len ? { value: obj[key], key: key } : null;
+    };
+}
+
+function iterator(coll) {
+    if ((0, _isArrayLike2.default)(coll)) {
+        return createArrayIterator(coll);
+    }
+
+    var iterator = (0, _getIterator2.default)(coll);
+    return iterator ? createES2015Iterator(iterator) : createObjectIterator(coll);
+}
+module.exports = exports['default'];
+},{"./getIterator":22,"lodash/isArrayLike":46,"lodash/keys":53}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = once;
+function once(fn) {
+    return function () {
+        if (fn === null) return;
+        var callFn = fn;
+        fn = null;
+        callFn.apply(this, arguments);
+    };
+}
+module.exports = exports['default'];
+},{}],25:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = onlyOnce;
+function onlyOnce(fn) {
+    return function () {
+        if (fn === null) throw new Error("Callback was already called.");
+        var callFn = fn;
+        fn = null;
+        callFn.apply(this, arguments);
+    };
+}
+module.exports = exports['default'];
+},{}],26:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = queue;
+
+var _arrayEach = require('lodash/_arrayEach');
+
+var _arrayEach2 = _interopRequireDefault(_arrayEach);
+
+var _isArray = require('lodash/isArray');
+
+var _isArray2 = _interopRequireDefault(_isArray);
+
+var _noop = require('lodash/noop');
+
+var _noop2 = _interopRequireDefault(_noop);
+
+var _rest = require('lodash/rest');
+
+var _rest2 = _interopRequireDefault(_rest);
+
+var _onlyOnce = require('./onlyOnce');
+
+var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
+
+var _setImmediate = require('./setImmediate');
+
+var _setImmediate2 = _interopRequireDefault(_setImmediate);
+
+var _DoublyLinkedList = require('./DoublyLinkedList');
+
+var _DoublyLinkedList2 = _interopRequireDefault(_DoublyLinkedList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function queue(worker, concurrency, payload) {
+    if (concurrency == null) {
+        concurrency = 1;
+    } else if (concurrency === 0) {
+        throw new Error('Concurrency must not be zero');
+    }
+
+    function _insert(data, insertAtFront, callback) {
+        if (callback != null && typeof callback !== 'function') {
+            throw new Error('task callback must be a function');
+        }
+        q.started = true;
+        if (!(0, _isArray2.default)(data)) {
+            data = [data];
+        }
+        if (data.length === 0 && q.idle()) {
+            // call drain immediately if there are no tasks
+            return (0, _setImmediate2.default)(function () {
+                q.drain();
+            });
+        }
+        (0, _arrayEach2.default)(data, function (task) {
+            var item = {
+                data: task,
+                callback: callback || _noop2.default
+            };
+
+            if (insertAtFront) {
+                q._tasks.unshift(item);
+            } else {
+                q._tasks.push(item);
+            }
+        });
+        (0, _setImmediate2.default)(q.process);
+    }
+
+    function _next(tasks) {
+        return (0, _rest2.default)(function (args) {
+            workers -= 1;
+
+            (0, _arrayEach2.default)(tasks, function (task) {
+                (0, _arrayEach2.default)(workersList, function (worker, index) {
+                    if (worker === task) {
+                        workersList.splice(index, 1);
+                        return false;
+                    }
+                });
+
+                task.callback.apply(task, args);
+
+                if (args[0] != null) {
+                    q.error(args[0], task.data);
+                }
+            });
+
+            if (workers <= q.concurrency - q.buffer) {
+                q.unsaturated();
+            }
+
+            if (q.idle()) {
+                q.drain();
+            }
+            q.process();
+        });
+    }
+
+    var workers = 0;
+    var workersList = [];
+    var q = {
+        _tasks: new _DoublyLinkedList2.default(),
+        concurrency: concurrency,
+        payload: payload,
+        saturated: _noop2.default,
+        unsaturated: _noop2.default,
+        buffer: concurrency / 4,
+        empty: _noop2.default,
+        drain: _noop2.default,
+        error: _noop2.default,
+        started: false,
+        paused: false,
+        push: function (data, callback) {
+            _insert(data, false, callback);
+        },
+        kill: function () {
+            q.drain = _noop2.default;
+            q._tasks.empty();
+        },
+        unshift: function (data, callback) {
+            _insert(data, true, callback);
+        },
+        process: function () {
+            while (!q.paused && workers < q.concurrency && q._tasks.length) {
+                var tasks = [],
+                    data = [];
+                var l = q._tasks.length;
+                if (q.payload) l = Math.min(l, q.payload);
+                for (var i = 0; i < l; i++) {
+                    var node = q._tasks.shift();
+                    tasks.push(node);
+                    data.push(node.data);
+                }
+
+                if (q._tasks.length === 0) {
+                    q.empty();
+                }
+                workers += 1;
+                workersList.push(tasks[0]);
+
+                if (workers === q.concurrency) {
+                    q.saturated();
+                }
+
+                var cb = (0, _onlyOnce2.default)(_next(tasks));
+                worker(data, cb);
+            }
+        },
+        length: function () {
+            return q._tasks.length;
+        },
+        running: function () {
+            return workers;
+        },
+        workersList: function () {
+            return workersList;
+        },
+        idle: function () {
+            return q._tasks.length + workers === 0;
+        },
+        pause: function () {
+            q.paused = true;
+        },
+        resume: function () {
+            if (q.paused === false) {
+                return;
+            }
+            q.paused = false;
+            var resumeCount = Math.min(q.concurrency, q._tasks.length);
+            // Need to call q.process once per concurrent
+            // worker to preserve full concurrency after pause
+            for (var w = 1; w <= resumeCount; w++) {
+                (0, _setImmediate2.default)(q.process);
+            }
+        }
+    };
+    return q;
+}
+module.exports = exports['default'];
+},{"./DoublyLinkedList":19,"./onlyOnce":25,"./setImmediate":27,"lodash/_arrayEach":35,"lodash/isArray":45,"lodash/noop":54,"lodash/rest":55}],27:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.hasNextTick = exports.hasSetImmediate = undefined;
+exports.fallback = fallback;
+exports.wrap = wrap;
+
+var _rest = require('lodash/rest');
+
+var _rest2 = _interopRequireDefault(_rest);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var hasSetImmediate = exports.hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
+var hasNextTick = exports.hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
+
+function fallback(fn) {
+    setTimeout(fn, 0);
+}
+
+function wrap(defer) {
+    return (0, _rest2.default)(function (fn, args) {
+        defer(function () {
+            fn.apply(null, args);
+        });
+    });
+}
+
+var _defer;
+
+if (hasSetImmediate) {
+    _defer = setImmediate;
+} else if (hasNextTick) {
+    _defer = process.nextTick;
+} else {
+    _defer = fallback;
+}
+
+exports.default = wrap(_defer);
+}).call(this,require('_process'))
+
+},{"_process":61,"lodash/rest":55}],28:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = _withoutIndex;
+function _withoutIndex(iteratee) {
+    return function (value, index, callback) {
+        return iteratee(value, callback);
+    };
+}
+module.exports = exports['default'];
+},{}],29:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (worker, concurrency) {
+  return (0, _queue2.default)(function (items, cb) {
+    worker(items[0], cb);
+  }, concurrency, 1);
+};
+
+var _queue = require('./internal/queue');
+
+var _queue2 = _interopRequireDefault(_queue);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = exports['default'];
+
+/**
+ * A queue of tasks for the worker function to complete.
+ * @typedef {Object} QueueObject
+ * @memberOf module:ControlFlow
+ * @property {Function} length - a function returning the number of items
+ * waiting to be processed. Invoke with `queue.length()`.
+ * @property {boolean} started - a boolean indicating whether or not any
+ * items have been pushed and processed by the queue.
+ * @property {Function} running - a function returning the number of items
+ * currently being processed. Invoke with `queue.running()`.
+ * @property {Function} workersList - a function returning the array of items
+ * currently being processed. Invoke with `queue.workersList()`.
+ * @property {Function} idle - a function returning false if there are items
+ * waiting or being processed, or true if not. Invoke with `queue.idle()`.
+ * @property {number} concurrency - an integer for determining how many `worker`
+ * functions should be run in parallel. This property can be changed after a
+ * `queue` is created to alter the concurrency on-the-fly.
+ * @property {Function} push - add a new task to the `queue`. Calls `callback`
+ * once the `worker` has finished processing the task. Instead of a single task,
+ * a `tasks` array can be submitted. The respective callback is used for every
+ * task in the list. Invoke with `queue.push(task, [callback])`,
+ * @property {Function} unshift - add a new task to the front of the `queue`.
+ * Invoke with `queue.unshift(task, [callback])`.
+ * @property {Function} saturated - a callback that is called when the number of
+ * running workers hits the `concurrency` limit, and further tasks will be
+ * queued.
+ * @property {Function} unsaturated - a callback that is called when the number
+ * of running workers is less than the `concurrency` & `buffer` limits, and
+ * further tasks will not be queued.
+ * @property {number} buffer - A minimum threshold buffer in order to say that
+ * the `queue` is `unsaturated`.
+ * @property {Function} empty - a callback that is called when the last item
+ * from the `queue` is given to a `worker`.
+ * @property {Function} drain - a callback that is called when the last item
+ * from the `queue` has returned from the `worker`.
+ * @property {Function} error - a callback that is called when a task errors.
+ * Has the signature `function(error, task)`.
+ * @property {boolean} paused - a boolean for determining whether the queue is
+ * in a paused state.
+ * @property {Function} pause - a function that pauses the processing of tasks
+ * until `resume()` is called. Invoke with `queue.pause()`.
+ * @property {Function} resume - a function that resumes the processing of
+ * queued tasks when the queue is paused. Invoke with `queue.resume()`.
+ * @property {Function} kill - a function that removes the `drain` callback and
+ * empties remaining tasks from the queue forcing it to go idle. Invoke with `queue.kill()`.
+ */
+
+/**
+ * Creates a `queue` object with the specified `concurrency`. Tasks added to the
+ * `queue` are processed in parallel (up to the `concurrency` limit). If all
+ * `worker`s are in progress, the task is queued until one becomes available.
+ * Once a `worker` completes a `task`, that `task`'s callback is called.
+ *
+ * @name queue
+ * @static
+ * @memberOf module:ControlFlow
+ * @method
+ * @category Control Flow
+ * @param {Function} worker - An asynchronous function for processing a queued
+ * task, which must call its `callback(err)` argument when finished, with an
+ * optional `error` as an argument.  If you want to handle errors from an
+ * individual task, pass a callback to `q.push()`. Invoked with
+ * (task, callback).
+ * @param {number} [concurrency=1] - An `integer` for determining how many
+ * `worker` functions should be run in parallel.  If omitted, the concurrency
+ * defaults to `1`.  If the concurrency is `0`, an error is thrown.
+ * @returns {module:ControlFlow.QueueObject} A queue object to manage the tasks. Callbacks can
+ * attached as certain properties to listen for specific events during the
+ * lifecycle of the queue.
+ * @example
+ *
+ * // create a queue object with concurrency 2
+ * var q = async.queue(function(task, callback) {
+ *     console.log('hello ' + task.name);
+ *     callback();
+ * }, 2);
+ *
+ * // assign a callback
+ * q.drain = function() {
+ *     console.log('all items have been processed');
+ * };
+ *
+ * // add some items to the queue
+ * q.push({name: 'foo'}, function(err) {
+ *     console.log('finished processing foo');
+ * });
+ * q.push({name: 'bar'}, function (err) {
+ *     console.log('finished processing bar');
+ * });
+ *
+ * // add some items to the queue (batch-wise)
+ * q.push([{name: 'baz'},{name: 'bay'},{name: 'bax'}], function(err) {
+ *     console.log('finished processing item');
+ * });
+ *
+ * // add some items to the front of the queue
+ * q.unshift({name: 'bar'}, function (err) {
+ *     console.log('finished processing bar');
+ * });
+ */
+},{"./internal/queue":26}],30:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -211,7 +2517,7 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],2:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -857,7 +3163,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],3:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -1148,7 +3454,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  * isMobile.js v0.4.0
  *
@@ -1287,7 +3593,835 @@ if ('undefined' !== typeof module) {
 
 })(this);
 
-},{}],5:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+module.exports = apply;
+
+},{}],35:[function(require,module,exports){
+/**
+ * A specialized version of `_.forEach` for arrays without support for
+ * iteratee shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns `array`.
+ */
+function arrayEach(array, iteratee) {
+  var index = -1,
+      length = array ? array.length : 0;
+
+  while (++index < length) {
+    if (iteratee(array[index], index, array) === false) {
+      break;
+    }
+  }
+  return array;
+}
+
+module.exports = arrayEach;
+
+},{}],36:[function(require,module,exports){
+var baseTimes = require('./_baseTimes'),
+    isArguments = require('./isArguments'),
+    isArray = require('./isArray'),
+    isIndex = require('./_isIndex');
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Creates an array of the enumerable property names of the array-like `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @param {boolean} inherited Specify returning inherited property names.
+ * @returns {Array} Returns the array of property names.
+ */
+function arrayLikeKeys(value, inherited) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  // Safari 9 makes `arguments.length` enumerable in strict mode.
+  var result = (isArray(value) || isArguments(value))
+    ? baseTimes(value.length, String)
+    : [];
+
+  var length = result.length,
+      skipIndexes = !!length;
+
+  for (var key in value) {
+    if ((inherited || hasOwnProperty.call(value, key)) &&
+        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+module.exports = arrayLikeKeys;
+
+},{"./_baseTimes":39,"./_isIndex":40,"./isArguments":44,"./isArray":45}],37:[function(require,module,exports){
+var isPrototype = require('./_isPrototype'),
+    nativeKeys = require('./_nativeKeys');
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeys(object) {
+  if (!isPrototype(object)) {
+    return nativeKeys(object);
+  }
+  var result = [];
+  for (var key in Object(object)) {
+    if (hasOwnProperty.call(object, key) && key != 'constructor') {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+module.exports = baseKeys;
+
+},{"./_isPrototype":41,"./_nativeKeys":42}],38:[function(require,module,exports){
+var apply = require('./_apply');
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest(func, start) {
+  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = array;
+    return apply(func, this, otherArgs);
+  };
+}
+
+module.exports = baseRest;
+
+},{"./_apply":34}],39:[function(require,module,exports){
+/**
+ * The base implementation of `_.times` without support for iteratee shorthands
+ * or max array length checks.
+ *
+ * @private
+ * @param {number} n The number of times to invoke `iteratee`.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the array of results.
+ */
+function baseTimes(n, iteratee) {
+  var index = -1,
+      result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+module.exports = baseTimes;
+
+},{}],40:[function(require,module,exports){
+/** Used as references for various `Number` constants. */
+var MAX_SAFE_INTEGER = 9007199254740991;
+
+/** Used to detect unsigned integer values. */
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length &&
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
+}
+
+module.exports = isIndex;
+
+},{}],41:[function(require,module,exports){
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Checks if `value` is likely a prototype object.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+ */
+function isPrototype(value) {
+  var Ctor = value && value.constructor,
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+  return value === proto;
+}
+
+module.exports = isPrototype;
+
+},{}],42:[function(require,module,exports){
+var overArg = require('./_overArg');
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeKeys = overArg(Object.keys, Object);
+
+module.exports = nativeKeys;
+
+},{"./_overArg":43}],43:[function(require,module,exports){
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+module.exports = overArg;
+
+},{}],44:[function(require,module,exports){
+var isArrayLikeObject = require('./isArrayLikeObject');
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]';
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+/**
+ * Checks if `value` is likely an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+}
+
+module.exports = isArguments;
+
+},{"./isArrayLikeObject":47}],45:[function(require,module,exports){
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+module.exports = isArray;
+
+},{}],46:[function(require,module,exports){
+var isFunction = require('./isFunction'),
+    isLength = require('./isLength');
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+module.exports = isArrayLike;
+
+},{"./isFunction":48,"./isLength":49}],47:[function(require,module,exports){
+var isArrayLike = require('./isArrayLike'),
+    isObjectLike = require('./isObjectLike');
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+module.exports = isArrayLikeObject;
+
+},{"./isArrayLike":46,"./isObjectLike":51}],48:[function(require,module,exports){
+var isObject = require('./isObject');
+
+/** `Object#toString` result references. */
+var funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]';
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 8-9 which returns 'object' for typed array and other constructors.
+  var tag = isObject(value) ? objectToString.call(value) : '';
+  return tag == funcTag || tag == genTag;
+}
+
+module.exports = isFunction;
+
+},{"./isObject":50}],49:[function(require,module,exports){
+/** Used as references for various `Number` constants. */
+var MAX_SAFE_INTEGER = 9007199254740991;
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ * @example
+ *
+ * _.isLength(3);
+ * // => true
+ *
+ * _.isLength(Number.MIN_VALUE);
+ * // => false
+ *
+ * _.isLength(Infinity);
+ * // => false
+ *
+ * _.isLength('3');
+ * // => false
+ */
+function isLength(value) {
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+module.exports = isLength;
+
+},{}],50:[function(require,module,exports){
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+module.exports = isObject;
+
+},{}],51:[function(require,module,exports){
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+module.exports = isObjectLike;
+
+},{}],52:[function(require,module,exports){
+var isObjectLike = require('./isObjectLike');
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+module.exports = isSymbol;
+
+},{"./isObjectLike":51}],53:[function(require,module,exports){
+var arrayLikeKeys = require('./_arrayLikeKeys'),
+    baseKeys = require('./_baseKeys'),
+    isArrayLike = require('./isArrayLike');
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+function keys(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+}
+
+module.exports = keys;
+
+},{"./_arrayLikeKeys":36,"./_baseKeys":37,"./isArrayLike":46}],54:[function(require,module,exports){
+/**
+ * This method returns `undefined`.
+ *
+ * @static
+ * @memberOf _
+ * @since 2.3.0
+ * @category Util
+ * @example
+ *
+ * _.times(2, _.noop);
+ * // => [undefined, undefined]
+ */
+function noop() {
+  // No operation performed.
+}
+
+module.exports = noop;
+
+},{}],55:[function(require,module,exports){
+var baseRest = require('./_baseRest'),
+    toInteger = require('./toInteger');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that invokes `func` with the `this` binding of the
+ * created function and arguments from `start` and beyond provided as
+ * an array.
+ *
+ * **Note:** This method is based on the
+ * [rest parameter](https://mdn.io/rest_parameters).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Function
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var say = _.rest(function(what, names) {
+ *   return what + ' ' + _.initial(names).join(', ') +
+ *     (_.size(names) > 1 ? ', & ' : '') + _.last(names);
+ * });
+ *
+ * say('hello', 'fred', 'barney', 'pebbles');
+ * // => 'hello fred, barney, & pebbles'
+ */
+function rest(func, start) {
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  start = start === undefined ? start : toInteger(start);
+  return baseRest(func, start);
+}
+
+module.exports = rest;
+
+},{"./_baseRest":38,"./toInteger":57}],56:[function(require,module,exports){
+var toNumber = require('./toNumber');
+
+/** Used as references for various `Number` constants. */
+var INFINITY = 1 / 0,
+    MAX_INTEGER = 1.7976931348623157e+308;
+
+/**
+ * Converts `value` to a finite number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.12.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {number} Returns the converted number.
+ * @example
+ *
+ * _.toFinite(3.2);
+ * // => 3.2
+ *
+ * _.toFinite(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toFinite(Infinity);
+ * // => 1.7976931348623157e+308
+ *
+ * _.toFinite('3.2');
+ * // => 3.2
+ */
+function toFinite(value) {
+  if (!value) {
+    return value === 0 ? value : 0;
+  }
+  value = toNumber(value);
+  if (value === INFINITY || value === -INFINITY) {
+    var sign = (value < 0 ? -1 : 1);
+    return sign * MAX_INTEGER;
+  }
+  return value === value ? value : 0;
+}
+
+module.exports = toFinite;
+
+},{"./toNumber":58}],57:[function(require,module,exports){
+var toFinite = require('./toFinite');
+
+/**
+ * Converts `value` to an integer.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToInteger`](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {number} Returns the converted integer.
+ * @example
+ *
+ * _.toInteger(3.2);
+ * // => 3
+ *
+ * _.toInteger(Number.MIN_VALUE);
+ * // => 0
+ *
+ * _.toInteger(Infinity);
+ * // => 1.7976931348623157e+308
+ *
+ * _.toInteger('3.2');
+ * // => 3
+ */
+function toInteger(value) {
+  var result = toFinite(value),
+      remainder = result % 1;
+
+  return result === result ? (remainder ? result - remainder : result) : 0;
+}
+
+module.exports = toInteger;
+
+},{"./toFinite":56}],58:[function(require,module,exports){
+var isObject = require('./isObject'),
+    isSymbol = require('./isSymbol');
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = toNumber;
+
+},{"./isObject":50,"./isSymbol":52}],59:[function(require,module,exports){
 'use strict';
 /* eslint-disable no-unused-vars */
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -1372,1572 +4506,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],6:[function(require,module,exports){
-var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
-
-/**
- * Helper class to create a webGL buffer
- *
- * @class
- * @memberof pixi.gl
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param type {gl.ARRAY_BUFFER | gl.ELEMENT_ARRAY_BUFFER} @mat
- * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
- * @param drawType {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
- */
-var Buffer = function(gl, type, data, drawType)
-{
-
-	/**
-     * The current WebGL rendering context
-     *
-     * @member {WebGLRenderingContext}
-     */
-	this.gl = gl;
-
-	/**
-     * The WebGL buffer, created upon instantiation
-     *
-     * @member {WebGLBuffer}
-     */
-	this.buffer = gl.createBuffer();
-
-	/**
-     * The type of the buffer
-     *
-     * @member {gl.ARRAY_BUFFER|gl.ELEMENT_ARRAY_BUFFER}
-     */
-	this.type = type || gl.ARRAY_BUFFER;
-
-	/**
-     * The draw type of the buffer
-     *
-     * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
-     */
-	this.drawType = drawType || gl.STATIC_DRAW;
-
-	/**
-     * The data in the buffer, as a typed array
-     *
-     * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
-     */
-	this.data = EMPTY_ARRAY_BUFFER;
-
-	if(data)
-	{
-		this.upload(data);
-	}
-};
-
-/**
- * Uploads the buffer to the GPU
- * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
- * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
- * @param dontBind {Boolean} whether to bind the buffer before uploading it
- */
-Buffer.prototype.upload = function(data, offset, dontBind)
-{
-	// todo - needed?
-	if(!dontBind) this.bind();
-
-	var gl = this.gl;
-
-	data = data || this.data;
-	offset = offset || 0;
-
-	if(this.data.byteLength >= data.byteLength)
-	{
-		gl.bufferSubData(this.type, offset, data);
-	}
-	else
-	{
-		gl.bufferData(this.type, data, this.drawType);
-	}
-
-	this.data = data;
-};
-/**
- * Binds the buffer
- *
- */
-Buffer.prototype.bind = function()
-{
-	var gl = this.gl;
-	gl.bindBuffer(this.type, this.buffer);
-};
-
-Buffer.createVertexBuffer = function(gl, data, drawType)
-{
-	return new Buffer(gl, gl.ARRAY_BUFFER, data, drawType);
-};
-
-Buffer.createIndexBuffer = function(gl, data, drawType)
-{
-	return new Buffer(gl, gl.ELEMENT_ARRAY_BUFFER, data, drawType);
-};
-
-Buffer.create = function(gl, type, data, drawType)
-{
-	return new Buffer(gl, type, drawType);
-};
-
-/**
- * Destroys the buffer
- *
- */
-Buffer.prototype.destroy = function(){
-	this.gl.deleteBuffer(this.buffer);
-};
-
-module.exports = Buffer;
-
-},{}],7:[function(require,module,exports){
-
-var Texture = require('./GLTexture');
-
-/**
- * Helper class to create a webGL Framebuffer
- *
- * @class
- * @memberof pixi.gl
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param width {Number} the width of the drawing area of the frame buffer
- * @param height {Number} the height of the drawing area of the frame buffer
- */
-var Framebuffer = function(gl, width, height)
-{
-    /**
-     * The current WebGL rendering context
-     *
-     * @member {WebGLRenderingContext}
-     */
-    this.gl = gl;
-
-    /**
-     * The frame buffer
-     *
-     * @member {WebGLFramebuffer}
-     */
-    this.framebuffer = gl.createFramebuffer();
-
-    /**
-     * The stencil buffer
-     *
-     * @member {WebGLRenderbuffer}
-     */
-    this.stencil = null;
-
-    /**
-     * The stencil buffer
-     *
-     * @member {GLTexture}
-     */
-    this.texture = null;
-
-    /**
-     * The width of the drawing area of the buffer
-     *
-     * @member {Number}
-     */
-    this.width = width || 100;
-    /**
-     * The height of the drawing area of the buffer
-     *
-     * @member {Number}
-     */
-    this.height = height || 100;
-};
-
-/**
- * Adds a texture to the frame buffer
- * @param texture {GLTexture}
- */
-Framebuffer.prototype.enableTexture = function(texture)
-{
-    var gl = this.gl;
-
-    this.texture = texture || new Texture(gl);
-
-    this.texture.bind();
-
-    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-    this.bind();
-
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture.texture, 0);
-};
-
-/**
- * Initialises the stencil buffer
- */
-Framebuffer.prototype.enableStencil = function()
-{
-    if(this.stencil)return;
-
-    var gl = this.gl;
-
-    this.stencil = gl.createRenderbuffer();
-
-    gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
-
-    // TODO.. this is depth AND stencil?
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencil);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
-};
-
-/**
- * Erases the drawing area and fills it with a colour
- * @param  r {Number} the red value of the clearing colour
- * @param  g {Number} the green value of the clearing colour
- * @param  b {Number} the blue value of the clearing colour
- * @param  a {Number} the alpha value of the clearing colour
- */
-Framebuffer.prototype.clear = function( r, g, b, a )
-{
-    this.bind();
-
-    var gl = this.gl;
-
-    gl.clearColor(r, g, b, a);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-};
-
-/**
- * Binds the frame buffer to the WebGL context
- */
-Framebuffer.prototype.bind = function()
-{
-    var gl = this.gl;
-
-    if(this.texture)
-    {
-        this.texture.unbind();
-    }
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
-};
-
-/**
- * Unbinds the frame buffer to the WebGL context
- */
-Framebuffer.prototype.unbind = function()
-{
-    var gl = this.gl;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null );  
-};
-/**
- * Resizes the drawing area of the buffer to the given width and height
- * @param  width  {Number} the new width
- * @param  height {Number} the new height
- */
-Framebuffer.prototype.resize = function(width, height)
-{
-    var gl = this.gl;
-
-    this.width = width;
-    this.height = height;
-
-    if ( this.texture )
-    {
-        this.texture.uploadData(null, width, height);
-    }
-
-    if ( this.stencil )
-    {
-        // update the stencil buffer width and height
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
-    }
-};
-
-/**
- * Destroys this buffer
- */
-Framebuffer.prototype.destroy = function()
-{
-    var gl = this.gl;
-
-    //TODO
-    if(this.texture)
-    {
-        this.texture.destroy();
-    }
-
-    gl.deleteFramebuffer(this.framebuffer);
-
-    this.gl = null;
-
-    this.stencil = null;
-    this.texture = null;
-};
-
-/**
- * Creates a frame buffer with a texture containing the given data
- * @static
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param width {Number} the width of the drawing area of the frame buffer
- * @param height {Number} the height of the drawing area of the frame buffer
- * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
- */
-Framebuffer.createRGBA = function(gl, width, height/*, data*/)
-{
-    var texture = Texture.fromData(gl, null, width, height);
-    texture.enableNearestScaling();
-    texture.enableWrapClamp();
-
-    //now create the framebuffer object and attach the texture to it.
-    var fbo = new Framebuffer(gl, width, height);
-    fbo.enableTexture(texture);
-
-    fbo.unbind();
-
-    return fbo;
-};
-
-/**
- * Creates a frame buffer with a texture containing the given data
- * @static
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param width {Number} the width of the drawing area of the frame buffer
- * @param height {Number} the height of the drawing area of the frame buffer
- * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
- */
-Framebuffer.createFloat32 = function(gl, width, height, data)
-{
-    // create a new texture..
-    var texture = new Texture.fromData(gl, data, width, height);
-    texture.enableNearestScaling();
-    texture.enableWrapClamp();
-
-    //now create the framebuffer object and attach the texture to it.
-    var fbo = new Framebuffer(gl, width, height);
-    fbo.enableTexture(texture);
-
-    fbo.unbind();
-
-    return fbo;
-};
-
-module.exports = Framebuffer;
-
-},{"./GLTexture":9}],8:[function(require,module,exports){
-
-var compileProgram = require('./shader/compileProgram'),
-	extractAttributes = require('./shader/extractAttributes'),
-	extractUniforms = require('./shader/extractUniforms'),
-	generateUniformAccessObject = require('./shader/generateUniformAccessObject');
-
-/**
- * Helper class to create a webGL Shader
- *
- * @class
- * @memberof pixi.gl
- * @param gl {WebGLRenderingContext}
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- */
-var Shader = function(gl, vertexSrc, fragmentSrc)
-{
-	/**
-	 * The current WebGL rendering context
-	 *
-	 * @member {WebGLRenderingContext}
-	 */
-	this.gl = gl;
-
-	/**
-	 * The shader program
-	 *
-	 * @member {WebGLProgram}
-	 */
-	// First compile the program..
-	this.program = compileProgram(gl, vertexSrc, fragmentSrc);
-
-
-	/**
-	 * The attributes of the shader as an object containing the following properties
-	 * {
-	 * 	type,
-	 * 	size,
-	 * 	location,
-	 * 	pointer
-	 * }
-	 * @member {Object}
-	 */
-	// next extract the attributes
-	this.attributes = extractAttributes(gl, this.program);
-
-    var uniformData = extractUniforms(gl, this.program);
-
-	/**
-	 * The uniforms of the shader as an object containing the following properties
-	 * {
-	 * 	gl,
-	 * 	data
-	 * }
-	 * @member {Object}
-	 */
-    this.uniforms = generateUniformAccessObject( gl, uniformData );
-};
-/**
- * Uses this shader
- */
-Shader.prototype.bind = function()
-{
-	this.gl.useProgram(this.program);
-};
-
-/**
- * Destroys this shader
- * TODO
- */
-Shader.prototype.destroy = function()
-{
-	// var gl = this.gl;
-};
-
-module.exports = Shader;
-
-},{"./shader/compileProgram":14,"./shader/extractAttributes":16,"./shader/extractUniforms":17,"./shader/generateUniformAccessObject":18}],9:[function(require,module,exports){
-
-/**
- * Helper class to create a WebGL Texture
- *
- * @class
- * @memberof pixi.gl
- * @param gl {WebGLRenderingContext} The current WebGL context
- * @param width {number} the width of the texture
- * @param height {number} the height of the texture
- * @param format {number} the pixel format of the texture. defaults to gl.RGBA
- * @param type {number} the gl type of the texture. defaults to gl.UNSIGNED_BYTE
- */
-var Texture = function(gl, width, height, format, type)
-{
-	/**
-	 * The current WebGL rendering context
-	 *
-	 * @member {WebGLRenderingContext}
-	 */
-	this.gl = gl;
-
-
-	/**
-	 * The WebGL texture
-	 *
-	 * @member {WebGLTexture}
-	 */
-	this.texture = gl.createTexture();
-
-	/**
-	 * If mipmapping was used for this texture, enable and disable with enableMipmap()
-	 *
-	 * @member {Boolean}
-	 */
-	// some settings..
-	this.mipmap = false;
-
-
-	/**
-	 * Set to true to enable pre-multiplied alpha
-	 *
-	 * @member {Boolean}
-	 */
-	this.premultiplyAlpha = false;
-
-	/**
-	 * The width of texture
-	 *
-	 * @member {Number}
-	 */
-	this.width = width || 0;
-	/**
-	 * The height of texture
-	 *
-	 * @member {Number}
-	 */
-	this.height = height || 0;
-
-	/**
-	 * The pixel format of the texture. defaults to gl.RGBA
-	 *
-	 * @member {Number}
-	 */
-	this.format = format || gl.RGBA;
-
-	/**
-	 * The gl type of the texture. defaults to gl.UNSIGNED_BYTE
-	 *
-	 * @member {Number}
-	 */
-	this.type = type || gl.UNSIGNED_BYTE;
-
-
-};
-
-/**
- * Uploads this texture to the GPU
- * @param source {HTMLImageElement|ImageData|HTMLVideoElement} the source image of the texture
- */
-Texture.prototype.upload = function(source)
-{
-	this.bind();
-
-	var gl = this.gl;
-
-	// if the source is a video, we need to use the videoWidth / videoHeight properties as width / height will be incorrect.
-	this.width = source.videoWidth || source.width;
-	this.height = source.videoHeight || source.height;
-
-	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, source);
-};
-
-var FLOATING_POINT_AVAILABLE = false;
-
-/**
- * Use a data source and uploads this texture to the GPU
- * @param data {TypedArray} the data to upload to the texture
- * @param width {number} the new width of the texture
- * @param height {number} the new height of the texture
- */
-Texture.prototype.uploadData = function(data, width, height)
-{
-	this.bind();
-
-	var gl = this.gl;
-
-	this.width = width || this.width;
-	this.height = height || this.height;
-
-	if(data instanceof Float32Array)
-	{
-		if(!FLOATING_POINT_AVAILABLE)
-		{
-			var ext = gl.getExtension("OES_texture_float");
-
-			if(ext)
-			{
-				FLOATING_POINT_AVAILABLE = true;
-			}
-			else
-			{
-				throw new Error('floating point textures not available');
-			}
-		}
-
-		this.type = gl.FLOAT;
-	}
-	else
-	{
-		// TODO support for other types
-		this.type = gl.UNSIGNED_BYTE;
-	}
-
-	
-
-	// what type of data?
-	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
-	gl.texImage2D(gl.TEXTURE_2D, 0, this.format,  this.width, this.height, 0, this.format, this.type, data || null);
-
-};
-
-/**
- * Binds the texture
- * @param  location 
- */
-Texture.prototype.bind = function(location)
-{
-	var gl = this.gl;
-
-	if(location !== undefined)
-	{
-		gl.activeTexture(gl.TEXTURE0 + location);
-	}
-
-	gl.bindTexture(gl.TEXTURE_2D, this.texture);
-};
-
-/**
- * Unbinds the texture
- */
-Texture.prototype.unbind = function()
-{
-	var gl = this.gl;
-	gl.bindTexture(gl.TEXTURE_2D, null);
-};
-
-/**
- * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
- */
-Texture.prototype.minFilter = function( linear )
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	if(this.mipmap)
-	{
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
-	}
-	else
-	{
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-	}
-};
-
-/**
- * @param linear {Boolean} if we want to use linear filtering or nearest neighbour interpolation
- */
-Texture.prototype.magFilter = function( linear )
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, linear ? gl.LINEAR : gl.NEAREST);
-};
-
-/**
- * Enables mipmapping
- */
-Texture.prototype.enableMipmap = function()
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	this.mipmap = true;
-
-	gl.generateMipmap(gl.TEXTURE_2D);
-};
-
-/**
- * Enables linear filtering
- */
-Texture.prototype.enableLinearScaling = function()
-{
-	this.minFilter(true);
-	this.magFilter(true);
-};
-
-/**
- * Enables nearest neighbour interpolation
- */
-Texture.prototype.enableNearestScaling = function()
-{
-	this.minFilter(false);
-	this.magFilter(false);
-};
-
-/**
- * Enables clamping on the texture so WebGL will not repeat it
- */
-Texture.prototype.enableWrapClamp = function()
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-};
-
-/**
- * Enable tiling on the texture
- */
-Texture.prototype.enableWrapRepeat = function()
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-};
-
-Texture.prototype.enableWrapMirrorRepeat = function()
-{
-	var gl = this.gl;
-
-	this.bind();
-
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
-};
-
-
-/**
- * Destroys this texture
- */
-Texture.prototype.destroy = function()
-{
-	var gl = this.gl;
-	//TODO
-	gl.deleteTexture(this.texture);
-};
-
-/**
- * @static
- * @param gl {WebGLRenderingContext} The current WebGL context
- * @param source {HTMLImageElement|ImageData} the source image of the texture
- * @param premultiplyAlpha {Boolean} If we want to use pre-multiplied alpha
- */
-Texture.fromSource = function(gl, source, premultiplyAlpha)
-{
-	var texture = new Texture(gl);
-	texture.premultiplyAlpha = premultiplyAlpha || false;
-	texture.upload(source);
-
-	return texture;
-};
-
-/**
- * @static
- * @param gl {WebGLRenderingContext} The current WebGL context
- * @param data {TypedArray} the data to upload to the texture
- * @param width {number} the new width of the texture
- * @param height {number} the new height of the texture
- */
-Texture.fromData = function(gl, data, width, height)
-{
-	//console.log(data, width, height);
-	var texture = new Texture(gl);
-	texture.uploadData(data, width, height);
-
-	return texture;
-};
-
-
-module.exports = Texture;
-
-},{}],10:[function(require,module,exports){
-
-// state object//
-var setVertexAttribArrays = require( './setVertexAttribArrays' );
-
-/**
- * Helper class to work with WebGL VertexArrayObjects (vaos)
- * Only works if WebGL extensions are enabled (they usually are)
- *
- * @class
- * @memberof pixi.gl
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- */
-function VertexArrayObject(gl, state)
-{
-    this.nativeVaoExtension = null;
-
-    if(!VertexArrayObject.FORCE_NATIVE)
-    {
-        this.nativeVaoExtension = gl.getExtension('OES_vertex_array_object') ||
-                                  gl.getExtension('MOZ_OES_vertex_array_object') ||
-                                  gl.getExtension('WEBKIT_OES_vertex_array_object');
-    }
-
-    this.nativeState = state;
-
-    if(this.nativeVaoExtension)
-    {
-        this.nativeVao = this.nativeVaoExtension.createVertexArrayOES();
-
-        var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
-
-        // VAO - overwrite the state..
-        this.nativeState = {
-            tempAttribState: new Array(maxAttribs),
-            attribState: new Array(maxAttribs)
-        };
-    }
-
-    /**
-     * The current WebGL rendering context
-     *
-     * @member {WebGLRenderingContext}
-     */
-    this.gl = gl;
-
-    /**
-     * An array of attributes
-     *
-     * @member {Array}
-     */
-    this.attributes = [];
-
-    /**
-     * @member {Array}
-     */
-    this.indexBuffer = null;
-
-    /**
-     * A boolean flag
-     *
-     * @member {Boolean}
-     */
-    this.dirty = false;
-}
-
-VertexArrayObject.prototype.constructor = VertexArrayObject;
-module.exports = VertexArrayObject;
-
-/**
-* Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
-* If you find on older devices that things have gone a bit weird then set this to true.
-*/
-/**
- * Lets the VAO know if you should use the WebGL extension or the native methods.
- * Some devices behave a bit funny when using the newer extensions (im looking at you ipad 2!)
- * If you find on older devices that things have gone a bit weird then set this to true.
- * @static
- * @property {Boolean} FORCE_NATIVE
- */
-VertexArrayObject.FORCE_NATIVE = false;
-
-/**
- * Binds the buffer
- */
-VertexArrayObject.prototype.bind = function()
-{
-    if(this.nativeVao)
-    {
-        this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
-
-        if(this.dirty)
-        {
-            this.dirty = false;
-            this.activate();
-        }
-    }
-    else
-    {
-
-        this.activate();
-    }
-
-    return this;
-};
-
-/**
- * Unbinds the buffer
- */
-VertexArrayObject.prototype.unbind = function()
-{
-    if(this.nativeVao)
-    {
-        this.nativeVaoExtension.bindVertexArrayOES(null);
-    }
-
-    return this;
-};
-
-/**
- * Uses this vao
- */
-VertexArrayObject.prototype.activate = function()
-{
-
-    var gl = this.gl;
-    var lastBuffer = null;
-
-    for (var i = 0; i < this.attributes.length; i++)
-    {
-        var attrib = this.attributes[i];
-
-        if(lastBuffer !== attrib.buffer)
-        {
-            attrib.buffer.bind();
-            lastBuffer = attrib.buffer;
-        }
-
-        //attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start);
-        gl.vertexAttribPointer(attrib.attribute.location,
-                               attrib.attribute.size, attrib.type || gl.FLOAT,
-                               attrib.normalized || false,
-                               attrib.stride || 0,
-                               attrib.start || 0);
-
-
-    }
-
-    setVertexAttribArrays(gl, this.attributes, this.nativeState);
-
-    this.indexBuffer.bind();
-
-    return this;
-};
-
-/**
- *
- * @param buffer     {WebGLBuffer}
- * @param attribute  {*}
- * @param type       {String}
- * @param normalized {Boolean}
- * @param stride     {Number}
- * @param start      {Number}
- */
-VertexArrayObject.prototype.addAttribute = function(buffer, attribute, type, normalized, stride, start)
-{
-    this.attributes.push({
-        buffer:     buffer,
-        attribute:  attribute,
-
-        location:   attribute.location,
-        type:       type || this.gl.FLOAT,
-        normalized: normalized || false,
-        stride:     stride || 0,
-        start:      start || 0
-    });
-
-    this.dirty = true;
-
-    return this;
-};
-
-/**
- *
- * @param buffer   {WebGLBuffer}
- * @param options  {Object}
- */
-VertexArrayObject.prototype.addIndex = function(buffer/*, options*/)
-{
-    this.indexBuffer = buffer;
-
-    this.dirty = true;
-
-    return this;
-};
-
-/**
- * Unbinds this vao and disables it
- */
-VertexArrayObject.prototype.clear = function()
-{
-    // var gl = this.gl;
-
-    // TODO - should this function unbind after clear?
-    // for now, no but lets see what happens in the real world!
-    if(this.nativeVao)
-    {
-        this.nativeVaoExtension.bindVertexArrayOES(this.nativeVao);
-    }
-
-    this.attributes.length = 0;
-    this.indexBuffer = null;
-
-    return this;
-};
-
-/**
- * @param type  {Number}
- * @param size  {Number}
- * @param start {Number}
- */
-VertexArrayObject.prototype.draw = function(type, size, start)
-{
-    var gl = this.gl;
-    gl.drawElements(type, size, gl.UNSIGNED_SHORT, start || 0);
-
-    return this;
-};
-
-/**
- * Destroy this vao
- */
-VertexArrayObject.prototype.destroy = function()
-{
-    // lose references
-    this.gl = null;
-    this.indexBuffer = null;
-    this.attributes = null;
-    this.nativeState = null;
-
-    if(this.nativeVao)
-    {
-        this.nativeVaoExtension.deleteVertexArrayOES(this.nativeVao);
-    }
-
-    this.nativeVaoExtension = null;
-    this.nativeVao = null;
-};
-
-},{"./setVertexAttribArrays":13}],11:[function(require,module,exports){
-
-/**
- * Helper class to create a webGL Context
- *
- * @class
- * @memberof pixi.gl
- * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
- * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
- *                         see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
- * @return {WebGLRenderingContext} the WebGL context
- */
-var createContext = function(canvas, options)
-{
-    var gl = canvas.getContext('webgl', options) || 
-         canvas.getContext('experimental-webgl', options);
-
-    if (!gl)
-    {
-        // fail, not able to get a context
-        throw new Error('This browser does not support webGL. Try using the canvas renderer');
-    }
-
-    return gl;
-};
-
-module.exports = createContext;
-
-},{}],12:[function(require,module,exports){
-var gl = {
-    createContext:          require('./createContext'),
-    setVertexAttribArrays:  require('./setVertexAttribArrays'),
-    GLBuffer:               require('./GLBuffer'),
-    GLFramebuffer:          require('./GLFramebuffer'),
-    GLShader:               require('./GLShader'),
-    GLTexture:              require('./GLTexture'),
-    VertexArrayObject:      require('./VertexArrayObject'),
-    shader:                 require('./shader')
-};
-
-// Export for Node-compatible environments
-if (typeof module !== 'undefined' && module.exports)
-{
-    // Export the module
-    module.exports = gl;
-}
-
-// Add to the browser window pixi.gl
-if (typeof window !== 'undefined')
-{
-    // add the window object
-    window.pixi = { gl: gl };
-}
-},{"./GLBuffer":6,"./GLFramebuffer":7,"./GLShader":8,"./GLTexture":9,"./VertexArrayObject":10,"./createContext":11,"./setVertexAttribArrays":13,"./shader":19}],13:[function(require,module,exports){
-// var GL_MAP = {};
-
-/**
- * @param gl {WebGLRenderingContext} The current WebGL context
- * @param attribs {*}
- * @param state {*}
- */
-var setVertexAttribArrays = function (gl, attribs, state)
-{
-    var i;
-    if(state)
-    {
-        var tempAttribState = state.tempAttribState,
-            attribState = state.attribState;
-
-        for (i = 0; i < tempAttribState.length; i++)
-        {
-            tempAttribState[i] = false;
-        }
-
-        // set the new attribs
-        for (i = 0; i < attribs.length; i++)
-        {
-            tempAttribState[attribs[i].attribute.location] = true;
-        }
-
-        for (i = 0; i < attribState.length; i++)
-        {
-            if (attribState[i] !== tempAttribState[i])
-            {
-                attribState[i] = tempAttribState[i];
-
-                if (state.attribState[i])
-                {
-                    gl.enableVertexAttribArray(i);
-                }
-                else
-                {
-                    gl.disableVertexAttribArray(i);
-                }
-            }
-        }
-
-    }
-    else
-    {
-        for (i = 0; i < attribs.length; i++)
-        {
-            var attrib = attribs[i];
-            gl.enableVertexAttribArray(attrib.attribute.location);
-        }
-    }
-};
-
-module.exports = setVertexAttribArrays;
-
-},{}],14:[function(require,module,exports){
-
-/**
- * @class
- * @memberof pixi.gl.shader
- * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- * @return {WebGLProgram} the shader program
- */
-var compileProgram = function(gl, vertexSrc, fragmentSrc)
-{
-    var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
-    var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
-
-    var program = gl.createProgram();
-
-    gl.attachShader(program, glVertShader);
-    gl.attachShader(program, glFragShader);
-    gl.linkProgram(program);
-
-    // if linking fails, then log and cleanup
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
-    {
-        console.error('Pixi.js Error: Could not initialize shader.');
-        console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
-        console.error('gl.getError()', gl.getError());
-
-        // if there is a program info log, log it
-        if (gl.getProgramInfoLog(program) !== '')
-        {
-            console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
-        }
-
-        gl.deleteProgram(program);
-        program = null;
-    }
-
-    // clean up some shaders
-    gl.deleteShader(glVertShader);
-    gl.deleteShader(glFragShader);
-
-    return program;
-};
-
-/**
- * @private
- * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
- * @param type {Number} the type, can be either VERTEX_SHADER or FRAGMENT_SHADER
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @return {WebGLShader} the shader
- */
-var compileShader = function (gl, type, src)
-{
-    var shader = gl.createShader(type);
-
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-    {
-        console.log(gl.getShaderInfoLog(shader));
-        return null;
-    }
-
-    return shader;
-};
-
-module.exports = compileProgram;
-
-},{}],15:[function(require,module,exports){
-/**
- * @class
- * @memberof pixi.gl.shader
- * @param type {String} Type of value
- * @param size {Number}
- */
-var defaultValue = function(type, size) 
-{
-    switch (type)
-    {
-        case 'float':
-            return 0;
-
-        case 'vec2': 
-            return new Float32Array(2 * size);
-
-        case 'vec3':
-            return new Float32Array(3 * size);
-
-        case 'vec4':     
-            return new Float32Array(4 * size);
-            
-        case 'int':
-        case 'sampler2D':
-            return 0;
-
-        case 'ivec2':   
-            return new Int32Array(2 * size);
-
-        case 'ivec3':
-            return new Int32Array(3 * size);
-
-        case 'ivec4': 
-            return new Int32Array(4 * size);
-
-        case 'bool':     
-            return false;
-
-        case 'bvec2':
-
-            return booleanArray( 2 * size);
-
-        case 'bvec3':
-            return booleanArray(3 * size);
-
-        case 'bvec4':
-            return booleanArray(4 * size);
-
-        case 'mat2':
-            return new Float32Array([1, 0,
-                                     0, 1]);
-
-        case 'mat3': 
-            return new Float32Array([1, 0, 0,
-                                     0, 1, 0,
-                                     0, 0, 1]);
-
-        case 'mat4':
-            return new Float32Array([1, 0, 0, 0,
-                                     0, 1, 0, 0,
-                                     0, 0, 1, 0,
-                                     0, 0, 0, 1]);
-    }
-};
-
-var booleanArray = function(size)
-{
-    var array = new Array(size);
-
-    for (var i = 0; i < array.length; i++) 
-    {
-        array[i] = false;
-    }
-
-    return array;
-};
-
-module.exports = defaultValue;
-
-},{}],16:[function(require,module,exports){
-
-var mapType = require('./mapType');
-var mapSize = require('./mapSize');
-
-/**
- * Extracts the attributes
- * @class
- * @memberof pixi.gl.shader
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param program {WebGLProgram} The shader program to get the attributes from
- * @return attributes {Object}
- */
-var extractAttributes = function(gl, program)
-{
-    var attributes = {};
-
-    var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-
-    for (var i = 0; i < totalAttributes; i++)
-    {
-        var attribData = gl.getActiveAttrib(program, i);
-        var type = mapType(gl, attribData.type);
-
-        attributes[attribData.name] = {
-            type:type,
-            size:mapSize(type),
-            location:gl.getAttribLocation(program, attribData.name),
-            //TODO - make an attribute object
-            pointer: pointer
-        };
-    }
-
-    return attributes;
-};
-
-var pointer = function(type, normalized, stride, start){
-    // console.log(this.location)
-    gl.vertexAttribPointer(this.location,this.size, type || gl.FLOAT, normalized || false, stride || 0, start || 0);
-};
-
-module.exports = extractAttributes;
-
-},{"./mapSize":20,"./mapType":21}],17:[function(require,module,exports){
-var mapType = require('./mapType');
-var defaultValue = require('./defaultValue');
-
-/**
- * Extracts the uniforms
- * @class
- * @memberof pixi.gl.shader
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param program {WebGLProgram} The shader program to get the uniforms from
- * @return uniforms {Object}
- */
-var extractUniforms = function(gl, program)
-{
-	var uniforms = {};
-
-    var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-
-    for (var i = 0; i < totalUniforms; i++)
-    {
-    	var uniformData = gl.getActiveUniform(program, i);
-    	var name = uniformData.name.replace(/\[.*?\]/, "");
-        var type = mapType(gl, uniformData.type );
-
-    	uniforms[name] = {
-    		type:type,
-    		size:uniformData.size,
-    		location:gl.getUniformLocation(program, name),
-    		value:defaultValue(type, uniformData.size)
-    	};
-    }
-
-	return uniforms;
-};
-
-module.exports = extractUniforms;
-
-},{"./defaultValue":15,"./mapType":21}],18:[function(require,module,exports){
-/**
- * Extracts the attributes
- * @class
- * @memberof pixi.gl.shader
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param uniforms {Array} @mat ?
- * @return attributes {Object}
- */
-var generateUniformAccessObject = function(gl, uniformData)
-{
-    // this is the object we will be sending back.
-    // an object hierachy will be created for structs
-    var uniforms = {data:{}};
-
-    uniforms.gl = gl;
-
-    var uniformKeys= Object.keys(uniformData);
-
-    for (var i = 0; i < uniformKeys.length; i++)
-    {
-        var fullName = uniformKeys[i];
-
-        var nameTokens = fullName.split('.');
-        var name = nameTokens[nameTokens.length - 1];
-
-        var uniformGroup = getUniformGroup(nameTokens, uniforms);
-
-        var uniform =  uniformData[fullName];
-        uniformGroup.data[name] = uniform;
-
-        uniformGroup.gl = gl;
-
-        Object.defineProperty(uniformGroup, name, {
-            get: generateGetter(name),
-            set: generateSetter(name, uniform)
-        });
-    }
-
-    return uniforms;
-};
-
-var generateGetter = function(name)
-{
-	var template = getterTemplate.replace('%%', name);
-	return new Function(template); // jshint ignore:line
-};
-
-var generateSetter = function(name, uniform)
-{
-    var template = setterTemplate.replace(/%%/g, name);
-    var setTemplate;
-
-    if(uniform.size === 1)
-    {
-        setTemplate = GLSL_TO_SINGLE_SETTERS[uniform.type];
-    }
-    else
-    {
-        setTemplate = GLSL_TO_ARRAY_SETTERS[uniform.type];
-    }
-
-    if(setTemplate)
-    {
-        template += "\nthis.gl." + setTemplate + ";";
-    }
-
-  	return new Function('value', template); // jshint ignore:line
-};
-
-var getUniformGroup = function(nameTokens, uniform)
-{
-    var cur = uniform;
-
-    for (var i = 0; i < nameTokens.length - 1; i++)
-    {
-        var o = cur[nameTokens[i]] || {data:{}};
-        cur[nameTokens[i]] = o;
-        cur = o;
-    }
-
-    return cur;
-};
-
-var getterTemplate = [
-    'return this.data.%%.value;',
-].join('\n');
-
-var setterTemplate = [
-    'this.data.%%.value = value;',
-    'var location = this.data.%%.location;'
-].join('\n');
-
-
-var GLSL_TO_SINGLE_SETTERS = {
-
-    'float':    'uniform1f(location, value)',
-
-    'vec2':     'uniform2f(location, value[0], value[1])',
-    'vec3':     'uniform3f(location, value[0], value[1], value[2])',
-    'vec4':     'uniform4f(location, value[0], value[1], value[2], value[3])',
-
-    'int':      'uniform1i(location, value)',
-    'ivec2':    'uniform2i(location, value[0], value[1])',
-    'ivec3':    'uniform3i(location, value[0], value[1], value[2])',
-    'ivec4':    'uniform4i(location, value[0], value[1], value[2], value[3])',
-
-    'bool':     'uniform1i(location, value)',
-    'bvec2':    'uniform2i(location, value[0], value[1])',
-    'bvec3':    'uniform3i(location, value[0], value[1], value[2])',
-    'bvec4':    'uniform4i(location, value[0], value[1], value[2], value[3])',
-
-    'mat2':     'uniformMatrix2fv(location, false, value)',
-    'mat3':     'uniformMatrix3fv(location, false, value)',
-    'mat4':     'uniformMatrix4fv(location, false, value)',
-
-    'sampler2D':'uniform1i(location, value)'
-};
-
-var GLSL_TO_ARRAY_SETTERS = {
-
-    'float':    'uniform1fv(location, value)',
-
-    'vec2':     'uniform2fv(location, value)',
-    'vec3':     'uniform3fv(location, value)',
-    'vec4':     'uniform4fv(location, value)',
-
-    'int':      'uniform1iv(location, value)',
-    'ivec2':    'uniform2iv(location, value)',
-    'ivec3':    'uniform3iv(location, value)',
-    'ivec4':    'uniform4iv(location, value)',
-
-    'bool':     'uniform1iv(location, value)',
-    'bvec2':    'uniform2iv(location, value)',
-    'bvec3':    'uniform3iv(location, value)',
-    'bvec4':    'uniform4iv(location, value)',
-
-    'sampler2D':'uniform1iv(location, value)'
-};
-
-module.exports = generateUniformAccessObject;
-
-},{}],19:[function(require,module,exports){
-module.exports = {
-    compileProgram: require('./compileProgram'),
-    defaultValue: require('./defaultValue'),
-    extractAttributes: require('./extractAttributes'),
-    extractUniforms: require('./extractUniforms'),
-    generateUniformAccessObject: require('./generateUniformAccessObject'),
-    mapSize: require('./mapSize'),
-    mapType: require('./mapType')  
-};
-},{"./compileProgram":14,"./defaultValue":15,"./extractAttributes":16,"./extractUniforms":17,"./generateUniformAccessObject":18,"./mapSize":20,"./mapType":21}],20:[function(require,module,exports){
-/**
- * @class
- * @memberof pixi.gl.shader
- * @param type {String}
- * @return {Number}
- */
-var mapSize = function(type) 
-{ 
-    return GLSL_TO_SIZE[type];
-};
-
-
-var GLSL_TO_SIZE = {
-    'float':    1,
-    'vec2':     2,
-    'vec3':     3,
-    'vec4':     4,
-
-    'int':      1,
-    'ivec2':    2,
-    'ivec3':    3,
-    'ivec4':    4,
-
-    'bool':     1,
-    'bvec2':    2,
-    'bvec3':    3,
-    'bvec4':    4,
-
-    'mat2':     4,
-    'mat3':     9,
-    'mat4':     16,
-
-    'sampler2D':  1
-};
-
-module.exports = mapSize;
-
-},{}],21:[function(require,module,exports){
-
-
-var mapSize = function(gl, type) 
-{
-    if(!GL_TABLE) 
-    {
-        var typeNames = Object.keys(GL_TO_GLSL_TYPES);
-
-        GL_TABLE = {};
-
-        for(var i = 0; i < typeNames.length; ++i) 
-        {
-            var tn = typeNames[i];
-            GL_TABLE[ gl[tn] ] = GL_TO_GLSL_TYPES[tn];
-        }
-    }
-
-  return GL_TABLE[type];
-};
-
-var GL_TABLE = null;
-
-var GL_TO_GLSL_TYPES = {
-  'FLOAT':       'float',
-  'FLOAT_VEC2':  'vec2',
-  'FLOAT_VEC3':  'vec3',
-  'FLOAT_VEC4':  'vec4',
-
-  'INT':         'int',
-  'INT_VEC2':    'ivec2',
-  'INT_VEC3':    'ivec3',
-  'INT_VEC4':    'ivec4',
-  
-  'BOOL':        'bool',
-  'BOOL_VEC2':   'bvec2',
-  'BOOL_VEC3':   'bvec3',
-  'BOOL_VEC4':   'bvec4',
-  
-  'FLOAT_MAT2':  'mat2',
-  'FLOAT_MAT3':  'mat3',
-  'FLOAT_MAT4':  'mat4',
-  
-  'SAMPLER_2D':  'sampler2D'  
-};
-
-module.exports = mapSize;
-
-},{}],22:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3166,7 +4735,7 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this,require('_process'))
 
-},{"_process":23}],23:[function(require,module,exports){
+},{"_process":61}],61:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3178,25 +4747,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -3217,6 +4801,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -3328,7 +4917,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],24:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -3866,7 +5455,7 @@ process.umask = function() { return 0; };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],25:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3952,7 +5541,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],26:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4039,2288 +5628,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],27:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":25,"./encode":26}],28:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var punycode = require('punycode');
-var util = require('./util');
-
-exports.parse = urlParse;
-exports.resolve = urlResolve;
-exports.resolveObject = urlResolveObject;
-exports.format = urlFormat;
-
-exports.Url = Url;
-
-function Url() {
-  this.protocol = null;
-  this.slashes = null;
-  this.auth = null;
-  this.host = null;
-  this.port = null;
-  this.hostname = null;
-  this.hash = null;
-  this.search = null;
-  this.query = null;
-  this.pathname = null;
-  this.path = null;
-  this.href = null;
-}
-
-// Reference: RFC 3986, RFC 1808, RFC 2396
-
-// define these here so at least they only have to be
-// compiled once on the first module load.
-var protocolPattern = /^([a-z0-9.+-]+:)/i,
-    portPattern = /:[0-9]*$/,
-
-    // Special case for a simple path URL
-    simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/,
-
-    // RFC 2396: characters reserved for delimiting URLs.
-    // We actually just auto-escape these.
-    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
-
-    // RFC 2396: characters not allowed for various reasons.
-    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
-
-    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
-    autoEscape = ['\''].concat(unwise),
-    // Characters that are never ever allowed in a hostname.
-    // Note that any invalid chars are also handled, but these
-    // are the ones that are *expected* to be seen, so we fast-path
-    // them.
-    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
-    hostEndingChars = ['/', '?', '#'],
-    hostnameMaxLen = 255,
-    hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
-    hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
-    // protocols that can allow "unsafe" and "unwise" chars.
-    unsafeProtocol = {
-      'javascript': true,
-      'javascript:': true
-    },
-    // protocols that never have a hostname.
-    hostlessProtocol = {
-      'javascript': true,
-      'javascript:': true
-    },
-    // protocols that always contain a // bit.
-    slashedProtocol = {
-      'http': true,
-      'https': true,
-      'ftp': true,
-      'gopher': true,
-      'file': true,
-      'http:': true,
-      'https:': true,
-      'ftp:': true,
-      'gopher:': true,
-      'file:': true
-    },
-    querystring = require('querystring');
-
-function urlParse(url, parseQueryString, slashesDenoteHost) {
-  if (url && util.isObject(url) && url instanceof Url) return url;
-
-  var u = new Url;
-  u.parse(url, parseQueryString, slashesDenoteHost);
-  return u;
-}
-
-Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
-  if (!util.isString(url)) {
-    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
-  }
-
-  // Copy chrome, IE, opera backslash-handling behavior.
-  // Back slashes before the query string get converted to forward slashes
-  // See: https://code.google.com/p/chromium/issues/detail?id=25916
-  var queryIndex = url.indexOf('?'),
-      splitter =
-          (queryIndex !== -1 && queryIndex < url.indexOf('#')) ? '?' : '#',
-      uSplit = url.split(splitter),
-      slashRegex = /\\/g;
-  uSplit[0] = uSplit[0].replace(slashRegex, '/');
-  url = uSplit.join(splitter);
-
-  var rest = url;
-
-  // trim before proceeding.
-  // This is to support parse stuff like "  http://foo.com  \n"
-  rest = rest.trim();
-
-  if (!slashesDenoteHost && url.split('#').length === 1) {
-    // Try fast path regexp
-    var simplePath = simplePathPattern.exec(rest);
-    if (simplePath) {
-      this.path = rest;
-      this.href = rest;
-      this.pathname = simplePath[1];
-      if (simplePath[2]) {
-        this.search = simplePath[2];
-        if (parseQueryString) {
-          this.query = querystring.parse(this.search.substr(1));
-        } else {
-          this.query = this.search.substr(1);
-        }
-      } else if (parseQueryString) {
-        this.search = '';
-        this.query = {};
-      }
-      return this;
-    }
-  }
-
-  var proto = protocolPattern.exec(rest);
-  if (proto) {
-    proto = proto[0];
-    var lowerProto = proto.toLowerCase();
-    this.protocol = lowerProto;
-    rest = rest.substr(proto.length);
-  }
-
-  // figure out if it's got a host
-  // user@server is *always* interpreted as a hostname, and url
-  // resolution will treat //foo/bar as host=foo,path=bar because that's
-  // how the browser resolves relative URLs.
-  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
-    var slashes = rest.substr(0, 2) === '//';
-    if (slashes && !(proto && hostlessProtocol[proto])) {
-      rest = rest.substr(2);
-      this.slashes = true;
-    }
-  }
-
-  if (!hostlessProtocol[proto] &&
-      (slashes || (proto && !slashedProtocol[proto]))) {
-
-    // there's a hostname.
-    // the first instance of /, ?, ;, or # ends the host.
-    //
-    // If there is an @ in the hostname, then non-host chars *are* allowed
-    // to the left of the last @ sign, unless some host-ending character
-    // comes *before* the @-sign.
-    // URLs are obnoxious.
-    //
-    // ex:
-    // http://a@b@c/ => user:a@b host:c
-    // http://a@b?@c => user:a host:c path:/?@c
-
-    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
-    // Review our test case against browsers more comprehensively.
-
-    // find the first instance of any hostEndingChars
-    var hostEnd = -1;
-    for (var i = 0; i < hostEndingChars.length; i++) {
-      var hec = rest.indexOf(hostEndingChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-        hostEnd = hec;
-    }
-
-    // at this point, either we have an explicit point where the
-    // auth portion cannot go past, or the last @ char is the decider.
-    var auth, atSign;
-    if (hostEnd === -1) {
-      // atSign can be anywhere.
-      atSign = rest.lastIndexOf('@');
-    } else {
-      // atSign must be in auth portion.
-      // http://a@b/c@d => host:b auth:a path:/c@d
-      atSign = rest.lastIndexOf('@', hostEnd);
-    }
-
-    // Now we have a portion which is definitely the auth.
-    // Pull that off.
-    if (atSign !== -1) {
-      auth = rest.slice(0, atSign);
-      rest = rest.slice(atSign + 1);
-      this.auth = decodeURIComponent(auth);
-    }
-
-    // the host is the remaining to the left of the first non-host char
-    hostEnd = -1;
-    for (var i = 0; i < nonHostChars.length; i++) {
-      var hec = rest.indexOf(nonHostChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-        hostEnd = hec;
-    }
-    // if we still have not hit it, then the entire thing is a host.
-    if (hostEnd === -1)
-      hostEnd = rest.length;
-
-    this.host = rest.slice(0, hostEnd);
-    rest = rest.slice(hostEnd);
-
-    // pull out port.
-    this.parseHost();
-
-    // we've indicated that there is a hostname,
-    // so even if it's empty, it has to be present.
-    this.hostname = this.hostname || '';
-
-    // if hostname begins with [ and ends with ]
-    // assume that it's an IPv6 address.
-    var ipv6Hostname = this.hostname[0] === '[' &&
-        this.hostname[this.hostname.length - 1] === ']';
-
-    // validate a little.
-    if (!ipv6Hostname) {
-      var hostparts = this.hostname.split(/\./);
-      for (var i = 0, l = hostparts.length; i < l; i++) {
-        var part = hostparts[i];
-        if (!part) continue;
-        if (!part.match(hostnamePartPattern)) {
-          var newpart = '';
-          for (var j = 0, k = part.length; j < k; j++) {
-            if (part.charCodeAt(j) > 127) {
-              // we replace non-ASCII char with a temporary placeholder
-              // we need this to make sure size of hostname is not
-              // broken by replacing non-ASCII by nothing
-              newpart += 'x';
-            } else {
-              newpart += part[j];
-            }
-          }
-          // we test again with ASCII char only
-          if (!newpart.match(hostnamePartPattern)) {
-            var validParts = hostparts.slice(0, i);
-            var notHost = hostparts.slice(i + 1);
-            var bit = part.match(hostnamePartStart);
-            if (bit) {
-              validParts.push(bit[1]);
-              notHost.unshift(bit[2]);
-            }
-            if (notHost.length) {
-              rest = '/' + notHost.join('.') + rest;
-            }
-            this.hostname = validParts.join('.');
-            break;
-          }
-        }
-      }
-    }
-
-    if (this.hostname.length > hostnameMaxLen) {
-      this.hostname = '';
-    } else {
-      // hostnames are always lower case.
-      this.hostname = this.hostname.toLowerCase();
-    }
-
-    if (!ipv6Hostname) {
-      // IDNA Support: Returns a punycoded representation of "domain".
-      // It only converts parts of the domain name that
-      // have non-ASCII characters, i.e. it doesn't matter if
-      // you call it with a domain that already is ASCII-only.
-      this.hostname = punycode.toASCII(this.hostname);
-    }
-
-    var p = this.port ? ':' + this.port : '';
-    var h = this.hostname || '';
-    this.host = h + p;
-    this.href += this.host;
-
-    // strip [ and ] from the hostname
-    // the host field still retains them, though
-    if (ipv6Hostname) {
-      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
-      if (rest[0] !== '/') {
-        rest = '/' + rest;
-      }
-    }
-  }
-
-  // now rest is set to the post-host stuff.
-  // chop off any delim chars.
-  if (!unsafeProtocol[lowerProto]) {
-
-    // First, make 100% sure that any "autoEscape" chars get
-    // escaped, even if encodeURIComponent doesn't think they
-    // need to be.
-    for (var i = 0, l = autoEscape.length; i < l; i++) {
-      var ae = autoEscape[i];
-      if (rest.indexOf(ae) === -1)
-        continue;
-      var esc = encodeURIComponent(ae);
-      if (esc === ae) {
-        esc = escape(ae);
-      }
-      rest = rest.split(ae).join(esc);
-    }
-  }
-
-
-  // chop off from the tail first.
-  var hash = rest.indexOf('#');
-  if (hash !== -1) {
-    // got a fragment string.
-    this.hash = rest.substr(hash);
-    rest = rest.slice(0, hash);
-  }
-  var qm = rest.indexOf('?');
-  if (qm !== -1) {
-    this.search = rest.substr(qm);
-    this.query = rest.substr(qm + 1);
-    if (parseQueryString) {
-      this.query = querystring.parse(this.query);
-    }
-    rest = rest.slice(0, qm);
-  } else if (parseQueryString) {
-    // no query string, but parseQueryString still requested
-    this.search = '';
-    this.query = {};
-  }
-  if (rest) this.pathname = rest;
-  if (slashedProtocol[lowerProto] &&
-      this.hostname && !this.pathname) {
-    this.pathname = '/';
-  }
-
-  //to support http.request
-  if (this.pathname || this.search) {
-    var p = this.pathname || '';
-    var s = this.search || '';
-    this.path = p + s;
-  }
-
-  // finally, reconstruct the href based on what has been validated.
-  this.href = this.format();
-  return this;
-};
-
-// format a parsed object into a url string
-function urlFormat(obj) {
-  // ensure it's an object, and not a string url.
-  // If it's an obj, this is a no-op.
-  // this way, you can call url_format() on strings
-  // to clean up potentially wonky urls.
-  if (util.isString(obj)) obj = urlParse(obj);
-  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
-  return obj.format();
-}
-
-Url.prototype.format = function() {
-  var auth = this.auth || '';
-  if (auth) {
-    auth = encodeURIComponent(auth);
-    auth = auth.replace(/%3A/i, ':');
-    auth += '@';
-  }
-
-  var protocol = this.protocol || '',
-      pathname = this.pathname || '',
-      hash = this.hash || '',
-      host = false,
-      query = '';
-
-  if (this.host) {
-    host = auth + this.host;
-  } else if (this.hostname) {
-    host = auth + (this.hostname.indexOf(':') === -1 ?
-        this.hostname :
-        '[' + this.hostname + ']');
-    if (this.port) {
-      host += ':' + this.port;
-    }
-  }
-
-  if (this.query &&
-      util.isObject(this.query) &&
-      Object.keys(this.query).length) {
-    query = querystring.stringify(this.query);
-  }
-
-  var search = this.search || (query && ('?' + query)) || '';
-
-  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
-
-  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
-  // unless they had them to begin with.
-  if (this.slashes ||
-      (!protocol || slashedProtocol[protocol]) && host !== false) {
-    host = '//' + (host || '');
-    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
-  } else if (!host) {
-    host = '';
-  }
-
-  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
-  if (search && search.charAt(0) !== '?') search = '?' + search;
-
-  pathname = pathname.replace(/[?#]/g, function(match) {
-    return encodeURIComponent(match);
-  });
-  search = search.replace('#', '%23');
-
-  return protocol + host + pathname + search + hash;
-};
-
-function urlResolve(source, relative) {
-  return urlParse(source, false, true).resolve(relative);
-}
-
-Url.prototype.resolve = function(relative) {
-  return this.resolveObject(urlParse(relative, false, true)).format();
-};
-
-function urlResolveObject(source, relative) {
-  if (!source) return relative;
-  return urlParse(source, false, true).resolveObject(relative);
-}
-
-Url.prototype.resolveObject = function(relative) {
-  if (util.isString(relative)) {
-    var rel = new Url();
-    rel.parse(relative, false, true);
-    relative = rel;
-  }
-
-  var result = new Url();
-  var tkeys = Object.keys(this);
-  for (var tk = 0; tk < tkeys.length; tk++) {
-    var tkey = tkeys[tk];
-    result[tkey] = this[tkey];
-  }
-
-  // hash is always overridden, no matter what.
-  // even href="" will remove it.
-  result.hash = relative.hash;
-
-  // if the relative url is empty, then there's nothing left to do here.
-  if (relative.href === '') {
-    result.href = result.format();
-    return result;
-  }
-
-  // hrefs like //foo/bar always cut to the protocol.
-  if (relative.slashes && !relative.protocol) {
-    // take everything except the protocol from relative
-    var rkeys = Object.keys(relative);
-    for (var rk = 0; rk < rkeys.length; rk++) {
-      var rkey = rkeys[rk];
-      if (rkey !== 'protocol')
-        result[rkey] = relative[rkey];
-    }
-
-    //urlParse appends trailing / to urls like http://www.example.com
-    if (slashedProtocol[result.protocol] &&
-        result.hostname && !result.pathname) {
-      result.path = result.pathname = '/';
-    }
-
-    result.href = result.format();
-    return result;
-  }
-
-  if (relative.protocol && relative.protocol !== result.protocol) {
-    // if it's a known url protocol, then changing
-    // the protocol does weird things
-    // first, if it's not file:, then we MUST have a host,
-    // and if there was a path
-    // to begin with, then we MUST have a path.
-    // if it is file:, then the host is dropped,
-    // because that's known to be hostless.
-    // anything else is assumed to be absolute.
-    if (!slashedProtocol[relative.protocol]) {
-      var keys = Object.keys(relative);
-      for (var v = 0; v < keys.length; v++) {
-        var k = keys[v];
-        result[k] = relative[k];
-      }
-      result.href = result.format();
-      return result;
-    }
-
-    result.protocol = relative.protocol;
-    if (!relative.host && !hostlessProtocol[relative.protocol]) {
-      var relPath = (relative.pathname || '').split('/');
-      while (relPath.length && !(relative.host = relPath.shift()));
-      if (!relative.host) relative.host = '';
-      if (!relative.hostname) relative.hostname = '';
-      if (relPath[0] !== '') relPath.unshift('');
-      if (relPath.length < 2) relPath.unshift('');
-      result.pathname = relPath.join('/');
-    } else {
-      result.pathname = relative.pathname;
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    result.host = relative.host || '';
-    result.auth = relative.auth;
-    result.hostname = relative.hostname || relative.host;
-    result.port = relative.port;
-    // to support http.request
-    if (result.pathname || result.search) {
-      var p = result.pathname || '';
-      var s = result.search || '';
-      result.path = p + s;
-    }
-    result.slashes = result.slashes || relative.slashes;
-    result.href = result.format();
-    return result;
-  }
-
-  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
-      isRelAbs = (
-          relative.host ||
-          relative.pathname && relative.pathname.charAt(0) === '/'
-      ),
-      mustEndAbs = (isRelAbs || isSourceAbs ||
-                    (result.host && relative.pathname)),
-      removeAllDots = mustEndAbs,
-      srcPath = result.pathname && result.pathname.split('/') || [],
-      relPath = relative.pathname && relative.pathname.split('/') || [],
-      psychotic = result.protocol && !slashedProtocol[result.protocol];
-
-  // if the url is a non-slashed url, then relative
-  // links like ../.. should be able
-  // to crawl up to the hostname, as well.  This is strange.
-  // result.protocol has already been set by now.
-  // Later on, put the first path part into the host field.
-  if (psychotic) {
-    result.hostname = '';
-    result.port = null;
-    if (result.host) {
-      if (srcPath[0] === '') srcPath[0] = result.host;
-      else srcPath.unshift(result.host);
-    }
-    result.host = '';
-    if (relative.protocol) {
-      relative.hostname = null;
-      relative.port = null;
-      if (relative.host) {
-        if (relPath[0] === '') relPath[0] = relative.host;
-        else relPath.unshift(relative.host);
-      }
-      relative.host = null;
-    }
-    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
-  }
-
-  if (isRelAbs) {
-    // it's absolute.
-    result.host = (relative.host || relative.host === '') ?
-                  relative.host : result.host;
-    result.hostname = (relative.hostname || relative.hostname === '') ?
-                      relative.hostname : result.hostname;
-    result.search = relative.search;
-    result.query = relative.query;
-    srcPath = relPath;
-    // fall through to the dot-handling below.
-  } else if (relPath.length) {
-    // it's relative
-    // throw away the existing file, and take the new path instead.
-    if (!srcPath) srcPath = [];
-    srcPath.pop();
-    srcPath = srcPath.concat(relPath);
-    result.search = relative.search;
-    result.query = relative.query;
-  } else if (!util.isNullOrUndefined(relative.search)) {
-    // just pull out the search.
-    // like href='?foo'.
-    // Put this after the other two cases because it simplifies the booleans
-    if (psychotic) {
-      result.hostname = result.host = srcPath.shift();
-      //occationaly the auth can get stuck only in host
-      //this especially happens in cases like
-      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-      var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                       result.host.split('@') : false;
-      if (authInHost) {
-        result.auth = authInHost.shift();
-        result.host = result.hostname = authInHost.shift();
-      }
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    //to support http.request
-    if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
-      result.path = (result.pathname ? result.pathname : '') +
-                    (result.search ? result.search : '');
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  if (!srcPath.length) {
-    // no path at all.  easy.
-    // we've already handled the other stuff above.
-    result.pathname = null;
-    //to support http.request
-    if (result.search) {
-      result.path = '/' + result.search;
-    } else {
-      result.path = null;
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  // if a url ENDs in . or .., then it must get a trailing slash.
-  // however, if it ends in anything else non-slashy,
-  // then it must NOT get a trailing slash.
-  var last = srcPath.slice(-1)[0];
-  var hasTrailingSlash = (
-      (result.host || relative.host || srcPath.length > 1) &&
-      (last === '.' || last === '..') || last === '');
-
-  // strip single dots, resolve double dots to parent dir
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = srcPath.length; i >= 0; i--) {
-    last = srcPath[i];
-    if (last === '.') {
-      srcPath.splice(i, 1);
-    } else if (last === '..') {
-      srcPath.splice(i, 1);
-      up++;
-    } else if (up) {
-      srcPath.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (!mustEndAbs && !removeAllDots) {
-    for (; up--; up) {
-      srcPath.unshift('..');
-    }
-  }
-
-  if (mustEndAbs && srcPath[0] !== '' &&
-      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
-    srcPath.unshift('');
-  }
-
-  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
-    srcPath.push('');
-  }
-
-  var isAbsolute = srcPath[0] === '' ||
-      (srcPath[0] && srcPath[0].charAt(0) === '/');
-
-  // put the host back
-  if (psychotic) {
-    result.hostname = result.host = isAbsolute ? '' :
-                                    srcPath.length ? srcPath.shift() : '';
-    //occationaly the auth can get stuck only in host
-    //this especially happens in cases like
-    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-    var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                     result.host.split('@') : false;
-    if (authInHost) {
-      result.auth = authInHost.shift();
-      result.host = result.hostname = authInHost.shift();
-    }
-  }
-
-  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
-
-  if (mustEndAbs && !isAbsolute) {
-    srcPath.unshift('');
-  }
-
-  if (!srcPath.length) {
-    result.pathname = null;
-    result.path = null;
-  } else {
-    result.pathname = srcPath.join('/');
-  }
-
-  //to support request.http
-  if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
-    result.path = (result.pathname ? result.pathname : '') +
-                  (result.search ? result.search : '');
-  }
-  result.auth = relative.auth || result.auth;
-  result.slashes = result.slashes || relative.slashes;
-  result.href = result.format();
-  return result;
-};
-
-Url.prototype.parseHost = function() {
-  var host = this.host;
-  var port = portPattern.exec(host);
-  if (port) {
-    port = port[0];
-    if (port !== ':') {
-      this.port = port.substr(1);
-    }
-    host = host.substr(0, host.length - port.length);
-  }
-  if (host) this.hostname = host;
-};
-
-},{"./util":29,"punycode":24,"querystring":27}],29:[function(require,module,exports){
-'use strict';
-
-module.exports = {
-  isString: function(arg) {
-    return typeof(arg) === 'string';
-  },
-  isObject: function(arg) {
-    return typeof(arg) === 'object' && arg !== null;
-  },
-  isNull: function(arg) {
-    return arg === null;
-  },
-  isNullOrUndefined: function(arg) {
-    return arg == null;
-  }
-};
-
-},{}],30:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = eachLimit;
-
-var _eachOfLimit = require('./internal/eachOfLimit');
-
-var _eachOfLimit2 = _interopRequireDefault(_eachOfLimit);
-
-var _withoutIndex = require('./internal/withoutIndex');
-
-var _withoutIndex2 = _interopRequireDefault(_withoutIndex);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
- *
- * @name eachLimit
- * @static
- * @memberOf module:Collections
- * @method
- * @see [async.each]{@link module:Collections.each}
- * @alias forEachLimit
- * @category Collection
- * @param {Array|Iterable|Object} coll - A colleciton to iterate over.
- * @param {number} limit - The maximum number of async operations at a time.
- * @param {Function} iteratee - A function to apply to each item in `coll`. The
- * iteratee is passed a `callback(err)` which must be called once it has
- * completed. If no error has occurred, the `callback` should be run without
- * arguments or with an explicit `null` argument. The array index is not passed
- * to the iteratee. Invoked with (item, callback). If you need the index, use
- * `eachOfLimit`.
- * @param {Function} [callback] - A callback which is called when all
- * `iteratee` functions have finished, or an error occurs. Invoked with (err).
- */
-function eachLimit(coll, limit, iteratee, callback) {
-  (0, _eachOfLimit2.default)(limit)(coll, (0, _withoutIndex2.default)(iteratee), callback);
-}
-module.exports = exports['default'];
-},{"./internal/eachOfLimit":34,"./internal/withoutIndex":41}],31:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _eachLimit = require('./eachLimit');
-
-var _eachLimit2 = _interopRequireDefault(_eachLimit);
-
-var _doLimit = require('./internal/doLimit');
-
-var _doLimit2 = _interopRequireDefault(_doLimit);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * The same as [`each`]{@link module:Collections.each} but runs only a single async operation at a time.
- *
- * @name eachSeries
- * @static
- * @memberOf module:Collections
- * @method
- * @see [async.each]{@link module:Collections.each}
- * @alias forEachSeries
- * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
- * @param {Function} iteratee - A function to apply to each
- * item in `coll`. The iteratee is passed a `callback(err)` which must be called
- * once it has completed. If no error has occurred, the `callback` should be run
- * without arguments or with an explicit `null` argument. The array index is
- * not passed to the iteratee. Invoked with (item, callback). If you need the
- * index, use `eachOfSeries`.
- * @param {Function} [callback] - A callback which is called when all
- * `iteratee` functions have finished, or an error occurs. Invoked with (err).
- */
-exports.default = (0, _doLimit2.default)(_eachLimit2.default, 1);
-module.exports = exports['default'];
-},{"./eachLimit":30,"./internal/doLimit":33}],32:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = DLL;
-// Simple doubly linked list (https://en.wikipedia.org/wiki/Doubly_linked_list) implementation
-// used for queues. This implementation assumes that the node provided by the user can be modified
-// to adjust the next and last properties. We implement only the minimal functionality
-// for queue support.
-function DLL() {
-    this.head = this.tail = null;
-    this.length = 0;
-}
-
-function setInitial(dll, node) {
-    dll.length = 1;
-    dll.head = dll.tail = node;
-}
-
-DLL.prototype.removeLink = function (node) {
-    if (node.prev) node.prev.next = node.next;else this.head = node.next;
-    if (node.next) node.next.prev = node.prev;else this.tail = node.prev;
-
-    node.prev = node.next = null;
-    this.length -= 1;
-    return node;
-};
-
-DLL.prototype.empty = DLL;
-
-DLL.prototype.insertAfter = function (node, newNode) {
-    newNode.prev = node;
-    newNode.next = node.next;
-    if (node.next) node.next.prev = newNode;else this.tail = newNode;
-    node.next = newNode;
-    this.length += 1;
-};
-
-DLL.prototype.insertBefore = function (node, newNode) {
-    newNode.prev = node.prev;
-    newNode.next = node;
-    if (node.prev) node.prev.next = newNode;else this.head = newNode;
-    node.prev = newNode;
-    this.length += 1;
-};
-
-DLL.prototype.unshift = function (node) {
-    if (this.head) this.insertBefore(this.head, node);else setInitial(this, node);
-};
-
-DLL.prototype.push = function (node) {
-    if (this.tail) this.insertAfter(this.tail, node);else setInitial(this, node);
-};
-
-DLL.prototype.shift = function () {
-    return this.head && this.removeLink(this.head);
-};
-
-DLL.prototype.pop = function () {
-    return this.tail && this.removeLink(this.tail);
-};
-module.exports = exports['default'];
-},{}],33:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = doLimit;
-function doLimit(fn, limit) {
-    return function (iterable, iteratee, callback) {
-        return fn(iterable, limit, iteratee, callback);
-    };
-}
-module.exports = exports['default'];
-},{}],34:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = _eachOfLimit;
-
-var _noop = require('lodash/noop');
-
-var _noop2 = _interopRequireDefault(_noop);
-
-var _once = require('./once');
-
-var _once2 = _interopRequireDefault(_once);
-
-var _iterator = require('./iterator');
-
-var _iterator2 = _interopRequireDefault(_iterator);
-
-var _onlyOnce = require('./onlyOnce');
-
-var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _eachOfLimit(limit) {
-    return function (obj, iteratee, callback) {
-        callback = (0, _once2.default)(callback || _noop2.default);
-        if (limit <= 0 || !obj) {
-            return callback(null);
-        }
-        var nextElem = (0, _iterator2.default)(obj);
-        var done = false;
-        var running = 0;
-
-        function iterateeCallback(err) {
-            running -= 1;
-            if (err) {
-                done = true;
-                callback(err);
-            } else if (done && running <= 0) {
-                return callback(null);
-            } else {
-                replenish();
-            }
-        }
-
-        function replenish() {
-            while (running < limit && !done) {
-                var elem = nextElem();
-                if (elem === null) {
-                    done = true;
-                    if (running <= 0) {
-                        callback(null);
-                    }
-                    return;
-                }
-                running += 1;
-                iteratee(elem.value, elem.key, (0, _onlyOnce2.default)(iterateeCallback));
-            }
-        }
-
-        replenish();
-    };
-}
-module.exports = exports['default'];
-},{"./iterator":36,"./once":37,"./onlyOnce":38,"lodash/noop":62}],35:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-exports.default = function (coll) {
-    return iteratorSymbol && coll[iteratorSymbol] && coll[iteratorSymbol]();
-};
-
-var iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
-
-module.exports = exports['default'];
-},{}],36:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = iterator;
-
-var _isArrayLike = require('lodash/isArrayLike');
-
-var _isArrayLike2 = _interopRequireDefault(_isArrayLike);
-
-var _getIterator = require('./getIterator');
-
-var _getIterator2 = _interopRequireDefault(_getIterator);
-
-var _keys = require('lodash/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function createArrayIterator(coll) {
-    var i = -1;
-    var len = coll.length;
-    return function next() {
-        return ++i < len ? { value: coll[i], key: i } : null;
-    };
-}
-
-function createES2015Iterator(iterator) {
-    var i = -1;
-    return function next() {
-        var item = iterator.next();
-        if (item.done) return null;
-        i++;
-        return { value: item.value, key: i };
-    };
-}
-
-function createObjectIterator(obj) {
-    var okeys = (0, _keys2.default)(obj);
-    var i = -1;
-    var len = okeys.length;
-    return function next() {
-        var key = okeys[++i];
-        return i < len ? { value: obj[key], key: key } : null;
-    };
-}
-
-function iterator(coll) {
-    if ((0, _isArrayLike2.default)(coll)) {
-        return createArrayIterator(coll);
-    }
-
-    var iterator = (0, _getIterator2.default)(coll);
-    return iterator ? createES2015Iterator(iterator) : createObjectIterator(coll);
-}
-module.exports = exports['default'];
-},{"./getIterator":35,"lodash/isArrayLike":54,"lodash/keys":61}],37:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = once;
-function once(fn) {
-    return function () {
-        if (fn === null) return;
-        var callFn = fn;
-        fn = null;
-        callFn.apply(this, arguments);
-    };
-}
-module.exports = exports['default'];
-},{}],38:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = onlyOnce;
-function onlyOnce(fn) {
-    return function () {
-        if (fn === null) throw new Error("Callback was already called.");
-        var callFn = fn;
-        fn = null;
-        callFn.apply(this, arguments);
-    };
-}
-module.exports = exports['default'];
-},{}],39:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = queue;
-
-var _arrayEach = require('lodash/_arrayEach');
-
-var _arrayEach2 = _interopRequireDefault(_arrayEach);
-
-var _isArray = require('lodash/isArray');
-
-var _isArray2 = _interopRequireDefault(_isArray);
-
-var _noop = require('lodash/noop');
-
-var _noop2 = _interopRequireDefault(_noop);
-
-var _rest = require('lodash/rest');
-
-var _rest2 = _interopRequireDefault(_rest);
-
-var _onlyOnce = require('./onlyOnce');
-
-var _onlyOnce2 = _interopRequireDefault(_onlyOnce);
-
-var _setImmediate = require('./setImmediate');
-
-var _setImmediate2 = _interopRequireDefault(_setImmediate);
-
-var _DoublyLinkedList = require('./DoublyLinkedList');
-
-var _DoublyLinkedList2 = _interopRequireDefault(_DoublyLinkedList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function queue(worker, concurrency, payload) {
-    if (concurrency == null) {
-        concurrency = 1;
-    } else if (concurrency === 0) {
-        throw new Error('Concurrency must not be zero');
-    }
-
-    function _insert(data, insertAtFront, callback) {
-        if (callback != null && typeof callback !== 'function') {
-            throw new Error('task callback must be a function');
-        }
-        q.started = true;
-        if (!(0, _isArray2.default)(data)) {
-            data = [data];
-        }
-        if (data.length === 0 && q.idle()) {
-            // call drain immediately if there are no tasks
-            return (0, _setImmediate2.default)(function () {
-                q.drain();
-            });
-        }
-        (0, _arrayEach2.default)(data, function (task) {
-            var item = {
-                data: task,
-                callback: callback || _noop2.default
-            };
-
-            if (insertAtFront) {
-                q._tasks.unshift(item);
-            } else {
-                q._tasks.push(item);
-            }
-        });
-        (0, _setImmediate2.default)(q.process);
-    }
-
-    function _next(tasks) {
-        return (0, _rest2.default)(function (args) {
-            workers -= 1;
-
-            (0, _arrayEach2.default)(tasks, function (task) {
-                (0, _arrayEach2.default)(workersList, function (worker, index) {
-                    if (worker === task) {
-                        workersList.splice(index, 1);
-                        return false;
-                    }
-                });
-
-                task.callback.apply(task, args);
-
-                if (args[0] != null) {
-                    q.error(args[0], task.data);
-                }
-            });
-
-            if (workers <= q.concurrency - q.buffer) {
-                q.unsaturated();
-            }
-
-            if (q.idle()) {
-                q.drain();
-            }
-            q.process();
-        });
-    }
-
-    var workers = 0;
-    var workersList = [];
-    var q = {
-        _tasks: new _DoublyLinkedList2.default(),
-        concurrency: concurrency,
-        payload: payload,
-        saturated: _noop2.default,
-        unsaturated: _noop2.default,
-        buffer: concurrency / 4,
-        empty: _noop2.default,
-        drain: _noop2.default,
-        error: _noop2.default,
-        started: false,
-        paused: false,
-        push: function (data, callback) {
-            _insert(data, false, callback);
-        },
-        kill: function () {
-            q.drain = _noop2.default;
-            q._tasks.empty();
-        },
-        unshift: function (data, callback) {
-            _insert(data, true, callback);
-        },
-        process: function () {
-            while (!q.paused && workers < q.concurrency && q._tasks.length) {
-                var tasks = [],
-                    data = [];
-                var l = q._tasks.length;
-                if (q.payload) l = Math.min(l, q.payload);
-                for (var i = 0; i < l; i++) {
-                    var node = q._tasks.shift();
-                    tasks.push(node);
-                    data.push(node.data);
-                }
-
-                if (q._tasks.length === 0) {
-                    q.empty();
-                }
-                workers += 1;
-                workersList.push(tasks[0]);
-
-                if (workers === q.concurrency) {
-                    q.saturated();
-                }
-
-                var cb = (0, _onlyOnce2.default)(_next(tasks));
-                worker(data, cb);
-            }
-        },
-        length: function () {
-            return q._tasks.length;
-        },
-        running: function () {
-            return workers;
-        },
-        workersList: function () {
-            return workersList;
-        },
-        idle: function () {
-            return q._tasks.length + workers === 0;
-        },
-        pause: function () {
-            q.paused = true;
-        },
-        resume: function () {
-            if (q.paused === false) {
-                return;
-            }
-            q.paused = false;
-            var resumeCount = Math.min(q.concurrency, q._tasks.length);
-            // Need to call q.process once per concurrent
-            // worker to preserve full concurrency after pause
-            for (var w = 1; w <= resumeCount; w++) {
-                (0, _setImmediate2.default)(q.process);
-            }
-        }
-    };
-    return q;
-}
-module.exports = exports['default'];
-},{"./DoublyLinkedList":32,"./onlyOnce":38,"./setImmediate":40,"lodash/_arrayEach":43,"lodash/isArray":53,"lodash/noop":62,"lodash/rest":63}],40:[function(require,module,exports){
-(function (process){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.hasNextTick = exports.hasSetImmediate = undefined;
-exports.fallback = fallback;
-exports.wrap = wrap;
-
-var _rest = require('lodash/rest');
-
-var _rest2 = _interopRequireDefault(_rest);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var hasSetImmediate = exports.hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
-var hasNextTick = exports.hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
-
-function fallback(fn) {
-    setTimeout(fn, 0);
-}
-
-function wrap(defer) {
-    return (0, _rest2.default)(function (fn, args) {
-        defer(function () {
-            fn.apply(null, args);
-        });
-    });
-}
-
-var _defer;
-
-if (hasSetImmediate) {
-    _defer = setImmediate;
-} else if (hasNextTick) {
-    _defer = process.nextTick;
-} else {
-    _defer = fallback;
-}
-
-exports.default = wrap(_defer);
-}).call(this,require('_process'))
-
-},{"_process":23,"lodash/rest":63}],41:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = _withoutIndex;
-function _withoutIndex(iteratee) {
-    return function (value, index, callback) {
-        return iteratee(value, callback);
-    };
-}
-module.exports = exports['default'];
-},{}],42:[function(require,module,exports){
-/**
- * A faster alternative to `Function#apply`, this function invokes `func`
- * with the `this` binding of `thisArg` and the arguments of `args`.
- *
- * @private
- * @param {Function} func The function to invoke.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {Array} args The arguments to invoke `func` with.
- * @returns {*} Returns the result of `func`.
- */
-function apply(func, thisArg, args) {
-  switch (args.length) {
-    case 0: return func.call(thisArg);
-    case 1: return func.call(thisArg, args[0]);
-    case 2: return func.call(thisArg, args[0], args[1]);
-    case 3: return func.call(thisArg, args[0], args[1], args[2]);
-  }
-  return func.apply(thisArg, args);
-}
-
-module.exports = apply;
-
-},{}],43:[function(require,module,exports){
-/**
- * A specialized version of `_.forEach` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns `array`.
- */
-function arrayEach(array, iteratee) {
-  var index = -1,
-      length = array ? array.length : 0;
-
-  while (++index < length) {
-    if (iteratee(array[index], index, array) === false) {
-      break;
-    }
-  }
-  return array;
-}
-
-module.exports = arrayEach;
-
-},{}],44:[function(require,module,exports){
-var baseTimes = require('./_baseTimes'),
-    isArguments = require('./isArguments'),
-    isArray = require('./isArray'),
-    isIndex = require('./_isIndex');
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Creates an array of the enumerable property names of the array-like `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @param {boolean} inherited Specify returning inherited property names.
- * @returns {Array} Returns the array of property names.
- */
-function arrayLikeKeys(value, inherited) {
-  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
-  // Safari 9 makes `arguments.length` enumerable in strict mode.
-  var result = (isArray(value) || isArguments(value))
-    ? baseTimes(value.length, String)
-    : [];
-
-  var length = result.length,
-      skipIndexes = !!length;
-
-  for (var key in value) {
-    if ((inherited || hasOwnProperty.call(value, key)) &&
-        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = arrayLikeKeys;
-
-},{"./_baseTimes":47,"./_isIndex":48,"./isArguments":52,"./isArray":53}],45:[function(require,module,exports){
-var isPrototype = require('./_isPrototype'),
-    nativeKeys = require('./_nativeKeys');
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function baseKeys(object) {
-  if (!isPrototype(object)) {
-    return nativeKeys(object);
-  }
-  var result = [];
-  for (var key in Object(object)) {
-    if (hasOwnProperty.call(object, key) && key != 'constructor') {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = baseKeys;
-
-},{"./_isPrototype":49,"./_nativeKeys":50}],46:[function(require,module,exports){
-var apply = require('./_apply');
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max;
-
-/**
- * The base implementation of `_.rest` which doesn't validate or coerce arguments.
- *
- * @private
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @returns {Function} Returns the new function.
- */
-function baseRest(func, start) {
-  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
-  return function() {
-    var args = arguments,
-        index = -1,
-        length = nativeMax(args.length - start, 0),
-        array = Array(length);
-
-    while (++index < length) {
-      array[index] = args[start + index];
-    }
-    index = -1;
-    var otherArgs = Array(start + 1);
-    while (++index < start) {
-      otherArgs[index] = args[index];
-    }
-    otherArgs[start] = array;
-    return apply(func, this, otherArgs);
-  };
-}
-
-module.exports = baseRest;
-
-},{"./_apply":42}],47:[function(require,module,exports){
-/**
- * The base implementation of `_.times` without support for iteratee shorthands
- * or max array length checks.
- *
- * @private
- * @param {number} n The number of times to invoke `iteratee`.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the array of results.
- */
-function baseTimes(n, iteratee) {
-  var index = -1,
-      result = Array(n);
-
-  while (++index < n) {
-    result[index] = iteratee(index);
-  }
-  return result;
-}
-
-module.exports = baseTimes;
-
-},{}],48:[function(require,module,exports){
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/** Used to detect unsigned integer values. */
-var reIsUint = /^(?:0|[1-9]\d*)$/;
-
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
-function isIndex(value, length) {
-  length = length == null ? MAX_SAFE_INTEGER : length;
-  return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
-}
-
-module.exports = isIndex;
-
-},{}],49:[function(require,module,exports){
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Checks if `value` is likely a prototype object.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
- */
-function isPrototype(value) {
-  var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
-
-  return value === proto;
-}
-
-module.exports = isPrototype;
-
-},{}],50:[function(require,module,exports){
-var overArg = require('./_overArg');
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeKeys = overArg(Object.keys, Object);
-
-module.exports = nativeKeys;
-
-},{"./_overArg":51}],51:[function(require,module,exports){
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
-function overArg(func, transform) {
-  return function(arg) {
-    return func(transform(arg));
-  };
-}
-
-module.exports = overArg;
-
-},{}],52:[function(require,module,exports){
-var isArrayLikeObject = require('./isArrayLikeObject');
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/** Built-in value references. */
-var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-/**
- * Checks if `value` is likely an `arguments` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- *  else `false`.
- * @example
- *
- * _.isArguments(function() { return arguments; }());
- * // => true
- *
- * _.isArguments([1, 2, 3]);
- * // => false
- */
-function isArguments(value) {
-  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
-  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
-    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
-}
-
-module.exports = isArguments;
-
-},{"./isArrayLikeObject":55}],53:[function(require,module,exports){
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-module.exports = isArray;
-
-},{}],54:[function(require,module,exports){
-var isFunction = require('./isFunction'),
-    isLength = require('./isLength');
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
-function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
-}
-
-module.exports = isArrayLike;
-
-},{"./isFunction":56,"./isLength":57}],55:[function(require,module,exports){
-var isArrayLike = require('./isArrayLike'),
-    isObjectLike = require('./isObjectLike');
-
-/**
- * This method is like `_.isArrayLike` except that it also checks if `value`
- * is an object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array-like object,
- *  else `false`.
- * @example
- *
- * _.isArrayLikeObject([1, 2, 3]);
- * // => true
- *
- * _.isArrayLikeObject(document.body.children);
- * // => true
- *
- * _.isArrayLikeObject('abc');
- * // => false
- *
- * _.isArrayLikeObject(_.noop);
- * // => false
- */
-function isArrayLikeObject(value) {
-  return isObjectLike(value) && isArrayLike(value);
-}
-
-module.exports = isArrayLikeObject;
-
-},{"./isArrayLike":54,"./isObjectLike":59}],56:[function(require,module,exports){
-var isObject = require('./isObject');
-
-/** `Object#toString` result references. */
-var funcTag = '[object Function]',
-    genTag = '[object GeneratorFunction]';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */
-function isFunction(value) {
-  // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8-9 which returns 'object' for typed array and other constructors.
-  var tag = isObject(value) ? objectToString.call(value) : '';
-  return tag == funcTag || tag == genTag;
-}
-
-module.exports = isFunction;
-
-},{"./isObject":58}],57:[function(require,module,exports){
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This method is loosely based on
- * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- * @example
- *
- * _.isLength(3);
- * // => true
- *
- * _.isLength(Number.MIN_VALUE);
- * // => false
- *
- * _.isLength(Infinity);
- * // => false
- *
- * _.isLength('3');
- * // => false
- */
-function isLength(value) {
-  return typeof value == 'number' &&
-    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-}
-
-module.exports = isLength;
-
-},{}],58:[function(require,module,exports){
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-module.exports = isObject;
-
-},{}],59:[function(require,module,exports){
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-module.exports = isObjectLike;
-
-},{}],60:[function(require,module,exports){
-var isObjectLike = require('./isObjectLike');
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && objectToString.call(value) == symbolTag);
-}
-
-module.exports = isSymbol;
-
-},{"./isObjectLike":59}],61:[function(require,module,exports){
-var arrayLikeKeys = require('./_arrayLikeKeys'),
-    baseKeys = require('./_baseKeys'),
-    isArrayLike = require('./isArrayLike');
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-function keys(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-}
-
-module.exports = keys;
-
-},{"./_arrayLikeKeys":44,"./_baseKeys":45,"./isArrayLike":54}],62:[function(require,module,exports){
-/**
- * This method returns `undefined`.
- *
- * @static
- * @memberOf _
- * @since 2.3.0
- * @category Util
- * @example
- *
- * _.times(2, _.noop);
- * // => [undefined, undefined]
- */
-function noop() {
-  // No operation performed.
-}
-
-module.exports = noop;
-
-},{}],63:[function(require,module,exports){
-var baseRest = require('./_baseRest'),
-    toInteger = require('./toInteger');
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/**
- * Creates a function that invokes `func` with the `this` binding of the
- * created function and arguments from `start` and beyond provided as
- * an array.
- *
- * **Note:** This method is based on the
- * [rest parameter](https://mdn.io/rest_parameters).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Function
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @returns {Function} Returns the new function.
- * @example
- *
- * var say = _.rest(function(what, names) {
- *   return what + ' ' + _.initial(names).join(', ') +
- *     (_.size(names) > 1 ? ', & ' : '') + _.last(names);
- * });
- *
- * say('hello', 'fred', 'barney', 'pebbles');
- * // => 'hello fred, barney, & pebbles'
- */
-function rest(func, start) {
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  start = start === undefined ? start : toInteger(start);
-  return baseRest(func, start);
-}
-
-module.exports = rest;
-
-},{"./_baseRest":46,"./toInteger":65}],64:[function(require,module,exports){
-var toNumber = require('./toNumber');
-
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0,
-    MAX_INTEGER = 1.7976931348623157e+308;
-
-/**
- * Converts `value` to a finite number.
- *
- * @static
- * @memberOf _
- * @since 4.12.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {number} Returns the converted number.
- * @example
- *
- * _.toFinite(3.2);
- * // => 3.2
- *
- * _.toFinite(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toFinite(Infinity);
- * // => 1.7976931348623157e+308
- *
- * _.toFinite('3.2');
- * // => 3.2
- */
-function toFinite(value) {
-  if (!value) {
-    return value === 0 ? value : 0;
-  }
-  value = toNumber(value);
-  if (value === INFINITY || value === -INFINITY) {
-    var sign = (value < 0 ? -1 : 1);
-    return sign * MAX_INTEGER;
-  }
-  return value === value ? value : 0;
-}
-
-module.exports = toFinite;
-
-},{"./toNumber":66}],65:[function(require,module,exports){
-var toFinite = require('./toFinite');
-
-/**
- * Converts `value` to an integer.
- *
- * **Note:** This method is loosely based on
- * [`ToInteger`](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {number} Returns the converted integer.
- * @example
- *
- * _.toInteger(3.2);
- * // => 3
- *
- * _.toInteger(Number.MIN_VALUE);
- * // => 0
- *
- * _.toInteger(Infinity);
- * // => 1.7976931348623157e+308
- *
- * _.toInteger('3.2');
- * // => 3
- */
-function toInteger(value) {
-  var result = toFinite(value),
-      remainder = result % 1;
-
-  return result === result ? (remainder ? result - remainder : result) : 0;
-}
-
-module.exports = toInteger;
-
-},{"./toFinite":64}],66:[function(require,module,exports){
-var isObject = require('./isObject'),
-    isSymbol = require('./isSymbol');
-
-/** Used as references for various `Number` constants. */
-var NAN = 0 / 0;
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/** Used to detect bad signed hexadecimal string values. */
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-/** Used to detect binary string values. */
-var reIsBinary = /^0b[01]+$/i;
-
-/** Used to detect octal string values. */
-var reIsOctal = /^0o[0-7]+$/i;
-
-/** Built-in method references without a dependency on `root`. */
-var freeParseInt = parseInt;
-
-/**
- * Converts `value` to a number.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {number} Returns the number.
- * @example
- *
- * _.toNumber(3.2);
- * // => 3.2
- *
- * _.toNumber(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toNumber(Infinity);
- * // => Infinity
- *
- * _.toNumber('3.2');
- * // => 3.2
- */
-function toNumber(value) {
-  if (typeof value == 'number') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject(other) ? (other + '') : other;
-  }
-  if (typeof value != 'string') {
-    return value === 0 ? value : +value;
-  }
-  value = value.replace(reTrim, '');
-  var isBinary = reIsBinary.test(value);
-  return (isBinary || reIsOctal.test(value))
-    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-    : (reIsBadHex.test(value) ? NAN : +value);
-}
-
-module.exports = toNumber;
-
-},{"./isObject":58,"./isSymbol":60}],67:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (worker, concurrency) {
-  return (0, _queue2.default)(function (items, cb) {
-    worker(items[0], cb);
-  }, concurrency, 1);
-};
-
-var _queue = require('./internal/queue');
-
-var _queue2 = _interopRequireDefault(_queue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = exports['default'];
-
-/**
- * A queue of tasks for the worker function to complete.
- * @typedef {Object} QueueObject
- * @memberOf module:ControlFlow
- * @property {Function} length - a function returning the number of items
- * waiting to be processed. Invoke with `queue.length()`.
- * @property {boolean} started - a boolean indicating whether or not any
- * items have been pushed and processed by the queue.
- * @property {Function} running - a function returning the number of items
- * currently being processed. Invoke with `queue.running()`.
- * @property {Function} workersList - a function returning the array of items
- * currently being processed. Invoke with `queue.workersList()`.
- * @property {Function} idle - a function returning false if there are items
- * waiting or being processed, or true if not. Invoke with `queue.idle()`.
- * @property {number} concurrency - an integer for determining how many `worker`
- * functions should be run in parallel. This property can be changed after a
- * `queue` is created to alter the concurrency on-the-fly.
- * @property {Function} push - add a new task to the `queue`. Calls `callback`
- * once the `worker` has finished processing the task. Instead of a single task,
- * a `tasks` array can be submitted. The respective callback is used for every
- * task in the list. Invoke with `queue.push(task, [callback])`,
- * @property {Function} unshift - add a new task to the front of the `queue`.
- * Invoke with `queue.unshift(task, [callback])`.
- * @property {Function} saturated - a callback that is called when the number of
- * running workers hits the `concurrency` limit, and further tasks will be
- * queued.
- * @property {Function} unsaturated - a callback that is called when the number
- * of running workers is less than the `concurrency` & `buffer` limits, and
- * further tasks will not be queued.
- * @property {number} buffer - A minimum threshold buffer in order to say that
- * the `queue` is `unsaturated`.
- * @property {Function} empty - a callback that is called when the last item
- * from the `queue` is given to a `worker`.
- * @property {Function} drain - a callback that is called when the last item
- * from the `queue` has returned from the `worker`.
- * @property {Function} error - a callback that is called when a task errors.
- * Has the signature `function(error, task)`.
- * @property {boolean} paused - a boolean for determining whether the queue is
- * in a paused state.
- * @property {Function} pause - a function that pauses the processing of tasks
- * until `resume()` is called. Invoke with `queue.pause()`.
- * @property {Function} resume - a function that resumes the processing of
- * queued tasks when the queue is paused. Invoke with `queue.resume()`.
- * @property {Function} kill - a function that removes the `drain` callback and
- * empties remaining tasks from the queue forcing it to go idle. Invoke with `queue.kill()`.
- */
-
-/**
- * Creates a `queue` object with the specified `concurrency`. Tasks added to the
- * `queue` are processed in parallel (up to the `concurrency` limit). If all
- * `worker`s are in progress, the task is queued until one becomes available.
- * Once a `worker` completes a `task`, that `task`'s callback is called.
- *
- * @name queue
- * @static
- * @memberOf module:ControlFlow
- * @method
- * @category Control Flow
- * @param {Function} worker - An asynchronous function for processing a queued
- * task, which must call its `callback(err)` argument when finished, with an
- * optional `error` as an argument.  If you want to handle errors from an
- * individual task, pass a callback to `q.push()`. Invoked with
- * (task, callback).
- * @param {number} [concurrency=1] - An `integer` for determining how many
- * `worker` functions should be run in parallel.  If omitted, the concurrency
- * defaults to `1`.  If the concurrency is `0`, an error is thrown.
- * @returns {module:ControlFlow.QueueObject} A queue object to manage the tasks. Callbacks can
- * attached as certain properties to listen for specific events during the
- * lifecycle of the queue.
- * @example
- *
- * // create a queue object with concurrency 2
- * var q = async.queue(function(task, callback) {
- *     console.log('hello ' + task.name);
- *     callback();
- * }, 2);
- *
- * // assign a callback
- * q.drain = function() {
- *     console.log('all items have been processed');
- * };
- *
- * // add some items to the queue
- * q.push({name: 'foo'}, function(err) {
- *     console.log('finished processing foo');
- * });
- * q.push({name: 'bar'}, function (err) {
- *     console.log('finished processing bar');
- * });
- *
- * // add some items to the queue (batch-wise)
- * q.push([{name: 'baz'},{name: 'bay'},{name: 'bax'}], function(err) {
- *     console.log('finished processing item');
- * });
- *
- * // add some items to the front of the queue
- * q.unshift({name: 'bar'}, function (err) {
- *     console.log('finished processing bar');
- * });
- */
-},{"./internal/queue":39}],68:[function(require,module,exports){
+},{"./decode":63,"./encode":64}],66:[function(require,module,exports){
 'use strict';
 
 var asyncQueue      = require('async/queue');
@@ -6815,7 +6129,7 @@ Loader.prototype._onLoad = function (resource) {
 Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":69,"async/eachSeries":31,"async/queue":67,"eventemitter3":3,"url":28}],69:[function(require,module,exports){
+},{"./Resource":67,"async/eachSeries":18,"async/queue":29,"eventemitter3":32,"url":72}],67:[function(require,module,exports){
 'use strict';
 
 var EventEmitter    = require('eventemitter3');
@@ -7728,7 +7042,7 @@ function setExtMap(map, extname, val) {
     map[extname] = val;
 }
 
-},{"eventemitter3":3,"url":28}],70:[function(require,module,exports){
+},{"eventemitter3":32,"url":72}],68:[function(require,module,exports){
 /* eslint no-magic-numbers: 0 */
 'use strict';
 
@@ -7798,7 +7112,7 @@ module.exports = {
     }
 };
 
-},{}],71:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /* eslint global-require: 0 */
 'use strict';
 
@@ -7814,7 +7128,7 @@ module.exports.middleware = {
 };
 
 
-},{"./Loader":68,"./Resource":69,"./middlewares/caching/memory":72,"./middlewares/parsing/blob":73}],72:[function(require,module,exports){
+},{"./Loader":66,"./Resource":67,"./middlewares/caching/memory":70,"./middlewares/parsing/blob":71}],70:[function(require,module,exports){
 'use strict';
 
 // a simple in-memory cache for resources
@@ -7838,7 +7152,7 @@ module.exports = function () {
     };
 };
 
-},{}],73:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 'use strict';
 
 var Resource = require('../../Resource');
@@ -7907,7 +7221,759 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":69,"../../b64":70}],74:[function(require,module,exports){
+},{"../../Resource":67,"../../b64":68}],72:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var punycode = require('punycode');
+var util = require('./util');
+
+exports.parse = urlParse;
+exports.resolve = urlResolve;
+exports.resolveObject = urlResolveObject;
+exports.format = urlFormat;
+
+exports.Url = Url;
+
+function Url() {
+  this.protocol = null;
+  this.slashes = null;
+  this.auth = null;
+  this.host = null;
+  this.port = null;
+  this.hostname = null;
+  this.hash = null;
+  this.search = null;
+  this.query = null;
+  this.pathname = null;
+  this.path = null;
+  this.href = null;
+}
+
+// Reference: RFC 3986, RFC 1808, RFC 2396
+
+// define these here so at least they only have to be
+// compiled once on the first module load.
+var protocolPattern = /^([a-z0-9.+-]+:)/i,
+    portPattern = /:[0-9]*$/,
+
+    // Special case for a simple path URL
+    simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/,
+
+    // RFC 2396: characters reserved for delimiting URLs.
+    // We actually just auto-escape these.
+    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
+
+    // RFC 2396: characters not allowed for various reasons.
+    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
+
+    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
+    autoEscape = ['\''].concat(unwise),
+    // Characters that are never ever allowed in a hostname.
+    // Note that any invalid chars are also handled, but these
+    // are the ones that are *expected* to be seen, so we fast-path
+    // them.
+    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
+    hostEndingChars = ['/', '?', '#'],
+    hostnameMaxLen = 255,
+    hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
+    hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
+    // protocols that can allow "unsafe" and "unwise" chars.
+    unsafeProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that never have a hostname.
+    hostlessProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that always contain a // bit.
+    slashedProtocol = {
+      'http': true,
+      'https': true,
+      'ftp': true,
+      'gopher': true,
+      'file': true,
+      'http:': true,
+      'https:': true,
+      'ftp:': true,
+      'gopher:': true,
+      'file:': true
+    },
+    querystring = require('querystring');
+
+function urlParse(url, parseQueryString, slashesDenoteHost) {
+  if (url && util.isObject(url) && url instanceof Url) return url;
+
+  var u = new Url;
+  u.parse(url, parseQueryString, slashesDenoteHost);
+  return u;
+}
+
+Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+  if (!util.isString(url)) {
+    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
+  }
+
+  // Copy chrome, IE, opera backslash-handling behavior.
+  // Back slashes before the query string get converted to forward slashes
+  // See: https://code.google.com/p/chromium/issues/detail?id=25916
+  var queryIndex = url.indexOf('?'),
+      splitter =
+          (queryIndex !== -1 && queryIndex < url.indexOf('#')) ? '?' : '#',
+      uSplit = url.split(splitter),
+      slashRegex = /\\/g;
+  uSplit[0] = uSplit[0].replace(slashRegex, '/');
+  url = uSplit.join(splitter);
+
+  var rest = url;
+
+  // trim before proceeding.
+  // This is to support parse stuff like "  http://foo.com  \n"
+  rest = rest.trim();
+
+  if (!slashesDenoteHost && url.split('#').length === 1) {
+    // Try fast path regexp
+    var simplePath = simplePathPattern.exec(rest);
+    if (simplePath) {
+      this.path = rest;
+      this.href = rest;
+      this.pathname = simplePath[1];
+      if (simplePath[2]) {
+        this.search = simplePath[2];
+        if (parseQueryString) {
+          this.query = querystring.parse(this.search.substr(1));
+        } else {
+          this.query = this.search.substr(1);
+        }
+      } else if (parseQueryString) {
+        this.search = '';
+        this.query = {};
+      }
+      return this;
+    }
+  }
+
+  var proto = protocolPattern.exec(rest);
+  if (proto) {
+    proto = proto[0];
+    var lowerProto = proto.toLowerCase();
+    this.protocol = lowerProto;
+    rest = rest.substr(proto.length);
+  }
+
+  // figure out if it's got a host
+  // user@server is *always* interpreted as a hostname, and url
+  // resolution will treat //foo/bar as host=foo,path=bar because that's
+  // how the browser resolves relative URLs.
+  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+    var slashes = rest.substr(0, 2) === '//';
+    if (slashes && !(proto && hostlessProtocol[proto])) {
+      rest = rest.substr(2);
+      this.slashes = true;
+    }
+  }
+
+  if (!hostlessProtocol[proto] &&
+      (slashes || (proto && !slashedProtocol[proto]))) {
+
+    // there's a hostname.
+    // the first instance of /, ?, ;, or # ends the host.
+    //
+    // If there is an @ in the hostname, then non-host chars *are* allowed
+    // to the left of the last @ sign, unless some host-ending character
+    // comes *before* the @-sign.
+    // URLs are obnoxious.
+    //
+    // ex:
+    // http://a@b@c/ => user:a@b host:c
+    // http://a@b?@c => user:a host:c path:/?@c
+
+    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
+    // Review our test case against browsers more comprehensively.
+
+    // find the first instance of any hostEndingChars
+    var hostEnd = -1;
+    for (var i = 0; i < hostEndingChars.length; i++) {
+      var hec = rest.indexOf(hostEndingChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+
+    // at this point, either we have an explicit point where the
+    // auth portion cannot go past, or the last @ char is the decider.
+    var auth, atSign;
+    if (hostEnd === -1) {
+      // atSign can be anywhere.
+      atSign = rest.lastIndexOf('@');
+    } else {
+      // atSign must be in auth portion.
+      // http://a@b/c@d => host:b auth:a path:/c@d
+      atSign = rest.lastIndexOf('@', hostEnd);
+    }
+
+    // Now we have a portion which is definitely the auth.
+    // Pull that off.
+    if (atSign !== -1) {
+      auth = rest.slice(0, atSign);
+      rest = rest.slice(atSign + 1);
+      this.auth = decodeURIComponent(auth);
+    }
+
+    // the host is the remaining to the left of the first non-host char
+    hostEnd = -1;
+    for (var i = 0; i < nonHostChars.length; i++) {
+      var hec = rest.indexOf(nonHostChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+    // if we still have not hit it, then the entire thing is a host.
+    if (hostEnd === -1)
+      hostEnd = rest.length;
+
+    this.host = rest.slice(0, hostEnd);
+    rest = rest.slice(hostEnd);
+
+    // pull out port.
+    this.parseHost();
+
+    // we've indicated that there is a hostname,
+    // so even if it's empty, it has to be present.
+    this.hostname = this.hostname || '';
+
+    // if hostname begins with [ and ends with ]
+    // assume that it's an IPv6 address.
+    var ipv6Hostname = this.hostname[0] === '[' &&
+        this.hostname[this.hostname.length - 1] === ']';
+
+    // validate a little.
+    if (!ipv6Hostname) {
+      var hostparts = this.hostname.split(/\./);
+      for (var i = 0, l = hostparts.length; i < l; i++) {
+        var part = hostparts[i];
+        if (!part) continue;
+        if (!part.match(hostnamePartPattern)) {
+          var newpart = '';
+          for (var j = 0, k = part.length; j < k; j++) {
+            if (part.charCodeAt(j) > 127) {
+              // we replace non-ASCII char with a temporary placeholder
+              // we need this to make sure size of hostname is not
+              // broken by replacing non-ASCII by nothing
+              newpart += 'x';
+            } else {
+              newpart += part[j];
+            }
+          }
+          // we test again with ASCII char only
+          if (!newpart.match(hostnamePartPattern)) {
+            var validParts = hostparts.slice(0, i);
+            var notHost = hostparts.slice(i + 1);
+            var bit = part.match(hostnamePartStart);
+            if (bit) {
+              validParts.push(bit[1]);
+              notHost.unshift(bit[2]);
+            }
+            if (notHost.length) {
+              rest = '/' + notHost.join('.') + rest;
+            }
+            this.hostname = validParts.join('.');
+            break;
+          }
+        }
+      }
+    }
+
+    if (this.hostname.length > hostnameMaxLen) {
+      this.hostname = '';
+    } else {
+      // hostnames are always lower case.
+      this.hostname = this.hostname.toLowerCase();
+    }
+
+    if (!ipv6Hostname) {
+      // IDNA Support: Returns a punycoded representation of "domain".
+      // It only converts parts of the domain name that
+      // have non-ASCII characters, i.e. it doesn't matter if
+      // you call it with a domain that already is ASCII-only.
+      this.hostname = punycode.toASCII(this.hostname);
+    }
+
+    var p = this.port ? ':' + this.port : '';
+    var h = this.hostname || '';
+    this.host = h + p;
+    this.href += this.host;
+
+    // strip [ and ] from the hostname
+    // the host field still retains them, though
+    if (ipv6Hostname) {
+      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+      if (rest[0] !== '/') {
+        rest = '/' + rest;
+      }
+    }
+  }
+
+  // now rest is set to the post-host stuff.
+  // chop off any delim chars.
+  if (!unsafeProtocol[lowerProto]) {
+
+    // First, make 100% sure that any "autoEscape" chars get
+    // escaped, even if encodeURIComponent doesn't think they
+    // need to be.
+    for (var i = 0, l = autoEscape.length; i < l; i++) {
+      var ae = autoEscape[i];
+      if (rest.indexOf(ae) === -1)
+        continue;
+      var esc = encodeURIComponent(ae);
+      if (esc === ae) {
+        esc = escape(ae);
+      }
+      rest = rest.split(ae).join(esc);
+    }
+  }
+
+
+  // chop off from the tail first.
+  var hash = rest.indexOf('#');
+  if (hash !== -1) {
+    // got a fragment string.
+    this.hash = rest.substr(hash);
+    rest = rest.slice(0, hash);
+  }
+  var qm = rest.indexOf('?');
+  if (qm !== -1) {
+    this.search = rest.substr(qm);
+    this.query = rest.substr(qm + 1);
+    if (parseQueryString) {
+      this.query = querystring.parse(this.query);
+    }
+    rest = rest.slice(0, qm);
+  } else if (parseQueryString) {
+    // no query string, but parseQueryString still requested
+    this.search = '';
+    this.query = {};
+  }
+  if (rest) this.pathname = rest;
+  if (slashedProtocol[lowerProto] &&
+      this.hostname && !this.pathname) {
+    this.pathname = '/';
+  }
+
+  //to support http.request
+  if (this.pathname || this.search) {
+    var p = this.pathname || '';
+    var s = this.search || '';
+    this.path = p + s;
+  }
+
+  // finally, reconstruct the href based on what has been validated.
+  this.href = this.format();
+  return this;
+};
+
+// format a parsed object into a url string
+function urlFormat(obj) {
+  // ensure it's an object, and not a string url.
+  // If it's an obj, this is a no-op.
+  // this way, you can call url_format() on strings
+  // to clean up potentially wonky urls.
+  if (util.isString(obj)) obj = urlParse(obj);
+  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
+  return obj.format();
+}
+
+Url.prototype.format = function() {
+  var auth = this.auth || '';
+  if (auth) {
+    auth = encodeURIComponent(auth);
+    auth = auth.replace(/%3A/i, ':');
+    auth += '@';
+  }
+
+  var protocol = this.protocol || '',
+      pathname = this.pathname || '',
+      hash = this.hash || '',
+      host = false,
+      query = '';
+
+  if (this.host) {
+    host = auth + this.host;
+  } else if (this.hostname) {
+    host = auth + (this.hostname.indexOf(':') === -1 ?
+        this.hostname :
+        '[' + this.hostname + ']');
+    if (this.port) {
+      host += ':' + this.port;
+    }
+  }
+
+  if (this.query &&
+      util.isObject(this.query) &&
+      Object.keys(this.query).length) {
+    query = querystring.stringify(this.query);
+  }
+
+  var search = this.search || (query && ('?' + query)) || '';
+
+  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+
+  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
+  // unless they had them to begin with.
+  if (this.slashes ||
+      (!protocol || slashedProtocol[protocol]) && host !== false) {
+    host = '//' + (host || '');
+    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
+  } else if (!host) {
+    host = '';
+  }
+
+  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
+  if (search && search.charAt(0) !== '?') search = '?' + search;
+
+  pathname = pathname.replace(/[?#]/g, function(match) {
+    return encodeURIComponent(match);
+  });
+  search = search.replace('#', '%23');
+
+  return protocol + host + pathname + search + hash;
+};
+
+function urlResolve(source, relative) {
+  return urlParse(source, false, true).resolve(relative);
+}
+
+Url.prototype.resolve = function(relative) {
+  return this.resolveObject(urlParse(relative, false, true)).format();
+};
+
+function urlResolveObject(source, relative) {
+  if (!source) return relative;
+  return urlParse(source, false, true).resolveObject(relative);
+}
+
+Url.prototype.resolveObject = function(relative) {
+  if (util.isString(relative)) {
+    var rel = new Url();
+    rel.parse(relative, false, true);
+    relative = rel;
+  }
+
+  var result = new Url();
+  var tkeys = Object.keys(this);
+  for (var tk = 0; tk < tkeys.length; tk++) {
+    var tkey = tkeys[tk];
+    result[tkey] = this[tkey];
+  }
+
+  // hash is always overridden, no matter what.
+  // even href="" will remove it.
+  result.hash = relative.hash;
+
+  // if the relative url is empty, then there's nothing left to do here.
+  if (relative.href === '') {
+    result.href = result.format();
+    return result;
+  }
+
+  // hrefs like //foo/bar always cut to the protocol.
+  if (relative.slashes && !relative.protocol) {
+    // take everything except the protocol from relative
+    var rkeys = Object.keys(relative);
+    for (var rk = 0; rk < rkeys.length; rk++) {
+      var rkey = rkeys[rk];
+      if (rkey !== 'protocol')
+        result[rkey] = relative[rkey];
+    }
+
+    //urlParse appends trailing / to urls like http://www.example.com
+    if (slashedProtocol[result.protocol] &&
+        result.hostname && !result.pathname) {
+      result.path = result.pathname = '/';
+    }
+
+    result.href = result.format();
+    return result;
+  }
+
+  if (relative.protocol && relative.protocol !== result.protocol) {
+    // if it's a known url protocol, then changing
+    // the protocol does weird things
+    // first, if it's not file:, then we MUST have a host,
+    // and if there was a path
+    // to begin with, then we MUST have a path.
+    // if it is file:, then the host is dropped,
+    // because that's known to be hostless.
+    // anything else is assumed to be absolute.
+    if (!slashedProtocol[relative.protocol]) {
+      var keys = Object.keys(relative);
+      for (var v = 0; v < keys.length; v++) {
+        var k = keys[v];
+        result[k] = relative[k];
+      }
+      result.href = result.format();
+      return result;
+    }
+
+    result.protocol = relative.protocol;
+    if (!relative.host && !hostlessProtocol[relative.protocol]) {
+      var relPath = (relative.pathname || '').split('/');
+      while (relPath.length && !(relative.host = relPath.shift()));
+      if (!relative.host) relative.host = '';
+      if (!relative.hostname) relative.hostname = '';
+      if (relPath[0] !== '') relPath.unshift('');
+      if (relPath.length < 2) relPath.unshift('');
+      result.pathname = relPath.join('/');
+    } else {
+      result.pathname = relative.pathname;
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    result.host = relative.host || '';
+    result.auth = relative.auth;
+    result.hostname = relative.hostname || relative.host;
+    result.port = relative.port;
+    // to support http.request
+    if (result.pathname || result.search) {
+      var p = result.pathname || '';
+      var s = result.search || '';
+      result.path = p + s;
+    }
+    result.slashes = result.slashes || relative.slashes;
+    result.href = result.format();
+    return result;
+  }
+
+  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
+      isRelAbs = (
+          relative.host ||
+          relative.pathname && relative.pathname.charAt(0) === '/'
+      ),
+      mustEndAbs = (isRelAbs || isSourceAbs ||
+                    (result.host && relative.pathname)),
+      removeAllDots = mustEndAbs,
+      srcPath = result.pathname && result.pathname.split('/') || [],
+      relPath = relative.pathname && relative.pathname.split('/') || [],
+      psychotic = result.protocol && !slashedProtocol[result.protocol];
+
+  // if the url is a non-slashed url, then relative
+  // links like ../.. should be able
+  // to crawl up to the hostname, as well.  This is strange.
+  // result.protocol has already been set by now.
+  // Later on, put the first path part into the host field.
+  if (psychotic) {
+    result.hostname = '';
+    result.port = null;
+    if (result.host) {
+      if (srcPath[0] === '') srcPath[0] = result.host;
+      else srcPath.unshift(result.host);
+    }
+    result.host = '';
+    if (relative.protocol) {
+      relative.hostname = null;
+      relative.port = null;
+      if (relative.host) {
+        if (relPath[0] === '') relPath[0] = relative.host;
+        else relPath.unshift(relative.host);
+      }
+      relative.host = null;
+    }
+    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
+  }
+
+  if (isRelAbs) {
+    // it's absolute.
+    result.host = (relative.host || relative.host === '') ?
+                  relative.host : result.host;
+    result.hostname = (relative.hostname || relative.hostname === '') ?
+                      relative.hostname : result.hostname;
+    result.search = relative.search;
+    result.query = relative.query;
+    srcPath = relPath;
+    // fall through to the dot-handling below.
+  } else if (relPath.length) {
+    // it's relative
+    // throw away the existing file, and take the new path instead.
+    if (!srcPath) srcPath = [];
+    srcPath.pop();
+    srcPath = srcPath.concat(relPath);
+    result.search = relative.search;
+    result.query = relative.query;
+  } else if (!util.isNullOrUndefined(relative.search)) {
+    // just pull out the search.
+    // like href='?foo'.
+    // Put this after the other two cases because it simplifies the booleans
+    if (psychotic) {
+      result.hostname = result.host = srcPath.shift();
+      //occationaly the auth can get stuck only in host
+      //this especially happens in cases like
+      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+      var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                       result.host.split('@') : false;
+      if (authInHost) {
+        result.auth = authInHost.shift();
+        result.host = result.hostname = authInHost.shift();
+      }
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    //to support http.request
+    if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+      result.path = (result.pathname ? result.pathname : '') +
+                    (result.search ? result.search : '');
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  if (!srcPath.length) {
+    // no path at all.  easy.
+    // we've already handled the other stuff above.
+    result.pathname = null;
+    //to support http.request
+    if (result.search) {
+      result.path = '/' + result.search;
+    } else {
+      result.path = null;
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  // if a url ENDs in . or .., then it must get a trailing slash.
+  // however, if it ends in anything else non-slashy,
+  // then it must NOT get a trailing slash.
+  var last = srcPath.slice(-1)[0];
+  var hasTrailingSlash = (
+      (result.host || relative.host || srcPath.length > 1) &&
+      (last === '.' || last === '..') || last === '');
+
+  // strip single dots, resolve double dots to parent dir
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = srcPath.length; i >= 0; i--) {
+    last = srcPath[i];
+    if (last === '.') {
+      srcPath.splice(i, 1);
+    } else if (last === '..') {
+      srcPath.splice(i, 1);
+      up++;
+    } else if (up) {
+      srcPath.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (!mustEndAbs && !removeAllDots) {
+    for (; up--; up) {
+      srcPath.unshift('..');
+    }
+  }
+
+  if (mustEndAbs && srcPath[0] !== '' &&
+      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
+    srcPath.unshift('');
+  }
+
+  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
+    srcPath.push('');
+  }
+
+  var isAbsolute = srcPath[0] === '' ||
+      (srcPath[0] && srcPath[0].charAt(0) === '/');
+
+  // put the host back
+  if (psychotic) {
+    result.hostname = result.host = isAbsolute ? '' :
+                                    srcPath.length ? srcPath.shift() : '';
+    //occationaly the auth can get stuck only in host
+    //this especially happens in cases like
+    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+    var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                     result.host.split('@') : false;
+    if (authInHost) {
+      result.auth = authInHost.shift();
+      result.host = result.hostname = authInHost.shift();
+    }
+  }
+
+  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
+
+  if (mustEndAbs && !isAbsolute) {
+    srcPath.unshift('');
+  }
+
+  if (!srcPath.length) {
+    result.pathname = null;
+    result.path = null;
+  } else {
+    result.pathname = srcPath.join('/');
+  }
+
+  //to support request.http
+  if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+    result.path = (result.pathname ? result.pathname : '') +
+                  (result.search ? result.search : '');
+  }
+  result.auth = relative.auth || result.auth;
+  result.slashes = result.slashes || relative.slashes;
+  result.href = result.format();
+  return result;
+};
+
+Url.prototype.parseHost = function() {
+  var host = this.host;
+  var port = portPattern.exec(host);
+  if (port) {
+    port = port[0];
+    if (port !== ':') {
+      this.port = port.substr(1);
+    }
+    host = host.substr(0, host.length - port.length);
+  }
+  if (host) this.hostname = host;
+};
+
+},{"./util":73,"punycode":62,"querystring":65}],73:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  isString: function(arg) {
+    return typeof(arg) === 'string';
+  },
+  isObject: function(arg) {
+    return typeof(arg) === 'object' && arg !== null;
+  },
+  isNull: function(arg) {
+    return arg === null;
+  },
+  isNullOrUndefined: function(arg) {
+    return arg == null;
+  }
+};
+
+},{}],74:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7920,12 +7986,16 @@ var _ismobilejs = require('ismobilejs');
 
 var _ismobilejs2 = _interopRequireDefault(_ismobilejs);
 
+var _accessibleTarget = require('./accessibleTarget');
+
+var _accessibleTarget2 = _interopRequireDefault(_accessibleTarget);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // add some extra variables to the container..
-Object.assign(_core2.default.DisplayObject.prototype, require('./accessibleTarget'));
+Object.assign(_core2.default.DisplayObject.prototype, _accessibleTarget2.default);
 
 /**
  * The Accessibility manager reacreates the ability to tab and and have content read by screen readers. This is very important as it can possibly help people with disabilities access pixi content.
@@ -7940,7 +8010,7 @@ var AccessibilityManager = function () {
     function AccessibilityManager(renderer) {
         _classCallCheck(this, AccessibilityManager);
 
-        if (_ismobilejs2.default.tablet || _ismobilejs2.default.phone) {
+        if ((_ismobilejs2.default.tablet || _ismobilejs2.default.phone) && !navigator.isCocoonJS) {
             this.createTouchHook();
         }
 
@@ -7952,7 +8022,6 @@ var AccessibilityManager = function () {
         div.style.position = 'absolute';
         div.style.top = 0;
         div.style.left = 0;
-        //
         div.style.zIndex = 2;
 
         /**
@@ -7987,34 +8056,34 @@ var AccessibilityManager = function () {
         this.debug = false;
 
         /**
-        * The renderer this accessibility manager works for.
-        *
-        * @member {PIXI.SystemRenderer}
-        */
+         * The renderer this accessibility manager works for.
+         *
+         * @member {PIXI.SystemRenderer}
+         */
         this.renderer = renderer;
 
         /**
-        * The array of currently active accessible items.
-        *
-        * @member {Array<*>}
-        * @private
-        */
+         * The array of currently active accessible items.
+         *
+         * @member {Array<*>}
+         * @private
+         */
         this.children = [];
 
         /**
-        * pre-bind the functions
-        *
-        * @private
-        */
+         * pre-bind the functions
+         *
+         * @private
+         */
         this._onKeyDown = this._onKeyDown.bind(this);
         this._onMouseMove = this._onMouseMove.bind(this);
 
         /**
-        * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
-        *
-        * @member {Array<*>}
-        * @private
-        */
+         * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
+         *
+         * @member {Array<*>}
+         * @private
+         */
         this.isActive = false;
         this.isMobileAccessabillity = false;
 
@@ -8023,6 +8092,8 @@ var AccessibilityManager = function () {
     }
 
     AccessibilityManager.prototype.createTouchHook = function createTouchHook() {
+        var _this = this;
+
         var hookDiv = document.createElement('button');
         hookDiv.style.width = 1 + 'px';
         hookDiv.style.height = 1 + 'px';
@@ -8035,10 +8106,10 @@ var AccessibilityManager = function () {
 
         hookDiv.addEventListener('focus', function () {
 
-            this.isMobileAccessabillity = true;
-            this.activate();
+            _this.isMobileAccessabillity = true;
+            _this.activate();
             document.body.removeChild(hookDiv);
-        }.bind(this));
+        });
 
         document.body.appendChild(hookDiv);
     };
@@ -8345,7 +8416,7 @@ _core2.default.CanvasRenderer.registerPlugin('accessibility', AccessibilityManag
 
 exports.default = AccessibilityManager;
 
-},{"../core":97,"./accessibleTarget":75,"ismobilejs":4}],75:[function(require,module,exports){
+},{"../core":97,"./accessibleTarget":75,"ismobilejs":33}],75:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -8489,7 +8560,7 @@ var Shader = function (_GLShader) {
 
 exports.default = Shader;
 
-},{"./const":78,"pixi-gl-core":12}],78:[function(require,module,exports){
+},{"./const":78,"pixi-gl-core":7}],78:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8513,7 +8584,7 @@ var CONST = {
    * @constant
    * @type {string}
    */
-  VERSION: '4.0.1',
+  VERSION: '4.0.2',
 
   /**
    * Two Pi.
@@ -8939,7 +9010,7 @@ var Bounds = function () {
     /**
      * Can return Rectangle.EMPTY constant, either construct new rectangle, either use your rectangle
      * It is not guaranteed that it will return tempRect
-     * @param tempRect {PIXI.Rectangle} temporary object will be used if AABB is not empty
+     * @param rect {PIXI.Rectangle} temporary object will be used if AABB is not empty
      * @returns {PIXI.Rectangle}
      */
 
@@ -9408,24 +9479,26 @@ var Container = function (_DisplayObject) {
      */
 
 
-    Container.prototype.removeChildren = function removeChildren(beginIndex, endIndex) {
-        var begin = beginIndex || 0;
+    Container.prototype.removeChildren = function removeChildren() {
+        var beginIndex = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+        var endIndex = arguments[1];
+
+        var begin = beginIndex;
         var end = typeof endIndex === 'number' ? endIndex : this.children.length;
         var range = end - begin;
-        var removed = void 0,
-            i = void 0;
+        var removed = void 0;
 
         if (range > 0 && range <= end) {
             removed = this.children.splice(begin, range);
 
-            for (i = 0; i < removed.length; ++i) {
+            for (var i = 0; i < removed.length; ++i) {
                 removed[i].parent = null;
             }
 
             this.onChildrenChange(beginIndex);
 
-            for (i = 0; i < removed.length; ++i) {
-                removed[i].emit('removed', this);
+            for (var _i = 0; _i < removed.length; ++_i) {
+                removed[_i].emit('removed', this);
             }
 
             return removed;
@@ -9517,8 +9590,6 @@ var Container = function (_DisplayObject) {
 
         var filters = this._filters;
         var mask = this._mask;
-        var i = void 0,
-            j = void 0;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (filters) {
@@ -9528,7 +9599,7 @@ var Container = function (_DisplayObject) {
 
             this._enabledFilters.length = 0;
 
-            for (i = 0; i < filters.length; i++) {
+            for (var i = 0; i < filters.length; i++) {
                 if (filters[i].enabled) {
                     this._enabledFilters.push(filters[i]);
                 }
@@ -9549,8 +9620,8 @@ var Container = function (_DisplayObject) {
         this._renderWebGL(renderer);
 
         // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++) {
-            this.children[i].renderWebGL(renderer);
+        for (var _i2 = 0, j = this.children.length; _i2 < j; _i2++) {
+            this.children[_i2].renderWebGL(renderer);
         }
 
         renderer.currentRenderer.flush();
@@ -9620,7 +9691,7 @@ var Container = function (_DisplayObject) {
     };
 
     /**
-     * Removes all internal references and listeners as well as removes children from the display list. 
+     * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
      * @param [options] {object|boolean} Options parameter. A boolean will act as if all options have been set to that value
      * @param [options.children=false] {boolean} if set to true, all the children will have their destroy
@@ -9953,11 +10024,15 @@ var DisplayObject = function (_EventEmitter) {
      * Calculates the global position of the display object
      *
      * @param position {PIXI.Point} The world origin to calculate from
+     * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+     * @param [skipUpdate=false] {boolean}
      * @return {PIXI.Point} A point object representing the position of this object
      */
 
 
-    DisplayObject.prototype.toGlobal = function toGlobal(position, point, skipUpdate) {
+    DisplayObject.prototype.toGlobal = function toGlobal(position, point) {
+        var skipUpdate = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
         if (!skipUpdate) {
             this._recursivePostUpdateTransform();
 
@@ -9983,6 +10058,7 @@ var DisplayObject = function (_EventEmitter) {
      * @param position {PIXI.Point} The world origin to calculate from
      * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
      * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new Point)
+     * @param [skipUpdate=false] {boolean}
      * @return {PIXI.Point} A point object representing the position of this object
      */
 
@@ -10068,24 +10144,33 @@ var DisplayObject = function (_EventEmitter) {
      */
 
 
-    DisplayObject.prototype.setTransform = function setTransform(x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY) //jshint ignore:line
-    {
-        this.position.x = x || 0;
-        this.position.y = y || 0;
+    DisplayObject.prototype.setTransform = function setTransform() {
+        var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+        var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var scaleX = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+        var scaleY = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+        var rotation = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
+        var skewX = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
+        var skewY = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
+        var pivotX = arguments.length <= 7 || arguments[7] === undefined ? 0 : arguments[7];
+        var pivotY = arguments.length <= 8 || arguments[8] === undefined ? 0 : arguments[8];
+
+        this.position.x = x;
+        this.position.y = y;
         this.scale.x = !scaleX ? 1 : scaleX;
         this.scale.y = !scaleY ? 1 : scaleY;
-        this.rotation = rotation || 0;
-        this.skew.x = skewX || 0;
-        this.skew.y = skewY || 0;
-        this.pivot.x = pivotX || 0;
-        this.pivot.y = pivotY || 0;
+        this.rotation = rotation;
+        this.skew.x = skewX;
+        this.skew.y = skewY;
+        this.pivot.x = pivotX;
+        this.pivot.y = pivotY;
         return this;
     };
 
     /**
      * Base destroy method for generic display objects. This will automatically
      * remove the display object from its parent Container as well as remove
-     * all current event listeners and internal references. Do not use a DisplayObject 
+     * all current event listeners and internal references. Do not use a DisplayObject
      * after calling `destroy`.
      */
 
@@ -10344,7 +10429,7 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 
 exports.default = DisplayObject;
 
-},{"../const":78,"../math":102,"./Bounds":79,"./Transform":82,"./TransformStatic":84,"eventemitter3":3}],82:[function(require,module,exports){
+},{"../const":78,"../math":102,"./Bounds":79,"./Transform":82,"./TransformStatic":84,"eventemitter3":32}],82:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10500,7 +10585,7 @@ var Transform = function (_TransformBase) {
 
   /**
    * Decomposes a matrix and sets the transforms properties based on it.
-   * @param {PIXI.Matrix} The matrix to decompose
+   * @param matrix {PIXI.Matrix} The matrix to decompose
    */
 
 
@@ -10564,7 +10649,7 @@ var TransformBase = function () {
     this.worldTransform = new _math2.default.Matrix();
     /**
      * The local matrix transform
-     * 
+     *
      * @member {PIXI.Matrix}
      */
     this.localTransform = new _math2.default.Matrix();
@@ -11185,10 +11270,10 @@ var Graphics = function (_Container) {
             this.moveTo(0, 0);
         }
 
+        var n = 20;
+        var points = this.currentPath.shape.points;
         var xa = void 0,
-            ya = void 0,
-            n = 20,
-            points = this.currentPath.shape.points;
+            ya = void 0;
 
         if (points.length === 0) {
             this.moveTo(0, 0);
@@ -11322,8 +11407,9 @@ var Graphics = function (_Container) {
      */
 
 
-    Graphics.prototype.arc = function arc(cx, cy, radius, startAngle, endAngle, anticlockwise) {
-        anticlockwise = anticlockwise || false;
+    Graphics.prototype.arc = function arc(cx, cy, radius, startAngle, endAngle) {
+        var anticlockwise = arguments.length <= 5 || arguments[5] === undefined ? false : arguments[5];
+
 
         if (startAngle === endAngle) {
             return this;
@@ -11383,16 +11469,19 @@ var Graphics = function (_Container) {
      * Specifies a simple one-color fill that subsequent calls to other Graphics methods
      * (such as lineTo() or drawCircle()) use when drawing.
      *
-     * @param color {number} the color of the fill
-     * @param alpha {number} the alpha of the fill
+     * @param [color=0] {number} the color of the fill
+     * @param [alpha=1] {number} the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
 
 
-    Graphics.prototype.beginFill = function beginFill(color, alpha) {
+    Graphics.prototype.beginFill = function beginFill() {
+        var color = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+        var alpha = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
         this.filling = true;
-        this.fillColor = color || 0;
-        this.fillAlpha = alpha === undefined ? 1 : alpha;
+        this.fillColor = color;
+        this.fillAlpha = alpha;
 
         if (this.currentPath) {
             if (this.currentPath.shape.points.length <= 2) {
@@ -11581,10 +11670,13 @@ var Graphics = function (_Container) {
             if (!Graphics._SPRITE_TEXTURE) {
                 Graphics._SPRITE_TEXTURE = _RenderTexture2.default.create(10, 10);
 
-                var currentRenderTarget = renderer._activeRenderTarget;
-                renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
-                renderer.clear([1, 1, 1, 1]);
-                renderer.bindRenderTarget(currentRenderTarget);
+                var canvas = document.createElement('canvas');
+                canvas.width = 10;
+                canvas.height = 10;
+                var context = canvas.getContext('2d');
+                context.fillStyle = 'white';
+                context.fillRect(0, 0, 10, 10);
+                Graphics._SPRITE_TEXTURE = _Texture2.default.fromCanvas(canvas);
             }
 
             this._spriteRect = new _Sprite2.default(Graphics._SPRITE_TEXTURE);
@@ -12289,15 +12381,14 @@ exports.__esModule = true;
  * @param cpY2 {number} Second Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @param [path=number[]] Path array to push points into
- * @return {PIXI.Graphics}
+ * @param [path=[]] {number[]} Path array to push points into
+ * @return {number[]}
  */
-var bezierCurveTo = function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
-{
-    path = path || [];
+var bezierCurveTo = function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY) {
+    var path = arguments.length <= 8 || arguments[8] === undefined ? [] : arguments[8];
 
-    var n = 20,
-        dt = void 0,
+    var n = 20;
+    var dt = void 0,
         dt2 = void 0,
         dt3 = void 0,
         t2 = void 0,
@@ -12305,9 +12396,7 @@ var bezierCurveTo = function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, t
 
     path.push(fromX, fromY);
 
-    var j = 0;
-
-    for (var i = 1; i <= n; ++i) {
+    for (var i = 1, j = 0; i <= n; ++i) {
         j = i / n;
 
         dt = 1 - j;
@@ -12497,14 +12586,12 @@ var GraphicsRenderer = function (_ObjectRenderer) {
         // flag the graphics as not dirty as we are about to update it...
         webGL.dirty = graphics.dirty;
 
-        var i = void 0;
-
         // if the user cleared the graphics object we will need to clear every object
         if (graphics.clearDirty !== webGL.clearDirty) {
             webGL.clearDirty = graphics.clearDirty;
 
             // loop through and return all the webGLDatas to the object pool so than can be reused later on
-            for (i = 0; i < webGL.data.length; i++) {
+            for (var i = 0; i < webGL.data.length; i++) {
                 var graphicsData = webGL.data[i];
                 this.graphicsDataPool.push(graphicsData);
             }
@@ -12519,8 +12606,8 @@ var GraphicsRenderer = function (_ObjectRenderer) {
         // loop through the graphics datas and construct each one..
         // if the object is a complex fill then the new stencil buffer technique will be used
         // other wise graphics objects will be pushed into a batch..
-        for (i = webGL.lastIndex; i < graphics.graphicsData.length; i++) {
-            var data = graphics.graphicsData[i];
+        for (var _i = webGL.lastIndex; _i < graphics.graphicsData.length; _i++) {
+            var data = graphics.graphicsData[_i];
 
             //TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);
@@ -12540,8 +12627,8 @@ var GraphicsRenderer = function (_ObjectRenderer) {
         }
 
         // upload all the dirty data...
-        for (i = 0; i < webGL.data.length; i++) {
-            webGLData = webGL.data[i];
+        for (var _i2 = 0; _i2 < webGL.data.length; _i2++) {
+            webGLData = webGL.data[_i2];
 
             if (webGLData.dirty) {
                 webGLData.upload();
@@ -12713,7 +12800,7 @@ var WebGLGraphicsData = function () {
 
 exports.default = WebGLGraphicsData;
 
-},{"pixi-gl-core":12}],91:[function(require,module,exports){
+},{"pixi-gl-core":7}],91:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12805,8 +12892,6 @@ var buildCircle = function buildCircle(graphicsData, webGLData) {
     var totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
     var seg = Math.PI * 2 / totalSegs;
 
-    var i = 0;
-
     if (graphicsData.fill) {
         var color = _utils2.default.hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
@@ -12822,7 +12907,7 @@ var buildCircle = function buildCircle(graphicsData, webGLData) {
 
         indices.push(vecPos);
 
-        for (i = 0; i < totalSegs + 1; i++) {
+        for (var i = 0; i < totalSegs + 1; i++) {
             verts.push(x, y, r, g, b, alpha);
 
             verts.push(x + Math.sin(seg * i) * width, y + Math.cos(seg * i) * height, r, g, b, alpha);
@@ -12838,8 +12923,8 @@ var buildCircle = function buildCircle(graphicsData, webGLData) {
 
         graphicsData.points = [];
 
-        for (i = 0; i < totalSegs + 1; i++) {
-            graphicsData.points.push(x + Math.sin(seg * i) * width, y + Math.cos(seg * i) * height);
+        for (var _i = 0; _i < totalSegs + 1; _i++) {
+            graphicsData.points.push(x + Math.sin(seg * _i) * width, y + Math.cos(seg * _i) * height);
         }
 
         (0, _buildLine2.default)(graphicsData, webGLData);
@@ -12877,7 +12962,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 var buildLine = function buildLine(graphicsData, webGLData) {
     // TODO OPTIMISE!
-    var i = 0;
     var points = graphicsData.points;
 
     if (points.length === 0) {
@@ -12975,7 +13059,7 @@ var buildLine = function buildLine(graphicsData, webGLData) {
 
     verts.push(p1x + perpx, p1y + perpy, r, g, b, alpha);
 
-    for (i = 1; i < length - 1; i++) {
+    for (var i = 1; i < length - 1; i++) {
         p1x = points[(i - 1) * 2];
         p1y = points[(i - 1) * 2 + 1];
 
@@ -13080,7 +13164,7 @@ var buildLine = function buildLine(graphicsData, webGLData) {
 
     indices.push(indexStart);
 
-    for (i = 0; i < indexCount; i++) {
+    for (var _i = 0; _i < indexCount; _i++) {
         indices.push(indexStart++);
     }
 
@@ -13177,7 +13261,7 @@ var buildPoly = function buildPoly(graphicsData, webGLData) {
 
 exports.default = buildPoly;
 
-},{"../../../utils":151,"./buildLine":93,"earcut":2}],95:[function(require,module,exports){
+},{"../../../utils":151,"./buildLine":93,"earcut":31}],95:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13318,8 +13402,7 @@ var buildRoundedRectangle = function buildRoundedRectangle(graphicsData, webGLDa
 
         var triangles = (0, _earcut2.default)(recPoints, null, 2);
 
-        var i = 0;
-        for (i = 0; i < triangles.length; i += 3) {
+        for (var i = 0, j = triangles.length; i < j; i += 3) {
             indices.push(triangles[i] + vecPos);
             indices.push(triangles[i] + vecPos);
             indices.push(triangles[i + 1] + vecPos);
@@ -13327,8 +13410,8 @@ var buildRoundedRectangle = function buildRoundedRectangle(graphicsData, webGLDa
             indices.push(triangles[i + 2] + vecPos);
         }
 
-        for (i = 0; i < recPoints.length; i++) {
-            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
+        for (var _i = 0, _j = recPoints.length; _i < _j; _i++) {
+            verts.push(recPoints[_i], recPoints[++_i], r, g, b, alpha);
         }
     }
 
@@ -13357,19 +13440,21 @@ var buildRoundedRectangle = function buildRoundedRectangle(graphicsData, webGLDa
  * @param cpY {number} Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @param [out] {number[]} The output array to add points into. If not passed, a new array is created.
+ * @param [out=[]] {number[]} The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-var quadraticBezierCurve = function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY, out) // jshint ignore:line
-{
+var quadraticBezierCurve = function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
+    var out = arguments.length <= 6 || arguments[6] === undefined ? [] : arguments[6];
+
+    var n = 20,
+        points = out;
+
     var xa = void 0,
         ya = void 0,
         xb = void 0,
         yb = void 0,
         x = void 0,
-        y = void 0,
-        n = 20,
-        points = out || [];
+        y = void 0;
 
     function getPt(n1, n2, perc) {
         var diff = n2 - n1;
@@ -13377,8 +13462,7 @@ var quadraticBezierCurve = function quadraticBezierCurve(fromX, fromY, cpX, cpY,
         return n1 + diff * perc;
     }
 
-    var j = 0;
-    for (var i = 0; i <= n; i++) {
+    for (var i = 0, j = 0; i <= n; i++) {
         j = i / n;
 
         // The Green Line
@@ -13399,7 +13483,7 @@ var quadraticBezierCurve = function quadraticBezierCurve(fromX, fromY, cpX, cpY,
 
 exports.default = buildRoundedRectangle;
 
-},{"../../../utils":151,"./buildLine":93,"earcut":2}],97:[function(require,module,exports){
+},{"../../../utils":151,"./buildLine":93,"earcut":31}],97:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13613,8 +13697,8 @@ var core = Object.assign(_const2.default, _math2.default, {
      * the browser then this function will return a canvas renderer
      *
      * @memberof PIXI
-     * @param width=800 {number} the width of the renderers view
-     * @param height=600 {number} the height of the renderers view
+     * @param [width=800] {number} the width of the renderers view
+     * @param [height=600] {number} the height of the renderers view
      * @param [options] {object} The optional renderer parameters
      * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
      * @param [options.transparent=false] {boolean} If the render view is transparent, default false
@@ -13626,9 +13710,12 @@ var core = Object.assign(_const2.default, _math2.default, {
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function autoDetectRenderer(width, height, options, noWebGL) {
-        width = width || 800;
-        height = height || 600;
+    autoDetectRenderer: function autoDetectRenderer() {
+        var width = arguments.length <= 0 || arguments[0] === undefined ? 800 : arguments[0];
+        var height = arguments.length <= 1 || arguments[1] === undefined ? 600 : arguments[1];
+        var options = arguments[2];
+        var noWebGL = arguments[3];
+
 
         if (!noWebGL && core.utils.isWebGLSupported()) {
             return new core.WebGLRenderer(width, height, options);
@@ -13640,7 +13727,7 @@ var core = Object.assign(_const2.default, _math2.default, {
 
 exports.default = core;
 
-},{"./Shader":77,"./const":78,"./display/Container":80,"./display/DisplayObject":81,"./display/Transform":82,"./display/TransformBase":83,"./display/TransformStatic":84,"./graphics/Graphics":85,"./graphics/GraphicsData":86,"./graphics/canvas/CanvasGraphicsRenderer":87,"./graphics/webgl/GraphicsRenderer":89,"./math":102,"./renderers/canvas/CanvasRenderer":109,"./renderers/canvas/utils/CanvasRenderTarget":111,"./renderers/webgl/WebGLRenderer":116,"./renderers/webgl/filters/Filter":118,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":121,"./renderers/webgl/managers/WebGLManager":125,"./renderers/webgl/utils/ObjectRenderer":126,"./renderers/webgl/utils/Quad":127,"./renderers/webgl/utils/RenderTarget":128,"./sprites/Sprite":133,"./sprites/canvas/CanvasSpriteRenderer":134,"./sprites/canvas/CanvasTinter":135,"./sprites/webgl/SpriteRenderer":137,"./text/Text":139,"./text/TextStyle":140,"./textures/BaseRenderTexture":141,"./textures/BaseTexture":142,"./textures/RenderTexture":143,"./textures/Texture":144,"./textures/TextureUvs":145,"./textures/VideoBaseTexture":146,"./ticker":148,"./utils":151,"pixi-gl-core":12}],98:[function(require,module,exports){
+},{"./Shader":77,"./const":78,"./display/Container":80,"./display/DisplayObject":81,"./display/Transform":82,"./display/TransformBase":83,"./display/TransformStatic":84,"./graphics/Graphics":85,"./graphics/GraphicsData":86,"./graphics/canvas/CanvasGraphicsRenderer":87,"./graphics/webgl/GraphicsRenderer":89,"./math":102,"./renderers/canvas/CanvasRenderer":109,"./renderers/canvas/utils/CanvasRenderTarget":111,"./renderers/webgl/WebGLRenderer":116,"./renderers/webgl/filters/Filter":118,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":121,"./renderers/webgl/managers/WebGLManager":125,"./renderers/webgl/utils/ObjectRenderer":126,"./renderers/webgl/utils/Quad":127,"./renderers/webgl/utils/RenderTarget":128,"./sprites/Sprite":133,"./sprites/canvas/CanvasSpriteRenderer":134,"./sprites/canvas/CanvasTinter":135,"./sprites/webgl/SpriteRenderer":137,"./text/Text":139,"./text/TextStyle":140,"./textures/BaseRenderTexture":141,"./textures/BaseTexture":142,"./textures/RenderTexture":143,"./textures/Texture":144,"./textures/TextureUvs":145,"./textures/VideoBaseTexture":146,"./ticker":148,"./utils":151,"pixi-gl-core":7}],98:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13812,9 +13899,7 @@ exports.default = GroupD8;
 
 exports.__esModule = true;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // @todo - ignore the too many parameters warning for now
-// should either fix it or change the jshint config
-// jshint -W072
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Point = require('./Point');
 
@@ -14618,31 +14703,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the center of this circle
- * @param y {number} The Y coordinate of the center of this circle
- * @param radius {number} The radius of the circle
+ * @param [x=0] {number} The X coordinate of the center of this circle
+ * @param [y=0] {number} The Y coordinate of the center of this circle
+ * @param [radius=0] {number} The radius of the circle
  */
 var Circle = function () {
-  function Circle(x, y, radius) {
+  function Circle() {
+    var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+    var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var radius = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
     _classCallCheck(this, Circle);
 
     /**
      * @member {number}
      * @default 0
      */
-    this.x = x || 0;
+    this.x = x;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.y = y || 0;
+    this.y = y;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.radius = radius || 0;
+    this.radius = radius;
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
@@ -14680,9 +14769,9 @@ var Circle = function () {
       return false;
     }
 
+    var r2 = this.radius * this.radius;
     var dx = this.x - x,
-        dy = this.y - y,
-        r2 = this.radius * this.radius;
+        dy = this.y - y;
 
     dx *= dx;
     dy *= dy;
@@ -14728,38 +14817,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the center of the ellipse
- * @param y {number} The Y coordinate of the center of the ellipse
- * @param width {number} The half width of this ellipse
- * @param height {number} The half height of this ellipse
+ * @param [x=0] {number} The X coordinate of the center of the ellipse
+ * @param [y=0] {number} The Y coordinate of the center of the ellipse
+ * @param [width=0] {number} The half width of this ellipse
+ * @param [height=0] {number} The half height of this ellipse
  */
 var Ellipse = function () {
-  function Ellipse(x, y, width, height) {
+  function Ellipse() {
+    var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+    var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var width = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+    var height = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
     _classCallCheck(this, Ellipse);
 
     /**
      * @member {number}
      * @default 0
      */
-    this.x = x || 0;
+    this.x = x;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.y = y || 0;
+    this.y = y;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.width = width || 0;
+    this.width = width;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.height = height || 0;
+    this.height = height;
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
@@ -14974,38 +15068,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the upper-left corner of the rectangle
- * @param y {number} The Y coordinate of the upper-left corner of the rectangle
- * @param width {number} The overall width of this rectangle
- * @param height {number} The overall height of this rectangle
+ * @param [x=0] {number} The X coordinate of the upper-left corner of the rectangle
+ * @param [y=0] {number} The Y coordinate of the upper-left corner of the rectangle
+ * @param [width=0] {number} The overall width of this rectangle
+ * @param [height=0] {number} The overall height of this rectangle
  */
 var Rectangle = function () {
-    function Rectangle(x, y, width, height) {
+    function Rectangle() {
+        var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+        var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var width = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+        var height = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
         _classCallCheck(this, Rectangle);
 
         /**
          * @member {number}
          * @default 0
          */
-        this.x = x || 0;
+        this.x = x;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.y = y || 0;
+        this.y = y;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.width = width || 0;
+        this.width = width;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.height = height || 0;
+        this.height = height;
 
         /**
          * The type of the object, mainly used to avoid `instanceof` checks
@@ -15019,10 +15118,10 @@ var Rectangle = function () {
     }
 
     /**
-     * A constant empty rectangle.
+     * returns the left edge of the rectangle
      *
-     * @static
-     * @constant
+     * @member {number}
+     * @memberof PIXI.Rectangle#
      */
 
 
@@ -15127,7 +15226,59 @@ var Rectangle = function () {
         this.height = y2 - y1;
     };
 
-    _createClass(Rectangle, null, [{
+    _createClass(Rectangle, [{
+        key: 'left',
+        get: function get() {
+            return this.x;
+        }
+
+        /**
+         * returns the right edge of the rectangle
+         *
+         * @member {number}
+         * @memberof PIXI.Rectangle
+         */
+
+    }, {
+        key: 'right',
+        get: function get() {
+            return this.x + this.width;
+        }
+
+        /**
+         * returns the top edge of the rectangle
+         *
+         * @member {number}
+         * @memberof PIXI.Rectangle
+         */
+
+    }, {
+        key: 'top',
+        get: function get() {
+            return this.y;
+        }
+
+        /**
+         * returns the bottom edge of the rectangle
+         *
+         * @member {number}
+         * @memberof PIXI.Rectangle
+         */
+
+    }, {
+        key: 'bottom',
+        get: function get() {
+            return this.y + this.height;
+        }
+
+        /**
+         * A constant empty rectangle.
+         *
+         * @static
+         * @constant
+         */
+
+    }], [{
         key: 'EMPTY',
         get: function get() {
             return new Rectangle(0, 0, 0, 0);
@@ -15157,45 +15308,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * @class
  * @memberof PIXI
- * @param x {number} The X coordinate of the upper-left corner of the rounded rectangle
- * @param y {number} The Y coordinate of the upper-left corner of the rounded rectangle
- * @param width {number} The overall width of this rounded rectangle
- * @param height {number} The overall height of this rounded rectangle
- * @param radius {number} Controls the radius of the rounded corners
+ * @param [x=0] {number} The X coordinate of the upper-left corner of the rounded rectangle
+ * @param [y=0] {number} The Y coordinate of the upper-left corner of the rounded rectangle
+ * @param [width=0] {number} The overall width of this rounded rectangle
+ * @param [height=0] {number} The overall height of this rounded rectangle
+ * @param [radius=20] {number} Controls the radius of the rounded corners
  */
 var RoundedRectangle = function () {
-  function RoundedRectangle(x, y, width, height, radius) {
+  function RoundedRectangle() {
+    var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+    var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var width = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+    var height = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+    var radius = arguments.length <= 4 || arguments[4] === undefined ? 20 : arguments[4];
+
     _classCallCheck(this, RoundedRectangle);
 
     /**
      * @member {number}
      * @default 0
      */
-    this.x = x || 0;
+    this.x = x;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.y = y || 0;
+    this.y = y;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.width = width || 0;
+    this.width = width;
 
     /**
      * @member {number}
      * @default 0
      */
-    this.height = height || 0;
+    this.height = height;
 
     /**
      * @member {number}
      * @default 20
      */
-    this.radius = radius || 20;
+    this.radius = radius;
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
@@ -15573,7 +15730,7 @@ var SystemRenderer = function (_EventEmitter) {
 
 exports.default = SystemRenderer;
 
-},{"../const":78,"../display/Container":80,"../math":102,"../textures/RenderTexture":143,"../utils":151,"eventemitter3":3}],109:[function(require,module,exports){
+},{"../const":78,"../display/Container":80,"../math":102,"../textures/RenderTexture":143,"../utils":151,"eventemitter3":32}],109:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15632,10 +15789,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CanvasRenderer = function (_SystemRenderer) {
     _inherits(CanvasRenderer, _SystemRenderer);
 
-    function CanvasRenderer(width, height, options) {
-        _classCallCheck(this, CanvasRenderer);
+    function CanvasRenderer(width, height) {
+        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-        options = options || {};
+        _classCallCheck(this, CanvasRenderer);
 
         var _this = _possibleConstructorReturn(this, _SystemRenderer.call(this, 'Canvas', width, height, options));
 
@@ -16206,10 +16363,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Maps blend combinations to Canvas
  * @class
  * @memberof PIXI
- * @param array
+ * @param [array=[]] {array}
  */
-function mapCanvasBlendModesToPixi(array) {
-    array = array || [];
+function mapCanvasBlendModesToPixi() {
+    var array = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
     if ((0, _canUseNewCanvasBlendModes2.default)()) {
         array[_const2.default.BLEND_MODES.NORMAL] = 'source-over';
@@ -16321,10 +16478,8 @@ var TextureGarbageCollector = function () {
         var tm = this.renderer.textureManager;
         var managedTextures = tm._managedTextures;
         var wasRemoved = false;
-        var i = void 0,
-            j = void 0;
 
-        for (i = 0; i < managedTextures.length; i++) {
+        for (var i = 0; i < managedTextures.length; i++) {
             var texture = managedTextures[i];
 
             // only supports non generated textures at the moment!
@@ -16336,11 +16491,10 @@ var TextureGarbageCollector = function () {
         }
 
         if (wasRemoved) {
-            j = 0;
-
-            for (i = 0; i < managedTextures.length; i++) {
-                if (managedTextures[i] !== null) {
-                    managedTextures[j++] = managedTextures[i];
+            var j = 0;
+            for (var _i = 0; _i < managedTextures.length; _i++) {
+                if (managedTextures[_i] !== null) {
+                    managedTextures[j++] = managedTextures[_i];
                 }
             }
 
@@ -16572,7 +16726,7 @@ var TextureManager = function () {
 
 exports.default = TextureManager;
 
-},{"../../const":78,"../../utils":151,"./utils/RenderTarget":128,"pixi-gl-core":12}],116:[function(require,module,exports){
+},{"../../const":78,"../../utils":151,"./utils/RenderTarget":128,"pixi-gl-core":7}],116:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16671,10 +16825,10 @@ var CONTEXT_UID = 0;
 var WebGLRenderer = function (_SystemRenderer) {
     _inherits(WebGLRenderer, _SystemRenderer);
 
-    function WebGLRenderer(width, height, options) {
-        _classCallCheck(this, WebGLRenderer);
+    function WebGLRenderer(width, height) {
+        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-        options = options || {};
+        _classCallCheck(this, WebGLRenderer);
 
         /**
          * The type of this renderer as a standardised const
@@ -17050,13 +17204,14 @@ var WebGLRenderer = function (_SystemRenderer) {
      */
 
 
-    WebGLRenderer.prototype.bindTexture = function bindTexture(texture, location) {
+    WebGLRenderer.prototype.bindTexture = function bindTexture(texture) {
+        var location = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
         texture = texture.baseTexture || texture;
 
         var gl = this.gl;
 
         //TODO test perf of cache?
-        location = location || 0;
 
         if (this._activeTextureLocation !== location) //
             {
@@ -17180,7 +17335,7 @@ _utils2.default.pluginTarget.mixin(WebGLRenderer);
 
 exports.default = WebGLRenderer;
 
-},{"../../const":78,"../../utils":151,"../SystemRenderer":108,"./TextureGarbageCollector":114,"./TextureManager":115,"./WebGLState":117,"./managers/FilterManager":122,"./managers/MaskManager":123,"./managers/StencilManager":124,"./utils/ObjectRenderer":126,"./utils/RenderTarget":128,"./utils/mapWebGLDrawModesToPixi":131,"./utils/validateContext":132,"pixi-gl-core":12}],117:[function(require,module,exports){
+},{"../../const":78,"../../utils":151,"../SystemRenderer":108,"./TextureGarbageCollector":114,"./TextureManager":115,"./WebGLState":117,"./managers/FilterManager":122,"./managers/MaskManager":123,"./managers/StencilManager":124,"./utils/ObjectRenderer":126,"./utils/RenderTarget":128,"./utils/mapWebGLDrawModesToPixi":131,"./utils/validateContext":132,"pixi-gl-core":7}],117:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17316,16 +17471,8 @@ var WebGLState = function () {
         if (this.activeState[BLEND] === value | 0) {
             return;
         }
-
         this.activeState[BLEND] = value | 0;
-
-        var gl = this.gl;
-
-        if (value) {
-            gl.enable(gl.BLEND);
-        } else {
-            gl.disable(gl.BLEND);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     };
 
     /**
@@ -17356,14 +17503,7 @@ var WebGLState = function () {
         }
 
         this.activeState[DEPTH_TEST] = value | 0;
-
-        var gl = this.gl;
-
-        if (value) {
-            gl.enable(gl.DEPTH_TEST);
-        } else {
-            gl.disable(gl.DEPTH_TEST);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
     };
 
     /**
@@ -17378,14 +17518,7 @@ var WebGLState = function () {
         }
 
         this.activeState[CULL_FACE] = value | 0;
-
-        var gl = this.gl;
-
-        if (value) {
-            gl.enable(gl.CULL_FACE);
-        } else {
-            gl.disable(gl.CULL_FACE);
-        }
+        this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
     };
 
     /**
@@ -17400,14 +17533,7 @@ var WebGLState = function () {
         }
 
         this.activeState[FRONT_FACE] = value | 0;
-
-        var gl = this.gl;
-
-        if (value) {
-            gl.frontFace(gl.CW);
-        } else {
-            gl.frontFace(gl.CCW);
-        }
+        this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
     };
 
     /**
@@ -17416,21 +17542,18 @@ var WebGLState = function () {
 
 
     WebGLState.prototype.resetAttributes = function resetAttributes() {
-        var i = void 0;
 
-        for (i = 0; i < this.attribState.tempAttribState.length; i++) {
+        for (var i = 0; i < this.attribState.tempAttribState.length; i++) {
             this.attribState.tempAttribState[i] = 0;
         }
 
-        for (i = 0; i < this.attribState.attribState.length; i++) {
-            this.attribState.attribState[i] = 0;
+        for (var _i = 0; _i < this.attribState.attribState.length; _i++) {
+            this.attribState.attribState[_i] = 0;
         }
 
-        var gl = this.gl;
-
         // im going to assume one is always active for performance reasons.
-        for (i = 1; i < this.maxAttribs; i++) {
-            gl.disableVertexAttribArray(i);
+        for (var _i2 = 1; _i2 < this.maxAttribs; _i2++) {
+            this.gl.disableVertexAttribArray(_i2);
         }
     };
 
@@ -17671,7 +17794,7 @@ function extractUniformsFromString(string) {
 
 exports.default = extractUniformsFromSrc;
 
-},{"pixi-gl-core":12}],120:[function(require,module,exports){
+},{"pixi-gl-core":7}],120:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17943,7 +18066,7 @@ var FilterManager = function (_WebGLManager) {
 
         // for now we go off the filter of the first resolution..
         var resolution = filters[0].resolution;
-        var padding = filters[0].padding;
+        var padding = filters[0].padding | 0;
         var targetBounds = target.filterArea || target.getBounds(true);
         var sourceFrame = currentState.sourceFrame;
         var destinationFrame = currentState.destinationFrame;
@@ -17953,7 +18076,7 @@ var FilterManager = function (_WebGLManager) {
         sourceFrame.width = (targetBounds.width * resolution | 0) / resolution;
         sourceFrame.height = (targetBounds.height * resolution | 0) / resolution;
 
-        if (filterData.stack[0].renderTarget.transform) {//jshint ignore:line
+        if (filterData.stack[0].renderTarget.transform) {//
 
             // TODO we should fit the rect around the transform..
         } else {
@@ -17961,12 +18084,15 @@ var FilterManager = function (_WebGLManager) {
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
 
-        destinationFrame.width = sourceFrame.width;
-        destinationFrame.height = sourceFrame.height;
-
         // lets pplay the padding After we fit the element to the screen.
         // this should stop the strange side effects that can occour when cropping to the edges
         sourceFrame.pad(padding);
+
+        destinationFrame.width = sourceFrame.width;
+        destinationFrame.height = sourceFrame.height;
+
+        // lets play the padding after we fit the element to the screen.
+        // this should stop the strange side effects that can occour when cropping to the edges
 
         var renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
@@ -18003,16 +18129,14 @@ var FilterManager = function (_WebGLManager) {
             var flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
-            var i = void 0;
-
-            for (i = 0; i < filters.length - 1; i++) {
+            var i = 0;
+            for (i; i < filters.length - 1; i++) {
                 filters[i].apply(this, flip, flop, true);
 
                 var t = flip;
                 flip = flop;
                 flop = t;
             }
-
             filters[i].apply(this, flip, lastState.renderTarget, false);
 
             this.freePotRenderTarget(flip);
@@ -18264,7 +18388,7 @@ var FilterManager = function (_WebGLManager) {
 
 exports.default = FilterManager;
 
-},{"../../../Shader":77,"../../../math":102,"../filters/filterTransforms":120,"../utils/Quad":127,"../utils/RenderTarget":128,"./WebGLManager":125,"bit-twiddle":1}],123:[function(require,module,exports){
+},{"../../../Shader":77,"../../../math":102,"../filters/filterTransforms":120,"../utils/Quad":127,"../utils/RenderTarget":128,"./WebGLManager":125,"bit-twiddle":30}],123:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18912,7 +19036,7 @@ var Quad = function () {
 
 exports.default = Quad;
 
-},{"../../../utils/createIndicesForQuads":149,"pixi-gl-core":12}],128:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":149,"pixi-gl-core":7}],128:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19227,7 +19351,7 @@ var RenderTarget = function () {
 
 exports.default = RenderTarget;
 
-},{"../../../const":78,"../../../math":102,"pixi-gl-core":12}],129:[function(require,module,exports){
+},{"../../../const":78,"../../../math":102,"pixi-gl-core":7}],129:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19296,7 +19420,7 @@ function generateIfTestSrc(maxIfs) {
 
 exports.default = checkMaxIfStatmentsInShader;
 
-},{"pixi-gl-core":12}],130:[function(require,module,exports){
+},{"pixi-gl-core":7}],130:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19312,10 +19436,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The current WebGL drawing context
- * @param array
+ * @param [array=[]] {array}
+ * @return {array}
  */
-function mapWebGLBlendModesToPixi(gl, array) {
-    array = array || [];
+function mapWebGLBlendModesToPixi(gl) {
+    var array = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
     //TODO - premultiply alpha would be different.
     //add a boolean for that!
@@ -19358,10 +19483,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} The current WebGL drawing context
- * @param object
+ * @param [object={}] {object}
  */
-function mapWebGLDrawModesToPixi(gl, object) {
-    object = object || {};
+function mapWebGLDrawModesToPixi(gl) {
+    var object = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     object[_const2.default.DRAW_MODES.POINTS] = gl.POINTS;
     object[_const2.default.DRAW_MODES.LINES] = gl.LINES;
@@ -19383,7 +19508,7 @@ function validateContext(gl) {
 
     // this is going to be fairly simple for now.. but at least we have rom to grow!
     if (!attributes.stencil) {
-        console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly'); // jshint ignore:line
+        console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
     }
 }
 
@@ -19586,12 +19711,12 @@ var Sprite = function (_Container) {
             tx = wt.tx,
             ty = wt.ty,
             vertexData = this.vertexData,
-            w0 = void 0,
-            w1 = void 0,
-            h0 = void 0,
-            h1 = void 0,
             trim = texture.trim,
             orig = texture.orig;
+        var w0 = void 0,
+            w1 = void 0,
+            h0 = void 0,
+            h1 = void 0;
 
         if (trim) {
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space before transforming the sprite coords..
@@ -19648,8 +19773,8 @@ var Sprite = function (_Container) {
             c = wt.c,
             d = wt.d,
             tx = wt.tx,
-            ty = wt.ty,
-            w0 = void 0,
+            ty = wt.ty;
+        var w0 = void 0,
             w1 = void 0,
             h0 = void 0,
             h1 = void 0;
@@ -20004,8 +20129,8 @@ var CanvasSpriteRenderer = function () {
 
     CanvasSpriteRenderer.prototype.render = function render(sprite) {
         var texture = sprite._texture,
-            renderer = this.renderer,
-            wt = sprite.transform.worldTransform,
+            renderer = this.renderer;
+        var wt = sprite.transform.worldTransform,
             dx = void 0,
             dy = void 0,
             width = texture._frame.width,
@@ -20216,6 +20341,7 @@ var CanvasTinter = {
 
         // context.globalCompositeOperation = 'copy';
     },
+
 
     /**
      * Tint a texture pixel per pixel.
@@ -20810,7 +20936,7 @@ _WebGLRenderer2.default.registerPlugin('sprite', SpriteRenderer);
 
 exports.default = SpriteRenderer;
 
-},{"../../const":78,"../../renderers/webgl/WebGLRenderer":116,"../../renderers/webgl/utils/ObjectRenderer":126,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":129,"../../utils/createIndicesForQuads":149,"./BatchBuffer":136,"./generateMultiTextureShader":138,"bit-twiddle":1,"pixi-gl-core":12}],138:[function(require,module,exports){
+},{"../../const":78,"../../renderers/webgl/WebGLRenderer":116,"../../renderers/webgl/utils/ObjectRenderer":126,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":129,"../../utils/createIndicesForQuads":149,"./BatchBuffer":136,"./generateMultiTextureShader":138,"bit-twiddle":30,"pixi-gl-core":7}],138:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20941,7 +21067,9 @@ var Text = function (_Sprite) {
     function Text(text, style) {
         _classCallCheck(this, Text);
 
-        var texture = _Texture2.default.fromCanvas(document.createElement('canvas'));
+        var canvas = document.createElement('canvas');
+        var texture = _Texture2.default.fromCanvas(canvas);
+
         texture.orig = new _math2.default.Rectangle();
         texture.trim = new _math2.default.Rectangle();
 
@@ -20952,7 +21080,7 @@ var Text = function (_Sprite) {
          */
         var _this = _possibleConstructorReturn(this, _Sprite.call(this, texture));
 
-        _this.canvas = document.createElement('canvas');
+        _this.canvas = canvas;
 
         /**
          * The canvas 2d context that everything is drawn with
@@ -21043,8 +21171,7 @@ var Text = function (_Sprite) {
         var maxLineWidth = 0;
         var fontProperties = this.determineFontProperties(this._font);
 
-        var i = void 0;
-        for (i = 0; i < lines.length; i++) {
+        for (var i = 0; i < lines.length; i++) {
             var lineWidth = this.context.measureText(lines[i]).width + (lines[i].length - 1) * style.letterSpacing;
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -21099,22 +21226,22 @@ var Text = function (_Sprite) {
             var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
             var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
-            for (i = 0; i < lines.length; i++) {
+            for (var _i = 0; _i < lines.length; _i++) {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = style.strokeThickness / 2 + i * lineHeight + fontProperties.ascent;
+                linePositionY = style.strokeThickness / 2 + _i * lineHeight + fontProperties.ascent;
 
                 if (style.align === 'right') {
-                    linePositionX += maxLineWidth - lineWidths[i];
+                    linePositionX += maxLineWidth - lineWidths[_i];
                 } else if (style.align === 'center') {
-                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                    linePositionX += (maxLineWidth - lineWidths[_i]) / 2;
                 }
 
                 if (style.fill) {
-                    this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding);
+                    this.drawLetterSpacing(lines[_i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding);
 
                     if (style.stroke && style.strokeThickness) {
                         this.context.strokeStyle = style.dropShadowColor;
-                        this.drawLetterSpacing(lines[i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
+                        this.drawLetterSpacing(lines[_i], linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding, true);
                         this.context.strokeStyle = style.stroke;
                     }
                 }
@@ -21125,22 +21252,22 @@ var Text = function (_Sprite) {
         this.context.fillStyle = this._generateFillStyle(style, lines);
 
         //draw lines line by line
-        for (i = 0; i < lines.length; i++) {
+        for (var _i2 = 0; _i2 < lines.length; _i2++) {
             linePositionX = style.strokeThickness / 2;
-            linePositionY = style.strokeThickness / 2 + i * lineHeight + fontProperties.ascent;
+            linePositionY = style.strokeThickness / 2 + _i2 * lineHeight + fontProperties.ascent;
 
             if (style.align === 'right') {
-                linePositionX += maxLineWidth - lineWidths[i];
+                linePositionX += maxLineWidth - lineWidths[_i2];
             } else if (style.align === 'center') {
-                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                linePositionX += (maxLineWidth - lineWidths[_i2]) / 2;
             }
 
             if (style.stroke && style.strokeThickness) {
-                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
+                this.drawLetterSpacing(lines[_i2], linePositionX + style.padding, linePositionY + style.padding, true);
             }
 
             if (style.fill) {
-                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding);
+                this.drawLetterSpacing(lines[_i2], linePositionX + style.padding, linePositionY + style.padding);
             }
         }
 
@@ -21152,12 +21279,14 @@ var Text = function (_Sprite) {
      * @param {string} text - The text to draw
      * @param {number} x - Horizontal position to draw the text
      * @param {number} y - Vertical position to draw the text
-     * @param {boolean} isStroke - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
+     * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
      * @private
      */
 
 
-    Text.prototype.drawLetterSpacing = function drawLetterSpacing(text, x, y, isStroke) {
+    Text.prototype.drawLetterSpacing = function drawLetterSpacing(text, x, y) {
+        var isStroke = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
         var style = this._style;
 
         // letterSpacing of 0 means normal
@@ -21172,10 +21301,10 @@ var Text = function (_Sprite) {
             return;
         }
 
-        var characters = String.prototype.split.call(text, ''),
+        var characters = String.prototype.split.call(text, '');
+        var currentPosition = x,
             index = 0,
-            current = void 0,
-            currentPosition = x;
+            current = void 0;
 
         while (index < text.length) {
             current = characters[index++];
@@ -21302,15 +21431,13 @@ var Text = function (_Sprite) {
             var pixels = imagedata.length;
             var line = width * 4;
 
-            var i = void 0,
-                j = void 0;
-
             var idx = 0;
             var stop = false;
 
             // ascent. scan from top to bottom until we find a non red pixel
+            var i = void 0;
             for (i = 0; i < baseline; i++) {
-                for (j = 0; j < line; j += 4) {
+                for (var j = 0; j < line; j += 4) {
                     if (imagedata[idx + j] !== 255) {
                         stop = true;
                         break;
@@ -21330,8 +21457,8 @@ var Text = function (_Sprite) {
 
             // descent. scan from bottom to top until we find a non red pixel
             for (i = height; i > baseline; i--) {
-                for (j = 0; j < line; j += 4) {
-                    if (imagedata[idx + j] !== 255) {
+                for (var _j = 0; _j < line; _j += 4) {
+                    if (imagedata[idx + _j] !== 255) {
                         stop = true;
                         break;
                     }
@@ -21446,9 +21573,13 @@ var Text = function (_Sprite) {
         if (!Array.isArray(style.fill)) {
             return style.fill;
         } else {
+            // cocoon on canvas+ cannot generate textures, so use the first colour instead
+            if (navigator.isCocoonJS) {
+                return style.fill[0];
+            }
+
             // the gradient will be evenly spaced out according to how large the array is.
             // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-            var i = void 0;
             var gradient = void 0;
             var totalIterations = void 0;
             var currentIteration = void 0;
@@ -21465,7 +21596,7 @@ var Text = function (_Sprite) {
                 // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
                 totalIterations = (style.fill.length + 1) * lines.length;
                 currentIteration = 0;
-                for (i = 0; i < lines.length; i++) {
+                for (var i = 0; i < lines.length; i++) {
                     currentIteration += 1;
                     for (var j = 0; j < style.fill.length; j++) {
                         stop = currentIteration / totalIterations;
@@ -21481,9 +21612,9 @@ var Text = function (_Sprite) {
                 totalIterations = style.fill.length + 1;
                 currentIteration = 1;
 
-                for (i = 0; i < style.fill.length; i++) {
+                for (var _i3 = 0; _i3 < style.fill.length; _i3++) {
                     stop = currentIteration / totalIterations;
-                    gradient.addColorStop(stop, style.fill[i]);
+                    gradient.addColorStop(stop, style.fill[_i3]);
                     currentIteration++;
                 }
             }
@@ -21579,7 +21710,6 @@ var Text = function (_Sprite) {
             return this._style;
         },
         set: function set(style) {
-
             style = style || {};
             if (style instanceof _TextStyle2.default) {
                 this._style = style;
@@ -22114,15 +22244,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var BaseRenderTexture = function (_BaseTexture) {
   _inherits(BaseRenderTexture, _BaseTexture);
 
-  function BaseRenderTexture(width, height, scaleMode, resolution) {
+  function BaseRenderTexture() {
+    var width = arguments.length <= 0 || arguments[0] === undefined ? 100 : arguments[0];
+    var height = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+    var scaleMode = arguments[2];
+    var resolution = arguments[3];
+
     _classCallCheck(this, BaseRenderTexture);
 
     var _this = _possibleConstructorReturn(this, _BaseTexture.call(this, null, scaleMode));
 
     _this.resolution = resolution || _const2.default.RESOLUTION;
 
-    _this.width = width || 100;
-    _this.height = height || 100;
+    _this.width = width;
+    _this.height = height;
 
     _this.realWidth = _this.width * _this.resolution;
     _this.realHeight = _this.height * _this.resolution;
@@ -22671,7 +22806,7 @@ var BaseTexture = function (_EventEmitter) {
 
 exports.default = BaseTexture;
 
-},{"../const":78,"../utils":151,"../utils/determineCrossOrigin":150,"bit-twiddle":1,"eventemitter3":3}],143:[function(require,module,exports){
+},{"../const":78,"../utils":151,"../utils/determineCrossOrigin":150,"bit-twiddle":30,"eventemitter3":32}],143:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22747,7 +22882,7 @@ var RenderTexture = function (_Texture) {
             var resolution = arguments[4] || 1;
 
             // we have an old render texture..
-            console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(' + width + ', ' + height + ')'); // jshint ignore:line
+            console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create(' + width + ', ' + height + ')');
             _legacyRenderer = arguments[0];
 
             frame = null;
@@ -23358,7 +23493,7 @@ Texture.EMPTY.emit = function () {};
 
 exports.default = Texture;
 
-},{"../math":102,"../utils":151,"./BaseTexture":142,"./TextureUvs":145,"./VideoBaseTexture":146,"eventemitter3":3}],145:[function(require,module,exports){
+},{"../math":102,"../utils":151,"./BaseTexture":142,"./TextureUvs":145,"./VideoBaseTexture":146,"eventemitter3":32}],145:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23675,6 +23810,9 @@ var VideoBaseTexture = function (_BaseTexture) {
     VideoBaseTexture.fromUrl = function fromUrl(videoSrc, scaleMode) {
         var video = document.createElement('video');
 
+        video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('playsinline', '');
+
         // array of objects or strings
         if (Array.isArray(videoSrc)) {
             for (var i = 0; i < videoSrc.length; ++i) {
@@ -23747,6 +23885,8 @@ var TICK = 'tick';
 
 var Ticker = function () {
     function Ticker() {
+        var _this = this;
+
         _classCallCheck(this, Ticker);
 
         /**
@@ -23838,34 +23978,30 @@ var Ticker = function () {
          */
         this.started = false;
 
-        // Bind tick
-        this._tick = this._tick.bind(this);
-    }
+        /**
+         * Internal tick method bound to ticker instance.
+         * This is because in early 2015, Function.bind
+         * is still 60% slower in high performance scenarios.
+         * Also separating frame requests from update method
+         * so listeners may be called at any time and with
+         * any animation API, just invoke ticker.update(time).
+         *
+         * @private
+         */
+        this._tick = function (time) {
 
-    /**
-     * Internal tick method bound to ticker instance.
-     * This is because in early 2015, Function.bind
-     * is still 60% slower in high performance scenarios.
-     * Also separating frame requests from update method
-     * so listeners may be called at any time and with
-     * any animation API, just invoke ticker.update(time).
-     *
-     * @private
-     */
+            _this._requestId = null;
 
-
-    Ticker.prototype._tick = function _tick(time) {
-        this._requestId = null;
-
-        if (this.started) {
-            // Invoke listeners now
-            this.update(time);
-            // Listener side effects may have modified ticker state.
-            if (this.started && this._requestId === null && this._emitter.listeners(TICK, true)) {
-                this._requestId = requestAnimationFrame(this._tick);
+            if (_this.started) {
+                // Invoke listeners now
+                _this.update(time);
+                // Listener side effects may have modified ticker state.
+                if (_this.started && _this._requestId === null && _this._emitter.listeners(TICK, true)) {
+                    _this._requestId = requestAnimationFrame(_this._tick);
+                }
             }
-        }
-    };
+        };
+    }
 
     /**
      * Conditionally requests a new animation frame.
@@ -24106,7 +24242,7 @@ var Ticker = function () {
 
 exports.default = Ticker;
 
-},{"../const":78,"eventemitter3":3}],148:[function(require,module,exports){
+},{"../const":78,"eventemitter3":32}],148:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24257,7 +24393,7 @@ var determineCrossOrigin = function determineCrossOrigin(url, loc) {
 
 exports.default = determineCrossOrigin;
 
-},{"url":28}],151:[function(require,module,exports){
+},{"url":72}],151:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24296,6 +24432,7 @@ var utils = {
         return ++utils._uid;
     },
 
+
     /**
      * Converts a hex color number to an [R, G, B] array
      *
@@ -24314,6 +24451,7 @@ var utils = {
         return out;
     },
 
+
     /**
      * Converts a hex color number to a string.
      *
@@ -24328,6 +24466,7 @@ var utils = {
         return '#' + hex;
     },
 
+
     /**
      * Converts a color as an [R, G, B] array to a hex number
      *
@@ -24338,6 +24477,7 @@ var utils = {
     rgb2hex: function rgb2hex(rgb) {
         return (rgb[0] * 255 << 16) + (rgb[1] * 255 << 8) + rgb[2] * 255;
     },
+
 
     /**
      * get the resolution / device pixel ratio of an asset by looking for the prefix
@@ -24357,6 +24497,7 @@ var utils = {
         return 1;
     },
 
+
     /**
      * Logs out the version and renderer information for this running instance of PIXI.
      * If you don't want to see this message you can set `PIXI.utils._saidHello = true;`
@@ -24374,15 +24515,16 @@ var utils = {
         }
 
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-            var args = ['\n %c %c %c Pixi.js ' + _const2.default.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n', 'background: #ff66a5; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'color: #ff66a5; background: #030307; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'background: #ffc3dc; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;'];
+            var args = ['\n %c %c %c Pixi.js ' + _const2.default.VERSION + ' - ✰ ' + type + ' ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n', 'background: #ff66a5; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'color: #ff66a5; background: #030307; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'background: #ffc3dc; padding:5px 0;', 'background: #ff66a5; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;', 'color: #ff2424; background: #fff; padding:5px 0;'];
 
-            window.console.log.apply(console, args); //jshint ignore:line
+            window.console.log.apply(console, args);
         } else if (window.console) {
-            window.console.log('Pixi.js ' + _const2.default.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log('Pixi.js ' + _const2.default.VERSION + ' - ' + type + ' - http://www.pixijs.com/');
         }
 
         utils._saidHello = true;
     },
+
 
     /**
      * Helper for checking for webgl support
@@ -24397,8 +24539,8 @@ var utils = {
                 return false;
             }
 
-            var canvas = document.createElement('canvas'),
-                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+            var canvas = document.createElement('canvas');
+            var gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
             var success = !!(gl && gl.getContextAttributes().stencil);
             if (gl) {
@@ -24416,6 +24558,7 @@ var utils = {
         }
     },
 
+
     /**
      * Returns sign of number
      *
@@ -24426,6 +24569,7 @@ var utils = {
     sign: function sign(n) {
         return n ? n < 0 ? -1 : 1 : 0;
     },
+
 
     /**
      * Remove a range of items from an array
@@ -24451,6 +24595,7 @@ var utils = {
         arr.length = len;
     },
 
+
     /**
      * @todo Describe property usage
      *
@@ -24470,7 +24615,7 @@ var utils = {
 
 exports.default = utils;
 
-},{"../const":78,"./pluginTarget":153,"eventemitter3":3}],152:[function(require,module,exports){
+},{"../const":78,"./pluginTarget":153,"eventemitter3":32}],152:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24493,7 +24638,7 @@ var maxRecommendedTextures = function maxRecommendedTextures(max) {
 
 exports.default = maxRecommendedTextures;
 
-},{"ismobilejs":4}],153:[function(require,module,exports){
+},{"ismobilejs":33}],153:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -24974,11 +25119,10 @@ Object.defineProperties(_core2.default.TextStyle.prototype, {
 
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
             var splits = font.split(' ');
-            var i = void 0;
             var fontSizeIndex = -1;
 
             this._fontSize = 26;
-            for (i = 0; i < splits.length; ++i) {
+            for (var i = 0; i < splits.length; ++i) {
                 if (splits[i].match(/(px|pt|em|%)/)) {
                     fontSizeIndex = i;
                     this._fontSize = splits[i];
@@ -24988,9 +25132,9 @@ Object.defineProperties(_core2.default.TextStyle.prototype, {
 
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
-            for (i = 0; i < fontSizeIndex; ++i) {
-                if (splits[i].match(/(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/)) {
-                    this._fontWeight = splits[i];
+            for (var _i = 0; _i < fontSizeIndex; ++_i) {
+                if (splits[_i].match(/(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/)) {
+                    this._fontWeight = splits[_i];
                     break;
                 }
             }
@@ -24998,8 +25142,8 @@ Object.defineProperties(_core2.default.TextStyle.prototype, {
             // and finally join everything together after the fontSize in case the font family has multiple words
             if (fontSizeIndex > -1 && fontSizeIndex < splits.length - 1) {
                 this._fontFamily = '';
-                for (i = fontSizeIndex + 1; i < splits.length; ++i) {
-                    this._fontFamily += splits[i] + ' ';
+                for (var _i2 = fontSizeIndex + 1; _i2 < splits.length; ++_i2) {
+                    this._fontFamily += splits[_i2] + ' ';
                 }
 
                 this._fontFamily = this._fontFamily.slice(0, -1);
@@ -25501,12 +25645,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var BitmapText = function (_core$Container) {
     _inherits(BitmapText, _core$Container);
 
-    function BitmapText(text, style) {
+    function BitmapText(text) {
+        var style = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
         _classCallCheck(this, BitmapText);
-
-        var _this = _possibleConstructorReturn(this, _core$Container.call(this));
-
-        style = style || {};
 
         /**
          * The width of the overall text, different from fontSize,
@@ -25515,6 +25657,8 @@ var BitmapText = function (_core$Container) {
          * @member {number}
          * @readonly
          */
+        var _this = _possibleConstructorReturn(this, _core$Container.call(this));
+
         _this.textWidth = 0;
 
         /**
@@ -25606,14 +25750,15 @@ var BitmapText = function (_core$Container) {
 
     BitmapText.prototype.updateText = function updateText() {
         var data = BitmapText.fonts[this._font.name];
+        var scale = this._font.size / data.size;
         var pos = new _core2.default.Point();
-        var prevCharCode = null;
         var chars = [];
+        var lineWidths = [];
+
+        var prevCharCode = null;
         var lastLineWidth = 0;
         var maxLineWidth = 0;
-        var lineWidths = [];
         var line = 0;
-        var scale = this._font.size / data.size;
         var lastSpace = -1;
         var lastSpaceWidth = 0;
         var maxLineHeight = 0;
@@ -26263,14 +26408,17 @@ var tempPoint = new _core2.default.Point();
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param texture {PIXI.Texture} the texture of the tiling sprite
- * @param width {number}  the width of the tiling sprite
- * @param height {number} the height of the tiling sprite
+ * @param [width=100] {number}  the width of the tiling sprite
+ * @param [height=100] {number} the height of the tiling sprite
  */
 
 var TilingSprite = function (_core$Sprite) {
     _inherits(TilingSprite, _core$Sprite);
 
-    function TilingSprite(texture, width, height) {
+    function TilingSprite(texture) {
+        var width = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+        var height = arguments.length <= 2 || arguments[2] === undefined ? 100 : arguments[2];
+
         _classCallCheck(this, TilingSprite);
 
         /**
@@ -26297,7 +26445,7 @@ var TilingSprite = function (_core$Sprite) {
          * @member {number}
          * @private
          */
-        _this._width = width || 100;
+        _this._width = width;
 
         /**
          * The height of the tiling sprite
@@ -26305,7 +26453,7 @@ var TilingSprite = function (_core$Sprite) {
          * @member {number}
          * @private
          */
-        _this._height = height || 100;
+        _this._height = height;
 
         /**
          * An internal WebGL UV cache.
@@ -26567,10 +26715,9 @@ var TilingSprite = function (_core$Sprite) {
         var width = this._width;
         var height = this._height;
         var x1 = -width * this.anchor.x;
-        var y1 = void 0;
 
         if (tempPoint.x > x1 && tempPoint.x < x1 + width) {
-            y1 = -height * this.anchor.y;
+            var y1 = -height * this.anchor.y;
 
             if (tempPoint.y > y1 && tempPoint.y < y1 + height) {
                 return true;
@@ -27091,11 +27238,19 @@ var _BitmapText = require('./BitmapText');
 
 var _BitmapText2 = _interopRequireDefault(_BitmapText);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _cacheAsBitmap = require('./cacheAsBitmap');
 
-require('./cacheAsBitmap');
-require('./getChildByName');
-require('./getGlobalPosition');
+var _cacheAsBitmap2 = _interopRequireDefault(_cacheAsBitmap);
+
+var _getChildByName = require('./getChildByName');
+
+var _getChildByName2 = _interopRequireDefault(_getChildByName);
+
+var _getGlobalPosition = require('./getGlobalPosition');
+
+var _getGlobalPosition2 = _interopRequireDefault(_getGlobalPosition);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @namespace PIXI.extras
@@ -27103,7 +27258,10 @@ require('./getGlobalPosition');
 exports.default = {
     MovieClip: _MovieClip2.default,
     TilingSprite: _TilingSprite2.default,
-    BitmapText: _BitmapText2.default
+    BitmapText: _BitmapText2.default,
+    cacheAsBitmap: _cacheAsBitmap2.default,
+    getChildByName: _getChildByName2.default,
+    getGlobalPosition: _getGlobalPosition2.default
 };
 
 },{"./BitmapText":158,"./MovieClip":159,"./TilingSprite":160,"./cacheAsBitmap":161,"./getChildByName":162,"./getGlobalPosition":163}],165:[function(require,module,exports){
@@ -28593,6 +28751,10 @@ var _eventemitter = require('eventemitter3');
 
 var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
+var _interactiveTarget = require('./interactiveTarget');
+
+var _interactiveTarget2 = _interopRequireDefault(_interactiveTarget);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28602,7 +28764,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // Mix interactiveTarget into core.DisplayObject.prototype
-Object.assign(_core2.default.DisplayObject.prototype, require('./interactiveTarget'));
+Object.assign(_core2.default.DisplayObject.prototype, _interactiveTarget2.default);
 
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
@@ -28798,113 +28960,113 @@ var InteractionManager = function (_EventEmitter) {
 
         /**
          * Fired when a pointing device button (usually a mouse button) is pressed on the display object.
-         * 
+         *
          * @memberof PIXI.interaction.InteractionManager#
          * @event mousedown
          */
 
         /**
          * Fired when a pointing device secondary button (usually a mouse right-button) is pressed on the display object.
-         * 
+         *
          * @memberof PIXI.interaction.InteractionManager#
          * @event rightdown
          */
 
         /**
          * Fired when a pointing device button (usually a mouse button) is released over the display object.
-         * 
+         *
          * @memberof PIXI.interaction.InteractionManager#
          * @event mouseup
          */
 
         /**
          * Fired when a pointing device secondary button (usually a mouse right-button) is released over the display object.
-         * 
+         *
          * @memberof PIXI.interaction.InteractionManager#
          * @event rightup
          */
 
         /**
          * Fired when a pointing device button (usually a mouse button) is pressed and released on the display object.
-         * 
+         *
          * @event click
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a pointing device secondary button (usually a mouse right-button) is pressed and released on the display object.
-         * 
+         *
          * @event rightclick
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a pointing device button (usually a mouse button) is released outside the display object that initially registered a [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
-         * 
+         *
          * @event mouseupoutside
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
-         * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially 
+         * Fired when a pointing device secondary button (usually a mouse right-button) is released outside the display object that initially
          * registered a [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
-         * 
+         *
          * @event rightupoutside
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a pointing device (usually a mouse) is moved while over the display object
-         * 
+         *
          * @event mousemove
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a pointing device (usually a mouse) is moved onto the display object
-         * 
+         *
          * @event mouseover
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a pointing device (usually a mouse) is moved off the display object
-         * 
+         *
          * @event mouseout
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a touch point is placed on the display object.
-         * 
+         *
          * @event touchstart
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a touch point is removed from the display object.
-         * 
+         *
          * @event touchend
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a touch point is placed and removed from the display object.
-         * 
+         *
          * @event tap
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a touch point is removed outside of the display object that initially registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
-         * 
+         *
          * @event touchendoutside
          * @memberof PIXI.interaction.InteractionManager#
          */
 
         /**
          * Fired when a touch point is moved along the display object.
-         * 
+         *
          * @event touchmove
          * @memberof PIXI.interaction.InteractionManager#
          */
@@ -28922,12 +29084,14 @@ var InteractionManager = function (_EventEmitter) {
      */
 
 
-    InteractionManager.prototype.setTargetElement = function setTargetElement(element, resolution) {
+    InteractionManager.prototype.setTargetElement = function setTargetElement(element) {
+        var resolution = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
         this.removeEvents();
 
         this.interactionDOMElement = element;
 
-        this.resolution = resolution || 1;
+        this.resolution = resolution;
 
         this.addEvents();
     };
@@ -29579,11 +29743,7 @@ var InteractionManager = function (_EventEmitter) {
 
 
     InteractionManager.prototype.getTouchData = function getTouchData(touchEvent) {
-        var touchData = this.interactiveDataPool.pop();
-
-        if (!touchData) {
-            touchData = new _InteractionData2.default();
-        }
+        var touchData = this.interactiveDataPool.pop() || new _InteractionData2.default();
 
         touchData.identifier = touchEvent.identifier;
         this.mapPositionToPoint(touchData.global, touchEvent.clientX, touchEvent.clientY);
@@ -29667,7 +29827,7 @@ _core2.default.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
 exports.default = InteractionManager;
 
-},{"../core":97,"./InteractionData":178,"./interactiveTarget":181,"eventemitter3":3}],180:[function(require,module,exports){
+},{"../core":97,"./InteractionData":178,"./interactiveTarget":181,"eventemitter3":32}],180:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29911,7 +30071,7 @@ function parse(resource, texture) {
     _extras2.default.BitmapText.fonts[data.font] = data;
 }
 
-},{"../core":97,"../extras":164,"path":22,"resource-loader":71}],183:[function(require,module,exports){
+},{"../core":97,"../extras":164,"path":60,"resource-loader":69}],183:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29947,7 +30107,7 @@ exports.default = {
     Resource: _resourceLoader.Resource
 };
 
-},{"./bitmapFontParser":182,"./loader":184,"./spritesheetParser":185,"./textureParser":186,"resource-loader":71}],184:[function(require,module,exports){
+},{"./bitmapFontParser":182,"./loader":184,"./spritesheetParser":185,"./textureParser":186,"resource-loader":69}],184:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30037,7 +30197,7 @@ Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
 exports.default = Loader;
 
-},{"./bitmapFontParser":182,"./spritesheetParser":185,"./textureParser":186,"resource-loader":71}],185:[function(require,module,exports){
+},{"./bitmapFontParser":182,"./spritesheetParser":185,"./textureParser":186,"resource-loader":69}],185:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30152,7 +30312,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var BATCH_SIZE = 1000;
 
-},{"../core":97,"path":22,"resource-loader":71}],186:[function(require,module,exports){
+},{"../core":97,"path":60,"resource-loader":69}],186:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30699,7 +30859,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":97,"./webgl/MeshShader":192,"pixi-gl-core":12}],188:[function(require,module,exports){
+},{"../core":97,"./webgl/MeshShader":192,"pixi-gl-core":7}],188:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30723,7 +30883,7 @@ var DEFAULT_BORDER_SIZE = 10;
 /**
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
- *  
+ *
  *```js
  * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.fromImage('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  *  ```
@@ -30883,8 +31043,8 @@ var NineSlicePlane = function (_Plane) {
      * @param textureSource
      * @param w    width of the texture
      * @param h height of the texture
-     * @param x1 
-     * @param y1    
+     * @param x1
+     * @param y1
      * @param x2
      * @param y2
      * @private
@@ -31117,12 +31277,11 @@ var Plane = function (_Mesh) {
 
         var segmentsX = this.verticesX - 1;
         var segmentsY = this.verticesY - 1;
-        var i = 0;
 
         var sizeX = texture.width / segmentsX;
         var sizeY = texture.height / segmentsY;
 
-        for (i = 0; i < total; i++) {
+        for (var i = 0; i < total; i++) {
 
             var x = i % this.verticesX;
             var y = i / this.verticesX | 0;
@@ -31137,10 +31296,10 @@ var Plane = function (_Mesh) {
 
         var totalSub = segmentsX * segmentsY;
 
-        for (i = 0; i < totalSub; i++) {
+        for (var _i = 0; _i < totalSub; _i++) {
 
-            var xpos = i % segmentsX;
-            var ypos = i / segmentsX | 0;
+            var xpos = _i % segmentsX;
+            var ypos = _i / segmentsX | 0;
 
             var value = ypos * this.verticesX + xpos;
             var value2 = ypos * this.verticesX + xpos + 1;
@@ -31299,8 +31458,8 @@ var Rope = function (_Mesh) {
         indices[0] = 0;
         indices[1] = 1;
 
-        var total = points.length,
-            index = void 0,
+        var total = points.length;
+        var index = void 0,
             amount = void 0;
 
         for (var i = 1; i < total; i++) {
@@ -31668,6 +31827,8 @@ var ParticleContainer = function (_core$Container) {
 
 
     ParticleContainer.prototype.renderWebGL = function renderWebGL(renderer) {
+        var _this2 = this;
+
         if (!this.visible || this.worldAlpha <= 0 || !this.children.length || !this.renderable) {
             return;
         }
@@ -31676,8 +31837,8 @@ var ParticleContainer = function (_core$Container) {
             this.baseTexture = this.children[0]._texture.baseTexture;
             if (!this.baseTexture.hasLoaded) {
                 this.baseTexture.once('update', function () {
-                    this.onChildrenChange(0);
-                }, this);
+                    return _this2.onChildrenChange(0);
+                });
             }
         }
 
@@ -31950,10 +32111,8 @@ var ParticleBuffer = function () {
 
     ParticleBuffer.prototype.initBuffers = function initBuffers() {
         var gl = this.gl;
-        var i = void 0;
-        var property = void 0;
-
         var dynamicOffset = 0;
+        var property = void 0;
 
         /**
          * Holds the indices of the geometry (quads) to draw
@@ -31965,7 +32124,7 @@ var ParticleBuffer = function () {
 
         this.dynamicStride = 0;
 
-        for (i = 0; i < this.dynamicProperties.length; i++) {
+        for (var i = 0; i < this.dynamicProperties.length; i++) {
             property = this.dynamicProperties[i];
 
             property.offset = dynamicOffset;
@@ -31980,8 +32139,8 @@ var ParticleBuffer = function () {
         var staticOffset = 0;
         this.staticStride = 0;
 
-        for (i = 0; i < this.staticProperties.length; i++) {
-            property = this.staticProperties[i];
+        for (var _i = 0; _i < this.staticProperties.length; _i++) {
+            property = this.staticProperties[_i];
 
             property.offset = staticOffset;
             staticOffset += property.size;
@@ -31993,13 +32152,13 @@ var ParticleBuffer = function () {
 
         this.vao = new _pixiGlCore2.default.VertexArrayObject(gl).addIndex(this.indexBuffer);
 
-        for (i = 0; i < this.dynamicProperties.length; i++) {
-            property = this.dynamicProperties[i];
+        for (var _i2 = 0; _i2 < this.dynamicProperties.length; _i2++) {
+            property = this.dynamicProperties[_i2];
             this.vao.addAttribute(this.dynamicBuffer, property.attribute, gl.FLOAT, false, this.dynamicStride * 4, property.offset * 4);
         }
 
-        for (i = 0; i < this.staticProperties.length; i++) {
-            property = this.staticProperties[i];
+        for (var _i3 = 0; _i3 < this.staticProperties.length; _i3++) {
+            property = this.staticProperties[_i3];
             this.vao.addAttribute(this.staticBuffer, property.attribute, gl.FLOAT, false, this.staticStride * 4, property.offset * 4);
         }
     };
@@ -32065,7 +32224,7 @@ var ParticleBuffer = function () {
 
 exports.default = ParticleBuffer;
 
-},{"../../core/utils/createIndicesForQuads":149,"pixi-gl-core":12}],196:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":149,"pixi-gl-core":7}],196:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32211,9 +32370,9 @@ var ParticleRenderer = function (_core$ObjectRenderer) {
 
     ParticleRenderer.prototype.render = function render(container) {
         var children = container.children,
-            totalChildren = children.length,
             maxSize = container._maxSize,
             batchSize = container._batchSize;
+        var totalChildren = children.length;
 
         if (totalChildren === 0) {
             return;
@@ -32281,10 +32440,9 @@ var ParticleRenderer = function (_core$ObjectRenderer) {
             buffers = [],
             size = container._maxSize,
             batchSize = container._batchSize,
-            dynamicPropertyFlags = container._properties,
-            i = void 0;
+            dynamicPropertyFlags = container._properties;
 
-        for (i = 0; i < size; i += batchSize) {
+        for (var i = 0; i < size; i += batchSize) {
             buffers.push(new _ParticleBuffer2.default(gl, this.properties, dynamicPropertyFlags, batchSize));
         }
 
@@ -32570,15 +32728,19 @@ if (!Math.sign) {
 },{}],199:[function(require,module,exports){
 'use strict';
 
-// References:
+var _objectAssign = require('object-assign');
+
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+if (!Object.assign) {
+    Object.assign = _objectAssign2.default;
+} // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 
-if (!Object.assign) {
-    Object.assign = require('object-assign');
-}
-
-},{"object-assign":5}],200:[function(require,module,exports){
+},{"object-assign":59}],200:[function(require,module,exports){
 'use strict';
 
 require('./Object.assign');
@@ -32881,14 +33043,11 @@ var WebGLPrepare = function () {
 
 
     WebGLPrepare.prototype.tick = function tick() {
-        var i = void 0,
-            len = void 0;
-
         // Upload the graphics
         while (this.queue.length && this.numLeft > 0) {
             var item = this.queue[0];
             var uploaded = false;
-            for (i = 0, len = this.uploadHooks.length; i < len; i++) {
+            for (var i = 0, len = this.uploadHooks.length; i < len; i++) {
                 if (this.uploadHooks[i](this.renderer, item)) {
                     this.numLeft--;
                     this.queue.shift();
@@ -32909,8 +33068,8 @@ var WebGLPrepare = function () {
             SharedTicker.remove(this.tick, this);
             var completes = this.completes.slice(0);
             this.completes.length = 0;
-            for (i = 0, len = completes.length; i < len; i++) {
-                completes[i]();
+            for (var _i = 0, _len = completes.length; _i < _len; _i++) {
+                completes[_i]();
             }
         }
     };
@@ -32943,12 +33102,10 @@ var WebGLPrepare = function () {
 
 
     WebGLPrepare.prototype.add = function add(item) {
-        var i = void 0,
-            len = void 0;
 
         // Add additional hooks for finding elements on special
         // types of objects that
-        for (i = 0, len = this.addHooks.length; i < len; i++) {
+        for (var i = 0, len = this.addHooks.length; i < len; i++) {
             if (this.addHooks[i](item, this.queue)) {
                 break;
             }
@@ -32956,8 +33113,8 @@ var WebGLPrepare = function () {
 
         // Get childen recursively
         if (item instanceof _core2.default.Container) {
-            for (i = item.children.length - 1; i >= 0; i--) {
-                this.add(item.children[i]);
+            for (var _i2 = item.children.length - 1; _i2 >= 0; _i2--) {
+                this.add(item.children[_i2]);
             }
         }
         return this;
