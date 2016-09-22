@@ -115,7 +115,7 @@ class Matrix
            this.array = new Float32Array(9);
        }
 
-       let array = out || this.array;
+       const array = out || this.array;
 
        if (transpose)
        {
@@ -157,8 +157,8 @@ class Matrix
    {
        newPos = newPos || new Point();
 
-       let x = pos.x;
-       let y = pos.y;
+       const x = pos.x;
+       const y = pos.y;
 
        newPos.x = this.a * x + this.c * y + this.tx;
        newPos.y = this.b * x + this.d * y + this.ty;
@@ -178,10 +178,10 @@ class Matrix
    {
        newPos = newPos || new Point();
 
-       let id = 1 / (this.a * this.d + this.c * -this.b);
+       const id = 1 / (this.a * this.d + this.c * -this.b);
 
-       let x = pos.x;
-       let y = pos.y;
+       const x = pos.x;
+       const y = pos.y;
 
        newPos.x = this.d * id * x + -this.c * id * y + (this.ty * this.c - this.tx * this.d) * id;
        newPos.y = this.a * id * y + -this.b * id * x + (-this.ty * this.a + this.tx * this.b) * id;
@@ -232,12 +232,12 @@ class Matrix
     */
    rotate(angle)
    {
-       let cos = Math.cos( angle );
-       let sin = Math.sin( angle );
+       const cos = Math.cos( angle );
+       const sin = Math.sin( angle );
 
-       let a1 = this.a;
-       let c1 = this.c;
-       let tx1 = this.tx;
+       const a1 = this.a;
+       const c1 = this.c;
+       const tx1 = this.tx;
 
        this.a = a1 * cos-this.b * sin;
        this.b = a1 * sin+this.b * cos;
@@ -257,10 +257,10 @@ class Matrix
     */
    append(matrix)
    {
-       let a1 = this.a;
-       let b1 = this.b;
-       let c1 = this.c;
-       let d1 = this.d;
+       const a1 = this.a;
+       const b1 = this.b;
+       const c1 = this.c;
+       const d1 = this.d;
 
        this.a  = matrix.a * a1 + matrix.b * c1;
        this.b  = matrix.a * b1 + matrix.b * d1;
@@ -323,12 +323,12 @@ class Matrix
     */
    prepend(matrix)
    {
-       let tx1 = this.tx;
+       const tx1 = this.tx;
 
        if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1)
        {
-           let a1 = this.a;
-           let c1 = this.c;
+           const a1 = this.a;
+           const c1 = this.c;
            this.a  = a1*matrix.a+this.b*matrix.c;
            this.b  = a1*matrix.b+this.b*matrix.d;
            this.c  = c1*matrix.a+this.d*matrix.c;
@@ -354,10 +354,10 @@ class Matrix
            c = this.c,
            d = this.d;
 
-       let skewX = Math.atan2(-c, d);
-       let skewY = Math.atan2(b, a);
+       const skewX = Math.atan2(-c, d);
+       const skewY = Math.atan2(b, a);
 
-       let delta = Math.abs(1-skewX/skewY);
+       const delta = Math.abs(1-skewX/skewY);
 
        if (delta < 0.00001)
        {
@@ -396,12 +396,12 @@ class Matrix
     */
    invert()
    {
-       let a1 = this.a;
-       let b1 = this.b;
-       let c1 = this.c;
-       let d1 = this.d;
-       let tx1 = this.tx;
-       let n = a1*d1-b1*c1;
+       const a1 = this.a;
+       const b1 = this.b;
+       const c1 = this.c;
+       const d1 = this.d;
+       const tx1 = this.tx;
+       const n = a1*d1-b1*c1;
 
        this.a = d1/n;
        this.b = -b1/n;
@@ -438,7 +438,7 @@ class Matrix
      */
     clone()
     {
-        let matrix = new Matrix();
+        const matrix = new Matrix();
         matrix.a = this.a;
         matrix.b = this.b;
         matrix.c = this.c;

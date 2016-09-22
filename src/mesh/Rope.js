@@ -146,7 +146,7 @@ class Rope extends Mesh
      */
     updateTransform()
     {
-        let points = this.points;
+        const points = this.points;
 
         if (points.length < 1)
         {
@@ -160,7 +160,7 @@ class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        let vertices = this.vertices;
+        const vertices = this.vertices;
         let total = points.length,
             point, index, ratio, perpLength, num;
 

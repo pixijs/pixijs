@@ -38,7 +38,7 @@ class SystemRenderer extends EventEmitter
         // prepare options
         if (options)
         {
-            for (let i in CONST.DEFAULT_RENDER_OPTIONS)
+            for (const i in CONST.DEFAULT_RENDER_OPTIONS)
             {
                 if (typeof options[i] === 'undefined')
                 {

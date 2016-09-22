@@ -206,10 +206,10 @@ class Rectangle
             return;
         }
 
-        let x1 = Math.min(this.x, rect.x);
-        let x2 = Math.max(this.x + this.width, rect.x + rect.width);
-        let y1 = Math.min(this.y, rect.y);
-        let y2 = Math.max(this.y + this.height, rect.y + rect.height);
+        const x1 = Math.min(this.x, rect.x);
+        const x2 = Math.max(this.x + this.width, rect.x + rect.width);
+        const y1 = Math.min(this.y, rect.y);
+        const y2 = Math.max(this.y + this.height, rect.y + rect.height);
         this.x = x1;
         this.width = x2 - x1;
         this.y = y1;

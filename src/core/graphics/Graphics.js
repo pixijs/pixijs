@@ -314,8 +314,8 @@ class Graphics extends Container
             this.moveTo(0, 0);
         }
 
-        let fromX = points[points.length-2];
-        let fromY = points[points.length-1];
+        const fromX = points[points.length-2];
+        const fromY = points[points.length-1];
 
         let j = 0;
         for (let i = 1; i <= n; ++i)
@@ -821,7 +821,7 @@ class Graphics extends Container
 
         for (let i = 0; i < graphicsData.length; i++)
         {
-            let data = graphicsData[i];
+            const data = graphicsData[i];
 
             if (!data.fill)
             {
@@ -930,7 +930,7 @@ class Graphics extends Container
             maxY = 0;
         }
 
-        let padding = this.boundsPadding;
+        const padding = this.boundsPadding;
 
         this._localBounds.minX = minX - padding;
         this._localBounds.maxX = maxX + padding * 2;
@@ -1035,7 +1035,7 @@ class Graphics extends Container
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (let id in this._webgl) {
+        for (const id in this._webgl) {
             for (let j = 0; j < this._webgl[id].data.length; ++j) {
                 this._webgl[id].data[j].destroy();
             }

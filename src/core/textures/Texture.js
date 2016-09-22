@@ -361,7 +361,7 @@ class Texture extends EventEmitter
             if (!texture)
             {
                 // check if its a video..
-                let isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
+                const isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
                 if(isVideo)
                 {
                     return Texture.fromVideoUrl(source);

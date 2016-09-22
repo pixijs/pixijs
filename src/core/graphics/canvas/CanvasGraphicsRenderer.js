@@ -83,7 +83,7 @@ class CanvasGraphicsRenderer
 
                 for (let j = 0; j < data.holes.length; j++)
                 {
-                    let hole = data.holes[j];
+                    const hole = data.holes[j];
                     this.renderPolygon(hole.points, true, context);
                 }
 

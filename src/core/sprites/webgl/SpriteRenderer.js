@@ -214,7 +214,7 @@ class SpriteRenderer extends ObjectRenderer
         {
             // upload the sprite elemetns...
             // they have all ready been calculated so we just need to push them into the buffer.
-            let sprite = sprites[i];
+            const sprite = sprites[i];
 
             nextTexture = sprite._texture.baseTexture;
 

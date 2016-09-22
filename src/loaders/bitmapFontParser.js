@@ -14,7 +14,7 @@ function parse(resource, texture) {
     data.chars = {};
 
     //parse letters
-    let letters = resource.data.getElementsByTagName('char');
+    const letters = resource.data.getElementsByTagName('char');
 
     for (let i = 0; i < letters.length; i++)
     {
@@ -102,14 +102,14 @@ export default function ()
             xmlUrl += '/';
         }
 
-        let textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         if (core.utils.TextureCache[textureUrl]) {
             //reuse existing texture
             parse(resource, core.utils.TextureCache[textureUrl]);
             next();
         }
         else {
-            let loadOptions = {
+            const loadOptions = {
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE,
                 metadata: resource.metadata.imageMetadata

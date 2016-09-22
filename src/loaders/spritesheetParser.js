@@ -9,7 +9,7 @@ export default function ()
     return function (resource, next)
     {
         let resourcePath;
-        let imageResourceName = `${resource.name}_image`;
+        const imageResourceName = `${resource.name}_image`;
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
@@ -49,7 +49,7 @@ export default function ()
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    let i = frameKeys[frameIndex];
+                    const i = frameKeys[frameIndex];
                     const rect = frames[i].frame;
 
                     if (rect)

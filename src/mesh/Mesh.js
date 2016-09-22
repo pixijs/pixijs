@@ -411,12 +411,12 @@ class Mesh extends core.Container
         }
         this.worldTransform.applyInverse(point,  tempPoint);
 
-        let vertices = this.vertices;
-        let points = tempPolygon.points;
+        const vertices = this.vertices;
+        const points = tempPolygon.points;
 
-        let indices = this.indices;
-        let len = this.indices.length;
-        let step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
+        const indices = this.indices;
+        const len = this.indices.length;
+        const step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
         for (let i=0;i+2<len;i+=step) {
             let ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
             points[0] = vertices[ind0];

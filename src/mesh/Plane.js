@@ -74,7 +74,7 @@ class Plane extends Mesh
 
         //  cons
 
-        let totalSub = segmentsX * segmentsY;
+        const totalSub = segmentsX * segmentsY;
 
         for (let i = 0; i < totalSub; i++) {
 

@@ -18,7 +18,7 @@ if (!(Date.now && Date.prototype.getTime)) {
 
 // performance.now
 if (!(global.performance && global.performance.now)) {
-    let startTime = Date.now();
+    const startTime = Date.now();
     if (!global.performance) {
         global.performance = {};
     }
@@ -29,7 +29,7 @@ if (!(global.performance && global.performance.now)) {
 
 // requestAnimationFrame
 let lastTime = Date.now();
-let vendors = ['ms', 'moz', 'webkit', 'o'];
+const vendors = ['ms', 'moz', 'webkit', 'o'];
 
 for(let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x) {
     global.requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];

@@ -124,19 +124,19 @@ class Text extends Sprite
 
         // word wrap
         // preserve original text
-        let outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
+        const outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
         // split text into lines
-        let lines = outputText.split(/(?:\r\n|\r|\n)/);
+        const lines = outputText.split(/(?:\r\n|\r|\n)/);
 
         // calculate text width
         const lineWidths = new Array(lines.length);
         let maxLineWidth = 0;
-        let fontProperties = this.determineFontProperties(this._font);
+        const fontProperties = this.determineFontProperties(this._font);
 
         for (let i = 0; i < lines.length; i++)
         {
-            let lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+            const lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
@@ -152,7 +152,7 @@ class Text extends Sprite
         this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
 
         // calculate text height
-        let lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        const lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
         let height = Math.max(lineHeight, fontProperties.fontSize  + style.strokeThickness) + (lines.length - 1) * lineHeight;
         if (style.dropShadow)
@@ -192,8 +192,8 @@ class Text extends Sprite
                 this.context.fillStyle = style.dropShadowColor;
             }
 
-            let xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-            let yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+            const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
             for (let i = 0; i < lines.length; i++)
             {
@@ -412,9 +412,9 @@ class Text extends Sprite
             context.fillStyle = '#000';
             context.fillText('|MÉq', 0, baseline);
 
-            let imagedata = context.getImageData(0, 0, width, height).data;
-            let pixels = imagedata.length;
-            let line = width * 4;
+            const imagedata = context.getImageData(0, 0, width, height).data;
+            const pixels = imagedata.length;
+            const line = width * 4;
 
             let idx = 0;
             let stop = false;
@@ -494,17 +494,17 @@ class Text extends Sprite
         for (let i = 0; i < lines.length; i++)
         {
             let spaceLeft = wordWrapWidth;
-            let words = lines[i].split(' ');
+            const words = lines[i].split(' ');
             for (let j = 0; j < words.length; j++)
             {
-                let wordWidth = this.context.measureText(words[j]).width;
+                const wordWidth = this.context.measureText(words[j]).width;
                 if (this._style.breakWords && wordWidth > wordWrapWidth)
                 {
                     // Word should be split in the middle
-                    let characters = words[j].split('');
+                    const characters = words[j].split('');
                     for (let c = 0; c < characters.length; c++)
                     {
-                      let characterWidth = this.context.measureText(characters[c]).width;
+                      const characterWidth = this.context.measureText(characters[c]).width;
                       if (characterWidth > spaceLeft)
                       {
                         result += '\n' + characters[c];
@@ -523,7 +523,7 @@ class Text extends Sprite
                 }
                 else
                 {
-                    let wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                    const wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                     if (j === 0 || wordWidthWithSpace > spaceLeft)
                     {
                         // Skip printing the newline if it's the first word of the line that is
@@ -685,7 +685,7 @@ class Text extends Sprite
     {
         this.updateText(true);
 
-        let sign = utils.sign(this.scale.x) || 1;
+        const sign = utils.sign(this.scale.x) || 1;
         this.scale.x = sign * value / this.texture.orig.width;
         this._width = value;
     }

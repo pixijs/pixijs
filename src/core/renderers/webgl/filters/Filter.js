@@ -40,7 +40,7 @@ class Filter
 
         this.uniforms = {};
 
-        for (let i in this.uniformData)
+        for (const i in this.uniformData)
         {
             this.uniforms[i] = this.uniformData[i].value;
         }

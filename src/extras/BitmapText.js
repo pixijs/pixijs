@@ -145,7 +145,7 @@ class BitmapText extends core.Container
 
         for (let i = 0; i < this.text.length; i++)
         {
-            let charCode = this.text.charCodeAt(i);
+            const charCode = this.text.charCodeAt(i);
 
             if(/(\s)/.test(this.text.charAt(i))){
                 lastSpace = i;
@@ -180,7 +180,7 @@ class BitmapText extends core.Container
                 continue;
             }
 
-            let charData = data.chars[charCode];
+            const charData = data.chars[charCode];
 
             if (!charData)
             {
@@ -202,7 +202,7 @@ class BitmapText extends core.Container
         lineWidths.push(lastLineWidth);
         maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
 
-        let lineAlignOffsets = [];
+        const lineAlignOffsets = [];
 
         for (let i = 0; i <= line; i++)
         {
@@ -220,8 +220,8 @@ class BitmapText extends core.Container
             lineAlignOffsets.push(alignOffset);
         }
 
-        let lenChars = chars.length;
-        let tint = this.tint;
+        const lenChars = chars.length;
+        const tint = this.tint;
 
         for (let i = 0; i < lenChars; i++)
         {

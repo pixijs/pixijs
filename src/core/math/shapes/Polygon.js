@@ -76,7 +76,7 @@ class Polygon
 
     close()
     {
-        let points = this.points;
+        const points = this.points;
 
         // close the poly if the value is true!
         if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])

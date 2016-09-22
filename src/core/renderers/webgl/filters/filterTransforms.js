@@ -30,8 +30,8 @@ const calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea,
 
     mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
 
-    let translateScaleX = (textureSize.width / filterArea.width);
-    let translateScaleY = (textureSize.height / filterArea.height);
+    const translateScaleX = (textureSize.width / filterArea.width);
+    const translateScaleY = (textureSize.height / filterArea.height);
 
     mappedMatrix.scale( translateScaleX , translateScaleY );
 

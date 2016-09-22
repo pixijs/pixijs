@@ -462,7 +462,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             // @if DEBUG
             warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
-            let fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
+            const fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
             return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
         set (font)
@@ -496,7 +496,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
 
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
-            let splits = font.split(' ');
+            const splits = font.split(' ');
             let fontSizeIndex = -1;
 
             this._fontSize = 26;

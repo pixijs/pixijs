@@ -223,7 +223,7 @@ class BaseTexture extends EventEmitter
      */
     loadSource(source)
     {
-        let wasLoading = this.isLoading;
+        const wasLoading = this.isLoading;
         this.hasLoaded = false;
         this.isLoading = false;
 
@@ -397,7 +397,7 @@ class BaseTexture extends EventEmitter
         {
             // new Image() breaks tex loading in some versions of Chrome.
             // See https://code.google.com/p/chromium/issues/detail?id=238071
-            let image = new Image();//document.createElement('img');
+            const image = new Image();//document.createElement('img');
 
 
             if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)

@@ -20,9 +20,9 @@ const buildPoly = function (graphicsData, webGLData)
 
     if(graphicsData.fill && points.length >= 6)
     {
-        let holeArray = [];
+        const holeArray = [];
              // Process holes..
-        let holes = graphicsData.holes;
+        const holes = graphicsData.holes;
 
         for (let i = 0; i < holes.length; i++) {
             const hole = holes[i];
@@ -51,7 +51,7 @@ const buildPoly = function (graphicsData, webGLData)
             return;
         }
 
-        let vertPos = verts.length / 6;
+        const vertPos = verts.length / 6;
 
         for (let i = 0; i < triangles.length; i+=3)
         {

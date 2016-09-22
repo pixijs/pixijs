@@ -165,7 +165,7 @@ class MovieClip extends core.Sprite
                 lag += this._durations[this.currentFrame];
             }
 
-            let sign = Math.sign(this.animationSpeed * deltaTime);
+            const sign = Math.sign(this.animationSpeed * deltaTime);
             this._currentTime = Math.floor(this._currentTime);
 
             while (lag >= this._durations[this.currentFrame])

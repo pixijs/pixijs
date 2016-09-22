@@ -110,7 +110,7 @@ const utils = {
 
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
-            let args = [
+            const args = [
                 `\n %c %c %c Pixi.js ${CONST.VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
                 'background: #ff66a5; padding:5px 0;',
                 'background: #ff66a5; padding:5px 0;',
@@ -152,10 +152,10 @@ const utils = {
             const canvas = document.createElement('canvas');
             let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
-            let success = !!(gl && gl.getContextAttributes().stencil);
+            const success = !!(gl && gl.getContextAttributes().stencil);
             if (gl)
             {
-                let loseContext = gl.getExtension('WEBGL_lose_context');
+                const loseContext = gl.getExtension('WEBGL_lose_context');
 
                 if(loseContext)
                 {
@@ -194,7 +194,7 @@ const utils = {
      */
     removeItems (arr, startIdx, removeCount)
     {
-        let length = arr.length;
+        const length = arr.length;
 
         if (startIdx >= length || removeCount === 0)
         {
@@ -202,7 +202,7 @@ const utils = {
         }
 
         removeCount = (startIdx+removeCount > length ? length-startIdx : removeCount);
-        let len = length-removeCount;
+        const len = length-removeCount;
         for (let i = startIdx; i < len; ++i)
         {
             arr[i] = arr[i + removeCount];

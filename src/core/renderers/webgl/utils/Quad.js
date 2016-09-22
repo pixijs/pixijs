@@ -162,7 +162,7 @@ class Quad
      */
     destroy()
     {
-        let gl = this.gl;
+        const gl = this.gl;
 
          gl.deleteBuffer(this.vertexBuffer);
          gl.deleteBuffer(this.indexBuffer);

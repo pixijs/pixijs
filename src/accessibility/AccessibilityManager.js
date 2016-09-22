@@ -257,7 +257,7 @@ class AccessibilityManager
                 // map div to display..
                 div = child._accessibleDiv;
                 let hitArea = child.hitArea;
-                let wt = child.worldTransform;
+                const wt = child.worldTransform;
 
                 if(child.hitArea)
                 {
@@ -374,7 +374,7 @@ class AccessibilityManager
      */
     _onClick(e)
     {
-        let interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
         interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
     }
 
@@ -384,7 +384,7 @@ class AccessibilityManager
      */
     _onFocus(e)
     {
-        let interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
         interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
     }
 
@@ -394,7 +394,7 @@ class AccessibilityManager
      */
     _onFocusOut(e)
     {
-        let interactionManager = this.renderer.plugins.interaction;
+        const interactionManager = this.renderer.plugins.interaction;
         interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
     }
 

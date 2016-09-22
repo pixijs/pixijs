@@ -151,7 +151,7 @@ class FilterManager extends WebGLManager
             {
                 filters[i].apply(this, flip, flop, true);
 
-                let t = flip;
+                const t = flip;
                 flip = flop;
                 flop = t;
             }
@@ -242,7 +242,7 @@ class FilterManager extends WebGLManager
         if(shader.uniforms.data.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
-            let filterArea = shader.uniforms.filterArea;
+            const filterArea = shader.uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
             filterArea[1] = currentState.renderTarget.size.height;
@@ -257,7 +257,7 @@ class FilterManager extends WebGLManager
         if(shader.uniforms.data.filterClamp)
         {
             currentState = this.filterData.stack[this.filterData.index];
-            let filterClamp = shader.uniforms.filterClamp;
+            const filterClamp = shader.uniforms.filterClamp;
 
             filterClamp[0] = 0.5 / currentState.renderTarget.size.width;
             filterClamp[1] = 0.5 / currentState.renderTarget.size.height;
@@ -269,7 +269,7 @@ class FilterManager extends WebGLManager
 
         let val;
         //TODO Cacheing layer..
-        for(let i in uniformData)
+        for(const i in uniformData)
         {
             if(uniformData[i].type === 'sampler2D')
             {
@@ -416,9 +416,9 @@ class FilterManager extends WebGLManager
 
     emptyPool()
     {
-        for (let i in this.pool)
+        for (const i in this.pool)
         {
-            let textures = this.pool[i];
+            const textures = this.pool[i];
             if(textures)
             {
                 for (let j = 0; j < textures.length; j++)

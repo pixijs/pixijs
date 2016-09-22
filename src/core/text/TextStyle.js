@@ -53,8 +53,8 @@ class TextStyle
      */
     clone()
     {
-        let clonedProperties = {};
-        for (let key in this._defaults)
+        const clonedProperties = {};
+        for (const key in this._defaults)
         {
             clonedProperties[key] = this[key];
         }
@@ -175,7 +175,7 @@ class TextStyle
     }
     set dropShadowColor(dropShadowColor)
     {
-        let outputColor = getColor(dropShadowColor);
+        const outputColor = getColor(dropShadowColor);
         if (this._dropShadowColor !== outputColor)
         {
             this._dropShadowColor = outputColor;
@@ -202,7 +202,7 @@ class TextStyle
     }
     set fill(fill)
     {
-        let outputColor = getColor(fill);
+        const outputColor = getColor(fill);
         if (this._fill !== outputColor)
         {
             this._fill = outputColor;
@@ -359,7 +359,7 @@ class TextStyle
     }
     set stroke(stroke)
     {
-        let outputColor = getColor(stroke);
+        const outputColor = getColor(stroke);
         if (this._stroke !== outputColor)
         {
             this._stroke = outputColor;
