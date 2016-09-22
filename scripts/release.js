@@ -2,7 +2,6 @@
 
 // Publish script to push releases of the bin files
 // the normally are gitignored
-
 var ghpages = require('gh-pages');
 var path = require('path');
 var packageInfo = require(path.join(__dirname, '..', 'package.json'));
