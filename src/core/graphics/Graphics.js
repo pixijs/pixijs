@@ -219,7 +219,7 @@ class Graphics extends Container
      *
      * @param [lineWidth=0] {number} width of the line to draw, will update the objects stored style
      * @param [color=0] {number} color of the line to draw, will update the objects stored style
-     * @param [alpha=0] {number} alpha of the line to draw, will update the objects stored style
+     * @param [alpha=1] {number} alpha of the line to draw, will update the objects stored style
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     lineStyle(lineWidth=0, color=0, alpha=1)
