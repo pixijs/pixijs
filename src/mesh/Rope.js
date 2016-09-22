@@ -161,8 +161,8 @@ class Rope extends Mesh
         // this.count -= 0.2;
 
         const vertices = this.vertices;
-        let total = points.length,
-            point, index, ratio, perpLength, num;
+        const total = points.length;
+        let point, index, ratio, perpLength, num;
 
         for (let i = 0; i < total; i++)
         {

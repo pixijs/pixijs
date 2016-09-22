@@ -77,12 +77,10 @@ class TransformStatic extends TransformBase
         if(this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            let a,b,c,d;
-
-            a  =  this._cr * this.scale._x;
-            b  =  this._sr * this.scale._x;
-            c  = -this._sr * this.scale._y;
-            d  =  this._cr * this.scale._y;
+            const a  =  this._cr * this.scale._x;
+            const b  =  this._sr * this.scale._x;
+            const c  = -this._sr * this.scale._y;
+            const d  =  this._cr * this.scale._y;
 
             lt.a  = this._cy * a + this._sy * c;
             lt.b  = this._cy * b + this._sy * d;
@@ -112,12 +110,10 @@ class TransformStatic extends TransformBase
         if(this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            let a,b,c,d;
-
-            a  =  this._cr * this.scale._x;
-            b  =  this._sr * this.scale._x;
-            c  = -this._sr * this.scale._y;
-            d  =  this._cr * this.scale._y;
+            const a  =  this._cr * this.scale._x;
+            const b  =  this._sr * this.scale._x;
+            const c  = -this._sr * this.scale._y;
+            const d  =  this._cr * this.scale._y;
 
             lt.a  = this._cy * a + this._sy * c;
             lt.b  = this._cy * b + this._sy * d;

@@ -39,13 +39,14 @@ class CanvasSpriteRenderer
      */
     render(sprite)
     {
-        const texture = sprite._texture,
-            renderer = this.renderer;
+        const texture = sprite._texture;
+        const renderer = this.renderer;
+        
+        const width = texture._frame.width;
+        const height = texture._frame.height;
+
         let wt = sprite.transform.worldTransform,
-            dx,
-            dy,
-            width = texture._frame.width,
-            height = texture._frame.height;
+            dx, dy;
 
         if (texture.orig.width <= 0 || texture.orig.height <= 0 || !texture.baseTexture.source)
         {

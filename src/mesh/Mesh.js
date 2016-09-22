@@ -418,7 +418,9 @@ class Mesh extends core.Container
         const len = this.indices.length;
         const step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
         for (let i=0;i+2<len;i+=step) {
-            let ind0 = indices[i]*2, ind1 = indices[i+1]*2, ind2 = indices[i+2]*2;
+            const ind0 = indices[i]*2;
+            const ind1 = indices[i + 1] * 2;
+            const ind2 = indices[i + 2] * 2;
             points[0] = vertices[ind0];
             points[1] = vertices[ind0+1];
             points[2] = vertices[ind1];

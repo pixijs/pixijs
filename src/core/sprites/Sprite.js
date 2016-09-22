@@ -212,20 +212,19 @@ class Sprite extends Container
         }
 
         // lets do some special trim code!
-        let texture = this._texture,
-            vertexData = this.vertexTrimmedData,
-            orig = texture.orig;
+        const texture = this._texture;
+        const vertexData = this.vertexTrimmedData;
+        const orig = texture.orig;
 
         // lets calculate the new untrimmed bounds..
         const wt = this.transform.worldTransform,
             a = wt.a, b = wt.b, c = wt.c, d = wt.d, tx = wt.tx, ty = wt.ty;
-        let w0, w1, h0, h1;
 
-        w0 = (orig.width ) * (1-this.anchor._x);
-        w1 = (orig.width ) * -this.anchor._x;
+        const w0 = (orig.width ) * (1-this.anchor._x);
+        const w1 = (orig.width ) * -this.anchor._x;
 
-        h0 = orig.height * (1-this.anchor._y);
-        h1 = orig.height * -this.anchor._y;
+        const h0 = orig.height * (1-this.anchor._y);
+        const h1 = orig.height * -this.anchor._y;
 
         // xy
         vertexData[0] = a * w1 + c * h1 + tx;

@@ -73,12 +73,10 @@ class Transform extends TransformBase
      */
     updateLocalTransform() {
         const lt = this.localTransform;
-        let a, b, c, d;
-
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        const a  =  this._cr * this.scale.x;
+        const b  =  this._sr * this.scale.x;
+        const c  = -this._sr * this.scale.y;
+        const d  =  this._cr * this.scale.y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -96,12 +94,11 @@ class Transform extends TransformBase
         const pt = parentTransform.worldTransform;
         const wt = this.worldTransform;
         const lt = this.localTransform;
-        let a, b, c, d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        const a  =  this._cr * this.scale.x;
+        const b  =  this._sr * this.scale.x;
+        const c  = -this._sr * this.scale.y;
+        const d  =  this._cr * this.scale.y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;

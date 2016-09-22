@@ -43,8 +43,8 @@ if (!global.requestAnimationFrame) {
             throw new TypeError(callback + 'is not a function');
         }
 
-        let currentTime = Date.now(),
-            delay = 16 + lastTime - currentTime;
+        const currentTime = Date.now();
+        let delay = 16 + lastTime - currentTime;
 
         if (delay < 0) {
             delay = 0;
