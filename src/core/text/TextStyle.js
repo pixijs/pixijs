@@ -29,8 +29,8 @@ import utils from '../utils';
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
  * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
  *      or increase the spikiness of rendered text.
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from
+ *     happening by adding padding to all sides of the text.
  * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
