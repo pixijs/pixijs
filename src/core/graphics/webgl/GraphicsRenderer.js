@@ -143,7 +143,7 @@ class GraphicsRenderer extends ObjectRenderer
             }
 
             // clear the array and reset the index..
-            webGL.data = [];
+            webGL.data.length = 0;
             webGL.lastIndex = 0;
         }
 

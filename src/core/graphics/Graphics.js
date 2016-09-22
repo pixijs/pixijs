@@ -668,12 +668,15 @@ class Graphics extends Container
      */
     clear()
     {
-        this.lineWidth = 0;
-        this.filling = false;
+        if (this.lineWidth || this.filling || this.graphicsData.length > 0)
+        {
+            this.lineWidth = 0;
+            this.filling = false;
 
-        this.dirty++;
-        this.clearDirty++;
-        this.graphicsData = [];
+            this.dirty++;
+            this.clearDirty++;
+            this.graphicsData.length = 0;
+        }
 
         return this;
     }
