@@ -213,6 +213,9 @@ class Container extends DisplayObject
         }
         else
         {
+            if(!this.children) return;
+            // If one is reusing Sprite's before removing them from their deceased parent, this is needed, as this.children will be null
+            
             let index = this.children.indexOf(child);
 
             if (index === -1)
