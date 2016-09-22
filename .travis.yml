@@ -14,7 +14,6 @@ addons:
 
 install:
     - npm install xvfb-maybe
-    - npm install
 
 cache:
   directories:
@@ -25,7 +24,7 @@ before_script:
   - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
 
 script:
-    - xvfb-maybe npm run build
+    - xvfb-maybe npm install
     - npm run docs
 
 deploy:
