@@ -29,7 +29,12 @@
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
     "postbuild": "npm test",
-    "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md"
+    "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
+    "publish:patch": "npm version patch --no-git-tag-version && npm publish",
+    "publish:minor": "npm version minor --no-git-tag-version && npm publish",
+    "publish:major": "npm version major --no-git-tag-version && npm publish",
+    "prepublish": "npm run build",
+    "postpublish": "node scripts/release.js"
   },
   "files": [
     "bin/",
@@ -57,6 +62,7 @@
     "electron-prebuilt": "^1.3.2",
     "eslint": "^3.5.0",
     "floss": "^0.7.1",
+    "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "jsdoc": "^3.4.0",
     "minimist": "^1.2.0",
@@ -72,7 +78,12 @@
         "babelify",
         {
           "presets": [
-            ["es2015", {"loose": true}]
+            [
+              "es2015",
+              {
+                "loose": true
+              }
+            ]
           ]
         }
       ],
