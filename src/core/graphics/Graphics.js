@@ -217,16 +217,16 @@ class Graphics extends Container
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
      *
-     * @param lineWidth {number} width of the line to draw, will update the objects stored style
-     * @param color {number} color of the line to draw, will update the objects stored style
-     * @param alpha {number} alpha of the line to draw, will update the objects stored style
+     * @param [lineWidth=0] {number} width of the line to draw, will update the objects stored style
+     * @param [color=0] {number} color of the line to draw, will update the objects stored style
+     * @param [alpha=0] {number} alpha of the line to draw, will update the objects stored style
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth, color, alpha)
+    lineStyle(lineWidth=0, color=0, alpha=1)
     {
-        this.lineWidth = lineWidth || 0;
-        this.lineColor = color || 0;
-        this.lineAlpha = (alpha === undefined) ? 1 : alpha;
+        this.lineWidth = lineWidth;
+        this.lineColor = color;
+        this.lineAlpha = alpha;
 
         if (this.currentPath)
         {
@@ -783,9 +783,7 @@ class Graphics extends Container
     /**
      * Retrieves the bounds of the graphic shape as a rectangle object
      *
-     * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
-     *  object's worldTransform.
-     * @return {PIXI.Rectangle} the rectangular bounding area
+     * @private
      */
     _calculateBounds()
     {
@@ -974,10 +972,8 @@ class Graphics extends Container
         return data;
     }
 
-    generateCanvasTexture(scaleMode, resolution)
+    generateCanvasTexture(scaleMode, resolution=1)
     {
-        resolution = resolution || 1;
-
         const bounds = this.getLocalBounds();
 
         const canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
