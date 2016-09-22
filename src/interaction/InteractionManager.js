@@ -112,6 +112,14 @@ class InteractionManager extends EventEmitter
          */
         this.eventsAdded = false;
 
+        /**
+         * Is the mouse hovering over the renderer?
+         *
+         * @member {boolean}
+         * @private
+         */
+        this.mouseOverRenderer = false;
+
         //this will make it so that you don't have to call bind all the time
 
         /**
@@ -789,6 +797,8 @@ class InteractionManager extends EventEmitter
      */
     onMouseOut(event)
     {
+        this.mouseOverRenderer = false;
+
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
         this.eventData.stopped = false;
@@ -815,7 +825,7 @@ class InteractionManager extends EventEmitter
      */
     processMouseOverOut( displayObject, hit )
     {
-        if(hit)
+        if(hit && this.mouseOverRenderer)
         {
             if(!displayObject._over)
             {
@@ -846,6 +856,8 @@ class InteractionManager extends EventEmitter
      */
     onMouseOver(event)
     {
+        this.mouseOverRenderer = true;
+
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
         this.eventData.stopped = false;
