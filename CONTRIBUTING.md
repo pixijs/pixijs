@@ -27,7 +27,8 @@ the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just 
 
 To setup for making changes you will need to take a few steps, we've outlined them below:
 
-1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node].
+1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
+pixi uses modern JS features, you will need a modern version of node. v4+ is recommended.
 
 2. Fork the [pixi.js][pixi] repository, if you are unsure how to do this GitHub has a guides
 for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
