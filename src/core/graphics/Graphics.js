@@ -977,7 +977,7 @@ class Graphics extends Container
 
         const bounds = this.getLocalBounds();
 
-        const canvasBuffer = new RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+        const canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
         if(!canvasRenderer)
         {

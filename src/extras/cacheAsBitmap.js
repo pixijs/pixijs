@@ -261,7 +261,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
     // need to set //
     const m = _tempMatrix;
