@@ -20,7 +20,7 @@ import CONST from '../const';
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * BaserenderTexture.render(sprite);
+ * baseRenderTexture.render(sprite);
  * ```
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
