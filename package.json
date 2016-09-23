@@ -28,12 +28,11 @@
     "lint": "eslint scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
-    "postbuild": "npm test",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish",
     "publish:major": "npm version major --no-git-tag-version && npm publish",
-    "prepublish": "npm run build",
+    "postversion": "npm run build && npm test",
     "postpublish": "node scripts/release.js"
   },
   "files": [
