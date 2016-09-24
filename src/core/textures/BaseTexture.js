@@ -272,9 +272,12 @@ class BaseTexture extends EventEmitter
         {
             this._updateImageType();
 
-            if (this.imageType === 'svg'){
+            if (this.imageType === 'svg')
+            {
                 this._loadSvgSource();
-            } else {
+            }
+            else
+            {
                 this._sourceLoaded();
             }
         }
@@ -300,7 +303,8 @@ class BaseTexture extends EventEmitter
                 scope.isLoading = false;
                 scope._sourceLoaded();
 
-                if (scope.imageType === 'svg'){
+                if (scope.imageType === 'svg')
+                {
                     scope._loadSvgSource();
                     return;
                 }
@@ -368,7 +372,8 @@ class BaseTexture extends EventEmitter
      */
     _updateImageType()
     {
-        if (!this.imageUrl) {
+        if (!this.imageUrl)
+        {
             return;
         }
 
@@ -438,7 +443,9 @@ class BaseTexture extends EventEmitter
                 throw new Error('Your browser doesn\'t support base64 conversions.');
             }
             svgString = atob(dataUri.data);
-        } else {
+        }
+        else
+        {
             svgString = dataUri.data;
         }
 
@@ -463,7 +470,8 @@ class BaseTexture extends EventEmitter
 
         svgXhr.onload = function ()
         {
-            if (svgXhr.readyState !== svgXhr.DONE || svgXhr.status !== 200) {
+            if (svgXhr.readyState !== svgXhr.DONE || svgXhr.status !== 200)
+            {
                 throw new Error('Failed to load SVG using XHR.');
             }
 
@@ -495,7 +503,8 @@ class BaseTexture extends EventEmitter
         const svgWidth = svgSize.width;
         const svgHeight = svgSize.height;
 
-        if (!svgWidth || !svgHeight) {
+        if (!svgWidth || !svgHeight)
+        {
             throw new Error('The SVG image must have width and height defined, canvas API needs them.');
         }
 
@@ -630,7 +639,8 @@ class BaseTexture extends EventEmitter
             baseTexture = new BaseTexture(image, scaleMode);
             baseTexture.imageUrl = imageUrl;
 
-            if (sourceScale) {
+            if (sourceScale)
+            {
                 baseTexture.sourceScale = sourceScale;
             }
 
