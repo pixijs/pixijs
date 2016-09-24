@@ -12,10 +12,10 @@
  */
 class ObservablePoint
 {
-    constructor(cb, scope, x, y)
+    constructor(cb, scope, x=0, y=0)
     {
-        this._x = x || 0;
-        this._y = y || 0;
+        this._x = x;
+        this._y = y;
 
         this.cb = cb;
         this.scope = scope;
