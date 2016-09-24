@@ -72,7 +72,8 @@ class TransformStatic extends TransformBase
     /**
      * Updates only local matrix
      */
-    updateLocalTransform() {
+    updateLocalTransform()
+    {
         const lt = this.localTransform;
         if(this._localID !== this._currentLocalID)
         {
@@ -147,7 +148,7 @@ class TransformStatic extends TransformBase
 
     /**
      * Decomposes a matrix and sets the transforms properties based on it.
-     * @param {PIXI.Matrix} The matrix to decompose
+     * @param matrix {PIXI.Matrix} The matrix to decompose
      */
     setFromMatrix(matrix)
     {
@@ -161,10 +162,12 @@ class TransformStatic extends TransformBase
      * @member {number}
      * @memberof PIXI.TransformStatic#
      */
-    get rotation() {
+    get rotation()
+    {
         return this._rotation;
     }
-    set rotation(value) {
+    set rotation(value)
+    {
         this._rotation = value;
         this._sr = Math.sin(value);
         this._cr = Math.cos(value);

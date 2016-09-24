@@ -43,7 +43,8 @@ class CanvasGraphicsRenderer
         const resolution = renderer.resolution;
 
          // if the tint has changed, set the graphics object to dirty.
-        if (this._prevTint !== this.tint) {
+        if (this._prevTint !== this.tint)
+        {
             this.dirty = true;
         }
 
