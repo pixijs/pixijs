@@ -28,10 +28,10 @@ class ColorMatrixFilter extends core.Filter
         );
 
         this.uniforms.m = [
-                        1, 0, 0, 0, 0,
-                        0, 1, 0, 0, 0,
-                        0, 0, 1, 0, 0,
-                        0, 0, 0, 1, 0];
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0];
     }
 
 
@@ -47,7 +47,8 @@ class ColorMatrixFilter extends core.Filter
 
         let newMatrix = matrix;
 
-        if (multiply) {
+        if (multiply)
+        {
             this._multiply(newMatrix, this.uniforms.m, matrix);
             newMatrix = this._colorMatrix(newMatrix);
         }
@@ -185,26 +186,26 @@ class ColorMatrixFilter extends core.Filter
             sqrt = Math.sqrt;
 
         /*a good approximation for hue rotation
-        This matrix is far better than the versions with magic luminance constants
-        formerly used here, but also used in the starling framework (flash) and known from this
-        old part of the internet: quasimondo.com/archives/000565.php
+         This matrix is far better than the versions with magic luminance constants
+         formerly used here, but also used in the starling framework (flash) and known from this
+         old part of the internet: quasimondo.com/archives/000565.php
 
-        This new matrix is based on rgb cube rotation in space. Look here for a more descriptive
-        implementation as a shader not a general matrix:
-        https://github.com/evanw/glfx.js/blob/58841c23919bd59787effc0333a4897b43835412/src/filters/adjust/huesaturation.js
+         This new matrix is based on rgb cube rotation in space. Look here for a more descriptive
+         implementation as a shader not a general matrix:
+         https://github.com/evanw/glfx.js/blob/58841c23919bd59787effc0333a4897b43835412/src/filters/adjust/huesaturation.js
 
-        This is the source for the code:
-        see http://stackoverflow.com/questions/8507885/shift-hue-of-an-rgb-color/8510751#8510751
-        */
+         This is the source for the code:
+         see http://stackoverflow.com/questions/8507885/shift-hue-of-an-rgb-color/8510751#8510751
+         */
 
-        const w = 1/3, sqrW = sqrt(w);//weight is
+        const w = 1 / 3, sqrW = sqrt(w);//weight is
 
         const a00 = cosR + (1.0 - cosR) * w;
         const a01 = w * (1.0 - cosR) - sqrW * sinR;
         const a02 = w * (1.0 - cosR) + sqrW * sinR;
 
         const a10 = w * (1.0 - cosR) + sqrW * sinR;
-        const a11 = cosR + w*(1.0 - cosR);
+        const a11 = cosR + w * (1.0 - cosR);
         const a12 = w * (1.0 - cosR) - sqrW * sinR;
 
         const a20 = w * (1.0 - cosR) - sqrW * sinR;
@@ -213,10 +214,10 @@ class ColorMatrixFilter extends core.Filter
 
 
         const matrix = [
-          a00, a01, a02, 0, 0,
-          a10, a11, a12, 0, 0,
-          a20, a21, a22, 0, 0,
-          0, 0, 0, 1, 0,
+            a00, a01, a02, 0, 0,
+            a10, a11, a12, 0, 0,
+            a20, a21, a22, 0, 0,
+            0, 0, 0, 1, 0,
         ];
 
         this._loadMatrix(matrix, multiply);
@@ -537,6 +538,7 @@ class ColorMatrixFilter extends core.Filter
     {
         return this.uniforms.m;
     }
+
     set matrix(value)
     {
         this.uniforms.m = value;

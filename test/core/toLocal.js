@@ -1,7 +1,7 @@
-describe('toLocal', function () {
-
-    it('should return correct local cordinates of a displayObject', function() {
-
+describe('toLocal', function ()
+{
+    it('should return correct local cordinates of a displayObject', function()
+    {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();
@@ -30,8 +30,8 @@ describe('toLocal', function () {
 
     });
 
-    it('should map the correct local cordinates of a displayObject to another', function() {
-
+    it('should map the correct local cordinates of a displayObject to another', function()
+    {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();

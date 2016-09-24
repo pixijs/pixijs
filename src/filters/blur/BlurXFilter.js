@@ -14,8 +14,8 @@ class BlurXFilter extends core.Filter
 {
     constructor(strength, quality, resolution)
     {
-        let vertSrc = generateBlurVertSource(5, true);
-        let fragSrc = generateBlurFragSource(5);
+        const vertSrc = generateBlurVertSource(5, true);
+        const fragSrc = generateBlurFragSource(5);
 
         super(
             // vertex shader

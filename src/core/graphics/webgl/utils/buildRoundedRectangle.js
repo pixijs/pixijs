@@ -12,7 +12,7 @@ import utils from '../../../utils';
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildRoundedRectangle = function (graphicsData, webGLData)
+const buildRoundedRectangle = function (graphicsData, webGLData)
 {
     const rrectData = graphicsData.shape;
     const x = rrectData.x;
@@ -92,7 +92,7 @@ let buildRoundedRectangle = function (graphicsData, webGLData)
  * @param [out=[]] {number[]} The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
+const quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
 {
     const n = 20,
         points = out;
@@ -104,13 +104,15 @@ let quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
         x,
         y;
 
-    function getPt(n1 , n2, perc) {
+    function getPt(n1 , n2, perc)
+    {
         const diff = n2 - n1;
 
         return n1 + ( diff * perc );
     }
 
-    for (let i = 0, j = 0; i <= n; i++ ) {
+    for (let i = 0, j = 0; i <= n; i++)
+    {
         j = i / n;
 
         // The Green Line

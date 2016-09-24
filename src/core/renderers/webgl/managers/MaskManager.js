@@ -164,7 +164,7 @@ class MaskManager extends WebGLManager
 
         this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
-        let resolution = this.renderer.resolution;
+        const resolution = this.renderer.resolution;
         this.renderer.gl.scissor(bounds.x * resolution,
             (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
                                bounds.width * resolution,

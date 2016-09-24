@@ -33,7 +33,8 @@ class Container extends DisplayObject
      *
      * @private
      */
-    onChildrenChange() {}
+    onChildrenChange()
+    {}
 
     /**
      * Adds a child or multiple children to the container.
@@ -213,7 +214,7 @@ class Container extends DisplayObject
         }
         else
         {
-            let index = this.children.indexOf(child);
+            const index = this.children.indexOf(child);
 
             if (index === -1)
             {

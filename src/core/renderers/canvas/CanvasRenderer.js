@@ -26,7 +26,7 @@ import CONST from '../../const';
  */
 class CanvasRenderer extends SystemRenderer
 {
-    constructor(width, height, options={})
+    constructor(width, height, options = {})
     {
 
         super('Canvas', width, height, options);
@@ -38,7 +38,7 @@ class CanvasRenderer extends SystemRenderer
          *
          * @member {CanvasRenderingContext2D}
          */
-        this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+        this.rootContext = this.view.getContext('2d', {alpha: this.transparent});
         this.rootResolution = this.resolution;
 
         /**
@@ -105,20 +105,21 @@ class CanvasRenderer extends SystemRenderer
     render(displayObject, renderTexture, clear, transform, skipUpdateTransform)
     {
 
-        if (!this.view){
-          return;
+        if (!this.view)
+        {
+            return;
         }
 
-         // can be handy to know!
+        // can be handy to know!
         this.renderingToScreen = !renderTexture;
 
         this.emit('prerender');
 
-        if(renderTexture)
+        if (renderTexture)
         {
             renderTexture = renderTexture.baseTexture || renderTexture;
 
-            if(!renderTexture._canvasRenderTarget)
+            if (!renderTexture._canvasRenderTarget)
             {
 
                 renderTexture._canvasRenderTarget = new CanvasRenderTarget(renderTexture.width, renderTexture.height, renderTexture.resolution);
@@ -138,19 +139,19 @@ class CanvasRenderer extends SystemRenderer
 
         const context = this.context;
 
-        if(!renderTexture)
+        if (!renderTexture)
         {
             this._lastObjectRendered = displayObject;
         }
 
 
-        if(!skipUpdateTransform)
+        if (!skipUpdateTransform)
         {
             // update the scene graph
             const cacheParent = displayObject.parent;
             const tempWt = this._tempDisplayObjectParent.transform.worldTransform;
 
-            if(transform)
+            if (transform)
             {
                 transform.copy(tempWt);
             }
@@ -162,7 +163,7 @@ class CanvasRenderer extends SystemRenderer
             displayObject.parent = this._tempDisplayObjectParent;
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
-           // displayObject.hitArea = //TODO add a temp hit area
+            // displayObject.hitArea = //TODO add a temp hit area
         }
 
 
@@ -176,18 +177,21 @@ class CanvasRenderer extends SystemRenderer
             context.clear();
         }
 
-        if(clear !== undefined ? clear : this.clearBeforeRender)
+        if (clear !== undefined ? clear : this.clearBeforeRender)
         {
-            if (this.renderingToScreen) {
-                if (this.transparent) {
+            if (this.renderingToScreen)
+            {
+                if (this.transparent)
+                {
                     context.clearRect(0, 0, this.width, this.height);
                 }
-                else {
+                else
+                {
                     context.fillStyle = this._backgroundColorString;
                     context.fillRect(0, 0, this.width, this.height);
                 }
             } //else {
-                //TODO: implement background for CanvasRenderTarget or RenderTexture?
+            //TODO: implement background for CanvasRenderTarget or RenderTexture?
             //}
         }
 
@@ -204,8 +208,9 @@ class CanvasRenderer extends SystemRenderer
 
     setBlendMode(blendMode)
     {
-        if(this._activeBlendMode === blendMode) {
-          return;
+        if (this._activeBlendMode === blendMode)
+        {
+            return;
         }
 
         this.context.globalCompositeOperation = this.blendModes[blendMode];
@@ -247,7 +252,7 @@ class CanvasRenderer extends SystemRenderer
 
         //reset the scale mode.. oddly this seems to be reset when the canvas is resized.
         //surely a browser bug?? Let pixi fix that for you..
-        if(this.smoothProperty)
+        if (this.smoothProperty)
         {
             this.rootContext[this.smoothProperty] = (CONST.SCALE_MODES.DEFAULT === CONST.SCALE_MODES.LINEAR);
         }

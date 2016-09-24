@@ -45,8 +45,8 @@ const buildLine = function (graphicsData, webGLData)
 
         lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
 
-        let midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
-        let midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
+        const midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
+        const midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
 
         points.unshift(midPointX, midPointY);
         points.push(midPointX, midPointY);

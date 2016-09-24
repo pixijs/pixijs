@@ -134,7 +134,8 @@ class Rope extends Mesh
         super._onTextureUpdate();
 
         // wait for the Rope ctor to finish before calling refresh
-        if (this._ready) {
+        if (this._ready)
+        {
             this.refresh();
         }
     }
@@ -146,7 +147,7 @@ class Rope extends Mesh
      */
     updateTransform()
     {
-        let points = this.points;
+        const points = this.points;
 
         if (points.length < 1)
         {
@@ -160,9 +161,9 @@ class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        let vertices = this.vertices;
-        let total = points.length,
-            point, index, ratio, perpLength, num;
+        const vertices = this.vertices;
+        const total = points.length;
+        let point, index, ratio, perpLength, num;
 
         for (let i = 0; i < total; i++)
         {

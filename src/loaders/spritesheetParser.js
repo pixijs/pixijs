@@ -9,7 +9,7 @@ export default function ()
     return function (resource, next)
     {
         let resourcePath;
-        let imageResourceName = `${resource.name}_image`;
+        const imageResourceName = `${resource.name}_image`;
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
@@ -49,7 +49,7 @@ export default function ()
 
                 while (frameIndex - initialFrameIndex < maxFrames && frameIndex < frameKeys.length)
                 {
-                    let i = frameKeys[frameIndex];
+                    const i = frameKeys[frameIndex];
                     const rect = frames[i].frame;
 
                     if (rect)
@@ -59,10 +59,12 @@ export default function ()
                         let trim = null;
                         const orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
 
-                        if (frames[i].rotated) {
+                        if (frames[i].rotated)
+                        {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
                         }
-                        else {
+                        else
+                        {
                             frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
                         }
 
@@ -74,7 +76,7 @@ export default function ()
                                 frames[i].spriteSourceSize.y / resolution,
                                 frames[i].spriteSourceSize.w / resolution,
                                 frames[i].spriteSourceSize.h / resolution
-                             );
+                            );
                         }
 
                         resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, orig, trim, frames[i].rotated ? 2 : 0);
@@ -100,11 +102,16 @@ export default function ()
                 setTimeout(done, 0);
             }
 
-            function iteration() {
-                processNextBatch(() => {
-                    if (shouldProcessNextBatch()) {
+            function iteration()
+            {
+                processNextBatch(() =>
+                {
+                    if (shouldProcessNextBatch())
+                    {
                         iteration();
-                    } else {
+                    }
+                    else
+                    {
                         next();
                     }
                 });

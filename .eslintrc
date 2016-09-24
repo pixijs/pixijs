@@ -3,7 +3,15 @@
   "rules": {
     "no-console": 0,
     "no-debugger": 1,
-    "arrow-spacing": 1
+    "arrow-spacing": 1,
+    "prefer-const": [
+      "warn",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "brace-style": [2, "allman"]
   },
   "parserOptions": {
     "ecmaVersion": 6,

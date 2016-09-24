@@ -32,7 +32,7 @@ function pluginTarget(obj)
     {
         this.plugins = this.plugins || {};
 
-        for (let o in obj.__plugins)
+        for (const o in obj.__plugins)
         {
             this.plugins[o] = new (obj.__plugins[o])(this);
         }
@@ -44,7 +44,7 @@ function pluginTarget(obj)
      */
     obj.prototype.destroyPlugins = function ()
     {
-        for (let o in this.plugins)
+        for (const o in this.plugins)
         {
             this.plugins[o].destroy();
             this.plugins[o] = null;

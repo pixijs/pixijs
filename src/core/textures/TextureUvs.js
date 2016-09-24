@@ -41,11 +41,11 @@ class TextureUvs
         if(rotate)
         {
             //width and height div 2 div baseFrame size
-            let w2 = frame.width / 2 / tw;
-            let h2 = frame.height / 2 / th;
+            const w2 = frame.width / 2 / tw;
+            const h2 = frame.height / 2 / th;
             //coordinates of center
-            let cX = frame.x / tw + w2;
-            let cY = frame.y / th + h2;
+            const cX = frame.x / tw + w2;
+            const cY = frame.y / th + h2;
             rotate = GroupD8.add(rotate, GroupD8.NW); //NW is top-left corner
             this.x0 = cX + w2 * GroupD8.uX(rotate);
             this.y0 = cY + h2 * GroupD8.uY(rotate);

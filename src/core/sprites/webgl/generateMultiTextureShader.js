@@ -25,7 +25,7 @@ function generateMultiTextureShader(gl, maxTextures)
 
     const shader = new Shader(gl, vertexSrc, fragmentSrc);
 
-    let sampleValues = [];
+    const sampleValues = [];
     for (let i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;

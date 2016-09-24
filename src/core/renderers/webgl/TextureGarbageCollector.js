@@ -57,7 +57,7 @@ class TextureGarbageCollector
 
         for (let i = 0; i < managedTextures.length; i++)
         {
-            let texture = managedTextures[i];
+            const texture = managedTextures[i];
 
             // only supports non generated textures at the moment!
             if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle)
@@ -97,10 +97,9 @@ class TextureGarbageCollector
             tm.destroyTexture(displayObject._texture, true);
         }
 
-        for (let i = displayObject.children.length - 1; i >= 0; i--) {
-
+        for (let i = displayObject.children.length - 1; i >= 0; i--)
+        {
             this.unload(displayObject.children[i]);
-
         }
     }
 }

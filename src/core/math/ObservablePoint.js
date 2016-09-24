@@ -12,10 +12,10 @@
  */
 class ObservablePoint
 {
-    constructor(cb, scope, x, y)
+    constructor(cb, scope, x = 0, y = 0)
     {
-        this._x = x || 0;
-        this._y = y || 0;
+        this._x = x;
+        this._y = y;
 
         this.cb = cb;
         this.scope = scope;
@@ -30,8 +30,8 @@ class ObservablePoint
      */
     set(x, y)
     {
-        let _x = x || 0;
-        let _y = y || ( (y !== 0) ? _x : 0 );
+        const _x = x || 0;
+        const _y = y || ( (y !== 0) ? _x : 0 );
         if (this._x !== _x || this._y !== _y)
         {
             this._x = _x;
@@ -65,9 +65,11 @@ class ObservablePoint
     {
         return this._x;
     }
+
     set x(value)
     {
-        if (this._x !== value) {
+        if (this._x !== value)
+        {
             this._x = value;
             this.cb.call(this.scope);
         }
@@ -83,9 +85,11 @@ class ObservablePoint
     {
         return this._y;
     }
+
     set y(value)
     {
-        if (this._y !== value) {
+        if (this._y !== value)
+        {
             this._y = value;
             this.cb.call(this.scope);
         }

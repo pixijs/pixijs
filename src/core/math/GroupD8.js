@@ -9,27 +9,35 @@ const tempMatrices = [];
 
 const mul = [];
 
-function signum(x) {
-    if (x < 0) {
+function signum(x)
+{
+    if (x < 0)
+    {
         return -1;
     }
-    if (x > 0) {
+    if (x > 0)
+    {
         return 1;
     }
     return 0;
 }
 
-function init() {
-    for (let i = 0; i < 16; i++) {
+function init()
+{
+    for (let i = 0; i < 16; i++)
+    {
         const row = [];
         mul.push(row);
-        for (let j = 0; j < 16; j++) {
+        for (let j = 0; j < 16; j++)
+        {
             const _ux = signum(ux[i] * ux[j] + vx[i] * uy[j]);
             const _uy = signum(uy[i] * ux[j] + vy[i] * uy[j]);
             const _vx = signum(ux[i] * vx[j] + vx[i] * vy[j]);
             const _vy = signum(uy[i] * vx[j] + vy[i] * vy[j]);
-            for (let k = 0; k < 16; k++) {
-                if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy) {
+            for (let k = 0; k < 16; k++)
+            {
+                if (ux[k] === _ux && uy[k] === _uy && vx[k] === _vx && vy[k] === _vy)
+                {
                     row.push(k);
                     break;
                 }
@@ -37,7 +45,8 @@ function init() {
         }
     }
 
-    for (let i=0;i<16;i++) {
+    for (let i = 0; i < 16; i++)
+    {
         const mat = new Matrix();
         mat.set(ux[i], uy[i], vx[i], vy[i], 0, 0);
         tempMatrices.push(mat);
@@ -73,8 +82,10 @@ const GroupD8 = {
     uY: ind => uy[ind],
     vX: ind => vx[ind],
     vY: ind => vy[ind],
-    inv: rotation => {
-        if (rotation & 8) {
+    inv: rotation =>
+    {
+        if (rotation & 8)
+        {
             return rotation & 15;
         }
         return (-rotation) & 7;
@@ -93,34 +104,49 @@ const GroupD8 = {
      * @returns {boolean}
      */
     isSwapWidthHeight: rotation => (rotation & 3) === 2,
-    byDirection: (dx, dy) => {
-        if (Math.abs(dx) * 2 <= Math.abs(dy)) {
-            if (dy >= 0) {
+    byDirection: (dx, dy) =>
+    {
+        if (Math.abs(dx) * 2 <= Math.abs(dy))
+        {
+            if (dy >= 0)
+            {
                 return GroupD8.S;
             }
-            else {
+            else
+            {
                 return GroupD8.N;
             }
-        } else if (Math.abs(dy) * 2 <= Math.abs(dx)) {
-            if (dx > 0) {
+        }
+        else if (Math.abs(dy) * 2 <= Math.abs(dx))
+        {
+            if (dx > 0)
+            {
                 return GroupD8.E;
             }
-            else {
+            else
+            {
                 return GroupD8.W;
             }
-        } else {
-            if (dy > 0) {
-                if (dx > 0) {
+        }
+        else
+        {
+            if (dy > 0)
+            {
+                if (dx > 0)
+                {
                     return GroupD8.SE;
                 }
-                else {
+                else
+                {
                     return GroupD8.SW;
                 }
             }
-            else if (dx > 0) {
+            else if (dx > 0)
+            {
                 return GroupD8.NE;
             }
-            else {
+            else
+            {
                 return GroupD8.NW;
             }
         }
@@ -132,7 +158,8 @@ const GroupD8 = {
      * @param tx {number|*} sprite anchoring
      * @param ty {number|*} sprite anchoring
      */
-    matrixAppendRotationInv: (matrix, rotation, tx, ty) => {
+    matrixAppendRotationInv: (matrix, rotation, tx, ty) =>
+    {
         //Packer used "rotation", we use "inv(rotation)"
         const mat = tempMatrices[GroupD8.inv(rotation)];
         tx = tx || 0;
