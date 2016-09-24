@@ -18,6 +18,7 @@ import utils from '../utils';
  * ```
  *
  * @class
+ * @extends EventEmitter
  * @memberof PIXI
  * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
