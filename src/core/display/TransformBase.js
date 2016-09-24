@@ -31,8 +31,7 @@ class TransformBase
      * TransformBase does not have decomposition, so this function wont do anything
      */
     updateLocalTransform()
-    { // eslint-disable-line no-unused-vars
-    }
+    {}
 
     /**
      * Updates the values of the object and applies the parent's transform.
