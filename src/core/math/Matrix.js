@@ -11,7 +11,8 @@ import Point from './Point';
  * @memberof PIXI
  */
 class Matrix {
-    constructor() {
+    constructor()
+    {
         /**
          * @member {number}
          * @default 1
@@ -63,7 +64,8 @@ class Matrix {
      *
      * @param array {number[]} The array that the matrix will be populated from.
      */
-    fromArray(array) {
+    fromArray(array)
+    {
         this.a = array[0];
         this.b = array[1];
         this.c = array[3];
@@ -85,7 +87,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    set(a, b, c, d, tx, ty) {
+    set(a, b, c, d, tx, ty)
+    {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -104,14 +107,17 @@ class Matrix {
      * @param [out=new Float32Array(9)] {Float32Array} If provided the array will be assigned to out
      * @return {number[]} the newly created array which contains the matrix
      */
-    toArray(transpose, out) {
-        if (!this.array) {
+    toArray(transpose, out)
+    {
+        if (!this.array)
+        {
             this.array = new Float32Array(9);
         }
 
         const array = out || this.array;
 
-        if (transpose) {
+        if (transpose)
+        {
             array[0] = this.a;
             array[1] = this.b;
             array[2] = 0;
@@ -122,7 +128,8 @@ class Matrix {
             array[7] = this.ty;
             array[8] = 1;
         }
-        else {
+        else
+        {
             array[0] = this.a;
             array[1] = this.c;
             array[2] = this.tx;
@@ -145,7 +152,8 @@ class Matrix {
      * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, transformed through this matrix
      */
-    apply(pos, newPos) {
+    apply(pos, newPos)
+    {
         newPos = newPos || new Point();
 
         const x = pos.x;
@@ -165,7 +173,8 @@ class Matrix {
      * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
      * @return {PIXI.Point} The new point, inverse-transformed through this matrix
      */
-    applyInverse(pos, newPos) {
+    applyInverse(pos, newPos)
+    {
         newPos = newPos || new Point();
 
         const id = 1 / (this.a * this.d + this.c * -this.b);
@@ -186,7 +195,8 @@ class Matrix {
      * @param {number} y How much to translate y by
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    translate(x, y) {
+    translate(x, y)
+    {
         this.tx += x;
         this.ty += y;
 
@@ -200,7 +210,8 @@ class Matrix {
      * @param {number} y The amount to scale vertically
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    scale(x, y) {
+    scale(x, y)
+    {
         this.a *= x;
         this.d *= y;
         this.c *= x;
@@ -218,7 +229,8 @@ class Matrix {
      * @param {number} angle - The angle in radians.
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    rotate(angle) {
+    rotate(angle)
+    {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
 
@@ -242,7 +254,8 @@ class Matrix {
      * @param {PIXI.Matrix} matrix
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    append(matrix) {
+    append(matrix)
+    {
         const a1 = this.a;
         const b1 = this.b;
         const c1 = this.c;
@@ -274,7 +287,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    setTransform(x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY) {
+    setTransform(x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY)
+    {
 
         const sr = Math.sin(rotation);
         const cr = Math.cos(rotation);
@@ -305,10 +319,12 @@ class Matrix {
      * @param {PIXI.Matrix} matrix
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    prepend(matrix) {
+    prepend(matrix)
+    {
         const tx1 = this.tx;
 
-        if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1) {
+        if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1)
+        {
             const a1 = this.a;
             const c1 = this.c;
             this.a = a1 * matrix.a + this.b * matrix.c;
@@ -328,7 +344,8 @@ class Matrix {
      * @param transform {PIXI.Transform|PIXI.TransformStatic} the transform to apply the properties to.
      * @return {PIXI.Transform|PIXI.TransformStatic} The transform with the newly applied properies
      */
-    decompose(transform) {
+    decompose(transform)
+    {
         // sort out rotation / skew..
         const a = this.a;
         const b = this.b;
@@ -340,17 +357,20 @@ class Matrix {
 
         const delta = Math.abs(1 - skewX / skewY);
 
-        if (delta < 0.00001) {
+        if (delta < 0.00001)
+        {
             transform.rotation = skewY;
 
-            if (a < 0 && d >= 0) {
+            if (a < 0 && d >= 0)
+            {
                 transform.rotation += (transform.rotation <= 0) ? Math.PI : -Math.PI;
             }
 
             transform.skew.x = transform.skew.y = 0;
 
         }
-        else {
+        else
+        {
             transform.skew.x = skewX;
             transform.skew.y = skewY;
         }
@@ -372,7 +392,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    invert() {
+    invert()
+    {
         const a1 = this.a;
         const b1 = this.b;
         const c1 = this.c;
@@ -396,7 +417,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} This matrix. Good for chaining method calls.
      */
-    identity() {
+    identity()
+    {
         this.a = 1;
         this.b = 0;
         this.c = 0;
@@ -412,7 +434,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} A copy of this matrix. Good for chaining method calls.
      */
-    clone() {
+    clone()
+    {
         const matrix = new Matrix();
         matrix.a = this.a;
         matrix.b = this.b;
@@ -429,7 +452,8 @@ class Matrix {
      *
      * @return {PIXI.Matrix} The matrix given in parameter with its values updated.
      */
-    copy(matrix) {
+    copy(matrix)
+    {
         matrix.a = this.a;
         matrix.b = this.b;
         matrix.c = this.c;
@@ -446,7 +470,8 @@ class Matrix {
      * @static
      * @const
      */
-    static get IDENTITY() {
+    static get IDENTITY()
+    {
         return new Matrix();
     }
 
@@ -456,7 +481,8 @@ class Matrix {
      * @static
      * @const
      */
-    static get TEMP_MATRIX() {
+    static get TEMP_MATRIX()
+    {
         return new Matrix();
     }
 }

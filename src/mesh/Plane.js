@@ -59,7 +59,8 @@ class Plane extends Mesh
         const sizeX = texture.width / segmentsX;
         const sizeY = texture.height / segmentsY;
 
-        for (let i = 0; i < total; i++) {
+        for (let i = 0; i < total; i++)
+        {
 
             const x = (i % this.verticesX);
             const y = ( (i / this.verticesX ) | 0 );
@@ -76,7 +77,8 @@ class Plane extends Mesh
 
         const totalSub = segmentsX * segmentsY;
 
-        for (let i = 0; i < totalSub; i++) {
+        for (let i = 0; i < totalSub; i++)
+        {
 
             const xpos = i % segmentsX;
             const ypos = (i / segmentsX ) | 0;
@@ -111,7 +113,8 @@ class Plane extends Mesh
         Mesh.prototype._onTextureUpdate.call(this);
 
         // wait for the Plane ctor to finish before calling refresh
-        if (this._ready) {
+        if (this._ready)
+        {
             this.refresh();
         }
     }

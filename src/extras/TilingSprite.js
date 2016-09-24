@@ -349,7 +349,8 @@ class TilingSprite extends core.Sprite
      * Destroys this tiling sprite
      *
      */
-    destroy() {
+    destroy()
+    {
         super.destroy();
 
         this.tileScale = null;

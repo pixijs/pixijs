@@ -134,7 +134,8 @@ class Rope extends Mesh
         super._onTextureUpdate();
 
         // wait for the Rope ctor to finish before calling refresh
-        if (this._ready) {
+        if (this._ready)
+        {
             this.refresh();
         }
     }

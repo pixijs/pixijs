@@ -16,8 +16,7 @@ const tempPolygon = new core.Polygon();
  * @param [indices] {Uint16Array} if you want to specify the indices
  * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
-class Mesh extends core.Container
-{
+class Mesh extends core.Container {
     constructor(texture, vertices, uvs, indices, drawMode)
     {
         super();
@@ -36,9 +35,9 @@ class Mesh extends core.Container
          * @member {Float32Array}
          */
         this.uvs = uvs || new Float32Array([0, 0,
-            1, 0,
-            1, 1,
-            0, 1]);
+                1, 0,
+                1, 1,
+                0, 1]);
 
         /**
          * An array of vertices
@@ -46,9 +45,9 @@ class Mesh extends core.Container
          * @member {Float32Array}
          */
         this.vertices = vertices || new Float32Array([0, 0,
-            100, 0,
-            100, 100,
-            0, 100]);
+                100, 0,
+                100, 100,
+                0, 100]);
 
         /*
          * @member {Uint16Array} An array containing the indices of the vertices
@@ -91,7 +90,7 @@ class Mesh extends core.Container
         // run texture setter;
         this.texture = texture;
 
-         /**
+        /**
          * The default shader that is used if a mesh doesn't have a more specific one.
          *
          * @member {PIXI.Shader}
@@ -125,38 +124,38 @@ class Mesh extends core.Container
         const gl = renderer.gl;
         let glData = this._glDatas[renderer.CONTEXT_UID];
 
-        if(!glData)
+        if (!glData)
         {
             glData = {
-                shader:new Shader(gl),
-                vertexBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
-                uvBuffer:glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
-                indexBuffer:glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
+                shader: new Shader(gl),
+                vertexBuffer: glCore.GLBuffer.createVertexBuffer(gl, this.vertices, gl.STREAM_DRAW),
+                uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, this.uvs, gl.STREAM_DRAW),
+                indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW),
                 // build the vao object that will render..
-                vao:new glCore.VertexArrayObject(gl),
-                dirty:this.dirty,
-                indexDirty:this.indexDirty
+                vao: new glCore.VertexArrayObject(gl),
+                dirty: this.dirty,
+                indexDirty: this.indexDirty
             };
 
             // build the vao object that will render..
             glData.vao = new glCore.VertexArrayObject(gl)
-            .addIndex(glData.indexBuffer)
-            .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
-            .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+                .addIndex(glData.indexBuffer)
+                .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+                .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
             this._glDatas[renderer.CONTEXT_UID] = glData;
 
 
         }
 
-        if(this.dirty !== glData.dirty)
+        if (this.dirty !== glData.dirty)
         {
             glData.dirty = this.dirty;
             glData.uvBuffer.upload();
 
         }
 
-        if(this.indexDirty !== glData.indexDirty)
+        if (this.indexDirty !== glData.indexDirty)
         {
             glData.indexDirty = this.indexDirty;
             glData.indexBuffer.upload();
@@ -175,8 +174,8 @@ class Mesh extends core.Container
         const drawMode = this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
         glData.vao.bind()
-        .draw(drawMode, this.indices.length)
-        .unbind();
+            .draw(drawMode, this.indices.length)
+            .unbind();
     }
 
     /**
@@ -326,12 +325,12 @@ class Mesh extends core.Container
         context.clip();
 
         // Compute matrix transform
-        const delta =  (u0 * v1)      + (v0 * u2)      + (u1 * v2)      - (v1 * u2)      - (v0 * u1)      - (u0 * v2);
-        const deltaA = (x0 * v1)      + (v0 * x2)      + (x1 * v2)      - (v1 * x2)      - (v0 * x1)      - (x0 * v2);
-        const deltaB = (u0 * x1)      + (x0 * u2)      + (u1 * x2)      - (x1 * u2)      - (x0 * u1)      - (u0 * x2);
+        const delta = (u0 * v1) + (v0 * u2) + (u1 * v2) - (v1 * u2) - (v0 * u1) - (u0 * v2);
+        const deltaA = (x0 * v1) + (v0 * x2) + (x1 * v2) - (v1 * x2) - (v0 * x1) - (x0 * v2);
+        const deltaB = (u0 * x1) + (x0 * u2) + (u1 * x2) - (x1 * u2) - (x0 * u1) - (u0 * x2);
         const deltaC = (u0 * v1 * x2) + (v0 * x1 * u2) + (x0 * u1 * v2) - (x0 * v1 * u2) - (v0 * u1 * x2) - (u0 * x1 * v2);
-        const deltaD = (y0 * v1)      + (v0 * y2)      + (y1 * v2)      - (v1 * y2)      - (v0 * y1)      - (y0 * v2);
-        const deltaE = (u0 * y1)      + (y0 * u2)      + (u1 * y2)      - (y1 * u2)      - (y0 * u1)      - (u0 * y2);
+        const deltaD = (y0 * v1) + (v0 * y2) + (y1 * v2) - (v1 * y2) - (v0 * y1) - (y0 * v2);
+        const deltaE = (u0 * y1) + (y0 * u2) + (u1 * y2) - (y1 * u2) - (y0 * u1) - (u0 * y2);
         const deltaF = (u0 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2) - (u0 * y1 * v2);
 
         context.transform(deltaA / delta, deltaD / delta,
@@ -341,7 +340,6 @@ class Mesh extends core.Container
         context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
         context.restore();
     }
-
 
 
     /**
@@ -355,17 +353,17 @@ class Mesh extends core.Container
         const context = this.context;
         const vertices = Mesh.vertices;
 
-        const length = vertices.length/2;
+        const length = vertices.length / 2;
         // this.count++;
 
         context.beginPath();
-        for (let i=1; i < length-2; i++)
+        for (let i = 1; i < length - 2; i++)
         {
             // draw some triangles!
-            const index = i*2;
+            const index = i * 2;
 
-            const x0 = vertices[index],   x1 = vertices[index+2], x2 = vertices[index+4];
-            const y0 = vertices[index+1], y1 = vertices[index+3], y2 = vertices[index+5];
+            const x0 = vertices[index], x1 = vertices[index + 2], x2 = vertices[index + 4];
+            const y0 = vertices[index + 1], y1 = vertices[index + 3], y2 = vertices[index + 5];
 
             context.moveTo(x0, y0);
             context.lineTo(x1, y1);
@@ -390,7 +388,6 @@ class Mesh extends core.Container
     /**
      * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
      *
-     * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
      * @return {PIXI.Rectangle} the framing rectangle
      */
     _calculateBounds()
@@ -405,11 +402,13 @@ class Mesh extends core.Container
      * @param point {PIXI.Point} the point to test
      * @return {boolean} the result of the test
      */
-    containsPoint( point ) {
-        if (!this.getBounds().contains(point.x, point.y)) {
+    containsPoint(point)
+    {
+        if (!this.getBounds().contains(point.x, point.y))
+        {
             return false;
         }
-        this.worldTransform.applyInverse(point,  tempPoint);
+        this.worldTransform.applyInverse(point, tempPoint);
 
         const vertices = this.vertices;
         const points = tempPolygon.points;
@@ -417,17 +416,19 @@ class Mesh extends core.Container
         const indices = this.indices;
         const len = this.indices.length;
         const step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
-        for (let i=0;i+2<len;i+=step) {
-            const ind0 = indices[i]*2;
+        for (let i = 0; i + 2 < len; i += step)
+        {
+            const ind0 = indices[i] * 2;
             const ind1 = indices[i + 1] * 2;
             const ind2 = indices[i + 2] * 2;
             points[0] = vertices[ind0];
-            points[1] = vertices[ind0+1];
+            points[1] = vertices[ind0 + 1];
             points[2] = vertices[ind1];
-            points[3] = vertices[ind1+1];
+            points[3] = vertices[ind1 + 1];
             points[4] = vertices[ind2];
-            points[5] = vertices[ind2+1];
-            if (tempPolygon.contains(tempPoint.x, tempPoint.y)) {
+            points[5] = vertices[ind2 + 1];
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y))
+            {
                 return true;
             }
         }
@@ -442,8 +443,9 @@ class Mesh extends core.Container
      */
     get texture()
     {
-        return  this._texture;
+        return this._texture;
     }
+
     set texture(value)
     {
         if (this._texture === value)
@@ -474,10 +476,13 @@ class Mesh extends core.Container
      * @memberof PIXI.mesh.Mesh#
      * @default 0xFFFFFF
      */
-    get tint() {
+    get tint()
+    {
         return core.utils.rgb2hex(this.tintRgb);
     }
-    set tint(value) {
+
+    set tint(value)
+    {
         this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
     }
 }

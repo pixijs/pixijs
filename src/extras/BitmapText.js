@@ -28,9 +28,8 @@ import ObservablePoint from '../core/math/ObservablePoint';
  *      single line text
  * @param [style.tint=0xFFFFFF] {number} The tint color
  */
-class BitmapText extends core.Container
-{
-    constructor(text, style={})
+class BitmapText extends core.Container {
+    constructor(text, style = {})
     {
         super();
 
@@ -147,7 +146,8 @@ class BitmapText extends core.Container
         {
             const charCode = this.text.charCodeAt(i);
 
-            if(/(\s)/.test(this.text.charAt(i))){
+            if (/(\s)/.test(this.text.charAt(i)))
+            {
                 lastSpace = i;
                 lastSpaceWidth = lastLineWidth;
             }
@@ -192,7 +192,12 @@ class BitmapText extends core.Container
                 pos.x += charData.kerning[prevCharCode];
             }
 
-            chars.push({texture:charData.texture, line, charCode, position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+            chars.push({
+                texture: charData.texture,
+                line,
+                charCode,
+                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)
+            });
             lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
             pos.x += charData.xAdvance;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
@@ -306,7 +311,8 @@ class BitmapText extends core.Container
         }
     }
 
-    makeDirty() {
+    makeDirty()
+    {
         this.dirty = true;
     }
 
@@ -320,6 +326,7 @@ class BitmapText extends core.Container
     {
         return this._font.tint;
     }
+
     set tint(value)
     {
         this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
@@ -338,6 +345,7 @@ class BitmapText extends core.Container
     {
         return this._font.align;
     }
+
     set align(value)
     {
         this._font.align = value || 'left';
@@ -354,14 +362,19 @@ class BitmapText extends core.Container
      * @member {PIXI.Point | number}
      * @memberof PIXI.extras.BitmapText#
      */
-    get anchor() {
+    get anchor()
+    {
         return this._anchor;
     }
-    set anchor(value) {
-        if (typeof value === 'number'){
-             this._anchor.set(value);
+
+    set anchor(value)
+    {
+        if (typeof value === 'number')
+        {
+            this._anchor.set(value);
         }
-        else {
+        else
+        {
             this._anchor.copy(value);
         }
     }
@@ -376,19 +389,23 @@ class BitmapText extends core.Container
     {
         return this._font;
     }
+
     set font(value)
     {
-        if (!value) {
+        if (!value)
+        {
             return;
         }
 
-        if (typeof value === 'string') {
+        if (typeof value === 'string')
+        {
             value = value.split(' ');
 
             this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
             this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
         }
-        else {
+        else
+        {
             this._font.name = value.name;
             this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
         }
@@ -406,6 +423,7 @@ class BitmapText extends core.Container
     {
         return this._text;
     }
+
     set text(value)
     {
         value = value.toString() || ' ';

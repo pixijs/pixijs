@@ -10,19 +10,24 @@
 // correct reference of `global`, `self`, and finally `window`
 
 // Date.now
-if (!(Date.now && Date.prototype.getTime)) {
-    Date.now = function now() {
+if (!(Date.now && Date.prototype.getTime))
+{
+    Date.now = function now()
+    {
         return new Date().getTime();
     };
 }
 
 // performance.now
-if (!(global.performance && global.performance.now)) {
+if (!(global.performance && global.performance.now))
+{
     const startTime = Date.now();
-    if (!global.performance) {
+    if (!global.performance)
+    {
         global.performance = {};
     }
-    global.performance.now = function () {
+    global.performance.now = function ()
+    {
         return Date.now() - startTime;
     };
 }
@@ -31,36 +36,44 @@ if (!(global.performance && global.performance.now)) {
 let lastTime = Date.now();
 const vendors = ['ms', 'moz', 'webkit', 'o'];
 
-for(let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x) {
+for (let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x)
+{
     global.requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];
     global.cancelAnimationFrame = global[vendors[x] + 'CancelAnimationFrame'] ||
         global[vendors[x] + 'CancelRequestAnimationFrame'];
 }
 
-if (!global.requestAnimationFrame) {
-    global.requestAnimationFrame = function (callback) {
-        if (typeof callback !== 'function') {
+if (!global.requestAnimationFrame)
+{
+    global.requestAnimationFrame = function (callback)
+    {
+        if (typeof callback !== 'function')
+        {
             throw new TypeError(callback + 'is not a function');
         }
 
         const currentTime = Date.now();
         let delay = 16 + lastTime - currentTime;
 
-        if (delay < 0) {
+        if (delay < 0)
+        {
             delay = 0;
         }
 
         lastTime = currentTime;
 
-        return setTimeout(function () {
+        return setTimeout(function ()
+        {
             lastTime = Date.now();
             callback(performance.now());
         }, delay);
     };
 }
 
-if (!global.cancelAnimationFrame) {
-    global.cancelAnimationFrame = function(id) {
+if (!global.cancelAnimationFrame)
+{
+    global.cancelAnimationFrame = function (id)
+    {
         clearTimeout(id);
     };
 }
