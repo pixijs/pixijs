@@ -15,8 +15,7 @@ import math from '../math';
  * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
-class DisplayObject extends EventEmitter
-{
+class DisplayObject extends EventEmitter {
     constructor()
     {
         super();
@@ -32,7 +31,7 @@ class DisplayObject extends EventEmitter
          *
          * @member {PIXI.TransformBase}
          */
-        this.transform =  new TransformClass();
+        this.transform = new TransformClass();
 
         /**
          * The opacity of the object.
@@ -108,8 +107,10 @@ class DisplayObject extends EventEmitter
 
     }
 
-    get _tempDisplayObjectParent() {
-        if (this.tempDisplayObjectParent === null) {
+    get _tempDisplayObjectParent()
+    {
+        if (this.tempDisplayObjectParent === null)
+        {
             this.tempDisplayObjectParent = new DisplayObject();
         }
         return this.tempDisplayObjectParent;
@@ -156,9 +157,9 @@ class DisplayObject extends EventEmitter
      */
     getBounds(skipUpdate, rect)
     {
-        if(!skipUpdate)
+        if (!skipUpdate)
         {
-            if(!this.parent)
+            if (!this.parent)
             {
                 this.parent = this._tempDisplayObjectParent;
                 this.parent.transform._worldID++;
@@ -172,14 +173,14 @@ class DisplayObject extends EventEmitter
             }
         }
 
-        if(this._boundsID !== this._lastBoundsID)
+        if (this._boundsID !== this._lastBoundsID)
         {
             this.calculateBounds();
         }
 
-        if(!rect)
+        if (!rect)
         {
-            if(!this._boundsRect)
+            if (!this._boundsRect)
             {
                 this._boundsRect = new math.Rectangle();
             }
@@ -203,9 +204,9 @@ class DisplayObject extends EventEmitter
         this.parent = null;
         this.transform = this._tempDisplayObjectParent.transform;
 
-        if(!rect)
+        if (!rect)
         {
-            if(!this._localBoundsRect)
+            if (!this._localBoundsRect)
             {
                 this._localBoundsRect = new math.Rectangle();
             }
@@ -229,16 +230,16 @@ class DisplayObject extends EventEmitter
      * @param [skipUpdate=false] {boolean}
      * @return {PIXI.Point} A point object representing the position of this object
      */
-    toGlobal(position, point, skipUpdate=false)
+    toGlobal(position, point, skipUpdate = false)
     {
-        if(!skipUpdate)
+        if (!skipUpdate)
         {
             this._recursivePostUpdateTransform();
 
             // this parent check is for just in case the item is a root object.
             // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-            if(!this.parent)
+            if (!this.parent)
             {
                 this.parent = this._tempDisplayObjectParent;
                 this.displayObjectUpdateTransform();
@@ -270,14 +271,14 @@ class DisplayObject extends EventEmitter
             position = from.toGlobal(position, point, skipUpdate);
         }
 
-        if(! skipUpdate)
+        if (!skipUpdate)
         {
             this._recursivePostUpdateTransform();
 
             // this parent check is for just in case the item is a root object.
             // If it is we need to give it a temporary parent so that displayObjectUpdateTransform works correctly
             // this is mainly to avoid a parent check in the main loop. Every little helps for performance :)
-            if(!this.parent)
+            if (!this.parent)
             {
                 this.parent = this._tempDisplayObjectParent;
                 this.displayObjectUpdateTransform();
@@ -344,7 +345,7 @@ class DisplayObject extends EventEmitter
      * @param [pivotY=0] {number} The Y pivot value
      * @return {PIXI.DisplayObject} The DisplayObject instance
      */
-    setTransform(x=0, y=0, scaleX=1, scaleY=1, rotation=0, skewX=0, skewY=0, pivotX=0, pivotY=0)
+    setTransform(x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0, skewX = 0, skewY = 0, pivotX = 0, pivotY = 0)
     {
         this.position.x = x;
         this.position.y = y;
@@ -384,6 +385,7 @@ class DisplayObject extends EventEmitter
         this.interactive = false;
         this.interactiveChildren = false;
     }
+
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
@@ -395,6 +397,7 @@ class DisplayObject extends EventEmitter
     {
         return this.position.x;
     }
+
     set x(value)
     {
         this.transform.position.x = value;
@@ -411,6 +414,7 @@ class DisplayObject extends EventEmitter
     {
         return this.position.y;
     }
+
     set y(value)
     {
         this.transform.position.y = value;
@@ -451,7 +455,9 @@ class DisplayObject extends EventEmitter
     {
         return this.transform.position;
     }
-    set position(value) {
+
+    set position(value)
+    {
         this.transform.position.copy(value);
     }
 
@@ -462,10 +468,13 @@ class DisplayObject extends EventEmitter
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    get scale() {
+    get scale()
+    {
         return this.transform.scale;
     }
-    set scale(value) {
+
+    set scale(value)
+    {
         this.transform.scale.copy(value);
     }
 
@@ -476,10 +485,13 @@ class DisplayObject extends EventEmitter
      * @member {PIXI.Point|PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    get pivot() {
+    get pivot()
+    {
         return this.transform.pivot;
     }
-    set pivot(value) {
+
+    set pivot(value)
+    {
         this.transform.pivot.copy(value);
     }
 
@@ -490,10 +502,13 @@ class DisplayObject extends EventEmitter
      * @member {PIXI.ObservablePoint}
      * @memberof PIXI.DisplayObject#
      */
-    get skew() {
+    get skew()
+    {
         return this.transform.skew;
     }
-    set skew(value) {
+
+    set skew(value)
+    {
         this.transform.skew.copy(value);
     }
 
@@ -507,6 +522,7 @@ class DisplayObject extends EventEmitter
     {
         return this.transform.rotation;
     }
+
     set rotation(value)
     {
         this.transform.rotation = value;
@@ -523,7 +539,8 @@ class DisplayObject extends EventEmitter
     {
         let item = this;
 
-        do {
+        do
+        {
             if (!item.visible)
             {
                 return false;
@@ -549,6 +566,7 @@ class DisplayObject extends EventEmitter
     {
         return this._mask;
     }
+
     set mask(value)
     {
         if (this._mask)
@@ -576,6 +594,7 @@ class DisplayObject extends EventEmitter
     {
         return this._filters && this._filters.slice();
     }
+
     set filters(value)
     {
         this._filters = value && value.slice();

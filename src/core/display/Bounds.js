@@ -63,7 +63,8 @@ class Bounds
      */
     getRectangle(rect)
     {
-        if (this.minX > this.maxX || this.minY > this.maxY) {
+        if (this.minX > this.maxX || this.minY > this.maxY)
+        {
             return Rectangle.EMPTY;
         }
 

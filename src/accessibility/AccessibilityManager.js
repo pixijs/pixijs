@@ -20,7 +20,7 @@ class AccessibilityManager
 {
     constructor(renderer)
     {
-        if((Device.tablet || Device.phone) && !navigator.isCocoonJS)
+        if ((Device.tablet || Device.phone) && !navigator.isCocoonJS)
         {
             this.createTouchHook();
         }
@@ -108,13 +108,14 @@ class AccessibilityManager
         hookDiv.style.width = 1 + 'px';
         hookDiv.style.height = 1 + 'px';
         hookDiv.style.position = 'absolute';
-        hookDiv.style.top = -1000+'px';
-        hookDiv.style.left = -1000+'px';
+        hookDiv.style.top = -1000 + 'px';
+        hookDiv.style.left = -1000 + 'px';
         hookDiv.style.zIndex = 2;
         hookDiv.style.backgroundColor = '#FF0000';
         hookDiv.title = 'HOOK DIV';
 
-        hookDiv.addEventListener('focus', () => {
+        hookDiv.addEventListener('focus', () =>
+        {
 
             this.isMobileAccessabillity = true;
             this.activate();
@@ -132,7 +133,7 @@ class AccessibilityManager
      */
     activate()
     {
-        if(this.isActive )
+        if (this.isActive)
         {
             return;
         }
@@ -144,7 +145,7 @@ class AccessibilityManager
 
         this.renderer.on('postrender', this.update, this);
 
-        if(this.renderer.view.parentNode)
+        if (this.renderer.view.parentNode)
         {
             this.renderer.view.parentNode.appendChild(this.div);
         }
@@ -157,7 +158,7 @@ class AccessibilityManager
     deactivate()
     {
 
-        if(!this.isActive || this.isMobileAccessabillity)
+        if (!this.isActive || this.isMobileAccessabillity)
         {
             return;
         }
@@ -169,7 +170,7 @@ class AccessibilityManager
 
         this.renderer.off('postrender', this.update);
 
-        if(this.div.parentNode)
+        if (this.div.parentNode)
         {
             this.div.parentNode.removeChild(this.div);
         }
@@ -183,24 +184,25 @@ class AccessibilityManager
      */
     updateAccessibleObjects(displayObject)
     {
-        if(!displayObject.visible)
+        if (!displayObject.visible)
         {
             return;
         }
 
-        if(displayObject.accessible && displayObject.interactive)
+        if (displayObject.accessible && displayObject.interactive)
         {
-            if(!displayObject._accessibleActive)
+            if (!displayObject._accessibleActive)
             {
                 this.addChild(displayObject);
             }
 
-               displayObject.renderId = this.renderId;
+            displayObject.renderId = this.renderId;
         }
 
         const children = displayObject.children;
 
-        for (let i = children.length - 1; i >= 0; i--) {
+        for (let i = children.length - 1; i >= 0; i--)
+        {
 
             this.updateAccessibleObjects(children[i]);
         }
@@ -213,15 +215,16 @@ class AccessibilityManager
      */
     update()
     {
-        if(!this.renderer.renderingToScreen) {
+        if (!this.renderer.renderingToScreen)
+        {
             return;
-          }
+        }
 
         // update children...
         this.updateAccessibleObjects(this.renderer._lastObjectRendered);
 
         const rect = this.renderer.view.getBoundingClientRect();
-        const sx = rect.width  / this.renderer.width;
+        const sx = rect.width / this.renderer.width;
         const sy = rect.height / this.renderer.height;
 
         let div = this.div;
@@ -236,18 +239,18 @@ class AccessibilityManager
 
             const child = this.children[i];
 
-            if(child.renderId !== this.renderId)
+            if (child.renderId !== this.renderId)
             {
                 child._accessibleActive = false;
 
                 core.utils.removeItems(this.children, i, 1);
-                this.div.removeChild( child._accessibleDiv );
+                this.div.removeChild(child._accessibleDiv);
                 this.pool.push(child._accessibleDiv);
                 child._accessibleDiv = null;
 
                 i--;
 
-                if(this.children.length === 0)
+                if (this.children.length === 0)
                 {
                     this.deactivate();
                 }
@@ -259,10 +262,10 @@ class AccessibilityManager
                 let hitArea = child.hitArea;
                 const wt = child.worldTransform;
 
-                if(child.hitArea)
+                if (child.hitArea)
                 {
                     div.style.left = ((wt.tx + (hitArea.x * wt.a)) * sx) + 'px';
-                    div.style.top =  ((wt.ty + (hitArea.y * wt.d)) * sy) +  'px';
+                    div.style.top = ((wt.ty + (hitArea.y * wt.d)) * sy) + 'px';
 
                     div.style.width = (hitArea.width * wt.a * sx) + 'px';
                     div.style.height = (hitArea.height * wt.d * sy) + 'px';
@@ -275,7 +278,7 @@ class AccessibilityManager
                     this.capHitArea(hitArea);
 
                     div.style.left = (hitArea.x * sx) + 'px';
-                    div.style.top =  (hitArea.y * sy) +  'px';
+                    div.style.top = (hitArea.y * sy) + 'px';
 
                     div.style.width = (hitArea.width * sx) + 'px';
                     div.style.height = (hitArea.height * sy) + 'px';
@@ -301,12 +304,12 @@ class AccessibilityManager
             hitArea.y = 0;
         }
 
-        if ( hitArea.x + hitArea.width > this.renderer.width )
+        if (hitArea.x + hitArea.width > this.renderer.width)
         {
             hitArea.width = this.renderer.width - hitArea.x;
         }
 
-        if ( hitArea.y + hitArea.height > this.renderer.height )
+        if (hitArea.y + hitArea.height > this.renderer.height)
         {
             hitArea.height = this.renderer.height - hitArea.y;
         }
@@ -318,11 +321,11 @@ class AccessibilityManager
      */
     addChild(displayObject)
     {
-    //    this.activate();
+        //    this.activate();
 
         let div = this.pool.pop();
 
-        if(!div)
+        if (!div)
         {
             div = document.createElement('button');
 
@@ -340,7 +343,7 @@ class AccessibilityManager
         }
 
 
-        if(displayObject.accessibleTitle)
+        if (displayObject.accessibleTitle)
         {
             div.title = displayObject.accessibleTitle;
         }
@@ -349,7 +352,7 @@ class AccessibilityManager
             div.title = 'displayObject ' + this.tabIndex;
         }
 
-        if(displayObject.accessibleHint)
+        if (displayObject.accessibleHint)
         {
             div.setAttribute('aria-label', displayObject.accessibleHint);
         }
@@ -363,7 +366,7 @@ class AccessibilityManager
 
 
         this.children.push(displayObject);
-        this.div.appendChild( displayObject._accessibleDiv );
+        this.div.appendChild(displayObject._accessibleDiv);
         displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
     }
 
@@ -405,7 +408,7 @@ class AccessibilityManager
      */
     _onKeyDown(e)
     {
-        if(e.keyCode !== 9)
+        if (e.keyCode !== 9)
         {
             return;
         }

@@ -33,7 +33,8 @@ class Container extends DisplayObject
      *
      * @private
      */
-    onChildrenChange() {}
+    onChildrenChange()
+    {}
 
     /**
      * Adds a child or multiple children to the container.

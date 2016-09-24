@@ -71,7 +71,8 @@ class Transform extends TransformBase
     /**
      * Updates only local matrix
      */
-    updateLocalTransform() {
+    updateLocalTransform()
+    {
         const lt = this.localTransform;
         const a  =  this._cr * this.scale.x;
         const b  =  this._sr * this.scale.x;
@@ -134,10 +135,12 @@ class Transform extends TransformBase
      * @member {number}
      * @memberof PIXI.Transform#
      */
-    get rotation() {
+    get rotation()
+    {
         return this._rotation;
     }
-    set rotation(value) {
+    set rotation(value)
+    {
         this._rotation = value;
         this._sr = Math.sin(value);
         this._cr = Math.cos(value);
