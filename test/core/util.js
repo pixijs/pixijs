@@ -59,6 +59,80 @@ describe('PIXI.utils', function ()
         // it('should return the correct resolution based on a URL');
     });
 
+    describe('decomposeDataUri', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.decomposeDataUri)
+                .to.be.a('function');
+        });
+
+        it('should decompose a data URI', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
+            expect(dataUri)
+                .to.be.an('object');
+            expect(dataUri.mediaType)
+                .to.equal('image');
+            expect(dataUri.subType)
+                .to.equal('png');
+            expect(dataUri.encoding)
+                .to.equal('base64');
+            expect(dataUri.data)
+                .to.equal('94Z9RWUN77ZW');
+        });
+
+        it('should return undefined for anything else', function ()
+        {
+            const dataUri = PIXI.utils.decomposeDataUri('foo');
+            expect(dataUri)
+                .to.be.an('undefined');
+        });
+    });
+
+    describe('getImageTypeOfUrl', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.getImageTypeOfUrl)
+                .to.be.a('function');
+        });
+
+        it('should return image type of URL in lower case', function ()
+        {
+            const imageType = PIXI.utils.getImageTypeOfUrl('http://foo.bar/baz.PNG');
+            expect(imageType)
+                .to.equal('png');
+        });
+    });
+
+    describe('getSvgSize', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.getSvgSize)
+                .to.be.a('function');
+        });
+
+        it('should return a size object with width and height from an SVG string', function ()
+        {
+            const svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+            expect(svgSize)
+                .to.be.an('object');
+            expect(svgSize.width)
+                .to.equal(64);
+            expect(svgSize.height)
+                .to.equal(32);
+        });
+
+        it('should return an empty object when width and/or height is missing', function ()
+        {
+            const svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
+            expect(Object.keys(svgSize).length)
+                .to.equal(0);
+        });
+    });
+
     describe('sayHello', function ()
     {
         it('should exist', function ()
