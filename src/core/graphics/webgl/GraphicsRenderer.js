@@ -55,7 +55,8 @@ class GraphicsRenderer extends ObjectRenderer
     {
         ObjectRenderer.prototype.destroy.call(this);
 
-        for (let i = 0; i < this.graphicsDataPool.length; ++i) {
+        for (let i = 0; i < this.graphicsDataPool.length; ++i)
+        {
             this.graphicsDataPool[i].destroy();
         }
 
@@ -73,7 +74,6 @@ class GraphicsRenderer extends ObjectRenderer
         const gl = renderer.gl;
 
         let webGLData;
-
         let webGL = graphics._webGL[this.CONTEXT_UID];
 
         if (!webGL || graphics.dirty !== webGL.dirty )

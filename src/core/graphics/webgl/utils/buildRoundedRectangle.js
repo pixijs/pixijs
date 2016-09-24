@@ -104,13 +104,15 @@ const quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
         x,
         y;
 
-    function getPt(n1 , n2, perc) {
+    function getPt(n1 , n2, perc)
+    {
         const diff = n2 - n1;
 
         return n1 + ( diff * perc );
     }
 
-    for (let i = 0, j = 0; i <= n; i++ ) {
+    for (let i = 0, j = 0; i <= n; i++)
+    {
         j = i / n;
 
         // The Green Line

@@ -18,16 +18,17 @@ const buildPoly = function (graphicsData, webGLData)
 
     let points = graphicsData.points;
 
-    if(graphicsData.fill && points.length >= 6)
+    if (graphicsData.fill && points.length >= 6)
     {
         const holeArray = [];
-             // Process holes..
+        // Process holes..
         const holes = graphicsData.holes;
 
-        for (let i = 0; i < holes.length; i++) {
+        for (let i = 0; i < holes.length; i++)
+        {
             const hole = holes[i];
 
-            holeArray.push(points.length/2);
+            holeArray.push(points.length / 2);
 
             points = points.concat(hole.points);
         }
@@ -47,25 +48,26 @@ const buildPoly = function (graphicsData, webGLData)
 
         const triangles = earcut(points, holeArray, 2);
 
-        if (!triangles) {
+        if (!triangles)
+        {
             return;
         }
 
         const vertPos = verts.length / 6;
 
-        for (let i = 0; i < triangles.length; i+=3)
+        for (let i = 0; i < triangles.length; i += 3)
         {
             indices.push(triangles[i] + vertPos);
             indices.push(triangles[i] + vertPos);
-            indices.push(triangles[i+1] + vertPos);
-            indices.push(triangles[i+2] +vertPos);
-            indices.push(triangles[i+2] + vertPos);
+            indices.push(triangles[i + 1] + vertPos);
+            indices.push(triangles[i + 2] + vertPos);
+            indices.push(triangles[i + 2] + vertPos);
         }
 
         for (let i = 0; i < length; i++)
         {
             verts.push(points[i * 2], points[i * 2 + 1],
-                       r, g, b, alpha);
+                r, g, b, alpha);
         }
     }
 
