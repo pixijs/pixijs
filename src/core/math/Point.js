@@ -9,7 +9,7 @@
  */
 class Point
 {
-    constructor(x=0, y=0)
+    constructor(x = 0, y = 0)
     {
         /**
          * @member {number}
@@ -39,7 +39,8 @@ class Point
      *
      * @param p {PIXI.Point}
      */
-    copy(p) {
+    copy(p)
+    {
         this.set(p.x, p.y);
     }
 
@@ -49,7 +50,8 @@ class Point
      * @param p {PIXI.Point}
      * @returns {boolean} Whether the given point equal to this point
      */
-    equals(p) {
+    equals(p)
+    {
         return (p.x === this.x) && (p.y === this.y);
     }
 
@@ -63,7 +65,7 @@ class Point
     set(x, y)
     {
         this.x = x || 0;
-        this.y = y || ( (y !== 0) ? this.x : 0 ) ;
+        this.y = y || ( (y !== 0) ? this.x : 0 );
     }
 
 }
