@@ -28,7 +28,8 @@ import ObservablePoint from '../core/math/ObservablePoint';
  *      single line text
  * @param [style.tint=0xFFFFFF] {number} The tint color
  */
-class BitmapText extends core.Container {
+class BitmapText extends core.Container
+{
     constructor(text, style = {})
     {
         super();

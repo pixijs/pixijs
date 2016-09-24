@@ -12,7 +12,7 @@ import CONST from '../../const';
  */
 class Rectangle
 {
-    constructor(x=0, y=0, width=0, height=0)
+    constructor(x = 0, y = 0, width = 0, height = 0)
     {
         /**
          * @member {number}
@@ -55,7 +55,7 @@ class Rectangle
      * @member {number}
      * @memberof PIXI.Rectangle#
      */
-    get left ()
+    get left()
     {
         return this.x;
     }
@@ -66,7 +66,7 @@ class Rectangle
      * @member {number}
      * @memberof PIXI.Rectangle
      */
-    get right ()
+    get right()
     {
         return this.x + this.width;
     }
@@ -99,7 +99,8 @@ class Rectangle
      * @static
      * @constant
      */
-    static get EMPTY() {
+    static get EMPTY()
+    {
         return new Rectangle(0, 0, 0, 0);
     }
 
@@ -165,8 +166,9 @@ class Rectangle
         if (this.x < rectangle.x)
         {
             this.width += this.x;
-            if(this.width < 0) {
-              this.width = 0;
+            if (this.width < 0)
+            {
+                this.width = 0;
             }
 
             this.x = rectangle.x;
@@ -175,25 +177,28 @@ class Rectangle
         if (this.y < rectangle.y)
         {
             this.height += this.y;
-            if(this.height < 0) {
-              this.height = 0;
+            if (this.height < 0)
+            {
+                this.height = 0;
             }
             this.y = rectangle.y;
         }
 
-        if ( this.x + this.width > rectangle.x + rectangle.width )
+        if (this.x + this.width > rectangle.x + rectangle.width)
         {
             this.width = rectangle.width - this.x;
-            if(this.width < 0) {
-              this.width = 0;
+            if (this.width < 0)
+            {
+                this.width = 0;
             }
         }
 
-        if ( this.y + this.height > rectangle.y + rectangle.height )
+        if (this.y + this.height > rectangle.y + rectangle.height)
         {
             this.height = rectangle.height - this.y;
-            if(this.height < 0) {
-              this.height = 0;
+            if (this.height < 0)
+            {
+                this.height = 0;
             }
         }
     }

@@ -25,7 +25,8 @@ class Polygon
             // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
             points = new Array(arguments.length);
 
-            for (let a = 0; a < points.length; ++a) {
+            for (let a = 0; a < points.length; ++a)
+            {
                 points[a] = arguments[a];
             }
         }

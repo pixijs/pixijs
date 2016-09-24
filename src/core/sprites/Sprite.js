@@ -277,8 +277,8 @@ class Sprite extends Container
             orig = this._texture.orig;
 
         //First lets check to see if the current texture has a trim..
-        if (!trim || trim.width === orig.width && trim.height === orig.height) {
-
+        if (!trim || trim.width === orig.width && trim.height === orig.height)
+        {
             // no trim! lets use the usual calculations..
             this.calculateVertices();
             this._bounds.addQuad(this.vertexData);

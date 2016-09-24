@@ -59,8 +59,10 @@ class WebGLState
 
         this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
-        this.attribState = {tempAttribState:new Array(this.maxAttribs),
-            attribState:new Array(this.maxAttribs)};
+        this.attribState = {
+            tempAttribState: new Array(this.maxAttribs),
+            attribState: new Array(this.maxAttribs)
+        };
 
         this.blendModes = mapWebGLBlendModesToPixi(gl);
 
@@ -80,7 +82,7 @@ class WebGLState
         // next state..
         let state = this.stack[++this.stackIndex];
 
-        if(!state)
+        if (!state)
         {
             state = this.stack[this.stackIndex] = new Uint8Array(16);
         }
@@ -121,10 +123,11 @@ class WebGLState
      */
     setBlend(value)
     {
-        if(this.activeState[BLEND] === value|0) {
+        if (this.activeState[BLEND] === value | 0)
+        {
             return;
         }
-        this.activeState[BLEND] = value|0;
+        this.activeState[BLEND] = value | 0;
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
 
@@ -134,7 +137,8 @@ class WebGLState
      */
     setBlendMode(value)
     {
-        if(value === this.activeState[BLEND_FUNC]) {
+        if (value === this.activeState[BLEND_FUNC])
+        {
             return;
         }
 
@@ -149,11 +153,12 @@ class WebGLState
      */
     setDepthTest(value)
     {
-        if(this.activeState[DEPTH_TEST] === value|0) {
+        if (this.activeState[DEPTH_TEST] === value | 0)
+        {
             return;
         }
 
-        this.activeState[DEPTH_TEST] = value|0;
+        this.activeState[DEPTH_TEST] = value | 0;
         this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
     }
 
@@ -163,11 +168,12 @@ class WebGLState
      */
     setCullFace(value)
     {
-        if(this.activeState[CULL_FACE] === value|0) {
+        if (this.activeState[CULL_FACE] === value | 0)
+        {
             return;
         }
 
-        this.activeState[CULL_FACE] = value|0;
+        this.activeState[CULL_FACE] = value | 0;
         this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
     }
 
@@ -177,11 +183,12 @@ class WebGLState
      */
     setFrontFace(value)
     {
-        if(this.activeState[FRONT_FACE] === value|0) {
+        if (this.activeState[FRONT_FACE] === value | 0)
+        {
             return;
         }
 
-        this.activeState[FRONT_FACE] = value|0;
+        this.activeState[FRONT_FACE] = value | 0;
         this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
     }
 
@@ -191,11 +198,13 @@ class WebGLState
     resetAttributes()
     {
 
-        for (let i = 0; i < this.attribState.tempAttribState.length; i++) {
+        for (let i = 0; i < this.attribState.tempAttribState.length; i++)
+        {
             this.attribState.tempAttribState[i] = 0;
         }
 
-        for (let i = 0; i < this.attribState.attribState.length; i++) {
+        for (let i = 0; i < this.attribState.attribState.length; i++)
+        {
             this.attribState.attribState[i] = 0;
         }
 
@@ -214,7 +223,7 @@ class WebGLState
     {
 
         // unbind any VAO if they exist..
-        if(this.nativeVaoExtension)
+        if (this.nativeVaoExtension)
         {
             this.nativeVaoExtension.bindVertexArrayOES(null);
         }

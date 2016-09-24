@@ -102,11 +102,15 @@ class Texture extends EventEmitter
 
         this._rotate = +(rotate || 0);
 
-        if (rotate === true) {
+        if (rotate === true)
+        {
             // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
             this._rotate = 2;
-        } else {
-            if (this._rotate % 2 !== 0) {
+        }
+        else
+        {
+            if (this._rotate % 2 !== 0)
+            {
                 throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
             }
         }
@@ -201,7 +205,7 @@ class Texture extends EventEmitter
             {
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destoryed too..
-                if(utils.TextureCache[this.baseTexture.imageUrl])
+                if (utils.TextureCache[this.baseTexture.imageUrl])
                 {
                     delete utils.TextureCache[this.baseTexture.imageUrl];
                 }
@@ -354,7 +358,7 @@ class Texture extends EventEmitter
     {
         //TODO auto detect cross origin..
         //TODO pass in scale mode?
-        if(typeof source === 'string')
+        if (typeof source === 'string')
         {
             const texture = utils.TextureCache[source];
 
@@ -362,7 +366,7 @@ class Texture extends EventEmitter
             {
                 // check if its a video..
                 const isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
-                if(isVideo)
+                if (isVideo)
                 {
                     return Texture.fromVideoUrl(source);
                 }
@@ -372,15 +376,15 @@ class Texture extends EventEmitter
 
             return texture;
         }
-        else if(source instanceof HTMLCanvasElement)
+        else if (source instanceof HTMLCanvasElement)
         {
             return Texture.fromCanvas(source);
         }
-        else if(source instanceof HTMLVideoElement)
+        else if (source instanceof HTMLVideoElement)
         {
             return Texture.fromVideo(source);
         }
-        else if(source instanceof BaseTexture)
+        else if (source instanceof BaseTexture)
         {
             return new Texture(BaseTexture);
         }
@@ -431,6 +435,7 @@ class Texture extends EventEmitter
     {
         return this._frame;
     }
+
     set frame(frame)
     {
         this._frame = frame;
@@ -469,6 +474,7 @@ class Texture extends EventEmitter
     {
         return this._rotate;
     }
+
     set rotate(rotate)
     {
         this._rotate = rotate;
@@ -483,7 +489,8 @@ class Texture extends EventEmitter
      *
      * @member {number}
      */
-    get width() {
+    get width()
+    {
         return this.orig ? this.orig.width : 0;
     }
 
@@ -492,7 +499,8 @@ class Texture extends EventEmitter
      *
      * @member {number}
      */
-    get height() {
+    get height()
+    {
         return this.orig ? this.orig.height : 0;
     }
 }
@@ -505,9 +513,17 @@ class Texture extends EventEmitter
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function() {};
-Texture.EMPTY.on = function() {};
-Texture.EMPTY.once = function() {};
-Texture.EMPTY.emit = function() {};
+Texture.EMPTY.destroy = function ()
+{
+};
+Texture.EMPTY.on = function ()
+{
+};
+Texture.EMPTY.once = function ()
+{
+};
+Texture.EMPTY.emit = function ()
+{
+};
 
 export default Texture;

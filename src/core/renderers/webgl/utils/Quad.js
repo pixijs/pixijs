@@ -46,7 +46,8 @@ class Quad
 
         this.interleaved = new Float32Array(8 * 2);
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++)
+        {
             this.interleaved[i*4] = this.vertices[(i*2)];
             this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
             this.interleaved[(i*4)+2] = this.uvs[i*2];
@@ -145,7 +146,8 @@ class Quad
      */
     upload()
     {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++)
+        {
             this.interleaved[i*4] = this.vertices[(i*2)];
             this.interleaved[(i*4)+1] = this.vertices[(i*2)+1];
             this.interleaved[(i*4)+2] = this.uvs[i*2];

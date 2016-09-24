@@ -51,7 +51,8 @@ class SpriteRenderer extends ObjectRenderer
         // let numVerts = this.size * 4 * this.vertByteSize;
 
         this.buffers = [];
-        for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i*=2) {
+        for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i *= 2)
+        {
             const numVertsTemp = i * 4 * this.vertByteSize;
             this.buffers.push(new Buffer(numVertsTemp));
         }
@@ -72,12 +73,12 @@ class SpriteRenderer extends ObjectRenderer
         this.shaders = null;
 
         this.currentIndex = 0;
-        TICK =0;
+        TICK = 0;
         this.groups = [];
 
         for (let k = 0; k < this.size; k++)
         {
-            this.groups[k] = {textures:[], textureCount:0, ids:[], size:0, start:0, blend:0};
+            this.groups[k] = {textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0};
         }
 
         this.sprites = [];
@@ -104,7 +105,7 @@ class SpriteRenderer extends ObjectRenderer
         this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
 
         // step 2: check the maximum number of if statements the shader can have too..
-        this.MAX_TEXTURES = checkMaxIfStatmentsInShader( this.MAX_TEXTURES, gl );
+        this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
 
         this.shaders = new Array(this.MAX_TEXTURES);
         this.shaders[0] = generateMultiTextureShader(gl, 1);
@@ -117,16 +118,17 @@ class SpriteRenderer extends ObjectRenderer
         // as it is not used by the shader so is optimized out.
         const shader = this.shaders[1];
 
-        for (let i = 0; i < this.vaoMax; i++) {
+        for (let i = 0; i < this.vaoMax; i++)
+        {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
 
             // build the vao object that will render..
             this.vaos[i] = this.renderer.createVao()
-            .addIndex(this.indexBuffer)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-            .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                .addIndex(this.indexBuffer)
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
         this.vao = this.vaos[0];
@@ -173,8 +175,9 @@ class SpriteRenderer extends ObjectRenderer
      */
     flush()
     {
-        if (this.currentIndex === 0) {
-          return;
+        if (this.currentIndex === 0)
+        {
+            return;
         }
 
         const gl = this.renderer.gl;
@@ -218,7 +221,7 @@ class SpriteRenderer extends ObjectRenderer
 
             nextTexture = sprite._texture.baseTexture;
 
-            if(blendMode !== sprite.blendMode)
+            if (blendMode !== sprite.blendMode)
             {
                 blendMode = sprite.blendMode;
 
@@ -228,13 +231,13 @@ class SpriteRenderer extends ObjectRenderer
                 TICK++;
             }
 
-            if(currentTexture !== nextTexture)
+            if (currentTexture !== nextTexture)
             {
                 currentTexture = nextTexture;
 
-                if(nextTexture._enabled !== TICK)
+                if (nextTexture._enabled !== TICK)
                 {
-                    if(textureCount === this.MAX_TEXTURES)
+                    if (textureCount === this.MAX_TEXTURES)
                     {
                         TICK++;
 
@@ -270,47 +273,47 @@ class SpriteRenderer extends ObjectRenderer
 
                 //xy
                 float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
-                float32View[index+1] = ((vertexData[1] * resolution) | 0) / resolution;
+                float32View[index + 1] = ((vertexData[1] * resolution) | 0) / resolution;
 
                 // xy
-                float32View[index+5] = ((vertexData[2] * resolution) | 0) / resolution;
-                float32View[index+6] = ((vertexData[3] * resolution) | 0) / resolution;
-
-                 // xy
-                float32View[index+10] = ((vertexData[4] * resolution) | 0) / resolution;
-                float32View[index+11] = ((vertexData[5] * resolution) | 0) / resolution;
+                float32View[index + 5] = ((vertexData[2] * resolution) | 0) / resolution;
+                float32View[index + 6] = ((vertexData[3] * resolution) | 0) / resolution;
 
                 // xy
-                float32View[index+15] = ((vertexData[6] * resolution) | 0) / resolution;
-                float32View[index+16] = ((vertexData[7] * resolution) | 0) / resolution;
+                float32View[index + 10] = ((vertexData[4] * resolution) | 0) / resolution;
+                float32View[index + 11] = ((vertexData[5] * resolution) | 0) / resolution;
+
+                // xy
+                float32View[index + 15] = ((vertexData[6] * resolution) | 0) / resolution;
+                float32View[index + 16] = ((vertexData[7] * resolution) | 0) / resolution;
 
             }
             else
             {
                 //xy
                 float32View[index] = vertexData[0];
-                float32View[index+1] = vertexData[1];
+                float32View[index + 1] = vertexData[1];
 
                 // xy
-                float32View[index+5] = vertexData[2];
-                float32View[index+6] = vertexData[3];
-
-                 // xy
-                float32View[index+10] = vertexData[4];
-                float32View[index+11] = vertexData[5];
+                float32View[index + 5] = vertexData[2];
+                float32View[index + 6] = vertexData[3];
 
                 // xy
-                float32View[index+15] = vertexData[6];
-                float32View[index+16] = vertexData[7];
+                float32View[index + 10] = vertexData[4];
+                float32View[index + 11] = vertexData[5];
+
+                // xy
+                float32View[index + 15] = vertexData[6];
+                float32View[index + 16] = vertexData[7];
             }
 
-            uint32View[index+2] = uvs[0];
-            uint32View[index+7] = uvs[1];
-            uint32View[index+12] = uvs[2];
-            uint32View[index+17] = uvs[3];
+            uint32View[index + 2] = uvs[0];
+            uint32View[index + 7] = uvs[1];
+            uint32View[index + 12] = uvs[2];
+            uint32View[index + 17] = uvs[3];
 
-            uint32View[index+3] = uint32View[index+8] = uint32View[index+13] = uint32View[index+18] = tint;
-            float32View[index+4] = float32View[index+9] = float32View[index+14] = float32View[index+19] = textureId;
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = tint;
+            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
 
             index += 20;
         }
@@ -319,33 +322,34 @@ class SpriteRenderer extends ObjectRenderer
 
         this.vertexCount++;
 
-        if(this.vaoMax <= this.vertexCount)
+        if (this.vaoMax <= this.vertexCount)
         {
             this.vaoMax++;
             shader = this.shaders[1];
             this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
             // build the vao object that will render..
             this.vaos[this.vertexCount] = this.renderer.createVao()
-            .addIndex(this.indexBuffer)
-            .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-            .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-            .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-            .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                .addIndex(this.indexBuffer)
+                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
         this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
         this.vao = this.vaos[this.vertexCount].bind();
 
         /// render the groups..
-        for (i = 0; i < groupCount; i++) {
+        for (i = 0; i < groupCount; i++)
+        {
 
             const group = groups[i];
             const groupTextureCount = group.textureCount;
-            shader = this.shaders[groupTextureCount-1];
+            shader = this.shaders[groupTextureCount - 1];
 
-            if(!shader)
+            if (!shader)
             {
-                shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+                shader = this.shaders[groupTextureCount - 1] = generateMultiTextureShader(gl, groupTextureCount);
                 //console.log("SHADER generated for " + textureCount + " textures")
             }
 
@@ -357,7 +361,7 @@ class SpriteRenderer extends ObjectRenderer
             }
 
             // set the blend mode..
-            this.renderer.state.setBlendMode( group.blend );
+            this.renderer.state.setBlendMode(group.blend);
 
             gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
         }
@@ -388,7 +392,8 @@ class SpriteRenderer extends ObjectRenderer
      */
     destroy()
     {
-        for (let i = 0; i < this.vaoMax; i++) {
+        for (let i = 0; i < this.vaoMax; i++)
+        {
             this.vertexBuffers[i].destroy();
             this.vaos[i].destroy();
         }
@@ -399,9 +404,10 @@ class SpriteRenderer extends ObjectRenderer
 
         super.destroy();
 
-        for (let i = 0; i < this.shaders.length; i++) {
+        for (let i = 0; i < this.shaders.length; i++)
+        {
 
-            if(this.shaders[i])
+            if (this.shaders[i])
             {
                 this.shaders[i].destroy();
             }
@@ -414,7 +420,8 @@ class SpriteRenderer extends ObjectRenderer
 
         this.sprites = null;
 
-        for (let i = 0; i < this.buffers.length; i++) {
+        for (let i = 0; i < this.buffers.length; i++)
+        {
             this.buffers[i].destroy();
         }
     }

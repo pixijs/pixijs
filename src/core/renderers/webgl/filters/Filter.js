@@ -13,8 +13,7 @@ const SOURCE_KEY_MAP = {};
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  */
-class Filter
-{
+class Filter {
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
 
@@ -36,7 +35,7 @@ class Filter
 
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types
-        this.uniformData = uniforms || extractUniformsFromSrc( this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+        this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
 
         this.uniforms = {};
 
@@ -50,7 +49,7 @@ class Filter
         this.glShaders = [];
 
         // used for cacheing.. sure there is a better way!
-        if(!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
+        if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
         {
             SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = utils.uid();
         }
@@ -80,7 +79,7 @@ class Filter
     apply(filterManager, input, output, clear)
     {
         // --- //
-      //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
+        //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
 
         // do as you please!
 
@@ -95,7 +94,8 @@ class Filter
      * @static
      * @constant
      */
-    static get defaultVertexSrc() { 
+    static get defaultVertexSrc()
+    {
         return [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
@@ -120,7 +120,8 @@ class Filter
      * @static
      * @constant
      */
-    static get defaultFragmentSrc() {
+    static get defaultFragmentSrc()
+    {
         return [
             'varying vec2 vTextureCoord;',
             'varying vec2 vFilterCoord;',
@@ -140,13 +141,12 @@ class Filter
             '   {',
             '     color = vec4(0.0, 1.0, 0.0, 1.0);',
             '   }',
-           // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
+            // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
             '   gl_FragColor = mix(sample, masky, 0.5);',
             '   gl_FragColor *= sample.a;',
             '}'
         ].join('\n');
     }
-    
 }
 
 export default Filter;

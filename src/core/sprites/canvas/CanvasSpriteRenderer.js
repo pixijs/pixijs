@@ -41,7 +41,7 @@ class CanvasSpriteRenderer
     {
         const texture = sprite._texture;
         const renderer = this.renderer;
-        
+
         const width = texture._frame.width;
         const height = texture._frame.height;
 
@@ -67,14 +67,18 @@ class CanvasSpriteRenderer
                 renderer.context[renderer.smoothProperty] = smoothingEnabled;
             }
 
-            if (texture.trim) {
+            if (texture.trim)
+            {
                 dx = texture.trim.width/2 + texture.trim.x - sprite.anchor.x * texture.orig.width;
                 dy = texture.trim.height/2 + texture.trim.y - sprite.anchor.y * texture.orig.height;
-            } else {
+            }
+            else
+                {
                 dx = (0.5 - sprite.anchor.x) * texture.orig.width;
                 dy = (0.5 - sprite.anchor.y) * texture.orig.height;
             }
-            if(texture.rotate) {
+            if(texture.rotate)
+            {
                 wt.copy(canvasRenderWorldTransform);
                 wt = canvasRenderWorldTransform;
                 math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);

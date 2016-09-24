@@ -400,7 +400,8 @@ class FilterManager extends WebGLManager
 
         const key = ((minWidth & 0xFFFF) << 16) | ( minHeight & 0xFFFF);
 
-        if(!this.pool[key]) {
+        if(!this.pool[key])
+        {
           this.pool[key] = [];
         }
 

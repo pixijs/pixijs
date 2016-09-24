@@ -157,7 +157,8 @@ class CanvasMaskManager
         renderer.context.restore();
     }
 
-    destroy() {}
+    destroy()
+    {}
 }
 
 export default CanvasMaskManager;

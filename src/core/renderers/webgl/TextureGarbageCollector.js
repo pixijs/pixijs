@@ -97,10 +97,9 @@ class TextureGarbageCollector
             tm.destroyTexture(displayObject._texture, true);
         }
 
-        for (let i = displayObject.children.length - 1; i >= 0; i--) {
-
+        for (let i = displayObject.children.length - 1; i >= 0; i--)
+        {
             this.unload(displayObject.children[i]);
-
         }
     }
 }

@@ -27,8 +27,7 @@ const tempMatrix = new math.Matrix();
  * @param [options.backgroundColor=0x000000] {number} The background color of the rendered area (shown if not transparent).
  * @param [options.roundPixels=false] {boolean} If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
  */
-class SystemRenderer extends EventEmitter
-{
+class SystemRenderer extends EventEmitter {
     constructor(system, width, height, options)
     {
         super();
@@ -187,7 +186,8 @@ class SystemRenderer extends EventEmitter
      * @param width {number} the new width of the canvas view
      * @param height {number} the new height of the canvas view
      */
-    resize(width, height) {
+    resize(width, height)
+    {
         this.width = width * this.resolution;
         this.height = height * this.resolution;
 
@@ -210,7 +210,8 @@ class SystemRenderer extends EventEmitter
      * @param resolution {number} The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.Texture} a texture of the graphics object
      */
-    generateTexture(displayObject, scaleMode, resolution) {
+    generateTexture(displayObject, scaleMode, resolution)
+    {
 
         const bounds = displayObject.getLocalBounds();
 
@@ -229,7 +230,8 @@ class SystemRenderer extends EventEmitter
      *
      * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
      */
-    destroy(removeView) {
+    destroy(removeView)
+    {
         if (removeView && this.view.parentNode)
         {
             this.view.parentNode.removeChild(this.view);
@@ -274,6 +276,7 @@ class SystemRenderer extends EventEmitter
     {
         return this._backgroundColor;
     }
+
     set backgroundColor(val)
     {
         this._backgroundColor = val;
