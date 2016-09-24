@@ -98,7 +98,8 @@ class GraphicsData
     /**
      * Destroys the Graphics data.
      */
-    destroy() {
+    destroy()
+    {
         this.shape = null;
         this.holes = null;
     }
