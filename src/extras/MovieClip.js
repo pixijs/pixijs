@@ -72,6 +72,14 @@ class MovieClip extends core.Sprite
         this.onComplete = null;
 
         /**
+         * Function to call when a MovieClip changes which texture is being rendered
+         *
+         * @method
+         * @memberof PIXI.extras.MovieClip#
+         */
+        this.onFrameChange = null;
+
+        /**
          * Elapsed time since animation has been started, used internally to display current texture
          *
          * @member {number}
@@ -127,10 +135,19 @@ class MovieClip extends core.Sprite
     {
         this.stop();
 
+        const previousFrame = this.currentFrame;
         this._currentTime = frameNumber;
 
-        this._texture = this._textures[this.currentFrame];
-        this._textureID = -1;
+        if (previousFrame !== this.currentFrame)
+        {
+            this._texture = this._textures[this.currentFrame];
+            this._textureID = -1;
+
+            if (this.onFrameChange)
+            {
+                this.onFrameChange(this.currentFrame);
+            }
+        }
     }
 
     /**
@@ -152,6 +169,7 @@ class MovieClip extends core.Sprite
     update(deltaTime)
     {
         const elapsed = this.animationSpeed * deltaTime;
+        const previousFrame = this.currentFrame;
 
         if (this._durations !== null)
         {
@@ -201,8 +219,16 @@ class MovieClip extends core.Sprite
         }
         else
         {
-            this._texture = this._textures[this.currentFrame];
-            this._textureID = -1;
+            if (previousFrame !== this.currentFrame)
+            {
+                this._texture = this._textures[this.currentFrame];
+                this._textureID = -1;
+
+                if (this.onFrameChange)
+                {
+                    this.onFrameChange(this.currentFrame);
+                }
+            }
         }
 
     }
