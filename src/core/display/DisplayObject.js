@@ -27,7 +27,7 @@ class DisplayObject extends EventEmitter {
         //TODO: need to create Transform from factory
         /**
          * World transform and local transform of this object.
-         * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+         * This will become read-only later, please do not assign anything there unless you know what are you doing
          *
          * @member {PIXI.TransformBase}
          */
@@ -44,6 +44,8 @@ class DisplayObject extends EventEmitter {
          * The visibility of the object. If false the object will not be drawn, and
          * the updateTransform function will not be called.
          *
+         * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually
+         *
          * @member {boolean}
          */
         this.visible = true;
@@ -51,6 +53,8 @@ class DisplayObject extends EventEmitter {
         /**
          * Can this object be rendered, if false the object will not be drawn but the updateTransform
          * methods will still be called.
+         *
+         * Only affects recursive calls from parent. You can ask for bounds manually
          *
          * @member {boolean}
          */

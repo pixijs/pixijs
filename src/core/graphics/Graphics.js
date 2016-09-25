@@ -791,11 +791,6 @@ class Graphics extends Container
      */
     _calculateBounds()
     {
-        if (!this.renderable)
-        {
-            return;
-        }
-
         if (this.boundsDirty !== this.dirty)
         {
             this.boundsDirty = this.dirty;

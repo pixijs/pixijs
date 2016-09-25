@@ -303,11 +303,6 @@ class Container extends DisplayObject
     {
         this._boundsID++;
 
-        if (!this.visible)
-        {
-            return;
-        }
-
         this.transform.updateTransform(this.parent.transform);
 
         //TODO: check render flags, how to process stuff here
@@ -315,7 +310,11 @@ class Container extends DisplayObject
 
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
-            this.children[i].updateTransform();
+            var child = this.children[i];
+            if (child.visible)
+            {
+                child.updateTransform();
+            }
         }
     }
 
@@ -323,23 +322,33 @@ class Container extends DisplayObject
     {
         this._bounds.clear();
 
-        if(!this.visible)
-        {
-            return;
-        }
-
         this._calculateBounds();
 
         for (let i = 0; i < this.children.length; i++)
         {
             const child = this.children[i];
 
+            if (!child.visible || !child.renderable) {
+                continue;
+            }
+
             child.calculateBounds();
 
-            this._bounds.addBounds(child._bounds);
+            //TODO: filter+mask, need to mask both somehow
+            if (child._mask)
+            {
+                child._mask.calculateBounds();
+                this._bounds.addBoundsMask(child._bounds, child._mask._bounds);
+            } else if (child.filterArea)
+            {
+                this._bounds.addBoundsArea(child._bounds, child.filterArea);
+            } else
+            {
+                this._bounds.addBounds(child._bounds);
+            }
         }
 
-        this._boundsID = this._lastBoundsID;
+        this._lastBoundsID = this._boundsID;
     }
 
     _calculateBounds()
