@@ -1,13 +1,13 @@
-var Resource = require('resource-loader').Resource,
-    core = require('../core'),
-    extras = require('../extras'),
-    path = require('path');
+import {Resource} from 'resource-loader';
+import core from '../core';
+import extras from '../extras';
+import path from 'path';
 
-
-function parse(resource, texture) {
-    var data = {};
-    var info = resource.data.getElementsByTagName('info')[0];
-    var common = resource.data.getElementsByTagName('common')[0];
+function parse(resource, texture)
+{
+    const data = {};
+    const info = resource.data.getElementsByTagName('info')[0];
+    const common = resource.data.getElementsByTagName('common')[0];
 
     data.font = info.getAttribute('face');
     data.size = parseInt(info.getAttribute('size'), 10);
@@ -15,13 +15,13 @@ function parse(resource, texture) {
     data.chars = {};
 
     //parse letters
-    var letters = resource.data.getElementsByTagName('char');
+    const letters = resource.data.getElementsByTagName('char');
 
-    for (var i = 0; i < letters.length; i++)
+    for (let i = 0; i < letters.length; i++)
     {
-        var charCode = parseInt(letters[i].getAttribute('id'), 10);
+        const charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-        var textureRect = new core.Rectangle(
+        const textureRect = new core.Rectangle(
             parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
             parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
             parseInt(letters[i].getAttribute('width'), 10),
@@ -39,14 +39,14 @@ function parse(resource, texture) {
     }
 
     //parse kernings
-    var kernings = resource.data.getElementsByTagName('kerning');
-    for (i = 0; i < kernings.length; i++)
+    const kernings = resource.data.getElementsByTagName('kerning');
+    for (let i = 0; i < kernings.length; i++)
     {
-        var first = parseInt(kernings[i].getAttribute('first'), 10);
-        var second = parseInt(kernings[i].getAttribute('second'), 10);
-        var amount = parseInt(kernings[i].getAttribute('amount'), 10);
+        const first = parseInt(kernings[i].getAttribute('first'), 10);
+        const second = parseInt(kernings[i].getAttribute('second'), 10);
+        const amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
-        if(data.chars[second])
+        if (data.chars[second])
         {
             data.chars[second].kerning[first] = amount;
         }
@@ -60,7 +60,7 @@ function parse(resource, texture) {
 }
 
 
-module.exports = function ()
+export default function ()
 {
     return function (resource, next)
     {
@@ -75,21 +75,25 @@ module.exports = function ()
             resource.data.getElementsByTagName('page').length === 0 ||
             resource.data.getElementsByTagName('info').length === 0 ||
             resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
-            )
+        )
         {
             return next();
         }
 
-        var xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
+        let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
-        if (resource.isDataUrl) {
-            if (xmlUrl === '.') {
+        if (resource.isDataUrl)
+        {
+            if (xmlUrl === '.')
+            {
                 xmlUrl = '';
             }
 
-            if (this.baseUrl && xmlUrl) {
+            if (this.baseUrl && xmlUrl)
+            {
                 // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
+                {
                     xmlUrl += '/';
                 }
 
@@ -97,29 +101,33 @@ module.exports = function ()
                 xmlUrl = xmlUrl.replace(this.baseUrl, '');
             }
         }
-        
+
         // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
+        {
             xmlUrl += '/';
         }
-        
-        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (core.utils.TextureCache[textureUrl]) {
+
+        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        if (core.utils.TextureCache[textureUrl])
+        {
             //reuse existing texture
             parse(resource, core.utils.TextureCache[textureUrl]);
             next();
         }
-        else {
-            var loadOptions = {
+        else
+        {
+            const loadOptions = {
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE,
                 metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
-            this.add(resource.name + '_image', textureUrl, loadOptions, function (res) {
+            this.add(resource.name + '_image', textureUrl, loadOptions, res =>
+            {
                 parse(resource, res.texture);
                 next();
             });
         }
     };
-};
+}

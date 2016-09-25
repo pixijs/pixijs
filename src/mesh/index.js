@@ -1,17 +1,16 @@
-/**
- * @file        Main export of the PIXI extras library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
- */
+import Mesh from './Mesh';
+import Plane from './Plane';
+import NineSlicePlane from './NineSlicePlane';
+import Rope from './Rope';
+import MeshShader from './webgl/MeshShader';
 
 /**
  * @namespace PIXI.mesh
  */
-module.exports = {
-    Mesh:           require('./Mesh'),
-    Plane:           require('./Plane'),
-    NineSlicePlane: require('./NineSlicePlane'),
-    Rope:           require('./Rope'),
-    MeshShader:     require('./webgl/MeshShader')
+export default {
+    Mesh,
+    Plane,
+    NineSlicePlane,
+    Rope,
+    MeshShader
 };

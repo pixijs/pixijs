@@ -1,31 +1,36 @@
 /*global console */
-var core = require('./core'),
-    mesh = require('./mesh'),
-    particles = require('./particles'),
-    extras = require('./extras'),
-    filters = require('./filters');
+import core from './core';
+import mesh from './mesh';
+import particles from './particles';
+import extras from './extras';
+import filters from './filters';
 
 // @if DEBUG
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
-function warn(msg) {
-    var stack = new Error().stack;
+function warn(msg)
+{
+    let stack = new Error().stack;
 
     // Handle IE < 10 and Safari < 6
-    if (typeof stack === 'undefined') {
+    if (typeof stack === 'undefined')
+    {
         console.warn('Deprecation Warning: ', msg);
     }
-    else {
+    else
+    {
         // chop off the stack trace which includes pixi.js internal calls
         stack = stack.split('\n').splice(3).join('\n');
 
-        if (console.groupCollapsed) {
+        if (console.groupCollapsed)
+        {
             console.groupCollapsed('%cDeprecation Warning: %c%s', 'color:#614108;background:#fffbe6', 'font-weight:normal;color:#614108;background:#fffbe6', msg);
             console.warn(stack);
             console.groupEnd();
         }
-        else {
+        else
+        {
             console.warn('Deprecation Warning: ', msg);
             console.warn(stack);
         }
@@ -42,7 +47,7 @@ function warn(msg) {
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
  * @deprecated since version 3.0.0
  */
-core.SpriteBatch = function()
+core.SpriteBatch = function ()
 {
     throw new ReferenceError('SpriteBatch does not exist any more, please use the new ParticleContainer instead.');
 };
@@ -56,7 +61,7 @@ core.SpriteBatch = function()
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
  * @deprecated since version 3.0.0
  */
-core.AssetLoader = function()
+core.AssetLoader = function ()
 {
     throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.');
 };
@@ -72,7 +77,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Stage: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
@@ -90,7 +95,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     DisplayObjectContainer: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
@@ -108,7 +113,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Strip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
@@ -126,7 +131,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Rope: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
@@ -144,7 +149,8 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     ParticleContainer: {
-        get: function() {
+        get()
+        {
             // @if DEBUG
             warn('The ParticleContainer class has been moved to particles.ParticleContainer, please use particles.ParticleContainer from now on.');
             // @endif
@@ -161,7 +167,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     MovieClip: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
@@ -179,7 +185,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TilingSprite: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
@@ -197,7 +203,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BitmapText: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
@@ -215,7 +221,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     blendModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
@@ -233,7 +239,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     scaleModes: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
@@ -251,7 +257,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BaseTextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
@@ -269,7 +275,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TextureCache: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
@@ -287,7 +293,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     math: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
             warn('The math namespace is deprecated, please access members already accessible on PIXI.');
@@ -296,7 +302,7 @@ Object.defineProperties(core, {
         }
     },
 
-     /**
+    /**
      * @class
      * @private
      * @name PIXI.AbstractFilter
@@ -304,7 +310,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -321,7 +327,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     TransformManual: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
@@ -331,7 +337,7 @@ Object.defineProperties(core, {
     }
 });
 
-core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
+core.DisplayObject.prototype.generateTexture = function (renderer, scaleMode, resolution)
 {
     // @if DEBUG
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
@@ -340,7 +346,7 @@ core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, res
 };
 
 
-core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
+core.Graphics.prototype.generateTexture = function (scaleMode, resolution)
 {
     // @if DEBUG
     warn('graphics generate texture has moved to the renderer. Or to render a graphics to a texture using canvas please use generateCanvasTexture');
@@ -348,7 +354,7 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
     return this.generateCanvasTexture(scaleMode, resolution);
 };
 
-core.RenderTexture.prototype.render = function(displayObject, matrix, clear, updateTransform)
+core.RenderTexture.prototype.render = function (displayObject, matrix, clear, updateTransform)
 {
     this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);
     // @if DEBUG
@@ -356,7 +362,7 @@ core.RenderTexture.prototype.render = function(displayObject, matrix, clear, upd
     // @endif
 };
 
-core.RenderTexture.prototype.getImage = function(target)
+core.RenderTexture.prototype.getImage = function (target)
 {
     // @if DEBUG
     warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
@@ -364,7 +370,7 @@ core.RenderTexture.prototype.getImage = function(target)
     return this.legacyRenderer.extract.image(target);
 };
 
-core.RenderTexture.prototype.getBase64 = function(target)
+core.RenderTexture.prototype.getBase64 = function (target)
 {
     // @if DEBUG
     warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
@@ -372,7 +378,7 @@ core.RenderTexture.prototype.getBase64 = function(target)
     return this.legacyRenderer.extract.base64(target);
 };
 
-core.RenderTexture.prototype.getCanvas = function(target)
+core.RenderTexture.prototype.getCanvas = function (target)
 {
     // @if DEBUG
     warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
@@ -380,14 +386,13 @@ core.RenderTexture.prototype.getCanvas = function(target)
     return this.legacyRenderer.extract.canvas(target);
 };
 
-core.RenderTexture.prototype.getPixels = function(target)
+core.RenderTexture.prototype.getPixels = function (target)
 {
     // @if DEBUG
     warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
     // @endif
     return this.legacyRenderer.pixels(target);
 };
-
 
 
 /**
@@ -397,7 +402,7 @@ core.RenderTexture.prototype.getPixels = function(target)
  * @see PIXI.Sprite#texture
  * @deprecated since version 3.0.0
  */
-core.Sprite.prototype.setTexture = function(texture)
+core.Sprite.prototype.setTexture = function (texture)
 {
     this.texture = texture;
     // @if DEBUG
@@ -406,18 +411,17 @@ core.Sprite.prototype.setTexture = function(texture)
 };
 
 
-
 /**
  * @method
  * @name PIXI.extras.BitmapText#setText
  * @see PIXI.extras.BitmapText#text
  * @deprecated since version 3.0.0
  */
-extras.BitmapText.prototype.setText = function(text)
+extras.BitmapText.prototype.setText = function (text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text';`);
     // @endif
 };
 
@@ -427,11 +431,11 @@ extras.BitmapText.prototype.setText = function(text)
  * @see PIXI.Text#text
  * @deprecated since version 3.0.0
  */
-core.Text.prototype.setText = function(text)
+core.Text.prototype.setText = function (text)
 {
     this.text = text;
     // @if DEBUG
-    warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
+    warn(`setText is now deprecated, please use the text property, e.g : myText.text = 'my text';`);
     // @endif
 };
 
@@ -441,7 +445,7 @@ core.Text.prototype.setText = function(text)
  * @see PIXI.Text#style
  * @deprecated since version 3.0.0
  */
-core.Text.prototype.setStyle = function(style)
+core.Text.prototype.setStyle = function (style)
 {
     this.style = style;
     // @if DEBUG
@@ -457,26 +461,26 @@ Object.defineProperties(core.TextStyle.prototype, {
      * @deprecated since version 4.0.0
      */
     font: {
-        get: function ()
+        get ()
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
-            var fontSizeString = (typeof this._fontSize === 'number') ? this._fontSize + 'px' : this._fontSize;
-            return this._fontStyle + ' ' + this._fontVariant + ' ' + this._fontWeight + ' ' + fontSizeString + ' ' + this._fontFamily;
+            const fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
+            return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
-        set: function (font)
+        set (font)
         {
             // @if DEBUG
-            warn('text style property \'font\' is now deprecated, please use the \'fontFamily\',\'fontSize\',fontStyle\',\'fontVariant\' and \'fontWeight\' properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
             // @endif
 
             // can work out fontStyle from search of whole string
-            if ( font.indexOf('italic') > 1 )
+            if (font.indexOf('italic') > 1)
             {
                 this._fontStyle = 'italic';
             }
-            else if ( font.indexOf('oblique') > -1 )
+            else if (font.indexOf('oblique') > -1)
             {
                 this._fontStyle = 'oblique';
             }
@@ -486,7 +490,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
 
             // can work out fontVariant from search of whole string
-            if ( font.indexOf('small-caps') > -1 )
+            if (font.indexOf('small-caps') > -1)
             {
                 this._fontVariant = 'small-caps';
             }
@@ -496,14 +500,13 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
 
             // fontWeight and fontFamily are tricker to find, but it's easier to find the fontSize due to it's units
-            var splits = font.split(' ');
-            var i;
-            var fontSizeIndex = -1;
+            const splits = font.split(' ');
+            let fontSizeIndex = -1;
 
             this._fontSize = 26;
-            for ( i = 0; i < splits.length; ++i )
+            for (let i = 0; i < splits.length; ++i)
             {
-                if ( splits[i].match( /(px|pt|em|%)/ ) )
+                if (splits[i].match(/(px|pt|em|%)/))
                 {
                     fontSizeIndex = i;
                     this._fontSize = splits[i];
@@ -513,9 +516,9 @@ Object.defineProperties(core.TextStyle.prototype, {
 
             // we can now search for fontWeight as we know it must occur before the fontSize
             this._fontWeight = 'normal';
-            for ( i = 0; i < fontSizeIndex; ++i )
+            for (let i = 0; i < fontSizeIndex; ++i)
             {
-                if ( splits[i].match( /(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/ ) )
+                if (splits[i].match(/(bold|bolder|lighter|100|200|300|400|500|600|700|800|900)/))
                 {
                     this._fontWeight = splits[i];
                     break;
@@ -523,10 +526,10 @@ Object.defineProperties(core.TextStyle.prototype, {
             }
 
             // and finally join everything together after the fontSize in case the font family has multiple words
-            if ( fontSizeIndex > -1 && fontSizeIndex < splits.length-1 )
+            if (fontSizeIndex > -1 && fontSizeIndex < splits.length - 1)
             {
                 this._fontFamily = '';
-                for ( i = fontSizeIndex + 1; i < splits.length; ++i )
+                for (let i = fontSizeIndex + 1; i < splits.length; ++i)
                 {
                     this._fontFamily += splits[i] + ' ';
                 }
@@ -541,7 +544,7 @@ Object.defineProperties(core.TextStyle.prototype, {
             this.styleID++;
         }
     }
-} );
+});
 
 /**
  * @method
@@ -549,7 +552,7 @@ Object.defineProperties(core.TextStyle.prototype, {
  * @see PIXI.Texture#setFrame
  * @deprecated since version 3.0.0
  */
-core.Texture.prototype.setFrame = function(frame)
+core.Texture.prototype.setFrame = function (frame)
 {
     this.frame = frame;
     // @if DEBUG
@@ -567,7 +570,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -584,7 +587,7 @@ Object.defineProperties(filters, {
      * @deprecated since version 3.0.6
      */
     SpriteMaskFilter: {
-        get: function()
+        get()
         {
             // @if DEBUG
             warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
@@ -614,7 +617,8 @@ core.utils.uuid = function ()
  * @see PIXI.CanvasTinter
  * @deprecated
  */
-core.utils.canUseNewCanvasBlendModes = function() {
+core.utils.canUseNewCanvasBlendModes = function ()
+{
     // @if DEBUG
     warn('utils.canUseNewCanvasBlendModes() is deprecated, please use CanvasTinter.canUseMultiply from now on');
     // @endif

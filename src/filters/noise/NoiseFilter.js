@@ -1,5 +1,5 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+import core from '../../core';
+const glslify = require('glslify');
 
 /**
  * @author Vico @vicocotea
@@ -13,23 +13,20 @@ var glslify  = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function NoiseFilter()
+class NoiseFilter extends core.Filter
 {
-    core.Filter.call(this,
-        // vertex shader
-        glslify('../fragments/default.vert'),
-        // fragment shader
-        glslify('./noise.frag')
-    );
+    constructor()
+    {
+        super(
+            // vertex shader
+            glslify('../fragments/default.vert'),
+            // fragment shader
+            glslify('./noise.frag')
+        );
 
-    this.noise = 0.5;
-}
+        this.noise = 0.5;
+    }
 
-NoiseFilter.prototype = Object.create(core.Filter.prototype);
-NoiseFilter.prototype.constructor = NoiseFilter;
-module.exports = NoiseFilter;
-
-Object.defineProperties(NoiseFilter.prototype, {
     /**
      * The amount of noise to apply.
      *
@@ -37,14 +34,14 @@ Object.defineProperties(NoiseFilter.prototype, {
      * @memberof PIXI.filters.NoiseFilter#
      * @default 0.5
      */
-    noise: {
-        get: function ()
-        {
-            return this.uniforms.noise;
-        },
-        set: function (value)
-        {
-            this.uniforms.noise = value;
-        }
+    get noise()
+    {
+        return this.uniforms.noise;
     }
-});
+    set noise(value)
+    {
+        this.uniforms.noise = value;
+    }
+}
+
+export default NoiseFilter;

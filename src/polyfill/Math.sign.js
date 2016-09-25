@@ -3,7 +3,8 @@
 
 if (!Math.sign)
 {
-    Math.sign = function (x) {
+    Math.sign = function (x)
+    {
         x = +x;
         if (x === 0 || isNaN(x))
         {

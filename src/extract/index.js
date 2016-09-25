@@ -1,5 +1,7 @@
+import webGL from './webgl/WebGLExtract';
+import canvas from './canvas/CanvasExtract';
 
-module.exports = {
-    webGL: require('./webgl/WebGLExtract'),
-    canvas: require('./canvas/CanvasExtract')
+export default {
+    webGL,
+    canvas
 };

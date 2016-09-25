@@ -14,13 +14,13 @@ across all devices. The Pixi renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
 If you want to keep up to date with the latest pixi.js news then feel free to follow us on twitter
-([@doormat23](https://twitter.com/doormat23), and [@rolnaaba](https://twitter.com/rolnaaba))
+([@doormat23](https://twitter.com/doormat23), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
-[![projects](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/projects/)
+[![gallery](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/gallery/)
 
 ### What to Use Pixi.js for and When to Use It
 
@@ -29,6 +29,19 @@ Pixi.js is a rendering library that will allow you to create rich, interactive g
 Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, Pixi.js is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degredation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some Pixi.js magic!
 
 **Boost your development and feel free to use your imagination!**
+
+### Learn ###
+- Website: Find out more about Pixi on the [offical website](http://www.pixijs.com/).
+- Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+- Examples: Get stuck right in and play around with pixi code and features right [here](http://pixijs.github.io/examples/)!
+- Docs: Get to know the Pixi API by checking out the [docs](https://pixijs.github.io/docs/).
+- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
+
+### Community ###
+- Forums: Check out the [forum] (http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow] (http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
+- Inspiration: Check out the [gallery](http://www.pixijs.com/gallery) to see some of the amazing things people have created!
+- Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about Pixi. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
+
 
 ### Installation ###
 
@@ -51,6 +64,7 @@ $> npm install pixi.js
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.0.0/pixi.min.js"></script>
 ```
+
 _Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 
@@ -72,14 +86,6 @@ _Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.
 
 Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
 those last 2 examples and allowing us to share the source code :)
-
-### Resources ###
-
-- Learning Pixi - a brilliant guide [here](https://github.com/kittykatattack/learningPixi)
-- API Documentation is [here](http://pixijs.github.io/docs).
-- Feature Examples are [here](https://pixijs.github.io/examples).
-- The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
-- Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
 
 ### Contribute ###
 

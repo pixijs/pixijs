@@ -12,7 +12,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-var interactiveTarget = {
+const interactiveTarget = {
     /**
      * Determines if the displayObject be clicked/touched
      * 
@@ -85,4 +85,4 @@ var interactiveTarget = {
     _touchDown: false
  };
 
-module.exports = interactiveTarget;
+export default interactiveTarget;
