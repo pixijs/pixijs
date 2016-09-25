@@ -1,3 +1,6 @@
+'use strict';
+
+/* eslint-disable global-require */
 require('../bin/pixi');
 
 describe('PIXI', function ()

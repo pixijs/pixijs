@@ -1,14 +1,19 @@
-import core from '../../core';
-const tempRect = new core.Rectangle();
+import * as core from '../../core';
+
+const TEMP_RECT = new core.Rectangle();
+const BYTES_PER_PIXEL = 4;
 
 /**
- * The extract manager provides functionality to export content from the renderers
+ * The extract manager provides functionality to export content from the renderers.
+ *
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-class WebGLExtract
+export default class WebGLExtract
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     */
     constructor(renderer)
     {
         this.renderer = renderer;
@@ -18,32 +23,40 @@ class WebGLExtract
     /**
      * Will return a HTML Image of the target
      *
-     * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     *  to convert. If left empty will use use the main renderer
      * @return {HTMLImageElement} HTML Image of the target
      */
-    image( target )
+    image(target)
     {
         const image = new Image();
-        image.src = this.base64( target );
+
+        image.src = this.base64(target);
+
         return image;
     }
 
     /**
-     * Will return a a base64 encoded string of this target. It works by calling WebGLExtract.getCanvas and then running toDataURL on that.
-     * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+     * Will return a a base64 encoded string of this target. It works by calling
+     *  `WebGLExtract.getCanvas` and then running toDataURL on that.
+     *
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     *  to convert. If left empty will use use the main renderer
      * @return {string} A base64 encoded string of the texture.
      */
-    base64( target )
+    base64(target)
     {
-        return this.canvas( target ).toDataURL();
+        return this.canvas(target).toDataURL();
     }
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
-     * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+     *
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     *  to convert. If left empty will use use the main renderer
      * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
      */
-    canvas( target )
+    canvas(target)
     {
         const renderer = this.renderer;
         let textureBuffer;
@@ -52,20 +65,19 @@ class WebGLExtract
         let flipY = false;
         let renderTexture;
 
-        if(target)
+        if (target)
         {
-            if(target instanceof core.RenderTexture)
+            if (target instanceof core.RenderTexture)
             {
                 renderTexture = target;
             }
             else
             {
                 renderTexture = this.renderer.generateTexture(target);
-
             }
         }
 
-        if(renderTexture)
+        if (renderTexture)
         {
             textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
@@ -78,42 +90,49 @@ class WebGLExtract
             resolution = textureBuffer.resolution;
             flipY = true;
 
-            frame = tempRect;
+            frame = TEMP_RECT;
             frame.width = textureBuffer.size.width;
             frame.height = textureBuffer.size.height;
-
         }
-
-
 
         const width = frame.width * resolution;
         const height = frame.height * resolution;
 
         const canvasBuffer = new core.CanvasRenderTarget(width, height);
 
-        if(textureBuffer)
+        if (textureBuffer)
         {
             // bind the buffer
             renderer.bindRenderTarget(textureBuffer);
 
             // set up an array of pixels
-            const webGLPixels = new Uint8Array(4 * width * height);
+            const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
             // read pixels to the array
             const gl = renderer.gl;
-            gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+
+            gl.readPixels(
+                frame.x * resolution,
+                frame.y * resolution,
+                width,
+                height,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                webglPixels
+            );
 
             // add the pixels to the canvas
             const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-            canvasData.data.set(webGLPixels);
+
+            canvasData.data.set(webglPixels);
 
             canvasBuffer.context.putImageData(canvasData, 0, 0);
 
             // pulling pixels
-            if(flipY)
+            if (flipY)
             {
                 canvasBuffer.context.scale(1, -1);
-                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0,-height);
+                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
             }
         }
 
@@ -122,11 +141,14 @@ class WebGLExtract
     }
 
     /**
-     * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
-     * @param target {PIXI.DisplayObject|PIXI.RenderTexture} A displayObject or renderTexture to convert. If left empty will use use the main renderer
+     * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
+     * order, with integer values between 0 and 255 (included).
+     *
+     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     *  to convert. If left empty will use use the main renderer
      * @return {Uint8ClampedArray} One-dimensional array containing the pixel data of the entire texture
      */
-    pixels( target )
+    pixels(target)
     {
         const renderer = this.renderer;
         let textureBuffer;
@@ -134,9 +156,9 @@ class WebGLExtract
         let frame;
         let renderTexture;
 
-        if(target)
+        if (target)
         {
-            if(target instanceof core.RenderTexture)
+            if (target instanceof core.RenderTexture)
             {
                 renderTexture = target;
             }
@@ -146,19 +168,18 @@ class WebGLExtract
             }
         }
 
-        if(renderTexture)
+        if (renderTexture)
         {
             textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
             frame = renderTexture.frame;
-
         }
         else
         {
             textureBuffer = this.renderer.rootRenderTarget;
             resolution = textureBuffer.resolution;
 
-            frame = tempRect;
+            frame = TEMP_RECT;
             frame.width = textureBuffer.size.width;
             frame.height = textureBuffer.size.height;
         }
@@ -166,18 +187,27 @@ class WebGLExtract
         const width = frame.width * resolution;
         const height = frame.height * resolution;
 
-        const webGLPixels = new Uint8Array(4 * width * height);
+        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
-        if(textureBuffer)
+        if (textureBuffer)
         {
             // bind the buffer
             renderer.bindRenderTarget(textureBuffer);
             // read pixels to the array
             const gl = renderer.gl;
-            gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+
+            gl.readPixels(
+                frame.x * resolution,
+                frame.y * resolution,
+                width,
+                height,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                webglPixels
+            );
         }
 
-        return webGLPixels;
+        return webglPixels;
     }
 
     /**
@@ -192,5 +222,3 @@ class WebGLExtract
 }
 
 core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
-
-export default WebGLExtract;

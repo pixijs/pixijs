@@ -1,6 +1,8 @@
+'use strict';
+
 describe('toLocal', function ()
 {
-    it('should return correct local cordinates of a displayObject', function()
+    it('should return correct local cordinates of a displayObject', function ()
     {
         var parent = new PIXI.Container();
 
@@ -27,10 +29,9 @@ describe('toLocal', function ()
 
         expect(localPoint.x).to.equal(40);
         expect(localPoint.y).to.equal(40);
-
     });
 
-    it('should map the correct local cordinates of a displayObject to another', function()
+    it('should map the correct local cordinates of a displayObject to another', function ()
     {
         var parent = new PIXI.Container();
 
@@ -52,6 +53,5 @@ describe('toLocal', function ()
 
         expect(localPoint.x).to.equal(100);
         expect(localPoint.y).to.equal(100);
-
     });
 });

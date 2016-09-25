@@ -3,10 +3,12 @@ import WebGLManager from './WebGLManager';
 /**
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class StencilManager extends WebGLManager
+export default class StencilManager extends WebGLManager
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     */
     constructor(renderer)
     {
         super(renderer);
@@ -16,9 +18,9 @@ class StencilManager extends WebGLManager
     /**
      * Changes the mask stack that is used by this manager.
      *
-     * @param stencilMaskStack {PIXI.Graphics[]} The mask stack
+     * @param {PIXI.Graphics[]} stencilMaskStack - The mask stack
      */
-    setMaskStack( stencilMaskStack )
+    setMaskStack(stencilMaskStack)
     {
         this.stencilMaskStack = stencilMaskStack;
 
@@ -37,7 +39,7 @@ class StencilManager extends WebGLManager
     /**
      * Applies the Mask and adds it to the current filter stack. @alvin
      *
-     * @param graphics {PIXI.Graphics}
+     * @param {PIXI.Graphics} graphics - The mask
      */
     pushStencil(graphics)
     {
@@ -45,26 +47,26 @@ class StencilManager extends WebGLManager
 
         this.renderer._activeRenderTarget.attachStencilBuffer();
 
-        const gl = this.renderer.gl,
-            sms = this.stencilMaskStack;
+        const gl = this.renderer.gl;
+        const sms = this.stencilMaskStack;
 
         if (sms.length === 0)
         {
             gl.enable(gl.STENCIL_TEST);
             gl.clear(gl.STENCIL_BUFFER_BIT);
-            gl.stencilFunc(gl.ALWAYS,1,1);
+            gl.stencilFunc(gl.ALWAYS, 1, 1);
         }
 
         sms.push(graphics);
 
         gl.colorMask(false, false, false, false);
-        gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
         this.renderer.plugins.graphics.render(graphics);
 
         gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.NOTEQUAL,0, sms.length);
-        gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+        gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }
 
     /**
@@ -74,8 +76,8 @@ class StencilManager extends WebGLManager
     {
         this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
-        const gl = this.renderer.gl,
-            sms = this.stencilMaskStack;
+        const gl = this.renderer.gl;
+        const sms = this.stencilMaskStack;
 
         const graphics = sms.pop();
 
@@ -87,13 +89,13 @@ class StencilManager extends WebGLManager
         else
         {
             gl.colorMask(false, false, false, false);
-            gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
+            gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
             this.renderer.plugins.graphics.render(graphics);
 
             gl.colorMask(true, true, true, true);
             gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);
-            gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+            gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
         }
     }
 
@@ -108,5 +110,3 @@ class StencilManager extends WebGLManager
         this.stencilMaskStack.stencilStack = null;
     }
 }
-
-export default StencilManager;

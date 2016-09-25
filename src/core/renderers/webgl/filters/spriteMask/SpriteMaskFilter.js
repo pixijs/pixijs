@@ -1,8 +1,8 @@
 import Filter from '../Filter';
-import math from '../../../../math';
+import * as math from '../../../../math';
 
 // @see https://github.com/substack/brfs/issues/25
-const glslify = require('glslify');
+const glslify = require('glslify'); // eslint-disable-line no-undef
 
 /**
  * The SpriteMaskFilter class
@@ -10,10 +10,12 @@ const glslify = require('glslify');
  * @class
  * @extends PIXI.Filter
  * @memberof PIXI
- * @param sprite {PIXI.Sprite} the target sprite
  */
 class SpriteMaskFilter extends Filter
 {
+    /**
+     * @param {PIXI.Sprite} sprite - the target sprite
+     */
     constructor(sprite)
     {
         const maskMatrix = new math.Matrix();
@@ -32,16 +34,16 @@ class SpriteMaskFilter extends Filter
     /**
      * Applies the filter
      *
-     * @param filterManager {PIXI.FilterManager} The renderer to retrieve the filter from
-     * @param input {PIXI.RenderTarget}
-     * @param output {PIXI.RenderTarget}
+     * @param {PIXI.FilterManager} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.RenderTarget} input - The input render target.
+     * @param {PIXI.RenderTarget} output - The target to output to.
      */
     apply(filterManager, input, output)
     {
         const maskSprite = this.maskSprite;
 
         this.uniforms.mask = maskSprite._texture;
-        this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite );
+        this.uniforms.otherMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, maskSprite);
         this.uniforms.alpha = maskSprite.worldAlpha;
 
         filterManager.applyFilter(this, input, output);

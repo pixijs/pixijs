@@ -1,13 +1,14 @@
 /**
  * Mixins functionality to make an object have "plugins".
  *
- * @mixin
- * @memberof PIXI.utils
- * @param obj {object} The object to mix into.
  * @example
  *      function MyObject() {}
  *
  *      pluginTarget.mixin(MyObject);
+ *
+ * @mixin
+ * @memberof PIXI.utils
+ * @param {object} obj - The object to mix into.
  */
 function pluginTarget(obj)
 {
@@ -16,10 +17,10 @@ function pluginTarget(obj)
     /**
      * Adds a plugin to an object
      *
-     * @param pluginName {string} The events that should be listed.
-     * @param ctor {Function} The constructor function for the plugin.
+     * @param {string} pluginName - The events that should be listed.
+     * @param {Function} ctor - The constructor function for the plugin.
      */
-    obj.registerPlugin = function (pluginName, ctor)
+    obj.registerPlugin = function registerPlugin(pluginName, ctor)
     {
         obj.__plugins[pluginName] = ctor;
     };
@@ -28,7 +29,7 @@ function pluginTarget(obj)
      * Instantiates all the plugins of this object
      *
      */
-    obj.prototype.initPlugins = function ()
+    obj.prototype.initPlugins = function initPlugins()
     {
         this.plugins = this.plugins || {};
 
@@ -42,7 +43,7 @@ function pluginTarget(obj)
      * Removes all the plugins of this object
      *
      */
-    obj.prototype.destroyPlugins = function ()
+    obj.prototype.destroyPlugins = function destroyPlugins()
     {
         for (const o in this.plugins)
         {
@@ -54,15 +55,14 @@ function pluginTarget(obj)
     };
 }
 
-
 export default {
     /**
      * Mixes in the properties of the pluginTarget into another object
      *
-     * @param obj {object} The obj to mix into
+     * @param {object} obj - The obj to mix into
      */
     mixin: function mixin(obj)
     {
         pluginTarget(obj);
-    }
+    },
 };

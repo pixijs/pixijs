@@ -3,6 +3,7 @@
  * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
  *
  * @mixin
+ * @name interactiveTarget
  * @memberof PIXI.interaction
  * @example
  *      function MyObject() {}
@@ -12,7 +13,7 @@
  *          PIXI.interaction.interactiveTarget
  *      );
  */
-const interactiveTarget = {
+export default {
     /**
      * Determines if the displayObject be clicked/touched
      *
@@ -44,8 +45,10 @@ const interactiveTarget = {
     buttonMode: false,
 
     /**
-     * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor is hovered over the displayObject
-     * https://developer.mozilla.org/en/docs/Web/CSS/cursor
+     * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor
+     * is hovered over the displayObject
+     *
+     * @see https://developer.mozilla.org/en/docs/Web/CSS/cursor
      *
      * @inner {string}
      */
@@ -58,7 +61,7 @@ const interactiveTarget = {
      * @inner {boolean}
      * @private
      */
-    _mouseOver: false,
+    _over: false,
 
     /**
      * Internal check to detect if the left mouse button is pressed on the displayObject
@@ -98,7 +101,5 @@ const interactiveTarget = {
      * @inner {boolean}
      * @private
      */
-    _touchDown: false
- };
-
-export default interactiveTarget;
+    _touchDown: false,
+};

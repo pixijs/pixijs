@@ -1,6 +1,7 @@
-import core from '../../core';
+import * as core from '../../core';
+
 // @see https://github.com/substack/brfs/issues/25
-const glslify = require('glslify');
+const glslify = require('glslify'); // eslint-disable-line no-undef
 
 /**
  * Does nothing. Very handy.
@@ -9,8 +10,11 @@ const glslify = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class VoidFilter extends core.Filter
+export default class VoidFilter extends core.Filter
 {
+    /**
+     *
+     */
     constructor()
     {
         super(
@@ -23,5 +27,3 @@ class VoidFilter extends core.Filter
         this.glShaderKey = 'void';
     }
 }
-
-export default VoidFilter;

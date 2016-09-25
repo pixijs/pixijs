@@ -1,4 +1,4 @@
-import core from '../../core';
+import * as core from '../../core';
 import BlurXFilter from './BlurXFilter';
 import BlurYFilter from './BlurYFilter';
 
@@ -10,8 +10,13 @@ import BlurYFilter from './BlurYFilter';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class BlurFilter extends core.Filter
+export default class BlurFilter extends core.Filter
 {
+    /**
+     * @param {number} strength - The strength of the blur filter.
+     * @param {number} quality - The quality of the blur filter.
+     * @param {number} resolution - The reoslution of the blur filter.
+     */
     constructor(strength, quality, resolution)
     {
         super();
@@ -26,9 +31,15 @@ class BlurFilter extends core.Filter
         this.blur = strength || 8;
     }
 
+    /**
+     * Applies the filter.
+     *
+     * @param {PIXI.FilterManager} filterManager - The manager.
+     * @param {PIXI.RenderTarget} input - The input target.
+     * @param {PIXI.RenderTarget} output - The output target.
+     */
     apply(filterManager, input, output)
     {
-
         const renderTarget = filterManager.getRenderTarget(true);
 
         this.blurXFilter.apply(filterManager, input, renderTarget, true);
@@ -48,10 +59,16 @@ class BlurFilter extends core.Filter
     {
         return this.blurXFilter.blur;
     }
+
+    /**
+     * Sets the strength of the blur.
+     *
+     * @param {number} value - The value to set.
+     */
     set blur(value)
     {
         this.blurXFilter.blur = this.blurYFilter.blur = value;
-        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 
     /**
@@ -63,8 +80,14 @@ class BlurFilter extends core.Filter
      */
     get quality()
     {
-        return  this.blurXFilter.quality;
+        return this.blurXFilter.quality;
     }
+
+    /**
+     * Sets the quality of the blur.
+     *
+     * @param {number} value - The value to set.
+     */
     set quality(value)
     {
         this.blurXFilter.quality = this.blurYFilter.quality = value;
@@ -81,10 +104,16 @@ class BlurFilter extends core.Filter
     {
         return this.blurXFilter.blur;
     }
+
+    /**
+     * Sets the strength of the blurX.
+     *
+     * @param {number} value - The value to set.
+     */
     set blurX(value)
     {
         this.blurXFilter.blur = value;
-        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 
     /**
@@ -98,11 +127,15 @@ class BlurFilter extends core.Filter
     {
         return this.blurYFilter.blur;
     }
+
+    /**
+     * Sets the strength of the blurY.
+     *
+     * @param {number} value - The value to set.
+     */
     set blurY(value)
     {
         this.blurYFilter.blur = value;
-        this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 }
-
-export default BlurFilter;

@@ -1,10 +1,5 @@
-import ParticleContainer from './ParticleContainer';
-import ParticleRenderer from './webgl/ParticleRenderer';
-
 /**
  * @namespace PIXI.particles
  */
-export default {
-    ParticleContainer,
-    ParticleRenderer
-};
+export { default as ParticleContainer } from './ParticleContainer';
+export { default as ParticleRenderer } from './webgl/ParticleRenderer';

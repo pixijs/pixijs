@@ -1,17 +1,15 @@
-import core from '../core';
+import * as core from '../core';
 
 /**
-* Returns the global position of the displayObject
-*
-* @memberof PIXI.DisplayObject#
-* @param point {Point} the point to write the global value to. If null a new point will be returned
-* @return {Point}
-*/
-core.DisplayObject.prototype.getGlobalPosition = function (point)
+ * Returns the global position of the displayObject
+ *
+ * @memberof PIXI.DisplayObject#
+ * @param {Point} point - the point to write the global value to. If null a new point will be returned
+ * @return {Point} The updated point
+ */
+core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new core.Point())
 {
-    point = point || new core.Point();
-
-    if(this.parent)
+    if (this.parent)
     {
         this.displayObjectUpdateTransform();
 

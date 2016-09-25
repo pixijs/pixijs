@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -23,28 +23,28 @@ import core from '../core';
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.particles
- * @param [maxSize=15000] {number} The maximum number of particles that can be renderer by the container.
- * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
- * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
- * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
- * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
- * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
- * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
- * @param [batchSize=15000] {number} Number of particles per batch.
  */
-class ParticleContainer extends core.Container {
-
-    constructor(maxSize, properties, batchSize)
+export default class ParticleContainer extends core.Container
+{
+    /**
+     * @param {number} [maxSize=15000] - The maximum number of particles that can be renderer by the container.
+     * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
+     * @param {boolean} [properties.scale=false] - When true, scale be uploaded and applied.
+     * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
+     * @param {boolean} [properties.rotation=false] - When true, rotation be uploaded and applied.
+     * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
+     * @param {boolean} [properties.alpha=false] - When true, alpha be uploaded and applied.
+     * @param {number} [batchSize=15000] - Number of particles per batch.
+     */
+    constructor(maxSize = 1500, properties, batchSize = 16384)
     {
         super();
-
-        batchSize = batchSize || 15000; //CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
-        maxSize = maxSize || 15000;
 
         // Making sure the batch size is valid
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
         // so max number of particles is 65536 / 4 = 16384
         const maxBatchSize = 16384;
+
         if (batchSize > maxBatchSize)
         {
             batchSize = maxBatchSize;
@@ -94,7 +94,8 @@ class ParticleContainer extends core.Container {
         this.interactiveChildren = false;
 
         /**
-         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
+         * to reset the blend mode.
          *
          * @member {number}
          * @default PIXI.BLEND_MODES.NORMAL
@@ -103,13 +104,20 @@ class ParticleContainer extends core.Container {
         this.blendMode = core.BLEND_MODES.NORMAL;
 
         /**
-         * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
+         * Used for canvas renderering. If true then the elements will be positioned at the
+         * nearest pixel. This provides a nice speed boost.
          *
          * @member {boolean}
          * @default true;
          */
         this.roundPixels = true;
 
+        /**
+         * The texture used to render the children.
+         *
+         * @readonly
+         * @member {BaseTexture}
+         */
         this.baseTexture = null;
 
         this.setProperties(properties);
@@ -118,7 +126,7 @@ class ParticleContainer extends core.Container {
     /**
      * Sets the private properties array to dynamic / static based on the passed properties object
      *
-     * @param properties {object} The properties to be uploaded
+     * @param {object} properties - The properties to be uploaded
      */
     setProperties(properties)
     {
@@ -139,7 +147,6 @@ class ParticleContainer extends core.Container {
      */
     updateTransform()
     {
-
         // TODO don't need to!
         this.displayObjectUpdateTransform();
         //  PIXI.Container.prototype.updateTransform.call( this );
@@ -148,8 +155,8 @@ class ParticleContainer extends core.Container {
     /**
      * Renders the container using the WebGL renderer
      *
-     * @param renderer {PIXI.WebGLRenderer} The webgl renderer
      * @private
+     * @param {PIXI.WebGLRenderer} renderer - The webgl renderer
      */
     renderWebGL(renderer)
     {
@@ -157,7 +164,6 @@ class ParticleContainer extends core.Container {
         {
             return;
         }
-
 
         if (!this.baseTexture)
         {
@@ -168,7 +174,6 @@ class ParticleContainer extends core.Container {
             }
         }
 
-
         renderer.setObjectRenderer(renderer.plugins.particle);
         renderer.plugins.particle.render(this);
     }
@@ -177,10 +182,12 @@ class ParticleContainer extends core.Container {
      * Set the flag that static data should be updated to true
      *
      * @private
+     * @param {number} smallestChildIndex - The smallest child index
      */
     onChildrenChange(smallestChildIndex)
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
+
         if (bufferIndex < this._bufferToUpdate)
         {
             this._bufferToUpdate = bufferIndex;
@@ -190,8 +197,8 @@ class ParticleContainer extends core.Container {
     /**
      * Renders the object using the Canvas renderer
      *
-     * @param renderer {PIXI.CanvasRenderer} The canvas renderer
      * @private
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
      */
     renderCanvas(renderer)
     {
@@ -211,6 +218,7 @@ class ParticleContainer extends core.Container {
         let finalHeight = 0;
 
         const compositeOperation = renderer.blendModes[this.blendMode];
+
         if (compositeOperation !== context.globalCompositeOperation)
         {
             context.globalCompositeOperation = compositeOperation;
@@ -250,12 +258,11 @@ class ParticleContainer extends core.Container {
                     isRotated = false;
                 }
 
-                positionX = ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x + 0.5);
-                positionY = ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y + 0.5);
+                positionX = ((child.anchor.x) * (-frame.width * child.scale.x)) + child.position.x + 0.5;
+                positionY = ((child.anchor.y) * (-frame.height * child.scale.y)) + child.position.y + 0.5;
 
                 finalWidth = frame.width * child.scale.x;
                 finalHeight = frame.height * child.scale.y;
-
             }
             else
             {
@@ -291,8 +298,8 @@ class ParticleContainer extends core.Container {
                     );
                 }
 
-                positionX = ((child.anchor.x) * (-frame.width) + 0.5);
-                positionY = ((child.anchor.y) * (-frame.height) + 0.5);
+                positionX = ((child.anchor.x) * (-frame.width)) + 0.5;
+                positionY = ((child.anchor.y) * (-frame.height)) + 0.5;
 
                 finalWidth = frame.width;
                 finalHeight = frame.height;
@@ -317,10 +324,14 @@ class ParticleContainer extends core.Container {
     /**
      * Destroys the container
      *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have their
+     *  destroy method called as well. 'options' will be passed on to those calls.
      */
-    destroy()
+    destroy(options)
     {
-        super.destroy(arguments);
+        super.destroy(options);
 
         if (this._buffers)
         {
@@ -333,7 +344,4 @@ class ParticleContainer extends core.Container {
         this._properties = null;
         this._buffers = null;
     }
-
 }
-
-export default ParticleContainer;

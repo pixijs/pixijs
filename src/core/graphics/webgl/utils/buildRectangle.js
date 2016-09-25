@@ -1,5 +1,5 @@
 import buildLine from './buildLine';
-import utils from '../../../utils';
+import * as utils from '../../../utils';
 
 /**
  * Builds a rectangle to draw
@@ -8,10 +8,10 @@ import utils from '../../../utils';
  *
  * @ignore
  * @private
- * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
- * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-const buildRectangle = function (graphicsData, webGLData)
+export default function buildRectangle(graphicsData, webGLData)
 {
     // --- //
     // need to convert points to a nice regular data
@@ -34,7 +34,7 @@ const buildRectangle = function (graphicsData, webGLData)
         const verts = webGLData.points;
         const indices = webGLData.indices;
 
-        const vertPos = verts.length/6;
+        const vertPos = verts.length / 6;
 
         // start
         verts.push(x, y);
@@ -43,14 +43,14 @@ const buildRectangle = function (graphicsData, webGLData)
         verts.push(x + width, y);
         verts.push(r, g, b, alpha);
 
-        verts.push(x , y + height);
+        verts.push(x, y + height);
         verts.push(r, g, b, alpha);
 
         verts.push(x + width, y + height);
         verts.push(r, g, b, alpha);
 
         // insert 2 dead triangles..
-        indices.push(vertPos, vertPos, vertPos+1, vertPos+2, vertPos+3, vertPos+3);
+        indices.push(vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3);
     }
 
     if (graphicsData.lineWidth)
@@ -63,11 +63,8 @@ const buildRectangle = function (graphicsData, webGLData)
                   x, y + height,
                   x, y];
 
-
         buildLine(graphicsData, webGLData);
 
         graphicsData.points = tempPoints;
     }
-};
-
-export default buildRectangle;
+}

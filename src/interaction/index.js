@@ -1,12 +1,6 @@
-import InteractionData from './InteractionData';
-import InteractionManager from './InteractionManager';
-import interactiveTarget from './interactiveTarget';
-
 /**
  * @namespace PIXI.interaction
  */
-export default {
-    InteractionData,
-    InteractionManager,
-    interactiveTarget
-};
+export { default as InteractionData } from './InteractionData';
+export { default as InteractionManager } from './InteractionManager';
+export { default as interactiveTarget } from './interactiveTarget';

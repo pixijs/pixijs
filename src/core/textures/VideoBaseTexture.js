@@ -1,5 +1,5 @@
 import BaseTexture from './BaseTexture';
-import utils from '../utils';
+import * as utils from '../utils';
 
 /**
  * A texture of a [playing] Video.
@@ -26,11 +26,13 @@ import utils from '../utils';
  * @class
  * @extends PIXI.BaseTexture
  * @memberof PIXI
- * @param source {HTMLVideoElement} Video source
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
  */
 class VideoBaseTexture extends BaseTexture
 {
+    /**
+     * @param {HTMLVideoElement} source - Video source
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     */
     constructor(source, scaleMode)
     {
         if (!source)
@@ -41,7 +43,8 @@ class VideoBaseTexture extends BaseTexture
         // hook in here to check if video is already available.
         // BaseTexture looks for a source.complete boolean, plus width & height.
 
-        if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA) && source.width && source.height)
+        if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA)
+            && source.width && source.height)
         {
             source.complete = true;
         }
@@ -94,7 +97,7 @@ class VideoBaseTexture extends BaseTexture
     _onPlayStart()
     {
         // Just in case the video has not recieved its can play even yet..
-        if(!this.hasLoaded)
+        if (!this.hasLoaded)
         {
             this._onCanPlay();
         }
@@ -152,7 +155,7 @@ class VideoBaseTexture extends BaseTexture
     {
         if (this.source && this.source._pixiId)
         {
-            delete utils.BaseTextureCache[ this.source._pixiId ];
+            delete utils.BaseTextureCache[this.source._pixiId];
             delete this.source._pixiId;
         }
 
@@ -163,8 +166,8 @@ class VideoBaseTexture extends BaseTexture
      * Mimic Pixi BaseTexture.from.... method.
      *
      * @static
-     * @param video {HTMLVideoElement} Video to create texture from
-     * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param {HTMLVideoElement} video - Video to create texture from
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
     static fromVideo(video, scaleMode)
@@ -179,7 +182,7 @@ class VideoBaseTexture extends BaseTexture
         if (!baseTexture)
         {
             baseTexture = new VideoBaseTexture(video, scaleMode);
-            utils.BaseTextureCache[ video._pixiId ] = baseTexture;
+            utils.BaseTextureCache[video._pixiId] = baseTexture;
         }
 
         return baseTexture;
@@ -190,11 +193,11 @@ class VideoBaseTexture extends BaseTexture
      * This BaseTexture can then be used to create a texture
      *
      * @static
-     * @param videoSrc {string|object|string[]|object[]} The URL(s) for the video.
-     * @param [videoSrc.src] {string} One of the source urls for the video
-     * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
+     * @param {string|object|string[]|object[]} videoSrc - The URL(s) for the video.
+     * @param {string} [videoSrc.src] - One of the source urls for the video
+     * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
      *  the url's extension will be used as the second part of the mime type.
-     * @param scaleMode {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
     static fromUrl(videoSrc, scaleMode)

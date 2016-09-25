@@ -1,10 +1,12 @@
 /**
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class WebGLManager
+export default class WebGLManager
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     */
     constructor(renderer)
     {
         /**
@@ -37,5 +39,3 @@ class WebGLManager
         this.renderer = null;
     }
 }
-
-export default WebGLManager;

@@ -7,12 +7,13 @@ let tempAnchor;
  * for this resource is cross-origin. If crossOrigin was manually set, this
  * function does nothing.
  * Nipped from the resource loader!
- * @private
- * @param url {string} The url to test.
- * @param [loc=window.location] {object} The location object to test against.
+ *
+ * @ignore
+ * @param {string} url - The url to test.
+ * @param {object} [loc=window.location] - The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
-const determineCrossOrigin = function (url, loc=window.location)
+export default function determineCrossOrigin(url, loc = window.location)
 {
     // data: and javascript: urls are considered same-origin
     if (url.indexOf('data:') === 0)
@@ -43,6 +44,4 @@ const determineCrossOrigin = function (url, loc=window.location)
     }
 
     return '';
-};
-
-export default determineCrossOrigin;
+}

@@ -19,15 +19,18 @@ import bitmapFontParser from './bitmapFontParser';
  * loader.load();
  * ```
  *
+ * @see https://github.com/englercj/resource-loader
+ *
  * @class
  * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
- * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
- * @param [concurrency=10] {number} The number of resources to load concurrently.
- * @see https://github.com/englercj/resource-loader
  */
-class Loader extends ResourceLoader
+export default class Loader extends ResourceLoader
 {
+    /**
+     * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
+     * @param {number} [concurrency=10] - The number of resources to load concurrently.
+     */
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
@@ -38,6 +41,12 @@ class Loader extends ResourceLoader
         }
     }
 
+    /**
+     * Adds a default middleware to the pixi loader.
+     *
+     * @static
+     * @param {Function} fn - The middleware to add.
+     */
     static addPixiMiddleware(fn)
     {
         Loader._pixiMiddleware.push(fn);
@@ -52,12 +61,10 @@ Loader._pixiMiddleware = [
     // parse any spritesheet data into multiple textures
     spritesheetParser,
     // parse any spritesheet data into multiple textures
-    bitmapFontParser
+    bitmapFontParser,
 ];
 
 // Add custom extentions
 const Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
-
-export default Loader;

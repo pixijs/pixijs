@@ -4,15 +4,17 @@ import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 /**
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class MaskManager extends WebGLManager
+export default class MaskManager extends WebGLManager
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     */
     constructor(renderer)
     {
         super(renderer);
 
-        //TODO - we don't need both!
+        // TODO - we don't need both!
         this.scissor = false;
         this.scissorData = null;
         this.scissorRenderTarget = null;
@@ -26,8 +28,8 @@ class MaskManager extends WebGLManager
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param target {PIXI.DisplayObject} Display Object to push the mask to
-     * @param maskData {PIXI.Sprite|PIXI.Graphics}
+     * @param {PIXI.DisplayObject} target - Display Object to push the mask to
+     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
      */
     pushMask(target, maskData)
     {
@@ -35,38 +37,38 @@ class MaskManager extends WebGLManager
         {
             this.pushSpriteMask(target, maskData);
         }
-        else
+        else if (this.enableScissor
+            && !this.scissor
+            && !this.renderer.stencilManager.stencilMaskStack.length
+            && maskData.isFastRect())
         {
-            if(this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect())
-            {
-                const matrix = maskData.worldTransform;
+            const matrix = maskData.worldTransform;
 
-                let rot = Math.atan2(matrix.b, matrix.a);
+            let rot = Math.atan2(matrix.b, matrix.a);
 
-                // use the nearest degree!
-                rot = Math.round(rot * (180/Math.PI));
+            // use the nearest degree!
+            rot = Math.round(rot * (180 / Math.PI));
 
-                if(rot % 90)
-                {
-                    this.pushStencilMask(maskData);
-                }
-                else
-                {
-                    this.pushScissorMask(target, maskData);
-                }
-            }
-            else
+            if (rot % 90)
             {
                 this.pushStencilMask(maskData);
             }
+            else
+            {
+                this.pushScissorMask(target, maskData);
+            }
+        }
+        else
+        {
+            this.pushStencilMask(maskData);
         }
     }
 
     /**
      * Removes the last mask from the mask stack and doesn't return it.
      *
-     * @param target {PIXI.DisplayObject} Display Object to pop the mask from
-     * @param maskData {Array<*>}
+     * @param {PIXI.DisplayObject} target - Display Object to pop the mask from
+     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
      */
     popMask(target, maskData)
     {
@@ -74,25 +76,21 @@ class MaskManager extends WebGLManager
         {
             this.popSpriteMask(target, maskData);
         }
+        else if (this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
+        {
+            this.popScissorMask(target, maskData);
+        }
         else
         {
-            if(this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
-            {
-                this.popScissorMask(target, maskData);
-            }
-            else
-            {
-                this.popStencilMask(target, maskData);
-            }
-
+            this.popStencilMask(target, maskData);
         }
     }
 
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param target {PIXI.RenderTarget} Display Object to push the sprite mask to
-     * @param maskData {PIXI.Sprite} Sprite to be used as the mask
+     * @param {PIXI.RenderTarget} target - Display Object to push the sprite mask to
+     * @param {PIXI.Sprite} maskData - Sprite to be used as the mask
      */
     pushSpriteMask(target, maskData)
     {
@@ -106,7 +104,7 @@ class MaskManager extends WebGLManager
         alphaMaskFilter[0].resolution = this.renderer.resolution;
         alphaMaskFilter[0].maskSprite = maskData;
 
-        //TODO - may cause issues!
+        // TODO - may cause issues!
         target.filterArea = maskData.getBounds(true);
 
         this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
@@ -124,11 +122,10 @@ class MaskManager extends WebGLManager
         this.alphaMaskIndex--;
     }
 
-
     /**
      * Applies the Mask and adds it to the current filter stack.
      *
-     * @param maskData {Array<*>}
+     * @param {PIXI.Sprite|PIXI.Graphics} maskData - The masking data.
      */
     pushStencilMask(maskData)
     {
@@ -148,8 +145,8 @@ class MaskManager extends WebGLManager
 
     /**
      *
-     * @param target {PIXI.RenderTarget} Display Object to push the scissor mask to
-     * @param maskData
+     * @param {PIXI.DisplayObject} target - Display Object to push the mask to
+     * @param {PIXI.Graphics} maskData - The masking data.
      */
     pushScissorMask(target, maskData)
     {
@@ -165,10 +162,13 @@ class MaskManager extends WebGLManager
         this.renderer.gl.enable(this.renderer.gl.SCISSOR_TEST);
 
         const resolution = this.renderer.resolution;
-        this.renderer.gl.scissor(bounds.x * resolution,
+
+        this.renderer.gl.scissor(
+            bounds.x * resolution,
             (renderTarget.root ? renderTarget.size.height - bounds.y - bounds.height : bounds.y) * resolution,
-                               bounds.width * resolution,
-                               bounds.height * resolution);
+            bounds.width * resolution,
+            bounds.height * resolution
+        );
 
         this.scissorRenderTarget = renderTarget;
         this.scissorData = maskData;
@@ -187,8 +187,7 @@ class MaskManager extends WebGLManager
 
         // must be scissor!
         const gl = this.renderer.gl;
+
         gl.disable(gl.SCISSOR_TEST);
     }
 }
-
-export default MaskManager;

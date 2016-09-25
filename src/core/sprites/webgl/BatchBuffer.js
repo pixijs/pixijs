@@ -1,5 +1,11 @@
-class Buffer
+/**
+ * @class
+ */
+export default class Buffer
 {
+    /**
+     * @param {number} size - The size of the buffer in bytes.
+     */
     constructor(size)
     {
         this.vertices = new ArrayBuffer(size);
@@ -19,13 +25,15 @@ class Buffer
         this.uint32View = new Uint32Array(this.vertices);
     }
 
+    /**
+     * Destroys the buffer.
+     *
+     */
     destroy()
     {
-       this.vertices = null;
-       this.positions = null;
-       this.uvs = null;
-       this.colors  = null;
+        this.vertices = null;
+        this.positions = null;
+        this.uvs = null;
+        this.colors = null;
     }
 }
-
-export default Buffer;
