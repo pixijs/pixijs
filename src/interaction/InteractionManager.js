@@ -178,28 +178,28 @@ class InteractionManager extends EventEmitter
          * @private
          */
         this.onMouseUp = this.onMouseUp.bind(this);
-        this.processMouseUp = this.processMouseUp.bind( this );
+        this.processMouseUp = this.processMouseUp.bind(this);
 
         /**
          * @member {Function}
          *  @private
          */
         this.onMouseDown = this.onMouseDown.bind(this);
-        this.processMouseDown = this.processMouseDown.bind( this );
+        this.processMouseDown = this.processMouseDown.bind(this);
 
         /**
          * @member {Function}
          * @private
          */
-        this.onMouseMove = this.onMouseMove.bind( this );
-        this.processMouseMove = this.processMouseMove.bind( this );
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.processMouseMove = this.processMouseMove.bind(this);
 
         /**
          * @member {Function}
          * @private
          */
         this.onMouseOut = this.onMouseOut.bind(this);
-        this.processMouseOverOut = this.processMouseOverOut.bind( this );
+        this.processMouseOverOut = this.processMouseOverOut.bind(this);
 
         /**
         * @member {Function}
@@ -212,25 +212,25 @@ class InteractionManager extends EventEmitter
         * @member {Function}
         */
         this.onPointerUp = this.onPointerUp.bind(this);
-        this.processPointerUp = this.processPointerUp.bind( this );
+        this.processPointerUp = this.processPointerUp.bind(this);
 
         /**
         * @member {Function}
         */
         this.onPointerDown = this.onPointerDown.bind(this);
-        this.processPointerDown = this.processPointerDown.bind( this );
+        this.processPointerDown = this.processPointerDown.bind(this);
 
         /**
         * @member {Function}
         */
         this.onPointerMove = this.onPointerMove.bind(this);
-        this.processPointerMove = this.processPointerMove.bind( this );
+        this.processPointerMove = this.processPointerMove.bind(this);
 
         /**
         * @member {Function}
         */
         this.onPointerOut = this.onPointerOut.bind(this);
-        this.processPointerOverOut = this.processPointerOverOut.bind( this );
+        this.processPointerOverOut = this.processPointerOverOut.bind(this);
 
         /**
         * @member {Function}
