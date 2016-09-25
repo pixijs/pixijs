@@ -1,12 +1,12 @@
-var utils = require('../../utils'),
-    canUseNewCanvasBlendModes = require('../../renderers/canvas/utils/canUseNewCanvasBlendModes');
+import utils from '../../utils';
+import canUseNewCanvasBlendModes from '../../renderers/canvas/utils/canUseNewCanvasBlendModes';
 
 /**
  * Utility methods for Sprite/Texture tinting.
  *
  * @namespace PIXI.CanvasTinter
  */
-var CanvasTinter = module.exports = {
+const CanvasTinter = {
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
      *
@@ -15,13 +15,13 @@ var CanvasTinter = module.exports = {
      * @param color {number} the color to use to tint the sprite with
      * @return {HTMLCanvasElement} The tinted canvas
      */
-    getTintedTexture: function (sprite, color)
+    getTintedTexture: (sprite, color) =>
     {
-        var texture = sprite.texture;
+        const texture = sprite.texture;
 
         color = CanvasTinter.roundColor(color);
 
-        var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+        const stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
         texture.tintCache = texture.tintCache || {};
 
@@ -31,7 +31,7 @@ var CanvasTinter = module.exports = {
         }
 
         // clone texture..
-        var canvas = CanvasTinter.canvas || document.createElement('canvas');
+        const canvas = CanvasTinter.canvas || document.createElement('canvas');
 
         //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
         CanvasTinter.tintMethod(texture, color, canvas);
@@ -39,7 +39,7 @@ var CanvasTinter = module.exports = {
         if (CanvasTinter.convertTintToImage)
         {
             // is this better?
-            var tintImage = new Image();
+            const tintImage = new Image();
             tintImage.src = canvas.toDataURL();
 
             texture.tintCache[stringColor] = tintImage;
@@ -62,11 +62,11 @@ var CanvasTinter = module.exports = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithMultiply: function (texture, color, canvas)
+    tintWithMultiply: (texture, color, canvas) =>
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        const context = canvas.getContext('2d');
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -117,11 +117,11 @@ var CanvasTinter = module.exports = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithOverlay: function (texture, color, canvas)
+    tintWithOverlay (texture, color, canvas)
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        const context = canvas.getContext('2d');
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -159,11 +159,11 @@ var CanvasTinter = module.exports = {
      * @param color {number} the color to use to tint the sprite with
      * @param canvas {HTMLCanvasElement} the current canvas
      */
-    tintWithPerPixel: function (texture, color, canvas)
+    tintWithPerPixel: (texture, color, canvas) =>
     {
-        var context = canvas.getContext( '2d' );
-        var crop = texture._frame.clone();
-        var resolution = texture.baseTexture.resolution;
+        const context = canvas.getContext('2d');
+        const crop = texture._frame.clone();
+        const resolution = texture.baseTexture.resolution;
 
         crop.x *= resolution;
         crop.y *= resolution;
@@ -186,18 +186,18 @@ var CanvasTinter = module.exports = {
             crop.height
         );
 
-        var rgbValues = utils.hex2rgb(color);
-        var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
+        const rgbValues = utils.hex2rgb(color);
+        const r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-        var pixelData = context.getImageData(0, 0, crop.width, crop.height);
+        const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
-        var pixels = pixelData.data;
+        const pixels = pixelData.data;
 
-        for (var i = 0; i < pixels.length; i += 4)
+        for (let i = 0; i < pixels.length; i += 4)
         {
-            pixels[i+0] *= r;
-            pixels[i+1] *= g;
-            pixels[i+2] *= b;
+            pixels[i + 0] *= r;
+            pixels[i + 1] *= g;
+            pixels[i + 2] *= b;
         }
 
         context.putImageData(pixelData, 0, 0);
@@ -209,11 +209,11 @@ var CanvasTinter = module.exports = {
      * @memberof PIXI.CanvasTinter
      * @param color {number} the color to round, should be a hex color
      */
-    roundColor: function (color)
+    roundColor: (color) =>
     {
-        var step = CanvasTinter.cacheStepsPerColorChannel;
+        const step = CanvasTinter.cacheStepsPerColorChannel;
 
-        var rgbValues = utils.hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
 
         rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
         rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
@@ -255,7 +255,7 @@ var CanvasTinter = module.exports = {
     tintMethod: 0
 };
 
-CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
+CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply : CanvasTinter.tintWithPerPixel;
 
 /**
  * The tintMethod type.
@@ -266,3 +266,5 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
+
+export default CanvasTinter;

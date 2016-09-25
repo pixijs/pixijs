@@ -1,22 +1,33 @@
+import Point from './Point';
+import ObservablePoint from './ObservablePoint';
+import Matrix from './Matrix';
+import GroupD8 from './GroupD8';
+
+import Circle from './shapes/Circle';
+import Ellipse from './shapes/Ellipse';
+import Polygon from './shapes/Polygon';
+import Rectangle from './shapes/Rectangle';
+import RoundedRectangle from './shapes/RoundedRectangle';
+
 /**
  * Math classes and utilities mixed into PIXI namespace.
  *
  * @lends PIXI
  */
-module.exports = {
+export default {
     // These will be mixed to be made publicly available,
     // while this module is used internally in core
     // to avoid circular dependencies and cut down on
     // internal module requires.
 
-    Point:              require('./Point'),
-    ObservablePoint:    require('./ObservablePoint'),
-    Matrix:             require('./Matrix'),
-    GroupD8:            require('./GroupD8'),
+    Point,
+    ObservablePoint,
+    Matrix,
+    GroupD8,
 
-    Circle:             require('./shapes/Circle'),
-    Ellipse:            require('./shapes/Ellipse'),
-    Polygon:            require('./shapes/Polygon'),
-    Rectangle:          require('./shapes/Rectangle'),
-    RoundedRectangle:   require('./shapes/RoundedRectangle')
+    Circle,
+    Ellipse,
+    Polygon,
+    Rectangle,
+    RoundedRectangle
 };

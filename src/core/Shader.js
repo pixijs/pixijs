@@ -1,16 +1,22 @@
-var GLShader = require('pixi-gl-core').GLShader;
-var Const = require('./const');
+import {GLShader} from 'pixi-gl-core';
+import Const from './const';
 
-function checkPrecision(src) {
-    if (src instanceof Array) {
-        if (src[0].substring(0,9) !== 'precision') {
-            var copy = src.slice(0);
-            copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
+function checkPrecision(src)
+{
+    if (src instanceof Array)
+    {
+        if (src[0].substring(0,9) !== 'precision')
+        {
+            const copy = src.slice(0);
+            copy.unshift(`precision ${Const.PRECISION.DEFAULT} float;`);
             return copy;
         }
-    } else {
-        if (src.substring(0,9) !== 'precision') {
-            return 'precision ' + Const.PRECISION.DEFAULT + ' float;\n' + src;
+    }
+    else
+    {
+        if (src.substring(0,9) !== 'precision')
+        {
+            return `precision ${Const.PRECISION.DEFAULT} float;\n${src}`;
         }
     }
     return src;
@@ -26,10 +32,12 @@ function checkPrecision(src) {
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  */
-var Shader = function(gl, vertexSrc, fragmentSrc) {
-    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
-};
+class Shader extends GLShader
+{
+    constructor(gl, vertexSrc, fragmentSrc)
+    {
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+    }
+}
 
-Shader.prototype = Object.create(GLShader.prototype);
-Shader.prototype.constructor = Shader;
-module.exports = Shader;
+export default Shader;

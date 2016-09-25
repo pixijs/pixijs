@@ -1,10 +1,11 @@
+import maxRecommendedTextures from './utils/maxRecommendedTextures';
 
 /**
  * Constant values used in pixi
  *
  * @lends PIXI
  */
-var CONST = {
+const CONST = {
     /**
      * String of the current PIXI version.
      *
@@ -273,6 +274,37 @@ var CONST = {
     },
 
     /**
+     * Regexp for image type by extension.
+     *
+     * @static
+     * @constant
+     * @type {RegExp|string}
+     * @example `image.png`
+     */
+    IMAGE_TYPE: /\.(gif|jpe?g|tiff|png|svg)$/i,
+
+    /**
+     * Regexp for data URI.
+     * Based on: https://github.com/ragingwind/data-uri-regex
+     *
+     * @static
+     * @constant
+     * @type {RegExp|string}
+     * @example `data:image/png;base64`
+     */
+    DATA_URI: /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|base64))?,(.*)/i,
+
+    /**
+     * Regexp for SVG size.
+     *
+     * @static
+     * @constant
+     * @type {RegExp|string}
+     * @example `<svg width="100" height="100"></svg>`
+     */
+    SVG_SIZE: /<svg[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)(?:px)?")[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)(?:px)?")[^>]*>/i,
+
+    /**
      * Constants that identify shapes, mainly to prevent `instanceof` calls.
      *
      * @static
@@ -362,7 +394,7 @@ var CONST = {
      * @constant
      * @type {number}
      */
-    SPRITE_MAX_TEXTURES: require('./utils/maxRecommendedTextures')(32)
+    SPRITE_MAX_TEXTURES: maxRecommendedTextures(32)
 };
 
-module.exports = CONST;
+export default CONST;

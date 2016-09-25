@@ -1,9 +1,11 @@
-var defaultValue = require('pixi-gl-core').shader.defaultValue;
+import glCore from 'pixi-gl-core';
+
+const defaultValue = glCore.shader.defaultValue;
 
 function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
-    var vertUniforms = extractUniformsFromString(vertexSrc, mask);
-    var fragUniforms = extractUniformsFromString(fragmentSrc, mask);
+    const vertUniforms = extractUniformsFromString(vertexSrc, mask);
+    const fragUniforms = extractUniformsFromString(fragmentSrc, mask);
 
     return Object.assign(vertUniforms, fragUniforms);
 }
@@ -11,29 +13,29 @@ function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 
 function extractUniformsFromString(string)
 {
-    var maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
+    const maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
 
-    var uniforms = {};
-    var nameSplit;
+    const uniforms = {};
+    let nameSplit;
 
 
     // clean the lines a little - remove extra spaces / teabs etc
     // then split along ';'
-    var lines = string.replace(/\s+/g,' ')
+    const lines = string.replace(/\s+/g,' ')
                 .split(/\s*;\s*/);
 
     // loop through..
-    for (var i = 0; i < lines.length; i++)
+    for (let i = 0; i < lines.length; i++)
     {
-        var line = lines[i].trim();
+        const line = lines[i].trim();
 
         if(line.indexOf('uniform') > -1)
         {
-            var splitLine = line.split(' ');
-            var type = splitLine[1];
+            const splitLine = line.split(' ');
+            const type = splitLine[1];
 
-            var name = splitLine[2];
-            var size = 1;
+            let name = splitLine[2];
+            let size = 1;
 
             if(name.indexOf('[') > -1)
             {
@@ -47,8 +49,8 @@ function extractUniformsFromString(string)
             {
                 uniforms[name] = {
                     value:defaultValue(type, size),
-                    name:name,
-                    type:type
+                    name,
+                    type
                 };
             }
         }
@@ -57,4 +59,4 @@ function extractUniformsFromString(string)
     return uniforms;
 }
 
-module.exports = extractUniformsFromSrc;
+export default extractUniformsFromSrc;

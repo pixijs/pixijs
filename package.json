@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -9,7 +9,7 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
-  "main": "./src/index.js",
+  "main": "./bin/pixi.min.js",
   "homepage": "http://goodboydigital.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -22,10 +22,10 @@
     "prestart": "npm run clean",
     "start": "parallelshell \"npm run watch:lint\" \"npm run watch\"",
     "watch": "pixify -n PIXI -o pixi -w",
-    "watch:lint": "watch \"jshint --reporter=scripts/reporter.js scripts src test || exit 0\" src",
+    "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
-    "lint": "jshint --reporter=scripts/reporter.js scripts src test",
+    "lint": "eslint scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
     "postbuild": "npm test",
@@ -51,14 +51,14 @@
     "browserify-versionify": "^1.0.6"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.14.0",
+    "babelify": "^7.3.0",
     "del": "^2.2.0",
     "electron-prebuilt": "^1.3.2",
+    "eslint": "^3.5.0",
     "floss": "^0.7.1",
     "jaguarjs-jsdoc": "^1.0.1",
     "jsdoc": "^3.4.0",
-    "jshint": "^2.9.2",
-    "jshint-stylish": "^2.2.0",
-    "jshint-stylish-summary": "^0.1.2",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
@@ -68,6 +68,14 @@
   },
   "browserify": {
     "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            ["es2015", {"loose": true}]
+          ]
+        }
+      ],
       "glslify",
       "browserify-versionify"
     ]

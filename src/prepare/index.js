@@ -1,5 +1,7 @@
+import webGL from './webgl/WebGLPrepare';
+import canvas from './canvas/CanvasPrepare';
 
-module.exports = {
-    webGL: require('./webgl/WebGLPrepare'),
-    canvas: require('./canvas/CanvasPrepare')
+export default {
+    webGL,
+    canvas
 };

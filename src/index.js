@@ -1,20 +1,17 @@
+import extras from './extras';
+import filters from './filters';
+import interaction from './interaction';
+import loaders from './loaders';
+import mesh from './mesh';
+import particles from './particles';
+import accessibility from './accessibility';
+import extract from './extract';
+import prepare from './prepare';
+import core from './core';
+
 // run the polyfills
 require('./polyfill');
 
-var core = module.exports = require('./core');
-
-// add core plugins.
-core.extras         = require('./extras');
-core.filters        = require('./filters');
-core.interaction    = require('./interaction');
-core.loaders        = require('./loaders');
-core.mesh           = require('./mesh');
-core.particles      = require('./particles');
-core.accessibility  = require('./accessibility');
-core.extract        = require('./extract');
-core.prepare        = require('./prepare');
-
-// export a premade loader instance
 /**
  * A premade instance of the loader that can be used to loader resources.
  *
@@ -22,10 +19,24 @@ core.prepare        = require('./prepare');
  * @memberof PIXI
  * @property {PIXI.loaders.Loader}
  */
-core.loader = new core.loaders.Loader();
+const loader = new loaders.Loader();
 
-// mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
+// add core plugins
+module.exports = Object.assign(core, {
+    accessibility,
+    extract,
+    extras,
+    filters,
+    interaction,
+    loaders,
+    loader,
+    mesh,
+    particles,
+    prepare
+});
+
+// Mixin the deprecations
+require('./deprecation');
 
 // Always export pixi globally.
 global.PIXI = core;
