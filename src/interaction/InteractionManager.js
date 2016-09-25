@@ -709,7 +709,7 @@ class InteractionManager extends EventEmitter
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
-        point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width ) ) / this.resolution;
+        point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width / rect.width ) ) / this.resolution;
         point.y = ( ( y - rect.top ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
     }
 
@@ -777,7 +777,7 @@ class InteractionManager extends EventEmitter
         {
             const children = displayObject.children;
 
-            for (let i = children.length-1; i >= 0; i--)
+            for (let i = children.length - 1; i >= 0; i--)
             {
                 const child = children[i];
 
@@ -820,7 +820,7 @@ class InteractionManager extends EventEmitter
 
                 if (displayObject.hitArea)
                 {
-                    displayObject.worldTransform.applyInverse(point,  this._tempPoint);
+                    displayObject.worldTransform.applyInverse(point, this._tempPoint);
                     hit = displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y);
                 }
                 else if (displayObject.containsPoint)
@@ -883,7 +883,7 @@ class InteractionManager extends EventEmitter
 
         if (hit)
         {
-            displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
+            displayObject[isRightButton ? '_isRightDown' : '_isLeftDown'] = true;
             this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData);
         }
     }
@@ -921,23 +921,23 @@ class InteractionManager extends EventEmitter
         const e = this.mouse.originalEvent;
 
         const isRightButton = e.button === 2 || e.which === 3;
-        const isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
+        const isDown = isRightButton ? '_isRightDown' : '_isLeftDown';
 
         if (hit)
         {
             this.dispatchEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', this.eventData);
 
-            if (displayObject[ isDown ])
+            if (displayObject[isDown])
             {
-                displayObject[ isDown ] = false;
+                displayObject[isDown] = false;
                 this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', this.eventData);
             }
         }
         else
         {
-            if (displayObject[ isDown ])
+            if (displayObject[isDown])
             {
-                displayObject[ isDown ] = false;
+                displayObject[isDown] = false;
                 this.dispatchEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', this.eventData);
             }
         }
@@ -1275,7 +1275,7 @@ class InteractionManager extends EventEmitter
         const changedTouches = event.changedTouches;
         const cLength = changedTouches.length;
 
-        for (let i=0; i < cLength; i++)
+        for (let i = 0; i < cLength; i++)
         {
             const touchEvent = changedTouches[i];
             //TODO POOL
@@ -1327,7 +1327,7 @@ class InteractionManager extends EventEmitter
         const changedTouches = event.changedTouches;
         const cLength = changedTouches.length;
 
-        for (let i=0; i < cLength; i++)
+        for (let i = 0; i < cLength; i++)
         {
             const touchEvent = changedTouches[i];
 
@@ -1393,7 +1393,7 @@ class InteractionManager extends EventEmitter
         const changedTouches = event.changedTouches;
         const cLength = changedTouches.length;
 
-        for (let i=0; i < cLength; i++)
+        for (let i = 0; i < cLength; i++)
         {
             const touchEvent = changedTouches[i];
 
