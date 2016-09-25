@@ -24,6 +24,7 @@ npm-debug.log
 node_modules
 docs/
 examples_old/
+bin/
 
 # jetBrains IDE ignores
 .idea
