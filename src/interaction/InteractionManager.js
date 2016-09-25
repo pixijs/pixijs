@@ -640,7 +640,7 @@ class InteractionManager extends EventEmitter
         }
 
         // if the user move the mouse this check has already been dfone using the mouse move!
-        if(this.didMove)
+        if (this.didMove)
         {
             this.didMove = false;
             return;
@@ -672,16 +672,16 @@ class InteractionManager extends EventEmitter
      * @param eventData {object} the event data object
      * @private
      */
-    dispatchEvent(displayObject, eventString, eventData )
+    dispatchEvent(displayObject, eventString, eventData)
     {
-        if(!eventData.stopped)
+        if (!eventData.stopped)
         {
             eventData.target = displayObject;
             eventData.type = eventString;
 
             displayObject.emit(eventString, eventData);
 
-            if(displayObject[eventString] )
+            if (displayObject[eventString])
             {
                 displayObject[eventString](eventData);
             }
@@ -696,7 +696,7 @@ class InteractionManager extends EventEmitter
      * @param  {number} x     the x coord of the position to map
      * @param  {number} y     the y coord of the position to map
      */
-    mapPositionToPoint(point, x, y )
+    mapPositionToPoint(point, x, y)
     {
         let rect;
         // IE 11 fix
@@ -709,8 +709,8 @@ class InteractionManager extends EventEmitter
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
-        point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width  ) ) / this.resolution;
-        point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
+        point.x = ( ( x - rect.left ) * (this.interactionDOMElement.width  / rect.width ) ) / this.resolution;
+        point.y = ( ( y - rect.top ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
     }
 
     /**
@@ -726,7 +726,7 @@ class InteractionManager extends EventEmitter
      */
     processInteractive(point, displayObject, func, hitTest, interactive)
     {
-        if(!displayObject || !displayObject.visible)
+        if (!displayObject || !displayObject.visible)
         {
             return false;
         }
@@ -748,24 +748,24 @@ class InteractionManager extends EventEmitter
             interactiveParent = interactive;
 
         // if the displayobject has a hitArea, then it does not need to hitTest children.
-        if(displayObject.hitArea)
+        if (displayObject.hitArea)
         {
             interactiveParent = false;
         }
 
         // it has a mask! Then lets hit test that before continuing..
-        if(hitTest && displayObject._mask)
+        if (hitTest && displayObject._mask)
         {
-            if(!displayObject._mask.containsPoint(point))
+            if (!displayObject._mask.containsPoint(point))
             {
                 hitTest = false;
             }
         }
 
         // it has a filterArea! Same as mask but easier, its a rectangle
-        if(hitTest && displayObject.filterArea)
+        if (hitTest && displayObject.filterArea)
         {
-            if(!displayObject.filterArea.contains(point.x, point.y))
+            if (!displayObject.filterArea.contains(point.x, point.y))
             {
                 hitTest = false;
             }
@@ -773,7 +773,7 @@ class InteractionManager extends EventEmitter
 
         // ** FREE TIP **! If an object is not interactive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow pixi to completly ignore and bypass checking the displayObjects children.
-        if(displayObject.interactiveChildren)
+        if (displayObject.interactiveChildren)
         {
             const children = displayObject.children;
 
@@ -782,11 +782,11 @@ class InteractionManager extends EventEmitter
                 const child = children[i];
 
                 // time to get recursive.. if this function will return if somthing is hit..
-                if(this.processInteractive(point, child, func, hitTest, interactiveParent))
+                if (this.processInteractive(point, child, func, hitTest, interactiveParent))
                 {
                     // its a good idea to check if a child has lost its parent.
                     // this means it has been removed whilst looping so its best
-                    if(!child.parent)
+                    if (!child.parent)
                     {
                         continue;
                     }
@@ -811,19 +811,19 @@ class InteractionManager extends EventEmitter
 
 
         // no point running this if the item is not interactive or does not have an interactive parent.
-        if(interactive)
+        if (interactive)
         {
             // if we are hit testing (as in we have no hit any objects yet)
             // We also don't need to worry about hit testing if once of the displayObjects children has already been hit!
-            if(hitTest && !hit)
+            if (hitTest && !hit)
             {
 
-                if(displayObject.hitArea)
+                if (displayObject.hitArea)
                 {
                     displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                     hit = displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y);
                 }
-                else if(displayObject.containsPoint)
+                else if (displayObject.containsPoint)
                 {
                     hit = displayObject.containsPoint(point);
                 }
@@ -831,7 +831,7 @@ class InteractionManager extends EventEmitter
 
             }
 
-            if(displayObject.interactive)
+            if (displayObject.interactive)
             {
                 func(displayObject, hit);
             }
@@ -875,13 +875,13 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processMouseDown(displayObject, hit )
+    processMouseDown(displayObject, hit)
     {
         const e = this.mouse.originalEvent;
 
         const isRightButton = e.button === 2 || e.which === 3;
 
-        if(hit)
+        if (hit)
         {
             displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
             this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData);
@@ -916,18 +916,18 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processMouseUp(displayObject, hit )
+    processMouseUp(displayObject, hit)
     {
         const e = this.mouse.originalEvent;
 
         const isRightButton = e.button === 2 || e.which === 3;
         const isDown =  isRightButton ? '_isRightDown' : '_isLeftDown';
 
-        if(hit)
+        if (hit)
         {
             this.dispatchEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', this.eventData);
 
-            if(displayObject[ isDown ] )
+            if (displayObject[ isDown ])
             {
                 displayObject[ isDown ] = false;
                 this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', this.eventData);
@@ -935,7 +935,7 @@ class InteractionManager extends EventEmitter
         }
         else
         {
-            if(displayObject[ isDown ] )
+            if (displayObject[ isDown ])
             {
                 displayObject[ isDown ] = false;
                 this.dispatchEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', this.eventData);
@@ -982,12 +982,12 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processMouseMove(displayObject, hit )
+    processMouseMove(displayObject, hit)
     {
         this.processMouseOverOut(displayObject, hit);
 
         // only display on mouse over
-        if(!this.moveWhenInside || hit)
+        if (!this.moveWhenInside || hit)
         {
             this.dispatchEvent(displayObject, 'mousemove', this.eventData);
         }
@@ -1028,11 +1028,11 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processMouseOverOut(displayObject, hit )
+    processMouseOverOut(displayObject, hit)
     {
-        if(hit && this.mouseOverRenderer)
+        if (hit && this.mouseOverRenderer)
         {
-            if(!displayObject._mouseOver)
+            if (!displayObject._mouseOver)
             {
                 displayObject._mouseOver = true;
                 this.dispatchEvent(displayObject, 'mouseover', this.eventData);
@@ -1045,7 +1045,7 @@ class InteractionManager extends EventEmitter
         }
         else
         {
-            if(displayObject._mouseOver)
+            if (displayObject._mouseOver)
             {
                 displayObject._mouseOver = false;
                 this.dispatchEvent(displayObject, 'mouseout', this.eventData);
@@ -1103,9 +1103,9 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processPointerDown(displayObject, hit )
+    processPointerDown(displayObject, hit)
     {
-        if(hit)
+        if (hit)
         {
             displayObject._pointerDown = true;
             this.dispatchEvent(displayObject, 'pointerdown', this.eventData);
@@ -1140,13 +1140,13 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processPointerUp(displayObject, hit )
+    processPointerUp(displayObject, hit)
     {
-        if(hit)
+        if (hit)
         {
             this.dispatchEvent(displayObject, 'pointerup', this.eventData);
 
-            if(displayObject._pointerDown )
+            if (displayObject._pointerDown)
             {
                 displayObject._pointerDown = false;
                 this.dispatchEvent(displayObject, 'pointertap', this.eventData);
@@ -1154,7 +1154,7 @@ class InteractionManager extends EventEmitter
         }
         else
         {
-            if(displayObject._pointerDown )
+            if (displayObject._pointerDown)
             {
                 displayObject._pointerDown = false;
                 this.dispatchEvent(displayObject, 'pointerupoutside', this.eventData);
@@ -1189,14 +1189,14 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processPointerMove(displayObject, hit )
+    processPointerMove(displayObject, hit)
     {
         if (!this.pointer.originalEvent.changedTouches)
         {
             this.processPointerOverOut(displayObject, hit);
         }
 
-        if(!this.moveWhenInside || hit)
+        if (!this.moveWhenInside || hit)
         {
             this.dispatchEvent(displayObject, 'pointermove', this.eventData);
         }
@@ -1230,11 +1230,11 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processPointerOverOut(displayObject, hit )
+    processPointerOverOut(displayObject, hit)
     {
-        if(hit && this.mouseOverRenderer)
+        if (hit && this.mouseOverRenderer)
         {
-            if(!displayObject._pointerOver)
+            if (!displayObject._pointerOver)
             {
                 displayObject._pointerOver = true;
                 this.dispatchEvent(displayObject, 'pointerover', this.eventData);
@@ -1242,7 +1242,7 @@ class InteractionManager extends EventEmitter
         }
         else
         {
-            if(displayObject._pointerOver)
+            if (displayObject._pointerOver)
             {
                 displayObject._pointerOver = false;
                 this.dispatchEvent(displayObject, 'pointerout', this.eventData);
@@ -1301,9 +1301,9 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processTouchStart(displayObject, hit )
+    processTouchStart(displayObject, hit)
     {
-        if(hit)
+        if (hit)
         {
             displayObject._touchDown = true;
             this.dispatchEvent(displayObject, 'touchstart', this.eventData);
@@ -1355,13 +1355,13 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processTouchEnd(displayObject, hit )
+    processTouchEnd(displayObject, hit)
     {
-        if(hit)
+        if (hit)
         {
             this.dispatchEvent(displayObject, 'touchend', this.eventData);
 
-            if(displayObject._touchDown )
+            if (displayObject._touchDown)
             {
                 displayObject._touchDown = false;
                 this.dispatchEvent(displayObject, 'tap', this.eventData);
@@ -1369,7 +1369,7 @@ class InteractionManager extends EventEmitter
         }
         else
         {
-            if(displayObject._touchDown )
+            if (displayObject._touchDown)
             {
                 displayObject._touchDown = false;
                 this.dispatchEvent(displayObject, 'touchendoutside', this.eventData);
@@ -1419,9 +1419,9 @@ class InteractionManager extends EventEmitter
      * @param hit {boolean} the result of the hit test on the display object
      * @private
      */
-    processTouchMove(displayObject, hit )
+    processTouchMove(displayObject, hit)
     {
-        if(!this.moveWhenInside || hit)
+        if (!this.moveWhenInside || hit)
         {
             this.dispatchEvent(displayObject, 'touchmove', this.eventData);
         }
@@ -1441,7 +1441,7 @@ class InteractionManager extends EventEmitter
         touchData.identifier = touchEvent.identifier;
         this.mapPositionToPoint(touchData.global, touchEvent.clientX, touchEvent.clientY);
 
-        if(navigator.isCocoonJS)
+        if (navigator.isCocoonJS)
         {
             touchData.global.x = touchData.global.x / this.resolution;
             touchData.global.y = touchData.global.y / this.resolution;
@@ -1460,7 +1460,7 @@ class InteractionManager extends EventEmitter
      *
      * @private
      */
-    returnTouchData(touchData )
+    returnTouchData(touchData)
     {
         this.interactiveDataPool.push(touchData);
     }
@@ -1474,7 +1474,7 @@ class InteractionManager extends EventEmitter
      */
     normalizeToPointerData(event)
     {
-        if (this.normalizingTouchEvents && event.changedTouches )
+        if (this.normalizingTouchEvents && event.changedTouches)
         {
             event.button = event.touches.length ? 1 : 0;
             event.buttons = event.touches.length ? 1 : 0;
