@@ -11,7 +11,7 @@ import utils from '../../../utils';
  * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
  * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
-let buildRectangle = function (graphicsData, webGLData)
+const buildRectangle = function (graphicsData, webGLData)
 {
     // --- //
     // need to convert points to a nice regular data
@@ -55,7 +55,7 @@ let buildRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.lineWidth)
     {
-        let tempPoints = graphicsData.points;
+        const tempPoints = graphicsData.points;
 
         graphicsData.points = [x, y,
                   x + width, y,

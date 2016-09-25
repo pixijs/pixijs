@@ -190,15 +190,15 @@ class Graphics extends Container
     {
         const clone = new Graphics();
 
-        clone.renderable    = this.renderable;
-        clone.fillAlpha     = this.fillAlpha;
-        clone.lineWidth     = this.lineWidth;
-        clone.lineColor     = this.lineColor;
-        clone.tint          = this.tint;
-        clone.blendMode     = this.blendMode;
-        clone.isMask        = this.isMask;
+        clone.renderable = this.renderable;
+        clone.fillAlpha = this.fillAlpha;
+        clone.lineWidth = this.lineWidth;
+        clone.lineColor = this.lineColor;
+        clone.tint = this.tint;
+        clone.blendMode = this.blendMode;
+        clone.isMask = this.isMask;
         clone.boundsPadding = this.boundsPadding;
-        clone.dirty         = 0;
+        clone.dirty = 0;
         clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
         // copy graphics data
@@ -217,16 +217,16 @@ class Graphics extends Container
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
      *
-     * @param lineWidth {number} width of the line to draw, will update the objects stored style
-     * @param color {number} color of the line to draw, will update the objects stored style
-     * @param alpha {number} alpha of the line to draw, will update the objects stored style
+     * @param [lineWidth=0] {number} width of the line to draw, will update the objects stored style
+     * @param [color=0] {number} color of the line to draw, will update the objects stored style
+     * @param [alpha=1] {number} alpha of the line to draw, will update the objects stored style
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    lineStyle(lineWidth, color, alpha)
+    lineStyle(lineWidth=0, color=0, alpha=1)
     {
-        this.lineWidth = lineWidth || 0;
-        this.lineColor = color || 0;
-        this.lineAlpha = (alpha === undefined) ? 1 : alpha;
+        this.lineWidth = lineWidth;
+        this.lineColor = color;
+        this.lineAlpha = alpha;
 
         if (this.currentPath)
         {
@@ -258,7 +258,7 @@ class Graphics extends Container
      */
     moveTo(x, y)
     {
-        const shape = new math.Polygon([x,y]);
+        const shape = new math.Polygon([x, y]);
         shape.closed = false;
         this.drawShape(shape);
 
@@ -302,7 +302,7 @@ class Graphics extends Container
         }
         else
         {
-            this.moveTo(0,0);
+            this.moveTo(0, 0);
         }
 
         const n = 20;
@@ -314,8 +314,8 @@ class Graphics extends Container
             this.moveTo(0, 0);
         }
 
-        let fromX = points[points.length-2];
-        let fromY = points[points.length-1];
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
 
         let j = 0;
         for (let i = 1; i <= n; ++i)
@@ -325,8 +325,8 @@ class Graphics extends Container
             xa = fromX + ( (cpX - fromX) * j );
             ya = fromY + ( (cpY - fromY) * j );
 
-            points.push( xa + ( ((cpX + ( (toX - cpX) * j )) - xa) * j ),
-                         ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
+            points.push(xa + ( ((cpX + ( (toX - cpX) * j )) - xa) * j ),
+                ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ));
         }
 
         this.dirty++;
@@ -356,13 +356,13 @@ class Graphics extends Container
         }
         else
         {
-            this.moveTo(0,0);
+            this.moveTo(0, 0);
         }
 
         const points = this.currentPath.shape.points;
 
-        const fromX = points[points.length-2];
-        const fromY = points[points.length-1];
+        const fromX = points[points.length - 2];
+        const fromY = points[points.length - 1];
 
         points.length -= 2;
 
@@ -400,17 +400,17 @@ class Graphics extends Container
         }
 
         const points = this.currentPath.shape.points,
-            fromX = points[points.length-2],
-            fromY = points[points.length-1],
+            fromX = points[points.length - 2],
+            fromY = points[points.length - 1],
             a1 = fromY - y1,
             b1 = fromX - x1,
-            a2 = y2   - y1,
-            b2 = x2   - x1,
+            a2 = y2 - y1,
+            b2 = x2 - x1,
             mm = Math.abs(a1 * b2 - b1 * a2);
 
         if (mm < 1.0e-8 || radius === 0)
         {
-            if (points[points.length-2] !== x1 || points[points.length-1] !== y1)
+            if (points[points.length - 2] !== x1 || points[points.length - 1] !== y1)
             {
                 points.push(x1, y1);
             }
@@ -431,7 +431,7 @@ class Graphics extends Container
                 qx = b2 * (k1 + j2),
                 qy = a2 * (k1 + j2),
                 startAngle = Math.atan2(py - cy, px - cx),
-                endAngle   = Math.atan2(qy - cy, qx - cx);
+                endAngle = Math.atan2(qy - cy, qx - cx);
 
             this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
         }
@@ -452,7 +452,7 @@ class Graphics extends Container
      * @param [anticlockwise=false] {boolean} Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    arc(cx, cy, radius, startAngle, endAngle, anticlockwise=false)
+    arc(cx, cy, radius, startAngle, endAngle, anticlockwise = false)
     {
 
         if (startAngle === endAngle)
@@ -460,19 +460,19 @@ class Graphics extends Container
             return this;
         }
 
-        if( !anticlockwise && endAngle <= startAngle )
+        if (!anticlockwise && endAngle <= startAngle)
         {
             endAngle += Math.PI * 2;
         }
-        else if( anticlockwise && startAngle <= endAngle )
+        else if (anticlockwise && startAngle <= endAngle)
         {
             startAngle += Math.PI * 2;
         }
 
         const sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
-        const segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
+        const segs = Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
-        if(sweep === 0)
+        if (sweep === 0)
         {
             return this;
         }
@@ -491,8 +491,8 @@ class Graphics extends Container
 
         const points = this.currentPath.shape.points;
 
-        const theta = sweep/(segs*2);
-        const theta2 = theta*2;
+        const theta = sweep / (segs * 2);
+        const theta2 = theta * 2;
 
         const cTheta = Math.cos(theta);
         const sTheta = Math.sin(theta);
@@ -501,17 +501,17 @@ class Graphics extends Container
 
         const remainder = ( segMinus % 1 ) / segMinus;
 
-        for(let i=0; i<=segMinus; i++)
+        for (let i = 0; i <= segMinus; i++)
         {
-            const real =  i + remainder * i;
+            const real = i + remainder * i;
 
             const angle = ((theta) + startAngle + (theta2 * real));
 
             const c = Math.cos(angle);
             const s = -Math.sin(angle);
 
-            points.push(( (cTheta *  c) + (sTheta * s) ) * radius + cx,
-                        ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
+            points.push(( (cTheta * c) + (sTheta * s) ) * radius + cx,
+                ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
         }
 
         this.dirty++;
@@ -527,7 +527,7 @@ class Graphics extends Container
      * @param [alpha=1] {number} the alpha of the fill
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    beginFill(color=0, alpha=1)
+    beginFill(color = 0, alpha = 1)
     {
         this.filling = true;
         this.fillColor = color;
@@ -567,9 +567,9 @@ class Graphics extends Container
      * @param height {number} The height of the rectangle
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    drawRect( x, y, width, height )
+    drawRect(x, y, width, height)
     {
-        this.drawShape(new math.Rectangle(x,y, width, height));
+        this.drawShape(new math.Rectangle(x, y, width, height));
 
         return this;
     }
@@ -583,7 +583,7 @@ class Graphics extends Container
      * @param radius {number} Radius of the rectangle corners
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    drawRoundedRect( x, y, width, height, radius )
+    drawRoundedRect(x, y, width, height, radius)
     {
         this.drawShape(new math.RoundedRectangle(x, y, width, height, radius));
 
@@ -600,7 +600,7 @@ class Graphics extends Container
      */
     drawCircle(x, y, radius)
     {
-        this.drawShape(new math.Circle(x,y, radius));
+        this.drawShape(new math.Circle(x, y, radius));
 
         return this;
     }
@@ -685,7 +685,8 @@ class Graphics extends Container
      * True if graphics consists of one rectangle, and thus, can be drawn like a Sprite and masked with gl.scissor
      * @returns {boolean}
      */
-    isFastRect() {
+    isFastRect()
+    {
         return this.graphicsData.length === 1 && this.graphicsData[0].shape.type === CONST.SHAPES.RECT && !this.graphicsData[0].lineWidth;
     }
 
@@ -698,14 +699,14 @@ class Graphics extends Container
     _renderWebGL(renderer)
     {
         // if the sprite is not visible or the alpha is 0 then no need to render this element
-        if(this.dirty !== this.fastRectDirty)
+        if (this.dirty !== this.fastRectDirty)
         {
             this.fastRectDirty = this.dirty;
             this._fastRect = this.isFastRect();
         }
 
         //TODO this check can be moved to dirty?
-        if(this._fastRect)
+        if (this._fastRect)
         {
             this._renderSpriteRect(renderer);
         }
@@ -720,9 +721,9 @@ class Graphics extends Container
     _renderSpriteRect(renderer)
     {
         const rect = this.graphicsData[0].shape;
-        if(!this._spriteRect)
+        if (!this._spriteRect)
         {
-            if(!Graphics._SPRITE_TEXTURE)
+            if (!Graphics._SPRITE_TEXTURE)
             {
                 Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
 
@@ -738,9 +739,12 @@ class Graphics extends Container
 
             this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
         }
-        if (this.tint === 0xffffff) {
+        if (this.tint === 0xffffff)
+        {
             this._spriteRect.tint = this.graphicsData[0].fillColor;
-        } else {
+        }
+        else
+        {
             const t1 = tempColor1;
             const t2 = tempColor2;
             utils.hex2rgb(this.graphicsData[0].fillColor, t1);
@@ -783,9 +787,7 @@ class Graphics extends Container
     /**
      * Retrieves the bounds of the graphic shape as a rectangle object
      *
-     * @param [matrix] {PIXI.Matrix} The world transform matrix to use, defaults to this
-     *  object's worldTransform.
-     * @return {PIXI.Rectangle} the rectangular bounding area
+     * @private
      */
     _calculateBounds()
     {
@@ -808,20 +810,20 @@ class Graphics extends Container
     }
 
     /**
-    * Tests if a point is inside this graphics object
-    *
-    * @param point {PIXI.Point} the point to test
-    * @return {boolean} the result of the test
-    */
-    containsPoint( point )
+     * Tests if a point is inside this graphics object
+     *
+     * @param point {PIXI.Point} the point to test
+     * @return {boolean} the result of the test
+     */
+    containsPoint(point)
     {
-        this.worldTransform.applyInverse(point,  tempPoint);
+        this.worldTransform.applyInverse(point, tempPoint);
 
         const graphicsData = this.graphicsData;
 
         for (let i = 0; i < graphicsData.length; i++)
         {
-            let data = graphicsData[i];
+            const data = graphicsData[i];
 
             if (!data.fill)
             {
@@ -831,7 +833,7 @@ class Graphics extends Container
             // only deal with fills..
             if (data.shape)
             {
-                if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
+                if (data.shape.contains(tempPoint.x, tempPoint.y))
                 {
                     return true;
                 }
@@ -866,8 +868,8 @@ class Graphics extends Container
 
                 if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
                 {
-                    x = shape.x - lineWidth/2;
-                    y = shape.y - lineWidth/2;
+                    x = shape.x - lineWidth / 2;
+                    y = shape.y - lineWidth / 2;
                     w = shape.width + lineWidth;
                     h = shape.height + lineWidth;
 
@@ -881,8 +883,8 @@ class Graphics extends Container
                 {
                     x = shape.x;
                     y = shape.y;
-                    w = shape.radius + lineWidth/2;
-                    h = shape.radius + lineWidth/2;
+                    w = shape.radius + lineWidth / 2;
+                    h = shape.radius + lineWidth / 2;
 
                     minX = x - w < minX ? x - w : minX;
                     maxX = x + w > maxX ? x + w : maxX;
@@ -894,8 +896,8 @@ class Graphics extends Container
                 {
                     x = shape.x;
                     y = shape.y;
-                    w = shape.width + lineWidth/2;
-                    h = shape.height + lineWidth/2;
+                    w = shape.width + lineWidth / 2;
+                    h = shape.height + lineWidth / 2;
 
                     minX = x - w < minX ? x - w : minX;
                     maxX = x + w > maxX ? x + w : maxX;
@@ -911,13 +913,13 @@ class Graphics extends Container
                     for (let j = 0; j < points.length; j += 2)
                     {
                         x = points[j];
-                        y = points[j+1];
+                        y = points[j + 1];
 
-                        minX = x-lineWidth < minX ? x-lineWidth : minX;
-                        maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
+                        minX = x - lineWidth < minX ? x - lineWidth : minX;
+                        maxX = x + lineWidth > maxX ? x + lineWidth : maxX;
 
-                        minY = y-lineWidth < minY ? y-lineWidth : minY;
-                        maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
+                        minY = y - lineWidth < minY ? y - lineWidth : minY;
+                        maxY = y + lineWidth > maxY ? y + lineWidth : maxY;
                     }
                 }
             }
@@ -930,7 +932,7 @@ class Graphics extends Container
             maxY = 0;
         }
 
-        let padding = this.boundsPadding;
+        const padding = this.boundsPadding;
 
         this._localBounds.minX = minX - padding;
         this._localBounds.maxX = maxX + padding * 2;
@@ -974,15 +976,13 @@ class Graphics extends Container
         return data;
     }
 
-    generateCanvasTexture(scaleMode, resolution)
+    generateCanvasTexture(scaleMode, resolution=1)
     {
-        resolution = resolution || 1;
-
         const bounds = this.getLocalBounds();
 
         const canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
 
-        if(!canvasRenderer)
+        if (!canvasRenderer)
         {
             canvasRenderer = new CanvasRenderer();
         }
@@ -1014,7 +1014,7 @@ class Graphics extends Container
         // this is a hole!
         const hole = this.graphicsData.pop();
 
-        this.currentPath = this.graphicsData[this.graphicsData.length-1];
+        this.currentPath = this.graphicsData[this.graphicsData.length - 1];
 
         this.currentPath.addHole(hole.shape);
         this.currentPath = null;
@@ -1030,18 +1030,21 @@ class Graphics extends Container
         super.destroy(arguments);
 
         // destroy each of the GraphicsData objects
-        for (let i = 0; i < this.graphicsData.length; ++i) {
+        for (let i = 0; i < this.graphicsData.length; ++i)
+        {
             this.graphicsData[i].destroy();
         }
 
         // for each webgl data entry, destroy the WebGLGraphicsData
-        for (let id in this._webgl) {
-            for (let j = 0; j < this._webgl[id].data.length; ++j) {
+        for (const id in this._webgl)
+        {
+            for (let j = 0; j < this._webgl[id].data.length; ++j)
+            {
                 this._webgl[id].data[j].destroy();
             }
         }
 
-        if(this._spriteRect)
+        if (this._spriteRect)
         {
             this._spriteRect.destroy();
         }

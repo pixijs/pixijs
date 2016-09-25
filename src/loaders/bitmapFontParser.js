@@ -3,7 +3,8 @@ import core from '../core';
 import extras from '../extras';
 import path from 'path';
 
-function parse(resource, texture) {
+function parse(resource, texture)
+{
     const data = {};
     const info = resource.data.getElementsByTagName('info')[0];
     const common = resource.data.getElementsByTagName('common')[0];
@@ -14,7 +15,7 @@ function parse(resource, texture) {
     data.chars = {};
 
     //parse letters
-    let letters = resource.data.getElementsByTagName('char');
+    const letters = resource.data.getElementsByTagName('char');
 
     for (let i = 0; i < letters.length; i++)
     {
@@ -45,7 +46,7 @@ function parse(resource, texture) {
         const second = parseInt(kernings[i].getAttribute('second'), 10);
         const amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
-        if(data.chars[second])
+        if (data.chars[second])
         {
             data.chars[second].kerning[first] = amount;
         }
@@ -74,21 +75,25 @@ export default function ()
             resource.data.getElementsByTagName('page').length === 0 ||
             resource.data.getElementsByTagName('info').length === 0 ||
             resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
-            )
+        )
         {
             return next();
         }
 
         let xmlUrl = !resource.isDataUrl ? path.dirname(resource.url) : '';
 
-        if (resource.isDataUrl) {
-            if (xmlUrl === '.') {
+        if (resource.isDataUrl)
+        {
+            if (xmlUrl === '.')
+            {
                 xmlUrl = '';
             }
 
-            if (this.baseUrl && xmlUrl) {
+            if (this.baseUrl && xmlUrl)
+            {
                 // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
-                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/')
+                {
                     xmlUrl += '/';
                 }
 
@@ -98,24 +103,28 @@ export default function ()
         }
 
         // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/')
+        {
             xmlUrl += '/';
         }
 
-        let textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (core.utils.TextureCache[textureUrl]) {
+        const textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        if (core.utils.TextureCache[textureUrl])
+        {
             //reuse existing texture
             parse(resource, core.utils.TextureCache[textureUrl]);
             next();
         }
-        else {
-            let loadOptions = {
+        else
+        {
+            const loadOptions = {
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE,
                 metadata: resource.metadata.imageMetadata
             };
             // load the texture for the font
-            this.add(resource.name + '_image', textureUrl, loadOptions, res => {
+            this.add(resource.name + '_image', textureUrl, loadOptions, res =>
+            {
                 parse(resource, res.texture);
                 next();
             });

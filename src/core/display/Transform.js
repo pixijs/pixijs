@@ -71,14 +71,13 @@ class Transform extends TransformBase
     /**
      * Updates only local matrix
      */
-    updateLocalTransform() {
+    updateLocalTransform()
+    {
         const lt = this.localTransform;
-        let a, b, c, d;
-
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        const a  =  this._cr * this.scale.x;
+        const b  =  this._sr * this.scale.x;
+        const c  = -this._sr * this.scale.y;
+        const d  =  this._cr * this.scale.y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -96,12 +95,11 @@ class Transform extends TransformBase
         const pt = parentTransform.worldTransform;
         const wt = this.worldTransform;
         const lt = this.localTransform;
-        let a, b, c, d;
 
-        a  =  this._cr * this.scale.x;
-        b  =  this._sr * this.scale.x;
-        c  = -this._sr * this.scale.y;
-        d  =  this._cr * this.scale.y;
+        const a  =  this._cr * this.scale.x;
+        const b  =  this._sr * this.scale.x;
+        const c  = -this._sr * this.scale.y;
+        const d  =  this._cr * this.scale.y;
 
         lt.a  = this._cy * a + this._sy * c;
         lt.b  = this._cy * b + this._sy * d;
@@ -137,10 +135,12 @@ class Transform extends TransformBase
      * @member {number}
      * @memberof PIXI.Transform#
      */
-    get rotation() {
+    get rotation()
+    {
         return this._rotation;
     }
-    set rotation(value) {
+    set rotation(value)
+    {
         this._rotation = value;
         this._sr = Math.sin(value);
         this._cr = Math.cos(value);

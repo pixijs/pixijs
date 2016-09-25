@@ -86,7 +86,8 @@ class InteractionManager extends EventEmitter
             target: null,
             type: null,
             data: this.mouse,
-            stopPropagation(){
+            stopPropagation()
+            {
                 this.stopped = true;
             }
         };
@@ -699,10 +700,12 @@ class InteractionManager extends EventEmitter
     {
         let rect;
         // IE 11 fix
-        if(!this.interactionDOMElement.parentElement)
+        if (!this.interactionDOMElement.parentElement)
         {
             rect = { x: 0, y: 0, width: 0, height: 0 };
-        } else {
+        }
+        else
+        {
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
@@ -776,7 +779,7 @@ class InteractionManager extends EventEmitter
 
             for (let i = children.length-1; i >= 0; i--)
             {
-                let child = children[i];
+                const child = children[i];
 
                 // time to get recursive.. if this function will return if somthing is hit..
                 if(this.processInteractive(point, child, func, hitTest, interactiveParent))
@@ -861,7 +864,7 @@ class InteractionManager extends EventEmitter
 
         this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 
-        let isRightButton = event.button === 2 || event.which === 3;
+        const isRightButton = event.button === 2 || event.which === 3;
         this.emit(isRightButton ? 'rightdown' : 'mousedown', this.eventData);
     }
 
@@ -874,9 +877,9 @@ class InteractionManager extends EventEmitter
      */
     processMouseDown( displayObject, hit )
     {
-        let e = this.mouse.originalEvent;
+        const e = this.mouse.originalEvent;
 
-        let isRightButton = e.button === 2 || e.which === 3;
+        const isRightButton = e.button === 2 || e.which === 3;
 
         if(hit)
         {
@@ -902,7 +905,7 @@ class InteractionManager extends EventEmitter
 
         this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 
-        let isRightButton = event.button === 2 || event.which === 3;
+        const isRightButton = event.button === 2 || event.which === 3;
         this.emit(isRightButton ? 'rightup' : 'mouseup', this.eventData);
     }
 
@@ -1512,7 +1515,8 @@ class InteractionManager extends EventEmitter
      * Destroys the interaction manager
      *
      */
-    destroy() {
+    destroy()
+    {
         this.removeEvents();
 
         this.removeAllListeners();

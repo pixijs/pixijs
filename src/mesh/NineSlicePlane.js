@@ -38,8 +38,7 @@ const DEFAULT_BORDER_SIZE = 10;
  * @param {int} [bottomHeight=10] size of the bottom horizontal bar (D)
  *
  */
-class NineSlicePlane extends Plane
-{
+class NineSlicePlane extends Plane {
     constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
     {
         super(texture, 4, 4);
@@ -101,18 +100,20 @@ class NineSlicePlane extends Plane
         this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
     }
 
-    updateHorizontalVertices() {
+    updateHorizontalVertices()
+    {
         const vertices = this.vertices;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
-    updateVerticalVertices() {
+    updateVerticalVertices()
+    {
         const vertices = this.vertices;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
-        vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width ;
+        vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
     }
 
     /**
@@ -175,24 +176,28 @@ class NineSlicePlane extends Plane
         const uvs = this.uvs;
         const vertices = this.vertices;
 
-        let sw = (uvs[x2]-uvs[x1]) * w;
-        let sh = (uvs[y2]-uvs[y1]) * h;
+        let sw = (uvs[x2] - uvs[x1]) * w;
+        let sh = (uvs[y2] - uvs[y1]) * h;
         let dw = vertices[x2] - vertices[x1];
         let dh = vertices[y2] - vertices[y1];
 
         // make sure the source is at least 1 pixel wide and high, otherwise nothing will be drawn.
-        if (sw<1) {
-            sw=1;
+        if (sw < 1)
+        {
+            sw = 1;
         }
-        if (sh<1) {
-            sh=1;
+        if (sh < 1)
+        {
+            sh = 1;
         }
         // make sure destination is at least 1 pixel wide and high, otherwise you get lines when rendering close to original size.
-        if (dw<1) {
-            dw=1;
+        if (dw < 1)
+        {
+            dw = 1;
         }
-        if (dh<1) {
-            dh=1;
+        if (dh < 1)
+        {
+            dh = 1;
         }
         context.drawImage(textureSource, uvs[x1] * w, uvs[y1] * h, sw, sh, vertices[x1], vertices[y1], dw, dh);
     }
@@ -208,6 +213,7 @@ class NineSlicePlane extends Plane
     {
         return this._width;
     }
+
     set width(value)
     {
         this._width = value;
@@ -224,8 +230,9 @@ class NineSlicePlane extends Plane
      */
     get height()
     {
-        return  this._height;
+        return this._height;
     }
+
     set height(value)
     {
         this._height = value;
@@ -242,14 +249,15 @@ class NineSlicePlane extends Plane
     {
         return this._leftWidth;
     }
-    set leftWidth (value)
+
+    set leftWidth(value)
     {
         this._leftWidth = value;
         const uvs = this.uvs;
         const vertices = this.vertices;
         uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
-        this.dirty=true;
+        this.dirty = true;
     }
 
     /**
@@ -261,6 +269,7 @@ class NineSlicePlane extends Plane
     {
         return this._rightWidth;
     }
+
     set rightWidth(value)
     {
         this._rightWidth = value;
@@ -268,7 +277,7 @@ class NineSlicePlane extends Plane
         const vertices = this.vertices;
         uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
-        this.dirty=true;
+        this.dirty = true;
     }
 
 
@@ -281,6 +290,7 @@ class NineSlicePlane extends Plane
     {
         return this._topHeight;
     }
+
     set topHeight(value)
     {
         this._topHeight = value;
@@ -288,7 +298,7 @@ class NineSlicePlane extends Plane
         const vertices = this.vertices;
         uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
-        this.dirty=true;
+        this.dirty = true;
     }
 
     /**
@@ -300,6 +310,7 @@ class NineSlicePlane extends Plane
     {
         return this._bottomHeight;
     }
+
     set bottomHeight(value)
     {
         this._bottomHeight = value;
@@ -307,7 +318,7 @@ class NineSlicePlane extends Plane
         const vertices = this.vertices;
         uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
-        this.dirty=true;
+        this.dirty = true;
     }
 }
 

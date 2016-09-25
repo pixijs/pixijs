@@ -9,7 +9,8 @@ DisplayObject.prototype._cacheData = false;
 // figured theres no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
 // most objects are not cached as bitmaps.
-const CacheData = function(){
+const CacheData = function()
+{
 
     this.originalRenderWebGL = null;
     this.originalRenderCanvas = null;

@@ -109,17 +109,17 @@ const core = Object.assign(consts, math, {
      * @param [options.resolution=1] {number} The resolution / device pixel ratio of the renderer, retina would be 2
      * @param [noWebGL=false] {boolean} prevents selection of WebGL renderer, even if such is present
      *
-     * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+     * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
     autoDetectRenderer (width=800, height=600, options, noWebGL)
     {
 
-        if (!noWebGL && core.utils.isWebGLSupported())
+        if (!noWebGL && utils.isWebGLSupported())
         {
-            return new core.WebGLRenderer(width, height, options);
+            return new WebGLRenderer(width, height, options);
         }
 
-        return new core.CanvasRenderer(width, height, options);
+        return new CanvasRenderer(width, height, options);
     }
 });
 

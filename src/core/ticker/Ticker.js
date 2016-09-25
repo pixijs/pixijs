@@ -117,8 +117,8 @@ class Ticker
          *
          * @private
          */
-        this._tick = (time) => {
-
+        this._tick = (time) =>
+        {
             this._requestId = null;
 
             if (this.started)

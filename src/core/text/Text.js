@@ -6,9 +6,9 @@ import CONST from '../const';
 import TextStyle from './TextStyle';
 
 const defaultDestroyOptions = {
-    texture:true,
-    children:false,
-    baseTexture:true
+    texture: true,
+    children: false,
+    baseTexture: true
 };
 
 /**
@@ -106,13 +106,14 @@ class Text extends Sprite
         const style = this._style;
 
         // check if style has changed..
-        if(this.localStyleID !== style.styleID)
+        if (this.localStyleID !== style.styleID)
         {
             this.dirty = true;
             this.localStyleID = style.styleID;
         }
 
-        if (!this.dirty && respectDirty) {
+        if (!this.dirty && respectDirty)
+        {
             return;
         }
 
@@ -124,19 +125,19 @@ class Text extends Sprite
 
         // word wrap
         // preserve original text
-        let outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
+        const outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
         // split text into lines
-        let lines = outputText.split(/(?:\r\n|\r|\n)/);
+        const lines = outputText.split(/(?:\r\n|\r|\n)/);
 
         // calculate text width
         const lineWidths = new Array(lines.length);
         let maxLineWidth = 0;
-        let fontProperties = this.determineFontProperties(this._font);
+        const fontProperties = this.determineFontProperties(this._font);
 
         for (let i = 0; i < lines.length; i++)
         {
-            let lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+            const lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
@@ -149,20 +150,20 @@ class Text extends Sprite
 
         width += style.padding * 2;
 
-        this.canvas.width = Math.ceil( ( width + this.context.lineWidth ) * this.resolution );
+        this.canvas.width = Math.ceil(( width + this.context.lineWidth ) * this.resolution);
 
         // calculate text height
-        let lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        const lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
-        let height = Math.max(lineHeight, fontProperties.fontSize  + style.strokeThickness) + (lines.length - 1) * lineHeight;
+        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness) + (lines.length - 1) * lineHeight;
         if (style.dropShadow)
         {
             height += style.dropShadowDistance;
         }
 
-        this.canvas.height = Math.ceil( ( height + this._style.padding * 2 ) * this.resolution );
+        this.canvas.height = Math.ceil(( height + this._style.padding * 2 ) * this.resolution);
 
-        this.context.scale( this.resolution, this.resolution);
+        this.context.scale(this.resolution, this.resolution);
 
         if (navigator.isCocoonJS)
         {
@@ -170,8 +171,8 @@ class Text extends Sprite
 
         }
 
-    //    this.context.fillStyle="#FF0000";
-    //    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        //    this.context.fillStyle="#FF0000";
+        //    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.context.font = this._font;
         this.context.strokeStyle = style.stroke;
@@ -185,15 +186,18 @@ class Text extends Sprite
 
         if (style.dropShadow)
         {
-            if (style.dropShadowBlur > 0) {
+            if (style.dropShadowBlur > 0)
+            {
                 this.context.shadowColor = style.dropShadowColor;
                 this.context.shadowBlur = style.dropShadowBlur;
-            } else {
+            }
+            else
+            {
                 this.context.fillStyle = style.dropShadowColor;
             }
 
-            let xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-            let yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+            const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+            const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
             for (let i = 0; i < lines.length; i++)
             {
@@ -263,7 +267,7 @@ class Text extends Sprite
      * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the text? If not, it's for the inside fill
      * @private
      */
-    drawLetterSpacing(text, x, y, isStroke=false)
+    drawLetterSpacing(text, x, y, isStroke = false)
     {
         const style = this._style;
 
@@ -326,13 +330,13 @@ class Text extends Sprite
         texture.trim.x = -style.padding;
         texture.trim.y = -style.padding;
 
-        texture.orig.width = texture._frame.width- style.padding*2;
-        texture.orig.height = texture._frame.height - style.padding*2;
+        texture.orig.width = texture._frame.width - style.padding * 2;
+        texture.orig.height = texture._frame.height - style.padding * 2;
 
         //call sprite onTextureUpdate to update scale if _width or _height were set
         this._onTextureUpdate();
 
-        texture.baseTexture.emit('update',  texture.baseTexture);
+        texture.baseTexture.emit('update', texture.baseTexture);
 
         this.dirty = false;
     }
@@ -344,7 +348,7 @@ class Text extends Sprite
      */
     renderWebGL(renderer)
     {
-        if(this.resolution !== renderer.resolution)
+        if (this.resolution !== renderer.resolution)
         {
             this.resolution = renderer.resolution;
             this.dirty = true;
@@ -363,7 +367,7 @@ class Text extends Sprite
      */
     _renderCanvas(renderer)
     {
-        if(this.resolution !== renderer.resolution)
+        if (this.resolution !== renderer.resolution)
         {
             this.resolution = renderer.resolution;
             this.dirty = true;
@@ -412,9 +416,9 @@ class Text extends Sprite
             context.fillStyle = '#000';
             context.fillText('|MÉq', 0, baseline);
 
-            let imagedata = context.getImageData(0, 0, width, height).data;
-            let pixels = imagedata.length;
-            let line = width * 4;
+            const imagedata = context.getImageData(0, 0, width, height).data;
+            const pixels = imagedata.length;
+            const line = width * 4;
 
             let idx = 0;
             let stop = false;
@@ -494,36 +498,36 @@ class Text extends Sprite
         for (let i = 0; i < lines.length; i++)
         {
             let spaceLeft = wordWrapWidth;
-            let words = lines[i].split(' ');
+            const words = lines[i].split(' ');
             for (let j = 0; j < words.length; j++)
             {
-                let wordWidth = this.context.measureText(words[j]).width;
+                const wordWidth = this.context.measureText(words[j]).width;
                 if (this._style.breakWords && wordWidth > wordWrapWidth)
                 {
                     // Word should be split in the middle
-                    let characters = words[j].split('');
+                    const characters = words[j].split('');
                     for (let c = 0; c < characters.length; c++)
                     {
-                      let characterWidth = this.context.measureText(characters[c]).width;
-                      if (characterWidth > spaceLeft)
-                      {
-                        result += '\n' + characters[c];
-                        spaceLeft = wordWrapWidth - characterWidth;
-                      }
-                      else
-                      {
-                        if (c === 0)
+                        const characterWidth = this.context.measureText(characters[c]).width;
+                        if (characterWidth > spaceLeft)
                         {
-                          result += ' ';
+                            result += '\n' + characters[c];
+                            spaceLeft = wordWrapWidth - characterWidth;
                         }
-                        result += characters[c];
-                        spaceLeft -= characterWidth;
-                      }
+                        else
+                        {
+                            if (c === 0)
+                            {
+                                result += ' ';
+                            }
+                            result += characters[c];
+                            spaceLeft -= characterWidth;
+                        }
                     }
                 }
                 else
                 {
-                    let wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                    const wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
                     if (j === 0 || wordWidthWithSpace > spaceLeft)
                     {
                         // Skip printing the newline if it's the first word of the line that is
@@ -543,7 +547,7 @@ class Text extends Sprite
                 }
             }
 
-            if (i < lines.length-1)
+            if (i < lines.length - 1)
             {
                 result += '\n';
             }
@@ -585,11 +589,11 @@ class Text extends Sprite
         else
         {
             // cocoon on canvas+ cannot generate textures, so use the first colour instead
-            if ( navigator.isCocoonJS )
+            if (navigator.isCocoonJS)
             {
                 return style.fill[0];
             }
-            
+
             // the gradient will be evenly spaced out according to how large the array is.
             // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
             let gradient;
@@ -654,11 +658,12 @@ class Text extends Sprite
      */
     destroy(options)
     {
-        if (typeof options === 'boolean') {
-            options = { children: options };
+        if (typeof options === 'boolean')
+        {
+            options = {children: options};
         }
 
-        options =  Object.assign({}, defaultDestroyOptions, options);
+        options = Object.assign({}, defaultDestroyOptions, options);
 
         super.destroy(options);
 
@@ -681,11 +686,12 @@ class Text extends Sprite
 
         return Math.abs(this.scale.x) * this.texture.orig.width;
     }
+
     set width(value)
     {
         this.updateText(true);
 
-        let sign = utils.sign(this.scale.x) || 1;
+        const sign = utils.sign(this.scale.x) || 1;
         this.scale.x = sign * value / this.texture.orig.width;
         this._width = value;
     }
@@ -702,6 +708,7 @@ class Text extends Sprite
 
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
+
     set height(value)
     {
         this.updateText(true);
@@ -721,6 +728,7 @@ class Text extends Sprite
     {
         return this._style;
     }
+
     set style(style)
     {
         style = style || {};
@@ -747,6 +755,7 @@ class Text extends Sprite
     {
         return this._text;
     }
+
     set text(text)
     {
 

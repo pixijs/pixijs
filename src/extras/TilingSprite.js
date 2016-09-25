@@ -328,13 +328,13 @@ class TilingSprite extends core.Sprite
     {
         this.worldTransform.applyInverse(point,  tempPoint);
 
-        let width = this._width;
-        let height = this._height;
-        let x1 = -width * this.anchor.x;
+        const width = this._width;
+        const height = this._height;
+        const x1 = -width * this.anchor.x;
 
         if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
         {
-            let y1 = -height * this.anchor.y;
+            const y1 = -height * this.anchor.y;
 
             if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
             {
@@ -349,7 +349,8 @@ class TilingSprite extends core.Sprite
      * Destroys this tiling sprite
      *
      */
-    destroy() {
+    destroy()
+    {
         super.destroy();
 
         this.tileScale = null;
@@ -388,7 +389,7 @@ class TilingSprite extends core.Sprite
      */
     static fromFrame(frameId,width,height)
     {
-        let texture = core.utils.TextureCache[frameId];
+        const texture = core.utils.TextureCache[frameId];
 
         if (!texture)
         {

@@ -32,12 +32,14 @@ class Loader extends ResourceLoader
     {
         super(baseUrl, concurrency);
 
-        for (let i = 0; i < Loader._pixiMiddleware.length; ++i) {
+        for (let i = 0; i < Loader._pixiMiddleware.length; ++i)
+        {
             this.use(Loader._pixiMiddleware[i]());
         }
     }
 
-    static addPixiMiddleware(fn) {
+    static addPixiMiddleware(fn)
+    {
         Loader._pixiMiddleware.push(fn);
     }
 }

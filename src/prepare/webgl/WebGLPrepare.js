@@ -106,7 +106,7 @@ class WebGLPrepare
         // Upload the graphics
         while(this.queue.length && this.numLeft > 0)
         {
-            let item = this.queue[0];
+            const item = this.queue[0];
             let uploaded = false;
             for (let i = 0, len = this.uploadHooks.length; i < len; i++)
             {
@@ -133,7 +133,7 @@ class WebGLPrepare
         {
             this.ticking = false;
             SharedTicker.remove(this.tick, this);
-            let completes = this.completes.slice(0);
+            const completes = this.completes.slice(0);
             this.completes.length = 0;
             for (let i = 0, len = completes.length; i < len; i++)
             {

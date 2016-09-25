@@ -25,7 +25,8 @@ class Polygon
             // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
             points = new Array(arguments.length);
 
-            for (let a = 0; a < points.length; ++a) {
+            for (let a = 0; a < points.length; ++a)
+            {
                 points[a] = arguments[a];
             }
         }
@@ -76,7 +77,7 @@ class Polygon
 
     close()
     {
-        let points = this.points;
+        const points = this.points;
 
         // close the poly if the value is true!
         if (points[0] !== points[points.length-2] || points[1] !== points[points.length-1])

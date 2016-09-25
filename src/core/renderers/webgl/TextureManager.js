@@ -164,7 +164,8 @@ class TextureManager
             if (!skipRemove)
             {
                 const i = this._managedTextures.indexOf(texture);
-                if (i !== -1) {
+                if (i !== -1)
+                {
                     utils.removeItems(this._managedTextures, i, 1);
                 }
             }

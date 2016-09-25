@@ -15,7 +15,7 @@ const checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     if(createTempContext)
     {
-        let tinyCanvas = document.createElement('canvas');
+        const tinyCanvas = document.createElement('canvas');
         tinyCanvas.width = 1;
         tinyCanvas.height = 1;
 

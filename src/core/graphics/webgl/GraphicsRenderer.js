@@ -55,7 +55,8 @@ class GraphicsRenderer extends ObjectRenderer
     {
         ObjectRenderer.prototype.destroy.call(this);
 
-        for (let i = 0; i < this.graphicsDataPool.length; ++i) {
+        for (let i = 0; i < this.graphicsDataPool.length; ++i)
+        {
             this.graphicsDataPool[i].destroy();
         }
 
@@ -73,7 +74,6 @@ class GraphicsRenderer extends ObjectRenderer
         const gl = renderer.gl;
 
         let webGLData;
-
         let webGL = graphics._webGL[this.CONTEXT_UID];
 
         if (!webGL || graphics.dirty !== webGL.dirty )
@@ -138,7 +138,7 @@ class GraphicsRenderer extends ObjectRenderer
             // loop through and return all the webGLDatas to the object pool so than can be reused later on
             for (let i = 0; i < webGL.data.length; i++)
             {
-                let graphicsData = webGL.data[i];
+                const graphicsData = webGL.data[i];
                 this.graphicsDataPool.push( graphicsData );
             }
 
@@ -154,7 +154,7 @@ class GraphicsRenderer extends ObjectRenderer
         // other wise graphics objects will be pushed into a batch..
         for (let i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
         {
-            let data = graphics.graphicsData[i];
+            const data = graphics.graphicsData[i];
 
             //TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);

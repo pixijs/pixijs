@@ -32,8 +32,8 @@ import core from '../core';
  * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
  * @param [batchSize=15000] {number} Number of particles per batch.
  */
-class ParticleContainer extends core.Container
-{
+class ParticleContainer extends core.Container {
+
     constructor(maxSize, properties, batchSize)
     {
         super();
@@ -45,11 +45,13 @@ class ParticleContainer extends core.Container
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
         // so max number of particles is 65536 / 4 = 16384
         const maxBatchSize = 16384;
-        if (batchSize > maxBatchSize) {
+        if (batchSize > maxBatchSize)
+        {
             batchSize = maxBatchSize;
         }
 
-        if (batchSize > maxSize) {
+        if (batchSize > maxSize)
+        {
             batchSize = maxSize;
         }
 
@@ -120,7 +122,8 @@ class ParticleContainer extends core.Container
      */
     setProperties(properties)
     {
-        if ( properties ) {
+        if (properties)
+        {
             this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
             this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
             this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
@@ -156,18 +159,18 @@ class ParticleContainer extends core.Container
         }
 
 
-        if(!this.baseTexture)
+        if (!this.baseTexture)
         {
             this.baseTexture = this.children[0]._texture.baseTexture;
-            if(!this.baseTexture.hasLoaded)
+            if (!this.baseTexture.hasLoaded)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));
             }
         }
 
 
-        renderer.setObjectRenderer( renderer.plugins.particle );
-        renderer.plugins.particle.render( this );
+        renderer.setObjectRenderer(renderer.plugins.particle);
+        renderer.plugins.particle.render(this);
     }
 
     /**
@@ -178,7 +181,8 @@ class ParticleContainer extends core.Container
     onChildrenChange(smallestChildIndex)
     {
         const bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
-        if (bufferIndex < this._bufferToUpdate) {
+        if (bufferIndex < this._bufferToUpdate)
+        {
             this._bufferToUpdate = bufferIndex;
         }
     }
@@ -246,8 +250,8 @@ class ParticleContainer extends core.Container
                     isRotated = false;
                 }
 
-                positionX = ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x  + 0.5);
-                positionY = ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y  + 0.5);
+                positionX = ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x + 0.5);
+                positionY = ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y + 0.5);
 
                 finalWidth = frame.width * child.scale.x;
                 finalHeight = frame.height * child.scale.y;
@@ -314,11 +318,14 @@ class ParticleContainer extends core.Container
      * Destroys the container
      *
      */
-    destroy() {
+    destroy()
+    {
         super.destroy(arguments);
 
-        if (this._buffers) {
-            for (let i = 0; i < this._buffers.length; ++i) {
+        if (this._buffers)
+        {
+            for (let i = 0; i < this._buffers.length; ++i)
+            {
                 this._buffers[i].destroy();
             }
         }

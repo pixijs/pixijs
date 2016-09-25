@@ -43,7 +43,8 @@ class CanvasGraphicsRenderer
         const resolution = renderer.resolution;
 
          // if the tint has changed, set the graphics object to dirty.
-        if (this._prevTint !== this.tint) {
+        if (this._prevTint !== this.tint)
+        {
             this.dirty = true;
         }
 
@@ -83,7 +84,7 @@ class CanvasGraphicsRenderer
 
                 for (let j = 0; j < data.holes.length; j++)
                 {
-                    let hole = data.holes[j];
+                    const hole = data.holes[j];
                     this.renderPolygon(hole.points, true, context);
                 }
 

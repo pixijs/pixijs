@@ -97,14 +97,14 @@ class WebGLExtract
             renderer.bindRenderTarget(textureBuffer);
 
             // set up an array of pixels
-            let webGLPixels = new Uint8Array(4 * width * height);
+            const webGLPixels = new Uint8Array(4 * width * height);
 
             // read pixels to the array
-            let gl = renderer.gl;
+            const gl = renderer.gl;
             gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
 
             // add the pixels to the canvas
-            let canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+            const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
             canvasData.data.set(webGLPixels);
 
             canvasBuffer.context.putImageData(canvasData, 0, 0);
@@ -173,7 +173,7 @@ class WebGLExtract
             // bind the buffer
             renderer.bindRenderTarget(textureBuffer);
             // read pixels to the array
-            let gl = renderer.gl;
+            const gl = renderer.gl;
             gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
         }
 

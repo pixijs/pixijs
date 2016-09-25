@@ -295,7 +295,7 @@ class RenderTarget
 
         this.frameBuffer.resize(width * this.resolution, height * this.resolution);
 
-        let projectionFrame = this.frame || this.size;
+        const projectionFrame = this.frame || this.size;
 
         this.calculateProjection( projectionFrame );
     }

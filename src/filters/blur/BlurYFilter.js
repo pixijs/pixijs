@@ -66,7 +66,7 @@ class BlurYFilter extends core.Filter
             {
                 filterManager.applyFilter(this, flip, flop, true);
 
-               let temp = flop;
+               const temp = flop;
                flop = flip;
                flip = temp;
             }

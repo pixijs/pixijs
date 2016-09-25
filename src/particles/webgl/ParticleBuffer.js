@@ -178,7 +178,7 @@ class ParticleBuffer
     {
         for (let i = 0; i < this.dynamicProperties.length; i++)
         {
-            let property = this.dynamicProperties[i];
+            const property = this.dynamicProperties[i];
             property.uploadFunction(children, startIndex, amount, this.dynamicData, this.dynamicStride, property.offset);
         }
 
@@ -193,7 +193,7 @@ class ParticleBuffer
     {
         for (let i = 0; i < this.staticProperties.length; i++)
         {
-            let property = this.staticProperties[i];
+            const property = this.staticProperties[i];
             property.uploadFunction(children, startIndex, amount, this.staticData, this.staticStride, property.offset);
         }
 

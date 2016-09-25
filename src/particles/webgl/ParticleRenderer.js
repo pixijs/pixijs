@@ -20,8 +20,7 @@ import ParticleBuffer from './ParticleBuffer';
  * @memberof PIXI
  * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
-class ParticleRenderer extends core.ObjectRenderer
-{
+class ParticleRenderer extends core.ObjectRenderer {
     constructor(renderer)
     {
         super(renderer);
@@ -65,38 +64,38 @@ class ParticleRenderer extends core.ObjectRenderer
         this.properties = [
             // verticesData
             {
-                attribute:this.shader.attributes.aVertexPosition,
-                size:2,
-                uploadFunction:this.uploadVertices,
-                offset:0
+                attribute: this.shader.attributes.aVertexPosition,
+                size: 2,
+                uploadFunction: this.uploadVertices,
+                offset: 0
             },
             // positionData
             {
-                attribute:this.shader.attributes.aPositionCoord,
-                size:2,
-                uploadFunction:this.uploadPosition,
-                offset:0
+                attribute: this.shader.attributes.aPositionCoord,
+                size: 2,
+                uploadFunction: this.uploadPosition,
+                offset: 0
             },
             // rotationData
             {
-                attribute:this.shader.attributes.aRotation,
-                size:1,
-                uploadFunction:this.uploadRotation,
-                offset:0
+                attribute: this.shader.attributes.aRotation,
+                size: 1,
+                uploadFunction: this.uploadRotation,
+                offset: 0
             },
             // uvsData
             {
-                attribute:this.shader.attributes.aTextureCoord,
-                size:2,
-                uploadFunction:this.uploadUvs,
-                offset:0
+                attribute: this.shader.attributes.aTextureCoord,
+                size: 2,
+                uploadFunction: this.uploadUvs,
+                offset: 0
             },
             // alphaData
             {
-                attribute:this.shader.attributes.aColor,
-                size:1,
-                uploadFunction:this.uploadAlpha,
-                offset:0
+                attribute: this.shader.attributes.aColor,
+                size: 1,
+                uploadFunction: this.uploadAlpha,
+                offset: 0
             }
         ];
 
@@ -124,20 +123,20 @@ class ParticleRenderer extends core.ObjectRenderer
             batchSize = container._batchSize;
         let totalChildren = children.length;
 
-        if(totalChildren === 0)
+        if (totalChildren === 0)
         {
             return;
         }
-        else if(totalChildren > maxSize)
+        else if (totalChildren > maxSize)
         {
             totalChildren = maxSize;
         }
 
         let buffers = container._glBuffers[this.renderer.CONTEXT_UID];
 
-        if(!buffers)
+        if (!buffers)
         {
-            buffers = container._glBuffers[this.renderer.CONTEXT_UID] = this.generateBuffers( container );
+            buffers = container._glBuffers[this.renderer.CONTEXT_UID] = this.generateBuffers(container);
         }
 
         // if the uvs have not updated then no point rendering just yet!
@@ -145,8 +144,8 @@ class ParticleRenderer extends core.ObjectRenderer
 
         const gl = this.renderer.gl;
 
-        const m = container.worldTransform.copy( this.tempMatrix );
-        m.prepend( this.renderer._activeRenderTarget.projectionMatrix );
+        const m = container.worldTransform.copy(this.tempMatrix);
+        m.prepend(this.renderer._activeRenderTarget.projectionMatrix);
         this.shader.uniforms.projectionMatrix = m.toArray(true);
         this.shader.uniforms.uAlpha = container.worldAlpha;
 
@@ -160,7 +159,7 @@ class ParticleRenderer extends core.ObjectRenderer
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
         {
             let amount = ( totalChildren - i);
-            if(amount > batchSize)
+            if (amount > batchSize)
             {
                 amount = batchSize;
             }
@@ -171,7 +170,7 @@ class ParticleRenderer extends core.ObjectRenderer
             buffer.uploadDynamic(children, i, amount);
 
             // we only upload the static content when we have to!
-            if(container._bufferToUpdate === j)
+            if (container._bufferToUpdate === j)
             {
                 buffer.uploadStatic(children, i, amount);
                 container._bufferToUpdate = j + 1;
@@ -179,12 +178,12 @@ class ParticleRenderer extends core.ObjectRenderer
 
             // bind the buffer
             buffer.vao.bind()
-            .draw(gl.TRIANGLES, amount * 6)
-            .unbind();
+                .draw(gl.TRIANGLES, amount * 6)
+                .unbind();
 
-             // now draw those suckas!
-           // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
-           //  this.renderer.drawCount++;
+            // now draw those suckas!
+            // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
+            //  this.renderer.drawCount++;
         }
     }
 
@@ -229,7 +228,8 @@ class ParticleRenderer extends core.ObjectRenderer
             sy,
             w0, w1, h0, h1;
 
-        for (let i = 0; i < amount; i++) {
+        for (let i = 0; i < amount; i++)
+        {
 
             sprite = children[startIndex + i];
             texture = sprite._texture;
@@ -250,10 +250,10 @@ class ParticleRenderer extends core.ObjectRenderer
             }
             else
             {
-                w0 = (orig.width ) * (1-sprite.anchor.x);
+                w0 = (orig.width ) * (1 - sprite.anchor.x);
                 w1 = (orig.width ) * -sprite.anchor.x;
 
-                h0 = orig.height * (1-sprite.anchor.y);
+                h0 = orig.height * (1 - sprite.anchor.y);
                 h1 = orig.height * -sprite.anchor.y;
             }
 
@@ -283,7 +283,7 @@ class ParticleRenderer extends core.ObjectRenderer
      * @param stride {number}
      * @param offset {number}
      */
-    uploadPosition(children,startIndex, amount, array, stride, offset)
+    uploadPosition(children, startIndex, amount, array, stride, offset)
     {
         for (let i = 0; i < amount; i++)
         {
@@ -315,7 +315,7 @@ class ParticleRenderer extends core.ObjectRenderer
      * @param stride {number}
      * @param offset {number}
      */
-    uploadRotation(children,startIndex, amount, array, stride, offset)
+    uploadRotation(children, startIndex, amount, array, stride, offset)
     {
         for (let i = 0; i < amount; i++)
         {
@@ -340,7 +340,7 @@ class ParticleRenderer extends core.ObjectRenderer
      * @param stride {number}
      * @param offset {number}
      */
-    uploadUvs(children,startIndex, amount, array, stride, offset)
+    uploadUvs(children, startIndex, amount, array, stride, offset)
     {
         for (let i = 0; i < amount; i++)
         {
@@ -391,10 +391,10 @@ class ParticleRenderer extends core.ObjectRenderer
      * @param stride {number}
      * @param offset {number}
      */
-    uploadAlpha(children,startIndex, amount, array, stride, offset)
+    uploadAlpha(children, startIndex, amount, array, stride, offset)
     {
-         for (let i = 0; i < amount; i++)
-         {
+        for (let i = 0; i < amount; i++)
+        {
             const spriteAlpha = children[startIndex + i].alpha;
 
             array[offset] = spriteAlpha;
@@ -413,7 +413,8 @@ class ParticleRenderer extends core.ObjectRenderer
      */
     destroy()
     {
-        if (this.renderer.gl) {
+        if (this.renderer.gl)
+        {
             this.renderer.gl.deleteBuffer(this.indexBuffer);
         }
         core.ObjectRenderer.prototype.destroy.apply(this, arguments);

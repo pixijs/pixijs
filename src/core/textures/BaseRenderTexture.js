@@ -12,7 +12,7 @@ import CONST from '../const';
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * let BaserenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
+ * let baseRenderTexture = new PIXI.BaseRenderTexture(renderer, 800, 600);
  * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
@@ -31,7 +31,7 @@ import CONST from '../const';
  *
  * doc.addChild(sprite);
  *
- * let baseRenderTexture = new PIXI.BaserenderTexture(100, 100);
+ * let baseRenderTexture = new PIXI.BaseRenderTexture(100, 100);
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
  * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
