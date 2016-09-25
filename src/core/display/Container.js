@@ -257,6 +257,7 @@ class Container extends DisplayObject
      *
      * @param [beginIndex=0] {number} The beginning position.
      * @param [endIndex=this.children.length] {number} The ending position. Default value is size of the container.
+     * @returns {DisplayObject[]}
      */
     removeChildren(beginIndex=0, endIndex)
     {
@@ -506,16 +507,13 @@ class Container extends DisplayObject
 
         const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
 
-        const oldChildren = this.children;
-        this.children = null;
+        const oldChildren = this.removeChildren(0, this.children.length);
 
         if (destroyChildren)
         {
-            for (let i = oldChildren.length - 1; i >= 0; i--)
+            for (let i = 0; i < oldChildren.length; ++i)
             {
-                const child = oldChildren[i];
-                child.parent = null;
-                child.destroy(options);
+                oldChildren[i].destroy(options);
             }
         }
     }
