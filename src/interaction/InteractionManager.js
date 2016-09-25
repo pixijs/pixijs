@@ -1,5 +1,6 @@
 import core from '../core';
 import InteractionData from './InteractionData';
+import InteractionEvent from './InteractionEvent';
 import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
 import MobileDevice from 'ismobilejs';
@@ -81,16 +82,7 @@ class InteractionManager extends EventEmitter
          *
          * @member {object}
          */
-        this.eventData = {
-            stopped: false,
-            target: null,
-            type: null,
-            data: this.mouse,
-            stopPropagation()
-            {
-                this.stopped = true;
-            }
-        };
+        this.eventData = new InteractionEvent();
 
         /**
          * Tiny little interactiveData pool !
@@ -651,7 +643,7 @@ class InteractionManager extends EventEmitter
         // Resets the flag as set by a stopPropagation call. This flag is usually reset by a user interaction of any kind,
         // but there was a scenario of a display object moving under a static mouse cursor.
         // In this case, mouseover and mouseevents would not pass the flag test in dispatchEvent function
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true);
 
@@ -676,7 +668,7 @@ class InteractionManager extends EventEmitter
     {
         if (!eventData.stopped)
         {
-            eventData.target = displayObject;
+            eventData.currentTarget = displayObject;
             eventData.type = eventString;
 
             displayObject.emit(eventString, eventData);
@@ -833,6 +825,12 @@ class InteractionManager extends EventEmitter
 
             if (displayObject.interactive)
             {
+                if (hit && !this.eventData.target)
+                {
+                    this.eventData.target = displayObject;
+                    this.mouse.target = displayObject;
+                }
+
                 func(displayObject, hit);
             }
         }
@@ -852,7 +850,7 @@ class InteractionManager extends EventEmitter
     {
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal mouse reference
         this.mapPositionToPoint(this.mouse.global, event.clientX, event.clientY);
@@ -898,7 +896,7 @@ class InteractionManager extends EventEmitter
     {
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal mouse reference
         this.mapPositionToPoint(this.mouse.global, event.clientX, event.clientY);
@@ -954,7 +952,7 @@ class InteractionManager extends EventEmitter
     {
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         this.mapPositionToPoint(this.mouse.global, event.clientX, event.clientY);
 
@@ -1006,7 +1004,7 @@ class InteractionManager extends EventEmitter
 
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal mouse reference
         this.mapPositionToPoint(this.mouse.global, event.clientX, event.clientY);
@@ -1065,7 +1063,7 @@ class InteractionManager extends EventEmitter
 
         this.mouse.originalEvent = event;
         this.eventData.data = this.mouse;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         this.emit('mouseover', this.eventData);
     }
@@ -1284,7 +1282,7 @@ class InteractionManager extends EventEmitter
             touchData.originalEvent = event;
 
             this.eventData.data = touchData;
-            this.eventData.stopped = false;
+            this.eventData._reset();
 
             this.processInteractive(touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true);
 
@@ -1337,7 +1335,7 @@ class InteractionManager extends EventEmitter
 
             //TODO this should be passed along.. no set
             this.eventData.data = touchData;
-            this.eventData.stopped = false;
+            this.eventData._reset();
 
 
             this.processInteractive(touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true);
@@ -1402,7 +1400,7 @@ class InteractionManager extends EventEmitter
             touchData.originalEvent = event;
 
             this.eventData.data = touchData;
-            this.eventData.stopped = false;
+            this.eventData._reset();
 
             this.processInteractive(touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, this.moveWhenInside);
 
