@@ -302,7 +302,7 @@ const CONST = {
      * @type {RegExp|string}
      * @example `<svg width="100" height="100"></svg>`
      */
-    SVG_SIZE: /<svg[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)")[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)")[^>]*>/i,
+    SVG_SIZE: /<svg[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)(?:px)?")[^>]*(?:\s(width|height)="(\d*(?:\.\d+)?)(?:px)?")[^>]*>/i,
 
     /**
      * Constants that identify shapes, mainly to prevent `instanceof` calls.

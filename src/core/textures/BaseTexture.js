@@ -383,7 +383,7 @@ class BaseTexture extends EventEmitter
         if (dataUri && dataUri.mediaType === 'image')
         {
             // Check for subType validity
-            let firstSubType = dataUri.subType.split('+')[0];
+            const firstSubType = dataUri.subType.split('+')[0];
             imageType = utils.getImageTypeOfUrl('.' + firstSubType);
 
             if (!imageType)
@@ -505,7 +505,7 @@ class BaseTexture extends EventEmitter
 
         if (!svgWidth || !svgHeight)
         {
-            throw new Error('The SVG image must have width and height defined, canvas API needs them.');
+            throw new Error('The SVG image must have width and height defined (in pixels), canvas API needs them.');
         }
 
         // Scale realWidth and realHeight
