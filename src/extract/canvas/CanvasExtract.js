@@ -72,7 +72,6 @@ class CanvasExtract
         else
         {
             context = renderer.rootContext;
-            resolution = renderer.rootResolution;
 
             frame = tempRect;
             frame.width = this.renderer.width;
@@ -125,7 +124,6 @@ class CanvasExtract
         else
         {
             context = renderer.rootContext;
-            resolution = renderer.rootResolution;
 
             frame = tempRect;
             frame.width = renderer.width;

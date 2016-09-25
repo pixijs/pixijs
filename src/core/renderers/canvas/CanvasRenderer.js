@@ -39,7 +39,6 @@ class CanvasRenderer extends SystemRenderer
          * @member {CanvasRenderingContext2D}
          */
         this.rootContext = this.view.getContext('2d', {alpha: this.transparent});
-        this.rootResolution = this.resolution;
 
         /**
          * Boolean flag controlling canvas refresh.
@@ -134,7 +133,6 @@ class CanvasRenderer extends SystemRenderer
         {
 
             this.context = this.rootContext;
-            this.resolution = this.rootResolution;
         }
 
         const context = this.context;
