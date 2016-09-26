@@ -829,6 +829,7 @@ class InteractionManager extends EventEmitter
                 {
                     this.eventData.target = displayObject;
                     this.mouse.target = displayObject;
+                    this.pointer.target = displayObject;
                 }
 
                 func(displayObject, hit);
@@ -1079,7 +1080,7 @@ class InteractionManager extends EventEmitter
         this.normalizeToPointerData(event);
         this.pointer.originalEvent = event;
         this.eventData.data = this.pointer;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal pointer reference
         this.mapPositionToPoint(this.pointer.global, event.clientX, event.clientY);
@@ -1121,7 +1122,7 @@ class InteractionManager extends EventEmitter
         this.normalizeToPointerData(event);
         this.pointer.originalEvent = event;
         this.eventData.data = this.pointer;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal pointer reference
         this.mapPositionToPoint(this.pointer.global, event.clientX, event.clientY);
@@ -1171,7 +1172,7 @@ class InteractionManager extends EventEmitter
         this.normalizeToPointerData(event);
         this.pointer.originalEvent = event;
         this.eventData.data = this.pointer;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         this.mapPositionToPoint(this.pointer.global, event.clientX, event.clientY);
 
@@ -1211,7 +1212,7 @@ class InteractionManager extends EventEmitter
         this.normalizeToPointerData(event);
         this.pointer.originalEvent = event;
         this.eventData.data = this.pointer;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         // Update internal pointer reference
         this.mapPositionToPoint(this.pointer.global, event.clientX, event.clientY);
@@ -1252,7 +1253,7 @@ class InteractionManager extends EventEmitter
     {
         this.pointer.originalEvent = event;
         this.eventData.data = this.pointer;
-        this.eventData.stopped = false;
+        this.eventData._reset();
 
         this.emit('pointerover', this.eventData);
     }
