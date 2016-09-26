@@ -202,6 +202,11 @@ class Container extends DisplayObject
     {
         const argumentsLength = arguments.length;
 
+        // break out if there are not children to remove
+        if (!this.children)
+        {
+            return child; 
+        }
         // if there is only one argument we can bypass looping through the them
         if(argumentsLength > 1)
         {
