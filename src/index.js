@@ -1,3 +1,4 @@
+import './polyfill';
 import extras from './extras';
 import filters from './filters';
 import interaction from './interaction';
@@ -8,9 +9,6 @@ import accessibility from './accessibility';
 import extract from './extract';
 import prepare from './prepare';
 import core from './core';
-
-// run the polyfills
-require('./polyfill');
 
 /**
  * A premade instance of the loader that can be used to loader resources.
