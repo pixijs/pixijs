@@ -33,8 +33,9 @@ class Sprite extends Container
          * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
          *
          * @member {PIXI.ObservablePoint}
+         * @private
          */
-        this.anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
+        this._anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
 
         /**
          * The texture that the sprite is using
@@ -368,7 +369,7 @@ class Sprite extends Container
     {
         super.destroy(options);
 
-        this.anchor = null;
+        this._anchor = null;
 
         const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
         if (destroyTexture)
@@ -463,6 +464,25 @@ class Sprite extends Container
         const sign = utils.sign(this.scale.y) || 1;
         this.scale.y = sign * value / this.texture.orig.height;
         this._height = value;
+    }
+
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.Sprite#
+     */
+    get anchor()
+    {
+        return this._anchor;
+    }
+
+    set anchor(value)
+    {
+        this._anchor.copy(value);
     }
 
     get tint()
