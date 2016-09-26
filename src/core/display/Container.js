@@ -328,7 +328,8 @@ class Container extends DisplayObject
         {
             const child = this.children[i];
 
-            if (!child.visible || !child.renderable) {
+            if (!child.visible || !child.renderable)
+            {
                 continue;
             }
 
@@ -339,10 +340,12 @@ class Container extends DisplayObject
             {
                 child._mask.calculateBounds();
                 this._bounds.addBoundsMask(child._bounds, child._mask._bounds);
-            } else if (child.filterArea)
+            }
+            else if (child.filterArea)
             {
                 this._bounds.addBoundsArea(child._bounds, child.filterArea);
-            } else
+            }
+            else
             {
                 this._bounds.addBounds(child._bounds);
             }

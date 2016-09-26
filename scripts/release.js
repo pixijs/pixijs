@@ -24,8 +24,10 @@ var options = {
     logger: console.log.bind(console)
 };
 
-ghpages.publish(process.cwd(), options, function(err) {
-    if (err) {
+ghpages.publish(process.cwd(), options, function(err)
+{
+    if (err)
+    {
         console.log(err);
         process.exit(1);
         return;

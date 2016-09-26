@@ -288,7 +288,8 @@ describe('getBounds', function ()
 
     });
 
-    it('should register correct bounds of invisible Container', function() {
+    it('should register correct bounds of invisible Container', function()
+    {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
@@ -311,11 +312,10 @@ describe('getBounds', function ()
         expect(bounds.y).to.equal(120);
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
-
     });
 
-    it('should register correct width and height with Container masked child', function() {
-
+    it('should register correct width and height with Container masked child', function()
+    {
         var parent = new PIXI.Container();
 
         var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
