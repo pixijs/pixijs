@@ -264,6 +264,8 @@ class BaseTexture extends EventEmitter
             this.source.onload = null;
             this.source.onerror = null;
         }
+		
+		const firstSourceLoaded = !this.source;
 
         this.source = source;
 
@@ -280,6 +282,11 @@ class BaseTexture extends EventEmitter
             {
                 this._sourceLoaded();
             }
+			if (firstSourceLoaded)
+			{
+				// send loaded event if previous source was null and we have been passed a pre-loaded IMG element
+				this.emit('loaded', this);
+			}
         }
         else if (!source.getContext)
         {
