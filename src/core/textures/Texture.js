@@ -22,7 +22,7 @@ import * as utils from '../utils';
  * @extends EventEmitter
  * @memberof PIXI
  */
-class Texture extends EventEmitter
+export default class Texture extends EventEmitter
 {
     /**
      * @param {PIXI.BaseTexture} baseTexture - The base texture source to create the texture from
@@ -524,5 +524,3 @@ Texture.EMPTY.destroy = function _emptyDestroy() { /* empty */ };
 Texture.EMPTY.on = function _emptyOn() { /* empty */ };
 Texture.EMPTY.once = function _emptyOnce() { /* empty */ };
 Texture.EMPTY.emit = function _emptyEmit() { /* empty */ };
-
-export default Texture;

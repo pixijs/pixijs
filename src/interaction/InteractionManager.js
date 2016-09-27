@@ -20,7 +20,7 @@ Object.assign(
  * @extends EventEmitter
  * @memberof PIXI.interaction
  */
-class InteractionManager extends EventEmitter
+export default class InteractionManager extends EventEmitter
 {
     /**
      * @param {PIXI.CanvasRenderer|PIXI.WebGLRenderer} renderer - A reference to the current renderer
@@ -1593,5 +1593,3 @@ class InteractionManager extends EventEmitter
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
-
-export default InteractionManager;

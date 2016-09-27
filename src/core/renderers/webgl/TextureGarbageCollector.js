@@ -7,7 +7,7 @@ import { GC_MODES } from '../../const';
  * @class
  * @memberof PIXI
  */
-class TextureGarbageCollector
+export default class TextureGarbageCollector
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
@@ -106,5 +106,3 @@ class TextureGarbageCollector
         }
     }
 }
-
-export default TextureGarbageCollector;

@@ -7,7 +7,7 @@ import GroupD8 from '../math/GroupD8';
  * @private
  * @memberof PIXI
  */
-class TextureUvs
+export default class TextureUvs
 {
     /**
      *
@@ -89,5 +89,3 @@ class TextureUvs
         this.uvsUint32[3] = (((this.y3 * 65535) & 0xFFFF) << 16) | ((this.x3 * 65535) & 0xFFFF);
     }
 }
-
-export default TextureUvs;

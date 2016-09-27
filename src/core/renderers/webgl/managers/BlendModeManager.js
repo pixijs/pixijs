@@ -5,7 +5,7 @@ import WebGLManager from './WebGLManager';
  * @memberof PIXI
  * @extends PIXI.WebGLManager
  */
-class BlendModeManager extends WebGLManager
+export default class BlendModeManager extends WebGLManager
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
@@ -43,5 +43,3 @@ class BlendModeManager extends WebGLManager
         return true;
     }
 }
-
-export default BlendModeManager;

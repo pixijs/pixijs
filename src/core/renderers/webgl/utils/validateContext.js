@@ -1,4 +1,4 @@
-function validateContext(gl)
+export default function validateContext(gl)
 {
     const attributes = gl.getContextAttributes();
 
@@ -10,5 +10,3 @@ function validateContext(gl)
         /* eslint-enable no-console */
     }
 }
-
-export default validateContext;

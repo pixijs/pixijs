@@ -16,7 +16,7 @@ const tempMatrix = new math.Matrix();
  * @extends EventEmitter
  * @memberof PIXI
  */
-class SystemRenderer extends EventEmitter
+export default class SystemRenderer extends EventEmitter
 {
     /**
      * @param {string} system - The name of the system this renderer is for.
@@ -298,5 +298,3 @@ class SystemRenderer extends EventEmitter
         utils.hex2rgb(value, this._backgroundColorRgba);
     }
 }
-
-export default SystemRenderer;
