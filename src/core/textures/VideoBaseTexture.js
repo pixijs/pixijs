@@ -27,7 +27,7 @@ import { uid, BaseTextureCache } from '../utils';
  * @extends PIXI.BaseTexture
  * @memberof PIXI
  */
-class VideoBaseTexture extends BaseTexture
+export default class VideoBaseTexture extends BaseTexture
 {
     /**
      * @param {HTMLVideoElement} source - Video source
@@ -244,5 +244,3 @@ function createSource(path, type)
 
     return source;
 }
-
-export default VideoBaseTexture;

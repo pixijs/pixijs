@@ -7,7 +7,7 @@ import WebGLManager from '../managers/WebGLManager';
  * @extends PIXI.WebGLManager
  * @memberof PIXI
  */
-class ObjectRenderer extends WebGLManager
+export default class ObjectRenderer extends WebGLManager
 {
     /**
      * Starts the renderer and sets the shader
@@ -46,5 +46,3 @@ class ObjectRenderer extends WebGLManager
         // render the object
     }
 }
-
-export default ObjectRenderer;

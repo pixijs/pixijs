@@ -12,7 +12,7 @@ const BLEND_FUNC = 4;
  * @memberof PIXI
  * @class
  */
-class WebGLState
+export default class WebGLState
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
@@ -259,5 +259,3 @@ class WebGLState
         this.setState(this.defaultState);
     }
 }
-
-export default WebGLState;

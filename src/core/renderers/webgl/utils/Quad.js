@@ -7,7 +7,7 @@ import createIndicesForQuads from '../../../utils/createIndicesForQuads';
  * @class
  * @memberof PIXI
  */
-class Quad
+export default class Quad
 {
     /**
      * @param {WebGLRenderingContext} gl - The gl context for this quad to use.
@@ -177,5 +177,3 @@ class Quad
         gl.deleteBuffer(this.indexBuffer);
     }
 }
-
-export default Quad;

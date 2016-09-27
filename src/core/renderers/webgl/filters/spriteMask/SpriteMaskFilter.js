@@ -11,7 +11,7 @@ const glslify = require('glslify'); // eslint-disable-line no-undef
  * @extends PIXI.Filter
  * @memberof PIXI
  */
-class SpriteMaskFilter extends Filter
+export default class SpriteMaskFilter extends Filter
 {
     /**
      * @param {PIXI.Sprite} sprite - the target sprite
@@ -49,5 +49,3 @@ class SpriteMaskFilter extends Filter
         filterManager.applyFilter(this, input, output);
     }
 }
-
-export default SpriteMaskFilter;

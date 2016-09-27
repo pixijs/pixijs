@@ -9,7 +9,7 @@ import { removeItems } from '../../utils';
  * @class
  * @memberof PIXI
  */
-class TextureManager
+export default class TextureManager
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
@@ -224,5 +224,3 @@ class TextureManager
         this._managedTextures = null;
     }
 }
-
-export default TextureManager;

@@ -38,7 +38,7 @@ import Texture from './Texture';
  * @extends PIXI.Texture
  * @memberof PIXI
  */
-class RenderTexture extends Texture
+export default class RenderTexture extends Texture
 {
     /**
      * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
@@ -125,5 +125,3 @@ class RenderTexture extends Texture
         return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
     }
 }
-
-export default RenderTexture;

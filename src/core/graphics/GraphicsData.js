@@ -4,7 +4,7 @@
  * @class
  * @memberof PIXI
  */
-class GraphicsData
+export default class GraphicsData
 {
     /**
      *
@@ -108,5 +108,3 @@ class GraphicsData
         this.holes = null;
     }
 }
-
-export default GraphicsData;
