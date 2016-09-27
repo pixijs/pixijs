@@ -1,5 +1,5 @@
 import buildLine from './buildLine';
-import * as utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 import earcut from 'earcut';
 
 /**
@@ -40,7 +40,7 @@ export default function buildPoly(graphicsData, webGLData)
         const length = points.length / 2;
 
         // sort color
-        const color = utils.hex2rgb(graphicsData.fillColor);
+        const color = hex2rgb(graphicsData.fillColor);
         const alpha = graphicsData.fillAlpha;
         const r = color[0] * alpha;
         const g = color[1] * alpha;

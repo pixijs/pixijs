@@ -1,4 +1,4 @@
-import * as utils from '../utils';
+import { removeItems } from '../utils';
 import DisplayObject from './DisplayObject';
 
 /**
@@ -166,7 +166,7 @@ export default class Container extends DisplayObject
 
         const currentIndex = this.getChildIndex(child);
 
-        utils.removeItems(this.children, currentIndex, 1); // remove from old position
+        removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
         this.onChildrenChange(index);
     }
@@ -203,7 +203,7 @@ export default class Container extends DisplayObject
             if (index === -1) continue;
 
             child.parent = null;
-            utils.removeItems(this.children, index, 1);
+            removeItems(this.children, index, 1);
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(index);
@@ -224,7 +224,7 @@ export default class Container extends DisplayObject
         const child = this.getChildAt(index);
 
         child.parent = null;
-        utils.removeItems(this.children, index, 1);
+        removeItems(this.children, index, 1);
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);

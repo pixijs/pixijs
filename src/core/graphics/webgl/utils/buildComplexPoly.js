@@ -1,4 +1,4 @@
-import * as utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a complex polygon to draw
@@ -25,7 +25,7 @@ export default function buildComplexPoly(graphicsData, webGLData)
 
     webGLData.points = points;
     webGLData.alpha = graphicsData.fillAlpha;
-    webGLData.color = utils.hex2rgb(graphicsData.fillColor);
+    webGLData.color = hex2rgb(graphicsData.fillColor);
 
     // calclate the bounds..
     let minX = Infinity;

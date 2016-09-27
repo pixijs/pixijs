@@ -2,8 +2,8 @@ import BaseTexture from './BaseTexture';
 import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
-import * as math from '../math';
-import * as utils from '../utils';
+import { Rectangle } from '../math';
+import { TextureCache, BaseTextureCache } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -45,7 +45,7 @@ class Texture extends EventEmitter
         if (!frame)
         {
             this.noFrame = true;
-            frame = new math.Rectangle(0, 0, 1, 1);
+            frame = new Rectangle(0, 0, 1, 1);
         }
 
         if (baseTexture instanceof Texture)
@@ -102,7 +102,7 @@ class Texture extends EventEmitter
          *
          * @member {PIXI.Rectangle}
          */
-        this.orig = orig || frame;// new math.Rectangle(0, 0, 1, 1);
+        this.orig = orig || frame;// new Rectangle(0, 0, 1, 1);
 
         this._rotate = Number(rotate || 0);
 
@@ -120,7 +120,7 @@ class Texture extends EventEmitter
         {
             if (this.noFrame)
             {
-                frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+                frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
 
                 // if there is no frame we should monitor for any base texture changes..
                 baseTexture.on('update', this.onBaseTextureUpdated, this);
@@ -165,7 +165,7 @@ class Texture extends EventEmitter
         // TODO this code looks confusing.. boo to abusing getters and setterss!
         if (this.noFrame)
         {
-            this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+            this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
         else
         {
@@ -205,9 +205,9 @@ class Texture extends EventEmitter
             {
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destoryed too..
-                if (utils.TextureCache[this.baseTexture.imageUrl])
+                if (TextureCache[this.baseTexture.imageUrl])
                 {
-                    delete utils.TextureCache[this.baseTexture.imageUrl];
+                    delete TextureCache[this.baseTexture.imageUrl];
                 }
 
                 this.baseTexture.destroy();
@@ -270,12 +270,12 @@ class Texture extends EventEmitter
      */
     static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
     {
-        let texture = utils.TextureCache[imageUrl];
+        let texture = TextureCache[imageUrl];
 
         if (!texture)
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
-            utils.TextureCache[imageUrl] = texture;
+            TextureCache[imageUrl] = texture;
         }
 
         return texture;
@@ -291,7 +291,7 @@ class Texture extends EventEmitter
      */
     static fromFrame(frameId)
     {
-        const texture = utils.TextureCache[frameId];
+        const texture = TextureCache[frameId];
 
         if (!texture)
         {
@@ -359,7 +359,7 @@ class Texture extends EventEmitter
         // TODO pass in scale mode?
         if (typeof source === 'string')
         {
-            const texture = utils.TextureCache[source];
+            const texture = TextureCache[source];
 
             if (!texture)
             {
@@ -394,7 +394,7 @@ class Texture extends EventEmitter
     }
 
     /**
-     * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.
+     * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
      * @param {PIXI.Texture} texture - The Texture to add to the cache.
@@ -402,11 +402,11 @@ class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
-        utils.TextureCache[id] = texture;
+        TextureCache[id] = texture;
     }
 
     /**
-     * Remove a texture from the global utils.TextureCache.
+     * Remove a texture from the global TextureCache.
      *
      * @static
      * @param {string} id - The id of the texture to be removed
@@ -414,10 +414,10 @@ class Texture extends EventEmitter
      */
     static removeTextureFromCache(id)
     {
-        const texture = utils.TextureCache[id];
+        const texture = TextureCache[id];
 
-        delete utils.TextureCache[id];
-        delete utils.BaseTextureCache[id];
+        delete TextureCache[id];
+        delete BaseTextureCache[id];
 
         return texture;
     }

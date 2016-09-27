@@ -1,7 +1,7 @@
 import { GLTexture } from 'pixi-gl-core';
 import { WRAP_MODES, SCALE_MODES } from '../../const';
 import RenderTarget from './utils/RenderTarget';
-import * as utils from '../../utils';
+import { removeItems } from '../../utils';
 
 /**
  * Helper class to create a webGL Texture
@@ -182,7 +182,7 @@ class TextureManager
 
                 if (i !== -1)
                 {
-                    utils.removeItems(this._managedTextures, i, 1);
+                    removeItems(this._managedTextures, i, 1);
                 }
             }
         }

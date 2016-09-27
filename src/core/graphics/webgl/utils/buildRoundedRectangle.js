@@ -1,6 +1,6 @@
 import earcut from 'earcut';
 import buildLine from './buildLine';
-import * as utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a rounded rectangle to draw
@@ -35,7 +35,7 @@ export default function buildRoundedRectangle(graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        const color = utils.hex2rgb(graphicsData.fillColor);
+        const color = hex2rgb(graphicsData.fillColor);
         const alpha = graphicsData.fillAlpha;
 
         const r = color[0] * alpha;

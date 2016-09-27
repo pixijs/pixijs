@@ -3,7 +3,7 @@ import { TRANSFORM_MODE } from '../const';
 import TransformStatic from './TransformStatic';
 import Transform from './Transform';
 import Bounds from './Bounds';
-import * as math from '../math';
+import { Rectangle } from '../math';
 // _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -195,7 +195,7 @@ export default class DisplayObject extends EventEmitter
         {
             if (!this._boundsRect)
             {
-                this._boundsRect = new math.Rectangle();
+                this._boundsRect = new Rectangle();
             }
 
             rect = this._boundsRect;
@@ -222,7 +222,7 @@ export default class DisplayObject extends EventEmitter
         {
             if (!this._localBoundsRect)
             {
-                this._localBoundsRect = new math.Rectangle();
+                this._localBoundsRect = new Rectangle();
             }
 
             rect = this._localBoundsRect;

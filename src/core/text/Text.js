@@ -1,8 +1,8 @@
 /* eslint max-depth: [2, 8] */
 import Sprite from '../sprites/Sprite';
 import Texture from '../textures/Texture';
-import * as math from '../math';
-import * as utils from '../utils';
+import { Rectangle } from '../math';
+import { sign } from '../utils';
 import { TEXT_GRADIENT, RESOLUTION } from '../const';
 import TextStyle from './TextStyle';
 
@@ -37,8 +37,8 @@ export default class Text extends Sprite
         const canvas = document.createElement('canvas');
         const texture = Texture.fromCanvas(canvas);
 
-        texture.orig = new math.Rectangle();
-        texture.trim = new math.Rectangle();
+        texture.orig = new Rectangle();
+        texture.trim = new Rectangle();
 
         super(texture);
 
@@ -719,9 +719,9 @@ export default class Text extends Sprite
     {
         this.updateText(true);
 
-        const sign = utils.sign(this.scale.x) || 1;
+        const s = sign(this.scale.x) || 1;
 
-        this.scale.x = sign * value / this.texture.orig.width;
+        this.scale.x = s * value / this.texture.orig.width;
         this._width = value;
     }
 
@@ -747,9 +747,9 @@ export default class Text extends Sprite
     {
         this.updateText(true);
 
-        const sign = utils.sign(this.scale.y) || 1;
+        const s = sign(this.scale.y) || 1;
 
-        this.scale.y = sign * value / this.texture.orig.height;
+        this.scale.y = s * value / this.texture.orig.height;
         this._height = value;
     }
 

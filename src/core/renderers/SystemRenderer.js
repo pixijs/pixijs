@@ -1,11 +1,11 @@
-import * as utils from '../utils';
-import * as math from '../math';
+import { sayHello, hex2string, hex2rgb } from '../utils';
+import { Matrix } from '../math';
 import { DEFAULT_RENDER_OPTIONS, RENDERER_TYPE } from '../const';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
 
-const tempMatrix = new math.Matrix();
+const tempMatrix = new Matrix();
 
 /**
  * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -40,7 +40,7 @@ class SystemRenderer extends EventEmitter
     {
         super();
 
-        utils.sayHello(system);
+        sayHello(system);
 
         // prepare options
         if (options)
@@ -294,8 +294,8 @@ class SystemRenderer extends EventEmitter
     set backgroundColor(value)
     {
         this._backgroundColor = value;
-        this._backgroundColorString = utils.hex2string(value);
-        utils.hex2rgb(value, this._backgroundColorRgba);
+        this._backgroundColorString = hex2string(value);
+        hex2rgb(value, this._backgroundColorRgba);
     }
 }
 

@@ -1,4 +1,4 @@
-import * as utils from '../../utils';
+import { hex2rgb } from '../../utils';
 import { SHAPES } from '../../const';
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
@@ -98,7 +98,7 @@ export default class GraphicsRenderer extends ObjectRenderer
 
             renderer.bindShader(shaderTemp);
             shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
-            shaderTemp.uniforms.tint = utils.hex2rgb(graphics.tint);
+            shaderTemp.uniforms.tint = hex2rgb(graphics.tint);
             shaderTemp.uniforms.alpha = graphics.worldAlpha;
 
             webGLData.vao.bind()

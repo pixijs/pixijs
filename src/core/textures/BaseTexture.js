@@ -1,4 +1,7 @@
-import * as utils from '../utils';
+import {
+    uid, getImageTypeOfUrl, decomposeDataUri, getSvgSize,
+    getResolutionOfUrl, BaseTextureCache, TextureCache,
+} from '../utils';
 import { RESOLUTION, SCALE_MODES, MIPMAP_TEXTURES, WRAP_MODES } from '../const';
 import EventEmitter from 'eventemitter3';
 import determineCrossOrigin from '../utils/determineCrossOrigin';
@@ -22,7 +25,7 @@ export default class BaseTexture extends EventEmitter
     {
         super();
 
-        this.uid = utils.uid();
+        this.uid = uid();
 
         this.touched = 0;
 
@@ -388,7 +391,7 @@ export default class BaseTexture extends EventEmitter
             return;
         }
 
-        const dataUri = utils.decomposeDataUri(this.imageUrl);
+        const dataUri = decomposeDataUri(this.imageUrl);
         let imageType;
 
         if (dataUri && dataUri.mediaType === 'image')
@@ -396,7 +399,7 @@ export default class BaseTexture extends EventEmitter
             // Check for subType validity
             const firstSubType = dataUri.subType.split('+')[0];
 
-            imageType = utils.getImageTypeOfUrl(`.${firstSubType}`);
+            imageType = getImageTypeOfUrl(`.${firstSubType}`);
 
             if (!imageType)
             {
@@ -405,7 +408,7 @@ export default class BaseTexture extends EventEmitter
         }
         else
         {
-            imageType = utils.getImageTypeOfUrl(this.imageUrl);
+            imageType = getImageTypeOfUrl(this.imageUrl);
 
             if (!imageType)
             {
@@ -428,7 +431,7 @@ export default class BaseTexture extends EventEmitter
             return;
         }
 
-        const dataUri = utils.decomposeDataUri(this.imageUrl);
+        const dataUri = decomposeDataUri(this.imageUrl);
 
         if (dataUri)
         {
@@ -507,7 +510,7 @@ export default class BaseTexture extends EventEmitter
      */
     _loadSvgSourceUsingString(svgString)
     {
-        const svgSize = utils.getSvgSize(svgString);
+        const svgSize = getSvgSize(svgString);
 
         const svgWidth = svgSize.width;
         const svgHeight = svgSize.height;
@@ -532,7 +535,7 @@ export default class BaseTexture extends EventEmitter
 
         canvas.width = this.realWidth;
         canvas.height = this.realHeight;
-        canvas._pixiId = `canvas_${utils.uid()}`;
+        canvas._pixiId = `canvas_${uid()}`;
 
         // Draw the Svg to the canvas
         canvas
@@ -544,7 +547,7 @@ export default class BaseTexture extends EventEmitter
         this.source = canvas;
 
         // Add also the canvas in cache (destroy clears by `imageUrl` and `source._pixiId`)
-        utils.BaseTextureCache[canvas._pixiId] = this;
+        BaseTextureCache[canvas._pixiId] = this;
 
         this.isLoading = false;
         this._sourceLoaded();
@@ -571,8 +574,8 @@ export default class BaseTexture extends EventEmitter
     {
         if (this.imageUrl)
         {
-            delete utils.BaseTextureCache[this.imageUrl];
-            delete utils.TextureCache[this.imageUrl];
+            delete BaseTextureCache[this.imageUrl];
+            delete TextureCache[this.imageUrl];
 
             this.imageUrl = null;
 
@@ -584,7 +587,7 @@ export default class BaseTexture extends EventEmitter
         // An svg source has both `imageUrl` and `__pixiId`, so no `else if` here
         if (this.source && this.source._pixiId)
         {
-            delete utils.BaseTextureCache[this.source._pixiId];
+            delete BaseTextureCache[this.source._pixiId];
         }
 
         this.source = null;
@@ -632,7 +635,7 @@ export default class BaseTexture extends EventEmitter
      */
     static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
     {
-        let baseTexture = utils.BaseTextureCache[imageUrl];
+        let baseTexture = BaseTextureCache[imageUrl];
 
         if (!baseTexture)
         {
@@ -654,11 +657,11 @@ export default class BaseTexture extends EventEmitter
             }
 
             // if there is an @2x at the end of the url we are going to assume its a highres image
-            baseTexture.resolution = utils.getResolutionOfUrl(imageUrl);
+            baseTexture.resolution = getResolutionOfUrl(imageUrl);
 
             image.src = imageUrl; // Setting this triggers load
 
-            utils.BaseTextureCache[imageUrl] = baseTexture;
+            BaseTextureCache[imageUrl] = baseTexture;
         }
 
         return baseTexture;
@@ -676,15 +679,15 @@ export default class BaseTexture extends EventEmitter
     {
         if (!canvas._pixiId)
         {
-            canvas._pixiId = `canvas_${utils.uid()}`;
+            canvas._pixiId = `canvas_${uid()}`;
         }
 
-        let baseTexture = utils.BaseTextureCache[canvas._pixiId];
+        let baseTexture = BaseTextureCache[canvas._pixiId];
 
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(canvas, scaleMode);
-            utils.BaseTextureCache[canvas._pixiId] = baseTexture;
+            BaseTextureCache[canvas._pixiId] = baseTexture;
         }
 
         return baseTexture;
