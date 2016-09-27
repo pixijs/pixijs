@@ -975,7 +975,7 @@ class Graphics extends Container
     {
         const bounds = this.getLocalBounds();
 
-        const canvasBuffer = RenderTexture.create(bounds.width * resolution, bounds.height * resolution);
+        const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
 
         if (!canvasRenderer)
         {
@@ -989,6 +989,7 @@ class Graphics extends Container
 
         const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
         texture.baseTexture.resolution = resolution;
+        texture.baseTexture.update();
 
         return texture;
     }
