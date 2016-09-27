@@ -1,6 +1,6 @@
 import buildLine from './buildLine';
 import { SHAPES } from '../../../const';
-import * as utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a circle to draw
@@ -40,7 +40,7 @@ export default function buildCircle(graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        const color = utils.hex2rgb(graphicsData.fillColor);
+        const color = hex2rgb(graphicsData.fillColor);
         const alpha = graphicsData.fillAlpha;
 
         const r = color[0] * alpha;

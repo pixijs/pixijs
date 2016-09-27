@@ -1,4 +1,4 @@
-import * as math from '../math';
+import { Point, ObservablePoint } from '../math';
 import TransformBase from './TransformBase';
 
 /**
@@ -23,28 +23,28 @@ export default class Transform extends TransformBase
          *
          * @member {PIXI.Point}
          */
-        this.position = new math.Point(0, 0);
+        this.position = new Point(0, 0);
 
         /**
          * The scale factor of the object.
          *
          * @member {PIXI.Point}
          */
-        this.scale = new math.Point(1, 1);
+        this.scale = new Point(1, 1);
 
         /**
          * The skew amount, on the x and y axis.
          *
          * @member {PIXI.ObservablePoint}
          */
-        this.skew = new math.ObservablePoint(this.updateSkew, this, 0, 0);
+        this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
 
         /**
          * The pivot point of the displayObject that it rotates around
          *
          * @member {PIXI.Point}
          */
-        this.pivot = new math.Point(0, 0);
+        this.pivot = new Point(0, 0);
 
         /**
          * The rotation value of the object, in radians

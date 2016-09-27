@@ -1,7 +1,7 @@
 import WebGLManager from './WebGLManager';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
-import * as math from '../../../math';
+import { Rectangle } from '../../../math';
 import Shader from '../../../Shader';
 import filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
@@ -18,8 +18,8 @@ class FilterState
     constructor()
     {
         this.renderTarget = null;
-        this.sourceFrame = new math.Rectangle();
-        this.destinationFrame = new math.Rectangle();
+        this.sourceFrame = new Rectangle();
+        this.destinationFrame = new Rectangle();
         this.filters = [];
         this.target = null;
         this.resolution = 1;

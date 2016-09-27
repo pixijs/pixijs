@@ -3,16 +3,16 @@ import RenderTexture from '../textures/RenderTexture';
 import Texture from '../textures/Texture';
 import GraphicsData from './GraphicsData';
 import Sprite from '../sprites/Sprite';
-import * as math from '../math';
-import * as utils from '../utils';
+import { Matrix, Point, Rectangle, RoundedRectangle, Ellipse, Polygon, Circle } from '../math';
+import { hex2rgb, rgb2hex } from '../utils';
 import { SHAPES, BLEND_MODES } from '../const';
 import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
 
 let canvasRenderer;
-const tempMatrix = new math.Matrix();
-const tempPoint = new math.Point();
+const tempMatrix = new Matrix();
+const tempPoint = new Point();
 const tempColor1 = new Float32Array(4);
 const tempColor2 = new Float32Array(4);
 
@@ -239,7 +239,7 @@ export default class Graphics extends Container
             if (this.currentPath.shape.points.length)
             {
                 // halfway through a line? start a new one!
-                const shape = new math.Polygon(this.currentPath.shape.points.slice(-2));
+                const shape = new Polygon(this.currentPath.shape.points.slice(-2));
 
                 shape.closed = false;
 
@@ -266,7 +266,7 @@ export default class Graphics extends Container
      */
     moveTo(x, y)
     {
-        const shape = new math.Polygon([x, y]);
+        const shape = new Polygon([x, y]);
 
         shape.closed = false;
         this.drawShape(shape);
@@ -583,7 +583,7 @@ export default class Graphics extends Container
      */
     drawRect(x, y, width, height)
     {
-        this.drawShape(new math.Rectangle(x, y, width, height));
+        this.drawShape(new Rectangle(x, y, width, height));
 
         return this;
     }
@@ -599,7 +599,7 @@ export default class Graphics extends Container
      */
     drawRoundedRect(x, y, width, height, radius)
     {
-        this.drawShape(new math.RoundedRectangle(x, y, width, height, radius));
+        this.drawShape(new RoundedRectangle(x, y, width, height, radius));
 
         return this;
     }
@@ -614,7 +614,7 @@ export default class Graphics extends Container
      */
     drawCircle(x, y, radius)
     {
-        this.drawShape(new math.Circle(x, y, radius));
+        this.drawShape(new Circle(x, y, radius));
 
         return this;
     }
@@ -630,7 +630,7 @@ export default class Graphics extends Container
      */
     drawEllipse(x, y, width, height)
     {
-        this.drawShape(new math.Ellipse(x, y, width, height));
+        this.drawShape(new Ellipse(x, y, width, height));
 
         return this;
     }
@@ -649,7 +649,7 @@ export default class Graphics extends Container
 
         let closed = true;
 
-        if (points instanceof math.Polygon)
+        if (points instanceof Polygon)
         {
             closed = points.closed;
             points = points.points;
@@ -667,7 +667,7 @@ export default class Graphics extends Container
             }
         }
 
-        const shape = new math.Polygon(points);
+        const shape = new Polygon(points);
 
         shape.closed = closed;
 
@@ -776,14 +776,14 @@ export default class Graphics extends Container
             const t1 = tempColor1;
             const t2 = tempColor2;
 
-            utils.hex2rgb(this.graphicsData[0].fillColor, t1);
-            utils.hex2rgb(this.tint, t2);
+            hex2rgb(this.graphicsData[0].fillColor, t1);
+            hex2rgb(this.tint, t2);
 
             t1[0] *= t2[0];
             t1[1] *= t2[1];
             t1[2] *= t2[2];
 
-            this._spriteRect.tint = utils.rgb2hex(t1);
+            this._spriteRect.tint = rgb2hex(t1);
         }
         this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
         this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;

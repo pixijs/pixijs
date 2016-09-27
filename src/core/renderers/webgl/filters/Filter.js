@@ -1,5 +1,5 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
-import * as utils from '../../../utils';
+import { uid } from '../../../utils';
 import { BLEND_MODES } from '../../../const';
 
 const SOURCE_KEY_MAP = {};
@@ -53,7 +53,7 @@ class Filter
         // used for cacheing.. sure there is a better way!
         if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
         {
-            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = utils.uid();
+            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
         }
 
         this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];

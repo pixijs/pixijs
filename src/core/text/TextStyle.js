@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { TEXT_GRADIENT } from '../const';
-import * as utils from '../utils';
+import { hex2string } from '../utils';
 
 const defaultStyle = {
     align: 'left',
@@ -439,7 +439,7 @@ function getColor(color)
 {
     if (typeof color === 'number')
     {
-        return utils.hex2string(color);
+        return hex2string(color);
     }
     else if (Array.isArray(color))
     {
@@ -447,7 +447,7 @@ function getColor(color)
         {
             if (typeof color[i] === 'number')
             {
-                color[i] = utils.hex2string(color[i]);
+                color[i] = hex2string(color[i]);
             }
         }
     }

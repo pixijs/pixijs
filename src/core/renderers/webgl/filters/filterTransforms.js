@@ -1,4 +1,4 @@
-import * as math from '../../../math';
+import { Matrix } from '../../../math';
 
 /*
  * Calculates the mapped matrix
@@ -10,7 +10,7 @@ import * as math from '../../../math';
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
-     // let worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
+     // let worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX),
     // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
@@ -40,7 +40,7 @@ export function calculateNormalizedScreenSpaceMatrix(outputMatrix, filterArea, t
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 export function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite)
 {
-    const worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX);
+    const worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX);
     const texture = sprite._texture.baseTexture;
 
     // TODO unwrap?

@@ -1,5 +1,5 @@
 import Filter from '../Filter';
-import * as math from '../../../../math';
+import { Matrix } from '../../../../math';
 
 // @see https://github.com/substack/brfs/issues/25
 const glslify = require('glslify'); // eslint-disable-line no-undef
@@ -18,7 +18,7 @@ class SpriteMaskFilter extends Filter
      */
     constructor(sprite)
     {
-        const maskMatrix = new math.Matrix();
+        const maskMatrix = new Matrix();
 
         super(
             glslify('./spriteMaskFilter.vert'),

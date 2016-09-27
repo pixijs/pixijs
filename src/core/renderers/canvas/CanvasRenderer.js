@@ -2,7 +2,7 @@ import SystemRenderer from '../SystemRenderer';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
-import * as utils from '../../utils';
+import { pluginTarget } from '../../utils';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '../../const';
 
 /**
@@ -267,4 +267,4 @@ export default class CanvasRenderer extends SystemRenderer
     }
 }
 
-utils.pluginTarget.mixin(CanvasRenderer);
+pluginTarget.mixin(CanvasRenderer);

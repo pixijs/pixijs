@@ -1,10 +1,10 @@
-import * as math from '../math';
+import { Point, ObservablePoint, Rectangle } from '../math';
+import { sign, TextureCache } from '../utils';
+import { BLEND_MODES } from '../const';
 import Texture from '../textures/Texture';
 import Container from '../display/Container';
-import * as utils from '../utils';
-import { BLEND_MODES } from '../const';
 
-const tempPoint = new math.Point();
+const tempPoint = new Point();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -37,7 +37,7 @@ export default class Sprite extends Container
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new math.ObservablePoint(this.onAnchorUpdate, this);
+        this._anchor = new ObservablePoint(this.onAnchorUpdate, this);
 
         /**
          * The texture that the sprite is using
@@ -134,12 +134,12 @@ export default class Sprite extends Container
         // so if _width is 0 then width was not set..
         if (this._width)
         {
-            this.scale.x = utils.sign(this.scale.x) * this._width / this.texture.orig.width;
+            this.scale.x = sign(this.scale.x) * this._width / this.texture.orig.width;
         }
 
         if (this._height)
         {
-            this.scale.y = utils.sign(this.scale.y) * this._height / this.texture.orig.height;
+            this.scale.y = sign(this.scale.y) * this._height / this.texture.orig.height;
         }
     }
 
@@ -339,7 +339,7 @@ export default class Sprite extends Container
             {
                 if (!this._localBoundsRect)
                 {
-                    this._localBoundsRect = new math.Rectangle();
+                    this._localBoundsRect = new Rectangle();
                 }
 
                 rect = this._localBoundsRect;
@@ -433,7 +433,7 @@ export default class Sprite extends Container
      */
     static fromFrame(frameId)
     {
-        const texture = utils.TextureCache[frameId];
+        const texture = TextureCache[frameId];
 
         if (!texture)
         {
@@ -477,9 +477,9 @@ export default class Sprite extends Container
      */
     set width(value)
     {
-        const sign = utils.sign(this.scale.x) || 1;
+        const s = sign(this.scale.x) || 1;
 
-        this.scale.x = sign * value / this.texture.orig.width;
+        this.scale.x = s * value / this.texture.orig.width;
         this._width = value;
     }
 
@@ -501,9 +501,9 @@ export default class Sprite extends Container
      */
     set height(value)
     {
-        const sign = utils.sign(this.scale.y) || 1;
+        const s = sign(this.scale.y) || 1;
 
-        this.scale.y = sign * value / this.texture.orig.height;
+        this.scale.y = s * value / this.texture.orig.height;
         this._height = value;
     }
 

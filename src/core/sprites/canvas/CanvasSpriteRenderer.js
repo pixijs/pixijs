@@ -1,9 +1,9 @@
 import CanvasRenderer from '../../renderers/canvas/CanvasRenderer';
 import { SCALE_MODES } from '../../const';
-import * as math from '../../math';
+import { Matrix, GroupD8 } from '../../math';
 import CanvasTinter from './CanvasTinter';
 
-const canvasRenderWorldTransform = new math.Matrix();
+const canvasRenderWorldTransform = new Matrix();
 
 /**
  * @author Mat Groves
@@ -87,7 +87,7 @@ export default class CanvasSpriteRenderer
             {
                 wt.copy(canvasRenderWorldTransform);
                 wt = canvasRenderWorldTransform;
-                math.GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
+                GroupD8.matrixAppendRotationInv(wt, texture.rotate, dx, dy);
                 // the anchor has already been applied above, so lets set it to zero
                 dx = 0;
                 dy = 0;

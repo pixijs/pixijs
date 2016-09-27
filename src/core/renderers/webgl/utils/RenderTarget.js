@@ -1,4 +1,4 @@
-import * as math from '../../../math';
+import { Rectangle, Matrix } from '../../../math';
 import { RESOLUTION, SCALE_MODES } from '../../../const';
 import { GLFramebuffer } from 'pixi-gl-core';
 
@@ -55,7 +55,7 @@ export default class RenderTarget
          *
          * @member {PIXI.Rectangle}
          */
-        this.size = new math.Rectangle(0, 0, 1, 1);
+        this.size = new Rectangle(0, 0, 1, 1);
 
         /**
          * The current resolution / device pixel ratio
@@ -70,7 +70,7 @@ export default class RenderTarget
          *
          * @member {PIXI.Matrix}
          */
-        this.projectionMatrix = new math.Matrix();
+        this.projectionMatrix = new Matrix();
 
         /**
          * The object's transform
@@ -91,7 +91,7 @@ export default class RenderTarget
          *
          * @member {glCore.GLBuffer}
          */
-        this.defaultFrame = new math.Rectangle();
+        this.defaultFrame = new Rectangle();
         this.destinationFrame = null;
         this.sourceFrame = null;
 

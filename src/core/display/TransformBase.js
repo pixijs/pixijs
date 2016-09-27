@@ -1,4 +1,4 @@
-import * as math from '../math';
+import { Matrix } from '../math';
 
 /**
  * Generic class to deal with traditional 2D matrix transforms
@@ -18,14 +18,14 @@ export default class TransformBase
          *
          * @member {PIXI.Matrix}
          */
-        this.worldTransform = new math.Matrix();
+        this.worldTransform = new Matrix();
 
         /**
          * The local matrix transform
          *
          * @member {PIXI.Matrix}
          */
-        this.localTransform = new math.Matrix();
+        this.localTransform = new Matrix();
 
         this._worldID = 0;
     }

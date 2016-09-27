@@ -1,5 +1,5 @@
 import BaseTexture from './BaseTexture';
-import * as utils from '../utils';
+import { uid, BaseTextureCache } from '../utils';
 
 /**
  * A texture of a [playing] Video.
@@ -155,7 +155,7 @@ class VideoBaseTexture extends BaseTexture
     {
         if (this.source && this.source._pixiId)
         {
-            delete utils.BaseTextureCache[this.source._pixiId];
+            delete BaseTextureCache[this.source._pixiId];
             delete this.source._pixiId;
         }
 
@@ -174,15 +174,15 @@ class VideoBaseTexture extends BaseTexture
     {
         if (!video._pixiId)
         {
-            video._pixiId = `video_${utils.uid()}`;
+            video._pixiId = `video_${uid()}`;
         }
 
-        let baseTexture = utils.BaseTextureCache[video._pixiId];
+        let baseTexture = BaseTextureCache[video._pixiId];
 
         if (!baseTexture)
         {
             baseTexture = new VideoBaseTexture(video, scaleMode);
-            utils.BaseTextureCache[video._pixiId] = baseTexture;
+            BaseTextureCache[video._pixiId] = baseTexture;
         }
 
         return baseTexture;

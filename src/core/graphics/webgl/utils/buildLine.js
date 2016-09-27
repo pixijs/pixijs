@@ -1,5 +1,5 @@
-import * as math from '../../../math';
-import * as utils from '../../../utils';
+import { Point } from '../../../math';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a line to draw
@@ -31,8 +31,8 @@ export default function buildLine(graphicsData, webGLData)
     // }
 
     // get first and last point.. figure out the middle!
-    const firstPoint = new math.Point(points[0], points[1]);
-    let lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
+    const firstPoint = new Point(points[0], points[1]);
+    let lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
 
     // if the first point is the last point - gonna have issues :)
     if (firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
@@ -43,7 +43,7 @@ export default function buildLine(graphicsData, webGLData)
         points.pop();
         points.pop();
 
-        lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
+        lastPoint = new Point(points[points.length - 2], points[points.length - 1]);
 
         const midPointX = lastPoint.x + ((firstPoint.x - lastPoint.x) * 0.5);
         const midPointY = lastPoint.y + ((firstPoint.y - lastPoint.y) * 0.5);
@@ -62,7 +62,7 @@ export default function buildLine(graphicsData, webGLData)
     const width = graphicsData.lineWidth / 2;
 
     // sort color
-    const color = utils.hex2rgb(graphicsData.lineColor);
+    const color = hex2rgb(graphicsData.lineColor);
     const alpha = graphicsData.lineAlpha;
     const r = color[0] * alpha;
     const g = color[1] * alpha;
