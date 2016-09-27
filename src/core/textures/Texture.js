@@ -2,12 +2,13 @@ import BaseTexture from './BaseTexture';
 import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
-import math from '../math';
-import utils from '../utils';
+import * as math from '../math';
+import * as utils from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
- * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided then the whole image is used.
+ * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided
+ * then the whole image is used.
  *
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
@@ -20,14 +21,16 @@ import utils from '../utils';
  * @class
  * @extends EventEmitter
  * @memberof PIXI
- * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
- * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
- * @param [orig] {PIXI.Rectangle} The area of original texture
- * @param [trim] {PIXI.Rectangle} Trimmed rectangle of original texture
- * @param [rotate] {number} indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
  */
 class Texture extends EventEmitter
 {
+    /**
+     * @param {PIXI.BaseTexture} baseTexture - The base texture source to create the texture from
+     * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
+     * @param {PIXI.Rectangle} [orig] - The area of original texture
+     * @param {PIXI.Rectangle} [trim] - Trimmed rectangle of original texture
+     * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.GroupD8}
+     */
     constructor(baseTexture, frame, orig, trim, rotate)
     {
         super();
@@ -99,21 +102,18 @@ class Texture extends EventEmitter
          *
          * @member {PIXI.Rectangle}
          */
-        this.orig = orig || frame;//new math.Rectangle(0, 0, 1, 1);
+        this.orig = orig || frame;// new math.Rectangle(0, 0, 1, 1);
 
-        this._rotate = +(rotate || 0);
+        this._rotate = Number(rotate || 0);
 
         if (rotate === true)
         {
             // this is old texturepacker legacy, some games/libraries are passing "true" for rotated textures
             this._rotate = 2;
         }
-        else
+        else if (this._rotate % 2 !== 0)
         {
-            if (this._rotate % 2 !== 0)
-            {
-                throw 'attempt to use diamond-shaped UVs. If you are sure, set rotation manually';
-            }
+            throw new Error('attempt to use diamond-shaped UVs. If you are sure, set rotation manually');
         }
 
         if (baseTexture.hasLoaded)
@@ -140,7 +140,6 @@ class Texture extends EventEmitter
          * @protected
          */
 
-
         this._updateID = 0;
     }
 
@@ -157,6 +156,7 @@ class Texture extends EventEmitter
      * Called when the base texture is loaded
      *
      * @private
+     * @param {PIXI.BaseTexture} baseTexture - The base texture.
      */
     onBaseTextureLoaded(baseTexture)
     {
@@ -174,13 +174,13 @@ class Texture extends EventEmitter
 
         this.baseTexture.on('update', this.onBaseTextureUpdated, this);
         this.emit('update', this);
-
     }
 
     /**
      * Called when the base texture is updated
      *
      * @private
+     * @param {PIXI.BaseTexture} baseTexture - The base texture.
      */
     onBaseTextureUpdated(baseTexture)
     {
@@ -195,13 +195,12 @@ class Texture extends EventEmitter
     /**
      * Destroys this texture
      *
-     * @param [destroyBase=false] {boolean} Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
      */
     destroy(destroyBase)
     {
         if (this.baseTexture)
         {
-
             if (destroyBase)
             {
                 // delete the texture if it exists in the texture cache..
@@ -234,7 +233,7 @@ class Texture extends EventEmitter
     /**
      * Creates a new texture object that acts the same as this one.
      *
-     * @return {PIXI.Texture}
+     * @return {PIXI.Texture} The new texture
      */
     clone()
     {
@@ -263,10 +262,10 @@ class Texture extends EventEmitter
      * If the image is not in the texture cache it will be  created and loaded.
      *
      * @static
-     * @param imageUrl {string} The image url of the texture
-     * @param [crossorigin] {boolean} Whether requests should be treated as crossorigin
-     * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
-     * @param [sourceScale=(auto)] {number} Scale for the original image, used with SVG images.
+     * @param {string} imageUrl - The image url of the texture
+     * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
      * @return {PIXI.Texture} The newly created texture
      */
     static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
@@ -287,7 +286,7 @@ class Texture extends EventEmitter
      * The frame ids are created when a Texture packer file has been loaded
      *
      * @static
-     * @param frameId {string} The frame Id of the texture in the cache
+     * @param {string} frameId - The frame Id of the texture in the cache
      * @return {PIXI.Texture} The newly created texture
      */
     static fromFrame(frameId)
@@ -306,8 +305,8 @@ class Texture extends EventEmitter
      * Helper function that creates a new Texture based on the given canvas element.
      *
      * @static
-     * @param canvas {HTMLCanvasElement} The canvas element source of the texture
-     * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromCanvas(canvas, scaleMode)
@@ -319,8 +318,8 @@ class Texture extends EventEmitter
      * Helper function that creates a new Texture based on the given video element.
      *
      * @static
-     * @param video {HTMLVideoElement|string} The URL or actual element of the video
-     * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param {HTMLVideoElement|string} video - The URL or actual element of the video
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideo(video, scaleMode)
@@ -329,18 +328,16 @@ class Texture extends EventEmitter
         {
             return Texture.fromVideoUrl(video, scaleMode);
         }
-        else
-        {
-            return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
-        }
+
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
     }
 
     /**
      * Helper function that creates a new Texture based on the video url.
      *
      * @static
-     * @param videoUrl {string} URL of the video
-     * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
+     * @param {string} videoUrl - URL of the video
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideoUrl(videoUrl, scaleMode)
@@ -353,13 +350,13 @@ class Texture extends EventEmitter
      * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
      *
      * @static
-     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
      * @return {PIXI.Texture} The newly created texture
      */
     static from(source)
     {
-        //TODO auto detect cross origin..
-        //TODO pass in scale mode?
+        // TODO auto detect cross origin..
+        // TODO pass in scale mode?
         if (typeof source === 'string')
         {
             const texture = utils.TextureCache[source];
@@ -368,6 +365,7 @@ class Texture extends EventEmitter
             {
                 // check if its a video..
                 const isVideo = source.match(/\.(mp4|webm|ogg|h264|avi|mov)$/) !== null;
+
                 if (isVideo)
                 {
                     return Texture.fromVideoUrl(source);
@@ -390,20 +388,17 @@ class Texture extends EventEmitter
         {
             return new Texture(BaseTexture);
         }
-        else
-        {
-            // lets assume its a texture!
-            return source;
-        }
-    }
 
+        // lets assume its a texture!
+        return source;
+    }
 
     /**
      * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
-     * @param texture {PIXI.Texture} The Texture to add to the cache.
-     * @param id {string} The id that the texture will be stored against.
+     * @param {PIXI.Texture} texture - The Texture to add to the cache.
+     * @param {string} id - The id that the texture will be stored against.
      */
     static addTextureToCache(texture, id)
     {
@@ -414,7 +409,7 @@ class Texture extends EventEmitter
      * Remove a texture from the global utils.TextureCache.
      *
      * @static
-     * @param id {string} The id of the texture to be removed
+     * @param {string} id - The id of the texture to be removed
      * @return {PIXI.Texture} The texture that was removed
      */
     static removeTextureFromCache(id)
@@ -438,6 +433,11 @@ class Texture extends EventEmitter
         return this._frame;
     }
 
+    /**
+     * Set the frame.
+     *
+     * @param {Rectangle} frame - The new frame to set.
+     */
     set frame(frame)
     {
         this._frame = frame;
@@ -446,10 +446,10 @@ class Texture extends EventEmitter
 
         if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
         {
-            throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
+            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions ${this}`);
         }
 
-        //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+        // this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
         this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
         if (!this.trim && !this.rotate)
@@ -477,6 +477,11 @@ class Texture extends EventEmitter
         return this._rotate;
     }
 
+    /**
+     * Set the rotation
+     *
+     * @param {number} rotate - The new rotation to set.
+     */
     set rotate(rotate)
     {
         this._rotate = rotate;
@@ -515,17 +520,9 @@ class Texture extends EventEmitter
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function ()
-{
-};
-Texture.EMPTY.on = function ()
-{
-};
-Texture.EMPTY.once = function ()
-{
-};
-Texture.EMPTY.emit = function ()
-{
-};
+Texture.EMPTY.destroy = function _emptyDestroy() { /* empty */ };
+Texture.EMPTY.on = function _emptyOn() { /* empty */ };
+Texture.EMPTY.once = function _emptyOnce() { /* empty */ };
+Texture.EMPTY.emit = function _emptyEmit() { /* empty */ };
 
 export default Texture;

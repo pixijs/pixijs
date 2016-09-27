@@ -1,0 +1,21 @@
+{
+    "extends": "../.eslintrc.json",
+    "env": {
+        "mocha": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "script"
+    },
+    "globals": {
+        "expect": false,
+        "PIXI": false
+    },
+    "rules": {
+        "func-names": 0,
+        "no-var": 0,
+        "no-magic-numbers": 0,
+        "no-unused-expressions": 0
+    }
+}

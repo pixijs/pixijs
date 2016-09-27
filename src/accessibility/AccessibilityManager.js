@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
 
@@ -8,16 +8,34 @@ Object.assign(
     accessibleTarget
 );
 
+const KEY_CODE_TAB = 9;
+
+const DIV_TOUCH_SIZE = 100;
+const DIV_TOUCH_POS_X = 0;
+const DIV_TOUCH_POS_Y = 0;
+const DIV_TOUCH_ZINDEX = 2;
+
+const DIV_HOOK_SIZE = 1;
+const DIV_HOOK_POS_X = -1000;
+const DIV_HOOK_POS_Y = -1000;
+const DIV_HOOK_ZINDEX = 2;
+
 /**
- * The Accessibility manager reacreates the ability to tab and and have content read by screen readers. This is very important as it can possibly help people with disabilities access pixi content.
- * Much like interaction any DisplayObject can be made accessible. This manager will map the events as if the mouse was being used, minimizing the efferot required to implement.
+ * The Accessibility manager reacreates the ability to tab and and have content read by screen
+ * readers. This is very important as it can possibly help people with disabilities access pixi
+ * content.
+ *
+ * Much like interaction any DisplayObject can be made accessible. This manager will map the
+ * events as if the mouse was being used, minimizing the efferot required to implement.
  *
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} A reference to the current renderer
  */
-class AccessibilityManager
+export default class AccessibilityManager
 {
+    /**
+     * @param {PIXI.CanvasRenderer|PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     */
     constructor(renderer)
     {
         if ((Device.tablet || Device.phone) && !navigator.isCocoonJS)
@@ -28,12 +46,12 @@ class AccessibilityManager
         // first we create a div that will sit over the pixi element. This is where the div overlays will go.
         const div = document.createElement('div');
 
-        div.style.width = 100 + 'px';
-        div.style.height = 100 + 'px';
+        div.style.width = `${DIV_TOUCH_SIZE}px`;
+        div.style.height = `${DIV_TOUCH_SIZE}px`;
         div.style.position = 'absolute';
-        div.style.top = 0;
-        div.style.left = 0;
-        div.style.zIndex = 2;
+        div.style.top = `${DIV_TOUCH_POS_X}px`;
+        div.style.left = `${DIV_TOUCH_POS_Y}px`;
+        div.style.zIndex = DIV_TOUCH_ZINDEX;
 
         /**
          * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
@@ -102,33 +120,37 @@ class AccessibilityManager
         window.addEventListener('keydown', this._onKeyDown, false);
     }
 
+    /**
+     * Creates the touch hooks.
+     *
+     */
     createTouchHook()
     {
         const hookDiv = document.createElement('button');
-        hookDiv.style.width = 1 + 'px';
-        hookDiv.style.height = 1 + 'px';
+
+        hookDiv.style.width = `${DIV_HOOK_SIZE}px`;
+        hookDiv.style.height = `${DIV_HOOK_SIZE}px`;
         hookDiv.style.position = 'absolute';
-        hookDiv.style.top = -1000 + 'px';
-        hookDiv.style.left = -1000 + 'px';
-        hookDiv.style.zIndex = 2;
+        hookDiv.style.top = `${DIV_HOOK_POS_X}px`;
+        hookDiv.style.left = `${DIV_HOOK_POS_Y}px`;
+        hookDiv.style.zIndex = DIV_HOOK_ZINDEX;
         hookDiv.style.backgroundColor = '#FF0000';
         hookDiv.title = 'HOOK DIV';
 
         hookDiv.addEventListener('focus', () =>
         {
-
             this.isMobileAccessabillity = true;
             this.activate();
             document.body.removeChild(hookDiv);
-
         });
 
         document.body.appendChild(hookDiv);
-
     }
 
     /**
-     * Activating will cause the Accessibility layer to be shown. This is called when a user preses the tab key
+     * Activating will cause the Accessibility layer to be shown. This is called when a user
+     * preses the tab key
+     *
      * @private
      */
     activate()
@@ -152,12 +174,13 @@ class AccessibilityManager
     }
 
     /**
-     * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves the mouse
+     * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves
+     * the mouse
+     *
      * @private
      */
     deactivate()
     {
-
         if (!this.isActive || this.isMobileAccessabillity)
         {
             return;
@@ -174,13 +197,13 @@ class AccessibilityManager
         {
             this.div.parentNode.removeChild(this.div);
         }
-
     }
 
     /**
      * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
-     * @param displayObject {PIXI.Container} the DisplayObject to check.
+     *
      * @private
+     * @param {PIXI.Container} displayObject - The DisplayObject to check.
      */
     updateAccessibleObjects(displayObject)
     {
@@ -203,14 +226,13 @@ class AccessibilityManager
 
         for (let i = children.length - 1; i >= 0; i--)
         {
-
             this.updateAccessibleObjects(children[i]);
         }
     }
 
-
     /**
-     * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects
+     * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects.
+     *
      * @private
      */
     update()
@@ -229,14 +251,13 @@ class AccessibilityManager
 
         let div = this.div;
 
-        div.style.left = rect.left + 'px';
-        div.style.top = rect.top + 'px';
-        div.style.width = this.renderer.width + 'px';
-        div.style.height = this.renderer.height + 'px';
+        div.style.left = `${rect.left}px`;
+        div.style.top = `${rect.top}px`;
+        div.style.width = `${this.renderer.width}px`;
+        div.style.height = `${this.renderer.height}px`;
 
         for (let i = 0; i < this.children.length; i++)
         {
-
             const child = this.children[i];
 
             if (child.renderId !== this.renderId)
@@ -264,12 +285,11 @@ class AccessibilityManager
 
                 if (child.hitArea)
                 {
-                    div.style.left = ((wt.tx + (hitArea.x * wt.a)) * sx) + 'px';
-                    div.style.top = ((wt.ty + (hitArea.y * wt.d)) * sy) + 'px';
+                    div.style.left = `${(wt.tx + (hitArea.x * wt.a)) * sx}px`;
+                    div.style.top = `${(wt.ty + (hitArea.y * wt.d)) * sy}px`;
 
-                    div.style.width = (hitArea.width * wt.a * sx) + 'px';
-                    div.style.height = (hitArea.height * wt.d * sy) + 'px';
-
+                    div.style.width = `${hitArea.width * wt.a * sx}px`;
+                    div.style.height = `${hitArea.height * wt.d * sy}px`;
                 }
                 else
                 {
@@ -277,11 +297,11 @@ class AccessibilityManager
 
                     this.capHitArea(hitArea);
 
-                    div.style.left = (hitArea.x * sx) + 'px';
-                    div.style.top = (hitArea.y * sy) + 'px';
+                    div.style.left = `${hitArea.x * sx}px`;
+                    div.style.top = `${hitArea.y * sy}px`;
 
-                    div.style.width = (hitArea.width * sx) + 'px';
-                    div.style.height = (hitArea.height * sy) + 'px';
+                    div.style.width = `${hitArea.width * sx}px`;
+                    div.style.height = `${hitArea.height * sy}px`;
                 }
             }
         }
@@ -290,6 +310,11 @@ class AccessibilityManager
         this.renderId++;
     }
 
+    /**
+     * TODO: docs.
+     *
+     * @param {Rectangle} hitArea - TODO docs
+     */
     capHitArea(hitArea)
     {
         if (hitArea.x < 0)
@@ -317,7 +342,9 @@ class AccessibilityManager
 
     /**
      * Adds a DisplayObject to the accessibility manager
+     *
      * @private
+     * @param {DisplayObject} displayObject - The child to make accessible.
      */
     addChild(displayObject)
     {
@@ -329,19 +356,17 @@ class AccessibilityManager
         {
             div = document.createElement('button');
 
-            div.style.width = 100 + 'px';
-            div.style.height = 100 + 'px';
+            div.style.width = `${DIV_TOUCH_SIZE}px`;
+            div.style.height = `${DIV_TOUCH_SIZE}px`;
             div.style.backgroundColor = this.debug ? 'rgba(255,0,0,0.5)' : 'transparent';
             div.style.position = 'absolute';
-            div.style.zIndex = 2;
+            div.style.zIndex = DIV_TOUCH_ZINDEX;
             div.style.borderStyle = 'none';
-
 
             div.addEventListener('click', this._onClick.bind(this));
             div.addEventListener('focus', this._onFocus.bind(this));
             div.addEventListener('focusout', this._onFocusOut.bind(this));
         }
-
 
         if (displayObject.accessibleTitle)
         {
@@ -349,7 +374,7 @@ class AccessibilityManager
         }
         else if (!displayObject.accessibleTitle && !displayObject.accessibleHint)
         {
-            div.title = 'displayObject ' + this.tabIndex;
+            div.title = `displayObject ${this.tabIndex}`;
         }
 
         if (displayObject.accessibleHint)
@@ -357,47 +382,53 @@ class AccessibilityManager
             div.setAttribute('aria-label', displayObject.accessibleHint);
         }
 
-
         //
 
         displayObject._accessibleActive = true;
         displayObject._accessibleDiv = div;
         div.displayObject = displayObject;
 
-
         this.children.push(displayObject);
         this.div.appendChild(displayObject._accessibleDiv);
         displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
     }
 
-
     /**
      * Maps the div button press to pixi's InteractionManager (click)
+     *
      * @private
+     * @param {MouseEvent} e - The click event.
      */
     _onClick(e)
     {
         const interactionManager = this.renderer.plugins.interaction;
+
         interactionManager.dispatchEvent(e.target.displayObject, 'click', interactionManager.eventData);
     }
 
     /**
      * Maps the div focus events to pixis InteractionManager (mouseover)
+     *
      * @private
+     * @param {FocusEvent} e - The focus event.
      */
     _onFocus(e)
     {
         const interactionManager = this.renderer.plugins.interaction;
+
         interactionManager.dispatchEvent(e.target.displayObject, 'mouseover', interactionManager.eventData);
     }
 
     /**
      * Maps the div focus events to pixis InteractionManager (mouseout)
+     *
      * @private
+     * @param {FocusEvent} e - The focusout event.
      */
     _onFocusOut(e)
     {
         const interactionManager = this.renderer.plugins.interaction;
+
         interactionManager.dispatchEvent(e.target.displayObject, 'mouseout', interactionManager.eventData);
     }
 
@@ -405,10 +436,11 @@ class AccessibilityManager
      * Is called when a key is pressed
      *
      * @private
+     * @param {KeyboardEvent} e - The keydown event.
      */
     _onKeyDown(e)
     {
-        if (e.keyCode !== 9)
+        if (e.keyCode !== KEY_CODE_TAB)
         {
             return;
         }
@@ -426,7 +458,6 @@ class AccessibilityManager
         this.deactivate();
     }
 
-
     /**
      * Destroys the accessibility manager
      *
@@ -440,18 +471,14 @@ class AccessibilityManager
             this.children[i].div = null;
         }
 
-
         window.document.removeEventListener('mousemove', this._onMouseMove);
         window.removeEventListener('keydown', this._onKeyDown);
 
         this.pool = null;
         this.children = null;
         this.renderer = null;
-
     }
 }
 
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
-
-export default AccessibilityManager;

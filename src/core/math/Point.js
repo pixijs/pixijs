@@ -4,11 +4,13 @@
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
-class Point
+export default class Point
 {
+    /**
+     * @param {number} [x=0] - position of the point on the x axis
+     * @param {number} [y=0] - position of the point on the y axis
+     */
     constructor(x = 0, y = 0)
     {
         /**
@@ -37,7 +39,7 @@ class Point
     /**
      * Copies x and y from the given point
      *
-     * @param p {PIXI.Point}
+     * @param {PIXI.Point} p - The point to copy.
      */
     copy(p)
     {
@@ -47,7 +49,7 @@ class Point
     /**
      * Returns true if the given point is equal to this point
      *
-     * @param p {PIXI.Point}
+     * @param {PIXI.Point} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
     equals(p)
@@ -59,15 +61,13 @@ class Point
      * Sets the point to a new x and y position.
      * If y is omitted, both x and y will be set to x.
      *
-     * @param [x=0] {number} position of the point on the x axis
-     * @param [y=0] {number} position of the point on the y axis
+     * @param {number} [x=0] - position of the point on the x axis
+     * @param {number} [y=0] - position of the point on the y axis
      */
     set(x, y)
     {
         this.x = x || 0;
-        this.y = y || ( (y !== 0) ? this.x : 0 );
+        this.y = y || ((y !== 0) ? this.x : 0);
     }
 
 }
-
-export default Point;

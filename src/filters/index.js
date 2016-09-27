@@ -1,22 +1,11 @@
-import FXAAFilter from './fxaa/FXAAFilter';
-import NoiseFilter from './noise/NoiseFilter';
-import DisplacementFilter from './displacement/DisplacementFilter';
-import BlurFilter from './blur/BlurFilter';
-import BlurXFilter from './blur/BlurXFilter';
-import BlurYFilter from './blur/BlurYFilter';
-import ColorMatrixFilter from './colormatrix/ColorMatrixFilter';
-import VoidFilter from './void/VoidFilter';
-
 /**
  * @namespace PIXI.filters
  */
-export default {
-    FXAAFilter,
-    NoiseFilter,
-    DisplacementFilter,
-    BlurFilter,
-    BlurXFilter,
-    BlurYFilter,
-    ColorMatrixFilter,
-    VoidFilter
-};
+export { default as FXAAFilter } from './fxaa/FXAAFilter';
+export { default as NoiseFilter } from './noise/NoiseFilter';
+export { default as DisplacementFilter } from './displacement/DisplacementFilter';
+export { default as BlurFilter } from './blur/BlurFilter';
+export { default as BlurXFilter } from './blur/BlurXFilter';
+export { default as BlurYFilter } from './blur/BlurYFilter';
+export { default as ColorMatrixFilter } from './colormatrix/ColorMatrixFilter';
+export { default as VoidFilter } from './void/VoidFilter';

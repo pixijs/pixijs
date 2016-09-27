@@ -1,20 +1,10 @@
-import MovieClip from './MovieClip';
-import TilingSprite from './TilingSprite';
-import BitmapText from './BitmapText';
-
-import cacheAsBitmap from './cacheAsBitmap';
-import getChildByName from './getChildByName';
-import getGlobalPosition from './getGlobalPosition';
-
-
 /**
  * @namespace PIXI.extras
  */
-export default {
-    MovieClip,
-    TilingSprite,
-    BitmapText,
-    cacheAsBitmap,
-    getChildByName,
-    getGlobalPosition
-};
+export { default as MovieClip } from './MovieClip';
+export { default as TilingSprite } from './TilingSprite';
+export { default as BitmapText } from './BitmapText';
+
+export { default as cacheAsBitmap } from './cacheAsBitmap';
+export { default as getChildByName } from './getChildByName';
+export { default as getGlobalPosition } from './getGlobalPosition';

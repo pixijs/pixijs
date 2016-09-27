@@ -1,11 +1,13 @@
+'use strict';
+
 describe('PIXI.Container', function ()
 {
     describe('parent', function ()
     {
         it('should be present when adding children to Container', function ()
         {
-            var container = new PIXI.Container(),
-                child = new PIXI.DisplayObject();
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
 
             expect(container.children.length).to.be.equals(0);
             container.addChild(child);
@@ -18,10 +20,10 @@ describe('PIXI.Container', function ()
     {
         it('should trigger "added" and "removed" events on it\'s children', function ()
         {
-            var container = new PIXI.Container(),
-                child = new PIXI.DisplayObject(),
-                triggeredAdded = false,
-                triggeredRemoved = false;
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+            var triggeredAdded = false;
+            var triggeredRemoved = false;
 
             child.on('added', function (to)
             {
@@ -44,6 +46,5 @@ describe('PIXI.Container', function ()
             container.removeChild(child);
             expect(triggeredRemoved).to.be.true;
         });
-
     });
 });

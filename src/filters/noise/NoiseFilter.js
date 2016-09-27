@@ -1,5 +1,5 @@
-import core from '../../core';
-const glslify = require('glslify');
+import * as core from '../../core';
+const glslify = require('glslify'); // eslint-disable-line no-undef
 
 /**
  * @author Vico @vicocotea
@@ -13,8 +13,11 @@ const glslify = require('glslify');
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-class NoiseFilter extends core.Filter
+export default class NoiseFilter extends core.Filter
 {
+    /**
+     *
+     */
     constructor()
     {
         super(
@@ -38,10 +41,14 @@ class NoiseFilter extends core.Filter
     {
         return this.uniforms.noise;
     }
+
+    /**
+     * Sets the amount of noise to apply.
+     *
+     * @param {number} value - The value to set to.
+     */
     set noise(value)
     {
         this.uniforms.noise = value;
     }
 }
-
-export default NoiseFilter;

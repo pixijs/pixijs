@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 import ObservablePoint from '../core/math/ObservablePoint';
 
 /**
@@ -18,18 +18,20 @@ import ObservablePoint from '../core/math/ObservablePoint';
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.extras
- * @param text {string} The copy that you would like the text to display
- * @param style {object} The style parameters
- * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
- *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
- * @param [style.font.name] {string} The bitmap font id
- * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
- *      single line text
- * @param [style.tint=0xFFFFFF] {number} The tint color
  */
-class BitmapText extends core.Container
+export default class BitmapText extends core.Container
 {
+    /**
+     * @param {string} text - The copy that you would like the text to display
+     * @param {object} style - The style parameters
+     * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
+     *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
+     * @param {string} [style.font.name] - The bitmap font id
+     * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
+     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
+     *      single line text
+     * @param {number} [style.tint=0xFFFFFF] - The tint color
+     */
     constructor(text, style = {})
     {
         super();
@@ -70,7 +72,7 @@ class BitmapText extends core.Container
             tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
             align: style.align || 'left',
             name: null,
-            size: 0
+            size: 0,
         };
 
         /**
@@ -90,7 +92,8 @@ class BitmapText extends core.Container
         this._text = text;
 
         /**
-         * The max width of this bitmap text in pixels. If the text provided is longer than the value provided, line breaks will be automatically inserted in the last whitespace.
+         * The max width of this bitmap text in pixels. If the text provided is longer than the
+         * value provided, line breaks will be automatically inserted in the last whitespace.
          * Disable by setting value to 0
          *
          * @member {number}
@@ -98,7 +101,8 @@ class BitmapText extends core.Container
         this.maxWidth = 0;
 
         /**
-         * The max line height. This is useful when trying to use the total height of the Text, ie: when trying to vertically align.
+         * The max line height. This is useful when trying to use the total height of the Text,
+         * ie: when trying to vertically align.
          *
          * @member {number}
          */
@@ -110,7 +114,7 @@ class BitmapText extends core.Container
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new ObservablePoint(this.makeDirty, this, 0, 0);
+        this._anchor = new ObservablePoint(() => { this.dirty = true; }, this, 0, 0);
 
         /**
          * The dirty state of this object.
@@ -197,7 +201,7 @@ class BitmapText extends core.Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)
+                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
             });
             lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
             pos.x += charData.xAdvance;
@@ -291,10 +295,10 @@ class BitmapText extends core.Container
      *
      * @return {PIXI.Rectangle} The rectangular bounding area
      */
-
     getLocalBounds()
     {
         this.validate();
+
         return super.getLocalBounds();
     }
 
@@ -312,11 +316,6 @@ class BitmapText extends core.Container
         }
     }
 
-    makeDirty()
-    {
-        this.dirty = true;
-    }
-
     /**
      * The tint of the BitmapText object
      *
@@ -328,6 +327,11 @@ class BitmapText extends core.Container
         return this._font.tint;
     }
 
+    /**
+     * Sets the tint.
+     *
+     * @param {number} value - The value to set to.
+     */
     set tint(value)
     {
         this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
@@ -347,6 +351,11 @@ class BitmapText extends core.Container
         return this._font.align;
     }
 
+    /**
+     * Sets the alignment
+     *
+     * @param {string} value - The value to set to.
+     */
     set align(value)
     {
         this._font.align = value || 'left';
@@ -368,6 +377,11 @@ class BitmapText extends core.Container
         return this._anchor;
     }
 
+    /**
+     * Sets the anchor.
+     *
+     * @param {PIXI.Point|number} value - The value to set to.
+     */
     set anchor(value)
     {
         if (typeof value === 'number')
@@ -391,6 +405,11 @@ class BitmapText extends core.Container
         return this._font;
     }
 
+    /**
+     * Sets the font.
+     *
+     * @param {string|object} value - The value to set to.
+     */
     set font(value)
     {
         if (!value)
@@ -425,6 +444,11 @@ class BitmapText extends core.Container
         return this._text;
     }
 
+    /**
+     * Sets the text.
+     *
+     * @param {string} value - The value to set to.
+     */
     set text(value)
     {
         value = value.toString() || ' ';
@@ -436,7 +460,5 @@ class BitmapText extends core.Container
         this.dirty = true;
     }
 }
-
-export default BitmapText;
 
 BitmapText.fonts = {};

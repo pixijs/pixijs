@@ -1,5 +1,4 @@
-import math from '../math';
-const Rectangle = math.Rectangle;
+import { Rectangle } from '../math';
 
 /**
  * 'Builder' pattern for bounds rectangles
@@ -9,8 +8,11 @@ const Rectangle = math.Rectangle;
  * @class
  * @memberof PIXI
  */
-class Bounds
+export default class Bounds
 {
+    /**
+     *
+     */
     constructor()
     {
         /**
@@ -40,11 +42,20 @@ class Bounds
         this.rect = null;
     }
 
+    /**
+     * Checks if bounds are empty.
+     *
+     * @return {boolean} True if empty.
+     */
     isEmpty()
     {
         return this.minX > this.maxX || this.minY > this.maxY;
     }
 
+    /**
+     * Clears the bounds and resets.
+     *
+     */
     clear()
     {
         this.updateID++;
@@ -58,8 +69,9 @@ class Bounds
     /**
      * Can return Rectangle.EMPTY constant, either construct new rectangle, either use your rectangle
      * It is not guaranteed that it will return tempRect
-     * @param rect {PIXI.Rectangle} temporary object will be used if AABB is not empty
-     * @returns {PIXI.Rectangle}
+     *
+     * @param {PIXI.Rectangle} rect - temporary object will be used if AABB is not empty
+     * @returns {PIXI.Rectangle} A rectangle of the bounds
      */
     getRectangle(rect)
     {
@@ -79,8 +91,9 @@ class Bounds
     }
 
     /**
-     * This function should be inlined when its possible
-     * @param point {PIXI.Point}
+     * This function should be inlined when its possible.
+     *
+     * @param {PIXI.Point} point - The point to add.
      */
     addPoint(point)
     {
@@ -92,15 +105,19 @@ class Bounds
 
     /**
      * Adds a quad, not transformed
-     * @param vertices {Float32Array}
-     * @returns {PIXI.Bounds}
+     *
+     * @param {Float32Array} vertices - The verts to add.
      */
     addQuad(vertices)
     {
-        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        let minX = this.minX;
+        let minY = this.minY;
+        let maxX = this.maxX;
+        let maxY = this.maxY;
 
         let x = vertices[0];
         let y = vertices[1];
+
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
@@ -134,42 +151,53 @@ class Bounds
     }
 
     /**
-     * Adds sprite frame, transformed
-     * @param transform {PIXI.TransformBase}
-     * @param x0 {number}
-     * @param y0 {number}
-     * @param x1 {number}
-     * @param y1 {number}
+     * Adds sprite frame, transformed.
+     *
+     * @param {PIXI.TransformBase} transform - TODO
+     * @param {number} x0 - TODO
+     * @param {number} y0 - TODO
+     * @param {number} x1 - TODO
+     * @param {number} y1 - TODO
      */
     addFrame(transform, x0, y0, x1, y1)
     {
         const matrix = transform.worldTransform;
-        const a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
-        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        const a = matrix.a;
+        const b = matrix.b;
+        const c = matrix.c;
+        const d = matrix.d;
+        const tx = matrix.tx;
+        const ty = matrix.ty;
 
-        let x = a * x0 + c * y0 + tx;
-        let y = b * x0 + d * y0 + ty;
+        let minX = this.minX;
+        let minY = this.minY;
+        let maxX = this.maxX;
+        let maxY = this.maxY;
+
+        let x = (a * x0) + (c * y0) + tx;
+        let y = (b * x0) + (d * y0) + ty;
+
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
         maxY = y > maxY ? y : maxY;
 
-        x = a * x1 + c * y0 + tx;
-        y = b * x1 + d * y0 + ty;
+        x = (a * x1) + (c * y0) + tx;
+        y = (b * x1) + (d * y0) + ty;
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
         maxY = y > maxY ? y : maxY;
 
-        x = a * x0 + c * y1 + tx;
-        y = b * x0 + d * y1 + ty;
+        x = (a * x0) + (c * y1) + tx;
+        y = (b * x0) + (d * y1) + ty;
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
         maxY = y > maxY ? y : maxY;
 
-        x = a * x1 + c * y1 + tx;
-        y = b * x1 + d * y1 + ty;
+        x = (a * x1) + (c * y1) + tx;
+        y = (b * x1) + (d * y1) + ty;
         minX = x < minX ? x : minX;
         minY = y < minY ? y : minY;
         maxX = x > maxX ? x : maxX;
@@ -182,21 +210,32 @@ class Bounds
     }
 
     /**
-     * add an array of vertices
-     * @param transform {PIXI.TransformBase}
-     * @param vertices {Float32Array}
-     * @param beginOffset {number}
-     * @param endOffset {number}
+     * Add an array of vertices
+     *
+     * @param {PIXI.TransformBase} transform - TODO
+     * @param {Float32Array} vertices - TODO
+     * @param {number} beginOffset - TODO
+     * @param {number} endOffset - TODO
      */
     addVertices(transform, vertices, beginOffset, endOffset)
     {
         const matrix = transform.worldTransform;
-        const a = matrix.a, b = matrix.b, c = matrix.c, d = matrix.d, tx = matrix.tx, ty = matrix.ty;
-        let minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        const a = matrix.a;
+        const b = matrix.b;
+        const c = matrix.c;
+        const d = matrix.d;
+        const tx = matrix.tx;
+        const ty = matrix.ty;
+
+        let minX = this.minX;
+        let minY = this.minY;
+        let maxX = this.maxX;
+        let maxY = this.maxY;
 
         for (let i = beginOffset; i < endOffset; i += 2)
         {
-            const rawX = vertices[i], rawY = vertices[i + 1];
+            const rawX = vertices[i];
+            const rawY = vertices[i + 1];
             const x = (a * rawX) + (c * rawY) + tx;
             const y = (d * rawY) + (b * rawX) + ty;
 
@@ -213,12 +252,16 @@ class Bounds
     }
 
     /**
-     * adds other Bounds
-     * @param bounds {PIXI.Bounds}
+     * Adds other Bounds
+     *
+     * @param {PIXI.Bounds} bounds - TODO
      */
     addBounds(bounds)
     {
-        const minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+        const minX = this.minX;
+        const minY = this.minY;
+        const maxX = this.maxX;
+        const maxY = this.maxY;
 
         this.minX = bounds.minX < minX ? bounds.minX : minX;
         this.minY = bounds.minY < minY ? bounds.minY : minY;
@@ -227,9 +270,10 @@ class Bounds
     }
 
     /**
-     * adds other Bounds, masked with Bounds
-     * @param bounds {PIXI.Bounds}
-     * @param mask {PIXI.Bounds}
+     * Adds other Bounds, masked with Bounds
+     *
+     * @param {PIXI.Bounds} bounds - TODO
+     * @param {PIXI.Bounds} mask - TODO
      */
     addBoundsMask(bounds, mask)
     {
@@ -237,9 +281,14 @@ class Bounds
         const _minY = bounds.minY > mask.minY ? bounds.minY : mask.minY;
         const _maxX = bounds.maxX < mask.maxX ? bounds.maxX : mask.maxX;
         const _maxY = bounds.maxY < mask.maxY ? bounds.maxY : mask.maxY;
+
         if (_minX <= _maxX && _minY <= _maxY)
         {
-            const minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+            const minX = this.minX;
+            const minY = this.minY;
+            const maxX = this.maxX;
+            const maxY = this.maxY;
+
             this.minX = _minX < minX ? _minX : minX;
             this.minY = _minY < minY ? _minY : minY;
             this.maxX = _maxX > maxX ? _maxX : maxX;
@@ -248,19 +297,25 @@ class Bounds
     }
 
     /**
-      * adds other Bounds, masked with Rectangle
-      * @param bounds {PIXI.Bounds}
-      * @param area {PIXI.Rectangle}
-      */
+     * Adds other Bounds, masked with Rectangle
+     *
+     * @param {PIXI.Bounds} bounds - TODO
+     * @param {PIXI.Rectangle} area - TODO
+     */
     addBoundsArea(bounds, area)
     {
         const _minX = bounds.minX > area.x ? bounds.minX : area.x;
         const _minY = bounds.minY > area.y ? bounds.minY : area.y;
         const _maxX = bounds.maxX < area.x + area.width ? bounds.maxX : (area.x + area.width);
         const _maxY = bounds.maxY < area.y + area.height ? bounds.maxY : (area.y + area.height);
+
         if (_minX <= _maxX && _minY <= _maxY)
         {
-            const minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
+            const minX = this.minX;
+            const minY = this.minY;
+            const maxX = this.maxX;
+            const maxY = this.maxY;
+
             this.minX = _minX < minX ? _minX : minX;
             this.minY = _minY < minY ? _minY : minY;
             this.maxX = _maxX > maxX ? _maxX : maxX;
@@ -268,5 +323,3 @@ class Bounds
         }
     }
 }
-
-export default Bounds;

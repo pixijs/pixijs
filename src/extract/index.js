@@ -1,7 +1,2 @@
-import webGL from './webgl/WebGLExtract';
-import canvas from './canvas/CanvasExtract';
-
-export default {
-    webGL,
-    canvas
-};
+export { default as webgl } from './webgl/WebGLExtract';
+export { default as canvas } from './canvas/CanvasExtract';

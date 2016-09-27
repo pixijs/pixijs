@@ -1,12 +1,13 @@
 import CanvasRenderer from '../../renderers/canvas/CanvasRenderer';
-import CONST from '../../const';
+import { SHAPES } from '../../const';
 
 /**
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
  * for creating the original pixi version!
- * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
+ * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they
+ * now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasGraphicsRenderer.java
@@ -19,20 +20,22 @@ import CONST from '../../const';
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {PIXI.SystemRenderer} The current PIXI renderer.
  */
-class CanvasGraphicsRenderer
+export default class CanvasGraphicsRenderer
 {
+    /**
+     * @param {PIXI.CanvasRenderer} renderer - The current PIXI renderer.
+     */
     constructor(renderer)
     {
         this.renderer = renderer;
     }
 
-    /*
+    /**
      * Renders a Graphics object to a canvas.
      *
-     * @param graphics {PIXI.Graphics} the actual graphics object to render
-     * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
+     * @param {PIXI.Graphics} graphics - the actual graphics object to render
+     * @param {CanvasRenderingContext2D} context - the 2d drawing method of the canvas
      */
     render(graphics)
     {
@@ -57,7 +60,6 @@ class CanvasGraphicsRenderer
             transform.ty * resolution
         );
 
-
         if (graphics.dirty)
         {
             this.updateGraphicsTint(graphics);
@@ -76,7 +78,7 @@ class CanvasGraphicsRenderer
 
             context.lineWidth = data.lineWidth;
 
-            if (data.type === CONST.SHAPES.POLY)
+            if (data.type === SHAPES.POLY)
             {
                 context.beginPath();
 
@@ -84,80 +86,76 @@ class CanvasGraphicsRenderer
 
                 for (let j = 0; j < data.holes.length; j++)
                 {
-                    const hole = data.holes[j];
-                    this.renderPolygon(hole.points, true, context);
+                    this.renderPolygon(data.holes[j].points, true, context);
                 }
-
 
                 if (data.fill)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
                 if (data.lineWidth)
                 {
                     context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
-            else if (data.type === CONST.SHAPES.RECT)
+            else if (data.type === SHAPES.RECT)
             {
-
                 if (data.fillColor || data.fillColor === 0)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fillRect(shape.x, shape.y, shape.width, shape.height);
-
                 }
                 if (data.lineWidth)
                 {
                     context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.strokeRect(shape.x, shape.y, shape.width, shape.height);
                 }
             }
-            else if (data.type === CONST.SHAPES.CIRC)
+            else if (data.type === SHAPES.CIRC)
             {
                 // TODO - need to be Undefined!
                 context.beginPath();
-                context.arc(shape.x, shape.y, shape.radius,0,2*Math.PI);
+                context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
                 context.closePath();
 
                 if (data.fill)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
                 if (data.lineWidth)
                 {
                     context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
-            else if (data.type === CONST.SHAPES.ELIP)
+            else if (data.type === SHAPES.ELIP)
             {
                 // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
                 const w = shape.width * 2;
                 const h = shape.height * 2;
 
-                const x = shape.x - w/2;
-                const y = shape.y - h/2;
+                const x = shape.x - (w / 2);
+                const y = shape.y - (h / 2);
 
                 context.beginPath();
 
-                const kappa = 0.5522848,
-                    ox = (w / 2) * kappa, // control point offset horizontal
-                    oy = (h / 2) * kappa, // control point offset vertical
-                    xe = x + w,           // x-end
-                    ye = y + h,           // y-end
-                    xm = x + w / 2,       // x-middle
-                    ym = y + h / 2;       // y-middle
+                const kappa = 0.5522848;
+                const ox = (w / 2) * kappa; // control point offset horizontal
+                const oy = (h / 2) * kappa; // control point offset vertical
+                const xe = x + w;           // x-end
+                const ye = y + h;           // y-end
+                const xm = x + (w / 2);       // x-middle
+                const ym = y + (h / 2);       // y-middle
 
                 context.moveTo(x, ym);
                 context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -170,17 +168,17 @@ class CanvasGraphicsRenderer
                 if (data.fill)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
                 }
                 if (data.lineWidth)
                 {
                     context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
-            else if (data.type === CONST.SHAPES.RREC)
+            else if (data.type === SHAPES.RREC)
             {
                 const rx = shape.x;
                 const ry = shape.y;
@@ -189,6 +187,7 @@ class CanvasGraphicsRenderer
                 let radius = shape.radius;
 
                 const maxRadius = Math.min(width, height) / 2 | 0;
+
                 radius = radius > maxRadius ? maxRadius : radius;
 
                 context.beginPath();
@@ -206,36 +205,35 @@ class CanvasGraphicsRenderer
                 if (data.fillColor || data.fillColor === 0)
                 {
                     context.globalAlpha = data.fillAlpha * worldAlpha;
-                    context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
+                    context.fillStyle = `#${(`00000${(fillColor | 0).toString(16)}`).substr(-6)}`;
                     context.fill();
-
                 }
+
                 if (data.lineWidth)
                 {
                     context.globalAlpha = data.lineAlpha * worldAlpha;
-                    context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
+                    context.strokeStyle = `#${(`00000${(lineColor | 0).toString(16)}`).substr(-6)}`;
                     context.stroke();
                 }
             }
         }
     }
 
-    /*
+    /**
      * Updates the tint of a graphics object
      *
      * @private
-     * @param graphics {PIXI.Graphics} the graphics that will have its tint updated
-     *
+     * @param {PIXI.Graphics} graphics - the graphics that will have its tint updated
      */
     updateGraphicsTint(graphics)
     {
         graphics._prevTint = graphics.tint;
 
-        const tintR = (graphics.tint >> 16 & 0xFF) / 255;
-        const tintG = (graphics.tint >> 8 & 0xFF) / 255;
-        const tintB = (graphics.tint & 0xFF)/ 255;
+        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
+        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
+        const tintB = (graphics.tint & 0xFF) / 255;
 
-        for (let i = 0; i < graphics.graphicsData.length; i++)
+        for (let i = 0; i < graphics.graphicsData.length; ++i)
         {
             const data = graphics.graphicsData[i];
 
@@ -243,18 +241,34 @@ class CanvasGraphicsRenderer
             const lineColor = data.lineColor | 0;
 
             // super inline cos im an optimization NAZI :)
-            data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
-            data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+            data._fillTint = (
+                (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                + (((fillColor & 0xFF) / 255) * tintB * 255)
+            );
+
+            data._lineTint = (
+                (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
+                + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
+                + (((lineColor & 0xFF) / 255) * tintB * 255)
+            );
         }
     }
 
+    /**
+     * Renders a polygon.
+     *
+     * @param {PIXI.Point[]} points - The points to render
+     * @param {boolean} close - Should the polygon be closed
+     * @param {CanvasRenderingContext2D} context - The rendering context to use
+     */
     renderPolygon(points, close, context)
     {
         context.moveTo(points[0], points[1]);
 
-        for (let j=1; j < points.length/2; j++)
+        for (let j = 1; j < points.length / 2; ++j)
         {
-            context.lineTo(points[j * 2], points[j * 2 + 1]);
+            context.lineTo(points[j * 2], points[(j * 2) + 1]);
         }
 
         if (close)
@@ -263,16 +277,14 @@ class CanvasGraphicsRenderer
         }
     }
 
-    /*
+    /**
      * destroy graphics object
      *
      */
     destroy()
     {
-      this.renderer = null;
+        this.renderer = null;
     }
 }
 
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-
-export default CanvasGraphicsRenderer;

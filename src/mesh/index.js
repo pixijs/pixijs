@@ -1,16 +1,8 @@
-import Mesh from './Mesh';
-import Plane from './Plane';
-import NineSlicePlane from './NineSlicePlane';
-import Rope from './Rope';
-import MeshShader from './webgl/MeshShader';
-
 /**
  * @namespace PIXI.mesh
  */
-export default {
-    Mesh,
-    Plane,
-    NineSlicePlane,
-    Rope,
-    MeshShader
-};
+export { default as Mesh } from './Mesh';
+export { default as Plane } from './Plane';
+export { default as NineSlicePlane } from './NineSlicePlane';
+export { default as Rope } from './Rope';
+export { default as MeshShader } from './webgl/MeshShader';

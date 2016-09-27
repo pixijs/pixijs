@@ -1,14 +1,16 @@
 import Shader from '../../core/Shader';
-const glslify = require('glslify');
+const glslify = require('glslify'); // eslint-disable-line no-undef
 
 /**
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI.mesh
- * @param gl {PIXI.Shader} The WebGL shader manager this shader works for.
  */
-class TilingShader extends Shader
+export default class TilingShader extends Shader
 {
+    /**
+     * @param {WebGLRenderingContext} gl - The WebGL rendering context.
+     */
     constructor(gl)
     {
         super(
@@ -18,5 +20,3 @@ class TilingShader extends Shader
         );
     }
 }
-
-export default TilingShader;

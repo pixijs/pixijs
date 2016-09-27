@@ -43,12 +43,10 @@ import Ticker from './Ticker';
  * @memberof PIXI.ticker
  */
 const shared = new Ticker();
+
 shared.autoStart = true;
 
 /**
  * @namespace PIXI.ticker
  */
-export default {
-    shared,
-    Ticker
-};
+export { shared, Ticker };

@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 import glCore from 'pixi-gl-core';
 import Shader from './webgl/MeshShader';
 
@@ -10,13 +10,16 @@ const tempPolygon = new core.Polygon();
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.mesh
- * @param texture {PIXI.Texture} The texture to use
- * @param [vertices] {Float32Array} if you want to specify the vertices
- * @param [uvs] {Float32Array} if you want to specify the uvs
- * @param [indices] {Uint16Array} if you want to specify the indices
- * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
-class Mesh extends core.Container {
+export default class Mesh extends core.Container
+{
+    /**
+     * @param {PIXI.Texture} texture - The texture to use
+     * @param {Float32Array} [vertices] - if you want to specify the vertices
+     * @param {Float32Array} [uvs] - if you want to specify the uvs
+     * @param {Uint16Array} [indices] - if you want to specify the indices
+     * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
+     */
     constructor(texture, vertices, uvs, indices, drawMode)
     {
         super();
@@ -64,7 +67,8 @@ class Mesh extends core.Container {
         this.indexDirty = 0;
 
         /**
-         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
+         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
+         * any blend mode.
          *
          * @member {number}
          * @default PIXI.BLEND_MODES.NORMAL
@@ -73,7 +77,8 @@ class Mesh extends core.Container {
         this.blendMode = core.BLEND_MODES.NORMAL;
 
         /**
-         * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
+         * Triangles in canvas mode are automatically antialiased, use this value to force triangles
+         * to overlap a bit with each other.
          *
          * @member {number}
          */
@@ -97,9 +102,9 @@ class Mesh extends core.Container {
          */
         this.shader = null;
 
-
         /**
-         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any tint effect.
+         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
+         * tint effect.
          *
          * @member {number}
          * @memberof PIXI.mesh.Mesh#
@@ -112,8 +117,8 @@ class Mesh extends core.Container {
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param renderer {PIXI.WebGLRenderer} a reference to the WebGL renderer
      * @private
+     * @param {PIXI.WebGLRenderer} renderer - a reference to the WebGL renderer
      */
     _renderWebGL(renderer)
     {
@@ -134,7 +139,7 @@ class Mesh extends core.Container {
                 // build the vao object that will render..
                 vao: new glCore.VertexArrayObject(gl),
                 dirty: this.dirty,
-                indexDirty: this.indexDirty
+                indexDirty: this.indexDirty,
             };
 
             // build the vao object that will render..
@@ -144,15 +149,12 @@ class Mesh extends core.Container {
                 .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
             this._glDatas[renderer.CONTEXT_UID] = glData;
-
-
         }
 
         if (this.dirty !== glData.dirty)
         {
             glData.dirty = this.dirty;
             glData.uvBuffer.upload();
-
         }
 
         if (this.indexDirty !== glData.indexDirty)
@@ -181,8 +183,8 @@ class Mesh extends core.Container {
     /**
      * Renders the object using the Canvas renderer
      *
-     * @param renderer {PIXI.CanvasRenderer}
      * @private
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
      */
     _renderCanvas(renderer)
     {
@@ -193,11 +195,25 @@ class Mesh extends core.Container {
 
         if (renderer.roundPixels)
         {
-            context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
+            context.setTransform(
+                transform.a * res,
+                transform.b * res,
+                transform.c * res,
+                transform.d * res,
+                (transform.tx * res) | 0,
+                (transform.ty * res) | 0
+            );
         }
         else
         {
-            context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
+            context.setTransform(
+                transform.a * res,
+                transform.b * res,
+                transform.c * res,
+                transform.d * res,
+                transform.tx * res,
+                transform.ty * res
+            );
         }
 
         if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
@@ -213,22 +229,23 @@ class Mesh extends core.Container {
     /**
      * Draws the object in Triangle Mesh mode using canvas
      *
-     * @param context {CanvasRenderingContext2D} the current drawing context
      * @private
+     * @param {CanvasRenderingContext2D} context - The current drawing context
      */
     _renderCanvasTriangleMesh(context)
     {
         // draw triangles!!
         const vertices = this.vertices;
         const uvs = this.uvs;
-
         const length = vertices.length / 2;
+
         // this.count++;
 
         for (let i = 0; i < length - 2; i++)
         {
             // draw some triangles!
             const index = i * 2;
+
             this._renderCanvasDrawTriangle(context, vertices, uvs, index, (index + 2), (index + 4));
         }
     }
@@ -236,8 +253,8 @@ class Mesh extends core.Container {
     /**
      * Draws the object in triangle mode using canvas
      *
-     * @param context {CanvasRenderingContext2D} the current drawing context
      * @private
+     * @param {CanvasRenderingContext2D} context - the current drawing context
      */
     _renderCanvasTriangles(context)
     {
@@ -245,14 +262,16 @@ class Mesh extends core.Container {
         const vertices = this.vertices;
         const uvs = this.uvs;
         const indices = this.indices;
-
         const length = indices.length;
         // this.count++;
 
         for (let i = 0; i < length; i += 3)
         {
             // draw some triangles!
-            const index0 = indices[i] * 2, index1 = indices[i + 1] * 2, index2 = indices[i + 2] * 2;
+            const index0 = indices[i] * 2;
+            const index1 = indices[i + 1] * 2;
+            const index2 = indices[i + 2] * 2;
+
             this._renderCanvasDrawTriangle(context, vertices, uvs, index0, index1, index2);
         }
     }
@@ -260,13 +279,13 @@ class Mesh extends core.Container {
     /**
      * Draws one of the triangles that form this Mesh
      *
-     * @param context {CanvasRenderingContext2D} the current drawing context
-     * @param vertices {Float32Array} a reference to the vertices of the Mesh
-     * @param uvs {Float32Array} a reference to the uvs of the Mesh
-     * @param index0 {number} the index of the first vertex
-     * @param index1 {number} the index of the second vertex
-     * @param index2 {number} the index of the third vertex
      * @private
+     * @param {CanvasRenderingContext2D} context - the current drawing context
+     * @param {Float32Array} vertices - a reference to the vertices of the Mesh
+     * @param {Float32Array} uvs - a reference to the uvs of the Mesh
+     * @param {number} index0 - the index of the first vertex
+     * @param {number} index1 - the index of the second vertex
+     * @param {number} index2 - the index of the third vertex
      */
     _renderCanvasDrawTriangle(context, vertices, uvs, index0, index1, index2)
     {
@@ -275,11 +294,19 @@ class Mesh extends core.Container {
         const textureWidth = base.width;
         const textureHeight = base.height;
 
-        let x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
-        let y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
+        const u0 = uvs[index0] * base.width;
+        const u1 = uvs[index1] * base.width;
+        const u2 = uvs[index2] * base.width;
+        const v0 = uvs[index0 + 1] * base.height;
+        const v1 = uvs[index1 + 1] * base.height;
+        const v2 = uvs[index2 + 1] * base.height;
 
-        const u0 = uvs[index0] * base.width, u1 = uvs[index1] * base.width, u2 = uvs[index2] * base.width;
-        const v0 = uvs[index0 + 1] * base.height, v1 = uvs[index1 + 1] * base.height, v2 = uvs[index2 + 1] * base.height;
+        let x0 = vertices[index0];
+        let x1 = vertices[index1];
+        let x2 = vertices[index2];
+        let y0 = vertices[index0 + 1];
+        let y1 = vertices[index1 + 1];
+        let y2 = vertices[index2 + 1];
 
         if (this.canvasPadding > 0)
         {
@@ -291,30 +318,30 @@ class Mesh extends core.Container {
             let normX = x0 - centerX;
             let normY = y0 - centerY;
 
-            let dist = Math.sqrt(normX * normX + normY * normY);
-            x0 = centerX + (normX / dist) * (dist + paddingX);
-            y0 = centerY + (normY / dist) * (dist + paddingY);
+            let dist = Math.sqrt((normX * normX) + (normY * normY));
+
+            x0 = centerX + ((normX / dist) * (dist + paddingX));
+            y0 = centerY + ((normY / dist) * (dist + paddingY));
 
             //
 
             normX = x1 - centerX;
             normY = y1 - centerY;
 
-            dist = Math.sqrt(normX * normX + normY * normY);
-            x1 = centerX + (normX / dist) * (dist + paddingX);
-            y1 = centerY + (normY / dist) * (dist + paddingY);
+            dist = Math.sqrt((normX * normX) + (normY * normY));
+            x1 = centerX + ((normX / dist) * (dist + paddingX));
+            y1 = centerY + ((normY / dist) * (dist + paddingY));
 
             normX = x2 - centerX;
             normY = y2 - centerY;
 
-            dist = Math.sqrt(normX * normX + normY * normY);
-            x2 = centerX + (normX / dist) * (dist + paddingX);
-            y2 = centerY + (normY / dist) * (dist + paddingY);
+            dist = Math.sqrt((normX * normX) + (normY * normY));
+            x2 = centerX + ((normX / dist) * (dist + paddingX));
+            y2 = centerY + ((normY / dist) * (dist + paddingY));
         }
 
         context.save();
         context.beginPath();
-
 
         context.moveTo(x0, y0);
         context.lineTo(x1, y1);
@@ -333,37 +360,59 @@ class Mesh extends core.Container {
         const deltaE = (u0 * y1) + (y0 * u2) + (u1 * y2) - (y1 * u2) - (y0 * u1) - (u0 * y2);
         const deltaF = (u0 * v1 * y2) + (v0 * y1 * u2) + (y0 * u1 * v2) - (y0 * v1 * u2) - (v0 * u1 * y2) - (u0 * y1 * v2);
 
-        context.transform(deltaA / delta, deltaD / delta,
-            deltaB / delta, deltaE / delta,
-            deltaC / delta, deltaF / delta);
+        context.transform(
+            deltaA / delta,
+            deltaD / delta,
+            deltaB / delta,
+            deltaE / delta,
+            deltaC / delta,
+            deltaF / delta
+        );
 
-        context.drawImage(textureSource, 0, 0, textureWidth * base.resolution, textureHeight * base.resolution, 0, 0, textureWidth, textureHeight);
+        context.drawImage(
+            textureSource,
+            0,
+            0,
+            textureWidth * base.resolution,
+            textureHeight * base.resolution,
+            0,
+            0,
+            textureWidth,
+            textureHeight
+        );
+
         context.restore();
     }
-
 
     /**
      * Renders a flat Mesh
      *
-     * @param Mesh {PIXI.mesh.Mesh} The Mesh to render
      * @private
+     * @param {PIXI.mesh.Mesh} mesh - The Mesh to render
      */
-    renderMeshFlat(Mesh)
+    renderMeshFlat(mesh)
     {
         const context = this.context;
-        const vertices = Mesh.vertices;
-
+        const vertices = mesh.vertices;
         const length = vertices.length / 2;
+
         // this.count++;
 
         context.beginPath();
-        for (let i = 1; i < length - 2; i++)
+
+        for (let i = 1; i < length - 2; ++i)
         {
             // draw some triangles!
             const index = i * 2;
 
-            const x0 = vertices[index], x1 = vertices[index + 2], x2 = vertices[index + 4];
-            const y0 = vertices[index + 1], y1 = vertices[index + 3], y2 = vertices[index + 5];
+            const x0 = vertices[index];
+            const y0 = vertices[index + 1];
+
+            const x1 = vertices[index + 2];
+            const y1 = vertices[index + 3];
+
+            const x2 = vertices[index + 4];
+            const y2 = vertices[index + 5];
 
             context.moveTo(x0, y0);
             context.lineTo(x1, y1);
@@ -382,24 +431,23 @@ class Mesh extends core.Container {
      */
     _onTextureUpdate()
     {
-
+        /* empty */
     }
 
     /**
      * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
      *
-     * @return {PIXI.Rectangle} the framing rectangle
      */
     _calculateBounds()
     {
-        //TODO - we can cache local bounds and use them if they are dirty (like graphics)
+        // TODO - we can cache local bounds and use them if they are dirty (like graphics)
         this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
     }
 
     /**
      * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
      *
-     * @param point {PIXI.Point} the point to test
+     * @param {PIXI.Point} point - the point to test
      * @return {boolean} the result of the test
      */
     containsPoint(point)
@@ -408,35 +456,39 @@ class Mesh extends core.Container {
         {
             return false;
         }
+
         this.worldTransform.applyInverse(point, tempPoint);
 
         const vertices = this.vertices;
         const points = tempPolygon.points;
-
         const indices = this.indices;
         const len = this.indices.length;
         const step = this.drawMode === Mesh.DRAW_MODES.TRIANGLES ? 3 : 1;
+
         for (let i = 0; i + 2 < len; i += step)
         {
             const ind0 = indices[i] * 2;
             const ind1 = indices[i + 1] * 2;
             const ind2 = indices[i + 2] * 2;
+
             points[0] = vertices[ind0];
             points[1] = vertices[ind0 + 1];
             points[2] = vertices[ind1];
             points[3] = vertices[ind1 + 1];
             points[4] = vertices[ind2];
             points[5] = vertices[ind2 + 1];
+
             if (tempPolygon.contains(tempPoint.x, tempPoint.y))
             {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * The texture that the sprite is using
+     * The texture that the mesh uses.
      *
      * @member {PIXI.Texture}
      * @memberof PIXI.mesh.Mesh#
@@ -446,6 +498,11 @@ class Mesh extends core.Container {
         return this._texture;
     }
 
+    /**
+     * Sets the texture the mesh uses.
+     *
+     * @param {Texture} value - The value to set.
+     */
     set texture(value)
     {
         if (this._texture === value)
@@ -481,24 +538,27 @@ class Mesh extends core.Container {
         return core.utils.rgb2hex(this.tintRgb);
     }
 
+    /**
+     * Sets the tint the mesh uses.
+     *
+     * @param {number} value - The value to set.
+     */
     set tint(value)
     {
         this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
     }
 }
 
-export default Mesh;
-
 /**
  * Different drawing buffer modes supported
  *
  * @static
  * @constant
- * @property {object} DRAW_MODES
- * @property {number} DRAW_MODES.TRIANGLE_MESH
- * @property {number} DRAW_MODES.TRIANGLES
+ * @type {object}
+ * @property {number} TRIANGLE_MESH
+ * @property {number} TRIANGLES
  */
 Mesh.DRAW_MODES = {
     TRIANGLE_MESH: 0,
-    TRIANGLES: 1
+    TRIANGLES: 1,
 };

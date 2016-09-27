@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 
 /**
  * Holds all information related to an Interaction event
@@ -6,8 +6,11 @@ import core from '../core';
  * @class
  * @memberof PIXI.interaction
  */
-class InteractionData
+export default class InteractionData
 {
+    /**
+     *
+     */
     constructor()
     {
         /**
@@ -35,15 +38,17 @@ class InteractionData
     /**
      * This will return the local coordinates of the specified displayObject for this InteractionData
      *
-     * @param displayObject {PIXI.DisplayObject} The DisplayObject that you would like the local coords off
-     * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new point)
-     * @param [globalPos] {PIXI.Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
-     * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
+     * @param {PIXI.DisplayObject} displayObject - The DisplayObject that you would like the local
+     *  coords off
+     * @param {PIXI.Point} [point] - A Point object in which to store the value, optional (otherwise
+     *  will create a new point)
+     * @param {PIXI.Point} [globalPos] - A Point object containing your custom global coords, optional
+     *  (otherwise will use the current global coords)
+     * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative
+     *  to the DisplayObject
      */
     getLocalPosition(displayObject, point, globalPos)
     {
         return displayObject.worldTransform.applyInverse(globalPos || this.global, point);
     }
 }
-
-export default InteractionData;
