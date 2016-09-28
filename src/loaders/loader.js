@@ -60,7 +60,7 @@ Loader._pixiMiddleware = [
     textureParser,
     // parse any spritesheet data into multiple textures
     spritesheetParser,
-    // parse any spritesheet data into multiple textures
+    // parse bitmap font data into multiple textures
     bitmapFontParser,
 ];
 
