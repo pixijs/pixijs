@@ -162,7 +162,7 @@ export default function buildLine(graphicsData, webGLData)
         const py = ((a2 * c1) - (a1 * c2)) / denom;
         const pdist = ((px - p2x) * (px - p2x)) + ((py - p2y) * (py - p2y));
 
-        if (pdist > 140 * 140)
+        if (pdist > (196 * width * width))
         {
             perp3x = perpx - perp2x;
             perp3y = perpy - perp2y;
