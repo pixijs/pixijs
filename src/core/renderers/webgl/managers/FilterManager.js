@@ -300,10 +300,10 @@ export default class FilterManager extends WebGLManager
 
             const filterClamp = shader.uniforms.filterClamp;
 
-            filterClamp[0] = 0.5 / currentState.renderTarget.size.width;
-            filterClamp[1] = 0.5 / currentState.renderTarget.size.height;
-            filterClamp[2] = (currentState.sourceFrame.width - 0.5) / currentState.renderTarget.size.width;
-            filterClamp[3] = (currentState.sourceFrame.height - 0.5) / currentState.renderTarget.size.height;
+            filterClamp[0] = 0;
+            filterClamp[1] = 0;
+            filterClamp[2] = (currentState.sourceFrame.width - 1) / currentState.renderTarget.size.width;
+            filterClamp[3] = (currentState.sourceFrame.height - 1) / currentState.renderTarget.size.height;
 
             shader.uniforms.filterClamp = filterClamp;
         }
