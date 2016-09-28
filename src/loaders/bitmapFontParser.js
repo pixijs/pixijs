@@ -3,7 +3,7 @@ import { Rectangle, Texture, utils } from '../core';
 import { Resource } from 'resource-loader';
 import { BitmapText } from '../extras';
 
-function parse(resource, texture)
+export function parse(resource, texture)
 {
     const data = {};
     const info = resource.data.getElementsByTagName('info')[0];
