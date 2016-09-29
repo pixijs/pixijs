@@ -51,6 +51,9 @@ export default class VideoBaseTexture extends BaseTexture
 
         super(source, scaleMode);
 
+        this.width = source.videoWidth;
+        this.height = source.videoHeight;
+
         /**
          * Should the base texture automatically update itself, set to true by default
          *
@@ -59,20 +62,56 @@ export default class VideoBaseTexture extends BaseTexture
          */
         this.autoUpdate = false;
 
+        /**
+         * When set to true will automatically play videos used by this texture once
+         * they are loaded. If false, it will not modify the playing state.
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.autoPlay = true;
+
         this._onUpdate = this._onUpdate.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
 
-        if (!source.complete)
+        source.addEventListener('play', this._onPlayStart.bind(this));
+        source.addEventListener('pause', this._onPlayStop.bind(this));
+        this.hasLoaded = false;
+        this.__loaded = false;
+
+        if (!this._isSourceReady())
         {
             source.addEventListener('canplay', this._onCanPlay);
             source.addEventListener('canplaythrough', this._onCanPlay);
-
-            // started playing..
-            source.addEventListener('play', this._onPlayStart.bind(this));
-            source.addEventListener('pause', this._onPlayStop.bind(this));
         }
+        else
+        {
+            this._onCanPlay();
+        }
+    }
 
-        this.__loaded = false;
+    /**
+     * Returns true if the underlying source is playing.
+     *
+     * @private
+     * @return {boolean} True if playing.
+     */
+    _isSourcePlaying()
+    {
+        const source = this.source;
+
+        return (source.currentTime > 0 && source.paused === false && source.ended === false && source.readyState > 2);
+    }
+
+    /**
+     * Returns true if the underlying source is ready for playing.
+     *
+     * @private
+     * @return {boolean} True if ready.
+     */
+    _isSourceReady()
+    {
+        return this.source.readyState === 3 || this.source.readyState === 4;
     }
 
     /**
@@ -136,13 +175,20 @@ export default class VideoBaseTexture extends BaseTexture
             this.width = this.source.videoWidth;
             this.height = this.source.videoHeight;
 
-            this.source.play();
-
             // prevent multiple loaded dispatches..
             if (!this.__loaded)
             {
                 this.__loaded = true;
                 this.emit('loaded', this);
+            }
+
+            if (this._isSourcePlaying())
+            {
+                this._onPlayStart();
+            }
+            else if (this.autoPlay)
+            {
+                this.source.play();
             }
         }
     }
