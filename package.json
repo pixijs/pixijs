@@ -63,7 +63,7 @@
     "floss": "^0.7.1",
     "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git#releases/3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
