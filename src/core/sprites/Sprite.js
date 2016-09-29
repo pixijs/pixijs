@@ -37,7 +37,7 @@ export default class Sprite extends Container
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new ObservablePoint(this.onAnchorUpdate, this);
+        this._anchor = new ObservablePoint(this._onAnchorUpdate, this);
 
         /**
          * The texture that the sprite is using
