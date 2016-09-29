@@ -123,7 +123,7 @@ export default class ColorMatrixFilter extends core.Filter
     /**
      * Adjusts brightness
      *
-     * @param {number} b - value of the brigthness (0 is black)
+     * @param {number} b - value of the brigthness (0-1, where 0 is black)
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -142,7 +142,7 @@ export default class ColorMatrixFilter extends core.Filter
     /**
      * Set the matrices in grey scales
      *
-     * @param {number} scale - value of the grey (0 is black)
+     * @param {number} scale - value of the grey (0-1, where 0 is black)
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -234,7 +234,7 @@ export default class ColorMatrixFilter extends core.Filter
      * Increase contrast : shadows darker and highlights brighter
      * Decrease contrast : bring the shadows up and the highlights down
      *
-     * @param {number} amount - value of the contrast
+     * @param {number} amount - value of the contrast (0-1)
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -257,7 +257,7 @@ export default class ColorMatrixFilter extends core.Filter
      * Set the saturation matrix, increase the separation between colors
      * Increase saturation : increase contrast, brightness, and sharpness
      *
-     * @param {number} amount - The saturation amount.
+     * @param {number} amount - The saturation amount (0-1)
      * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
