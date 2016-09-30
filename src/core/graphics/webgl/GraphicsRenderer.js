@@ -1,5 +1,5 @@
-import utils from '../../utils';
-import CONST from '../../const';
+import { hex2rgb } from '../../utils';
+import { SHAPES } from '../../const';
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
 import WebGLGraphicsData from './WebGLGraphicsData';
@@ -16,10 +16,12 @@ import buildCircle from './utils/buildCircle';
  * @class
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-class GraphicsRenderer extends ObjectRenderer
+export default class GraphicsRenderer extends ObjectRenderer
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this object renderer works for.
+     */
     constructor(renderer)
     {
         super(renderer);
@@ -66,7 +68,7 @@ class GraphicsRenderer extends ObjectRenderer
     /**
      * Renders a graphics object.
      *
-     * @param graphics {PIXI.Graphics} The graphics object to render.
+     * @param {PIXI.Graphics} graphics - The graphics object to render.
      */
     render(graphics)
     {
@@ -76,20 +78,18 @@ class GraphicsRenderer extends ObjectRenderer
         let webGLData;
         let webGL = graphics._webGL[this.CONTEXT_UID];
 
-        if (!webGL || graphics.dirty !== webGL.dirty )
+        if (!webGL || graphics.dirty !== webGL.dirty)
         {
-
             this.updateGraphics(graphics);
 
             webGL = graphics._webGL[this.CONTEXT_UID];
         }
 
-
-
         // This  could be speeded up for sure!
         const shader = this.primitiveShader;
+
         renderer.bindShader(shader);
-        renderer.state.setBlendMode( graphics.blendMode );
+        renderer.state.setBlendMode(graphics.blendMode);
 
         for (let i = 0, n = webGL.data.length; i < n; i++)
         {
@@ -98,11 +98,11 @@ class GraphicsRenderer extends ObjectRenderer
 
             renderer.bindShader(shaderTemp);
             shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
-            shaderTemp.uniforms.tint = utils.hex2rgb(graphics.tint);
+            shaderTemp.uniforms.tint = hex2rgb(graphics.tint);
             shaderTemp.uniforms.alpha = graphics.worldAlpha;
 
             webGLData.vao.bind()
-            .draw(gl.TRIANGLE_STRIP,  webGLData.indices.length)
+            .draw(gl.TRIANGLE_STRIP, webGLData.indices.length)
             .unbind();
         }
     }
@@ -111,7 +111,7 @@ class GraphicsRenderer extends ObjectRenderer
      * Updates the graphics object
      *
      * @private
-     * @param graphics {PIXI.Graphics} The graphics object to update
+     * @param {PIXI.Graphics} graphics - The graphics object to update
      */
     updateGraphics(graphics)
     {
@@ -123,8 +123,7 @@ class GraphicsRenderer extends ObjectRenderer
         // if the graphics object does not exist in the webGL context time to create it!
         if (!webGL)
         {
-            webGL = graphics._webGL[this.CONTEXT_UID] = {lastIndex:0, data:[], gl, clearDirty:-1, dirty:-1};
-
+            webGL = graphics._webGL[this.CONTEXT_UID] = { lastIndex: 0, data: [], gl, clearDirty: -1, dirty: -1 };
         }
 
         // flag the graphics as not dirty as we are about to update it...
@@ -138,8 +137,7 @@ class GraphicsRenderer extends ObjectRenderer
             // loop through and return all the webGLDatas to the object pool so than can be reused later on
             for (let i = 0; i < webGL.data.length; i++)
             {
-                const graphicsData = webGL.data[i];
-                this.graphicsDataPool.push( graphicsData );
+                this.graphicsDataPool.push(webGL.data[i]);
             }
 
             // clear the array and reset the index..
@@ -156,22 +154,22 @@ class GraphicsRenderer extends ObjectRenderer
         {
             const data = graphics.graphicsData[i];
 
-            //TODO - this can be simplified
+            // TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);
 
-            if (data.type === CONST.SHAPES.POLY)
+            if (data.type === SHAPES.POLY)
             {
                 buildPoly(data, webGLData);
             }
-            if (data.type === CONST.SHAPES.RECT)
+            if (data.type === SHAPES.RECT)
             {
                 buildRectangle(data, webGLData);
             }
-            else if (data.type === CONST.SHAPES.CIRC || data.type === CONST.SHAPES.ELIP)
+            else if (data.type === SHAPES.CIRC || data.type === SHAPES.ELIP)
             {
                 buildCircle(data, webGLData);
             }
-            else if (data.type === CONST.SHAPES.RREC)
+            else if (data.type === SHAPES.RREC)
             {
                 buildRoundedRectangle(data, webGLData);
             }
@@ -194,18 +192,21 @@ class GraphicsRenderer extends ObjectRenderer
     /**
      *
      * @private
-     * @param webGL {WebGLRenderingContext} the current WebGL drawing context
-     * @param type {number} TODO @Alvin
+     * @param {WebGLRenderingContext} gl - the current WebGL drawing context
+     * @param {number} type - TODO @Alvin
+     * @return {*} TODO
      */
-    getWebGLData(webGL, type)
+    getWebGLData(gl, type)
     {
-        let webGLData = webGL.data[webGL.data.length-1];
+        let webGLData = gl.data[gl.data.length - 1];
 
         if (!webGLData || webGLData.points.length > 320000)
         {
-            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
+            webGLData = this.graphicsDataPool.pop()
+                || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
+
             webGLData.reset(type);
-            webGL.data.push(webGLData);
+            gl.data.push(webGLData);
         }
 
         webGLData.dirty = true;
@@ -215,5 +216,3 @@ class GraphicsRenderer extends ObjectRenderer
 }
 
 WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
-
-export default GraphicsRenderer;

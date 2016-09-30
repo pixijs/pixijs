@@ -9,14 +9,14 @@ const vertTemplate = [
 
     'void main(void)',
     '{',
-        'gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);',
-        '%blur%',
-    '}'
+    'gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);',
+    '%blur%',
+    '}',
 ].join('\n');
 
-const generateVertBlurSource = function(kernelSize, x)
+export default function generateVertBlurSource(kernelSize, x)
 {
-    const halfLength = Math.ceil(kernelSize/2);
+    const halfLength = Math.ceil(kernelSize / 2);
 
     let vertSource = vertTemplate;
 
@@ -24,16 +24,14 @@ const generateVertBlurSource = function(kernelSize, x)
     let template;
     // let value;
 
-    if(x)
+    if (x)
     {
         template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(%sampleIndex% * strength, 0.0);';
     }
     else
     {
         template = 'vBlurTexCoords[%index%] = aTextureCoord + vec2(0.0, %sampleIndex% * strength);';
-
     }
-
 
     for (let i = 0; i < kernelSize; i++)
     {
@@ -46,7 +44,7 @@ const generateVertBlurSource = function(kernelSize, x)
         //     value = kernelSize - i - 1;
         // }
 
-        blur = blur.replace('%sampleIndex%', (i - (halfLength-1)) + '.0');
+        blur = blur.replace('%sampleIndex%', `${i - (halfLength - 1)}.0`);
 
         blurLoop += blur;
         blurLoop += '\n';
@@ -56,6 +54,4 @@ const generateVertBlurSource = function(kernelSize, x)
     vertSource = vertSource.replace('%size%', kernelSize);
 
     return vertSource;
-};
-
-export default generateVertBlurSource;
+}

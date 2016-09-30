@@ -3,16 +3,19 @@
  *
  * @class
  * @memberof PIXI
- * @param lineWidth {number} the width of the line to draw
- * @param lineColor {number} the color of the line to draw
- * @param lineAlpha {number} the alpha of the line to draw
- * @param fillColor {number} the color of the fill
- * @param fillAlpha {number} the alpha of the fill
- * @param fill      {boolean} whether or not the shape is filled with a colour
- * @param shape     {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} The shape object to draw.
  */
-class GraphicsData
+export default class GraphicsData
 {
+    /**
+     *
+     * @param {number} lineWidth - the width of the line to draw
+     * @param {number} lineColor - the color of the line to draw
+     * @param {number} lineAlpha - the alpha of the line to draw
+     * @param {number} fillColor - the color of the fill
+     * @param {number} fillAlpha - the alpha of the fill
+     * @param {boolean} fill - whether or not the shape is filled with a colour
+     * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
+     */
     constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
     {
         /**
@@ -87,8 +90,9 @@ class GraphicsData
     }
 
     /**
+     * Adds a hole to the shape.
      *
-     *
+     * @param {PIXI.Rectangle|PIXI.Circle} shape - The shape of the hole.
      */
     addHole(shape)
     {
@@ -104,5 +108,3 @@ class GraphicsData
         this.holes = null;
     }
 }
-
-export default GraphicsData;

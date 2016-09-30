@@ -3,19 +3,20 @@ import glCore from 'pixi-gl-core';
 const fragTemplate = [
     'precision mediump float;',
     'void main(void){',
-        'float test = 0.1;',
-        '%forloop%',
-        'gl_FragColor = vec4(0.0);',
-    '}'
+    'float test = 0.1;',
+    '%forloop%',
+    'gl_FragColor = vec4(0.0);',
+    '}',
 ].join('\n');
 
-const checkMaxIfStatmentsInShader = function(maxIfs, gl)
+export default function checkMaxIfStatmentsInShader(maxIfs, gl)
 {
     const createTempContext = !gl;
 
-    if(createTempContext)
+    if (createTempContext)
     {
         const tinyCanvas = document.createElement('canvas');
+
         tinyCanvas.width = 1;
         tinyCanvas.height = 1;
 
@@ -24,16 +25,16 @@ const checkMaxIfStatmentsInShader = function(maxIfs, gl)
 
     const shader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    while(true) // eslint-disable-line no-constant-condition
+    while (true) // eslint-disable-line no-constant-condition
     {
         const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 
         gl.shaderSource(shader, fragmentSrc);
         gl.compileShader(shader);
 
-        if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
         {
-            maxIfs = (maxIfs/2)|0;
+            maxIfs = (maxIfs / 2) | 0;
         }
         else
         {
@@ -42,31 +43,30 @@ const checkMaxIfStatmentsInShader = function(maxIfs, gl)
         }
     }
 
-    if(createTempContext)
+    if (createTempContext)
     {
         // get rid of context
-        if(gl.getExtension('WEBGL_lose_context'))
+        if (gl.getExtension('WEBGL_lose_context'))
         {
             gl.getExtension('WEBGL_lose_context').loseContext();
         }
     }
 
     return maxIfs;
-};
-
+}
 
 function generateIfTestSrc(maxIfs)
 {
     let src = '';
 
-    for (let i = 0; i < maxIfs; i++)
+    for (let i = 0; i < maxIfs; ++i)
     {
-        if(i > 0)
+        if (i > 0)
         {
             src += '\nelse ';
         }
 
-        if(i < maxIfs-1)
+        if (i < maxIfs - 1)
         {
             src += `if(test == ${i}.0){}`;
         }
@@ -74,5 +74,3 @@ function generateIfTestSrc(maxIfs)
 
     return src;
 }
-
-export default checkMaxIfStatmentsInShader;

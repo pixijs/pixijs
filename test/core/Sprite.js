@@ -1,3 +1,5 @@
+'use strict';
+
 describe('PIXI.Sprite', function ()
 {
     describe('width', function ()
@@ -17,7 +19,7 @@ describe('PIXI.Sprite', function ()
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 
-            texture.width = 100;
+            texture.orig.width = 100;
             sprite.scale.x = 1;
             sprite.width = 50;
 
@@ -47,7 +49,7 @@ describe('PIXI.Sprite', function ()
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 
-            texture.height = 100;
+            texture.orig.height = 100;
             sprite.scale.y = 1;
             sprite.height = 50;
 

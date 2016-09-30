@@ -1,6 +1,6 @@
 import earcut from 'earcut';
 import buildLine from './buildLine';
-import utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a rounded rectangle to draw
@@ -9,10 +9,10 @@ import utils from '../../../utils';
  *
  * @ignore
  * @private
- * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
- * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-const buildRoundedRectangle = function (graphicsData, webGLData)
+export default function buildRoundedRectangle(graphicsData, webGLData)
 {
     const rrectData = graphicsData.shape;
     const x = rrectData.x;
@@ -23,6 +23,7 @@ const buildRoundedRectangle = function (graphicsData, webGLData)
     const radius = rrectData.radius;
 
     const recPoints = [];
+
     recPoints.push(x, y + radius);
     quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
     quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
@@ -34,7 +35,7 @@ const buildRoundedRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        const color = utils.hex2rgb(graphicsData.fillColor);
+        const color = hex2rgb(graphicsData.fillColor);
         const alpha = graphicsData.fillAlpha;
 
         const r = color[0] * alpha;
@@ -44,17 +45,17 @@ const buildRoundedRectangle = function (graphicsData, webGLData)
         const verts = webGLData.points;
         const indices = webGLData.indices;
 
-        const vecPos = verts.length/6;
+        const vecPos = verts.length / 6;
 
         const triangles = earcut(recPoints, null, 2);
 
-        for (let i = 0, j=triangles.length; i < j; i+=3)
+        for (let i = 0, j = triangles.length; i < j; i += 3)
         {
             indices.push(triangles[i] + vecPos);
             indices.push(triangles[i] + vecPos);
-            indices.push(triangles[i+1] + vecPos);
-            indices.push(triangles[i+2] + vecPos);
-            indices.push(triangles[i+2] + vecPos);
+            indices.push(triangles[i + 1] + vecPos);
+            indices.push(triangles[i + 2] + vecPos);
+            indices.push(triangles[i + 2] + vecPos);
         }
 
         for (let i = 0, j = recPoints.length; i < j; i++)
@@ -73,7 +74,7 @@ const buildRoundedRectangle = function (graphicsData, webGLData)
 
         graphicsData.points = tempPoints;
     }
-};
+}
 
 /**
  * Calculate the points for a quadratic bezier curve. (helper function..)
@@ -83,52 +84,50 @@ const buildRoundedRectangle = function (graphicsData, webGLData)
  *
  * @ignore
  * @private
- * @param fromX {number} Origin point x
- * @param fromY {number} Origin point x
- * @param cpX {number} Control point x
- * @param cpY {number} Control point y
- * @param toX {number} Destination point x
- * @param toY {number} Destination point y
- * @param [out=[]] {number[]} The output array to add points into. If not passed, a new array is created.
+ * @param {number} fromX - Origin point x
+ * @param {number} fromY - Origin point x
+ * @param {number} cpX - Control point x
+ * @param {number} cpY - Control point y
+ * @param {number} toX - Destination point x
+ * @param {number} toY - Destination point y
+ * @param {number[]} [out=[]] - The output array to add points into. If not passed, a new array is created.
  * @return {number[]} an array of points
  */
-const quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY, out=[])
+function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY, out = [])
 {
-    const n = 20,
-        points = out;
+    const n = 20;
+    const points = out;
 
-    let xa,
-        ya,
-        xb,
-        yb,
-        x,
-        y;
+    let xa = 0;
+    let ya = 0;
+    let xb = 0;
+    let yb = 0;
+    let x = 0;
+    let y = 0;
 
-    function getPt(n1 , n2, perc)
+    function getPt(n1, n2, perc)
     {
         const diff = n2 - n1;
 
-        return n1 + ( diff * perc );
+        return n1 + (diff * perc);
     }
 
-    for (let i = 0, j = 0; i <= n; i++)
+    for (let i = 0, j = 0; i <= n; ++i)
     {
         j = i / n;
 
         // The Green Line
-        xa = getPt( fromX , cpX , j );
-        ya = getPt( fromY , cpY , j );
-        xb = getPt( cpX , toX , j );
-        yb = getPt( cpY , toY , j );
+        xa = getPt(fromX, cpX, j);
+        ya = getPt(fromY, cpY, j);
+        xb = getPt(cpX, toX, j);
+        yb = getPt(cpY, toY, j);
 
         // The Black Dot
-        x = getPt( xa , xb , j );
-        y = getPt( ya , yb , j );
+        x = getPt(xa, xb, j);
+        y = getPt(ya, yb, j);
 
         points.push(x, y);
     }
 
     return points;
-};
-
-export default buildRoundedRectangle;
+}

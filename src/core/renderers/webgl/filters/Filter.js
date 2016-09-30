@@ -1,6 +1,6 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
-import utils from '../../../utils';
-import CONST from '../../../const';
+import { uid } from '../../../utils';
+import { BLEND_MODES } from '../../../const';
 
 const SOURCE_KEY_MAP = {};
 
@@ -9,14 +9,16 @@ const SOURCE_KEY_MAP = {};
  * @class
  * @memberof PIXI
  * @extends PIXI.Shader
- * @param [vertexSrc] {string} The source of the vertex shader.
- * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param [uniforms] {object} Custom uniforms to use to augment the built-in ones.
  */
-class Filter {
+class Filter
+{
+    /**
+     * @param {string} [vertexSrc] - The source of the vertex shader.
+     * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     */
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
-
         /**
          * The vertex shader.
          *
@@ -31,7 +33,7 @@ class Filter {
          */
         this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
 
-        this.blendMode = CONST.BLEND_MODES.NORMAL;
+        this.blendMode = BLEND_MODES.NORMAL;
 
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types
@@ -51,31 +53,44 @@ class Filter {
         // used for cacheing.. sure there is a better way!
         if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
         {
-            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = utils.uid();
+            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
         }
 
         this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
 
         /**
-         * The padding of the filter. Some filters require extra space to breath such as a blur. Increasing this will add extra width and height to the bounds of the object that the filter is applied to.
+         * The padding of the filter. Some filters require extra space to breath such as a blur.
+         * Increasing this will add extra width and height to the bounds of the object that the
+         * filter is applied to.
+         *
+         * @member {number}
          */
         this.padding = 4;
 
         /**
-         * The resolution of the filter. Setting this to be lower will lower the quality but increase the performance of the filter.
+         * The resolution of the filter. Setting this to be lower will lower the quality but
+         * increase the performance of the filter.
+         *
          * @member {number}
          */
         this.resolution = 1;
 
         /**
          * If enabled is true the filter is applied, if false it will not.
+         *
          * @member {boolean}
          */
         this.enabled = true;
     }
 
-    // let tempMatrix = new math.Matrix();
-
+    /**
+     * Applies the filter
+     *
+     * @param {PIXI.FilterManager} filterManager - The renderer to retrieve the filter from
+     * @param {PIXI.RenderTarget} input - The input render target.
+     * @param {PIXI.RenderTarget} output - The target to output to.
+     * @param {boolean} clear - Should the output be cleared before rendering to it
+     */
     apply(filterManager, input, output, clear)
     {
         // --- //
@@ -110,7 +125,7 @@ class Filter {
             '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
             '   vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;',
             '   vTextureCoord = aTextureCoord ;',
-            '}'
+            '}',
         ].join('\n');
     }
 
@@ -144,7 +159,7 @@ class Filter {
             // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
             '   gl_FragColor = mix(sample, masky, 0.5);',
             '   gl_FragColor *= sample.a;',
-            '}'
+            '}',
         ].join('\n');
     }
 }

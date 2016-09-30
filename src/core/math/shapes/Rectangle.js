@@ -1,17 +1,20 @@
-import CONST from '../../const';
+import { SHAPES } from '../../const';
 
 /**
- * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
+ * Rectangle object is an area defined by its position, as indicated by its top-left corner
+ * point (x, y) and by its width and its height.
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} The X coordinate of the upper-left corner of the rectangle
- * @param [y=0] {number} The Y coordinate of the upper-left corner of the rectangle
- * @param [width=0] {number} The overall width of this rectangle
- * @param [height=0] {number} The overall height of this rectangle
  */
-class Rectangle
+export default class Rectangle
 {
+    /**
+     * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle
+     * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rectangle
+     * @param {number} [width=0] - The overall width of this rectangle
+     * @param {number} [height=0] - The overall height of this rectangle
+     */
     constructor(x = 0, y = 0, width = 0, height = 0)
     {
         /**
@@ -43,10 +46,10 @@ class Rectangle
          *
          * @member {number}
          * @readOnly
-         * @default CONST.SHAPES.RECT
+         * @default PIXI.SHAPES.RECT
          * @see PIXI.SHAPES
          */
-        this.type = CONST.SHAPES.RECT;
+        this.type = SHAPES.RECT;
     }
 
     /**
@@ -114,6 +117,12 @@ class Rectangle
         return new Rectangle(this.x, this.y, this.width, this.height);
     }
 
+    /**
+     * Copies another rectangle to this one.
+     *
+     * @param {PIXI.Rectangle} rectangle - The rectangle to copy.
+     * @return {PIXI.Rectanle} Returns itself.
+     */
     copy(rectangle)
     {
         this.x = rectangle.x;
@@ -127,8 +136,8 @@ class Rectangle
     /**
      * Checks whether the x and y coordinates given are contained within this Rectangle
      *
-     * @param x {number} The X coordinate of the point to test
-     * @param y {number} The Y coordinate of the point to test
+     * @param {number} x - The X coordinate of the point to test
+     * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rectangle
      */
     contains(x, y)
@@ -149,10 +158,16 @@ class Rectangle
         return false;
     }
 
+    /**
+     * Pads the rectangle making it grow in all directions.
+     *
+     * @param {number} paddingX - The horizontal padding amount.
+     * @param {number} paddingY - The vertical padding amount.
+     */
     pad(paddingX, paddingY)
     {
         paddingX = paddingX || 0;
-        paddingY = paddingY || ( (paddingY !== 0) ? paddingX : 0 );
+        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
 
         this.x -= paddingX;
         this.y -= paddingY;
@@ -161,6 +176,11 @@ class Rectangle
         this.height += paddingY * 2;
     }
 
+    /**
+     * Fits this rectangle around the passed one.
+     *
+     * @param {PIXI.Rectangle} rectangle - The rectangle to fit.
+     */
     fit(rectangle)
     {
         if (this.x < rectangle.x)
@@ -203,9 +223,13 @@ class Rectangle
         }
     }
 
+    /**
+     * Enlarges this rectangle to include the passed rectangle.
+     *
+     * @param {PIXI.Rectangle} rect - The rectangle to include.
+     */
     enlarge(rect)
     {
-
         if (rect === Rectangle.EMPTY)
         {
             return;
@@ -215,11 +239,10 @@ class Rectangle
         const x2 = Math.max(this.x + this.width, rect.x + rect.width);
         const y1 = Math.min(this.y, rect.y);
         const y2 = Math.max(this.y + this.height, rect.y + rect.height);
+
         this.x = x1;
         this.width = x2 - x1;
         this.y = y1;
         this.height = y2 - y1;
     }
 }
-
-export default Rectangle;

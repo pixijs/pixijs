@@ -5,13 +5,15 @@
  *
  * @class
  * @memberof PIXI
- * @param cb {Function} callback when changed
- * @param scope {Object} owner of callback
- * @param [x=0] {number} position of the point on the x axis
- * @param [y=0] {number} position of the point on the y axis
  */
-class ObservablePoint
+export default class ObservablePoint
 {
+    /**
+     * @param {Function} cb - callback when changed
+     * @param {object} scope - owner of callback
+     * @param {number} [x=0] - position of the point on the x axis
+     * @param {number} [y=0] - position of the point on the y axis
+     */
     constructor(cb, scope, x = 0, y = 0)
     {
         this._x = x;
@@ -25,13 +27,14 @@ class ObservablePoint
      * Sets the point to a new x and y position.
      * If y is omitted, both x and y will be set to x.
      *
-     * @param [x=0] {number} position of the point on the x axis
-     * @param [y=0] {number} position of the point on the y axis
+     * @param {number} [x=0] - position of the point on the x axis
+     * @param {number} [y=0] - position of the point on the y axis
      */
     set(x, y)
     {
         const _x = x || 0;
-        const _y = y || ( (y !== 0) ? _x : 0 );
+        const _y = y || ((y !== 0) ? _x : 0);
+
         if (this._x !== _x || this._y !== _y)
         {
             this._x = _x;
@@ -43,7 +46,7 @@ class ObservablePoint
     /**
      * Copies the data from another point
      *
-     * @param point {PIXI.Point|PIXI.ObservablePoint} point to copy from
+     * @param {PIXI.Point|PIXI.ObservablePoint} point - point to copy from
      */
     copy(point)
     {
@@ -66,6 +69,11 @@ class ObservablePoint
         return this._x;
     }
 
+    /**
+     * Sets the X component.
+     *
+     * @param {number} value - The value to set to.
+     */
     set x(value)
     {
         if (this._x !== value)
@@ -86,6 +94,11 @@ class ObservablePoint
         return this._y;
     }
 
+    /**
+     * Sets the Y component.
+     *
+     * @param {number} value - The value to set to.
+     */
     set y(value)
     {
         if (this._y !== value)
@@ -95,5 +108,3 @@ class ObservablePoint
         }
     }
 }
-
-export default ObservablePoint;

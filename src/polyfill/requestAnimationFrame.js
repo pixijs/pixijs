@@ -9,6 +9,8 @@
 // Browserify automatically detects the use of `global` and passes the
 // correct reference of `global`, `self`, and finally `window`
 
+const ONE_FRAME_TIME = 16;
+
 // Date.now
 if (!(Date.now && Date.prototype.getTime))
 {
@@ -22,14 +24,13 @@ if (!(Date.now && Date.prototype.getTime))
 if (!(global.performance && global.performance.now))
 {
     const startTime = Date.now();
+
     if (!global.performance)
     {
         global.performance = {};
     }
-    global.performance.now = function ()
-    {
-        return Date.now() - startTime;
-    };
+
+    global.performance.now = () => Date.now() - startTime;
 }
 
 // requestAnimationFrame
@@ -38,22 +39,23 @@ const vendors = ['ms', 'moz', 'webkit', 'o'];
 
 for (let x = 0; x < vendors.length && !global.requestAnimationFrame; ++x)
 {
-    global.requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];
-    global.cancelAnimationFrame = global[vendors[x] + 'CancelAnimationFrame'] ||
-        global[vendors[x] + 'CancelRequestAnimationFrame'];
+    const p = vendors[x];
+
+    global.requestAnimationFrame = global[`${p}RequestAnimationFrame`];
+    global.cancelAnimationFrame = global[`${p}CancelAnimationFrame`] || global[`${p}CancelRequestAnimationFrame`];
 }
 
 if (!global.requestAnimationFrame)
 {
-    global.requestAnimationFrame = function (callback)
+    global.requestAnimationFrame = (callback) =>
     {
         if (typeof callback !== 'function')
         {
-            throw new TypeError(callback + 'is not a function');
+            throw new TypeError(`${callback}is not a function`);
         }
 
         const currentTime = Date.now();
-        let delay = 16 + lastTime - currentTime;
+        let delay = ONE_FRAME_TIME + lastTime - currentTime;
 
         if (delay < 0)
         {
@@ -62,7 +64,7 @@ if (!global.requestAnimationFrame)
 
         lastTime = currentTime;
 
-        return setTimeout(function ()
+        return setTimeout(() =>
         {
             lastTime = Date.now();
             callback(performance.now());
@@ -72,8 +74,5 @@ if (!global.requestAnimationFrame)
 
 if (!global.cancelAnimationFrame)
 {
-    global.cancelAnimationFrame = function (id)
-    {
-        clearTimeout(id);
-    };
+    global.cancelAnimationFrame = (id) => clearTimeout(id);
 }

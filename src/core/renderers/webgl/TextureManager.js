@@ -1,17 +1,19 @@
-import {GLTexture} from 'pixi-gl-core';
-import CONST from '../../const';
+import { GLTexture } from 'pixi-gl-core';
+import { WRAP_MODES, SCALE_MODES } from '../../const';
 import RenderTarget from './utils/RenderTarget';
-import utils from '../../utils';
+import { removeItems } from '../../utils';
 
 /**
  * Helper class to create a webGL Texture
  *
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} A reference to the current renderer
  */
-class TextureManager
+export default class TextureManager
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
+     */
     constructor(renderer)
     {
         /**
@@ -37,19 +39,29 @@ class TextureManager
         this._managedTextures = [];
     }
 
+    /**
+     * Binds a texture.
+     *
+     */
     bindTexture()
     {
+        // empty
     }
 
-
+    /**
+     * Gets a texture.
+     *
+     */
     getTexture()
     {
+        // empty
     }
 
     /**
      * Updates and/or Creates a WebGL texture for the renderer's context.
      *
-     * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to update
+     * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
+     * @return {GLTexture} The gl texture.
      */
     updateTexture(texture)
     {
@@ -59,16 +71,23 @@ class TextureManager
 
         if (!texture.hasLoaded)
         {
-            return;
+            return null;
         }
 
         let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
         if (!glTexture)
         {
-            if(isRenderTexture)
+            if (isRenderTexture)
             {
-                const renderTarget = new RenderTarget(this.gl, texture.width, texture.height, texture.scaleMode, texture.resolution);
+                const renderTarget = new RenderTarget(
+                    this.gl,
+                    texture.width,
+                    texture.height,
+                    texture.scaleMode,
+                    texture.resolution
+                );
+
                 renderTarget.resize(texture.width, texture.height);
                 texture._glRenderTargets[this.renderer.CONTEXT_UID] = renderTarget;
                 glTexture = renderTarget.texture;
@@ -87,18 +106,18 @@ class TextureManager
 
             this._managedTextures.push(texture);
 
-            if(texture.isPowerOfTwo)
+            if (texture.isPowerOfTwo)
             {
-                if(texture.mipmap)
+                if (texture.mipmap)
                 {
                     glTexture.enableMipmap();
                 }
 
-                if(texture.wrapMode === CONST.WRAP_MODES.CLAMP)
+                if (texture.wrapMode === WRAP_MODES.CLAMP)
                 {
                     glTexture.enableWrapClamp();
                 }
-                else if(texture.wrapMode === CONST.WRAP_MODES.REPEAT)
+                else if (texture.wrapMode === WRAP_MODES.REPEAT)
                 {
                     glTexture.enableWrapRepeat();
                 }
@@ -112,7 +131,7 @@ class TextureManager
                 glTexture.enableWrapClamp();
             }
 
-            if(texture.scaleMode === CONST.SCALE_MODES.NEAREST)
+            if (texture.scaleMode === SCALE_MODES.NEAREST)
             {
                 glTexture.enableNearestScaling();
             }
@@ -121,27 +140,24 @@ class TextureManager
                 glTexture.enableLinearScaling();
             }
         }
+        // the textur ealrady exists so we only need to update it..
+        else if (isRenderTexture)
+        {
+            texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
+        }
         else
         {
-            // the textur ealrady exists so we only need to update it..
-            if(isRenderTexture)
-            {
-                texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
-            }
-            else
-            {
-                glTexture.upload(texture.source);
-            }
+            glTexture.upload(texture.source);
         }
 
-        return  glTexture;
+        return glTexture;
     }
 
     /**
      * Deletes the texture from WebGL
      *
-     * @param texture {PIXI.BaseTexture|PIXI.Texture} the texture to destroy
-     * @param [skipRemove=false] {boolean} Whether to skip removing the texture from the TextureManager.
+     * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to destroy
+     * @param {boolean} [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
     destroyTexture(texture, skipRemove)
     {
@@ -158,15 +174,15 @@ class TextureManager
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);
 
-
             delete texture._glTextures[this.renderer.CONTEXT_UID];
 
             if (!skipRemove)
             {
                 const i = this._managedTextures.indexOf(texture);
+
                 if (i !== -1)
                 {
-                    utils.removeItems(this._managedTextures, i, 1);
+                    removeItems(this._managedTextures, i, 1);
                 }
             }
         }
@@ -181,6 +197,7 @@ class TextureManager
         for (let i = 0; i < this._managedTextures.length; ++i)
         {
             const texture = this._managedTextures[i];
+
             if (texture._glTextures[this.renderer.CONTEXT_UID])
             {
                 delete texture._glTextures[this.renderer.CONTEXT_UID];
@@ -197,7 +214,9 @@ class TextureManager
         for (let i = 0; i < this._managedTextures.length; ++i)
         {
             const texture = this._managedTextures[i];
+
             this.destroyTexture(texture, true);
+
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);
         }
@@ -205,5 +224,3 @@ class TextureManager
         this._managedTextures = null;
     }
 }
-
-export default TextureManager;

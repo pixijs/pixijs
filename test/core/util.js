@@ -1,3 +1,5 @@
+'use strict';
+
 describe('PIXI.utils', function ()
 {
     describe('uid', function ()
@@ -69,7 +71,8 @@ describe('PIXI.utils', function ()
 
         it('should decompose a data URI', function ()
         {
-            const dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
+            var dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
+
             expect(dataUri)
                 .to.be.an('object');
             expect(dataUri.mediaType)
@@ -84,7 +87,8 @@ describe('PIXI.utils', function ()
 
         it('should return undefined for anything else', function ()
         {
-            const dataUri = PIXI.utils.decomposeDataUri('foo');
+            var dataUri = PIXI.utils.decomposeDataUri('foo');
+
             expect(dataUri)
                 .to.be.an('undefined');
         });
@@ -100,7 +104,8 @@ describe('PIXI.utils', function ()
 
         it('should return image type of URL in lower case', function ()
         {
-            const imageType = PIXI.utils.getImageTypeOfUrl('http://foo.bar/baz.PNG');
+            var imageType = PIXI.utils.getImageTypeOfUrl('http://foo.bar/baz.PNG');
+
             expect(imageType)
                 .to.equal('png');
         });
@@ -116,7 +121,8 @@ describe('PIXI.utils', function ()
 
         it('should return a size object with width and height from an SVG string', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+            var svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+
             expect(svgSize)
                 .to.be.an('object');
             expect(svgSize.width)
@@ -127,7 +133,8 @@ describe('PIXI.utils', function ()
 
         it('should work with px values', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
+            var svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
+
             expect(svgSize)
                 .to.be.an('object');
             expect(svgSize.width)
@@ -138,7 +145,8 @@ describe('PIXI.utils', function ()
 
         it('should return an empty object when width and/or height is missing', function ()
         {
-            const svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
+            var svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
+
             expect(Object.keys(svgSize).length)
                 .to.equal(0);
         });
@@ -213,13 +221,15 @@ describe('PIXI.utils', function ()
         it('should remove the number of elements specified from the array, starting from the start index', function ()
         {
             var res = [1, 2, 3, 8, 9, 10];
+
             PIXI.utils.removeItems(arr, 3, 4);
             expect(arr).to.be.deep.equal(res);
         });
 
-        it('should remove rest of elements if the delete count is > than the number of elements after start index', function ()
+        it('should remove other elements if delete count is > than the number of elements after start index', function ()
         {
             var res = [1, 2, 3, 4, 5, 6, 7];
+
             PIXI.utils.removeItems(arr, 7, 10);
             expect(arr).to.be.deep.equal(res);
         });

@@ -1,7 +1,5 @@
-import webGL from './webgl/WebGLPrepare';
-import canvas from './canvas/CanvasPrepare';
-
-export default {
-    webGL,
-    canvas
-};
+/**
+ * @namespace PIXI.prepare
+ */
+export { default as webgl } from './webgl/WebGLPrepare';
+export { default as canvas } from './canvas/CanvasPrepare';

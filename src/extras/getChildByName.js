@@ -1,4 +1,4 @@
-import core from '../core';
+import * as core from '../core';
 
 /**
  * The instance name of the object.
@@ -9,13 +9,13 @@ import core from '../core';
 core.DisplayObject.prototype.name = null;
 
 /**
-* Returns the display object in the container
-*
-* @memberof PIXI.Container#
-* @param name {string} instance name
-* @return {PIXI.DisplayObject}
-*/
-core.Container.prototype.getChildByName = function (name)
+ * Returns the display object in the container
+ *
+ * @memberof PIXI.Container#
+ * @param {string} name - instance name
+ * @return {PIXI.DisplayObject} The child with the specified name.
+ */
+core.Container.prototype.getChildByName = function getChildByName(name)
 {
     for (let i = 0; i < this.children.length; i++)
     {
@@ -24,5 +24,6 @@ core.Container.prototype.getChildByName = function (name)
             return this.children[i];
         }
     }
+
     return null;
 };

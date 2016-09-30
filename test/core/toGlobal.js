@@ -1,6 +1,8 @@
+'use strict';
+
 describe('toGlobal', function ()
 {
-    it('should return correct global cordinates of a point from within a displayObject', function()
+    it('should return correct global cordinates of a point from within a displayObject', function ()
     {
         var parent = new PIXI.Container();
 

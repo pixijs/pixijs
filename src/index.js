@@ -1,16 +1,32 @@
-import extras from './extras';
-import filters from './filters';
-import interaction from './interaction';
-import loaders from './loaders';
-import mesh from './mesh';
-import particles from './particles';
-import accessibility from './accessibility';
-import extract from './extract';
-import prepare from './prepare';
-import core from './core';
+// import polyfills first
+import './polyfill';
 
-// run the polyfills
-require('./polyfill');
+// export lib
+import * as accessibility from './accessibility';
+import * as extract from './extract';
+import * as extras from './extras';
+import * as filters from './filters';
+import * as interaction from './interaction';
+import * as loaders from './loaders';
+import * as mesh from './mesh';
+import * as particles from './particles';
+import * as prepare from './prepare';
+
+export * from './core';
+export {
+    accessibility,
+    extract,
+    extras,
+    filters,
+    interaction,
+    loaders,
+    mesh,
+    particles,
+    prepare,
+};
+
+// Mixin the deprecations
+import './deprecation';
 
 /**
  * A premade instance of the loader that can be used to loader resources.
@@ -21,22 +37,7 @@ require('./polyfill');
  */
 const loader = new loaders.Loader();
 
-// add core plugins
-module.exports = Object.assign(core, {
-    accessibility,
-    extract,
-    extras,
-    filters,
-    interaction,
-    loaders,
-    loader,
-    mesh,
-    particles,
-    prepare
-});
-
-// Mixin the deprecations
-require('./deprecation');
+export { loader };
 
 // Always export pixi globally.
-global.PIXI = core;
+global.PIXI = exports; // eslint-disable-line

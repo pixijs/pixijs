@@ -1,22 +1,24 @@
-import math from '../../../math';
-import CONST from '../../../const';
-import {GLFramebuffer} from 'pixi-gl-core';
+import { Rectangle, Matrix } from '../../../math';
+import { RESOLUTION, SCALE_MODES } from '../../../const';
+import { GLFramebuffer } from 'pixi-gl-core';
 
 /**
  * @class
  * @memberof PIXI
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
- * @param [width=0] {number} the horizontal range of the filter
- * @param [height=0] {number} the vertical range of the filter
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The current resolution / device pixel ratio
- * @param [root=false] {boolean} Whether this object is the root element or not
  */
-class RenderTarget
+export default class RenderTarget
 {
+    /**
+     * @param {WebGLRenderingContext} gl - The current WebGL drawing context
+     * @param {number} [width=0] - the horizontal range of the filter
+     * @param {number} [height=0] - the vertical range of the filter
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [resolution=1] - The current resolution / device pixel ratio
+     * @param {boolean} [root=false] - Whether this object is the root element or not
+     */
     constructor(gl, width, height, scaleMode, resolution, root)
     {
-        //TODO Resolution could go here ( eg low res blurs )
+        // TODO Resolution could go here ( eg low res blurs )
 
         /**
          * The current WebGL drawing context.
@@ -53,7 +55,7 @@ class RenderTarget
          *
          * @member {PIXI.Rectangle}
          */
-        this.size = new math.Rectangle(0, 0, 1, 1);
+        this.size = new Rectangle(0, 0, 1, 1);
 
         /**
          * The current resolution / device pixel ratio
@@ -61,14 +63,14 @@ class RenderTarget
          * @member {number}
          * @default 1
          */
-        this.resolution = resolution || CONST.RESOLUTION;
+        this.resolution = resolution || RESOLUTION;
 
         /**
          * The projection matrix
          *
          * @member {PIXI.Matrix}
          */
-        this.projectionMatrix = new math.Matrix();
+        this.projectionMatrix = new Matrix();
 
         /**
          * The object's transform
@@ -89,7 +91,7 @@ class RenderTarget
          *
          * @member {glCore.GLBuffer}
          */
-        this.defaultFrame = new math.Rectangle();
+        this.defaultFrame = new Rectangle();
         this.destinationFrame = null;
         this.sourceFrame = null;
 
@@ -121,7 +123,7 @@ class RenderTarget
          * @default PIXI.SCALE_MODES.DEFAULT
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
+        this.scaleMode = scaleMode || SCALE_MODES.DEFAULT;
 
         /**
          * Whether this object is the root element or not
@@ -130,19 +132,17 @@ class RenderTarget
          */
         this.root = root;
 
-
         if (!this.root)
         {
             this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
 
-            if( this.scaleMode === CONST.SCALE_MODES.NEAREST)
+            if (this.scaleMode === SCALE_MODES.NEAREST)
             {
                 this.frameBuffer.texture.enableNearestScaling();
             }
             else
             {
                 this.frameBuffer.texture.enableLinearScaling();
-
             }
             /*
                 A frame buffer needs a target to render to..
@@ -157,7 +157,6 @@ class RenderTarget
             // make it a null framebuffer..
             this.frameBuffer = new GLFramebuffer(gl, 100, 100);
             this.frameBuffer.framebuffer = null;
-
         }
 
         this.setFrame();
@@ -168,12 +167,13 @@ class RenderTarget
     /**
      * Clears the filter texture.
      *
-     * @param [clearColor=this.clearColor] {number[]} Array of [r,g,b,a] to clear the framebuffer
+     * @param {number[]} [clearColor=this.clearColor] - Array of [r,g,b,a] to clear the framebuffer
      */
     clear(clearColor)
     {
         const cc = clearColor || this.clearColor;
-        this.frameBuffer.clear(cc[0],cc[1],cc[2],cc[3]);//r,g,b,a);
+
+        this.frameBuffer.clear(cc[0], cc[1], cc[2], cc[3]);// r,g,b,a);
     }
 
     /**
@@ -182,7 +182,7 @@ class RenderTarget
      */
     attachStencilBuffer()
     {
-        //TODO check if stencil is done?
+        // TODO check if stencil is done?
         /**
          * The stencil buffer is used for masking in pixi
          * lets create one and then add attach it to the framebuffer..
@@ -193,6 +193,12 @@ class RenderTarget
         }
     }
 
+    /**
+     * Sets the frame of the render target.
+     *
+     * @param {Rectangle} destinationFrame - The destination frame.
+     * @param {Rectangle} sourceFrame - The source frame.
+     */
     setFrame(destinationFrame, sourceFrame)
     {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
@@ -205,42 +211,49 @@ class RenderTarget
      */
     activate()
     {
-        //TOOD refactor usage of frame..
+        // TOOD refactor usage of frame..
         const gl = this.gl;
 
         // make surethe texture is unbound!
         this.frameBuffer.bind();
 
-        this.calculateProjection( this.destinationFrame, this.sourceFrame );
+        this.calculateProjection(this.destinationFrame, this.sourceFrame);
 
-        if(this.transform)
+        if (this.transform)
         {
             this.projectionMatrix.append(this.transform);
         }
 
-        //TODO add a check as them may be the same!
-        if(this.destinationFrame !== this.sourceFrame)
+        // TODO add a check as them may be the same!
+        if (this.destinationFrame !== this.sourceFrame)
         {
-
             gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height* this.resolution) | 0);
+            gl.scissor(
+                this.destinationFrame.x | 0,
+                this.destinationFrame.y | 0,
+                (this.destinationFrame.width * this.resolution) | 0,
+                (this.destinationFrame.height * this.resolution) | 0
+            );
         }
         else
         {
             gl.disable(gl.SCISSOR_TEST);
         }
 
-
         // TODO - does not need to be updated all the time??
-        gl.viewport(this.destinationFrame.x | 0,this.destinationFrame.y | 0, (this.destinationFrame.width * this.resolution) | 0, (this.destinationFrame.height * this.resolution)|0);
-
-
+        gl.viewport(
+            this.destinationFrame.x | 0,
+            this.destinationFrame.y | 0,
+            (this.destinationFrame.width * this.resolution) | 0,
+            (this.destinationFrame.height * this.resolution) | 0
+        );
     }
-
 
     /**
      * Updates the projection matrix based on a projection frame (which is a rectangle)
      *
+     * @param {Rectangle} destinationFrame - The destination frame.
+     * @param {Rectangle} sourceFrame - The source frame.
      */
     calculateProjection(destinationFrame, sourceFrame)
     {
@@ -253,28 +266,27 @@ class RenderTarget
         // TODO: make dest scale source
         if (!this.root)
         {
-            pm.a = 1 / destinationFrame.width*2;
-            pm.d = 1 / destinationFrame.height*2;
+            pm.a = 1 / destinationFrame.width * 2;
+            pm.d = 1 / destinationFrame.height * 2;
 
-            pm.tx = -1 - sourceFrame.x * pm.a;
-            pm.ty = -1 - sourceFrame.y * pm.d;
+            pm.tx = -1 - (sourceFrame.x * pm.a);
+            pm.ty = -1 - (sourceFrame.y * pm.d);
         }
         else
         {
-            pm.a = 1 / destinationFrame.width*2;
-            pm.d = -1 / destinationFrame.height*2;
+            pm.a = 1 / destinationFrame.width * 2;
+            pm.d = -1 / destinationFrame.height * 2;
 
-            pm.tx = -1 - sourceFrame.x * pm.a;
-            pm.ty = 1 - sourceFrame.y * pm.d;
+            pm.tx = -1 - (sourceFrame.x * pm.a);
+            pm.ty = 1 - (sourceFrame.y * pm.d);
         }
     }
-
 
     /**
      * Resizes the texture to the specified width and height
      *
-     * @param width {Number} the new width of the texture
-     * @param height {Number} the new height of the texture
+     * @param {number} width - the new width of the texture
+     * @param {number} height - the new height of the texture
      */
     resize(width, height)
     {
@@ -292,12 +304,11 @@ class RenderTarget
         this.defaultFrame.width = width;
         this.defaultFrame.height = height;
 
-
         this.frameBuffer.resize(width * this.resolution, height * this.resolution);
 
         const projectionFrame = this.frame || this.size;
 
-        this.calculateProjection( projectionFrame );
+        this.calculateProjection(projectionFrame);
     }
 
     /**
@@ -312,5 +323,3 @@ class RenderTarget
         this.texture = null;
     }
 }
-
-export default RenderTarget;

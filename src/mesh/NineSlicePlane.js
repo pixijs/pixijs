@@ -31,19 +31,23 @@ const DEFAULT_BORDER_SIZE = 10;
  * @class
  * @extends PIXI.mesh.Plane
  * @memberof PIXI.mesh
- * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
- * @param {int} [leftWidth=10] size of the left vertical bar (A)
- * @param {int} [topHeight=10] size of the top horizontal bar (C)
- * @param {int} [rightWidth=10] size of the right vertical bar (B)
- * @param {int} [bottomHeight=10] size of the bottom horizontal bar (D)
  *
  */
-class NineSlicePlane extends Plane {
+export default class NineSlicePlane extends Plane
+{
+    /**
+     * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
+     * @param {int} [leftWidth=10] size of the left vertical bar (A)
+     * @param {int} [topHeight=10] size of the top horizontal bar (C)
+     * @param {int} [rightWidth=10] size of the right vertical bar (B)
+     * @param {int} [bottomHeight=10] size of the bottom horizontal bar (D)
+     */
     constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
     {
         super(texture, 4, 4);
 
         const uvs = this.uvs;
+
         // right and bottom uv's are always 1
         uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
         uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
@@ -52,6 +56,7 @@ class NineSlicePlane extends Plane {
         this._origHeight = texture.height;
         this._uvw = 1 / this._origWidth;
         this._uvh = 1 / this._origHeight;
+
         /**
          * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
          *
@@ -60,6 +65,7 @@ class NineSlicePlane extends Plane {
          * @override
          */
         this.width = texture.width;
+
         /**
          * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
          *
@@ -70,9 +76,9 @@ class NineSlicePlane extends Plane {
         this.height = texture.height;
 
         uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * leftWidth;
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * rightWidth;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * rightWidth);
         uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * topHeight;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * bottomHeight;
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * bottomHeight);
 
         /**
          * The width of the left column (a)
@@ -80,18 +86,21 @@ class NineSlicePlane extends Plane {
          * @member {number}
          */
         this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
+
         /**
          * The width of the right column (b)
          *
          * @member {number}
          */
         this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
+
         /**
          * The height of the top row (c)
          *
          * @member {number}
          */
         this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
+
         /**
          * The height of the bottom row (d)
          *
@@ -100,17 +109,27 @@ class NineSlicePlane extends Plane {
         this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
     }
 
+    /**
+     * Updates the horizontal vertices.
+     *
+     */
     updateHorizontalVertices()
     {
         const vertices = this.vertices;
+
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
+    /**
+     * Updates the vertical vertices.
+     *
+     */
     updateVerticalVertices()
     {
         const vertices = this.vertices;
+
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
@@ -119,12 +138,13 @@ class NineSlicePlane extends Plane {
     /**
      * Renders the object using the Canvas renderer
      *
-     * @param renderer {PIXI.CanvasRenderer}
      * @private
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer to render with.
      */
     _renderCanvas(renderer)
     {
         const context = renderer.context;
+
         context.globalAlpha = this.worldAlpha;
 
         const transform = this.worldTransform;
@@ -132,11 +152,25 @@ class NineSlicePlane extends Plane {
 
         if (renderer.roundPixels)
         {
-            context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, (transform.tx * res) | 0, (transform.ty * res) | 0);
+            context.setTransform(
+                transform.a * res,
+                transform.b * res,
+                transform.c * res,
+                transform.d * res,
+                (transform.tx * res) | 0,
+                (transform.ty * res) | 0
+            );
         }
         else
         {
-            context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
+            context.setTransform(
+                transform.a * res,
+                transform.b * res,
+                transform.c * res,
+                transform.d * res,
+                transform.tx * res,
+                transform.ty * res
+            );
         }
 
         const base = this._texture.baseTexture;
@@ -160,15 +194,15 @@ class NineSlicePlane extends Plane {
      * to mimic the exact drawing behavior of stretching the image like WebGL does, we need to make sure
      * that the source area is at least 1 pixel in size, otherwise nothing gets drawn when a slice size of 0 is used.
      *
-     * @param context
-     * @param textureSource
-     * @param w    width of the texture
-     * @param h height of the texture
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
      * @private
+     * @param {CanvasRenderingContext2D} context - The context to draw with.
+     * @param {CanvasImageSource} textureSource - The source to draw.
+     * @param {number} w - width of the texture
+     * @param {number} h - height of the texture
+     * @param {number} x1 - x index 1
+     * @param {number} y1 - y index 1
+     * @param {number} x2 - x index 2
+     * @param {number} y2 - y index 2
      */
     drawSegment(context, textureSource, w, h, x1, y1, x2, y2)
     {
@@ -186,19 +220,24 @@ class NineSlicePlane extends Plane {
         {
             sw = 1;
         }
+
         if (sh < 1)
         {
             sh = 1;
         }
-        // make sure destination is at least 1 pixel wide and high, otherwise you get lines when rendering close to original size.
+
+        // make sure destination is at least 1 pixel wide and high, otherwise you get
+        // lines when rendering close to original size.
         if (dw < 1)
         {
             dw = 1;
         }
+
         if (dh < 1)
         {
             dh = 1;
         }
+
         context.drawImage(textureSource, uvs[x1] * w, uvs[y1] * h, sw, sh, vertices[x1], vertices[y1], dw, dh);
     }
 
@@ -207,38 +246,44 @@ class NineSlicePlane extends Plane {
      *
      * @member {number}
      * @memberof PIXI.NineSlicePlane#
-     * @override
      */
     get width()
     {
         return this._width;
     }
 
+    /**
+     * Sets the width.
+     *
+     * @param {number} value - the value to set to.
+     */
     set width(value)
     {
         this._width = value;
         this.updateVerticalVertices();
     }
 
-
     /**
      * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
      *
      * @member {number}
      * @memberof PIXI.NineSlicePlane#
-     * @override
      */
     get height()
     {
         return this._height;
     }
 
+    /**
+     * Sets the height.
+     *
+     * @param {number} value - the value to set to.
+     */
     set height(value)
     {
         this._height = value;
         this.updateHorizontalVertices();
     }
-
 
     /**
      * The width of the left column
@@ -250,13 +295,21 @@ class NineSlicePlane extends Plane {
         return this._leftWidth;
     }
 
+    /**
+     * Sets the width of the left column.
+     *
+     * @param {number} value - the value to set to.
+     */
     set leftWidth(value)
     {
         this._leftWidth = value;
+
         const uvs = this.uvs;
         const vertices = this.vertices;
+
         uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
+
         this.dirty = true;
     }
 
@@ -270,16 +323,23 @@ class NineSlicePlane extends Plane {
         return this._rightWidth;
     }
 
+    /**
+     * Sets the width of the right column.
+     *
+     * @param {number} value - the value to set to.
+     */
     set rightWidth(value)
     {
         this._rightWidth = value;
+
         const uvs = this.uvs;
         const vertices = this.vertices;
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - this._uvw * value;
+
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * value);
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
+
         this.dirty = true;
     }
-
 
     /**
      * The height of the top row
@@ -291,13 +351,21 @@ class NineSlicePlane extends Plane {
         return this._topHeight;
     }
 
+    /**
+     * Sets the height of the top row.
+     *
+     * @param {number} value - the value to set to.
+     */
     set topHeight(value)
     {
         this._topHeight = value;
+
         const uvs = this.uvs;
         const vertices = this.vertices;
+
         uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
+
         this.dirty = true;
     }
 
@@ -311,15 +379,21 @@ class NineSlicePlane extends Plane {
         return this._bottomHeight;
     }
 
+    /**
+     * Sets the height of the bottom row.
+     *
+     * @param {number} value - the value to set to.
+     */
     set bottomHeight(value)
     {
         this._bottomHeight = value;
+
         const uvs = this.uvs;
         const vertices = this.vertices;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - this._uvh * value;
+
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * value);
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
+
         this.dirty = true;
     }
 }
-
-export default NineSlicePlane;

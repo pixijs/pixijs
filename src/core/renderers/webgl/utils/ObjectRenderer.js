@@ -6,15 +6,9 @@ import WebGLManager from '../managers/WebGLManager';
  * @class
  * @extends PIXI.WebGLManager
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-class ObjectRenderer extends WebGLManager
+export default class ObjectRenderer extends WebGLManager
 {
-    constructor(renderer)
-    {
-        super(renderer);
-    }
-
     /**
      * Starts the renderer and sets the shader
      *
@@ -45,12 +39,10 @@ class ObjectRenderer extends WebGLManager
     /**
      * Renders an object
      *
-     * @param object {PIXI.DisplayObject} The object to render.
+     * @param {PIXI.DisplayObject} object - The object to render.
      */
     render(object) // eslint-disable-line no-unused-vars
     {
         // render the object
     }
 }
-
-export default ObjectRenderer;

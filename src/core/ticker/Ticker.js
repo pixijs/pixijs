@@ -1,4 +1,4 @@
-import CONST from '../const';
+import { TARGET_FPMS } from '../const';
 import EventEmitter from 'eventemitter3';
 
 // Internal event used by composed emitter
@@ -14,8 +14,11 @@ const TICK = 'tick';
  * @class
  * @memberof PIXI.ticker
  */
-class Ticker
+export default class Ticker
 {
+    /**
+     *
+     */
     constructor()
     {
         /**
@@ -68,7 +71,7 @@ class Ticker
          * @member {number}
          * @default 1 / TARGET_FPMS
          */
-        this.elapsedMS = 1 / CONST.TARGET_FPMS; // default to target frame time
+        this.elapsedMS = 1 / TARGET_FPMS; // default to target frame time
 
         /**
          * The last time {@link PIXI.ticker.Ticker#update} was invoked.
@@ -116,6 +119,7 @@ class Ticker
          * any animation API, just invoke ticker.update(time).
          *
          * @private
+         * @param {number} time - Time since last tick.
          */
         this._tick = (time) =>
         {
@@ -192,8 +196,8 @@ class Ticker
      * internal 'tick' event. It checks if the emitter has listeners,
      * and if so it requests a new animation frame at this point.
      *
-     * @param fn {Function} The listener function to be added for updates
-     * @param [context] {Function} The listener context
+     * @param {Function} fn - The listener function to be added for updates
+     * @param {Function} [context] - The listener context
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
     add(fn, context)
@@ -210,8 +214,8 @@ class Ticker
      * internal 'tick' event. It checks if the emitter has listeners,
      * and if so it requests a new animation frame at this point.
      *
-     * @param fn {Function} The listener function to be added for one update
-     * @param [context] {Function} The listener context
+     * @param {Function} fn - The listener function to be added for one update
+     * @param {Function} [context] - The listener context
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
     addOnce(fn, context)
@@ -228,8 +232,8 @@ class Ticker
      * It checks if the emitter has listeners for 'tick' event.
      * If it does, then it cancels the animation frame.
      *
-     * @param [fn] {Function} The listener function to be removed
-     * @param [context] {Function} The listener context to be removed
+     * @param {Function} [fn] - The listener function to be removed
+     * @param {Function} [context] - The listener context to be removed
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
     remove(fn, context)
@@ -281,14 +285,11 @@ class Ticker
      * frame callbacks if the ticker instance has been started
      * and listeners are added.
      *
-     * @param [currentTime=performance.now()] {number} the current time of execution
+     * @param {number} [currentTime=performance.now()] - the current time of execution
      */
-    update(currentTime)
+    update(currentTime = performance.now())
     {
         let elapsedMS;
-
-        // Allow calling update directly with default currentTime.
-        currentTime = currentTime || performance.now();
 
         // If the difference in time is zero or negative, we ignore most of the work done here.
         // If there is no valid difference, then should be no reason to let anyone know about it.
@@ -316,7 +317,7 @@ class Ticker
                 elapsedMS = this._maxElapsedMS;
             }
 
-            this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
+            this.deltaTime = elapsedMS * TARGET_FPMS * this.speed;
 
             // Invoke listeners added to internal emitter
             this._emitter.emit(TICK, this.deltaTime);
@@ -359,12 +360,17 @@ class Ticker
     {
         return 1000 / this._maxElapsedMS;
     }
+
+    /**
+     * Sets the min fps.
+     *
+     * @param {number} fps - value to set.
+     */
     set minFPS(fps)
     {
         // Clamp: 0 to TARGET_FPMS
-        const minFPMS = Math.min(Math.max(0, fps) / 1000, CONST.TARGET_FPMS);
+        const minFPMS = Math.min(Math.max(0, fps) / 1000, TARGET_FPMS);
+
         this._maxElapsedMS = 1 / minFPMS;
     }
 }
-
-export default Ticker;

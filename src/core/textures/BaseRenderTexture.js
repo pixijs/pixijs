@@ -1,5 +1,5 @@
 import BaseTexture from './BaseTexture';
-import CONST from '../const';
+import { RESOLUTION, SCALE_MODES } from '../const';
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -40,18 +40,20 @@ import CONST from '../const';
  * @class
  * @extends PIXI.BaseTexture
  * @memberof PIXI
- * @param [width=100] {number} The width of the base render texture
- * @param [height=100] {number} The height of the base render texture
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
  */
-class BaseRenderTexture extends BaseTexture
+export default class BaseRenderTexture extends BaseTexture
 {
-    constructor(width=100, height=100, scaleMode, resolution)
+    /**
+     * @param {number} [width=100] - The width of the base render texture
+     * @param {number} [height=100] - The height of the base render texture
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
+     */
+    constructor(width = 100, height = 100, scaleMode, resolution)
     {
         super(null, scaleMode);
 
-        this.resolution = resolution || CONST.RESOLUTION;
+        this.resolution = resolution || RESOLUTION;
 
         this.width = width;
         this.height = height;
@@ -59,7 +61,7 @@ class BaseRenderTexture extends BaseTexture
         this.realWidth = this.width * this.resolution;
         this.realHeight = this.height * this.resolution;
 
-        this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
+        this.scaleMode = scaleMode || SCALE_MODES.DEFAULT;
         this.hasLoaded = true;
 
         /**
@@ -89,12 +91,11 @@ class BaseRenderTexture extends BaseTexture
     /**
      * Resizes the BaseRenderTexture.
      *
-     * @param width {number} The width to resize to.
-     * @param height {number} The height to resize to.
+     * @param {number} width - The width to resize to.
+     * @param {number} height - The height to resize to.
      */
     resize(width, height)
     {
-
         if (width === this.width && height === this.height)
         {
             return;
@@ -114,7 +115,6 @@ class BaseRenderTexture extends BaseTexture
         }
 
         this.emit('update', this);
-
     }
 
     /**
@@ -127,5 +127,3 @@ class BaseRenderTexture extends BaseTexture
         this.renderer = null;
     }
 }
-
-export default BaseRenderTexture;

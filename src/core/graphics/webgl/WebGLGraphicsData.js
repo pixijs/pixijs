@@ -6,15 +6,16 @@ import glCore from 'pixi-gl-core';
  * @class
  * @private
  * @memberof PIXI
- * @param gl {WebGLRenderingContext} The current WebGL drawing context
- * @param shader {PIXI.Shader} The shader
- * @param attribsState {object} The state for the VAO
  */
-class WebGLGraphicsData
+export default class WebGLGraphicsData
 {
+    /**
+     * @param {WebGLRenderingContext} gl - The current WebGL drawing context
+     * @param {PIXI.Shader} shader - The shader
+     * @param {object} attribsState - The state for the VAO
+     */
     constructor(gl, shader, attribsState)
     {
-
         /**
          * The current WebGL drawing context
          *
@@ -22,12 +23,12 @@ class WebGLGraphicsData
          */
         this.gl = gl;
 
-        //TODO does this need to be split before uploding??
+        // TODO does this need to be split before uploding??
         /**
          * An array of color components (r,g,b)
          * @member {number[]}
          */
-        this.color = [0,0,0]; // color split!
+        this.color = [0, 0, 0]; // color split!
 
         /**
          * An array of points to draw
@@ -67,11 +68,10 @@ class WebGLGraphicsData
          */
         this.shader = shader;
 
-        this.vao =  new glCore.VertexArrayObject(gl, attribsState)
+        this.vao = new glCore.VertexArrayObject(gl, attribsState)
         .addIndex(this.indexBuffer)
         .addAttribute(this.buffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 6, 0)
         .addAttribute(this.buffer, shader.attributes.aColor, gl.FLOAT, false, 4 * 6, 2 * 4);
-
     }
 
     /**
@@ -89,14 +89,13 @@ class WebGLGraphicsData
     upload()
     {
         this.glPoints = new Float32Array(this.points);
-        this.buffer.upload( this.glPoints );
+        this.buffer.upload(this.glPoints);
 
         this.glIndices = new Uint16Array(this.indices);
-        this.indexBuffer.upload( this.glIndices );
+        this.indexBuffer.upload(this.glIndices);
 
         this.dirty = false;
     }
-
 
     /**
      * Empties all the data
@@ -120,5 +119,3 @@ class WebGLGraphicsData
         this.glIndices = null;
     }
 }
-
-export default WebGLGraphicsData;

@@ -4,7 +4,7 @@ import createIndicesForQuads from '../../utils/createIndicesForQuads';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
-import CONST from '../../const';
+import { SPRITE_BATCH_SIZE, SPRITE_MAX_TEXTURES } from '../../const';
 import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
@@ -17,10 +17,12 @@ let TICK = 0;
  * @private
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
- * @param renderer {PIXI.WebGLRenderer} The renderer this sprite batch works for.
  */
-class SpriteRenderer extends ObjectRenderer
+export default class SpriteRenderer extends ObjectRenderer
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this sprite batch works for.
+     */
     constructor(renderer)
     {
         super(renderer);
@@ -45,7 +47,7 @@ class SpriteRenderer extends ObjectRenderer
          *
          * @member {number}
          */
-        this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+        this.size = SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
         // the total number of bytes in our batch
         // let numVerts = this.size * 4 * this.vertByteSize;
@@ -53,8 +55,7 @@ class SpriteRenderer extends ObjectRenderer
         this.buffers = [];
         for (let i = 1; i <= bitTwiddle.nextPow2(this.size); i *= 2)
         {
-            const numVertsTemp = i * 4 * this.vertByteSize;
-            this.buffers.push(new Buffer(numVertsTemp));
+            this.buffers.push(new Buffer(i * 4 * this.vertByteSize));
         }
 
         /**
@@ -78,7 +79,7 @@ class SpriteRenderer extends ObjectRenderer
 
         for (let k = 0; k < this.size; k++)
         {
-            this.groups[k] = {textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0};
+            this.groups[k] = { textures: [], textureCount: 0, ids: [], size: 0, start: 0, blend: 0 };
         }
 
         this.sprites = [];
@@ -102,7 +103,7 @@ class SpriteRenderer extends ObjectRenderer
         const gl = this.renderer.gl;
 
         // step 1: first check max textures the GPU can handle.
-        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), CONST.SPRITE_MAX_TEXTURES);
+        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), SPRITE_MAX_TEXTURES);
 
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
@@ -122,6 +123,8 @@ class SpriteRenderer extends ObjectRenderer
         {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
 
+            /* eslint-disable max-len */
+
             // build the vao object that will render..
             this.vaos[i] = this.renderer.createVao()
                 .addIndex(this.indexBuffer)
@@ -129,12 +132,18 @@ class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+
+            /* eslint-disable max-len */
         }
 
         this.vao = this.vaos[0];
         this.currentBlendMode = 99999;
     }
 
+    /**
+     * Called before the renderer starts rendering.
+     *
+     */
     onPrerender()
     {
         this.vertexCount = 0;
@@ -143,20 +152,18 @@ class SpriteRenderer extends ObjectRenderer
     /**
      * Renders the sprite object.
      *
-     * @param sprite {PIXI.Sprite} the sprite to render when using this spritebatch
+     * @param {PIXI.Sprite} sprite - the sprite to render when using this spritebatch
      */
     render(sprite)
     {
-        //TODO set blend modes..
+        // TODO set blend modes..
         // check texture..
         if (this.currentIndex >= this.size)
         {
             this.flush();
         }
 
-
         // get the uvs for the texture
-
 
         // if the uvs have not updated then no point rendering just yet!
         if (!sprite.texture._uvs)
@@ -257,12 +264,11 @@ class SpriteRenderer extends ObjectRenderer
                     currentGroup.textures[currentGroup.textureCount++] = nextTexture;
                     textureCount++;
                 }
-
             }
 
             vertexData = sprite.vertexData;
 
-            //TODO this sum does not need to be set each frame..
+            // TODO this sum does not need to be set each frame..
             tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
             uvs = sprite._texture._uvs.uvsUint32;
             textureId = nextTexture._id;
@@ -271,7 +277,7 @@ class SpriteRenderer extends ObjectRenderer
             {
                 const resolution = this.renderer.resolution;
 
-                //xy
+                // xy
                 float32View[index] = ((vertexData[0] * resolution) | 0) / resolution;
                 float32View[index + 1] = ((vertexData[1] * resolution) | 0) / resolution;
 
@@ -286,11 +292,10 @@ class SpriteRenderer extends ObjectRenderer
                 // xy
                 float32View[index + 15] = ((vertexData[6] * resolution) | 0) / resolution;
                 float32View[index + 16] = ((vertexData[7] * resolution) | 0) / resolution;
-
             }
             else
             {
-                //xy
+                // xy
                 float32View[index] = vertexData[0];
                 float32View[index + 1] = vertexData[1];
 
@@ -339,18 +344,18 @@ class SpriteRenderer extends ObjectRenderer
         this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
         this.vao = this.vaos[this.vertexCount].bind();
 
-        /// render the groups..
+        // / render the groups..
         for (i = 0; i < groupCount; i++)
         {
-
             const group = groups[i];
             const groupTextureCount = group.textureCount;
+
             shader = this.shaders[groupTextureCount - 1];
 
             if (!shader)
             {
                 shader = this.shaders[groupTextureCount - 1] = generateMultiTextureShader(gl, groupTextureCount);
-                //console.log("SHADER generated for " + textureCount + " textures")
+                // console.log("SHADER generated for " + textureCount + " textures")
             }
 
             this.renderer.bindShader(shader);
@@ -376,10 +381,14 @@ class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-        //this.renderer.bindShader(this.shader);
-        //TICK %= 1000;
+        // this.renderer.bindShader(this.shader);
+        // TICK %= 1000;
     }
 
+    /**
+     * Stops and flushes the current batch.
+     *
+     */
     stop()
     {
         this.flush();
@@ -406,7 +415,6 @@ class SpriteRenderer extends ObjectRenderer
 
         for (let i = 0; i < this.shaders.length; i++)
         {
-
             if (this.shaders[i])
             {
                 this.shaders[i].destroy();
@@ -428,5 +436,3 @@ class SpriteRenderer extends ObjectRenderer
 }
 
 WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
-
-export default SpriteRenderer;

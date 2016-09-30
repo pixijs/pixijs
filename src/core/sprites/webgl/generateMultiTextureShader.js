@@ -1,5 +1,5 @@
 import Shader from '../../Shader';
-const glslify = require('glslify');
+const glslify = require('glslify'); // eslint-disable-line no-undef
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
@@ -12,10 +12,10 @@ const fragTemplate = [
     'float textureId = floor(vTextureId+0.5);',
     '%forloop%',
     'gl_FragColor = color * vColor;',
-    '}'
+    '}',
 ].join('\n');
 
-function generateMultiTextureShader(gl, maxTextures)
+export default function generateMultiTextureShader(gl, maxTextures)
 {
     const vertexSrc = glslify('./texture.vert');
     let fragmentSrc = fragTemplate;
@@ -26,6 +26,7 @@ function generateMultiTextureShader(gl, maxTextures)
     const shader = new Shader(gl, vertexSrc, fragmentSrc);
 
     const sampleValues = [];
+
     for (let i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
@@ -46,12 +47,12 @@ function generateSampleSrc(maxTextures)
 
     for (let i = 0; i < maxTextures; i++)
     {
-        if(i > 0)
+        if (i > 0)
         {
             src += '\nelse ';
         }
 
-        if(i < maxTextures-1)
+        if (i < maxTextures - 1)
         {
             src += `if(textureId == ${i}.0)`;
         }
@@ -66,5 +67,3 @@ function generateSampleSrc(maxTextures)
 
     return src;
 }
-
-export default generateMultiTextureShader;

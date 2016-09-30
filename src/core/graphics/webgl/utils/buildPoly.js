@@ -1,5 +1,5 @@
 import buildLine from './buildLine';
-import utils from '../../../utils';
+import { hex2rgb } from '../../../utils';
 import earcut from 'earcut';
 
 /**
@@ -9,10 +9,10 @@ import earcut from 'earcut';
  *
  * @ignore
  * @private
- * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object containing all the necessary properties
- * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-const buildPoly = function (graphicsData, webGLData)
+export default function buildPoly(graphicsData, webGLData)
 {
     graphicsData.points = graphicsData.shape.points.slice();
 
@@ -40,7 +40,7 @@ const buildPoly = function (graphicsData, webGLData)
         const length = points.length / 2;
 
         // sort color
-        const color = utils.hex2rgb(graphicsData.fillColor);
+        const color = hex2rgb(graphicsData.fillColor);
         const alpha = graphicsData.fillAlpha;
         const r = color[0] * alpha;
         const g = color[1] * alpha;
@@ -66,7 +66,7 @@ const buildPoly = function (graphicsData, webGLData)
 
         for (let i = 0; i < length; i++)
         {
-            verts.push(points[i * 2], points[i * 2 + 1],
+            verts.push(points[i * 2], points[(i * 2) + 1],
                 r, g, b, alpha);
         }
     }
@@ -75,6 +75,4 @@ const buildPoly = function (graphicsData, webGLData)
     {
         buildLine(graphicsData, webGLData);
     }
-};
-
-export default buildPoly;
+}

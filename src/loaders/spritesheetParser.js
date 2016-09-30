@@ -1,12 +1,12 @@
-import {Resource} from 'resource-loader';
+import { Resource } from 'resource-loader';
 import path from 'path';
-import core from '../core';
+import * as core from '../core';
 
 const BATCH_SIZE = 1000;
 
 export default function ()
 {
-    return function (resource, next)
+    return function spritesheetParser(resource, next)
     {
         let resourcePath;
         const imageResourceName = `${resource.name}_image`;
@@ -14,13 +14,15 @@ export default function ()
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
         if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
         {
-            return next();
+            next();
+
+            return;
         }
 
         const loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE,
-            metadata: resource.metadata.imageMetadata
+            metadata: resource.metadata.imageMetadata,
         };
 
         // Prepend url path unless the resource image is a data url
@@ -34,7 +36,7 @@ export default function ()
         }
 
         // load the image for this sheet
-        this.add(imageResourceName, resourcePath, loadOptions, function (res)
+        this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res)
         {
             resource.textures = {};
 
@@ -54,18 +56,32 @@ export default function ()
 
                     if (rect)
                     {
-
                         let frame = null;
                         let trim = null;
-                        const orig = new core.Rectangle(0, 0, frames[i].sourceSize.w / resolution, frames[i].sourceSize.h / resolution);
+                        const orig = new core.Rectangle(
+                            0,
+                            0,
+                            frames[i].sourceSize.w / resolution,
+                            frames[i].sourceSize.h / resolution
+                        );
 
                         if (frames[i].rotated)
                         {
-                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.h / resolution, rect.w / resolution);
+                            frame = new core.Rectangle(
+                                rect.x / resolution,
+                                rect.y / resolution,
+                                rect.h / resolution,
+                                rect.w / resolution
+                            );
                         }
                         else
                         {
-                            frame = new core.Rectangle(rect.x / resolution, rect.y / resolution, rect.w / resolution, rect.h / resolution);
+                            frame = new core.Rectangle(
+                                rect.x / resolution,
+                                rect.y / resolution,
+                                rect.w / resolution,
+                                rect.h / resolution
+                            );
                         }
 
                         //  Check to see if the sprite is trimmed
@@ -79,11 +95,16 @@ export default function ()
                             );
                         }
 
-                        resource.textures[i] = new core.Texture(res.texture.baseTexture, frame, orig, trim, frames[i].rotated ? 2 : 0);
+                        resource.textures[i] = new core.Texture(
+                            res.texture.baseTexture,
+                            frame,
+                            orig,
+                            trim,
+                            frames[i].rotated ? 2 : 0
+                        );
 
                         // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                         core.utils.TextureCache[i] = resource.textures[i];
-
                     }
 
                     frameIndex++;

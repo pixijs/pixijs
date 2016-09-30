@@ -2,14 +2,13 @@ import glCore from 'pixi-gl-core';
 
 const defaultValue = glCore.shader.defaultValue;
 
-function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
+export default function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 {
     const vertUniforms = extractUniformsFromString(vertexSrc, mask);
     const fragUniforms = extractUniformsFromString(fragmentSrc, mask);
 
     return Object.assign(vertUniforms, fragUniforms);
 }
-
 
 function extractUniformsFromString(string)
 {
@@ -18,10 +17,9 @@ function extractUniformsFromString(string)
     const uniforms = {};
     let nameSplit;
 
-
     // clean the lines a little - remove extra spaces / teabs etc
     // then split along ';'
-    const lines = string.replace(/\s+/g,' ')
+    const lines = string.replace(/\s+/g, ' ')
                 .split(/\s*;\s*/);
 
     // loop through..
@@ -29,7 +27,7 @@ function extractUniformsFromString(string)
     {
         const line = lines[i].trim();
 
-        if(line.indexOf('uniform') > -1)
+        if (line.indexOf('uniform') > -1)
         {
             const splitLine = line.split(' ');
             const type = splitLine[1];
@@ -37,7 +35,7 @@ function extractUniformsFromString(string)
             let name = splitLine[2];
             let size = 1;
 
-            if(name.indexOf('[') > -1)
+            if (name.indexOf('[') > -1)
             {
                 // array!
                 nameSplit = name.split(/\[|\]/);
@@ -45,12 +43,12 @@ function extractUniformsFromString(string)
                 size *= Number(nameSplit[1]);
             }
 
-            if(!name.match(maskRegex))
+            if (!name.match(maskRegex))
             {
                 uniforms[name] = {
-                    value:defaultValue(type, size),
+                    value: defaultValue(type, size),
                     name,
-                    type
+                    type,
                 };
             }
         }
@@ -58,5 +56,3 @@ function extractUniformsFromString(string)
 
     return uniforms;
 }
-
-export default extractUniformsFromSrc;

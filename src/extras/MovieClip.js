@@ -1,10 +1,10 @@
-import core from '../core';
+import * as core from '../core';
 
 /**
  * @typedef FrameObject
  * @type {object}
- * @property texture {PIXI.Texture} The {@link PIXI.Texture} of the frame
- * @property time {number} the duration of the frame in ms
+ * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
+ * @property {number} time - the duration of the frame in ms
  */
 
 /**
@@ -23,14 +23,16 @@ import core from '../core';
  * let mc = new PIXI.MovieClip(textureArray);
  * ```
  *
- *
  * @class
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
- * @param textures {PIXI.Texture[]|FrameObject[]} an array of {@link PIXI.Texture} or frame objects that make up the animation
  */
-class MovieClip extends core.Sprite
+export default class MovieClip extends core.Sprite
 {
+    /**
+     * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
+     *  objects that make up the animation
+     */
     constructor(textures)
     {
         super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
@@ -102,7 +104,7 @@ class MovieClip extends core.Sprite
      */
     stop()
     {
-        if(!this.playing)
+        if (!this.playing)
         {
             return;
         }
@@ -117,7 +119,7 @@ class MovieClip extends core.Sprite
      */
     play()
     {
-        if(this.playing)
+        if (this.playing)
         {
             return;
         }
@@ -129,13 +131,14 @@ class MovieClip extends core.Sprite
     /**
      * Stops the MovieClip and goes to a specific frame
      *
-     * @param frameNumber {number} frame index to stop at
+     * @param {number} frameNumber - frame index to stop at
      */
     gotoAndStop(frameNumber)
     {
         this.stop();
 
         const previousFrame = this.currentFrame;
+
         this._currentTime = frameNumber;
 
         if (previousFrame !== this.currentFrame)
@@ -153,7 +156,7 @@ class MovieClip extends core.Sprite
     /**
      * Goes to a specific frame and begins playing the MovieClip
      *
-     * @param frameNumber {number} frame index to start at
+     * @param {number} frameNumber - frame index to start at
      */
     gotoAndPlay(frameNumber)
     {
@@ -162,9 +165,11 @@ class MovieClip extends core.Sprite
         this.play();
     }
 
-    /*
-     * Updates the object transform for rendering
+    /**
+     * Updates the object transform for rendering.
+     *
      * @private
+     * @param {number} deltaTime - Time since last tick.
      */
     update(deltaTime)
     {
@@ -184,6 +189,7 @@ class MovieClip extends core.Sprite
             }
 
             const sign = Math.sign(this.animationSpeed * deltaTime);
+
             this._currentTime = Math.floor(this._currentTime);
 
             while (lag >= this._durations[this.currentFrame])
@@ -217,27 +223,23 @@ class MovieClip extends core.Sprite
                 this.onComplete();
             }
         }
-        else
+        else if (previousFrame !== this.currentFrame)
         {
-            if (previousFrame !== this.currentFrame)
-            {
-                this._texture = this._textures[this.currentFrame];
-                this._textureID = -1;
+            this._texture = this._textures[this.currentFrame];
+            this._textureID = -1;
 
-                if (this.onFrameChange)
-                {
-                    this.onFrameChange(this.currentFrame);
-                }
+            if (this.onFrameChange)
+            {
+                this.onFrameChange(this.currentFrame);
             }
         }
-
     }
 
-    /*
+    /**
      * Stops the MovieClip and destroys it
      *
      */
-    destroy( )
+    destroy()
     {
         this.stop();
         super.destroy();
@@ -247,7 +249,8 @@ class MovieClip extends core.Sprite
      * A short hand way of creating a movieclip from an array of frame ids
      *
      * @static
-     * @param frames {string[]} the array of frames ids the movieclip will use as its texture frames
+     * @param {string[]} frames - The array of frames ids the movieclip will use as its texture frames
+     * @return {MovieClip} The new movie clip with the specified frames.
      */
     static fromFrames(frames)
     {
@@ -265,7 +268,8 @@ class MovieClip extends core.Sprite
      * A short hand way of creating a movieclip from an array of image ids
      *
      * @static
-     * @param images {string[]} the array of image urls the movieclip will use as its texture frames
+     * @param {string[]} images - the array of image urls the movieclip will use as its texture frames
+     * @return {MovieClip} The new movie clip with the specified images as frames.
      */
     static fromImages(images)
     {
@@ -283,10 +287,10 @@ class MovieClip extends core.Sprite
      * totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
      * assigned to the MovieClip.
      *
+     * @readonly
      * @member {number}
      * @memberof PIXI.extras.MovieClip#
      * @default 0
-     * @readonly
      */
     get totalFrames()
     {
@@ -298,15 +302,20 @@ class MovieClip extends core.Sprite
      *
      * @member {PIXI.Texture[]}
      * @memberof PIXI.extras.MovieClip#
-     *
      */
     get textures()
     {
         return this._textures;
     }
+
+    /**
+     * Sets the textures.
+     *
+     * @param {PIXI.Texture[]} value - The texture to set.
+     */
     set textures(value)
     {
-        if(value[0] instanceof core.Texture)
+        if (value[0] instanceof core.Texture)
         {
             this._textures = value;
             this._durations = null;
@@ -315,7 +324,8 @@ class MovieClip extends core.Sprite
         {
             this._textures = [];
             this._durations = [];
-            for(let i = 0; i < value.length; i++)
+
+            for (let i = 0; i < value.length; i++)
             {
                 this._textures.push(value[i].texture);
                 this._durations.push(value[i].time);
@@ -333,12 +343,12 @@ class MovieClip extends core.Sprite
     get currentFrame()
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
+
         if (currentFrame < 0)
         {
             currentFrame += this._textures.length;
         }
+
         return currentFrame;
     }
 }
-
-export default MovieClip;

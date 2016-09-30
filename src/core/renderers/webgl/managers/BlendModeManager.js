@@ -4,10 +4,12 @@ import WebGLManager from './WebGLManager';
  * @class
  * @memberof PIXI
  * @extends PIXI.WebGLManager
- * @param renderer {PIXI.WebGLRenderer} The renderer this manager works for.
  */
-class BlendModeManager extends WebGLManager
+export default class BlendModeManager extends WebGLManager
 {
+    /**
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     */
     constructor(renderer)
     {
         super(renderer);
@@ -21,8 +23,9 @@ class BlendModeManager extends WebGLManager
     /**
      * Sets-up the given blendMode from WebGL's point of view.
      *
-     * @param blendMode {number} the blendMode, should be a Pixi const, such as `PIXI.BLEND_MODES.ADD`. See
-     *  {@link PIXI.BLEND_MODES} for possible values.
+     * @param {number} blendMode - the blendMode, should be a Pixi const, such as
+     *  `PIXI.BLEND_MODES.ADD`. See {@link PIXI.BLEND_MODES} for possible values.
+     * @return {boolean} Returns if the blend mode was changed.
      */
     setBlendMode(blendMode)
     {
@@ -34,10 +37,9 @@ class BlendModeManager extends WebGLManager
         this.currentBlendMode = blendMode;
 
         const mode = this.renderer.blendModes[this.currentBlendMode];
+
         this.renderer.gl.blendFunc(mode[0], mode[1]);
 
         return true;
     }
 }
-
-export default BlendModeManager;

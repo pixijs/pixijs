@@ -1,19 +1,22 @@
-import CONST from '../../const';
+import { SHAPES } from '../../const';
 
 /**
- * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height and its radius.
+ * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
+ * top-left corner point (x, y) and by its width and its height and its radius.
  *
  * @class
  * @memberof PIXI
- * @param [x=0] {number} The X coordinate of the upper-left corner of the rounded rectangle
- * @param [y=0] {number} The Y coordinate of the upper-left corner of the rounded rectangle
- * @param [width=0] {number} The overall width of this rounded rectangle
- * @param [height=0] {number} The overall height of this rounded rectangle
- * @param [radius=20] {number} Controls the radius of the rounded corners
  */
-class RoundedRectangle
+export default class RoundedRectangle
 {
-    constructor(x=0, y=0, width=0, height=0, radius=20)
+    /**
+     * @param {number} [x=0] - The X coordinate of the upper-left corner of the rounded rectangle
+     * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rounded rectangle
+     * @param {number} [width=0] - The overall width of this rounded rectangle
+     * @param {number} [height=0] - The overall height of this rounded rectangle
+     * @param {number} [radius=20] - Controls the radius of the rounded corners
+     */
+    constructor(x = 0, y = 0, width = 0, height = 0, radius = 20)
     {
         /**
          * @member {number}
@@ -50,10 +53,10 @@ class RoundedRectangle
          *
          * @member {number}
          * @readonly
-         * @default CONST.SHAPES.RREC
+         * @default PIXI.SHAPES.RREC
          * @see PIXI.SHAPES
          */
-        this.type = CONST.SHAPES.RREC;
+        this.type = SHAPES.RREC;
     }
 
     /**
@@ -69,8 +72,8 @@ class RoundedRectangle
     /**
      * Checks whether the x and y coordinates given are contained within this Rounded Rectangle
      *
-     * @param x {number} The X coordinate of the point to test
-     * @param y {number} The Y coordinate of the point to test
+     * @param {number} x - The X coordinate of the point to test
+     * @param {number} y - The Y coordinate of the point to test
      * @return {boolean} Whether the x/y coordinates are within this Rounded Rectangle
      */
     contains(x, y)
@@ -91,5 +94,3 @@ class RoundedRectangle
         return false;
     }
 }
-
-export default RoundedRectangle;

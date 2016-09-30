@@ -4,9 +4,11 @@
  * @class
  * @memberof PIXI.interaction
  */
-class InteractionEvent
+export default class InteractionEvent
 {
-
+    /**
+     *
+     */
     constructor()
     {
         /**
@@ -47,6 +49,7 @@ class InteractionEvent
 
     /**
      * Prevents event from reaching any objects other than the current object.
+     *
      */
     stopPropagation()
     {
@@ -55,6 +58,8 @@ class InteractionEvent
 
     /**
      * Prevents event from reaching any objects other than the current object.
+     *
+     * @private
      */
     _reset()
     {
@@ -62,7 +67,4 @@ class InteractionEvent
         this.currentTarget = null;
         this.target = null;
     }
-
 }
-
-export default InteractionEvent;

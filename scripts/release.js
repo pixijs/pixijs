@@ -1,11 +1,13 @@
 #!/usr/bin/env node
+'use strict';
 
 // Publish script to push releases of the bin files
 // the normally are gitignored
-var ghpages = require('gh-pages');
-var path = require('path');
-var packageInfo = require(path.join(__dirname, '..', 'package.json'));
-var options = {
+const ghpages = require('gh-pages');
+const path = require('path');
+const packageInfo = require(path.join(__dirname, '..', 'package.json'));
+
+const options = {
     src: [
         'bin/**/*',
         'scripts/**/*',
@@ -16,21 +18,23 @@ var options = {
         'LICENSE',
         '.eslintrc',
         '.editorconfig',
-        '.travis.yml'
+        '.travis.yml',
     ],
     dotfiles: true,
     branch: 'release',
     message: packageInfo.version,
-    logger: console.log.bind(console)
+    logger: console.log.bind(console),
 };
 
-ghpages.publish(process.cwd(), options, function(err)
+ghpages.publish(process.cwd(), options, (err) =>
 {
     if (err)
     {
         console.log(err);
         process.exit(1);
+
         return;
     }
+
     process.exit(0);
 });
