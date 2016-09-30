@@ -25,7 +25,7 @@
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
-    "coverage": "floss --path test/index.js -c bin/pixi.js -hs",
+    "coverage": "rimraf coverage && floss --path test/index.js -c bin/pixi.js -hs",
     "lint": "eslint scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
