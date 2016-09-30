@@ -794,7 +794,7 @@ export default class Graphics extends Container
         this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
         this._spriteRect.anchor.set(-rect.x / rect.width, -rect.y / rect.height);
-        this._spriteRect.onAnchorUpdate();
+        this._spriteRect._onAnchorUpdate();
 
         this._spriteRect._renderWebGL(renderer);
     }
