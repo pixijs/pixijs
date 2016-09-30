@@ -19,7 +19,6 @@ import { SHAPES } from '../../const';
  * @class
  * @private
  * @memberof PIXI
- * @extends PIXI.ObjectRenderer
  */
 export default class CanvasGraphicsRenderer
 {
@@ -35,7 +34,6 @@ export default class CanvasGraphicsRenderer
      * Renders a Graphics object to a canvas.
      *
      * @param {PIXI.Graphics} graphics - the actual graphics object to render
-     * @param {CanvasRenderingContext2D} context - the 2d drawing method of the canvas
      */
     render(graphics)
     {
