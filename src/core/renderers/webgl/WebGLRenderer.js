@@ -508,7 +508,6 @@ export default class WebGLRenderer extends SystemRenderer
      * Handles a restored webgl context
      *
      * @private
-     * @param {WebGLContextEvent} event - The context restored event.
      */
     handleContextRestored()
     {
