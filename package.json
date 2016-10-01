@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -23,8 +23,10 @@
     "start": "parallelshell \"npm run watch:lint\" \"npm run watch\"",
     "watch": "pixify -n PIXI -o pixi -w",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
-    "test": "floss --path test/index.js",
+    "test": "floss --path test/index.js -c bin/pixi.js -s",
     "test:debug": "npm test -- --debug",
+    "precoverage": "rimraf coverage && npm run build -- --noExternal",
+    "coverage": "npm test -- -h",
     "lint": "eslint scripts src test",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
@@ -46,12 +48,12 @@
   "dependencies": {
     "bit-twiddle": "^1.0.2",
     "earcut": "^2.0.7",
-    "eventemitter3": "^1.1.1",
+    "eventemitter3": "^2.0.0",
     "glslify": "^5.0.2",
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.2",
-    "resource-loader": "^1.6.4",
+    "resource-loader": "^1.8.0",
     "browserify-versionify": "^1.0.6"
   },
   "devDependencies": {
@@ -60,14 +62,14 @@
     "del": "^2.2.0",
     "electron-prebuilt": "^1.3.2",
     "eslint": "^3.5.0",
-    "floss": "^0.7.1",
+    "floss": "^1.2.0",
     "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git#releases/3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
-    "pixify": "^1.4.0",
+    "pixify": "^1.5.0",
     "rimraf": "^2.5.3",
     "watch": "^0.19.1"
   },

@@ -207,7 +207,7 @@ export default class DisplayObject extends EventEmitter
     /**
      * Retrieves the local bounds of the displayObject as a rectangle object
      *
-     * @param {PIXI.Rectangle} rect - Optional rectangle to store the result of the bounds calculation
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation
      * @return {PIXI.Rectangle} the rectangular bounding area
      */
     getLocalBounds(rect)

@@ -2,6 +2,7 @@ import WebGLManager from './WebGLManager';
 
 /**
  * @class
+ * @extends PIXI.WebGLManager
  * @memberof PIXI
  */
 export default class StencilManager extends WebGLManager

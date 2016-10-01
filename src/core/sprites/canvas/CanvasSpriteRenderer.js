@@ -23,7 +23,6 @@ const canvasRenderWorldTransform = new Matrix();
  * @class
  * @private
  * @memberof PIXI
- * @extends PIXI.ObjectRenderer
  */
 export default class CanvasSpriteRenderer
 {

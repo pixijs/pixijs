@@ -14,7 +14,7 @@ across all devices. The Pixi renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
 If you want to keep up to date with the latest pixi.js news then feel free to follow us on twitter
-([@doormat23](https://twitter.com/doormat23), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
+([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
 

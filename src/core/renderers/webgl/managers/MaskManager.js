@@ -3,6 +3,7 @@ import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
+ * @extends PIXI.WebGLManager
  * @memberof PIXI
  */
 export default class MaskManager extends WebGLManager

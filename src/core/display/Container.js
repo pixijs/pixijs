@@ -190,7 +190,7 @@ export default class Container extends DisplayObject
     /**
      * Removes a child from the container.
      *
-     * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to remove
+     * @param {...PIXI.DisplayObject} childs - The DisplayObject(s) to remove
      * @return {PIXI.DisplayObject} The first child that was removed.
      */
     removeChild(...childs)

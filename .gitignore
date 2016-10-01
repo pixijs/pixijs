@@ -25,6 +25,7 @@ node_modules
 docs/
 examples_old/
 bin/
+coverage/
 
 # jetBrains IDE ignores
 .idea
