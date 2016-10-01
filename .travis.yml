@@ -27,7 +27,7 @@ before_script:
 script:
   - npm run clean
   - npm run build
-  - xvfb-maybe npm test
+  - xvfb-maybe npm run coverage
   - npm run docs
 
 deploy:
@@ -58,6 +58,19 @@ deploy:
     on:
         all_branches: true
         condition: -z $TRAVIS_TAG
+  - provider: s3
+    access_key_id: $S3_ACCESS_KEY_ID
+    secret_access_key: $S3_SECRET_ACCESS_KEY
+    bucket: "pixi-builds"
+    skip_cleanup: true
+    acl: public_read
+    region: eu-west-1
+    cache_control: "max-age=60"
+    local_dir: coverage
+    upload-dir: "$TRAVIS_BRANCH/coverage"
+    on:
+        all_branches: true
+        condition: -z $TRAVIS_TAG
   # Deploy config for tagged releases
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
@@ -82,6 +95,19 @@ deploy:
     cache_control: "max-age=2592000"
     local_dir: docs
     upload-dir: "$TRAVIS_BRANCH/docs"
+    on:
+        all_branches: true
+        condition: $TRAVIS_TAG
+  - provider: s3
+    access_key_id: $S3_ACCESS_KEY_ID
+    secret_access_key: $S3_SECRET_ACCESS_KEY
+    bucket: "pixi-builds"
+    skip_cleanup: true
+    acl: public_read
+    region: eu-west-1
+    cache_control: "max-age=2592000"
+    local_dir: coverage
+    upload-dir: "$TRAVIS_BRANCH/coverage"
     on:
         all_branches: true
         condition: $TRAVIS_TAG
