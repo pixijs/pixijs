@@ -156,7 +156,7 @@ export default class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.normalizingTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents;
+        this.normalizeTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents;
 
         /**
          * Are mouse events being 'normalized' and converted into pointer events if pointer events are not supported
@@ -166,7 +166,7 @@ export default class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.normalizingMouseEvents = !this.supportsPointerEvents && !MobileDevice.any;
+        this.normalizeMouseEvents = !this.supportsPointerEvents && !MobileDevice.any;
 
         // this will make it so that you don't have to call bind all the time
 
@@ -539,14 +539,14 @@ export default class InteractionManager extends EventEmitter
              * mouse events into pointer events. This allows a developer to just listen for emitted
              * pointer events on interactive sprites
              */
-            if (this.normalizingTouchEvents)
+            if (this.normalizeTouchEvents)
             {
                 this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
                 this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
                 this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
             }
 
-            if (this.normalizingMouseEvents)
+            if (this.normalizeMouseEvents)
             {
                 window.document.addEventListener('mousemove', this.onPointerMove, true);
                 this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
@@ -611,14 +611,14 @@ export default class InteractionManager extends EventEmitter
              * mouse events into pointer events. This allows a developer to just listen for emitted
              * pointer events on interactive sprites
              */
-            if (this.normalizingTouchEvents)
+            if (this.normalizeTouchEvents)
             {
                 this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
                 this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
                 this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
             }
 
-            if (this.normalizingMouseEvents)
+            if (this.normalizeMouseEvents)
             {
                 window.document.removeEventListener('mousemove', this.onPointerMove, true);
                 this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
@@ -1493,40 +1493,40 @@ export default class InteractionManager extends EventEmitter
      */
     normalizeToPointerData(event)
     {
-        if (this.normalizingTouchEvents && event.changedTouches)
+        if (this.normalizeTouchEvents && event.changedTouches)
         {
-            event.button = event.touches.length ? 1 : 0;
-            event.buttons = event.touches.length ? 1 : 0;
-            event.isPrimary = event.touches.length === 1;
-            event.width = event.changedTouches[0].radiusX || 1;
-            event.height = event.changedTouches[0].radiusY || 1;
-            event.tiltX = 0;
-            event.tiltY = 0;
-            event.pointerType = 'touch';
-            event.pointerId = event.changedTouches[0].identifier || 0;
-            event.pressure = event.changedTouches[0].force || 0.5;
-            event.rotation = event.changedTouches[0].rotationAngle || 0;
+            if (typeof event.button === 'undefined') event.button = event.touches.length ? 1 : 0;
+            if (typeof event.buttons === 'undefined') event.buttons = event.touches.length ? 1 : 0;
+            if (typeof event.isPrimary === 'undefined') event.isPrimary = event.touches.length === 1;
+            if (typeof event.width === 'undefined') event.width = event.changedTouches[0].radiusX || 1;
+            if (typeof event.height === 'undefined') event.height = event.changedTouches[0].radiusY || 1;
+            if (typeof event.tiltX === 'undefined') event.tiltX = 0;
+            if (typeof event.tiltY === 'undefined') event.tiltY = 0;
+            if (typeof event.pointerType === 'undefined') event.pointerType = 'touch';
+            if (typeof event.pointerId === 'undefined') event.pointerId = event.changedTouches[0].identifier || 0;
+            if (typeof event.pressure === 'undefined') event.pressure = event.changedTouches[0].force || 0.5;
+            if (typeof event.rotation === 'undefined') event.rotation = event.changedTouches[0].rotationAngle || 0;
 
-            event.clientX = event.changedTouches[0].clientX;
-            event.clientY = event.changedTouches[0].clientY;
-            event.pageX = event.changedTouches[0].pageX;
-            event.pageY = event.changedTouches[0].pageY;
-            event.screenX = event.changedTouches[0].screenX;
-            event.screenY = event.changedTouches[0].screenY;
-            event.layerX = event.offsetX = event.clientX;
-            event.layerY = event.offsetY = event.clientY;
+            if (typeof event.clientX === 'undefined') event.clientX = event.changedTouches[0].clientX;
+            if (typeof event.clientY === 'undefined') event.clientY = event.changedTouches[0].clientY;
+            if (typeof event.pageX === 'undefined') event.pageX = event.changedTouches[0].pageX;
+            if (typeof event.pageY === 'undefined') event.pageY = event.changedTouches[0].pageY;
+            if (typeof event.screenX === 'undefined') event.screenX = event.changedTouches[0].screenX;
+            if (typeof event.screenY === 'undefined') event.screenY = event.changedTouches[0].screenY;
+            if (typeof event.layerX === 'undefined') event.layerX = event.offsetX = event.clientX;
+            if (typeof event.layerY === 'undefined') event.layerY = event.offsetY = event.clientY;
         }
-        else if (this.normalizingMouseEvents)
+        else if (this.normalizeMouseEvents)
         {
-            event.isPrimary = true;
-            event.width = 1;
-            event.height = 1;
-            event.tiltX = 0;
-            event.tiltY = 0;
-            event.pointerType = 'mouse';
-            event.pointerId = 1;
-            event.pressure = 0.5;
-            event.rotation = 0;
+            if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
+            if (typeof event.width === 'undefined') event.width = 1;
+            if (typeof event.height === 'undefined') event.height = 1;
+            if (typeof event.tiltX === 'undefined') event.tiltX = 0;
+            if (typeof event.tiltY === 'undefined') event.tiltY = 0;
+            if (typeof event.pointerType === 'undefined') event.pointerType = 'mouse';
+            if (typeof event.pointerId === 'undefined') event.pointerId = 1;
+            if (typeof event.pressure === 'undefined') event.pressure = 0.5;
+            if (typeof event.rotation === 'undefined') event.rotation = 0;
         }
     }
 
