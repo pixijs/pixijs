@@ -175,7 +175,6 @@ export default class DisplayObject extends EventEmitter
             if (!this.parent)
             {
                 this.parent = this._tempDisplayObjectParent;
-                this.parent.transform._worldID++;
                 this.updateTransform();
                 this.parent = null;
             }
