@@ -26,8 +26,8 @@ before_script:
 
 script:
   - npm run clean
-  - npm run build
   - xvfb-maybe npm run coverage
+  - npm run build
   - npm run docs
 
 deploy:

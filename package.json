@@ -25,7 +25,7 @@
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
     "test": "floss --path test/index.js -c bin/pixi.js -s",
     "test:debug": "npm test -- --debug",
-    "precoverage": "rimraf coverage",
+    "precoverage": "rimraf coverage && npm run build -- --noExternal",
     "coverage": "npm test -- -h",
     "lint": "eslint scripts src test",
     "prebuild": "npm run lint && npm run clean",
@@ -69,7 +69,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
-    "pixify": "^1.4.0",
+    "pixify": "^1.5.0",
     "rimraf": "^2.5.3",
     "watch": "^0.19.1"
   },
