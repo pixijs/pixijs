@@ -3,7 +3,7 @@ import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
 import { Rectangle } from '../../../math';
 import Shader from '../../../Shader';
-import filterTransforms from '../filters/filterTransforms';
+import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
 /**
