@@ -28,6 +28,7 @@ export default class TransformBase
         this.localTransform = new Matrix();
 
         this._worldID = 0;
+        this._parentID = 0;
     }
 
     /**
