@@ -26,6 +26,7 @@
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
     "lint": "eslint scripts src test",
+    "lintfix": "eslint scripts src test --fix",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
