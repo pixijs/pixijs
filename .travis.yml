@@ -25,7 +25,6 @@ before_script:
   - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
 
 script:
-  - npm run clean
   - xvfb-maybe npm run coverage
   - npm run build
   - npm run docs
