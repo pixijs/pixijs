@@ -84,12 +84,13 @@ export default class TextureTransform {
         const texBase = tex.baseTexture;
         const frame = this.clampFrame;
         const margin = tex.clampMargin / texBase.resolution;
+        const offset = tex.clampOffset;
 
-        frame[0] = (tex._frame.x + margin) / texBase.width;
-        frame[1] = (tex._frame.y + margin) / texBase.height;
-        frame[2] = (tex._frame.x + tex._frame.width - margin) / texBase.width;
-        frame[3] = (tex._frame.y + tex._frame.height - margin) / texBase.height;
-        this.clampOffset[0] = tex.clampOffset / texBase.realWidth;
-        this.clampOffset[1] = tex.clampOffset / texBase.realHeight;
+        frame[0] = (tex._frame.x + margin + offset) / texBase.width;
+        frame[1] = (tex._frame.y + margin + offset) / texBase.height;
+        frame[2] = (tex._frame.x + tex._frame.width - margin + offset) / texBase.width;
+        frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
+        this.clampOffset[0] = offset / texBase.realWidth;
+        this.clampOffset[1] = offset / texBase.realHeight;
     }
 }

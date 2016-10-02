@@ -123,8 +123,8 @@ export class TilingRenderer extends core.ObjectRenderer {
         else
         {
             shader.uniforms.uMapCoord = uv.mapCoord.toArray(true);
-            shader.uniforms.uFrame = uv.frameClamp;
-            shader.uniforms.uClampOffset = tex.uClampOffset;
+            shader.uniforms.uClampFrame = uv.clampFrame;
+            shader.uniforms.uClampOffset = uv.clampOffset;
         }
         shader.uniforms.uTransform = tempMat.toArray(true);
 
