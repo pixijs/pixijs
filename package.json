@@ -28,6 +28,7 @@
     "precoverage": "rimraf coverage && npm run build -- --noExternal",
     "coverage": "npm test -- -h",
     "lint": "eslint scripts src test",
+    "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
