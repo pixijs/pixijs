@@ -140,7 +140,7 @@ FilterManager.prototype.popFilter = function()
     else
     {
         var flip = currentState.renderTarget;
-        var flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, 1);
+        var flop = this.getPotRenderTarget(this.renderer.gl, currentState.sourceFrame.width, currentState.sourceFrame.height, currentState.resolution);
         flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
         for (var i = 0; i < filters.length-1; i++)
