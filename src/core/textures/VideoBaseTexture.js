@@ -1,5 +1,6 @@
 import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache } from '../utils';
+import * as ticker from '../ticker';
 
 /**
  * A texture of a [playing] Video.
@@ -54,13 +55,8 @@ export default class VideoBaseTexture extends BaseTexture
         this.width = source.videoWidth;
         this.height = source.videoHeight;
 
-        /**
-         * Should the base texture automatically update itself, set to true by default
-         *
-         * @member {boolean}
-         * @default true
-         */
-        this.autoUpdate = false;
+        this._autoUpdate = true;
+        this._isAutoUpdating = false;
 
         /**
          * When set to true will automatically play videos used by this texture once
@@ -71,7 +67,7 @@ export default class VideoBaseTexture extends BaseTexture
          */
         this.autoPlay = true;
 
-        this._onUpdate = this._onUpdate.bind(this);
+        this.update = this.update.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
 
         source.addEventListener('play', this._onPlayStart.bind(this));
@@ -115,20 +111,6 @@ export default class VideoBaseTexture extends BaseTexture
     }
 
     /**
-     * The internal update loop of the video base texture, only runs when autoUpdate is set to true
-     *
-     * @private
-     */
-    _onUpdate()
-    {
-        if (this.autoUpdate)
-        {
-            window.requestAnimationFrame(this._onUpdate);
-            this.update();
-        }
-    }
-
-    /**
      * Runs the update loop when the video is ready to play
      *
      * @private
@@ -141,10 +123,10 @@ export default class VideoBaseTexture extends BaseTexture
             this._onCanPlay();
         }
 
-        if (!this.autoUpdate)
+        if (!this._isAutoUpdating && this.autoUpdate)
         {
-            window.requestAnimationFrame(this._onUpdate);
-            this.autoUpdate = true;
+            ticker.shared.add(this.update, this);
+            this._isAutoUpdating = true;
         }
     }
 
@@ -155,7 +137,11 @@ export default class VideoBaseTexture extends BaseTexture
      */
     _onPlayStop()
     {
-        this.autoUpdate = false;
+        if (this._isAutoUpdating)
+        {
+            ticker.shared.remove(this.update, this);
+            this._isAutoUpdating = false;
+        }
     }
 
     /**
@@ -199,6 +185,11 @@ export default class VideoBaseTexture extends BaseTexture
      */
     destroy()
     {
+        if (this._isAutoUpdating)
+        {
+            ticker.shared.remove(this.update, this);
+        }
+
         if (this.source && this.source._pixiId)
         {
             delete BaseTextureCache[this.source._pixiId];
@@ -268,9 +259,43 @@ export default class VideoBaseTexture extends BaseTexture
         }
 
         video.load();
-        video.play();
 
         return VideoBaseTexture.fromVideo(video, scaleMode);
+    }
+
+    /**
+     * Should the base texture automatically update itself, set to true by default
+     *
+     * @member {boolean}
+     * @memberof PIXI.VideoBaseTexture#
+     */
+    get autoUpdate()
+    {
+        return this._autoUpdate;
+    }
+
+    /**
+     * Sets autoUpdate property.
+     *
+     * @param {number} value - enable auto update or not
+     */
+    set autoUpdate(value)
+    {
+        if (value !== this._autoUpdate)
+        {
+            this._autoUpdate = value;
+
+            if (!this._autoUpdate && this._isAutoUpdating)
+            {
+                ticker.shared.remove(this.update, this);
+                this._isAutoUpdating = false;
+            }
+            else if (this._autoUpdate && !this._isAutoUpdating)
+            {
+                ticker.shared.add(this.update, this);
+                this._isAutoUpdating = true;
+            }
+        }
     }
 }
 
