@@ -237,7 +237,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {
-            this._activeRenderTarget.clear(this.currentRenderer._backgroundColorRgba);
+            this._activeRenderTarget.clear();
         }
 
         displayObject.renderWebGL(this);
