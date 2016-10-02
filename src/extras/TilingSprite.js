@@ -114,7 +114,10 @@ export default class TilingSprite extends core.Sprite
      */
     _onTextureUpdate()
     {
-        this.uvTransform.texture = this._texture;
+        if (this.uvTransform)
+        {
+            this.uvTransform.texture = this._texture;
+        }
     }
 
     /**
