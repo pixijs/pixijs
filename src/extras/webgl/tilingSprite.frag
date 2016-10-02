@@ -4,11 +4,11 @@ uniform sampler2D uSampler;
 uniform vec4 uColor;
 uniform mat3 uMapCoord;
 uniform vec4 uFrame;
-uniform vec2 uPixelSize;
+uniform vec2 uClampOffset;
 
 void main(void)
 {
-    vec2 coord = mod(vTextureCoord, vec2(1.0, 1.0));
+    vec2 coord = mod(vTextureCoord - uClampOffset, vec2(1.0, 1.0)) + uClampOffset;
     coord = (uMapCoord * vec3(coord, 1.0)).xy;
     coord = clamp(coord, uFrame.xy, uFrame.zw);
 

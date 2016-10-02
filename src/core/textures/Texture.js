@@ -146,22 +146,23 @@ export default class Texture extends EventEmitter
          * Experimental!
          * Changes frame clamping
          * Works with TilingSprite and Mesh
-         * By default, clamps bottom and right edge of texture.
-         * Change to 0 if you texture has repeated right and bottom lines, that leads to smoother borders
-         * @default 1
+         * Change to 1.5 if you tex ture has repeated right and bottom lines, that leads to smoother borders
+         * IN REAL PIXELS
+         * @default 0
          * @member {number}
          */
-        this.smoothEdge1 = 1;
+        this.clampOffset = 0;
 
         /**
          * Experimental!
          * Changes frame clamping
          * Works with TilingSprite and Mesh
          * Change to 0 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-         * @default 0
+         * IN REAL PIXELS
+         * @default 0.5
          * @member {number}
          */
-        this.smoothEdge2 = 0;
+        this.clampMargin = 0.5;
     }
 
     /**

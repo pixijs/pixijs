@@ -17,7 +17,9 @@ export default class TextureTransform {
 
         this.mapCoord = new Matrix();
 
-        this.frameClamp = new Float32Array(4);
+        this.clampFrame = new Float32Array(4);
+
+        this.clampOffset = new Float32Array(2);
 
         this._lastTextureID = -1;
 
@@ -80,11 +82,14 @@ export default class TextureTransform {
         }
 
         const texBase = tex.baseTexture;
-        const frame = this.frameClamp;
+        const frame = this.clampFrame;
+        const margin = tex.clampMargin / texBase.resolution;
 
-        frame[0] = (tex._frame.x + tex.smoothEdge2) / texBase.width;
-        frame[1] = (tex._frame.y + tex.smoothEdge2) / texBase.height;
-        frame[2] = (tex._frame.x + tex._frame.width - tex.smoothEdge1 + tex.smoothEdge2) / texBase.width;
-        frame[3] = (tex._frame.y + tex._frame.height - tex.smoothEdge1 + tex.smoothEdge2) / texBase.height;
+        frame[0] = (tex._frame.x + margin) / texBase.width;
+        frame[1] = (tex._frame.y + margin) / texBase.height;
+        frame[2] = (tex._frame.x + tex._frame.width - margin) / texBase.width;
+        frame[3] = (tex._frame.y + tex._frame.height - margin) / texBase.height;
+        this.clampOffset[0] = tex.clampOffset / texBase.realWidth;
+        this.clampOffset[1] = tex.clampOffset / texBase.realHeight;
     }
 }

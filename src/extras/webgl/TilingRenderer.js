@@ -74,7 +74,8 @@ export class TilingRenderer extends core.ObjectRenderer {
         const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
         const uv = ts.uvTransform;
-        let isSimple = tex.frame.width === baseTex.width && tex.frame.height === baseTex.height;
+        let isSimple = baseTex.isPowerOfTwo
+            && tex.frame.width === baseTex.width && tex.frame.height === baseTex.height;
 
         // auto, force repeat wrapMode for big tiling textures
         if (isSimple)
@@ -123,6 +124,7 @@ export class TilingRenderer extends core.ObjectRenderer {
         {
             shader.uniforms.uMapCoord = uv.mapCoord.toArray(true);
             shader.uniforms.uFrame = uv.frameClamp;
+            shader.uniforms.uClampOffset = tex.uClampOffset;
         }
         shader.uniforms.uTransform = tempMat.toArray(true);
 
