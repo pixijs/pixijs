@@ -165,7 +165,7 @@ export default class FilterManager extends WebGLManager
                 this.renderer.gl,
                 currentState.sourceFrame.width,
                 currentState.sourceFrame.height,
-                1
+                currentState.resolution
             );
 
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
