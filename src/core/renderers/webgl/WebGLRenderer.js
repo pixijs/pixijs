@@ -243,7 +243,7 @@ WebGLRenderer.prototype.render = function (displayObject, renderTexture, clear, 
 
     if(clear !== undefined ? clear : this.clearBeforeRender)
     {
-        this._activeRenderTarget.clear();
+        this._activeRenderTarget.clear(this._backgroundColorRgba); // @CHANGED LORD NORIYUKI
     }
 
     displayObject.renderWebGL(this);
