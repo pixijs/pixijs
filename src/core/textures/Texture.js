@@ -141,6 +141,27 @@ export default class Texture extends EventEmitter
          */
 
         this._updateID = 0;
+
+        /**
+         * Experimental!
+         * Changes frame clamping
+         * Works with TilingSprite and Mesh
+         * By default, clamps bottom and right edge of texture.
+         * Change to 0 if you texture has repeated right and bottom lines, that leads to smoother borders
+         * @default 1
+         * @member {number}
+         */
+        this.smoothEdge1 = 1;
+
+        /**
+         * Experimental!
+         * Changes frame clamping
+         * Works with TilingSprite and Mesh
+         * Change to 0 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
+         * @default 0
+         * @member {number}
+         */
+        this.smoothEdge2 = 0;
     }
 
     /**
@@ -255,6 +276,24 @@ export default class Texture extends EventEmitter
         this._uvs.set(this._frame, this.baseTexture, this.rotate);
 
         this._updateID++;
+    }
+
+    /**
+     * returns uvs
+     * @member PIXI.TextureUvs#
+     * @memberof PIXI.Texture#
+     */
+    get uvs()
+    {
+        return this._uvs;
+    }
+
+    /**
+     * Updates uvs accordingly to the texture
+     */
+    updateUvs()
+    {
+        this._updateUvs();
     }
 
     /**

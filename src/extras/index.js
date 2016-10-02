@@ -3,6 +3,7 @@
  */
 export { default as MovieClip } from './MovieClip';
 export { default as TilingSprite } from './TilingSprite';
+export { default as TilingRenderer } from './webgl/TilingRenderer';
 export { default as BitmapText } from './BitmapText';
 
 export { default as cacheAsBitmap } from './cacheAsBitmap';

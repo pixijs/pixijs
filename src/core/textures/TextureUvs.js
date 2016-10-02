@@ -27,6 +27,7 @@ export default class TextureUvs
         this.y3 = 1;
 
         this.uvsUint32 = new Uint32Array(4);
+        this.uvsMatrix = null;
     }
 
     /**

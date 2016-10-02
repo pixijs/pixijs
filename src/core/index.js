@@ -29,6 +29,7 @@ export { default as GraphicsData } from './graphics/GraphicsData';
 export { default as GraphicsRenderer } from './graphics/webgl/GraphicsRenderer';
 export { default as CanvasGraphicsRenderer } from './graphics/canvas/CanvasGraphicsRenderer';
 export { default as Texture } from './textures/Texture';
+export { default as TextureTransform } from './textures/TextureTransform';
 export { default as BaseTexture } from './textures/BaseTexture';
 export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
