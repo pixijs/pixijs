@@ -1,6 +1,7 @@
 /**
  * @namespace PIXI.extras
  */
+export { default as TextureTransform } from './TextureTransform';
 export { default as MovieClip } from './MovieClip';
 export { default as TilingSprite } from './TilingSprite';
 export { default as TilingRenderer } from './webgl/TilingRenderer';

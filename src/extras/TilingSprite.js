@@ -1,5 +1,6 @@
 import * as core from '../core';
 import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
+import { default as TextureTransform } from './TextureTransform';
 
 const tempPoint = new core.Point();
 
@@ -52,9 +53,9 @@ export default class TilingSprite extends core.Sprite
 
         /**
          * transform that is applied to UV to get the texture coords
-         * @member {PIXI.TextureTransform}
+         * @member {PIXI.extras.TextureTransform}
          */
-        this.uvTransform = new core.TextureTransform(texture);
+        this.uvTransform = new TextureTransform(texture);
     }
 
     /**

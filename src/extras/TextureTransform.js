@@ -1,4 +1,4 @@
-import { default as Matrix } from '../math/Matrix';
+import { default as Matrix } from '../core/math/Matrix';
 
 const tempMat = new Matrix();
 
