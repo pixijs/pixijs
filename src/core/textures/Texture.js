@@ -264,24 +264,6 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * returns uvs
-     * @member PIXI.TextureUvs#
-     * @memberof PIXI.Texture#
-     */
-    get uvs()
-    {
-        return this._uvs;
-    }
-
-    /**
-     * Updates uvs accordingly to the texture
-     */
-    updateUvs()
-    {
-        this._updateUvs();
-    }
-
-    /**
      * Helper function that creates a Texture object from the given image url.
      * If the image is not in the texture cache it will be  created and loaded.
      *
