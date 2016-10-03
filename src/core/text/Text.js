@@ -36,8 +36,8 @@ export default class Text extends Sprite
     {
         const canvas = document.createElement('canvas');
 
-        canvas.width = 16;
-        canvas.height = 16;
+        canvas.width = 3;
+        canvas.height = 3;
 
         const texture = Texture.fromCanvas(canvas);
 
