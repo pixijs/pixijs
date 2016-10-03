@@ -2,6 +2,7 @@ import * as core from '../core';
 import Texture from '../core/textures/Texture';
 import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
 import TilingShader from './webgl/TilingShader';
+import { Rectangle } from '../core/math';
 
 const tempArray = new Float32Array(4);
 const tempPoint = new core.Point();
@@ -244,6 +245,38 @@ export default class TilingSprite extends core.Sprite
                          -modY,
                          this._width / this.tileScale.x,
                          this._height / this.tileScale.y);
+    }
+
+    /**
+     * Gets the local bounds of the sprite object.
+     *
+     * @param {Rectangle} rect - The output rectangle.
+     * @return {Rectangle} The bounds.
+     */
+    getLocalBounds(rect)
+    {
+        // we can do a fast local bounds if the sprite has no children!
+        if (this.children.length === 0)
+        {
+            this._bounds.minX = -this._width * this.anchor._x;
+            this._bounds.minY = -this._height * this.anchor._y;
+            this._bounds.maxX = this._width;
+            this._bounds.maxY = this._height;
+
+            if (!rect)
+            {
+                if (!this._localBoundsRect)
+                {
+                    this._localBoundsRect = new Rectangle();
+                }
+
+                rect = this._localBoundsRect;
+            }
+
+            return this._bounds.getRectangle(rect);
+        }
+
+        return super.getLocalBounds.call(this, rect);
     }
 
     /**
