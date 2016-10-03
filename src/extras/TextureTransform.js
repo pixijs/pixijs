@@ -9,21 +9,40 @@ export default class TextureTransform {
     /**
      *
      * @param {PIXI.Texture} texture observed texture
+     * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      * @constructor
      */
-    constructor(texture)
+    constructor(texture, clampMargin)
     {
         this._texture = texture;
 
         this.mapCoord = new Matrix();
 
-        this.clampFrame = new Float32Array(4);
+        this.uClampFrame = new Float32Array(4);
 
-        this.clampOffset = new Float32Array(2);
+        this.uClampOffset = new Float32Array(2);
 
         this._lastTextureID = -1;
 
-        this.update();
+        /**
+         * Changes frame clamping
+         * Works with TilingSprite and Mesh
+         * Change to 1.5 if you tex ture has repeated right and bottom lines, that leads to smoother borders
+         * IN REAL PIXELS
+         * @default 0
+         * @member {number}
+         */
+        this.clampOffset = 0;
+
+        /**
+         * Changes frame clamping
+         * Works with TilingSprite and Mesh
+         * Change to 0 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
+         * IN REAL PIXELS
+         * @default 0.5
+         * @member {number}
+         */
+        this.clampMargin = (typeof clampMargin === 'undefined') ? 0.5 : clampMargin;
     }
 
     /**
@@ -82,15 +101,15 @@ export default class TextureTransform {
         }
 
         const texBase = tex.baseTexture;
-        const frame = this.clampFrame;
-        const margin = tex.clampMargin / texBase.resolution;
-        const offset = tex.clampOffset;
+        const frame = this.uClampFrame;
+        const margin = this.clampMargin / texBase.resolution;
+        const offset = this.clampOffset;
 
         frame[0] = (tex._frame.x + margin + offset) / texBase.width;
         frame[1] = (tex._frame.y + margin + offset) / texBase.height;
         frame[2] = (tex._frame.x + tex._frame.width - margin + offset) / texBase.width;
         frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
-        this.clampOffset[0] = offset / texBase.realWidth;
-        this.clampOffset[1] = offset / texBase.realHeight;
+        this.uClampOffset[0] = offset / texBase.realWidth;
+        this.uClampOffset[1] = offset / texBase.realHeight;
     }
 }

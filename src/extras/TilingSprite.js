@@ -55,7 +55,7 @@ export default class TilingSprite extends core.Sprite
          * transform that is applied to UV to get the texture coords
          * @member {PIXI.extras.TextureTransform}
          */
-        this.uvTransform = new TextureTransform(texture);
+        this.uvTransform = texture.transform || new TextureTransform(texture);
     }
 
     /**
