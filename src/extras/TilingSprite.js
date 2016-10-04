@@ -1,10 +1,7 @@
 import * as core from '../core';
-import Texture from '../core/textures/Texture';
 import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
-import TilingShader from './webgl/TilingShader';
-import { Rectangle } from '../core/math';
+import { default as TextureTransform } from './TextureTransform';
 
-const tempArray = new Float32Array(4);
 const tempPoint = new core.Point();
 
 /**
@@ -26,18 +23,11 @@ export default class TilingSprite extends core.Sprite
         super(texture);
 
         /**
-         * The scaling of the image that is being tiled
+         * Tile transform
          *
-         * @member {PIXI.Point}
+         * @member {PIXI.TransformStatic}
          */
-        this.tileScale = new core.Point(1, 1);
-
-        /**
-         * The offset position of the image that is being tiled
-         *
-         * @member {PIXI.Point}
-         */
-        this.tilePosition = new core.Point(0, 0);
+        this.tileTransform = new core.TransformStatic();
 
         // /// private
 
@@ -58,16 +48,84 @@ export default class TilingSprite extends core.Sprite
         this._height = height;
 
         /**
-         * An internal WebGL UV cache.
+         * Canvas pattern
          *
-         * @member {PIXI.TextureUvs}
+         * @type {CanvasPattern}
          * @private
          */
-        this._uvs = new core.TextureUvs();
-
         this._canvasPattern = null;
 
-        this._glDatas = [];
+        /**
+         * transform that is applied to UV to get the texture coords
+         *
+         * @member {PIXI.extras.TextureTransform}
+         */
+        this.uvTransform = texture.transform || new TextureTransform(texture);
+    }
+    /**
+     * Changes frame clamping in corresponding textureTransform, shortcut
+     * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
+     *
+     * @default 0.5
+     * @member {number}
+     * @memberof PIXI.TilingSprite
+     */
+    get clampMargin()
+    {
+        return this.uvTransform.clampMargin;
+    }
+
+    /**
+     * setter for clampMargin
+     *
+     * @param {number} value assigned value
+     */
+    set clampMargin(value)
+    {
+        this.uvTransform.clampMargin = value;
+        this.uvTransform.update(true);
+    }
+
+    /**
+     * The scaling of the image that is being tiled
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.DisplayObject#
+     */
+    get tileScale()
+    {
+        return this.tileTransform.scale;
+    }
+
+    /**
+     * Copies the point to the scale of the tiled image.
+     *
+     * @param {PIXI.Point|PIXI.ObservablePoint} value - The value to set to.
+     */
+    set tileScale(value)
+    {
+        this.tileTransform.scale.copy(value);
+    }
+
+    /**
+     * The offset of the image that is being tiled
+     *
+     * @member {PIXI.ObservablePoint}
+     * @memberof PIXI.TilingSprite#
+     */
+    get tilePosition()
+    {
+        return this.tileTransform.position;
+    }
+
+    /**
+     * Copies the point to the position of the tiled image.
+     *
+     * @param {PIXI.Point|PIXI.ObservablePoint} value - The value to set to.
+     */
+    set tilePosition(value)
+    {
+        this.tileTransform.position.copy(value);
     }
 
     /**
@@ -75,7 +133,10 @@ export default class TilingSprite extends core.Sprite
      */
     _onTextureUpdate()
     {
-        return;
+        if (this.uvTransform)
+        {
+            this.uvTransform.texture = this._texture;
+        }
     }
 
     /**
@@ -89,84 +150,16 @@ export default class TilingSprite extends core.Sprite
         // tweak our texture temporarily..
         const texture = this._texture;
 
-        if (!texture || !texture._uvs)
+        if (!texture || !texture.valid)
         {
             return;
         }
 
-         // get rid of any thing that may be batching.
-        renderer.flush();
+        this.tileTransform.updateLocalTransform();
+        this.uvTransform.update();
 
-        const gl = renderer.gl;
-        let glData = this._glDatas[renderer.CONTEXT_UID];
-
-        if (!glData)
-        {
-            glData = {
-                shader: new TilingShader(gl),
-                quad: new core.Quad(gl),
-            };
-
-            this._glDatas[renderer.CONTEXT_UID] = glData;
-
-            glData.quad.initVao(glData.shader);
-        }
-
-        // if the sprite is trimmed and is not a tilingsprite then we need to add the extra space
-        // before transforming the sprite coords..
-        const vertices = glData.quad.vertices;
-
-        vertices[0] = vertices[6] = (this._width) * -this.anchor.x;
-        vertices[1] = vertices[3] = this._height * -this.anchor.y;
-
-        vertices[2] = vertices[4] = (this._width) * (1 - this.anchor.x);
-        vertices[5] = vertices[7] = this._height * (1 - this.anchor.y);
-
-        glData.quad.upload();
-
-        renderer.bindShader(glData.shader);
-
-        const textureUvs = texture._uvs;
-        const textureWidth = texture._frame.width;
-        const textureHeight = texture._frame.height;
-        const textureBaseWidth = texture.baseTexture.width;
-        const textureBaseHeight = texture.baseTexture.height;
-
-        const uPixelSize = glData.shader.uniforms.uPixelSize;
-
-        uPixelSize[0] = 1.0 / textureBaseWidth;
-        uPixelSize[1] = 1.0 / textureBaseHeight;
-        glData.shader.uniforms.uPixelSize = uPixelSize;
-
-        const uFrame = glData.shader.uniforms.uFrame;
-
-        uFrame[0] = textureUvs.x0;
-        uFrame[1] = textureUvs.y0;
-        uFrame[2] = textureUvs.x1 - textureUvs.x0;
-        uFrame[3] = textureUvs.y2 - textureUvs.y0;
-        glData.shader.uniforms.uFrame = uFrame;
-
-        const uTransform = glData.shader.uniforms.uTransform;
-
-        uTransform[0] = (this.tilePosition.x % (textureWidth * this.tileScale.x)) / this._width;
-        uTransform[1] = (this.tilePosition.y % (textureHeight * this.tileScale.y)) / this._height;
-        uTransform[2] = (textureBaseWidth / this._width) * this.tileScale.x;
-        uTransform[3] = (textureBaseHeight / this._height) * this.tileScale.y;
-        glData.shader.uniforms.uTransform = uTransform;
-
-        glData.shader.uniforms.translationMatrix = this.worldTransform.toArray(true);
-
-        const color = tempArray;
-
-        core.utils.hex2rgb(this.tint, color);
-        color[3] = this.worldAlpha;
-
-        glData.shader.uniforms.uColor = color;
-
-        renderer.bindTexture(this._texture, 0);
-
-        renderer.state.setBlendMode(this.blendMode);
-        glData.quad.draw();
+        renderer.setObjectRenderer(renderer.plugins.tilingSprite);
+        renderer.plugins.tilingSprite.render(this);
     }
 
     /**
@@ -250,8 +243,8 @@ export default class TilingSprite extends core.Sprite
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {Rectangle} rect - The output rectangle.
-     * @return {Rectangle} The bounds.
+     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @return {PIXI.Rectangle} The bounds.
      */
     getLocalBounds(rect)
     {
@@ -267,7 +260,7 @@ export default class TilingSprite extends core.Sprite
             {
                 if (!this._localBoundsRect)
                 {
-                    this._localBoundsRect = new Rectangle();
+                    this._localBoundsRect = new core.Rectangle();
                 }
 
                 rect = this._localBoundsRect;
@@ -391,10 +384,7 @@ export default class TilingSprite extends core.Sprite
         super.destroy();
 
         this.tileScale = null;
-        this._tileScaleOffset = null;
         this.tilePosition = null;
-
-        this._uvs = null;
     }
 
     /**
@@ -409,7 +399,7 @@ export default class TilingSprite extends core.Sprite
      */
     static from(source, width, height)
     {
-        return new TilingSprite(Texture.from(source), width, height);
+        return new TilingSprite(core.Texture.from(source), width, height);
     }
 
     /**

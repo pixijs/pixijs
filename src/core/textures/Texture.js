@@ -141,6 +141,12 @@ export default class Texture extends EventEmitter
          */
 
         this._updateID = 0;
+
+        /**
+         * Extra field for extra plugins. May contain clamp settings and some matrices
+         * @type {Object}
+         */
+        this.transform = null;
     }
 
     /**
