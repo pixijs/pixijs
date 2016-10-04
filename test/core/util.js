@@ -102,9 +102,33 @@ describe('PIXI.utils', function ()
                 .to.be.a('function');
         });
 
-        it('should return image type of URL in lower case', function ()
+        it('should return extension of URL in lower case', function ()
         {
             var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when absolute', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('/you/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when relative', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('me/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when just an extension', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('.PNG');
 
             expect(imageType)
                 .to.equal('png');
