@@ -87,7 +87,7 @@ export default class Container extends DisplayObject
      */
     addChildAt(child, index)
     {
-        if (index < 0 || (index > 0 && index >= this.children.length))
+        if (index < 0 || index > this.children.length)
         {
             throw new Error(`${child}addChildAt: The index ${index} supplied is out of bounds ${this.children.length}`);
         }
