@@ -296,7 +296,7 @@ export const DEFAULT_RENDER_OPTIONS = {
  * @type {RegExp|string}
  * @example `image.png`
  */
-export const IMAGE_TYPE = /\.(gif|jpe?g|tiff|png|svg)$/i;
+export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
 
 /**
  * Regexp for data URI.
