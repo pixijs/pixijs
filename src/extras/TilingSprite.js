@@ -47,12 +47,17 @@ export default class TilingSprite extends core.Sprite
          */
         this._height = height;
 
+        /**
+         * Canvas pattern
+         *
+         * @type {CanvasPattern}
+         * @private
+         */
         this._canvasPattern = null;
-
-        this._glDatas = [];
 
         /**
          * transform that is applied to UV to get the texture coords
+         *
          * @member {PIXI.extras.TextureTransform}
          */
         this.uvTransform = texture.transform || new TextureTransform(texture);
@@ -60,6 +65,7 @@ export default class TilingSprite extends core.Sprite
 
     /**
      * setter for clampEdge
+     *
      * @param {number} value assigned value
      */
     set clampEdge(value)
@@ -141,7 +147,7 @@ export default class TilingSprite extends core.Sprite
         this.uvTransform.update();
 
         renderer.setObjectRenderer(renderer.plugins.tiling);
-        renderer.plugins.tiling.render(this);
+        renderer.plugins.tilingSprite.render(this);
     }
 
     /**
@@ -366,10 +372,7 @@ export default class TilingSprite extends core.Sprite
         super.destroy();
 
         this.tileScale = null;
-        this._tileScaleOffset = null;
         this.tilePosition = null;
-
-        this._uvs = null;
     }
 
     /**

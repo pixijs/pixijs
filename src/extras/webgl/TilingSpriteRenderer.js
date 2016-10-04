@@ -13,6 +13,7 @@ export class TilingRenderer extends core.ObjectRenderer {
 
     /**
      * constructor for renderer
+     *
      * @param {WebGLRenderer} renderer The renderer this tiling awesomeness works for.
      */
     constructor(renderer)
@@ -142,4 +143,4 @@ export class TilingRenderer extends core.ObjectRenderer {
     }
 }
 
-core.WebGLRenderer.registerPlugin('tiling', TilingRenderer);
+core.WebGLRenderer.registerPlugin('tilingSprite', TilingRenderer);
