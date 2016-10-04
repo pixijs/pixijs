@@ -28,7 +28,6 @@ export default class TextureTransform {
          * Changes frame clamping
          * Works with TilingSprite and Mesh
          * Change to 1.5 if you tex ture has repeated right and bottom lines, that leads to smoother borders
-         * IN REAL PIXELS
          *
          * @default 0
          * @member {number}
@@ -38,8 +37,7 @@ export default class TextureTransform {
         /**
          * Changes frame clamping
          * Works with TilingSprite and Mesh
-         * Change to 0 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-         * IN REAL PIXELS
+         * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
          *
          * @default 0.5
          * @member {number}

@@ -62,15 +62,27 @@ export default class TilingSprite extends core.Sprite
          */
         this.uvTransform = texture.transform || new TextureTransform(texture);
     }
+    /**
+     * Changes frame clamping in corresponding textureTransform, shortcut
+     * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
+     *
+     * @default 0.5
+     * @member {number}
+     * @memberof PIXI.TilingSprite
+     */
+    get clampMargin()
+    {
+        return this.uvTransform.clampMargin;
+    }
 
     /**
-     * setter for clampEdge
+     * setter for clampMargin
      *
      * @param {number} value assigned value
      */
-    set clampEdge(value)
+    set clampMargin(value)
     {
-        this.uvTransform.clampEdge = value;
+        this.uvTransform.clampMargin = value;
         this.uvTransform.update(true);
     }
 
@@ -146,7 +158,7 @@ export default class TilingSprite extends core.Sprite
         this.tileTransform.updateLocalTransform();
         this.uvTransform.update();
 
-        renderer.setObjectRenderer(renderer.plugins.tiling);
+        renderer.setObjectRenderer(renderer.plugins.tilingSprite);
         renderer.plugins.tilingSprite.render(this);
     }
 
@@ -231,8 +243,8 @@ export default class TilingSprite extends core.Sprite
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {Rectangle} rect - The output rectangle.
-     * @return {Rectangle} The bounds.
+     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @return {PIXI.Rectangle} The bounds.
      */
     getLocalBounds(rect)
     {
@@ -248,7 +260,7 @@ export default class TilingSprite extends core.Sprite
             {
                 if (!this._localBoundsRect)
                 {
-                    this._localBoundsRect = new Rectangle();
+                    this._localBoundsRect = new core.Rectangle();
                 }
 
                 rect = this._localBoundsRect;
