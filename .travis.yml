@@ -34,7 +34,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
@@ -47,7 +47,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
@@ -60,7 +60,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
@@ -74,7 +74,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
@@ -87,7 +87,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
@@ -100,7 +100,7 @@ deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY_ID
     secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: "pixi-builds"
+    bucket: "pixi.js"
     skip_cleanup: true
     acl: public_read
     region: eu-west-1
