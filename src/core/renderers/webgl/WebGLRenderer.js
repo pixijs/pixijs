@@ -176,6 +176,12 @@ export default class WebGLRenderer extends SystemRenderer
     {
         const gl = this.gl;
 
+        // restore a context if it was previously lost
+        if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
+        {
+            gl.getExtension('WEBGL_lose_context').restoreContext();
+        }
+
         // create a texture manager...
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
