@@ -13,6 +13,13 @@ export default function checkMaxIfStatmentsInShader(maxIfs, gl)
 {
     const createTempContext = !gl;
 
+    // @if DEBUG
+    if (maxIfs === 0)
+    {
+        throw new Error('Invalid value of `0` passed to `checkMaxIfStatementsInShader`');
+    }
+    // @endif
+
     if (createTempContext)
     {
         const tinyCanvas = document.createElement('canvas');
