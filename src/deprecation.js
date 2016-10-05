@@ -421,7 +421,7 @@ core.Sprite.prototype.setTexture = function setTexture(texture)
 extras.BitmapText.prototype.setText = function setText(text)
 {
     this.text = text;
-    warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = "my text";');
+    warn(`setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text';`);
 };
 
 /**
@@ -434,7 +434,7 @@ extras.BitmapText.prototype.setText = function setText(text)
 core.Text.prototype.setText = function setText(text)
 {
     this.text = text;
-    warn('setText is now deprecated, please use the text property, e.g : myText.text = "my text";');
+    warn(`setText is now deprecated, please use the text property, e.g : myText.text = 'my text';`);
 };
 
 /**
@@ -460,17 +460,17 @@ Object.defineProperties(core.TextStyle.prototype, {
     font: {
         get()
         {
-            warn('text style property "font" is now deprecated, please use the '
-                + '"fontFamily", "fontSize", "fontStyle", "fontVariant" and "fontWeight" properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the `
+                + `'fontFamily', 'fontSize', 'fontStyle', 'fontVariant' and 'fontWeight' properties from now on`);
 
-            const fontSizeString = (typeof this._fontSize === 'number') ? '${this._fontSize}px' : this._fontSize; // eslint-disable-line
+            const fontSizeString = (typeof this._fontSize === 'number') ? `${this._fontSize}px` : this._fontSize;
 
-            return '${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}';
+            return `${this._fontStyle} ${this._fontVariant} ${this._fontWeight} ${fontSizeString} ${this._fontFamily}`;
         },
         set(font)
         {
-            warn('text style property "font" is now deprecated, please use the '
-                + '"fontFamily","fontSize","fontStyle","fontVariant" and "fontWeight" properties from now on');
+            warn(`text style property 'font' is now deprecated, please use the `
+                + `'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties from now on`);
 
             // can work out fontStyle from search of whole string
             if (font.indexOf('italic') > 1)
@@ -528,7 +528,7 @@ Object.defineProperties(core.TextStyle.prototype, {
                 this._fontFamily = '';
                 for (let i = fontSizeIndex + 1; i < splits.length; ++i)
                 {
-                    this._fontFamily += '${splits[i]} ';
+                    this._fontFamily += `${splits[i]} `;
                 }
 
                 this._fontFamily = this._fontFamily.slice(0, -1);
