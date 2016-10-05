@@ -348,14 +348,14 @@ Object.defineProperties(core, {
     },
 });
 
-core.DisplayObject.prototype.generateTexture = function(renderer, scaleMode, resolution)
+core.DisplayObject.prototype.generateTexture = function (renderer, scaleMode, resolution)
 {
     warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');
 
     return renderer.generateTexture(this, scaleMode, resolution);
 };
 
-core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
+core.Graphics.prototype.generateTexture = function (scaleMode, resolution)
 {
     warn('graphics generate texture has moved to the renderer. '
         + 'Or to render a graphics to a texture using canvas please use generateCanvasTexture');
@@ -363,34 +363,34 @@ core.Graphics.prototype.generateTexture = function(scaleMode, resolution)
     return this.generateCanvasTexture(scaleMode, resolution);
 };
 
-core.RenderTexture.prototype.render = function(displayObject, matrix, clear, updateTransform)
+core.RenderTexture.prototype.render = function (displayObject, matrix, clear, updateTransform)
 {
     this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);
     warn('RenderTexture.render is now deprecated, please use renderer.render(displayObject, renderTexture)');
 };
 
-core.RenderTexture.prototype.getImage = function(target)
+core.RenderTexture.prototype.getImage = function (target)
 {
     warn('RenderTexture.getImage is now deprecated, please use renderer.extract.image(target)');
 
     return this.legacyRenderer.extract.image(target);
 };
 
-core.RenderTexture.prototype.getBase64 = function(target)
+core.RenderTexture.prototype.getBase64 = function (target)
 {
     warn('RenderTexture.getBase64 is now deprecated, please use renderer.extract.base64(target)');
 
     return this.legacyRenderer.extract.base64(target);
 };
 
-core.RenderTexture.prototype.getCanvas = function(target)
+core.RenderTexture.prototype.getCanvas = function (target)
 {
     warn('RenderTexture.getCanvas is now deprecated, please use renderer.extract.canvas(target)');
 
     return this.legacyRenderer.extract.canvas(target);
 };
 
-core.RenderTexture.prototype.getPixels = function(target)
+core.RenderTexture.prototype.getPixels = function (target)
 {
     warn('RenderTexture.getPixels is now deprecated, please use renderer.extract.pixels(target)');
 
@@ -405,7 +405,7 @@ core.RenderTexture.prototype.getPixels = function(target)
  * @deprecated since version 3.0.0
  * @param {PIXI.Texture} texture - The texture to set to.
  */
-core.Sprite.prototype.setTexture = function(texture)
+core.Sprite.prototype.setTexture = function (texture)
 {
     this.texture = texture;
     warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
@@ -418,7 +418,7 @@ core.Sprite.prototype.setTexture = function(texture)
  * @deprecated since version 3.0.0
  * @param {string} text - The text to set to.
  */
-extras.BitmapText.prototype.setText = function(text)
+extras.BitmapText.prototype.setText = function (text)
 {
     this.text = text;
     warn(`setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text';`);
@@ -431,7 +431,7 @@ extras.BitmapText.prototype.setText = function(text)
  * @deprecated since version 3.0.0
  * @param {string} text - The text to set to.
  */
-core.Text.prototype.setText = function(text)
+core.Text.prototype.setText = function (text)
 {
     this.text = text;
     warn(`setText is now deprecated, please use the text property, e.g : myText.text = 'my text';`);
@@ -444,7 +444,7 @@ core.Text.prototype.setText = function(text)
  * @deprecated since version 3.0.0
  * @param {*} style - The style to set to.
  */
-core.Text.prototype.setStyle = function(style)
+core.Text.prototype.setStyle = function (style)
 {
     this.style = style;
     warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
