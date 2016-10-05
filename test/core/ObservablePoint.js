@@ -4,8 +4,8 @@ describe('PIXI.ObservablePoint', function ()
 {
     it('should create a new observable point', function ()
     {
-        var cb = sinon.spy();
-        var pt = new PIXI.ObservablePoint(cb, pt);
+        const cb = sinon.spy();
+        const pt = new PIXI.ObservablePoint(cb, this);
 
         expect(pt.x).to.equal(0);
         expect(pt.y).to.equal(0);
@@ -33,10 +33,14 @@ describe('PIXI.ObservablePoint', function ()
 
     it('should copy a new observable point', function ()
     {
-        var cb = function () {};
-        var p1 = new PIXI.ObservablePoint(cb, p1, 10, 20);
-        var p2 = new PIXI.ObservablePoint(cb, p2, 5, 2);
-        var p3 = new PIXI.ObservablePoint(cb, p2, 5, 6);
+        function cb()
+        {
+            // do nothing
+        }
+
+        const p1 = new PIXI.ObservablePoint(cb, this, 10, 20);
+        const p2 = new PIXI.ObservablePoint(cb, this, 5, 2);
+        const p3 = new PIXI.ObservablePoint(cb, this, 5, 6);
 
         p1.copy(p2);
         expect(p1.x).to.equal(p2.x);

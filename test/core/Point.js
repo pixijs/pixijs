@@ -4,7 +4,7 @@ describe('PIXI.Point', function ()
 {
     it('should create a new point', function ()
     {
-        var pt = new PIXI.Point();
+        const pt = new PIXI.Point();
 
         expect(pt.x).to.equal(0);
         expect(pt.y).to.equal(0);
@@ -12,12 +12,12 @@ describe('PIXI.Point', function ()
 
     it('should clone a new point', function ()
     {
-        var p1 = new PIXI.Point(10, 20);
+        const p1 = new PIXI.Point(10, 20);
 
         expect(p1.x).to.equal(10);
         expect(p1.y).to.equal(20);
 
-        var p2 = p1.clone();
+        const p2 = p1.clone();
 
         expect(p2.x).to.equal(10);
         expect(p2.y).to.equal(20);
@@ -27,8 +27,8 @@ describe('PIXI.Point', function ()
 
     it('should copy from one point to another', function ()
     {
-        var p1 = new PIXI.Point(10, 20);
-        var p2 = new PIXI.Point(2, 5);
+        const p1 = new PIXI.Point(10, 20);
+        const p2 = new PIXI.Point(2, 5);
 
         p1.copy(p2);
 
@@ -38,7 +38,7 @@ describe('PIXI.Point', function ()
 
     it('should set a new value', function ()
     {
-        var p1 = new PIXI.Point(10, 20);
+        const p1 = new PIXI.Point(10, 20);
 
         p1.set();
         expect(p1.x).to.equal(0);

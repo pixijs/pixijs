@@ -4,7 +4,7 @@ describe('PIXI.Matrix', function ()
 {
     it('should create a new matrix', function ()
     {
-        var matrix = new PIXI.Matrix();
+        const matrix = new PIXI.Matrix();
 
         expect(matrix.a).to.equal(1);
         expect(matrix.b).to.equal(0);
@@ -13,7 +13,8 @@ describe('PIXI.Matrix', function ()
         expect(matrix.tx).to.equal(0);
         expect(matrix.ty).to.equal(0);
 
-        var input = [0, 1, 2, 3, 4, 5];
+        const input = [0, 1, 2, 3, 4, 5];
+
         matrix.fromArray(input);
 
         expect(matrix.a).to.equal(0);
@@ -23,7 +24,7 @@ describe('PIXI.Matrix', function ()
         expect(matrix.tx).to.equal(2);
         expect(matrix.ty).to.equal(5);
 
-        var output = matrix.toArray(true);
+        let output = matrix.toArray(true);
 
         expect(output.length).to.equal(9);
         expect(output[0]).to.equal(0);
@@ -33,7 +34,7 @@ describe('PIXI.Matrix', function ()
         expect(output[6]).to.equal(2);
         expect(output[7]).to.equal(5);
 
-        var output = matrix.toArray(false);
+        output = matrix.toArray(false);
 
         expect(output.length).to.equal(9);
         expect(output[0]).to.equal(0);
@@ -46,7 +47,7 @@ describe('PIXI.Matrix', function ()
 
     it('should apply different transforms', function ()
     {
-        var matrix = new PIXI.Matrix();
+        const matrix = new PIXI.Matrix();
 
         matrix.translate(10, 20);
         matrix.translate(1, 2);
@@ -61,7 +62,8 @@ describe('PIXI.Matrix', function ()
         expect(matrix.tx).to.equal(22);
         expect(matrix.ty).to.equal(88);
 
-        var m2 = matrix.clone();
+        const m2 = matrix.clone();
+
         expect(m2).to.not.equal(matrix);
         expect(m2.a).to.equal(2);
         expect(m2.b).to.equal(0);
@@ -79,7 +81,7 @@ describe('PIXI.Matrix', function ()
         expect(matrix.ty).to.equal(15);
     });
 
-    it('should get IDENTITY and TEMP_MATRIX', function()
+    it('should get IDENTITY and TEMP_MATRIX', function ()
     {
         expect(PIXI.Matrix.IDENTITY instanceof PIXI.Matrix).to.be.true;
         expect(PIXI.Matrix.TEMP_MATRIX instanceof PIXI.Matrix).to.be.true;
