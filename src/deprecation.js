@@ -83,6 +83,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Stage: {
+        enumerable: true,
         get()
         {
             warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
@@ -100,6 +101,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     DisplayObjectContainer: {
+        enumerable: true,
         get()
         {
             warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
@@ -117,6 +119,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Strip: {
+        enumerable: true,
         get()
         {
             warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
@@ -134,6 +137,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     Rope: {
+        enumerable: true,
         get()
         {
             warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
@@ -151,6 +155,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     ParticleContainer: {
+        enumerable: true,
         get()
         {
             warn('The ParticleContainer class has been moved to particles.ParticleContainer, '
@@ -169,6 +174,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     MovieClip: {
+        enumerable: true,
         get()
         {
             warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
@@ -186,6 +192,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TilingSprite: {
+        enumerable: true,
         get()
         {
             warn('The TilingSprite class has been moved to extras.TilingSprite, '
@@ -204,6 +211,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BitmapText: {
+        enumerable: true,
         get()
         {
             warn('The BitmapText class has been moved to extras.BitmapText, '
@@ -222,6 +230,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     blendModes: {
+        enumerable: true,
         get()
         {
             warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
@@ -239,6 +248,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     scaleModes: {
+        enumerable: true,
         get()
         {
             warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
@@ -256,6 +266,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     BaseTextureCache: {
+        enumerable: true,
         get()
         {
             warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, '
@@ -274,6 +285,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.0
      */
     TextureCache: {
+        enumerable: true,
         get()
         {
             warn('The TextureCache class has been moved to utils.TextureCache, '
@@ -292,6 +304,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     math: {
+        enumerable: true,
         get()
         {
             warn('The math namespace is deprecated, please access members already accessible on PIXI.');
@@ -308,6 +321,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0.6
      */
     AbstractFilter: {
+        enumerable: true,
         get()
         {
             warn('AstractFilter has been renamed to Filter, please use PIXI.Filter');
@@ -324,6 +338,7 @@ Object.defineProperties(core, {
      * @deprecated since version 4.0.0
      */
     TransformManual: {
+        enumerable: true,
         get()
         {
             warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');

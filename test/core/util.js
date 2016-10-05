@@ -94,17 +94,81 @@ describe('PIXI.utils', function ()
         });
     });
 
-    describe('getImageTypeOfUrl', function ()
+    describe('getUrlFileExtension', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.getImageTypeOfUrl)
+            expect(PIXI.utils.getUrlFileExtension)
                 .to.be.a('function');
         });
 
-        it('should return image type of URL in lower case', function ()
+        it('should return extension of URL in lower case', function ()
         {
-            var imageType = PIXI.utils.getImageTypeOfUrl('http://foo.bar/baz.PNG');
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when absolute', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('/you/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when relative', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('me/baz.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should return extension of URL when just an extension', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('.PNG');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should work with a hash on the url', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should work with a hash path on the url', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp/this/is/a/path/me.jpg');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should work with a query string on the url', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should work with a hash and query string on the url', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#not-today');
+
+            expect(imageType)
+                .to.equal('png');
+        });
+
+        it('should work with a hash path and query string on the url', function ()
+        {
+            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#path/self/not-today.svg');
 
             expect(imageType)
                 .to.equal('png');

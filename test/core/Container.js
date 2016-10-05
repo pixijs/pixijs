@@ -18,7 +18,7 @@ describe('PIXI.Container', function ()
 
     describe('events', function ()
     {
-        it('should trigger "added" and "removed" events on it\'s children', function ()
+        it('should trigger "added" and "removed" events on its children', function ()
         {
             var container = new PIXI.Container();
             var child = new PIXI.DisplayObject();
@@ -47,4 +47,87 @@ describe('PIXI.Container', function ()
             expect(triggeredRemoved).to.be.true;
         });
     });
+
+    describe('addChild', function ()
+    {
+        it('should remove from current parent', function ()
+        {
+            var parent = new PIXI.Container();
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            assertRemovedFromParent(parent, container, child, function () { container.addChild(child); });
+        });
+    });
+
+    describe('removeChildAt', function ()
+    {
+        it('should remove from current parent', function ()
+        {
+            var parent = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            assertRemovedFromParent(parent, null, child, function () { parent.removeChildAt(0); });
+        });
+    });
+
+    describe('addChildAt', function ()
+    {
+        it('should allow placements at start', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            container.addChild(new PIXI.DisplayObject());
+            container.addChildAt(child, 0);
+
+            expect(container.children.length).to.be.equals(2);
+            expect(container.children[0]).to.be.equals(child);
+        });
+
+        it('should allow placements at end', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            container.addChild(new PIXI.DisplayObject());
+            container.addChildAt(child, 1);
+
+            expect(container.children.length).to.be.equals(2);
+            expect(container.children[1]).to.be.equals(child);
+        });
+
+        it('should throw on out-of-bounds', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            container.addChild(new PIXI.DisplayObject());
+
+            expect(function () { container.addChildAt(child, -1); }).to.throw('The index -1 supplied is out of bounds 1');
+            expect(function () { container.addChildAt(child, 2); }).to.throw('The index 2 supplied is out of bounds 1');
+        });
+
+        it('should remove from current parent', function ()
+        {
+            var parent = new PIXI.Container();
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            assertRemovedFromParent(parent, container, child, function () { container.addChildAt(child, 0); });
+        });
+    });
+
+    function assertRemovedFromParent(parent, container, child, functionToAssert)
+    {
+        parent.addChild(child);
+
+        expect(parent.children.length).to.be.equals(1);
+        expect(child.parent).to.be.equals(parent);
+
+        functionToAssert();
+
+        expect(parent.children.length).to.be.equals(0);
+        expect(child.parent).to.be.equals(container);
+    }
 });

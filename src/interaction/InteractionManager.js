@@ -571,7 +571,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        core.ticker.shared.remove(this.update);
+        core.ticker.shared.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -623,6 +623,7 @@ export default class InteractionManager extends EventEmitter
                 window.document.removeEventListener('mousemove', this.onPointerMove, true);
                 this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
                 this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
+                this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
                 window.removeEventListener('mouseup', this.onPointerUp, true);
             }
         }

@@ -1,7 +1,11 @@
-// import polyfills first
+// import polyfills
 import './polyfill';
 
-// export lib
+// export core
+export * from './deprecation';
+export * from './core';
+
+// export libs
 import * as accessibility from './accessibility';
 import * as extract from './extract';
 import * as extras from './extras';
@@ -12,7 +16,6 @@ import * as mesh from './mesh';
 import * as particles from './particles';
 import * as prepare from './prepare';
 
-export * from './core';
 export {
     accessibility,
     extract,
@@ -24,9 +27,6 @@ export {
     particles,
     prepare,
 };
-
-// Mixin the deprecations
-import './deprecation';
 
 /**
  * A premade instance of the loader that can be used to loader resources.
