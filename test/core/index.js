@@ -9,3 +9,6 @@ require('./Text');
 require('./toGlobal');
 require('./toLocal');
 require('./util');
+require('./Point');
+require('./ObservablePoint');
+require('./Matrix');
