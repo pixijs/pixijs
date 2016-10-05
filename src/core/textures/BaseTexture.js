@@ -1,5 +1,5 @@
 import {
-    uid, getImageTypeOfUrl, decomposeDataUri, getSvgSize,
+    uid, getUrlFileExtension, decomposeDataUri, getSvgSize,
     getResolutionOfUrl, BaseTextureCache, TextureCache,
 } from '../utils';
 import { RESOLUTION, SCALE_MODES, MIPMAP_TEXTURES, WRAP_MODES } from '../const';
@@ -399,7 +399,7 @@ export default class BaseTexture extends EventEmitter
             // Check for subType validity
             const firstSubType = dataUri.subType.split('+')[0];
 
-            imageType = getImageTypeOfUrl(`.${firstSubType}`);
+            imageType = getUrlFileExtension(`.${firstSubType}`);
 
             if (!imageType)
             {
@@ -408,7 +408,7 @@ export default class BaseTexture extends EventEmitter
         }
         else
         {
-            imageType = getImageTypeOfUrl(this.imageUrl);
+            imageType = getUrlFileExtension(this.imageUrl);
 
             if (!imageType)
             {

@@ -1,4 +1,4 @@
-import { RETINA_PREFIX, DATA_URI, IMAGE_TYPE, SVG_SIZE, VERSION } from '../const';
+import { RETINA_PREFIX, DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
 
@@ -129,9 +129,9 @@ export function decomposeDataUri(dataUri)
  * @param {string} url - the image path
  * @return {string|undefined} image extension
  */
-export function getImageTypeOfUrl(url)
+export function getUrlFileExtension(url)
 {
-    const extension = IMAGE_TYPE.exec(url);
+    const extension = URL_FILE_EXTENSION.exec(url);
 
     if (extension)
     {
