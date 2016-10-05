@@ -1,0 +1,88 @@
+'use strict';
+
+describe('PIXI.Matrix', function ()
+{
+    it('should create a new matrix', function ()
+    {
+        var matrix = new PIXI.Matrix();
+
+        expect(matrix.a).to.equal(1);
+        expect(matrix.b).to.equal(0);
+        expect(matrix.c).to.equal(0);
+        expect(matrix.d).to.equal(1);
+        expect(matrix.tx).to.equal(0);
+        expect(matrix.ty).to.equal(0);
+
+        var input = [0, 1, 2, 3, 4, 5];
+        matrix.fromArray(input);
+
+        expect(matrix.a).to.equal(0);
+        expect(matrix.b).to.equal(1);
+        expect(matrix.c).to.equal(3);
+        expect(matrix.d).to.equal(4);
+        expect(matrix.tx).to.equal(2);
+        expect(matrix.ty).to.equal(5);
+
+        var output = matrix.toArray(true);
+
+        expect(output.length).to.equal(9);
+        expect(output[0]).to.equal(0);
+        expect(output[1]).to.equal(1);
+        expect(output[3]).to.equal(3);
+        expect(output[4]).to.equal(4);
+        expect(output[6]).to.equal(2);
+        expect(output[7]).to.equal(5);
+
+        var output = matrix.toArray(false);
+
+        expect(output.length).to.equal(9);
+        expect(output[0]).to.equal(0);
+        expect(output[1]).to.equal(3);
+        expect(output[2]).to.equal(2);
+        expect(output[3]).to.equal(1);
+        expect(output[4]).to.equal(4);
+        expect(output[5]).to.equal(5);
+    });
+
+    it('should apply different transforms', function ()
+    {
+        var matrix = new PIXI.Matrix();
+
+        matrix.translate(10, 20);
+        matrix.translate(1, 2);
+        expect(matrix.tx).to.equal(11);
+        expect(matrix.ty).to.equal(22);
+
+        matrix.scale(2, 4);
+        expect(matrix.a).to.equal(2);
+        expect(matrix.b).to.equal(0);
+        expect(matrix.c).to.equal(0);
+        expect(matrix.d).to.equal(4);
+        expect(matrix.tx).to.equal(22);
+        expect(matrix.ty).to.equal(88);
+
+        var m2 = matrix.clone();
+        expect(m2).to.not.equal(matrix);
+        expect(m2.a).to.equal(2);
+        expect(m2.b).to.equal(0);
+        expect(m2.c).to.equal(0);
+        expect(m2.d).to.equal(4);
+        expect(m2.tx).to.equal(22);
+        expect(m2.ty).to.equal(88);
+
+        matrix.setTransform(14, 15, 0, 0, 4, 2, 0, 0, 0);
+        expect(matrix.a).to.equal(4);
+        expect(matrix.b).to.equal(0);
+        expect(matrix.c).to.equal(0);
+        expect(matrix.d).to.equal(2);
+        expect(matrix.tx).to.equal(14);
+        expect(matrix.ty).to.equal(15);
+    });
+
+    it('should get IDENTITY and TEMP_MATRIX', function()
+    {
+        expect(PIXI.Matrix.IDENTITY instanceof PIXI.Matrix).to.be.true;
+        expect(PIXI.Matrix.TEMP_MATRIX instanceof PIXI.Matrix).to.be.true;
+    });
+});
+
