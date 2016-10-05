@@ -18,7 +18,7 @@ describe('PIXI.Container', function ()
 
     describe('events', function ()
     {
-        it('should trigger "added" and "removed" events on it\'s children', function ()
+        it('should trigger "added" and "removed" events on its children', function ()
         {
             var container = new PIXI.Container();
             var child = new PIXI.DisplayObject();
