@@ -81,6 +81,32 @@ describe('PIXI.Matrix', function ()
         expect(matrix.ty).to.equal(15);
     });
 
+    it('should allow rotatation', function ()
+    {
+        const matrix = new PIXI.Matrix();
+
+        matrix.rotate(Math.PI);
+
+        expect(matrix.a).to.equal(-1);
+        expect(matrix.b).to.equal(Math.sin(Math.PI));
+        expect(matrix.c).to.equal(-Math.sin(Math.PI));
+        expect(matrix.d).to.equal(-1);
+    });
+
+    it('should append matrix', function ()
+    {
+        const m1 = new PIXI.Matrix();
+        const m2 = new PIXI.Matrix();
+
+        m2.tx = 100;
+        m2.ty = 200;
+
+        m1.append(m2);
+
+        expect(m1.tx).to.equal(m2.tx);
+        expect(m1.ty).to.equal(m2.ty);
+    });
+
     it('should get IDENTITY and TEMP_MATRIX', function ()
     {
         expect(PIXI.Matrix.IDENTITY instanceof PIXI.Matrix).to.be.true;
