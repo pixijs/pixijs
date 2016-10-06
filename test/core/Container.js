@@ -118,6 +118,69 @@ describe('PIXI.Container', function ()
         });
     });
 
+    describe('removeChild', function ()
+    {
+        it('should ignore non-children', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+
+            container.removeChild(new PIXI.DisplayObject());
+
+            expect(container.children.length).to.be.equals(1);
+        });
+
+        it('should remove all children supplied', function ()
+        {
+            var container = new PIXI.Container();
+            var child1 = new PIXI.DisplayObject();
+            var child2 = new PIXI.DisplayObject();
+
+            container.addChild(child1, child2);
+
+            expect(container.children.length).to.be.equals(2);
+
+            container.removeChild(child1, child2);
+
+            expect(container.children.length).to.be.equals(0);
+        });
+    });
+
+    describe('getChildIndex', function ()
+    {
+        it('should return the correct index', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            container.addChild(new PIXI.DisplayObject(), child, new PIXI.DisplayObject());
+
+            expect(container.getChildIndex(child)).to.be.equals(1);
+        });
+
+        it('should throw when child does not exist', function ()
+        {
+            var container = new PIXI.Container();
+            var child = new PIXI.DisplayObject();
+
+            expect(function () { container.getChildIndex(child); })
+                .to.throw('The supplied DisplayObject must be a child of the caller');
+        });
+    });
+
+    describe('getChildAt', function ()
+    {
+        it('should throw when out-of-bounds', function ()
+        {
+            var container = new PIXI.Container();
+
+            expect(function () { container.getChildAt(-1); }).to.throw('getChildAt: Index (-1) does not exist.');
+            expect(function () { container.getChildAt(1); }).to.throw('getChildAt: Index (1) does not exist.');
+        });
+    });
+
     function assertRemovedFromParent(parent, container, child, functionToAssert)
     {
         parent.addChild(child);
