@@ -180,6 +180,26 @@ describe('PIXI.Container', () =>
             expect(() => container.getChildAt(1)).to.throw('getChildAt: Index (1) does not exist.');
         });
     });
+
+    describe('setChildIndex', () =>
+    {
+        it('should throw on out-of-bounds', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+
+            expect(() => container.setChildIndex(child, -1)).to.throw('The supplied index is out of bounds');
+            expect(() => container.setChildIndex(child, 1)).to.throw('The supplied index is out of bounds');
+        });
+
+        it ('should throw when child does not belong', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            expect(() => container.setChildIndex(child, 0)).to.throw('The supplied DisplayObject must be a child of the caller');
         });
     });
 
