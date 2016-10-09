@@ -287,6 +287,69 @@ describe('PIXI.Container', () =>
         });
     });
 
+    describe('swapChildren', () =>
+    {
+        it('should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child1 = new PIXI.DisplayObject();
+            const child2 = new PIXI.DisplayObject();
+            
+            container.addChild(child1, child2);
+
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.swapChildren(child1, child2);
+            });
+        });
+
+        it('should not call onChildrenChange if supplied children are equal', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            let triggered = false;
+
+            container.addChild(child, new PIXI.DisplayObject());
+
+            container.onChildrenChange = () => {
+                triggered = true;
+            };
+
+            container.swapChildren(child, child);
+
+            expect(triggered).to.be.false;
+        });
+
+        it('should throw if children do not belong', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.Container();
+            container.addChild(child, new PIXI.DisplayObject());
+
+            expect(() => container.swapChildren(child, new PIXI.DisplayObject()))
+                .to.throw('The supplied DisplayObject must be a child of the caller');
+            expect(() => container.swapChildren(new PIXI.DisplayObject(), child))
+                .to.throw('The supplied DisplayObject must be a child of the caller');
+        });
+
+        it('should result in swapped child positions', () =>
+        {
+            const container = new PIXI.Container();
+            const child1 = new PIXI.DisplayObject();
+            const child2 = new PIXI.DisplayObject();
+            
+            container.addChild(child1, child2);
+            
+            expect(container.children.indexOf(child1)).to.be.equals(0);
+            expect(container.children.indexOf(child2)).to.be.equals(1);
+
+            container.swapChildren(child1, child2);
+
+            expect(container.children.indexOf(child2)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).to.be.equals(1);
+        });
+    });
+
     function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
     {
         let triggered = false;
