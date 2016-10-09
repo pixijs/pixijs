@@ -63,7 +63,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            
+
             assertCallToOnChildrenChanged(container, 0, () =>
             {
                 container.addChild(child);
@@ -85,7 +85,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            
+
             container.addChild(child);
 
             assertCallToOnChildrenChanged(container, 0, () =>
@@ -145,7 +145,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            
+
             container.addChild(new PIXI.DisplayObject());
 
             assertCallToOnChildrenChanged(container, 0, () =>
@@ -188,7 +188,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            
+
             container.addChild(child);
 
             assertCallToOnChildrenChanged(container, 0, () =>
@@ -277,7 +277,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            
+
             container.addChild(child, new PIXI.DisplayObject());
 
             assertCallToOnChildrenChanged(container, 1, () =>
@@ -294,7 +294,7 @@ describe('PIXI.Container', () =>
             const container = new PIXI.Container();
             const child1 = new PIXI.DisplayObject();
             const child2 = new PIXI.DisplayObject();
-            
+
             container.addChild(child1, child2);
 
             assertCallToOnChildrenChanged(container, 0, () =>
@@ -311,7 +311,8 @@ describe('PIXI.Container', () =>
 
             container.addChild(child, new PIXI.DisplayObject());
 
-            container.onChildrenChange = () => {
+            container.onChildrenChange = () =>
+            {
                 triggered = true;
             };
 
@@ -324,6 +325,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
+
             container.addChild(child, new PIXI.DisplayObject());
 
             expect(() => container.swapChildren(child, new PIXI.DisplayObject()))
@@ -337,9 +339,9 @@ describe('PIXI.Container', () =>
             const container = new PIXI.Container();
             const child1 = new PIXI.DisplayObject();
             const child2 = new PIXI.DisplayObject();
-            
+
             container.addChild(child1, child2);
-            
+
             expect(container.children.indexOf(child1)).to.be.equals(0);
             expect(container.children.indexOf(child2)).to.be.equals(1);
 
@@ -357,7 +359,7 @@ describe('PIXI.Container', () =>
         container.onChildrenChange = (index) =>
         {
             triggered = true;
-            expect(index).to.be.equals(smallestIndex)
+            expect(index).to.be.equals(smallestIndex);
         };
 
         functionToAssert();
