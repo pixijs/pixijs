@@ -58,6 +58,17 @@ describe('PIXI.Container', () =>
 
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
+
+        it('it should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.addChild(child);
+            });
+        });
     });
 
     describe('removeChildAt', () =>
@@ -68,6 +79,19 @@ describe('PIXI.Container', () =>
             const child = new PIXI.DisplayObject();
 
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
+        });
+
+        it('it should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            container.addChild(child);
+
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.removeChildAt(0);
+            });
         });
     });
 
@@ -116,6 +140,19 @@ describe('PIXI.Container', () =>
 
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
+
+        it('it should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            container.addChild(new PIXI.DisplayObject());
+
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.addChildAt(child, 0);
+            });
+        });
     });
 
     describe('removeChild', () =>
@@ -145,6 +182,19 @@ describe('PIXI.Container', () =>
             container.removeChild(child1, child2);
 
             expect(container.children.length).to.be.equals(0);
+        });
+
+        it('it should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            container.addChild(child);
+
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.removeChild(child);
+            });
         });
     });
 
@@ -222,7 +272,35 @@ describe('PIXI.Container', () =>
             container.setChildIndex(child, 0);
             expect(container.children.indexOf(child)).to.be.equals(0);
         });
+
+        it('it should call onChildrenChange', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+            
+            container.addChild(child, new PIXI.DisplayObject());
+
+            assertCallToOnChildrenChanged(container, 1, () =>
+            {
+                container.setChildIndex(child, 1);
+            });
+        });
     });
+
+    function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
+    {
+        let triggered = false;
+
+        container.onChildrenChange = (index) =>
+        {
+            triggered = true;
+            expect(index).to.be.equals(smallestIndex)
+        };
+
+        functionToAssert();
+
+        expect(triggered).to.be.true;
+    }
 
     function assertRemovedFromParent(parent, container, child, functionToAssert)
     {
