@@ -143,9 +143,13 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
         shader.uniforms.uTransform = tempMat.toArray(true);
 
         const color = tempArray;
+        const alpha = ts.worldAlpha;
 
         core.utils.hex2rgb(ts.tint, color);
-        color[3] = ts.worldAlpha;
+        color[0] *= alpha;
+        color[1] *= alpha;
+        color[2] *= alpha;
+        color[3] = alpha;
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
