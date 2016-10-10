@@ -439,6 +439,85 @@ describe('PIXI.Container', () =>
             expect(child.transform).to.be.null;
         })
     });
+
+    describe('width', () =>
+    {
+        it('should reflect scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+            container.scale.x = 2;
+
+            expect(container.width).to.be.equals(20);
+        });
+
+        it('should adjust scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+
+            container.width = 20;
+
+            expect(container.width).to.be.equals(20);
+            expect(container.scale.x).to.be.equals(2);
+        });
+
+        it('should reset scale', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.scale.x = 2;
+            container.width = 5;
+
+            expect(container.width).to.be.equals(0);
+            expect(container.scale.x).to.be.equals(1);
+        });
+    });
+
+    describe('height', () =>
+    {
+        it('should reflect scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+            container.scale.y = 2;
+
+            expect(container.height).to.be.equals(20);
+        })
+
+        it('should adjust scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+
+            container.height = 20;
+
+            expect(container.height).to.be.equals(20);
+            expect(container.scale.y).to.be.equals(2);
+        });
+
+        it('should reset scale', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.scale.y = 2;
+            container.height = 5;
+
+            expect(container.height).to.be.equals(0);
+            expect(container.scale.y).to.be.equals(1);
+        });
+    });
+
     function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
     {
         let triggered = false;
