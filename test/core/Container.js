@@ -403,6 +403,42 @@ describe('PIXI.Container', () =>
         });
     });
 
+    describe('destroy', () =>
+    {
+        it('should not destroy children by default', () =>
+        {
+            let container = new PIXI.Container();
+            let child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy();
+
+            expect(container.children.length).to.be.equals(0);
+            expect(child.transform).to.not.be.null;
+        });
+
+        it('should allow children destroy', () => {
+            let container = new PIXI.Container();
+            let child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy({children: true});
+
+            expect(container.children.length).to.be.equals(0);
+            expect(container.transform).to.be.null;
+            expect(child.transform).to.be.null;
+
+            container = new PIXI.Container();
+            child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy(true);
+
+            expect(container.children.length).to.be.equals(0);
+            expect(container.transform).to.be.null;
+            expect(child.transform).to.be.null;
+        })
+    });
     function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
     {
         let triggered = false;
