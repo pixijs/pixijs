@@ -358,6 +358,51 @@ describe('PIXI.Container', () =>
         });
     });
 
+    describe('removeChildren', () =>
+    {
+        it('should remove all children when no arguments supplied', () =>
+        {
+            const container = new PIXI.Container();
+            let removed = [];
+
+            container.addChild(new PIXI.DisplayObject(), new PIXI.DisplayObject(), new PIXI.DisplayObject());
+
+            expect(container.children.length).to.be.equals(3);
+
+            removed = container.removeChildren();
+
+            expect(container.children.length).to.be.equals(0);
+            expect(removed.length).to.be.equals(3);
+        });
+
+        it('should return empty array if no children', () => {
+            const container = new PIXI.Container();
+            const removed = container.removeChildren();
+
+            expect(removed.length).to.be.equals(0);
+        });
+
+        it('should handle a range greater than length', () => {
+            const container = new PIXI.Container();
+            let removed = [];
+
+            container.addChild(new PIXI.DisplayObject());
+
+            removed = container.removeChildren(0, 2);
+            expect(removed.length).to.be.equals(1);
+        })
+
+        it('should throw outside acceptable range', () => {
+            const container = new PIXI.Container();
+            
+            container.addChild(new PIXI.DisplayObject());
+
+            expect(() => container.removeChildren(2)).to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1)).to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1, 1)).to.throw('removeChildren: numeric values are outside the acceptable range.');
+        });
+    });
+
     function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
     {
         let triggered = false;
