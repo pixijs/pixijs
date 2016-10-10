@@ -7,5 +7,5 @@ void main(void)
 {
     vec4 sample = texture2D(uSampler, vTextureCoord);
 
-    gl_FragColor = sample * color;
+    gl_FragColor = sample * uColor;
 }
