@@ -59,7 +59,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
-        it('it should call onChildrenChange', () =>
+        it('should call onChildrenChange', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -81,7 +81,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
         });
 
-        it('it should call onChildrenChange', () =>
+        it('should call onChildrenChange', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -141,7 +141,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
 
-        it('it should call onChildrenChange', () =>
+        it('should call onChildrenChange', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -184,7 +184,7 @@ describe('PIXI.Container', () =>
             expect(container.children.length).to.be.equals(0);
         });
 
-        it('it should call onChildrenChange', () =>
+        it('should call onChildrenChange', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -273,7 +273,7 @@ describe('PIXI.Container', () =>
             expect(container.children.indexOf(child)).to.be.equals(0);
         });
 
-        it('it should call onChildrenChange', () =>
+        it('should call onChildrenChange', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
