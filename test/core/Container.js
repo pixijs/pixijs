@@ -375,14 +375,16 @@ describe('PIXI.Container', () =>
             expect(removed.length).to.be.equals(3);
         });
 
-        it('should return empty array if no children', () => {
+        it('should return empty array if no children', () =>
+        {
             const container = new PIXI.Container();
             const removed = container.removeChildren();
 
             expect(removed.length).to.be.equals(0);
         });
 
-        it('should handle a range greater than length', () => {
+        it('should handle a range greater than length', () =>
+        {
             const container = new PIXI.Container();
             let removed = [];
 
@@ -390,16 +392,20 @@ describe('PIXI.Container', () =>
 
             removed = container.removeChildren(0, 2);
             expect(removed.length).to.be.equals(1);
-        })
+        });
 
-        it('should throw outside acceptable range', () => {
+        it('should throw outside acceptable range', () =>
+        {
             const container = new PIXI.Container();
-            
+
             container.addChild(new PIXI.DisplayObject());
 
-            expect(() => container.removeChildren(2)).to.throw('removeChildren: numeric values are outside the acceptable range.');
-            expect(() => container.removeChildren(-1)).to.throw('removeChildren: numeric values are outside the acceptable range.');
-            expect(() => container.removeChildren(-1, 1)).to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(2))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1, 1))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
         });
     });
 
@@ -407,8 +413,8 @@ describe('PIXI.Container', () =>
     {
         it('should not destroy children by default', () =>
         {
-            let container = new PIXI.Container();
-            let child = new PIXI.DisplayObject();
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
 
             container.addChild(child);
             container.destroy();
@@ -417,12 +423,13 @@ describe('PIXI.Container', () =>
             expect(child.transform).to.not.be.null;
         });
 
-        it('should allow children destroy', () => {
+        it('should allow children destroy', () =>
+        {
             let container = new PIXI.Container();
             let child = new PIXI.DisplayObject();
 
             container.addChild(child);
-            container.destroy({children: true});
+            container.destroy({ children: true });
 
             expect(container.children.length).to.be.equals(0);
             expect(container.transform).to.be.null;
@@ -437,7 +444,7 @@ describe('PIXI.Container', () =>
             expect(container.children.length).to.be.equals(0);
             expect(container.transform).to.be.null;
             expect(child.transform).to.be.null;
-        })
+        });
     });
 
     describe('width', () =>
@@ -458,6 +465,7 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
+
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
 
@@ -491,12 +499,13 @@ describe('PIXI.Container', () =>
             container.scale.y = 2;
 
             expect(container.height).to.be.equals(20);
-        })
+        });
 
         it('should adjust scale', () =>
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
+
             graphics.drawRect(0, 0, 10, 10);
             container.addChild(graphics);
 
