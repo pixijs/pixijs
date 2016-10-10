@@ -301,6 +301,12 @@ describe('PIXI.Container', () =>
             {
                 container.swapChildren(child1, child2);
             });
+
+            // second call required to complete returned index coverage
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.swapChildren(child1, child2);
+            });
         });
 
         it('should not call onChildrenChange if supplied children are equal', () =>
