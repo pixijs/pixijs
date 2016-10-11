@@ -189,7 +189,7 @@ export default class TilingSprite extends core.Sprite
         if (!this._canvasPattern)
         {
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height);
+            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height, texture.baseTexture.resolution);
 
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)
@@ -219,7 +219,7 @@ export default class TilingSprite extends core.Sprite
                            transform.ty * resolution);
 
         // TODO - this should be rolled into the setTransform above..
-        context.scale(this.tileScale.x, this.tileScale.y);
+        context.scale(this.tileScale.x / texture.baseTexture.resolution, this.tileScale.y / texture.baseTexture.resolution);
 
         context.translate(modX + (this.anchor.x * -this._width),
                           modY + (this.anchor.y * -this._height));
@@ -236,8 +236,8 @@ export default class TilingSprite extends core.Sprite
         context.fillStyle = this._canvasPattern;
         context.fillRect(-modX,
                          -modY,
-                         this._width / this.tileScale.x,
-                         this._height / this.tileScale.y);
+                         this._width / this.tileScale.x * texture.baseTexture.resolution,
+                         this._height / this.tileScale.y * texture.baseTexture.resolution);
     }
 
     /**
