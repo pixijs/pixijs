@@ -18,7 +18,7 @@ describe('getGlobalPosition', function ()
 
         var globalPoint;
 
-        globalPoint = container.toGlobalPosition(globalPoint, false);
+        globalPoint = container.getGlobalPosition(globalPoint, false);
 
         expect(globalPoint.x).to.equal(80);
         expect(globalPoint.y).to.equal(160);
@@ -26,7 +26,7 @@ describe('getGlobalPosition', function ()
         // check but skipUpdate
 
         parent.position.set(200, 200);
-        globalPoint = container.toGlobalPosition(globalPoint, true);
+        globalPoint = container.getGlobalPosition(globalPoint, true);
 
         expect(globalPoint.x).to.equal(80);
         expect(globalPoint.y).to.equal(160);
