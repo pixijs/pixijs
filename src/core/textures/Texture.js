@@ -8,7 +8,7 @@ var BaseTexture = require('./BaseTexture'),
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided then the whole image is used.
- *
+ * 
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
@@ -16,6 +16,15 @@ var BaseTexture = require('./BaseTexture'),
  * var sprite1 = new PIXI.Sprite(texture);
  * var sprite2 = new PIXI.Sprite(texture);
  * ```
+ *
+ * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing. You can check for this by checking the sprite's _textureID property.
+ * ```js
+ * var texture = PIXI.Texture.fromImage('assets/image.svg');
+ * var sprite1 = new PIXI.Sprite(texture);
+ * //sprite1._textureID should not be undefined
+ * ```
+ * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See #3068.
+ *
  *
  * @class
  * @memberof PIXI
