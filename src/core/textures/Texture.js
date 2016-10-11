@@ -17,9 +17,9 @@ var BaseTexture = require('./BaseTexture'),
  * var sprite2 = new PIXI.Sprite(texture);
  * ```
  *
- * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing. You can check for this by checking the sprite's textureid.
+ * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing. You can check for this by checking the sprite's _textureID property.
  * ```js
- * var texture = PIXI.Texture.fromImage('assets/image.png');
+ * var texture = PIXI.Texture.fromImage('assets/image.svg');
  * var sprite1 = new PIXI.Sprite(texture);
  * //sprite1._textureID should not be undefined
  * ```
