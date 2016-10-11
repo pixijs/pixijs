@@ -4,7 +4,7 @@ describe('PIXI.Sprite', function ()
 {
     describe('width', function ()
     {
-        it('should not be negative for nagative scale.x', function ()
+        it('should not be negative for negative scale.x', function ()
         {
             var sprite = new PIXI.Sprite();
 
@@ -34,7 +34,7 @@ describe('PIXI.Sprite', function ()
 
     describe('height', function ()
     {
-        it('should not be negative for nagative scale.y', function ()
+        it('should not be negative for negative scale.y', function ()
         {
             var sprite = new PIXI.Sprite();
 
