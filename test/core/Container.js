@@ -389,6 +389,24 @@ describe('PIXI.Container', () =>
             assertWebGLNotRendered(container);
             assertCanvasNotRendered(container);
         });
+
+        it('should render children', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.Container();
+            let canvasChildRendered = false;
+            let webGLChildRendered = false;
+
+            container.addChild(child);
+            child._renderCanvas = () => { canvasChildRendered = true; };
+            child._renderWebGL = () => { webGLChildRendered = true; };
+
+            container.renderWebGL();
+            expect(webGLChildRendered).to.be.true;
+
+            container.renderCanvas();
+            expect(canvasChildRendered).to.be.true;
+        });
     });
 
     describe('removeChildren', () =>
