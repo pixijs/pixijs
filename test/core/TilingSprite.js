@@ -1,6 +1,6 @@
 'use strict';
 
-describe('PIXI.Sprite', function ()
+describe('PIXI.TilingSprite', function ()
 {
     describe('getBounds()', function ()
     {
