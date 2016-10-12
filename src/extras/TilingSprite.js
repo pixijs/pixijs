@@ -248,10 +248,10 @@ export default class TilingSprite extends core.Sprite
      */
     _calculateBounds()
     {
-        const minX = -this._width * this.anchor._x;
-        const minY = -this._height * this.anchor._y;
-        const maxX = this._width;
-        const maxY = this._height;
+        const minX = this._width * -this._anchor._x;
+        const minY = this._height * -this._anchor._y;
+        const maxX = this._width * (1 - this._anchor._x);
+        const maxY = this._height * (1 - this._anchor._y);
 
         this._bounds.addFrame(this.transform, minX, minY, maxX, maxY);
     }
@@ -267,10 +267,10 @@ export default class TilingSprite extends core.Sprite
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
-            this._bounds.minX = -this._width * this.anchor._x;
-            this._bounds.minY = -this._height * this.anchor._y;
-            this._bounds.maxX = this._width;
-            this._bounds.maxY = this._height;
+            this._bounds.minX = this._width * -this._anchor._x;
+            this._bounds.minY = this._height * -this._anchor._y;
+            this._bounds.maxX = this._width * (1 - this._anchor._x);
+            this._bounds.maxY = this._height * (1 - this._anchor._x);
 
             if (!rect)
             {
@@ -300,11 +300,11 @@ export default class TilingSprite extends core.Sprite
 
         const width = this._width;
         const height = this._height;
-        const x1 = -width * this.anchor.x;
+        const x1 = -width * this.anchor._x;
 
         if (tempPoint.x > x1 && tempPoint.x < x1 + width)
         {
-            const y1 = -height * this.anchor.y;
+            const y1 = -height * this.anchor._y;
 
             if (tempPoint.y > y1 && tempPoint.y < y1 + height)
             {

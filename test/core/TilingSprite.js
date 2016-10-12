@@ -4,7 +4,7 @@ describe('PIXI.Sprite', function ()
 {
     describe('getBounds()', function ()
     {
-        it('must have correct value according to _width and _height', function ()
+        it('must have correct value according to _width, _height and anchor', function ()
         {
             const parent = new PIXI.Container();
             const texture = new PIXI.Texture(new PIXI.BaseTexture());
@@ -13,7 +13,7 @@ describe('PIXI.Sprite', function ()
             parent.addChild(tilingSprite);
 
             tilingSprite.anchor.set(0.5, 0.5);
-            tilingSprite.scale.set(-2, -2);
+            tilingSprite.scale.set(-2, 2);
             tilingSprite.position.set(50, 40);
 
             const bounds = tilingSprite.getBounds();

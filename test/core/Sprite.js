@@ -61,4 +61,30 @@ describe('PIXI.Sprite', function ()
             expect(sprite.scale.y).to.be.below(0);
         });
     });
+
+    describe('getBounds()', function ()
+    {
+        it('must have correct value according to texture size, width, height and anchor', function ()
+        {
+            const parent = new PIXI.Container();
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+            sprite.width = 200;
+            sprite.height = 300;
+
+            parent.addChild(sprite);
+
+            sprite.scale.x *= 2;
+            sprite.scale.y *= 2;
+            sprite.anchor.set(0.5, 0.5);
+            sprite.position.set(50, 40);
+
+            const bounds = sprite.getBounds();
+
+            expect(bounds.x).to.equal(-150);
+            expect(bounds.y).to.equal(-260);
+            expect(bounds.width).to.equal(400);
+            expect(bounds.height).to.equal(600);
+        });
+    });
 });
