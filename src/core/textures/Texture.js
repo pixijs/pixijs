@@ -18,7 +18,8 @@ import { TextureCache, BaseTextureCache } from '../utils';
  * let sprite2 = new PIXI.Sprite(texture);
  * ```
  *
- * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing. You can check for this by checking the sprite's _textureID property.
+ * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
+ * You can check for this by checking the sprite's _textureID property.
  * ```js
  * var texture = PIXI.Texture.fromImage('assets/image.svg');
  * var sprite1 = new PIXI.Sprite(texture);
