@@ -46,10 +46,46 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
     }
 
     /**
+     * whether or not tilingSprite can be drawn without transforms and clamps in fragment shader
      *
-     * @param {PIXI.extras.TilingSprite} ts tilingSprite to be rendered
+     * @param {TilingSprite} ts tiling sprite
+     * @returns {boolean} whether or not its simple
      */
-    render(ts)
+    isSimpleSprite(ts)
+    {
+        const renderer = this.renderer;
+        const tex = ts._texture;
+        const baseTex = tex.baseTexture;
+        let isSimple = baseTex.isPowerOfTwo
+            && tex.frame.width === baseTex.width && tex.frame.height === baseTex.height;
+
+        // auto, force repeat wrapMode for big tiling textures
+        if (isSimple)
+        {
+            if (!baseTex._glTextures[renderer.CONTEXT_UID])
+            {
+                if (baseTex.wrapMode === WRAP_MODES.CLAMP)
+                {
+                    baseTex.wrapMode = WRAP_MODES.REPEAT;
+                }
+            }
+            else
+            {
+                isSimple = baseTex.wrapMode !== WRAP_MODES.CLAMP;
+            }
+        }
+
+        return isSimple;
+    }
+
+    /**
+     * For extra pixi plugins use
+     *
+     * @param {PIXI.TilingSprite} ts tiling sprite
+     * @param {boolean} isSimple is it repeating texture or not
+     * @param {PIXI.Shader} shader, must be set accordingly to isSimple
+     */
+    renderWithShader(ts, isSimple, shader)
     {
         const quad = this.quad;
         let vertices = quad.vertices;
@@ -72,31 +108,8 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
 
         const renderer = this.renderer;
         const tex = ts._texture;
-        const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
         const uv = ts.uvTransform;
-        let isSimple = baseTex.isPowerOfTwo
-            && tex.frame.width === baseTex.width && tex.frame.height === baseTex.height;
-
-        // auto, force repeat wrapMode for big tiling textures
-        if (isSimple)
-        {
-            if (!baseTex._glTextures[renderer.CONTEXT_UID])
-            {
-                if (baseTex.wrapMode === WRAP_MODES.CLAMP)
-                {
-                    baseTex.wrapMode = WRAP_MODES.REPEAT;
-                }
-            }
-            else
-            {
-                isSimple = baseTex.wrapMode !== WRAP_MODES.CLAMP;
-            }
-        }
-
-        const shader = isSimple ? this.simpleShader : this.shader;
-
-        renderer.bindShader(shader);
 
         const w = tex.width;
         const h = tex.height;
@@ -130,16 +143,35 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
         shader.uniforms.uTransform = tempMat.toArray(true);
 
         const color = tempArray;
+        const alpha = ts.worldAlpha;
 
         core.utils.hex2rgb(ts.tint, color);
-        color[3] = ts.worldAlpha;
+        color[0] *= alpha;
+        color[1] *= alpha;
+        color[2] *= alpha;
+        color[3] = alpha;
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
         renderer.bindTexture(tex);
-        renderer.setBlendMode(ts.blendMode);
 
         quad.draw();
+    }
+
+    /**
+     * render method
+     *
+     * @param {PIXI.extras.TilingSprite} ts tilingSprite to be rendered
+     */
+    render(ts)
+    {
+        const renderer = this.renderer;
+        const isSimple = this.isSimpleSprite(ts);
+        const shader = isSimple ? this.simpleShader : this.shader;
+
+        renderer.bindShader(shader);
+        renderer.setBlendMode(ts.blendMode);
+        this.renderWithShader(ts, isSimple, shader);
     }
 }
 
