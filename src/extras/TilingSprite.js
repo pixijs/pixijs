@@ -181,6 +181,7 @@ export default class TilingSprite extends core.Sprite
         const transform = this.worldTransform;
         const resolution = renderer.resolution;
         const baseTexture = texture.baseTexture;
+        const baseTextureResolution = texture.baseTexture.resolution;
         const modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width;
         const modY = (this.tilePosition.y / this.tileScale.y) % texture._frame.height;
 
@@ -189,7 +190,7 @@ export default class TilingSprite extends core.Sprite
         if (!this._canvasPattern)
         {
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height, texture.baseTexture.resolution);
+            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height, baseTextureResolution);
 
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)
@@ -219,7 +220,7 @@ export default class TilingSprite extends core.Sprite
                            transform.ty * resolution);
 
         // TODO - this should be rolled into the setTransform above..
-        context.scale(this.tileScale.x / texture.baseTexture.resolution, this.tileScale.y / texture.baseTexture.resolution);
+        context.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
 
         context.translate(modX + (this.anchor.x * -this._width),
                           modY + (this.anchor.y * -this._height));
@@ -236,8 +237,8 @@ export default class TilingSprite extends core.Sprite
         context.fillStyle = this._canvasPattern;
         context.fillRect(-modX,
                          -modY,
-                         this._width / this.tileScale.x * texture.baseTexture.resolution,
-                         this._height / this.tileScale.y * texture.baseTexture.resolution);
+                         this._width / this.tileScale.x * baseTextureResolution,
+                         this._height / this.tileScale.y * baseTextureResolution);
     }
 
     /**
