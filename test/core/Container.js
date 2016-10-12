@@ -352,6 +352,57 @@ describe('PIXI.Container', () =>
         });
     });
 
+    describe('render', () =>
+    {
+        it('should not render when object not visible', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.visible = false;
+
+            assertWebGLNotRendered(container);
+            assertCanvasNotRendered(container);
+        });
+
+        it('should not render when alpha is zero', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.worldAlpha = 0;
+
+            assertWebGLNotRendered(container);
+            assertCanvasNotRendered(container);
+        });
+
+        it('should not render when object not renderable', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.renderable = false;
+
+            assertWebGLNotRendered(container);
+            assertCanvasNotRendered(container);
+        });
+    });
+
+    function assertWebGLNotRendered(container)
+    {
+        let rendered = false;
+
+        container._renderWebGL = () => { rendered = true; };
+        container.renderWebGL();
+        expect(rendered).to.be.false;
+    }
+
+    function assertCanvasNotRendered(container)
+    {
+        let rendered = false;
+
+        container._renderCanvas = () => { rendered = true; };
+        container.renderCanvas();
+        expect(rendered).to.be.false;
+    }
+
     function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
     {
         let triggered = false;
