@@ -472,7 +472,7 @@ export default class Container extends DisplayObject
     renderCanvas(renderer)
     {
         // if not visible or the alpha is 0 then no need to render this
-        if (!this.visible || this.alpha <= 0 || !this.renderable)
+        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
         {
             return;
         }
