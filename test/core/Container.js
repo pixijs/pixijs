@@ -301,6 +301,12 @@ describe('PIXI.Container', () =>
             {
                 container.swapChildren(child1, child2);
             });
+
+            // second call required to complete returned index coverage
+            assertCallToOnChildrenChanged(container, 0, () =>
+            {
+                container.swapChildren(child1, child2);
+            });
         });
 
         it('should not call onChildrenChange if supplied children are equal', () =>
@@ -382,6 +388,175 @@ describe('PIXI.Container', () =>
 
             assertWebGLNotRendered(container);
             assertCanvasNotRendered(container);
+        });
+    });
+
+    describe('removeChildren', () =>
+    {
+        it('should remove all children when no arguments supplied', () =>
+        {
+            const container = new PIXI.Container();
+            let removed = [];
+
+            container.addChild(new PIXI.DisplayObject(), new PIXI.DisplayObject(), new PIXI.DisplayObject());
+
+            expect(container.children.length).to.be.equals(3);
+
+            removed = container.removeChildren();
+
+            expect(container.children.length).to.be.equals(0);
+            expect(removed.length).to.be.equals(3);
+        });
+
+        it('should return empty array if no children', () =>
+        {
+            const container = new PIXI.Container();
+            const removed = container.removeChildren();
+
+            expect(removed.length).to.be.equals(0);
+        });
+
+        it('should handle a range greater than length', () =>
+        {
+            const container = new PIXI.Container();
+            let removed = [];
+
+            container.addChild(new PIXI.DisplayObject());
+
+            removed = container.removeChildren(0, 2);
+            expect(removed.length).to.be.equals(1);
+        });
+
+        it('should throw outside acceptable range', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.addChild(new PIXI.DisplayObject());
+
+            expect(() => container.removeChildren(2))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+            expect(() => container.removeChildren(-1, 1))
+                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+        });
+    });
+
+    describe('destroy', () =>
+    {
+        it('should not destroy children by default', () =>
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy();
+
+            expect(container.children.length).to.be.equals(0);
+            expect(child.transform).to.not.be.null;
+        });
+
+        it('should allow children destroy', () =>
+        {
+            let container = new PIXI.Container();
+            let child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy({ children: true });
+
+            expect(container.children.length).to.be.equals(0);
+            expect(container.transform).to.be.null;
+            expect(child.transform).to.be.null;
+
+            container = new PIXI.Container();
+            child = new PIXI.DisplayObject();
+
+            container.addChild(child);
+            container.destroy(true);
+
+            expect(container.children.length).to.be.equals(0);
+            expect(container.transform).to.be.null;
+            expect(child.transform).to.be.null;
+        });
+    });
+
+    describe('width', () =>
+    {
+        it('should reflect scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+            container.scale.x = 2;
+
+            expect(container.width).to.be.equals(20);
+        });
+
+        it('should adjust scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+
+            container.width = 20;
+
+            expect(container.width).to.be.equals(20);
+            expect(container.scale.x).to.be.equals(2);
+        });
+
+        it('should reset scale', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.scale.x = 2;
+            container.width = 5;
+
+            expect(container.width).to.be.equals(0);
+            expect(container.scale.x).to.be.equals(1);
+        });
+    });
+
+    describe('height', () =>
+    {
+        it('should reflect scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+            container.scale.y = 2;
+
+            expect(container.height).to.be.equals(20);
+        });
+
+        it('should adjust scale', () =>
+        {
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.addChild(graphics);
+
+            container.height = 20;
+
+            expect(container.height).to.be.equals(20);
+            expect(container.scale.y).to.be.equals(2);
+        });
+
+        it('should reset scale', () =>
+        {
+            const container = new PIXI.Container();
+
+            container.scale.y = 2;
+            container.height = 5;
+
+            expect(container.height).to.be.equals(0);
+            expect(container.scale.y).to.be.equals(1);
         });
     });
 
