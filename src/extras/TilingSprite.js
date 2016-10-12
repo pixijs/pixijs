@@ -242,6 +242,21 @@ export default class TilingSprite extends core.Sprite
     }
 
     /**
+     * Updates the bounds of the tiling sprite.
+     *
+     * @private
+     */
+    _calculateBounds()
+    {
+        const minX = this._width * -this._anchor._x;
+        const minY = this._height * -this._anchor._y;
+        const maxX = this._width * (1 - this._anchor._x);
+        const maxY = this._height * (1 - this._anchor._y);
+
+        this._bounds.addFrame(this.transform, minX, minY, maxX, maxY);
+    }
+
+    /**
      * Gets the local bounds of the sprite object.
      *
      * @param {PIXI.Rectangle} rect - The output rectangle.
@@ -252,10 +267,10 @@ export default class TilingSprite extends core.Sprite
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
-            this._bounds.minX = -this._width * this.anchor._x;
-            this._bounds.minY = -this._height * this.anchor._y;
-            this._bounds.maxX = this._width;
-            this._bounds.maxY = this._height;
+            this._bounds.minX = this._width * -this._anchor._x;
+            this._bounds.minY = this._height * -this._anchor._y;
+            this._bounds.maxX = this._width * (1 - this._anchor._x);
+            this._bounds.maxY = this._height * (1 - this._anchor._x);
 
             if (!rect)
             {
@@ -274,82 +289,6 @@ export default class TilingSprite extends core.Sprite
     }
 
     /**
-     * Returns the framing rectangle of the sprite as a Rectangle object
-    *
-     * @return {PIXI.Rectangle} the framing rectangle
-     */
-    getBounds()
-    {
-        const width = this._width;
-        const height = this._height;
-
-        const w0 = width * (1 - this.anchor.x);
-        const w1 = width * -this.anchor.x;
-
-        const h0 = height * (1 - this.anchor.y);
-        const h1 = height * -this.anchor.y;
-
-        const worldTransform = this.worldTransform;
-
-        const a = worldTransform.a;
-        const b = worldTransform.b;
-        const c = worldTransform.c;
-        const d = worldTransform.d;
-        const tx = worldTransform.tx;
-        const ty = worldTransform.ty;
-
-        const x1 = (a * w1) + (c * h1) + tx;
-        const y1 = (d * h1) + (b * w1) + ty;
-
-        const x2 = (a * w0) + (c * h1) + tx;
-        const y2 = (d * h1) + (b * w0) + ty;
-
-        const x3 = (a * w0) + (c * h0) + tx;
-        const y3 = (d * h0) + (b * w0) + ty;
-
-        const x4 =  (a * w1) + (c * h0) + tx;
-        const y4 =  (d * h0) + (b * w1) + ty;
-
-        let minX = 0;
-        let maxX = 0;
-        let minY = 0;
-        let maxY = 0;
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
-
-        const bounds = this._bounds;
-
-        bounds.x = minX;
-        bounds.width = maxX - minX;
-
-        bounds.y = minY;
-        bounds.height = maxY - minY;
-
-        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-        this._currentBounds = bounds;
-
-        return bounds;
-    }
-
-    /**
      * Checks if a point is inside this tiling sprite.
      *
      * @param {PIXI.Point} point - the point to check
@@ -361,11 +300,11 @@ export default class TilingSprite extends core.Sprite
 
         const width = this._width;
         const height = this._height;
-        const x1 = -width * this.anchor.x;
+        const x1 = -width * this.anchor._x;
 
         if (tempPoint.x > x1 && tempPoint.x < x1 + width)
         {
-            const y1 = -height * this.anchor.y;
+            const y1 = -height * this.anchor._y;
 
             if (tempPoint.y > y1 && tempPoint.y < y1 + height)
             {
