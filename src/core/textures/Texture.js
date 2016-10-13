@@ -391,6 +391,10 @@ export default class Texture extends EventEmitter
 
             return texture;
         }
+        else if (source instanceof HTMLImageElement)
+        {
+            return new Texture(new BaseTexture(source));
+        }
         else if (source instanceof HTMLCanvasElement)
         {
             return Texture.fromCanvas(source);
