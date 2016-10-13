@@ -1,4 +1,5 @@
 import { SHAPES } from '../../../const';
+import CanvasPool from './CanvasPool';
 
 /**
  * A set of functions used to handle masking.
@@ -15,6 +16,7 @@ export default class CanvasMaskManager
     {
         this.renderer = renderer;
         this._maskStates = [];
+        this._pool = new CanvasPool();
     }
 
     /**
@@ -84,9 +86,11 @@ export default class CanvasMaskManager
 
         if (maskData._texture)
         {
+            const key = this._pool.getKey(renderer.context.canvas);
+            const maskableCanvas = this._pool.popElementOrCreate(key, this._copyCanvas.bind(null, renderer));
             const maskState = {
                 originalContext: renderer.context,
-                maskableContext: this._setupContext(this._copyCanvas(renderer), renderer, maskData),
+                maskableContext: this._setupContext(maskableCanvas, renderer, maskData),
                 maskData,
             };
 
@@ -231,10 +235,14 @@ export default class CanvasMaskManager
      */
     popMask(renderer)
     {
+        this._freeCanvasOnNextFrame = this._freeCanvasOnNextFrame || [];
+        this._freeCanvasOnNextFrame.forEach((canvas) => this._pool.freeElement(canvas));
+
         if (this._maskStates.length > 0)
         {
             const maskState = this._maskStates.pop();
-            const maskCanvas = this._copyCanvas(renderer);
+            const key = this._pool.getKey(renderer.context.canvas);
+            const maskCanvas = this._pool.popElementOrCreate(key, this._copyCanvas.bind(null, renderer));
             const maskContext = this._setupContext(maskCanvas, renderer, maskState.maskData);
 
             renderer.context = maskContext;
@@ -246,11 +254,15 @@ export default class CanvasMaskManager
             // Render the stuff to be masked into the mask context
             maskContext.globalCompositeOperation = 'source-in';
             maskContext.drawImage(maskState.maskableContext.canvas, -maskCanvas.width / 2, -maskCanvas.height / 2);
+            this._pool.freeElement(maskState.maskableContext.canvas);
 
             // Restore the original context
             renderer.context = maskState.originalContext;
             // draw the masked content into the original context
             renderer.context.drawImage(maskCanvas, -maskCanvas.width / 2, -maskCanvas.height / 2);
+            // freeing the maskCanvas here makes it create weird artifacts for some reason I haven't
+            // been able to figure out, if someone knows of a better solution, please fix this.
+            this._clearOnNextFrame.push(maskCanvas);
         }
 
         renderer.context.restore();
@@ -262,6 +274,6 @@ export default class CanvasMaskManager
      */
     destroy()
     {
-        /* empty */
+        this._pool.emptyPool();
     }
 }
