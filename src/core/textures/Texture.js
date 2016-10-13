@@ -401,7 +401,7 @@ export default class Texture extends EventEmitter
         }
         else if (source instanceof BaseTexture)
         {
-            return new Texture(source);
+            return new Texture(BaseTexture);
         }
 
         // lets assume its a texture!
