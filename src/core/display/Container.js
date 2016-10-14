@@ -375,6 +375,11 @@ Container.prototype.updateTransform = function ()
     //TODO: check render flags, how to process stuff here
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
+    this.updateTransformChildren();
+};
+
+Container.prototype.updateTransformChildren = function()
+{
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform();
@@ -438,11 +443,16 @@ Container.prototype.renderWebGL = function (renderer)
     {
         this._renderWebGL(renderer);
 
-        // simple render children!
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
+        this.renderWebGLChildren(renderer);
+    }
+};
+
+Container.prototype.renderWebGLChildren = function(renderer)
+{
+    // simple render children!
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].renderWebGL(renderer);
     }
 };
 
@@ -452,7 +462,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
 
     var filters = this._filters;
     var mask = this._mask;
-    var i, j;
+    var i;
 
     // push filter first as we need to ensure the stencil buffer is correct for any masking
     if ( filters )
@@ -489,10 +499,7 @@ Container.prototype.renderAdvancedWebGL = function (renderer)
     this._renderWebGL(renderer);
 
     // now loop through the children and make sure they get rendered
-    for (i = 0, j = this.children.length; i < j; i++)
-    {
-        this.children[i].renderWebGL(renderer);
-    }
+    this.renderWebGLChildren(renderer);
 
     renderer.currentRenderer.flush();
 
@@ -551,14 +558,21 @@ Container.prototype.renderCanvas = function (renderer)
     }
 
     this._renderCanvas(renderer);
-    for (var i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].renderCanvas(renderer);
-    }
+
+    this.renderCanvasChildren(renderer);
 
     if (this._mask)
     {
         renderer.maskManager.popMask(renderer);
+    }
+};
+
+Container.prototype.renderCanvasChildren = function(renderer)
+{
+    // simple render children!
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].renderCanvas(renderer);
     }
 };
 
