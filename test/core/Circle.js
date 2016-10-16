@@ -58,7 +58,7 @@ describe('PIXI.Circle', function ()
     it('should return framing rectangle', function ()
     {
         const circ1 = new PIXI.Circle(10, 10, 5);
-        const rect1= circ1.getBounds();
+        const rect1 = circ1.getBounds();
 
         expect(rect1.left).to.equal(5);
         expect(rect1.top).to.equal(5);
