@@ -63,11 +63,12 @@ describe('PIXI.Container', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
+            const spy = sinon.spy(container, 'onChildrenChange');
 
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.addChild(child);
-            });
+            container.addChild(child);
+
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(0);
         });
     });
 
@@ -88,10 +89,11 @@ describe('PIXI.Container', () =>
 
             container.addChild(child);
 
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.removeChildAt(0);
-            });
+            const spy = sinon.spy(container, 'onChildrenChange');
+
+            container.removeChildAt(0);
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(0);
         });
     });
 
@@ -148,10 +150,12 @@ describe('PIXI.Container', () =>
 
             container.addChild(new PIXI.DisplayObject());
 
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.addChildAt(child, 0);
-            });
+            const spy = sinon.spy(container, 'onChildrenChange');
+
+            container.addChildAt(child, 0);
+
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(0);
         });
     });
 
@@ -191,10 +195,12 @@ describe('PIXI.Container', () =>
 
             container.addChild(child);
 
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.removeChild(child);
-            });
+            const spy = sinon.spy(container, 'onChildrenChange');
+
+            container.removeChild(child);
+
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(0);
         });
     });
 
@@ -280,10 +286,12 @@ describe('PIXI.Container', () =>
 
             container.addChild(child, new PIXI.DisplayObject());
 
-            assertCallToOnChildrenChanged(container, 1, () =>
-            {
-                container.setChildIndex(child, 1);
-            });
+            const spy = sinon.spy(container, 'onChildrenChange');
+
+            container.setChildIndex(child, 1);
+
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(1);
         });
     });
 
@@ -297,34 +305,30 @@ describe('PIXI.Container', () =>
 
             container.addChild(child1, child2);
 
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.swapChildren(child1, child2);
-            });
+            const spy = sinon.spy(container, 'onChildrenChange');
+
+            container.swapChildren(child1, child2);
+            expect(spy).to.have.been.called;
+            expect(spy).to.have.been.calledWith(0);
 
             // second call required to complete returned index coverage
-            assertCallToOnChildrenChanged(container, 0, () =>
-            {
-                container.swapChildren(child1, child2);
-            });
+            container.swapChildren(child1, child2);
+            expect(spy).to.have.been.calledTwice;
+            expect(spy).to.have.been.calledWith(0);
         });
 
         it('should not call onChildrenChange if supplied children are equal', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
-            let triggered = false;
 
             container.addChild(child, new PIXI.DisplayObject());
 
-            container.onChildrenChange = () =>
-            {
-                triggered = true;
-            };
+            const spy = sinon.spy(container, 'onChildrenChange');
 
             container.swapChildren(child, child);
 
-            expect(triggered).to.be.false;
+            expect(spy).to.not.have.been.called;
         });
 
         it('should throw if children do not belong', () =>
@@ -363,49 +367,62 @@ describe('PIXI.Container', () =>
         it('should not render when object not visible', () =>
         {
             const container = new PIXI.Container();
+            const webGLSpy = sinon.spy(container._renderWebGL);
+            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.visible = false;
 
-            assertWebGLNotRendered(container);
-            assertCanvasNotRendered(container);
+            container.renderWebGL();
+            expect(webGLSpy).to.not.have.been.called;
+
+            container.renderCanvas();
+            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should not render when alpha is zero', () =>
         {
             const container = new PIXI.Container();
+            const webGLSpy = sinon.spy(container._renderWebGL);
+            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.worldAlpha = 0;
 
-            assertWebGLNotRendered(container);
-            assertCanvasNotRendered(container);
+            container.renderWebGL();
+            expect(webGLSpy).to.not.have.been.called;
+
+            container.renderCanvas();
+            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should not render when object not renderable', () =>
         {
             const container = new PIXI.Container();
+            const webGLSpy = sinon.spy(container._renderWebGL);
+            const canvasSpy = sinon.spy(container._renderCanvas);
 
             container.renderable = false;
 
-            assertWebGLNotRendered(container);
-            assertCanvasNotRendered(container);
+            container.renderWebGL();
+            expect(webGLSpy).to.not.have.been.called;
+
+            container.renderCanvas();
+            expect(canvasSpy).to.not.have.been.called;
         });
 
         it('should render children', () =>
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
-            let canvasChildRendered = false;
-            let webGLChildRendered = false;
+            const webGLSpy = sinon.spy(child, '_renderWebGL');
+            const canvasSpy = sinon.spy(child, '_renderCanvas');
 
             container.addChild(child);
-            child._renderCanvas = () => { canvasChildRendered = true; };
-            child._renderWebGL = () => { webGLChildRendered = true; };
 
             container.renderWebGL();
-            expect(webGLChildRendered).to.be.true;
+            expect(webGLSpy).to.have.been.called;
 
             container.renderCanvas();
-            expect(canvasChildRendered).to.be.true;
+            expect(canvasSpy).to.have.been.called;
         });
     });
 
@@ -577,39 +594,6 @@ describe('PIXI.Container', () =>
             expect(container.scale.y).to.be.equals(1);
         });
     });
-
-    function assertWebGLNotRendered(container)
-    {
-        let rendered = false;
-
-        container._renderWebGL = () => { rendered = true; };
-        container.renderWebGL();
-        expect(rendered).to.be.false;
-    }
-
-    function assertCanvasNotRendered(container)
-    {
-        let rendered = false;
-
-        container._renderCanvas = () => { rendered = true; };
-        container.renderCanvas();
-        expect(rendered).to.be.false;
-    }
-
-    function assertCallToOnChildrenChanged(container, smallestIndex, functionToAssert)
-    {
-        let triggered = false;
-
-        container.onChildrenChange = (index) =>
-        {
-            triggered = true;
-            expect(index).to.be.equals(smallestIndex);
-        };
-
-        functionToAssert();
-
-        expect(triggered).to.be.true;
-    }
 
     function assertRemovedFromParent(parent, container, child, functionToAssert)
     {
