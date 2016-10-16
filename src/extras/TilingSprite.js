@@ -190,7 +190,9 @@ export default class TilingSprite extends core.Sprite
         if (!this._canvasPattern)
         {
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width, texture._frame.height, baseTextureResolution);
+            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
+                                                        texture._frame.height,
+                                                        baseTextureResolution);
 
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)

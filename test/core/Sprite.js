@@ -69,6 +69,7 @@ describe('PIXI.Sprite', function ()
             const parent = new PIXI.Container();
             const texture = new PIXI.RenderTexture.create(20, 30);
             const sprite = new PIXI.Sprite(texture);
+
             sprite.width = 200;
             sprite.height = 300;
 
