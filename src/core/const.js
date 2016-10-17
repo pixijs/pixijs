@@ -276,7 +276,6 @@ export const FILTER_RESOLUTION = 1;
  */
 export const DEFAULT_RENDER_OPTIONS = {
     view: null,
-    resolution: 1,
     antialias: false,
     forceFXAA: false,
     autoResize: false,

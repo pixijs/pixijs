@@ -1,6 +1,6 @@
 import { sayHello, hex2string, hex2rgb } from '../utils';
 import { Matrix } from '../math';
-import { DEFAULT_RENDER_OPTIONS, RENDERER_TYPE } from '../const';
+import { DEFAULT_RENDER_OPTIONS, RENDERER_TYPE, RESOLUTION } from '../const';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
@@ -96,7 +96,7 @@ export default class SystemRenderer extends EventEmitter
          * @member {number}
          * @default 1
          */
-        this.resolution = options.resolution;
+        this.resolution = options.resolution || RESOLUTION;
 
         /**
          * Whether the render view is transparent
