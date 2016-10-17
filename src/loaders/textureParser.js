@@ -13,8 +13,15 @@ export default function ()
             resource.texture = new core.Texture(baseTexture);
 
             // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-            core.utils.BaseTextureCache[resource.url] = baseTexture;
-            core.utils.TextureCache[resource.url] = resource.texture;
+            core.utils.BaseTextureCache[resource.name] = baseTexture;
+            core.utils.TextureCache[resource.name] = resource.texture;
+
+            // also add references by url if they are different.
+            if (resource.name !== resource.url)
+            {
+                core.utils.BaseTextureCache[resource.url] = baseTexture;
+                core.utils.TextureCache[resource.url] = resource.texture;
+            }
         }
 
         next();
