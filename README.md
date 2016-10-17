@@ -47,11 +47,11 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 
 Its easy to get started with Pixi.js! Simple grab the pre-built versions from here:
 
-Master - Nice and stable Pixi.js
-- Unminified: [http://pixijs.download/master/pixi.js]
-- Minified: [http://pixijs.download/master/pixi.min.js] 
+Release Branch - Nice and stable Pixi.js
+- Unminified: [http://pixijs.download/release/pixi.js]
+- Minified: [http://pixijs.download/release/pixi.min.js] 
 
-Develop - The bleeding edge version of Pixi.js
+Develop Branch - The bleeding edge version of Pixi.js
 - Unminified: [http://pixijs.download/dev/pixi.js]
 - Minified: [http://pixijs.download/dev/pixi.min.js]
 
