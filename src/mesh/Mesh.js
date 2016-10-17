@@ -115,7 +115,13 @@ export default class Mesh extends core.Container
          */
         this.tintRgb = new Float32Array([1, 1, 1]);
 
-        this._glDatas = [];
+        /**
+         * A map of renderer IDs to webgl render data
+         *
+         * @private
+         * @member {object<number, object>}
+         */
+        this._glDatas = {};
     }
 
     /**

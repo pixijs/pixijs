@@ -48,7 +48,7 @@ class Filter
 
         // this is where we store shader references..
         // TODO we could cache this!
-        this.glShaders = [];
+        this.glShaders = {};
 
         // used for cacheing.. sure there is a better way!
         if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
