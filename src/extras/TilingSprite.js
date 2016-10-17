@@ -325,8 +325,8 @@ export default class TilingSprite extends core.Sprite
     {
         super.destroy();
 
-        this.tileScale = null;
-        this.tilePosition = null;
+        this.tileTransform = null;
+        this.uvTransform = null;
     }
 
     /**
