@@ -499,13 +499,11 @@ export default class Graphics extends Container
             {
                 points.push(startX, startY);
             }
-
         }
         else
         {
             this.moveTo(startX, startY);
         }
-
 
         const theta = sweep / (segs * 2);
         const theta2 = theta * 2;
