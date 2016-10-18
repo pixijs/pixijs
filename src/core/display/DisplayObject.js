@@ -582,7 +582,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Indicates if the sprite is globally visible.
+     * Indicates if the object is globally visible.
      *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
