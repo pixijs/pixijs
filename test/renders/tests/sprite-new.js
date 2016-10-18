@@ -10,12 +10,12 @@ module.exports.async = function (done)
         {
             assert(resources.bitmap);
             assert(resources.bitmap.texture);
-            
+
             const sprite = new PIXI.Sprite(resources.bitmap.texture);
 
             assert.equal(sprite.width, 24);
             assert.equal(sprite.height, 24);
-            
+
             sprite.x = (32 - sprite.width) / 2;
             sprite.y = (32 - sprite.height) / 2;
 
