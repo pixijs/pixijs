@@ -70,6 +70,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",
+    "pixi-tests-tool": "^1.0.0",
     "pixify": "^1.5.0",
     "rimraf": "^2.5.3",
     "watch": "^0.19.1"

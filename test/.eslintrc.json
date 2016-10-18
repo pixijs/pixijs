@@ -11,6 +11,7 @@
     "globals": {
         "sinon": false,
         "expect": false,
+        "assert": false,
         "PIXI": false
     },
     "rules": {
