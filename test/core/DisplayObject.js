@@ -82,4 +82,23 @@ describe('PIXI.DisplayObject', () =>
             expect(object.scale.y).to.be.equal(1);
         });
     });
+
+    describe('worldVisible', () =>
+    {
+        it('should traverse parents', () =>
+        {
+            const grandParent = new PIXI.Container();
+            const parent = new PIXI.Container();
+            const child = new PIXI.DisplayObject();
+
+            grandParent.addChild(parent);
+            parent.addChild(child);
+
+            expect(child.worldVisible).to.be.true;
+
+            grandParent.visible = false;
+
+            expect(child.worldVisible).to.be.false;
+        });
+    });
 });
