@@ -55,7 +55,7 @@ describe('PIXI.DisplayObject', () =>
 
     describe('setTransform', () =>
     {
-        it('should set corret properties', () =>
+        it('should set correct properties', () =>
         {
             const object = new PIXI.DisplayObject();
 
