@@ -480,7 +480,7 @@ export default class Graphics extends Container
             startAngle += Math.PI * 2;
         }
 
-        const sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
+        const sweep = anticlockwise ? (startAngle - endAngle) : (endAngle - startAngle);
         const segs = Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
         if (sweep === 0)
@@ -491,16 +491,21 @@ export default class Graphics extends Container
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
 
+        const points = this.currentPath.shape.points;
+
         if (this.currentPath)
         {
-            this.currentPath.shape.points.push(startX, startY);
+            if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
+            {
+                points.push(startX, startY);
+            }
+
         }
         else
         {
             this.moveTo(startX, startY);
         }
 
-        const points = this.currentPath.shape.points;
 
         const theta = sweep / (segs * 2);
         const theta2 = theta * 2;
