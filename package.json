@@ -27,7 +27,7 @@
     "test:debug": "npm test -- --debug",
     "precoverage": "rimraf coverage && npm run build -- --noExternal",
     "coverage": "npm test -- -h",
-    "lint": "eslint scripts src test",
+    "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
