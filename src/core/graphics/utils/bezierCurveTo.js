@@ -1,37 +1,32 @@
-
 /**
  * Calculate the points for a bezier curve and then draws it.
  *
  * Ignored from docs since it is not directly exposed.
  *
  * @ignore
- * @param fromX {number} Starting point x
- * @param fromY {number} Starting point y
- * @param cpX {number} Control point x
- * @param cpY {number} Control point y
- * @param cpX2 {number} Second Control point x
- * @param cpY2 {number} Second Control point y
- * @param toX {number} Destination point x
- * @param toY {number} Destination point y
- * @param [path=number[]] Path array to push points into
- * @return {PIXI.Graphics}
+ * @param {number} fromX - Starting point x
+ * @param {number} fromY - Starting point y
+ * @param {number} cpX - Control point x
+ * @param {number} cpY - Control point y
+ * @param {number} cpX2 - Second Control point x
+ * @param {number} cpY2 - Second Control point y
+ * @param {number} toX - Destination point x
+ * @param {number} toY - Destination point y
+ * @param {number[]} [path=[]] - Path array to push points into
+ * @return {number[]} Array of points of the curve
  */
-var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path) // jshint ignore:line
+export default function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path = [])
 {
-    path = path || [];
-
-    var n = 20,
-        dt,
-        dt2,
-        dt3,
-        t2,
-        t3;
+    const n = 20;
+    let dt = 0;
+    let dt2 = 0;
+    let dt3 = 0;
+    let t2 = 0;
+    let t3 = 0;
 
     path.push(fromX, fromY);
 
-    var j = 0;
-
-    for (var i = 1; i <= n; ++i)
+    for (let i = 1, j = 0; i <= n; ++i)
     {
         j = i / n;
 
@@ -42,11 +37,11 @@ var bezierCurveTo = function (fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY, path
         t2 = j * j;
         t3 = t2 * j;
 
-        path.push( dt3 * fromX + 3 * dt2 * j * cpX + 3 * dt * t2 * cpX2 + t3 * toX,
-                   dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
+        path.push(
+            (dt3 * fromX) + (3 * dt2 * j * cpX) + (3 * dt * t2 * cpX2) + (t3 * toX),
+            (dt3 * fromY) + (3 * dt2 * j * cpY) + (3 * dt * t2 * cpY2) + (t3 * toY)
+        );
     }
 
     return path;
-};
-
-module.exports = bezierCurveTo;
+}

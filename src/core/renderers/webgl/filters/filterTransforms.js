@@ -1,4 +1,4 @@
-var math = require('../../../math');
+import { Matrix } from '../../../math';
 
 /*
  * Calculates the mapped matrix
@@ -8,58 +8,57 @@ var math = require('../../../math');
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // thia returns a matrix that will normalise map filter cords in the filter to screen space
-var calculateScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
-     //var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    // var texture = {width:1136, height:700};//sprite._texture.baseTexture;
+     // let worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX),
+    // let texture = {width:1136, height:700};//sprite._texture.baseTexture;
 
     // TODO unwrap?
-    var mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
-    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
+    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height);
 
-    mappedMatrix.scale( textureSize.width , textureSize.height );
+    mappedMatrix.scale(textureSize.width, textureSize.height);
 
     return mappedMatrix;
+}
 
-};
-
-var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, textureSize)
+export function calculateNormalizedScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
-    var mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
-    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
+    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height);
 
-    var translateScaleX = (textureSize.width / filterArea.width);
-    var translateScaleY = (textureSize.height / filterArea.height);
+    const translateScaleX = (textureSize.width / filterArea.width);
+    const translateScaleY = (textureSize.height / filterArea.height);
 
-    mappedMatrix.scale( translateScaleX , translateScaleY );
+    mappedMatrix.scale(translateScaleX, translateScaleY);
 
     return mappedMatrix;
-};
+}
 
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
-var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
+export function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite)
 {
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite._texture.baseTexture;
+    const worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX);
+    const texture = sprite._texture.baseTexture;
 
     // TODO unwrap?
-    var mappedMatrix = outputMatrix.identity();
+    const mappedMatrix = outputMatrix.identity();
 
     // scale..
-    var ratio = textureSize.height / textureSize.width;
+    const ratio = textureSize.height / textureSize.width;
 
-    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height );
+    mappedMatrix.translate(filterArea.x / textureSize.width, filterArea.y / textureSize.height);
 
-    mappedMatrix.scale(1 , ratio);
+    mappedMatrix.scale(1, ratio);
 
-    var translateScaleX = (textureSize.width / texture.width);
-    var translateScaleY = (textureSize.height / texture.height);
+    const translateScaleX = (textureSize.width / texture.width);
+    const translateScaleY = (textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
 
-    //this...?  free beer for anyone who can explain why this makes sense!
+    // this...?  free beer for anyone who can explain why this makes sense!
     worldTransform.ty /= texture.width * translateScaleX;
     // worldTransform.ty /= texture.height * translateScaleY;
 
@@ -67,17 +66,11 @@ var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, spr
     mappedMatrix.prepend(worldTransform);
 
     // apply inverse scale..
-    mappedMatrix.scale(1 , 1/ratio);
+    mappedMatrix.scale(1, 1 / ratio);
 
-    mappedMatrix.scale( translateScaleX , translateScaleY );
+    mappedMatrix.scale(translateScaleX, translateScaleY);
 
     mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
     return mappedMatrix;
-};
-
-module.exports = {
-    calculateScreenSpaceMatrix:calculateScreenSpaceMatrix,
-    calculateNormalizedScreenSpaceMatrix:calculateNormalizedScreenSpaceMatrix,
-    calculateSpriteMatrix:calculateSpriteMatrix
-};
+}

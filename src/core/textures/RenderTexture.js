@@ -1,5 +1,5 @@
-var BaseRenderTexture = require('./BaseRenderTexture'),
-    Texture = require('./Texture');
+import BaseRenderTexture from './BaseRenderTexture';
+import Texture from './Texture';
 
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -11,9 +11,9 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * and rotation of the given Display Objects is ignored. For example:
  *
  * ```js
- * var renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
- * var renderTexture = PIXI.RenderTexture.create(800, 600);
- * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
+ * let renderTexture = PIXI.RenderTexture.create(800, 600);
+ * let sprite = PIXI.Sprite.fromImage("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -27,7 +27,7 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * position a Container should be used:
  *
  * ```js
- * var doc = new PIXI.Container();
+ * let doc = new PIXI.Container();
  *
  * doc.addChild(sprite);
  *
@@ -37,86 +37,91 @@ var BaseRenderTexture = require('./BaseRenderTexture'),
  * @class
  * @extends PIXI.Texture
  * @memberof PIXI
- * @param baseRenderTexture {PIXI.BaseRenderTexture} The renderer used for this RenderTexture
- * @param [frame] {PIXI.Rectangle} The rectangle frame of the texture to show
  */
-function RenderTexture(baseRenderTexture, frame)
+export default class RenderTexture extends Texture
 {
-    // suport for legacy..
-    this.legacyRenderer = null;
-
-    if( !(baseRenderTexture instanceof BaseRenderTexture) )
+    /**
+     * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
+     * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
+     */
+    constructor(baseRenderTexture, frame)
     {
-        var width = arguments[1];
-        var height = arguments[2];
-        var scaleMode = arguments[3] || 0;
-        var resolution = arguments[4] || 1;
+        // suport for legacy..
+        let _legacyRenderer = null;
 
-        // we have an old render texture..
-        console.warn('v4 RenderTexture now expects a new BaseRenderTexture. Please use RenderTexture.create('+width+', '+height+')');  // jshint ignore:line
-        this.legacyRenderer = arguments[0];
+        if (!(baseRenderTexture instanceof BaseRenderTexture))
+        {
+            /* eslint-disable prefer-rest-params, no-console */
+            const width = arguments[1];
+            const height = arguments[2];
+            const scaleMode = arguments[3] || 0;
+            const resolution = arguments[4] || 1;
 
-        frame = null;
-        baseRenderTexture = new BaseRenderTexture(width, height, scaleMode, resolution);
+            // we have an old render texture..
+            console.warn(`Please use RenderTexture.create(${width}, ${height}) instead of the ctor directly.`);
+            _legacyRenderer = arguments[0];
+            /* eslint-enable prefer-rest-params, no-console */
+
+            frame = null;
+            baseRenderTexture = new BaseRenderTexture(width, height, scaleMode, resolution);
+        }
+
+        /**
+         * The base texture object that this texture uses
+         *
+         * @member {BaseTexture}
+         */
+        super(
+            baseRenderTexture,
+            frame
+        );
+
+        this.legacyRenderer = _legacyRenderer;
+
+        /**
+         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
+         *
+         * @member {boolean}
+         */
+        this.valid = true;
+
+        this._updateUvs();
     }
 
+    /**
+     * Resizes the RenderTexture.
+     *
+     * @param {number} width - The width to resize to.
+     * @param {number} height - The height to resize to.
+     * @param {boolean} doNotResizeBaseTexture - Should the baseTexture.width and height values be resized as well?
+     */
+    resize(width, height, doNotResizeBaseTexture)
+    {
+        // TODO - could be not required..
+        this.valid = (width > 0 && height > 0);
+
+        this._frame.width = this.orig.width = width;
+        this._frame.height = this.orig.height = height;
+
+        if (!doNotResizeBaseTexture)
+        {
+            this.baseTexture.resize(width, height);
+        }
+
+        this._updateUvs();
+    }
 
     /**
-     * The base texture object that this texture uses
+     * A short hand way of creating a render texture.
      *
-     * @member {BaseTexture}
+     * @param {number} [width=100] - The width of the render texture
+     * @param {number} [height=100] - The height of the render texture
+     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
+     * @return {PIXI.RenderTexture} The new render texture
      */
-    Texture.call(this,
-        baseRenderTexture,
-        frame
-    );
-
-    /**
-     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-     *
-     * @member {boolean}
-     */
-    this.valid = true;
-
-    this._updateUvs();
+    static create(width, height, scaleMode, resolution)
+    {
+        return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
+    }
 }
-
-RenderTexture.prototype = Object.create(Texture.prototype);
-RenderTexture.prototype.constructor = RenderTexture;
-module.exports = RenderTexture;
-
-/**
- * Resizes the RenderTexture.
- *
- * @param width {number} The width to resize to.
- * @param height {number} The height to resize to.
- * @param doNotResizeBaseTexture {boolean} Should the baseTexture.width and height values be resized as well?
- */
-RenderTexture.prototype.resize = function (width, height, doNotResizeBaseTexture)
-{
-
-    //TODO - could be not required..
-    this.valid = (width > 0 && height > 0);
-
-    this._frame.width = this.orig.width = width;
-    this._frame.height = this.orig.height = height;
-
-    if (!doNotResizeBaseTexture)
-    {
-        this.baseTexture.resize(width, height);
-    }
-
-    this._updateUvs();
-};
-
-/**
- * A short hand way of creating a render texture..
- * @param [width=100] {number} The width of the render texture
- * @param [height=100] {number} The height of the render texture
- * @param [scaleMode=PIXI.SCALE_MODES.DEFAULT] {number} See {@link PIXI.SCALE_MODES} for possible values
- * @param [resolution=1] {number} The resolution / device pixel ratio of the texture being generated
- */
-RenderTexture.create = function(width, height, scaleMode, resolution)
-{
-    return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
-};

@@ -1,4 +1,4 @@
-var WebGLManager = require('../managers/WebGLManager');
+import WebGLManager from '../managers/WebGLManager';
 
 /**
  * Base for a common object renderer that can be used as a system renderer plugin.
@@ -6,51 +6,43 @@ var WebGLManager = require('../managers/WebGLManager');
  * @class
  * @extends PIXI.WebGLManager
  * @memberof PIXI
- * @param renderer {PIXI.WebGLRenderer} The renderer this object renderer works for.
  */
-function ObjectRenderer(renderer)
+export default class ObjectRenderer extends WebGLManager
 {
-    WebGLManager.call(this, renderer);
+    /**
+     * Starts the renderer and sets the shader
+     *
+     */
+    start()
+    {
+        // set the shader..
+    }
+
+    /**
+     * Stops the renderer
+     *
+     */
+    stop()
+    {
+        this.flush();
+    }
+
+    /**
+     * Stub method for rendering content and emptying the current batch.
+     *
+     */
+    flush()
+    {
+        // flush!
+    }
+
+    /**
+     * Renders an object
+     *
+     * @param {PIXI.DisplayObject} object - The object to render.
+     */
+    render(object) // eslint-disable-line no-unused-vars
+    {
+        // render the object
+    }
 }
-
-
-ObjectRenderer.prototype = Object.create(WebGLManager.prototype);
-ObjectRenderer.prototype.constructor = ObjectRenderer;
-module.exports = ObjectRenderer;
-
-/**
- * Starts the renderer and sets the shader
- *
- */
-ObjectRenderer.prototype.start = function ()
-{
-    // set the shader..
-};
-
-/**
- * Stops the renderer
- *
- */
-ObjectRenderer.prototype.stop = function ()
-{
-    this.flush();
-};
-
-/**
- * Stub method for rendering content and emptying the current batch.
- *
- */
-ObjectRenderer.prototype.flush = function ()
-{
-    // flush!
-};
-
-/**
- * Renders an object
- *
- * @param object {PIXI.DisplayObject} The object to render.
- */
-ObjectRenderer.prototype.render = function (object) // jshint unused:false
-{
-    // render the object
-};

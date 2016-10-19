@@ -1,13 +1,13 @@
 # How to contribute
 
 It is essential to the development of pixi.js that the community is empowered
-to make changes and get them into the library. Here are some guidlines to make
+to make changes and get them into the library. Here are some guidelines to make
 that process silky smooth for all involved.
 
 ## Reporting issues
 
 To report a bug, request a feature, or even ask a question, make use of the GitHub Issues
-section for [pixi.js][0]. When submitting an issue please take the following steps:
+section for [pixi.js][issues]. When submitting an issue please take the following steps:
 
 1. **Seach for existing issues.** Your question or bug may have already been answered or fixed,
 be sure to search the issues first before putting in a duplicate issue.
@@ -16,50 +16,70 @@ be sure to search the issues first before putting in a duplicate issue.
 also have a minimal, runnable, code example that reproduces the problem you have.
 
 3. **Include a live example.** After narrowing your code down to only the problem areas, make use
-of [jsFiddle][1], [jsBin][2], or a link to your live site so that we can view a live example of the problem.
+of [jsFiddle][fiddle], [jsBin][jsbin], or a link to your live site so that we can view a live example of the problem.
 
 4. **Share as much information as possible.** Include browser version affected, your OS, version of
 the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
+## Contributing Changes
 
-## Making Changes
+### Setting Up
 
-To setup for making changes you will need node.js. You can download node.js from
-[nodejs.org][3].
+To setup for making changes you will need to take a few steps, we've outlined them below:
 
-After that you can clone the pixi.js repository, and run `npm i` inside the cloned folder.
-This will install dependencies necessary for building the project. Once that is ready, make your
-changes and submit a Pull Request. When submitting a PR follow these guidlines:
+1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
+pixi uses modern JS features, you will need a modern version of node. v4+ is recommended.
 
-- **Send Pull Requests to the `dev` branch.** All Pull Requests must be sent to the `dev` branch,
-`master` is the latest release and PRs to that branch will be closed.
+2. Fork the [pixi.js][pixi] repository, if you are unsure how to do this GitHub has a guides
+for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
 
-- **Ensure changes are jshint validated.** After making a change be sure to run the build process
-to ensure that you didn't break anything. You can do this with `npm test` which will run
-jshint, rebuild, then run the test suite.
+3. Next, run `npm install` from within your clone of your fork. That will install dependencies
+necessary to build pixi.js
 
-- **Never commit new builds.** When making a code change, you should always run `npm run build` which will
-rebuild the project, *however* please do not commit these new builds or your PR will be closed.
 
-- **Only commit relevant changes.** Don't include changes that are not directly relevant to the fix
-you are making. The more focused a PR is, the faster it will get attention and be merged. Extra files
-changing only whitespace or trash files will likely get your PR closed.
+### Making a Change
+
+Once you have node.js, the repository, and have installed dependencies are you almost ready to make your
+change. The only other thing before you start is to checkout the correct branch. Which branch you should
+make your change to (and send a PR to) depends on the type of change you are making.
+
+Here is our branch breakdown:
+
+- `master` - Make your change to the `master` branch if it is an *urgent* hotfix.
+- `dev` - Make your change to `dev` if it is a *non-urgent* bugfix or a backwards-compatible feature.
+- `next` - Make your change to `next` if it is a breaking change, or wild/crazy idea.
+
+Your change should be made directly to the branch in your fork, or to a branch in your fork made off of
+one of the above branches.
+
+### Testing Your Change
+
+You can test your change by using the automated tests packaged with pixi.js. You can run these tests
+by running `npm test` from the command line. If you fix a bug please add a test that will catch that
+bug if it ever happens again. This prevents regressions from sneaking in.
+
+### Submitting Your Change
+
+After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
+from your fork to the main pixi.js repository on the branch you used in the `Making a Change` section of this document.
 
 ## Quickie Code Style Guide
 
 - Use 4 spaces for tabs, never tab characters.
-
 - No trailing whitespace, blank lines should have no whitespace.
-
 - Always favor strict equals `===` unless you *need* to use type coercion.
+- Follow conventions already in the code, and listen to eslint.
+- **Ensure changes are eslint validated.** After making a change be sure to run the build process
+to ensure that you didn't break anything. You can do this with `npm test` which will run
+eslint, rebuild, then run the test suite.
 
-- Follow conventions already in the code, and listen to jshint.
-
-[0]: https://github.com/pixijs/pixi.js/issues
-[1]: http://jsfiddle.net
-[2]: http://jsbin.com/
-[3]: http://nodejs.org
-
+[issues]: https://github.com/pixijs/pixi.js/issues
+[pixi]: https://github.com/pixijs/pixi.js
+[fiddle]: http://jsfiddle.net
+[jsbin]: http://jsbin.com/
+[node]: http://nodejs.org
+[fork-cli]: https://help.github.com/articles/fork-a-repo/
+[fork-gui]: https://guides.github.com/activities/forking/
 
 ## Contributor Code of Conduct
 

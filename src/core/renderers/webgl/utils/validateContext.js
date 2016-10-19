@@ -1,14 +1,12 @@
-
-
-function validateContext(gl)
+export default function validateContext(gl)
 {
-	var attributes = gl.getContextAttributes();
+    const attributes = gl.getContextAttributes();
 
-	// this is going to be fairly simple for now.. but at least we have rom to grow!
-	if(!attributes.stencil)
-	{
-		console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly'); // jshint ignore:line
-	}
+    // this is going to be fairly simple for now.. but at least we have rom to grow!
+    if (!attributes.stencil)
+    {
+        /* eslint-disable no-console */
+        console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
+        /* eslint-enable no-console */
+    }
 }
-
-module.exports = validateContext;

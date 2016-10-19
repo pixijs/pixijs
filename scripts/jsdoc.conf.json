@@ -13,7 +13,8 @@
         "excludePattern": "(^|\\/|\\\\)_"
     },
     "plugins": [
-        "plugins/markdown"
+        "./node_modules/jsdoc/plugins/markdown",
+        "./scripts/jsdoc-fix"
     ],
     "templates": {
         "cleverLinks"   : false,

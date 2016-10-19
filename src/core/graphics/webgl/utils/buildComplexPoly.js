@@ -1,6 +1,4 @@
-var utils = require('../../../utils');
-
-
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a complex polygon to draw
@@ -9,13 +7,13 @@ var utils = require('../../../utils');
  *
  * @ignore
  * @private
- * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ * @param {PIXI.Graphics} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-var buildComplexPoly = function (graphicsData, webGLData)
+export default function buildComplexPoly(graphicsData, webGLData)
 {
-    //TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
-    var points = graphicsData.points.slice();
+    // TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
+    const points = graphicsData.points.slice();
 
     if (points.length < 6)
     {
@@ -23,25 +21,27 @@ var buildComplexPoly = function (graphicsData, webGLData)
     }
 
     // get first and last point.. figure out the middle!
-    var indices = webGLData.indices;
+    const indices = webGLData.indices;
+
     webGLData.points = points;
     webGLData.alpha = graphicsData.fillAlpha;
-    webGLData.color = utils.hex2rgb(graphicsData.fillColor);
+    webGLData.color = hex2rgb(graphicsData.fillColor);
 
     // calclate the bounds..
-    var minX = Infinity;
-    var maxX = -Infinity;
+    let minX = Infinity;
+    let maxX = -Infinity;
 
-    var minY = Infinity;
-    var maxY = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
 
-    var x,y;
+    let x = 0;
+    let y = 0;
 
     // get size..
-    for (var i = 0; i < points.length; i+=2)
+    for (let i = 0; i < points.length; i += 2)
     {
         x = points[i];
-        y = points[i+1];
+        y = points[i + 1];
 
         minX = x < minX ? x : minX;
         maxX = x > maxX ? x : maxX;
@@ -58,15 +58,11 @@ var buildComplexPoly = function (graphicsData, webGLData)
 
     // push a quad onto the end..
 
-    //TODO - this aint needed!
-    var length = points.length / 2;
-    for (i = 0; i < length; i++)
+    // TODO - this aint needed!
+    const length = points.length / 2;
+
+    for (let i = 0; i < length; i++)
     {
-        indices.push( i );
+        indices.push(i);
     }
-
-};
-
-
-
-module.exports = buildComplexPoly;
+}

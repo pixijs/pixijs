@@ -1,1 +1,3 @@
+'use strict';
+
 require('./InteractionData');

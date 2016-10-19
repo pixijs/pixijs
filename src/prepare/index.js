@@ -1,5 +1,5 @@
-
-module.exports = {
-    webGL: require('./webgl/WebGLPrepare'),
-    canvas: require('./canvas/CanvasPrepare')
-};
+/**
+ * @namespace PIXI.prepare
+ */
+export { default as webgl } from './webgl/WebGLPrepare';
+export { default as canvas } from './canvas/CanvasPrepare';

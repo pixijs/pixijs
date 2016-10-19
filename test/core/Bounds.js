@@ -1,6 +1,9 @@
-describe('getBounds', function () {
+'use strict';
 
-    it('should register correct width and height with a LOADED Sprite', function() {
+describe('getBounds', function ()
+{
+    it('should register correct width/height with a LOADED Sprite', function ()
+    {
         var parent = new PIXI.Container();
         var texture = PIXI.RenderTexture.create(10, 10);
 
@@ -30,17 +33,16 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
 
-
         bounds = sprite.getBounds(true);
 
         expect(bounds.x).to.equal(20);
         expect(bounds.y).to.equal(20);
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
-
     });
 
-    it('should register correct width and height with Graphics', function() {
+    it('should register correct width/height with Graphics', function ()
+    {
         var parent = new PIXI.Container();
 
         var graphics = new PIXI.Graphics();
@@ -54,7 +56,7 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(0);
         expect(bounds.height).to.equal(0);
 
-        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10, 10);// texture);
 
         parent.addChild(graphics);
 
@@ -84,13 +86,13 @@ describe('getBounds', function () {
         expect(bounds.y).to.equal(0);
         expect(bounds.width).to.equal(40);
         expect(bounds.height).to.equal(40);
-
     });
 
-    it('should register correct width and height with an empty Container', function() {
+    it('should register correct width/height with an empty Container', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
         parent.addChild(container);
 
@@ -115,15 +117,15 @@ describe('getBounds', function () {
         expect(bounds.y).to.equal(0);
         expect(bounds.width).to.equal(0);
         expect(bounds.height).to.equal(0);
-
     });
 
-    it('should register correct width and height with a Container', function() {
+    it('should register correct width/height with a Container', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container(); // Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10); // texture);
 
         var texture = PIXI.RenderTexture.create(10, 10);
         var sprite = new PIXI.Sprite(texture);
@@ -162,17 +164,15 @@ describe('getBounds', function () {
         expect(bounds.y | 0).to.equal(22);
         expect(bounds.width | 0).to.equal(73);
         expect(bounds.height | 0).to.equal(97);
-
-
     });
 
-    it('should register correct width and height with an item that has already had its parent Container transformed', function() {
+    it('should register correct width/height with an item that has already had its parent Container transformed', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);//texture);
-
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
 
         parent.addChild(container);
         container.addChild(graphics);
@@ -197,7 +197,8 @@ describe('getBounds', function () {
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct width and height with a Mesh', function() {
+    it('should register correct width/height with a Mesh', function ()
+    {
         var parent = new PIXI.Container();
 
         var texture = PIXI.RenderTexture.create(10, 10);
@@ -227,16 +228,15 @@ describe('getBounds', function () {
         expect(bounds.y).to.equal(20);
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
-
     });
 
-    it('should register correct width and height with an a DisplayObject is visible false', function() {
-
+    it('should register correct width/height with an a DisplayObject is visible false', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);// texture);
 
         var texture = PIXI.RenderTexture.create(10, 10);
         var sprite = new PIXI.Sprite(texture);
@@ -262,7 +262,7 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
 
-        container.visible = false;
+        sprite.renderable = false;
 
         bounds = container.getBounds();
 
@@ -271,23 +271,93 @@ describe('getBounds', function () {
         expect(bounds.width).to.equal(0);
         expect(bounds.height).to.equal(0);
 
+        bounds = sprite.getBounds();
 
+        expect(bounds.x).to.equal(30);
+        expect(bounds.y).to.equal(20);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct width and height with an a DisplayObject parent has moved', function() {
-
+    it('should register correct bounds of invisible Container', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container(); // Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);//texture);
+        var texture = PIXI.RenderTexture.create(10, 10);
+        var sprite = new PIXI.Sprite(texture);
+
+        container.addChild(sprite);
+        parent.addChild(container);
+
+        sprite.position.set(30, 20);
+        container.visible = false;
+        container.position.set(100, 100);
+
+        var bounds;
+
+        bounds = container.getBounds();
+
+        expect(bounds.x).to.equal(130);
+        expect(bounds.y).to.equal(120);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
+    });
+
+    it('should register correct width/height with Container masked child', function ()
+    {
+        var parent = new PIXI.Container();
+
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
+
+        var texture = PIXI.RenderTexture.create(10, 10);
+        var sprite = new PIXI.Sprite(texture);
+
+        container.addChild(sprite);
+        container.addChild(graphics);
+        sprite.mask = graphics;
+
+        parent.addChild(container);
+
+        sprite.position.x = 30;
+        sprite.position.y = 20;
+        graphics.position.x = 32;
+        graphics.position.y = 23;
+
+        var bounds;
+
+        bounds = graphics.getBounds();
+
+        expect(bounds.x).to.equal(32);
+        expect(bounds.y).to.equal(23);
+        expect(bounds.width).to.equal(10);
+        expect(bounds.height).to.equal(10);
+
+        bounds = container.getBounds();
+
+        expect(bounds.x).to.equal(32);
+        expect(bounds.y).to.equal(23);
+        expect(bounds.width).to.equal(8);
+        expect(bounds.height).to.equal(7);
+    });
+
+    it('should register correct width/height with an a DisplayObject parent has moved', function ()
+    {
+        var parent = new PIXI.Container();
+
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+
+        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);// texture);
 
         container.addChild(graphics);
 
         parent.addChild(container);
 
-      //  graphics.position.x = 100;
-      //  graphics.position.y = 100;
+        //  graphics.position.x = 100;
+        //  graphics.position.y = 100;
         container.position.x -= 100;
         container.position.y -= 100;
 
@@ -297,15 +367,13 @@ describe('getBounds', function () {
         expect(bounds.y).to.equal(-110);
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
-
-
     });
 
-    it('should register correct width and height with an a Text Object', function() {
-
+    it('should register correct width/height with an a Text Object', function ()
+    {
         var parent = new PIXI.Container();
 
-        var container = new PIXI.Container();//Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
         var text = new PIXI.Text('i am some text');
 
@@ -329,11 +397,10 @@ describe('getBounds', function () {
 
         // this variable seems to be different on different devices. a font thing?
         expect(bounds.width).to.not.equal(bx);
-
     });
 
-    it('should return a different rectangle if getting local bounds after global bounds ', function() {
-
+    it('should return a different rectangle if getting local bounds after global bounds ', function ()
+    {
         var parent = new PIXI.Container();
         var texture = PIXI.RenderTexture.create(10, 10);
         var sprite = new PIXI.Sprite(texture);
@@ -355,20 +422,20 @@ describe('getBounds', function () {
 
         var localBounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(localBounds.x).to.equal(0);
+        expect(localBounds.y).to.equal(0);
+        expect(localBounds.width).to.equal(10);
+        expect(localBounds.height).to.equal(10);
     });
 
-    it('should ensure bounds respect the trim of a texture ', function() {
-
+    it('should ensure bounds respect the trim of a texture ', function ()
+    {
         var parent = new PIXI.Container();
         var baseTexture = new PIXI.BaseRenderTexture(100, 100);
 
-        var orig = new PIXI.Rectangle(0,0,100,50);
-        var frame = new PIXI.Rectangle(2,2,50,50);
-        var trim = new PIXI.Rectangle(25,0,50,50);
+        var orig = new PIXI.Rectangle(0, 0, 100, 50);
+        var frame = new PIXI.Rectangle(2, 2, 50, 50);
+        var trim = new PIXI.Rectangle(25, 0, 50, 50);
 
         var trimmedTexture = new PIXI.Texture(baseTexture, frame, orig, trim);
 
@@ -385,6 +452,5 @@ describe('getBounds', function () {
         expect(bounds.y).to.equal(20);
         expect(bounds.width).to.equal(100);
         expect(bounds.height).to.equal(50);
-
     });
 });

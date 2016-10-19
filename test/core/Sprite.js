@@ -1,6 +1,11 @@
-describe('PIXI.Sprite', function () {
-    describe('width', function () {
-        it('should not be negative for nagative scale.x', function () {
+'use strict';
+
+describe('PIXI.Sprite', function ()
+{
+    describe('width', function ()
+    {
+        it('should not be negative for negative scale.x', function ()
+        {
             var sprite = new PIXI.Sprite();
 
             sprite.width = 100;
@@ -9,11 +14,12 @@ describe('PIXI.Sprite', function () {
             expect(sprite.width).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.x', function () {
+        it('should not change sign of scale.x', function ()
+        {
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 
-            texture.width = 100;
+            texture.orig.width = 100;
             sprite.scale.x = 1;
             sprite.width = 50;
 
@@ -26,8 +32,10 @@ describe('PIXI.Sprite', function () {
         });
     });
 
-    describe('height', function () {
-        it('should not be negative for nagative scale.y', function () {
+    describe('height', function ()
+    {
+        it('should not be negative for negative scale.y', function ()
+        {
             var sprite = new PIXI.Sprite();
 
             sprite.height = 100;
@@ -36,11 +44,12 @@ describe('PIXI.Sprite', function () {
             expect(sprite.height).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.y', function () {
+        it('should not change sign of scale.y', function ()
+        {
             var texture = new PIXI.Texture(new PIXI.BaseTexture());
             var sprite = new PIXI.Sprite();
 
-            texture.height = 100;
+            texture.orig.height = 100;
             sprite.scale.y = 1;
             sprite.height = 50;
 
@@ -50,6 +59,33 @@ describe('PIXI.Sprite', function () {
             sprite.height = 75;
 
             expect(sprite.scale.y).to.be.below(0);
+        });
+    });
+
+    describe('getBounds()', function ()
+    {
+        it('must have correct value according to texture size, width, height and anchor', function ()
+        {
+            const parent = new PIXI.Container();
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+
+            sprite.width = 200;
+            sprite.height = 300;
+
+            parent.addChild(sprite);
+
+            sprite.scale.x *= 2;
+            sprite.scale.y *= 2;
+            sprite.anchor.set(0.5, 0.5);
+            sprite.position.set(50, 40);
+
+            const bounds = sprite.getBounds();
+
+            expect(bounds.x).to.equal(-150);
+            expect(bounds.y).to.equal(-260);
+            expect(bounds.width).to.equal(400);
+            expect(bounds.height).to.equal(600);
         });
     });
 });
