@@ -311,7 +311,7 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] != 0)
+            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
             {
                 shader.uniforms[i] = textureCount;
 
