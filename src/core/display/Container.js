@@ -76,6 +76,10 @@ export default class Container extends DisplayObject
 
             this.children.push(child);
 
+            // ensure a transform will be recalculated..
+            this.transform._parentID = -1;
+            this._boundsID++;
+
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(this.children.length - 1);
             child.emit('added', this);
