@@ -1,0 +1,10 @@
+{
+  "files": {
+    "included": [
+      "src/**/*.js"
+    ],
+    "excluded": [
+      "src/polyfill/"
+    ]
+  }
+}
