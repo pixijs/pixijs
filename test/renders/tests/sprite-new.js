@@ -1,29 +1,30 @@
 'use strict';
 
-const assert = require('assert');
-
 module.exports.async = function (done)
 {
-    PIXI.loader
-        .add('bitmap', `file://${__dirname}/assets/bitmap-1.png`)
-        .once('complete', (loader, resources) =>
-        {
-            assert(resources.bitmap);
-            assert(resources.bitmap.texture);
+    const url = `file://${__dirname}/assets/bitmap-1.png`;
+    const loader = new PIXI.loaders.Loader();
 
-            const sprite = new PIXI.Sprite(resources.bitmap.texture);
+    loader.add('bitmap', url);
+    loader.once('complete', (loader, resources) =>
+    {
+        assert(resources.bitmap);
+        assert(resources.bitmap.texture);
+        assert.equal(resources.bitmap.url, url);
 
-            assert.equal(sprite.width, 24);
-            assert.equal(sprite.height, 24);
+        const sprite = new PIXI.Sprite(resources.bitmap.texture);
 
-            sprite.x = (32 - sprite.width) / 2;
-            sprite.y = (32 - sprite.height) / 2;
+        assert.equal(sprite.width, 24);
+        assert.equal(sprite.height, 24);
 
-            assert.equal(sprite.x, 4);
-            assert.equal(sprite.y, 4);
+        sprite.x = (32 - sprite.width) / 2;
+        sprite.y = (32 - sprite.height) / 2;
 
-            this.stage.addChild(sprite);
-            done();
-        })
-        .load();
+        assert.equal(sprite.x, 4);
+        assert.equal(sprite.y, 4);
+
+        this.stage.addChild(sprite);
+        done();
+    });
+    loader.load();
 };

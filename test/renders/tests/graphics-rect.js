@@ -1,7 +1,5 @@
 'use strict';
 
-const assert = require('assert');
-
 module.exports = function ()
 {
     const graphic = new PIXI.Graphics()

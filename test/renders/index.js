@@ -1,6 +1,6 @@
 'use strict';
 
-const Renderer = require('pixi-tests-tool');
+const Renderer = require('./lib/Renderer');
 const path = require('path');
 
 describe('renders', function ()
