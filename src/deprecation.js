@@ -624,7 +624,7 @@ let saidHello = true;
 /**
  * @method
  * @name PIXI.utils._saidHello
- * @see PIXI.utils.sayHello
+ * @see PIXI.utils.skipHello
  * @deprecated since 4.1.0
  */
 Object.defineProperty(core.utils, '_saidHello', {
