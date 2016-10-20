@@ -3,7 +3,7 @@
 /* eslint-disable global-require */
 require('../bin/pixi');
 
-PIXI.utils._saidHello = true; // hide banner
+PIXI.utils.skipHello(); // hide banner
 
 describe('PIXI', function ()
 {

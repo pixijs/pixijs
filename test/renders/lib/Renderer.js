@@ -206,12 +206,9 @@ class Renderer
             {
                 callback(err);
             }
-            else if (this.hasWebGL)
+            else if (this.hasWebGL && !this.compareResult(solution.webgl, result.webgl))
             {
-                if (!this.compareResult(solution.webgl, result.webgl))
-                {
-                    callback(new Error('WebGL results do not match.'));
-                }
+                callback(new Error('WebGL results do not match.'));
             }
             else if (!this.compareResult(solution.canvas, result.canvas))
             {
