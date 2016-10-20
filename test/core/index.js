@@ -16,3 +16,4 @@ require('./ObservablePoint');
 require('./Matrix');
 require('./Rectangle');
 require('./Circle');
+require('./Graphics');

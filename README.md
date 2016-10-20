@@ -43,9 +43,19 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 - Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about Pixi. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
 
 
-### Installation ###
+### Setup ###
 
-Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [NPM](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page. 
+It's easy to get started with Pixi.js! Simply grab the pre-built versions from here:
+
+Release Branch - Nice and stable Pixi.js
+- Unminified: [http://pixijs.download/release/pixi.js]
+- Minified: [http://pixijs.download/release/pixi.min.js]
+
+Develop Branch - The bleeding edge version of Pixi.js
+- Unminified: [http://pixijs.download/dev/pixi.js]
+- Minified: [http://pixijs.download/dev/pixi.min.js]
+
+Alternatively, Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [npm](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page.
 
 #### Bower Install
 
@@ -66,7 +76,6 @@ $> npm install pixi.js
 ```
 
 _Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
-
 
 ### Demos ###
 
@@ -168,7 +177,7 @@ Note that for most users you don't need to build this project. If all you want i
 just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
 the only time you should need to build pixi.js is if you are developing it.
 
-If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned 
+If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
 
 ```
