@@ -29,7 +29,7 @@ export {
 };
 
 /**
- * A premade instance of the loader that can be used to loader resources.
+ * A premade instance of the loader that can be used to load resources.
  *
  * @name loader
  * @memberof PIXI
