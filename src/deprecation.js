@@ -622,8 +622,8 @@ core.utils.canUseNewCanvasBlendModes = () =>
 let saidHello = true;
 
 /**
- * @method
  * @name PIXI.utils._saidHello
+ * @type {boolean}
  * @see PIXI.utils.skipHello
  * @deprecated since 4.1.0
  */
