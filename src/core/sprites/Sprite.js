@@ -179,6 +179,8 @@ export default class Sprite extends Container
         const vertexData = this.vertexData;
         const trim = texture.trim;
         const orig = texture.orig;
+        const anchor = this._anchor;
+
         let w0 = 0;
         let w1 = 0;
         let h0 = 0;
@@ -188,19 +190,19 @@ export default class Sprite extends Container
         {
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra
             // space before transforming the sprite coords.
-            w1 = trim.x - (this.anchor._x * orig.width);
+            w1 = trim.x - (anchor._x * orig.width);
             w0 = w1 + trim.width;
 
-            h1 = trim.y - (this.anchor._y * orig.height);
+            h1 = trim.y - (anchor._y * orig.height);
             h0 = h1 + trim.height;
         }
         else
         {
-            w0 = orig.width * (1 - this.anchor._x);
-            w1 = orig.width * -this.anchor._x;
+            w0 = orig.width * (1 - anchor._x);
+            w1 = orig.width * -anchor._x;
 
-            h0 = orig.height * (1 - this.anchor._y);
-            h1 = orig.height * -this.anchor._y;
+            h0 = orig.height * (1 - anchor._y);
+            h1 = orig.height * -anchor._y;
         }
 
         // xy
@@ -235,6 +237,7 @@ export default class Sprite extends Container
         const texture = this._texture;
         const vertexData = this.vertexTrimmedData;
         const orig = texture.orig;
+        const anchor = this._anchor;
 
         // lets calculate the new untrimmed bounds..
         const wt = this.transform.worldTransform;
@@ -245,11 +248,11 @@ export default class Sprite extends Container
         const tx = wt.tx;
         const ty = wt.ty;
 
-        const w0 = (orig.width) * (1 - this.anchor._x);
-        const w1 = (orig.width) * -this.anchor._x;
+        const w0 = (orig.width) * (1 - anchor._x);
+        const w1 = (orig.width) * -anchor._x;
 
-        const h0 = orig.height * (1 - this.anchor._y);
-        const h1 = orig.height * -this.anchor._y;
+        const h0 = orig.height * (1 - anchor._y);
+        const h1 = orig.height * -anchor._y;
 
         // xy
         vertexData[0] = (a * w1) + (c * h1) + tx;
@@ -330,10 +333,10 @@ export default class Sprite extends Container
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
-            this._bounds.minX = -this._texture.orig.width * this.anchor._x;
-            this._bounds.minY = -this._texture.orig.height * this.anchor._y;
-            this._bounds.maxX = this._texture.orig.width;
-            this._bounds.maxY = this._texture.orig.height;
+            this._bounds.minX = this._texture.orig.width * -this._anchor._x;
+            this._bounds.minY = this._texture.orig.height * -this._anchor._y;
+            this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
+            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._x);
 
             if (!rect)
             {

@@ -18,6 +18,15 @@ import { TextureCache, BaseTextureCache } from '../utils';
  * let sprite2 = new PIXI.Sprite(texture);
  * ```
  *
+ * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
+ * You can check for this by checking the sprite's _textureID property.
+ * ```js
+ * var texture = PIXI.Texture.fromImage('assets/image.svg');
+ * var sprite1 = new PIXI.Sprite(texture);
+ * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
+ * ```
+ * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
+ *
  * @class
  * @extends EventEmitter
  * @memberof PIXI
@@ -382,6 +391,10 @@ export default class Texture extends EventEmitter
 
             return texture;
         }
+        else if (source instanceof HTMLImageElement)
+        {
+            return new Texture(new BaseTexture(source));
+        }
         else if (source instanceof HTMLCanvasElement)
         {
             return Texture.fromCanvas(source);
@@ -392,7 +405,7 @@ export default class Texture extends EventEmitter
         }
         else if (source instanceof BaseTexture)
         {
-            return new Texture(BaseTexture);
+            return new Texture(source);
         }
 
         // lets assume its a texture!

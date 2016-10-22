@@ -50,12 +50,22 @@ export default class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
      */
-    addChild(...childs)
+    addChild(child)
     {
-        for (let i = 0; i < childs.length; ++i)
-        {
-            const child = childs[i];
+        const argumentsLength = arguments.length;
 
+        // if there is only one argument we can bypass looping through the them
+        if (argumentsLength > 1)
+        {
+            // loop through the arguments property and add all children
+            // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+            for (let i = 0; i < argumentsLength; i++)
+            {
+                this.addChild(arguments[i]);
+            }
+        }
+        else
+        {
             // if the child has a parent then lets remove it as Pixi objects can only exist in one place
             if (child.parent)
             {
@@ -75,7 +85,7 @@ export default class Container extends DisplayObject
             child.emit('added', this);
         }
 
-        return childs[0];
+        return child;
     }
 
     /**
@@ -123,11 +133,6 @@ export default class Container extends DisplayObject
 
         const index1 = this.getChildIndex(child);
         const index2 = this.getChildIndex(child2);
-
-        if (index1 < 0 || index2 < 0)
-        {
-            throw new Error('swapChildren: Both the supplied DisplayObjects must be children of the caller.');
-        }
 
         this.children[index1] = child2;
         this.children[index2] = child;
@@ -191,27 +196,42 @@ export default class Container extends DisplayObject
     /**
      * Removes a child from the container.
      *
-     * @param {...PIXI.DisplayObject} childs - The DisplayObject(s) to remove
+     * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to remove
      * @return {PIXI.DisplayObject} The first child that was removed.
      */
-    removeChild(...childs)
+    removeChild(child)
     {
-        for (let i = 0; i < childs.length; ++i)
+        const argumentsLength = arguments.length;
+
+        // if there is only one argument we can bypass looping through the them
+        if (argumentsLength > 1)
         {
-            const child = childs[i];
+            // loop through the arguments property and add all children
+            // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
+            for (let i = 0; i < argumentsLength; i++)
+            {
+                this.removeChild(arguments[i]);
+            }
+        }
+        else
+        {
             const index = this.children.indexOf(child);
 
-            if (index === -1) continue;
+            if (index === -1) return null;
 
             child.parent = null;
             removeItems(this.children, index, 1);
+
+            // ensure a transform will be recalculated..
+            this.transform._parentID = -1;
+            this._boundsID++;
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(index);
             child.emit('removed', this);
         }
 
-        return childs[0];
+        return child;
     }
 
     /**
@@ -477,7 +497,7 @@ export default class Container extends DisplayObject
     renderCanvas(renderer)
     {
         // if not visible or the alpha is 0 then no need to render this
-        if (!this.visible || this.alpha <= 0 || !this.renderable)
+        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
         {
             return;
         }

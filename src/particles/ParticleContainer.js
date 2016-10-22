@@ -76,10 +76,10 @@ export default class ParticleContainer extends core.Container
         this._batchSize = batchSize;
 
         /**
-         * @member {WebGLBuffer}
+         * @member {object<number, WebGLBuffer>}
          * @private
          */
-        this._glBuffers = [];
+        this._glBuffers = {};
 
         /**
          * @member {number}

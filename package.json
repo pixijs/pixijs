@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.0.3",
+  "version": "4.1.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -27,7 +27,7 @@
     "test:debug": "npm test -- --debug",
     "precoverage": "rimraf coverage && npm run build -- --noExternal",
     "coverage": "npm test -- -h",
-    "lint": "eslint scripts src test",
+    "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint && npm run clean",
     "build": "pixify -n PIXI -o pixi",
@@ -66,7 +66,7 @@
     "floss": "^1.2.0",
     "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
-    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git#releases/3.4",
+    "jsdoc": "^3.4.2",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",

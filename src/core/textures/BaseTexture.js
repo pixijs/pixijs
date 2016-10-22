@@ -191,7 +191,7 @@ export default class BaseTexture extends EventEmitter
          * @private
          * @member {object<number, WebGLTexture>}
          */
-        this._glTextures = [];
+        this._glTextures = {};
         this._enabled = 0;
         this._id = 0;
 
@@ -604,9 +604,6 @@ export default class BaseTexture extends EventEmitter
     dispose()
     {
         this.emit('dispose', this);
-
-        // this should no longer be needed, the renderers should cleanup all the gl textures.
-        // this._glTextures = {};
     }
 
     /**

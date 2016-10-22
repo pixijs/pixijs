@@ -68,7 +68,7 @@ export default class BlurFilter extends core.Filter
     set blur(value)
     {
         this.blurXFilter.blur = this.blurYFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 
     /**
@@ -113,7 +113,7 @@ export default class BlurFilter extends core.Filter
     set blurX(value)
     {
         this.blurXFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 
     /**
@@ -136,6 +136,6 @@ export default class BlurFilter extends core.Filter
     set blurY(value)
     {
         this.blurYFilter.blur = value;
-        this.padding = Math.max(Math.abs(this.blurYFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
 }
