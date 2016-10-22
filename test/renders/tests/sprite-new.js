@@ -8,20 +8,20 @@ module.exports.async = function (done)
     loader.add('bitmap', url);
     loader.once('complete', (loader, resources) =>
     {
-        assert(resources.bitmap);
-        assert(resources.bitmap.texture);
-        assert.equal(resources.bitmap.url, url);
+        expect(resources.bitmap).to.be.ok;
+        expect(resources.bitmap.texture).to.be.ok;
+        expect(resources.bitmap.url).to.equal(url);
 
         const sprite = new PIXI.Sprite(resources.bitmap.texture);
 
-        assert.equal(sprite.width, 24);
-        assert.equal(sprite.height, 24);
+        expect(sprite.width).to.equal(24);
+        expect(sprite.height).to.equal(24);
 
         sprite.x = (32 - sprite.width) / 2;
         sprite.y = (32 - sprite.height) / 2;
 
-        assert.equal(sprite.x, 4);
-        assert.equal(sprite.y, 4);
+        expect(sprite.x).to.equal(4);
+        expect(sprite.y).to.equal(4);
 
         this.stage.addChild(sprite);
         done();
