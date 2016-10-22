@@ -9,7 +9,27 @@ let saidHello = false;
 /**
  * @namespace PIXI.utils
  */
-export { EventEmitter, pluginTarget, isMobile };
+export {
+    /**
+     * @see {@link https://github.com/kaimallea/isMobile}
+     *
+     * @memberof PIXI.utils
+     * @type {Object}
+     */
+    isMobile,
+    /**
+     * @see {@link https://github.com/primus/eventemitter3}
+     *
+     * @memberof PIXI.utils
+     * @type {EventEmitter}
+     */
+    EventEmitter,
+    /**
+     * @memberof PIXI.utils
+     * @type {mixin}
+     */
+    pluginTarget,
+};
 
 /**
  * Gets the next unique identifier
