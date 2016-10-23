@@ -205,6 +205,7 @@ export default class WebGLRenderer extends SystemRenderer
         for (let i = 0; i < maxTextures; i++)
         {
             const empty = new BaseTexture();
+
             empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
             this.emptyTextures[i] = empty;
             this.bindTexture(null, i);
@@ -371,7 +372,6 @@ export default class WebGLRenderer extends SystemRenderer
         if (renderTexture)
         {
             const baseTexture = renderTexture.baseTexture;
-            const gl = this.gl;
 
             if (!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {

@@ -71,6 +71,7 @@ export default class TextureManager
 
         // assume it good!
         // texture = texture.baseTexture || texture;
+        location = location || 0;
 
         const gl = this.gl;
 
