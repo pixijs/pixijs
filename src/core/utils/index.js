@@ -173,6 +173,7 @@ export function getSvgSize(svgString)
 /**
  * Skips the hello message of renderers that are created after this is run.
  *
+ * @memberof PIXI.utils
  */
 export function skipHello()
 {

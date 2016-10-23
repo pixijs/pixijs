@@ -618,3 +618,27 @@ core.utils.canUseNewCanvasBlendModes = () =>
 
     return core.CanvasTinter.canUseMultiply;
 };
+
+let saidHello = true;
+
+/**
+ * @name PIXI.utils._saidHello
+ * @type {boolean}
+ * @see PIXI.utils.skipHello
+ * @deprecated since 4.1.0
+ */
+Object.defineProperty(core.utils, '_saidHello', {
+    set(bool)
+    {
+        if (bool)
+        {
+            warn('PIXI.utils._saidHello is deprecated, please use PIXI.utils.skipHello()');
+            this.skipHello();
+        }
+        saidHello = bool;
+    },
+    get()
+    {
+        return saidHello;
+    },
+});
