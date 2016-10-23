@@ -61,15 +61,16 @@ export default class TextureManager
      * Updates and/or Creates a WebGL texture for the renderer's context.
      *
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
+     * @param {uint} location - the location the texture will be bound to.
      * @return {GLTexture} The gl texture.
      */
     updateTexture(texture, location)
     {
-        //TODO - add default to location?
-        //probably ok!
+        // TODO - add default to location?
+        // probably ok!
 
         // assume it good!
-        //texture = texture.baseTexture || texture;
+        // texture = texture.baseTexture || texture;
 
         const gl = this.gl;
 
@@ -90,9 +91,7 @@ export default class TextureManager
 
         gl.activeTexture(gl.TEXTURE0 + location);
 
-
         let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
-
 
         if (!glTexture)
         {
@@ -112,7 +111,6 @@ export default class TextureManager
             }
             else
             {
-                console.log("UPDATE REGULAR TEXTURE")
                 glTexture = new GLTexture(this.gl, null, null, null, null);
                 glTexture.bind(location);
                 glTexture.premultiplyAlpha = true;
@@ -170,15 +168,7 @@ export default class TextureManager
             glTexture.upload(texture.source);
         }
 
-
         return glTexture;
-    }
-
-    bindTextureToGPU(texture, location)
-    {
-        // this assumes the texture exists and created!
-        //_boundTextures
-
     }
 
     /**

@@ -165,11 +165,6 @@ export default class WebGLRenderer extends SystemRenderer
         this._activeTexture = null;
 
         this.setBlendMode(0);
-
-        // TODO DONT hard code
-
-
-
     }
 
     /**
@@ -198,28 +193,24 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.bindRenderTarget(this.rootRenderTarget);
 
-         this.boundTextures = new Array(32);
+        this.boundTextures = new Array(32);
 
-
-         //TODO - fix this!
+        // TODO - CREATE A DUD TEXTURE
         for (let i = 0; i < 16; i++)
         {
-            var c = document.createElement('canvas');
+            const c = document.createElement('canvas');
 
             c.width = 3;
             c.height = 3;
 
-            var emptyTexture = new PIXI.Texture.from(c);
             this.boundTextures[i] = {};
-            this.bindTexture(emptyTexture.baseTexture, i);
+            this.bindTexture(new PIXI.Texture.from(c), i);
         }
 
         this.emit('context', gl);
 
         // setup the width/height properties and gl viewport
         this.resize(this.width, this.height);
-
-
     }
 
     /**
@@ -266,7 +257,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {
-            //this._activeRenderTarget.clear();
+            this._activeRenderTarget.clear();
         }
 
         displayObject.renderWebGL(this);
@@ -376,32 +367,32 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (renderTexture)
         {
-
             const baseTexture = renderTexture.baseTexture;
             const gl = this.gl;
 
-
             if (!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {
-
-                const tex = this.boundTextures[0];
+                const tempTexture = this.boundTextures[0];
 
                 // bind the current texture
                 this.textureManager.updateTexture(baseTexture, 0);
 
-                this.bindTexture(tex, 0);
+                // rebind the texture..
+                this.bindTexture(tempTexture, 0);
             }
             else
             {
-                console.log(">>>>>>-------------->>>>>>>")
-                var location = baseTexture._boundId;
+                const location = baseTexture._boundId;
 
-                if(location !== -1)
+                if (location !== -1)
                 {
+                    // this must be unbound - as we are going to render to it..
                     gl.activeTexture(gl.TEXTURE0 + location);
                     gl.bindTexture(gl.TEXTURE_2D, null);
 
                     baseTexture._boundId = -1;
+
+                    // TODO - need to add an EMPTY TEXTURE HERE
                     this.boundTextures[location] = null;
                 }
             }
@@ -489,7 +480,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (!glTexture)
         {
-
             // this will also bind the texture..
             this.textureManager.updateTexture(texture, location);
         }

@@ -10,6 +10,7 @@ import bitTwiddle from 'bit-twiddle';
 
 let TICK = 0;
 let TEXTURE_TICK = 0;
+
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -90,8 +91,6 @@ export default class SpriteRenderer extends ObjectRenderer
         this.vaoMax = 2;
         this.vertexCount = 0;
 
-        this.textureMap = null;
-
         this.renderer.on('prerender', this.onPrerender, this);
     }
 
@@ -114,8 +113,6 @@ export default class SpriteRenderer extends ObjectRenderer
 
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
-
-        this.textureMap = new Float32Array(this.MAX_TEXTURES);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
@@ -141,7 +138,6 @@ export default class SpriteRenderer extends ObjectRenderer
         this.currentBlendMode = 99999;
 
         this.boundTextures = new Array(this.MAX_TEXTURES);
-
     }
 
     /**
@@ -204,7 +200,6 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
-        const map = this.textureMap;
         const boundTextures = this.boundTextures;
 
         let index = 0;
@@ -231,7 +226,7 @@ export default class SpriteRenderer extends ObjectRenderer
         {
             boundTextures[i] = this.renderer.boundTextures[i];
             boundTextures[i]._virtalBoundId = i;
-        };
+        }
 
         for (i = 0; i < this.currentIndex; i++)
         {
@@ -273,14 +268,14 @@ export default class SpriteRenderer extends ObjectRenderer
                         currentGroup.start = i;
                     }
 
-                    if(nextTexture._virtalBoundId === -1)
+                    if (nextTexture._virtalBoundId === -1)
                     {
                         for (let j = 0; j < MAX_TEXTURES; ++j)
                         {
                             const tIndex = (j + TEXTURE_TICK) % MAX_TEXTURES;
                             const t = boundTextures[tIndex];
 
-                            if(t._enabled !== TICK )
+                            if (t._enabled !== TICK)
                             {
                                 TEXTURE_TICK++;
                                 t._virtalBoundId = -1;
@@ -288,7 +283,7 @@ export default class SpriteRenderer extends ObjectRenderer
                                 boundTextures[tIndex] = nextTexture;
                                 break;
                             }
-                        };
+                        }
                     }
 
                     nextTexture._enabled = TICK;
@@ -347,7 +342,7 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);;
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
@@ -385,7 +380,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
             for (let j = 0; j < groupTextureCount; j++)
             {
-                //reset virtual ids..
+                // reset virtual ids..
                 group.textures[j]._virtalBoundId = -1;
 
                 this.renderer.bindTexture(group.textures[j], group.ids[j]);
