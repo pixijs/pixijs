@@ -140,6 +140,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.vao = this.vaos[0];
         this.currentBlendMode = 99999;
 
+        this.boundTextures = new Array(this.MAX_TEXTURES);
 
     }
 
@@ -191,6 +192,7 @@ export default class SpriteRenderer extends ObjectRenderer
         }
 
         const gl = this.renderer.gl;
+        const MAX_TEXTURES = this.MAX_TEXTURES;
 
         const np2 = bitTwiddle.nextPow2(this.currentIndex);
         const log2 = bitTwiddle.log2(np2);
@@ -203,6 +205,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const uint32View = buffer.uint32View;
 
         const map = this.textureMap;
+        const boundTextures = this.boundTextures;
 
         let index = 0;
         let nextTexture;
@@ -211,9 +214,7 @@ export default class SpriteRenderer extends ObjectRenderer
         let textureCount = 0;
         let currentGroup = groups[0];
         let vertexData;
-        let tint;
         let uvs;
-        let textureId;
         let blendMode = sprites[0].blendMode;
         let shader;
 
@@ -225,18 +226,12 @@ export default class SpriteRenderer extends ObjectRenderer
 
         let i;
 
-        var boundTextures = this.renderer.boundTextures.slice();
-
-        for (i = 0; i < this.MAX_TEXTURES; i++)
+        // copy textures..
+        for (i = 0; i < MAX_TEXTURES; i++)
         {
-            if(boundTextures[i])
-            {
-
-                //map[i] = boundTextures[i];
-                boundTextures[i]._virtalBoundId = i;
-            }
+            boundTextures[i] = this.renderer.boundTextures[i];
+            boundTextures[i]._virtalBoundId = i;
         };
-        //console.log("--------")
 
         for (i = 0; i < this.currentIndex; i++)
         {
@@ -250,9 +245,10 @@ export default class SpriteRenderer extends ObjectRenderer
             {
                 blendMode = sprite.blendMode;
 
+                currentGroup.textureCount = textureCount;
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = this.MAX_TEXTURES;
+                textureCount = MAX_TEXTURES;
                 TICK++;
             }
 
@@ -263,30 +259,26 @@ export default class SpriteRenderer extends ObjectRenderer
                 if (nextTexture._enabled !== TICK)
                 {
                     // TODO lets assume this does not happen!
-                    if (textureCount === this.MAX_TEXTURES)
+                    if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
 
+                        currentGroup.size = i - currentGroup.start;
+                        currentGroup.textureCount = textureCount;
+
                         textureCount = 0;
 
-                        currentGroup.size = i - currentGroup.start;
-
                         currentGroup = groups[groupCount++];
-                        currentGroup.textureCount = 0;
                         currentGroup.blend = blendMode;
                         currentGroup.start = i;
                     }
-                    //console.log('tcount ' + textureCount);
 
-//                    nextTexture._id = textureCount;
                     if(nextTexture._virtalBoundId === -1)
                     {
-                        nextTexture._virtalBoundId = TEXTURE_TICK;
-                        for (let j = 0; j < this.MAX_TEXTURES; ++j)
+                        for (let j = 0; j < MAX_TEXTURES; ++j)
                         {
-                            var tIndex = (j + TEXTURE_TICK) % this.MAX_TEXTURES;
-
-                            var t = boundTextures[tIndex];
+                            const tIndex = (j + TEXTURE_TICK) % MAX_TEXTURES;
+                            const t = boundTextures[tIndex];
 
                             if(t._enabled !== TICK )
                             {
@@ -301,21 +293,15 @@ export default class SpriteRenderer extends ObjectRenderer
 
                     nextTexture._enabled = TICK;
 
-                    currentGroup.ids[currentGroup.textureCount] = nextTexture._virtalBoundId;
-                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
-                    textureCount++;
-
+                    currentGroup.ids[textureCount] = nextTexture._virtalBoundId;
+                    currentGroup.textures[textureCount++] = nextTexture;
                 }
             }
 
-
-      //      console.log(map)
             vertexData = sprite.vertexData;
 
             // TODO this sum does not need to be set each frame..
-            tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
             uvs = sprite._texture._uvs.uvsUint32;
-//            textureId = nextTexture._id;
 
             if (this.renderer.roundPixels)
             {
@@ -361,7 +347,7 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = tint;
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);;
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
@@ -369,9 +355,9 @@ export default class SpriteRenderer extends ObjectRenderer
         }
 
         currentGroup.size = i - currentGroup.start;
+        currentGroup.textureCount = textureCount;
 
-      //   console.log("...")
-        if (false)//this.vaoMax <= this.vertexCount)
+        if (this.vaoMax <= this.vertexCount)
         {
             this.vaoMax++;
             shader = this.shader;
@@ -394,12 +380,14 @@ export default class SpriteRenderer extends ObjectRenderer
         {
             const group = groups[i];
             const groupTextureCount = group.textureCount;
-           // console.log(group.textures.map(xx=xx.source.src), group.ids)
+
             this.renderer.bindShader(this.shader);
 
             for (let j = 0; j < groupTextureCount; j++)
             {
+                //reset virtual ids..
                 group.textures[j]._virtalBoundId = -1;
+
                 this.renderer.bindTexture(group.textures[j], group.ids[j]);
             }
 

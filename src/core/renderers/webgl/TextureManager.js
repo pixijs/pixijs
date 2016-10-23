@@ -37,8 +37,6 @@ export default class TextureManager
          * @private
          */
         this._managedTextures = [];
-
-
     }
 
     /**
@@ -65,10 +63,13 @@ export default class TextureManager
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
      * @return {GLTexture} The gl texture.
      */
-    updateTexture(texture, location = 0)
+    updateTexture(texture, location)
     {
+        //TODO - add default to location?
+        //probably ok!
 
-        texture = texture.baseTexture || texture;
+        // assume it good!
+        //texture = texture.baseTexture || texture;
 
         const gl = this.gl;
 
@@ -79,23 +80,24 @@ export default class TextureManager
             return null;
         }
 
+        const boundTextures = this.renderer.boundTextures;
+
+        // texture binding..
+        boundTextures[location]._boundId = -1;
+
+        texture._boundId = location;
+        boundTextures[location] = texture;
+
         gl.activeTexture(gl.TEXTURE0 + location);
+
+
         let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
-        if (this.renderer.boundTextures[location])
-        {
-            const tex = this.renderer.boundTextures[location];
-            tex._boundId = -1;
-        }
-
-        this.renderer.boundTextures[location] = texture;
-        texture._boundId = location;
 
         if (!glTexture)
         {
             if (isRenderTexture)
             {
-                console.log("UPDATE RENDER TEXTURE")
                 const renderTarget = new RenderTarget(
                     this.gl,
                     texture.width,
@@ -170,6 +172,13 @@ export default class TextureManager
 
 
         return glTexture;
+    }
+
+    bindTextureToGPU(texture, location)
+    {
+        // this assumes the texture exists and created!
+        //_boundTextures
+
     }
 
     /**

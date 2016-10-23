@@ -210,7 +210,7 @@ export default class WebGLRenderer extends SystemRenderer
             c.height = 3;
 
             var emptyTexture = new PIXI.Texture.from(c);
-            emptyTexture.baseTexture.fake = true;
+            this.boundTextures[i] = {};
             this.bindTexture(emptyTexture.baseTexture, i);
         }
 
@@ -472,11 +472,14 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {number} location - the texture location
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindTexture(texture, location = 0)
+    bindTexture(texture, location)
     {
-        const gl = this.gl;
-
+        location = location || 0;
         texture = texture.baseTexture || texture;
+
+        const gl = this.gl;
+        const glTexture = texture._glTextures[this.CONTEXT_UID];
+
         texture.touched = this.textureGC.count;
 
         if (this.boundTextures[location] === texture)
@@ -484,7 +487,7 @@ export default class WebGLRenderer extends SystemRenderer
             return this;
         }
 
-        if (!texture._glTextures[this.CONTEXT_UID])
+        if (!glTexture)
         {
 
             // this will also bind the texture..
@@ -493,21 +496,15 @@ export default class WebGLRenderer extends SystemRenderer
         else
         {
             // TODO - can we cache this texture too?
-            if (this.boundTextures[location])
-            {
-                const tex = this.boundTextures[location];
-                tex._boundId = -1;
-            }
+            this.boundTextures[location]._boundId = -1;
 
             // bind the current texture
             texture._boundId = location;
             this.boundTextures[location] = texture;
 
             gl.activeTexture(gl.TEXTURE0 + location);
-            texture._glTextures[this.CONTEXT_UID].bind();
+            gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
         }
-
-//         console.log(this.boundTextures.map(i => i.source.src), location)
 
         return this;
     }
