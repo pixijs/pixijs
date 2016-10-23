@@ -168,7 +168,8 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.RenderTarget}
          */
         this._activeRenderTarget = null;
-        this._activeTexture = null;
+
+        this._nextTextureLocation = 0;
 
         this.setBlendMode(0);
     }
@@ -249,6 +250,8 @@ export default class WebGLRenderer extends SystemRenderer
         {
             return;
         }
+
+        this._nextTextureLocation = 0;
 
         if (!renderTexture)
         {
@@ -452,32 +455,47 @@ export default class WebGLRenderer extends SystemRenderer
     }
 
     /**
-     * Binds the texture ... @mat
+     * Binds the texture. This will return the location of the bound texture.
+     * It may not be the same as the one you pass in. This is due to optimisation that prevents
+     * needless binding of textures. For example if the texture isalready bound it will return the
+     * current location of the texture instead of the one provided. To bypass this use force location
      *
      * @param {PIXI.Texture} texture - the new texture
-     * @param {number} location - the texture location
+     * @param {number} location - the suggested texture location
+     * @param {boolean} forceLocation - force the location
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindTexture(texture, location)
+    bindTexture(texture, location, forceLocation)
     {
-        location = location || 0;
-
         texture = texture || this.emptyTextures[location];
-
         texture = texture.baseTexture || texture;
+        texture.touched = this.textureGC.count;
+
+        if (!forceLocation)
+        {
+            // TODO - maybe look into adding boundIds.. save us the loop?
+            for (let i = 0; i < this.boundTextures.length; i++)
+            {
+                if (this.boundTextures[i] === texture)
+                {
+                    return i;
+                }
+            }
+
+            if (location === undefined)
+            {
+                this._nextTextureLocation++;
+                this._nextTextureLocation %= this.boundTextures.length;
+                location = this.boundTextures.length - this._nextTextureLocation - 1;
+            }
+        }
+        else
+        {
+            location = location || 0;
+        }
 
         const gl = this.gl;
         const glTexture = texture._glTextures[this.CONTEXT_UID];
-
-        texture.touched = this.textureGC.count;
-
-        if (this.boundTextures[location] === texture)
-        {
-            return this;
-        }
-
-        // TODO - what if we bind a texture that is already bound?
-        // Should be ok for now..
 
         if (!glTexture)
         {
@@ -488,12 +506,11 @@ export default class WebGLRenderer extends SystemRenderer
         {
             // bind the current texture
             this.boundTextures[location] = texture;
-
             gl.activeTexture(gl.TEXTURE0 + location);
             gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
         }
 
-        return this;
+        return location;
     }
 
      /**
@@ -543,7 +560,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._activeShader = null;
         this._activeRenderTarget = this.rootRenderTarget;
-        this._activeTexture = null;
 
         // bind the main frame buffer (the screen);
         this.rootRenderTarget.activate();

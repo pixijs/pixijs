@@ -156,7 +156,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
         // make sure the texture is bound..
         const baseTexture = children[0]._texture.baseTexture;
 
-        this.renderer.bindTexture(baseTexture);
+        this.shader.uniforms.uSampler = this.renderer.bindTexture(baseTexture);
 
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
