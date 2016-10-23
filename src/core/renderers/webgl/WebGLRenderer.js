@@ -194,20 +194,20 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.bindRenderTarget(this.rootRenderTarget);
 
-        this.boundTextures = new Array(32);
+        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+
+        this.boundTextures = new Array(maxTextures);
+        this.emptyTextures = new Array(maxTextures);
 
         const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
 
         // TODO - CREATE A DUD TEXTURE
-        for (let i = 0; i < 16; i++)
+        for (let i = 0; i < maxTextures; i++)
         {
-            this.boundTextures[i] = {};
-
             const empty = new BaseTexture();
-
             empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
-
-            this.bindTexture(empty, i);
+            this.emptyTextures[i] = empty;
+            this.bindTexture(null, i);
         }
 
         this.emit('context', gl);
@@ -389,14 +389,7 @@ export default class WebGLRenderer extends SystemRenderer
 
                 if (location !== -1)
                 {
-                    // this must be unbound - as we are going to render to it..
-                    gl.activeTexture(gl.TEXTURE0 + location);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-
-                    baseTexture._boundId = -1;
-
-                    // TODO - need to add an EMPTY TEXTURE HERE
-                    this.boundTextures[location] = null;
+                    this.bindTexture(null, location);
                 }
             }
 
@@ -469,6 +462,9 @@ export default class WebGLRenderer extends SystemRenderer
     bindTexture(texture, location)
     {
         location = location || 0;
+
+        texture = texture || this.emptyTextures[location];
+
         texture = texture.baseTexture || texture;
 
         const gl = this.gl;
@@ -488,7 +484,6 @@ export default class WebGLRenderer extends SystemRenderer
         }
         else
         {
-            // TODO - can we cache this texture too?
             this.boundTextures[location]._boundId = -1;
 
             // bind the current texture
