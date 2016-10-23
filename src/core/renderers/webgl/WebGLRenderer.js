@@ -5,6 +5,7 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import BaseTexture from '../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
 import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
@@ -195,16 +196,18 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.boundTextures = new Array(32);
 
+        const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
+
         // TODO - CREATE A DUD TEXTURE
         for (let i = 0; i < 16; i++)
         {
-            const c = document.createElement('canvas');
-
-            c.width = 3;
-            c.height = 3;
-
             this.boundTextures[i] = {};
-            this.bindTexture(new PIXI.Texture.from(c), i);
+
+            const empty = new BaseTexture();
+
+            empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
+
+            this.bindTexture(empty, i);
         }
 
         this.emit('context', gl);

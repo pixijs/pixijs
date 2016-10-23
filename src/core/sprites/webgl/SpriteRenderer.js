@@ -253,7 +253,6 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 if (nextTexture._enabled !== TICK)
                 {
-                    // TODO lets assume this does not happen!
                     if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
@@ -366,6 +365,8 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
+        // TODO - check this out for mobile!
+        // this.vertexCount++
         // set textures..
 
         this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
@@ -398,7 +399,6 @@ export default class SpriteRenderer extends ObjectRenderer
 
     /**
      * Starts a new sprite batch.
-     *
      */
     start()
     {
