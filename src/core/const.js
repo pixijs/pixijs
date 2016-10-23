@@ -1,4 +1,5 @@
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
+import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
  * String of the current PIXI version.
@@ -417,3 +418,13 @@ export const SPRITE_BATCH_SIZE = 4096;
  * @type {number}
  */
 export const SPRITE_MAX_TEXTURES = maxRecommendedTextures(32);
+
+/**
+ * Can we upload the same buffer in a single frame?
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @type {boolean}
+ */
+export const CAN_UPLOAD_SAME_BUFFER = canUploadSameBuffer();

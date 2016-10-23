@@ -41,6 +41,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
             glslify('./tilingSprite.vert'),
             glslify('./tilingSprite_simple.frag'));
 
+        this.renderer.bindVao(null);
         this.quad = new core.Quad(gl, this.renderer.state.attribState);
         this.quad.initVao(this.shader);
     }
@@ -51,7 +52,11 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
      */
     render(ts)
     {
+        const renderer = this.renderer;
         const quad = this.quad;
+
+        renderer.bindVao(quad.vao);
+
         let vertices = quad.vertices;
 
         vertices[0] = vertices[6] = (ts._width) * -ts.anchor.x;
@@ -70,7 +75,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
 
         quad.upload();
 
-        const renderer = this.renderer;
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
@@ -141,7 +145,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
 
         renderer.setBlendMode(ts.blendMode);
 
-        quad.draw();
+        quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
 
