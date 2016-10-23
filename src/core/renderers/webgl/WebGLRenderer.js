@@ -165,6 +165,11 @@ export default class WebGLRenderer extends SystemRenderer
         this._activeTexture = null;
 
         this.setBlendMode(0);
+
+        // TODO DONT hard code
+
+
+
     }
 
     /**
@@ -193,10 +198,28 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.bindRenderTarget(this.rootRenderTarget);
 
+         this.boundTextures = new Array(32);
+
+
+         //TODO - fix this!
+        for (let i = 0; i < 16; i++)
+        {
+            var c = document.createElement('canvas');
+
+            c.width = 3;
+            c.height = 3;
+
+            var emptyTexture = new PIXI.Texture.from(c);
+            emptyTexture.baseTexture.fake = true;
+            this.bindTexture(emptyTexture.baseTexture, i);
+        }
+
         this.emit('context', gl);
 
         // setup the width/height properties and gl viewport
         this.resize(this.width, this.height);
+
+
     }
 
     /**
@@ -243,7 +266,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {
-            this._activeRenderTarget.clear();
+            //this._activeRenderTarget.clear();
         }
 
         displayObject.renderWebGL(this);
@@ -353,20 +376,34 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (renderTexture)
         {
+
             const baseTexture = renderTexture.baseTexture;
             const gl = this.gl;
 
+
             if (!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {
-                this.textureManager.updateTexture(baseTexture);
-                gl.bindTexture(gl.TEXTURE_2D, null);
+
+                const tex = this.boundTextures[0];
+
+                // bind the current texture
+                this.textureManager.updateTexture(baseTexture, 0);
+
+                this.bindTexture(tex, 0);
             }
             else
             {
-                // the texture needs to be unbound if its being rendererd too..
-                this._activeTextureLocation = baseTexture._id;
-                gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
-                gl.bindTexture(gl.TEXTURE_2D, null);
+                console.log(">>>>>>-------------->>>>>>>")
+                var location = baseTexture._boundId;
+
+                if(location !== -1)
+                {
+                    gl.activeTexture(gl.TEXTURE0 + location);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+
+                    baseTexture._boundId = -1;
+                    this.boundTextures[location] = null;
+                }
             }
 
             renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
@@ -437,32 +474,40 @@ export default class WebGLRenderer extends SystemRenderer
      */
     bindTexture(texture, location = 0)
     {
-        texture = texture.baseTexture || texture;
-
         const gl = this.gl;
 
-        // TODO test perf of cache?
+        texture = texture.baseTexture || texture;
+        texture.touched = this.textureGC.count;
 
-        if (this._activeTextureLocation !== location)//
+        if (this.boundTextures[location] === texture)
         {
-            this._activeTextureLocation = location;
-            gl.activeTexture(gl.TEXTURE0 + location);
+            return this;
         }
-
-        // TODO - can we cache this texture too?
-        this._activeTexture = texture;
 
         if (!texture._glTextures[this.CONTEXT_UID])
         {
+
             // this will also bind the texture..
-            this.textureManager.updateTexture(texture);
+            this.textureManager.updateTexture(texture, location);
         }
         else
         {
-            texture.touched = this.textureGC.count;
+            // TODO - can we cache this texture too?
+            if (this.boundTextures[location])
+            {
+                const tex = this.boundTextures[location];
+                tex._boundId = -1;
+            }
+
             // bind the current texture
+            texture._boundId = location;
+            this.boundTextures[location] = texture;
+
+            gl.activeTexture(gl.TEXTURE0 + location);
             texture._glTextures[this.CONTEXT_UID].bind();
         }
+
+//         console.log(this.boundTextures.map(i => i.source.src), location)
 
         return this;
     }

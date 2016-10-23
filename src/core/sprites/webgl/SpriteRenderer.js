@@ -9,7 +9,7 @@ import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
 let TICK = 0;
-
+let TEXTURE_TICK = 0;
 /**
  * Renderer dedicated to drawing and batching sprites.
  *
@@ -71,7 +71,7 @@ export default class SpriteRenderer extends ObjectRenderer
          * These shaders will also be generated on the fly as required.
          * @member {PIXI.Shader[]}
          */
-        this.shaders = null;
+        this.shader = null;
 
         this.currentIndex = 0;
         TICK = 0;
@@ -89,6 +89,8 @@ export default class SpriteRenderer extends ObjectRenderer
 
         this.vaoMax = 2;
         this.vertexCount = 0;
+
+        this.textureMap = null;
 
         this.renderer.on('prerender', this.onPrerender, this);
     }
@@ -108,16 +110,15 @@ export default class SpriteRenderer extends ObjectRenderer
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
 
-        this.shaders = new Array(this.MAX_TEXTURES);
-        this.shaders[0] = generateMultiTextureShader(gl, 1);
-        this.shaders[1] = generateMultiTextureShader(gl, 2);
+        const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
+        this.textureMap = new Float32Array(this.MAX_TEXTURES);
+
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
-        const shader = this.shaders[1];
 
         for (let i = 0; i < this.vaoMax; i++)
         {
@@ -138,6 +139,8 @@ export default class SpriteRenderer extends ObjectRenderer
 
         this.vao = this.vaos[0];
         this.currentBlendMode = 99999;
+
+
     }
 
     /**
@@ -199,6 +202,8 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
+        const map = this.textureMap;
+
         let index = 0;
         let nextTexture;
         let currentTexture;
@@ -219,6 +224,19 @@ export default class SpriteRenderer extends ObjectRenderer
         TICK++;
 
         let i;
+
+        var boundTextures = this.renderer.boundTextures.slice();
+
+        for (i = 0; i < this.MAX_TEXTURES; i++)
+        {
+            if(boundTextures[i])
+            {
+
+                //map[i] = boundTextures[i];
+                boundTextures[i]._virtalBoundId = i;
+            }
+        };
+        //console.log("--------")
 
         for (i = 0; i < this.currentIndex; i++)
         {
@@ -244,6 +262,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 if (nextTexture._enabled !== TICK)
                 {
+                    // TODO lets assume this does not happen!
                     if (textureCount === this.MAX_TEXTURES)
                     {
                         TICK++;
@@ -257,21 +276,46 @@ export default class SpriteRenderer extends ObjectRenderer
                         currentGroup.blend = blendMode;
                         currentGroup.start = i;
                     }
+                    //console.log('tcount ' + textureCount);
+
+//                    nextTexture._id = textureCount;
+                    if(nextTexture._virtalBoundId === -1)
+                    {
+                        nextTexture._virtalBoundId = TEXTURE_TICK;
+                        for (let j = 0; j < this.MAX_TEXTURES; ++j)
+                        {
+                            var tIndex = (j + TEXTURE_TICK) % this.MAX_TEXTURES;
+
+                            var t = boundTextures[tIndex];
+
+                            if(t._enabled !== TICK )
+                            {
+                                TEXTURE_TICK++;
+                                t._virtalBoundId = -1;
+                                nextTexture._virtalBoundId = tIndex;
+                                boundTextures[tIndex] = nextTexture;
+                                break;
+                            }
+                        };
+                    }
 
                     nextTexture._enabled = TICK;
-                    nextTexture._id = textureCount;
 
+                    currentGroup.ids[currentGroup.textureCount] = nextTexture._virtalBoundId;
                     currentGroup.textures[currentGroup.textureCount++] = nextTexture;
                     textureCount++;
+
                 }
             }
 
+
+      //      console.log(map)
             vertexData = sprite.vertexData;
 
             // TODO this sum does not need to be set each frame..
             tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
             uvs = sprite._texture._uvs.uvsUint32;
-            textureId = nextTexture._id;
+//            textureId = nextTexture._id;
 
             if (this.renderer.roundPixels)
             {
@@ -318,19 +362,19 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 17] = uvs[3];
 
             uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = tint;
-            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
+
+            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
             index += 20;
         }
 
         currentGroup.size = i - currentGroup.start;
 
-        this.vertexCount++;
-
-        if (this.vaoMax <= this.vertexCount)
+      //   console.log("...")
+        if (false)//this.vaoMax <= this.vertexCount)
         {
             this.vaoMax++;
-            shader = this.shaders[1];
+            shader = this.shader;
             this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
             // build the vao object that will render..
             this.vaos[this.vertexCount] = this.renderer.createVao()
@@ -341,28 +385,22 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
-        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
-        this.vao = this.vaos[this.vertexCount].bind();
+        // set textures..
+
+        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
 
         // / render the groups..
         for (i = 0; i < groupCount; i++)
         {
             const group = groups[i];
             const groupTextureCount = group.textureCount;
-
-            shader = this.shaders[groupTextureCount - 1];
-
-            if (!shader)
-            {
-                shader = this.shaders[groupTextureCount - 1] = generateMultiTextureShader(gl, groupTextureCount);
-                // console.log("SHADER generated for " + textureCount + " textures")
-            }
-
-            this.renderer.bindShader(shader);
+           // console.log(group.textures.map(xx=xx.source.src), group.ids)
+            this.renderer.bindShader(this.shader);
 
             for (let j = 0; j < groupTextureCount; j++)
             {
-                this.renderer.bindTexture(group.textures[j], j);
+                group.textures[j]._virtalBoundId = -1;
+                this.renderer.bindTexture(group.textures[j], group.ids[j]);
             }
 
             // set the blend mode..
@@ -383,6 +421,7 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         // this.renderer.bindShader(this.shader);
         // TICK %= 1000;
+        this.vao = this.vaos[0].bind();
     }
 
     /**

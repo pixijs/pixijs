@@ -193,6 +193,7 @@ export default class BaseTexture extends EventEmitter
          */
         this._glTextures = {};
         this._enabled = 0;
+        this._virtalBoundId = -1;
         this._id = 0;
 
         // if no source passed don't try to load

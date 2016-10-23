@@ -37,6 +37,8 @@ export default class TextureManager
          * @private
          */
         this._managedTextures = [];
+
+
     }
 
     /**
@@ -63,9 +65,12 @@ export default class TextureManager
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
      * @return {GLTexture} The gl texture.
      */
-    updateTexture(texture)
+    updateTexture(texture, location = 0)
     {
+
         texture = texture.baseTexture || texture;
+
+        const gl = this.gl;
 
         const isRenderTexture = !!texture._glRenderTargets;
 
@@ -74,12 +79,23 @@ export default class TextureManager
             return null;
         }
 
+        gl.activeTexture(gl.TEXTURE0 + location);
         let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
+
+        if (this.renderer.boundTextures[location])
+        {
+            const tex = this.renderer.boundTextures[location];
+            tex._boundId = -1;
+        }
+
+        this.renderer.boundTextures[location] = texture;
+        texture._boundId = location;
 
         if (!glTexture)
         {
             if (isRenderTexture)
             {
+                console.log("UPDATE RENDER TEXTURE")
                 const renderTarget = new RenderTarget(
                     this.gl,
                     texture.width,
@@ -94,7 +110,9 @@ export default class TextureManager
             }
             else
             {
-                glTexture = new GLTexture(this.gl);
+                console.log("UPDATE REGULAR TEXTURE")
+                glTexture = new GLTexture(this.gl, null, null, null, null);
+                glTexture.bind(location);
                 glTexture.premultiplyAlpha = true;
                 glTexture.upload(texture.source);
             }
@@ -149,6 +167,7 @@ export default class TextureManager
         {
             glTexture.upload(texture.source);
         }
+
 
         return glTexture;
     }
