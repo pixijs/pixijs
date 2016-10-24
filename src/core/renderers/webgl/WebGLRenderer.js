@@ -5,7 +5,7 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
-import BaseTexture from '../textures/BaseTexture';
+import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
 import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
@@ -53,6 +53,7 @@ export default class WebGLRenderer extends SystemRenderer
     constructor(width, height, options = {})
     {
         super('WebGL', width, height, options);
+
         /**
          * The type of this renderer as a standardised const
          *
@@ -139,7 +140,6 @@ export default class WebGLRenderer extends SystemRenderer
         this.renderingToScreen = true;
 
         this._initContext();
-
         /**
          * Manages the filters.
          *
@@ -183,6 +183,11 @@ export default class WebGLRenderer extends SystemRenderer
             gl.getExtension('WEBGL_lose_context').restoreContext();
         }
 
+        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+
+        this.boundTextures = new Array(maxTextures);
+        this.emptyTextures = new Array(maxTextures);
+
         // create a texture manager...
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
@@ -194,11 +199,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.bindRenderTarget(this.rootRenderTarget);
 
-        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
-        this.boundTextures = new Array(maxTextures);
-        this.emptyTextures = new Array(maxTextures);
-
         const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
 
         // TODO - CREATE A DUD TEXTURE
@@ -207,6 +207,7 @@ export default class WebGLRenderer extends SystemRenderer
             const empty = new BaseTexture();
 
             empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
+            this.boundTextures[i] = {};
             this.emptyTextures[i] = empty;
             this.bindTexture(null, i);
         }
