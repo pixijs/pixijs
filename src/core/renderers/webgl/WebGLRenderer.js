@@ -199,15 +199,20 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.bindRenderTarget(this.rootRenderTarget);
 
+        // now lets fill up the textures with empty ones!
         const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
 
-        // TODO - CREATE A DUD TEXTURE
+        const tempObj = { _glTextures: {} };
+
+        tempObj._glTextures[this.CONTEXT_UID] = {};
+
         for (let i = 0; i < maxTextures; i++)
         {
             const empty = new BaseTexture();
 
             empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
-            this.boundTextures[i] = {};
+
+            this.boundTextures[i] = tempObj;
             this.emptyTextures[i] = empty;
             this.bindTexture(null, i);
         }
@@ -386,7 +391,7 @@ export default class WebGLRenderer extends SystemRenderer
             }
             else
             {
-                const location = baseTexture._boundId;
+                const location = baseTexture._glTextures[this.CONTEXT_UID]._boundId;
 
                 if (location !== -1)
                 {
@@ -478,6 +483,9 @@ export default class WebGLRenderer extends SystemRenderer
             return this;
         }
 
+        // TODO - what if we bind a texture that is already bound?
+        // Should be ok for now..
+
         if (!glTexture)
         {
             // this will also bind the texture..
@@ -485,10 +493,10 @@ export default class WebGLRenderer extends SystemRenderer
         }
         else
         {
-            this.boundTextures[location]._boundId = -1;
+            this.boundTextures[location]._glTextures[this.CONTEXT_UID]._boundId = -1;
 
             // bind the current texture
-            texture._boundId = location;
+            glTexture._boundId = location;
             this.boundTextures[location] = texture;
 
             gl.activeTexture(gl.TEXTURE0 + location);

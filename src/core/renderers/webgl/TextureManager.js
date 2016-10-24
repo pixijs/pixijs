@@ -85,9 +85,8 @@ export default class TextureManager
         const boundTextures = this.renderer.boundTextures;
 
         // texture binding..
-        boundTextures[location]._boundId = -1;
+        boundTextures[location]._glTextures[this.renderer.CONTEXT_UID]._boundId = -1;
 
-        texture._boundId = location;
         boundTextures[location] = texture;
 
         gl.activeTexture(gl.TEXTURE0 + location);
@@ -168,6 +167,8 @@ export default class TextureManager
         {
             glTexture.upload(texture.source);
         }
+
+        glTexture._boundId = location;
 
         return glTexture;
     }
