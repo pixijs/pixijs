@@ -9,7 +9,7 @@ const tempArray = new Float32Array(4);
 /**
  * WebGL renderer plugin for tiling sprites
  */
-export class TilingSpriteRenderer extends core.ObjectRenderer {
+export default class TilingSpriteRenderer extends core.ObjectRenderer {
 
     /**
      * constructor for renderer

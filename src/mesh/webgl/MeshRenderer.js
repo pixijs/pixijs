@@ -7,7 +7,7 @@ const glslify = require('glslify'); // eslint-disable-line no-undef
 /**
  * WebGL renderer plugin for tiling sprites
  */
-export class MeshRenderer extends core.ObjectRenderer {
+export default class MeshRenderer extends core.ObjectRenderer {
 
     /**
      * constructor for renderer
