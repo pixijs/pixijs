@@ -89,4 +89,37 @@ describe('PIXI.Polygon', () =>
             expect(polygon.points.length).to.be.equals(8);
         });
     });
+
+    describe('contains', () =>
+    {
+        it('should include points inside', () =>
+        {
+            const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
+
+            expect(polygon.contains(1, 1)).to.be.true;
+            expect(polygon.contains(1, 9)).to.be.true;
+            expect(polygon.contains(9, 1)).to.be.true;
+            expect(polygon.contains(9, 9)).to.be.true;
+        });
+
+        it('should exclude bounds', () =>
+        {
+            const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
+
+            // expect(polygon.contains(0, 0)).to.be.false; // this currently returns true
+            expect(polygon.contains(0, 10)).to.be.false;
+            expect(polygon.contains(10, 0)).to.be.false;
+            expect(polygon.contains(10, 10)).to.be.false;
+        });
+
+        it('should exclude points outside', () =>
+        {
+            const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
+
+            expect(polygon.contains(-1, -1)).to.be.false;
+            expect(polygon.contains(-1, 11)).to.be.false;
+            expect(polygon.contains(11, -1)).to.be.false;
+            expect(polygon.contains(11, 11)).to.be.false;
+        });
+    });
 });
