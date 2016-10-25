@@ -227,13 +227,7 @@ export default class TilingSprite extends core.Sprite
         context.translate(modX + (this.anchor.x * -this._width),
                           modY + (this.anchor.y * -this._height));
 
-        // check blend mode
-        const compositeOperation = renderer.blendModes[this.blendMode];
-
-        if (compositeOperation !== renderer.context.globalCompositeOperation)
-        {
-            context.globalCompositeOperation = compositeOperation;
-        }
+        renderer.setBlendMode(this.blendMode);
 
         // fill the pattern!
         context.fillStyle = this._canvasPattern;
