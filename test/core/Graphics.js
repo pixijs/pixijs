@@ -93,14 +93,14 @@ describe('PIXI.Graphics', () =>
             const graphics = new PIXI.Graphics();
 
             graphics.lineStyle(20, 0, 0.5);
-            graphics.moveTo(10, 10);
-            graphics.lineTo(50, 10);
+            graphics.moveTo(0, 0);
+            graphics.lineTo(50, 0);
             graphics.lineTo(50, 50);
-            graphics.lineTo(10, 50);
-            graphics.lineTo(10, 10);
+            graphics.lineTo(0, 50);
+            graphics.lineTo(0, 0);
 
-            expect(graphics.width).to.be.equals(50);
-            expect(graphics.height).to.be.equals(50);
+            expect(graphics.width).to.be.equals(70);
+            expect(graphics.height).to.be.equals(70);
         });
     });
 });

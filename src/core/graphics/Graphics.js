@@ -974,8 +974,8 @@ export default class Graphics extends Container
                             theta = (x2 - x) / (y2 - y);
                         }
 
-                        rw = ((h * Math.sin(theta)) + (w * Math.cos(theta))) / 2;
-                        rh = ((w * Math.sin(theta)) + (h * Math.cos(theta))) / 2;
+                        rw = Math.abs((h * Math.sin(theta)) + (w * Math.cos(theta))) / 2;
+                        rh = Math.abs((w * Math.sin(theta)) + (h * Math.cos(theta))) / 2;
                         cx = (x2 + x) / 2;
                         cy = (y2 + y) / 2;
 
