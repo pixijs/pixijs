@@ -15,4 +15,19 @@ describe('PIXI.Graphics', () =>
             expect(graphics.blendMode).to.be.equals(PIXI.BLEND_MODES.NORMAL);
         });
     });
+
+    describe('lineTo', () =>
+    {
+        it('should return the correct bounds', () =>
+        {
+            const graphics = new PIXI.Graphics();
+
+            graphics.moveTo(0, 0);
+            graphics.lineStyle(1);
+            graphics.lineTo(0, 10);
+
+            expect(graphics.width).to.be.equals(1);
+            expect(graphics.height).to.be.equals(10);
+        });
+    });
 });
