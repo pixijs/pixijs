@@ -1339,7 +1339,6 @@ export default class InteractionManager extends EventEmitter
     {
         if (hit)
         {
-            displayObject._touchDown = true;
             if (typeof displayObject._touchCount === 'undefined')
             {
                 displayObject._touchCount = 0;
