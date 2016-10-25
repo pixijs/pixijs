@@ -1328,6 +1328,9 @@ export default class InteractionManager extends EventEmitter
         if (hit)
         {
             displayObject._touchDown = true;
+            if(typeof displayObject._touchCount === "undefined")
+                displayObject._touchCount = 0;
+            displayObject._touchCount ++;
             this.dispatchEvent(displayObject, 'touchstart', this.eventData);
         }
     }
@@ -1381,15 +1384,15 @@ export default class InteractionManager extends EventEmitter
         {
             this.dispatchEvent(displayObject, 'touchend', this.eventData);
 
-            if (displayObject._touchDown)
+            if (displayObject._touchCount > 0)
             {
-                displayObject._touchDown = false;
+                displayObject._touchCount --;
                 this.dispatchEvent(displayObject, 'tap', this.eventData);
             }
         }
-        else if (displayObject._touchDown)
+        else if (displayObject._touchCount)
         {
-            displayObject._touchDown = false;
+            displayObject._touchCount --;
             this.dispatchEvent(displayObject, 'touchendoutside', this.eventData);
         }
     }
