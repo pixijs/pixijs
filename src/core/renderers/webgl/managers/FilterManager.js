@@ -233,11 +233,10 @@ export default class FilterManager extends WebGLManager
         }
 
         renderer.bindRenderTarget(output);
+            const gl = renderer.gl;
 
         if (clear)
         {
-            const gl = renderer.gl;
-
             gl.disable(gl.SCISSOR_TEST);
             renderer.clear();// [1, 1, 1, 1]);
             gl.enable(gl.SCISSOR_TEST);
@@ -254,14 +253,18 @@ export default class FilterManager extends WebGLManager
         // this syncs the pixi filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
-        // bind the input texture..
-        input.texture.bind(0);
-        // when you manually bind a texture, please switch active texture location to it
-        renderer._activeTextureLocation = 0;
-
         renderer.state.setBlendMode(filter.blendMode);
 
+        // temporary bypass cache..
+        const tex = this.renderer.boundTextures[0];
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
+
         this.quad.draw();
+
+        // restore cache.
+        gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
     }
 
     /**
@@ -321,6 +324,7 @@ export default class FilterManager extends WebGLManager
                 }
                 else
                 {
+                    // TODO
                     // this is helpful as renderTargets can also be set.
                     // Although thinking about it, we could probably
                     // make the filter texture cache return a RenderTexture
@@ -328,7 +332,6 @@ export default class FilterManager extends WebGLManager
                     const gl = this.renderer.gl;
 
                     this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
-
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
                     uniforms[i].texture.bind();
                 }
@@ -502,13 +505,33 @@ export default class FilterManager extends WebGLManager
             this.pool[key] = [];
         }
 
-        const renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+
+        // creating render target will cause texture to be bound!
+
+        let renderTarget = this.pool[key].pop()
+
+        if(!renderTarget)
+        {
+            // temporary bypass cache..
+            const tex = this.renderer.boundTextures[0];
+
+            gl.activeTexture(gl.TEXTURE0);
+
+            // internally - this will cause a texture to be bound..
+            renderTarget = new RenderTarget(gl, minWidth, minHeight, null, 1);
+            gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
+        }
 
         // manually tweak the resolution...
         // this will not modify the size of the frame buffer, just its resolution.
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+
+        if(!renderTarget.___)
+        {
+            renderTarget.___ = {_glTextures:{0:renderTarget.texture}};
+        }
 
         return renderTarget;
     }

@@ -190,6 +190,8 @@ export default class TextureManager
 
         if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
+            this.renderer.unbindTexture(texture);
+
             texture._glTextures[this.renderer.CONTEXT_UID].destroy();
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);
