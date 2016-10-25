@@ -213,7 +213,6 @@ export default class SpriteRenderer extends ObjectRenderer
         let vertexData;
         let uvs;
         let blendMode = sprites[0].blendMode;
-        let shader;
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -240,9 +239,9 @@ export default class SpriteRenderer extends ObjectRenderer
 
             if (blendMode !== sprite.blendMode)
             {
+                // finish a group..
                 blendMode = sprite.blendMode;
 
-                currentGroup.textureCount = textureCount;
                 // force the batch to break!
                 currentTexture = null;
                 textureCount = MAX_TEXTURES;
@@ -260,12 +259,12 @@ export default class SpriteRenderer extends ObjectRenderer
                         TICK++;
 
                         currentGroup.size = i - currentGroup.start;
-                        currentGroup.textureCount = textureCount;
 
                         textureCount = 0;
 
                         currentGroup = groups[groupCount++];
                         currentGroup.blend = blendMode;
+                        currentGroup.textureCount = 0;
                         currentGroup.start = i;
                     }
 
@@ -276,6 +275,7 @@ export default class SpriteRenderer extends ObjectRenderer
                         for (let j = 0; j < MAX_TEXTURES; ++j)
                         {
                             const tIndex = (j + TEXTURE_TICK) % MAX_TEXTURES;
+
                             const t = boundTextures[tIndex];
 
                             if (t._enabled !== TICK)
@@ -283,6 +283,7 @@ export default class SpriteRenderer extends ObjectRenderer
                                 TEXTURE_TICK++;
 
                                 t._virtalBoundId = -1;
+
                                 nextTexture._virtalBoundId = tIndex;
 
                                 boundTextures[tIndex] = nextTexture;
@@ -293,6 +294,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
                     nextTexture._enabled = TICK;
 
+                    currentGroup.textureCount++;
                     currentGroup.ids[textureCount] = nextTexture._virtalBoundId;
                     currentGroup.textures[textureCount++] = nextTexture;
                 }
@@ -355,8 +357,11 @@ export default class SpriteRenderer extends ObjectRenderer
         }
 
         currentGroup.size = i - currentGroup.start;
-        currentGroup.textureCount = textureCount;
 
+        // keep an eye out here!
+        // TODO - check this out for mobile!
+
+        /*
         if (this.vaoMax <= this.vertexCount)
         {
             this.vaoMax++;
@@ -371,26 +376,30 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
-        // TODO - check this out for mobile!
-        // this.vertexCount++
+        // this.vertexCount++;
         // set textures..
+        */
 
-        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
+        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
 
-        // / render the groups..
+        for (i = 0; i < MAX_TEXTURES; i++)
+        {
+            this.renderer.boundTextures[i]._virtalBoundId = -1;
+        }
+
+        // render the groups..
         for (i = 0; i < groupCount; i++)
         {
             const group = groups[i];
             const groupTextureCount = group.textureCount;
 
-            this.renderer.bindShader(this.shader);
-
             for (let j = 0; j < groupTextureCount; j++)
             {
                 // reset virtual ids..
-                group.textures[j]._virtalBoundId = -1;
-
                 this.renderer.bindTexture(group.textures[j], group.ids[j]);
+
+                // reset the virtualId..
+                group.textures[j]._virtalBoundId = -1;
             }
 
             // set the blend mode..
@@ -411,6 +420,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // this.renderer.bindShader(this.shader);
         // TICK %= 1000;
         this.vao = this.vaos[0].bind();
+        this.renderer.bindShader(this.shader);
     }
 
     /**

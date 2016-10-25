@@ -207,6 +207,8 @@ export default class FilterManager extends WebGLManager
     applyFilter(filter, input, output, clear)
     {
         const renderer = this.renderer;
+        const gl = renderer.gl;
+
         let shader = filter.glShaders[renderer.CONTEXT_UID];
 
         // cacheing..
@@ -233,7 +235,6 @@ export default class FilterManager extends WebGLManager
         }
 
         renderer.bindRenderTarget(output);
-            const gl = renderer.gl;
 
         if (clear)
         {
@@ -505,12 +506,10 @@ export default class FilterManager extends WebGLManager
             this.pool[key] = [];
         }
 
+        let renderTarget = this.pool[key].pop();
 
         // creating render target will cause texture to be bound!
-
-        let renderTarget = this.pool[key].pop()
-
-        if(!renderTarget)
+        if (!renderTarget)
         {
             // temporary bypass cache..
             const tex = this.renderer.boundTextures[0];
@@ -519,6 +518,8 @@ export default class FilterManager extends WebGLManager
 
             // internally - this will cause a texture to be bound..
             renderTarget = new RenderTarget(gl, minWidth, minHeight, null, 1);
+
+            // set the current one back
             gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
         }
 
@@ -527,11 +528,6 @@ export default class FilterManager extends WebGLManager
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
-
-        if(!renderTarget.___)
-        {
-            renderTarget.___ = {_glTextures:{0:renderTarget.texture}};
-        }
 
         return renderTarget;
     }
