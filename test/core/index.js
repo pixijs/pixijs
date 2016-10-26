@@ -18,3 +18,4 @@ require('./Rectangle');
 require('./RoundedRectangle');
 require('./Circle');
 require('./Graphics');
+require('./BaseTexture');
