@@ -961,18 +961,12 @@ export default class Graphics extends Container
                         h = lineWidth;
                         w = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
 
-                        if (y2 - y === 0)
+                        if (y2 - y === 0 && x2 - x === 0)
                         {
-                            theta = x > x2 ? Math.PI : 0;
+                            continue;
                         }
-                        else if (x2 - x === 0)
-                        {
-                            theta = (y > y2) ? -Math.PI / 2 : Math.PI / 2;
-                        }
-                        else
-                        {
-                            theta = (x2 - x) / (y2 - y);
-                        }
+
+                        theta = Math.atan2(y2 - y, x2 - x);
 
                         rw = Math.abs((h * Math.sin(theta)) + (w * Math.cos(theta))) / 2;
                         rh = Math.abs((w * Math.sin(theta)) + (h * Math.cos(theta))) / 2;
