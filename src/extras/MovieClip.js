@@ -160,7 +160,20 @@ export default class MovieClip extends core.Sprite
      */
     gotoAndPlay(frameNumber)
     {
+        const previousFrame = this.currentFrame;
+
         this._currentTime = frameNumber;
+
+        if (previousFrame !== this.currentFrame)
+        {
+            this._texture = this._textures[this.currentFrame];
+            this._textureID = -1;
+
+            if (this.onFrameChange)
+            {
+                this.onFrameChange(this.currentFrame);
+            }
+        }
 
         this.play();
     }
