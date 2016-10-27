@@ -121,7 +121,7 @@ export default class Rectangle
      * Copies another rectangle to this one.
      *
      * @param {PIXI.Rectangle} rectangle - The rectangle to copy.
-     * @return {PIXI.Rectanle} Returns itself.
+     * @return {PIXI.Rectangle} Returns itself.
      */
     copy(rectangle)
     {
