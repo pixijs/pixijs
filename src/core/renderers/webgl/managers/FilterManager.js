@@ -332,7 +332,6 @@ export default class FilterManager extends WebGLManager
                     // rather than a renderTarget
                     const gl = this.renderer.gl;
 
-                    this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
                     uniforms[i].texture.bind();
                 }
