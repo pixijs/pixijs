@@ -90,8 +90,8 @@ export default function ()
                             trim = new core.Rectangle(
                                 frames[i].spriteSourceSize.x / resolution,
                                 frames[i].spriteSourceSize.y / resolution,
-                                frames[i].spriteSourceSize.w / resolution,
-                                frames[i].spriteSourceSize.h / resolution
+                                rect.w / resolution,
+                                rect.h / resolution
                             );
                         }
 
