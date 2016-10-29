@@ -143,13 +143,7 @@ export default class MovieClip extends core.Sprite
 
         if (previousFrame !== this.currentFrame)
         {
-            this._texture = this._textures[this.currentFrame];
-            this._textureID = -1;
-
-            if (this.onFrameChange)
-            {
-                this.onFrameChange(this.currentFrame);
-            }
+            this.updateTexture();
         }
     }
 
@@ -160,7 +154,14 @@ export default class MovieClip extends core.Sprite
      */
     gotoAndPlay(frameNumber)
     {
+        const previousFrame = this.currentFrame;
+
         this._currentTime = frameNumber;
+
+        if (previousFrame !== this.currentFrame)
+        {
+            this.updateTexture();
+        }
 
         this.play();
     }
@@ -225,13 +226,23 @@ export default class MovieClip extends core.Sprite
         }
         else if (previousFrame !== this.currentFrame)
         {
-            this._texture = this._textures[this.currentFrame];
-            this._textureID = -1;
+            this.updateTexture();
+        }
+    }
 
-            if (this.onFrameChange)
-            {
-                this.onFrameChange(this.currentFrame);
-            }
+    /**
+     * Updates the displayed texture to match the current frame index
+     *
+     * @private
+     */
+    updateTexture()
+    {
+        this._texture = this._textures[this.currentFrame];
+        this._textureID = -1;
+
+        if (this.onFrameChange)
+        {
+            this.onFrameChange(this.currentFrame);
         }
     }
 
