@@ -380,7 +380,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // set textures..
         */
 
-        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
+        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
 
         for (i = 0; i < MAX_TEXTURES; i++)
         {
