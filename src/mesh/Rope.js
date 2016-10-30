@@ -77,6 +77,15 @@ export default class Rope extends Mesh
             return;
         }
 
+        // if the number of points has changed we will need to recreate the arraybuffers
+        if (this.vertices.length / 4 !== points.length)
+        {
+            this.vertices = new Float32Array(points.length * 4);
+            this.uvs = new Float32Array(points.length * 4);
+            this.colors = new Float32Array(points.length * 2);
+            this.indices = new Uint16Array(points.length * 2);
+        }
+
         const uvs = this.uvs;
 
         const indices = this.indices;
@@ -120,8 +129,9 @@ export default class Rope extends Mesh
             indices[index + 1] = index + 1;
         }
 
-        this.dirty = true;
-        this.indexDirty = true;
+        // ensure that the changes are uploaded
+        this.dirty++;
+        this.indexDirty++;
     }
 
     /**
