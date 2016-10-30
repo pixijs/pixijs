@@ -77,7 +77,6 @@ export class MeshRenderer extends core.ObjectRenderer {
 
         if (mesh.dirty !== glData.dirty)
         {
-
             glData.dirty = mesh.dirty;
             glData.uvBuffer.upload(mesh.uvs);
         }
@@ -87,7 +86,6 @@ export class MeshRenderer extends core.ObjectRenderer {
             glData.indexDirty = mesh.indexDirty;
             glData.indexBuffer.upload(mesh.indices);
         }
-
 
         glData.vertexBuffer.upload(mesh.vertices);
 

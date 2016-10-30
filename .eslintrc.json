@@ -103,7 +103,7 @@
         "no-unused-labels": 1,
         "no-useless-call": 1,
         "no-useless-concat": 1,
-        "no-useless-escape": 1,
+        "no-useless-escape": 0,
         "no-void": 1,
         "no-warning-comments": 0,
         "no-with": 1,
