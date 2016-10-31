@@ -139,6 +139,12 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.renderingToScreen = true;
 
+        /**
+         * Holds the current state of textures bound to the GPU.
+         * @type {Array}
+         */
+        this.boundTextures = null;
+
         this._initContext();
         /**
          * Manages the filters.
