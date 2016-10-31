@@ -11,7 +11,7 @@ const glslify = require('glslify'); // eslint-disable-line no-undef
  *
  * @class
  * @extends PIXI.Filter
- * @memberof PIXI
+ * @memberof PIXI.filters
  *
  */
 export default class FXAAFilter extends core.Filter
