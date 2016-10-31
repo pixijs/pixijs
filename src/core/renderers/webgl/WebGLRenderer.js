@@ -5,6 +5,7 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
 import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
@@ -52,6 +53,7 @@ export default class WebGLRenderer extends SystemRenderer
     constructor(width, height, options = {})
     {
         super('WebGL', width, height, options);
+
         /**
          * The type of this renderer as a standardised const
          *
@@ -137,8 +139,13 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.renderingToScreen = true;
 
-        this._initContext();
+        /**
+         * Holds the current state of textures bound to the GPU.
+         * @type {Array}
+         */
+        this.boundTextures = null;
 
+        this._initContext();
         /**
          * Manages the filters.
          *
@@ -161,7 +168,6 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.RenderTarget}
          */
         this._activeRenderTarget = null;
-        this._activeTextureLocation = 999;
         this._activeTexture = null;
 
         this.setBlendMode(0);
@@ -182,6 +188,11 @@ export default class WebGLRenderer extends SystemRenderer
             gl.getExtension('WEBGL_lose_context').restoreContext();
         }
 
+        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+
+        this.boundTextures = new Array(maxTextures);
+        this.emptyTextures = new Array(maxTextures);
+
         // create a texture manager...
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
@@ -192,6 +203,24 @@ export default class WebGLRenderer extends SystemRenderer
         this.rootRenderTarget.clearColor = this._backgroundColorRgba;
 
         this.bindRenderTarget(this.rootRenderTarget);
+
+        // now lets fill up the textures with empty ones!
+        const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
+
+        const tempObj = { _glTextures: {} };
+
+        tempObj._glTextures[this.CONTEXT_UID] = {};
+
+        for (let i = 0; i < maxTextures; i++)
+        {
+            const empty = new BaseTexture();
+
+            empty._glTextures[this.CONTEXT_UID] = emptyGLTexture;
+
+            this.boundTextures[i] = tempObj;
+            this.emptyTextures[i] = empty;
+            this.bindTexture(null, i);
+        }
 
         this.emit('context', gl);
 
@@ -354,20 +383,14 @@ export default class WebGLRenderer extends SystemRenderer
         if (renderTexture)
         {
             const baseTexture = renderTexture.baseTexture;
-            const gl = this.gl;
 
             if (!baseTexture._glRenderTargets[this.CONTEXT_UID])
             {
-                this.textureManager.updateTexture(baseTexture);
-                gl.bindTexture(gl.TEXTURE_2D, null);
+                // bind the current texture
+                this.textureManager.updateTexture(baseTexture, 0);
             }
-            else
-            {
-                // the texture needs to be unbound if its being rendererd too..
-                this._activeTextureLocation = baseTexture._id;
-                gl.activeTexture(gl.TEXTURE0 + baseTexture._id);
-                gl.bindTexture(gl.TEXTURE_2D, null);
-            }
+
+            this.unbindTexture(baseTexture);
 
             renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
             renderTarget.setFrame(renderTexture.frame);
@@ -435,33 +458,65 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {number} location - the texture location
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindTexture(texture, location = 0)
+    bindTexture(texture, location)
     {
+        location = location || 0;
+
+        texture = texture || this.emptyTextures[location];
+
         texture = texture.baseTexture || texture;
 
         const gl = this.gl;
+        const glTexture = texture._glTextures[this.CONTEXT_UID];
 
-        // TODO test perf of cache?
+        texture.touched = this.textureGC.count;
 
-        if (this._activeTextureLocation !== location)//
+        if (this.boundTextures[location] === texture)
         {
-            this._activeTextureLocation = location;
-            gl.activeTexture(gl.TEXTURE0 + location);
+            return this;
         }
 
-        // TODO - can we cache this texture too?
-        this._activeTexture = texture;
+        // TODO - what if we bind a texture that is already bound?
+        // Should be ok for now..
 
-        if (!texture._glTextures[this.CONTEXT_UID])
+        if (!glTexture)
         {
             // this will also bind the texture..
-            this.textureManager.updateTexture(texture);
+            this.textureManager.updateTexture(texture, location);
         }
         else
         {
-            texture.touched = this.textureGC.count;
             // bind the current texture
-            texture._glTextures[this.CONTEXT_UID].bind();
+            this.boundTextures[location] = texture;
+
+            gl.activeTexture(gl.TEXTURE0 + location);
+            gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        }
+
+        return this;
+    }
+
+     /**
+     * unbinds the texture ...
+     *
+     * @param {PIXI.Texture} texture - the texture to unbind
+     * @return {PIXI.WebGLRenderer} Returns itself.
+     */
+    unbindTexture(texture)
+    {
+        const gl = this.gl;
+
+        texture = texture.baseTexture || texture;
+
+        for (let i = 0; i < this.boundTextures.length; i++)
+        {
+            if (this.boundTextures[i] === texture)
+            {
+                this.boundTextures[i] = this.emptyTextures[i];
+
+                gl.activeTexture(gl.TEXTURE0 + i);
+                gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[i]._glTextures[this.CONTEXT_UID].texture);
+            }
         }
 
         return this;
@@ -488,7 +543,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._activeShader = null;
         this._activeRenderTarget = this.rootRenderTarget;
-        this._activeTextureLocation = 999;
         this._activeTexture = null;
 
         // bind the main frame buffer (the screen);

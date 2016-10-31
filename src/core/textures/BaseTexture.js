@@ -192,8 +192,9 @@ export default class BaseTexture extends EventEmitter
          * @member {object<number, WebGLTexture>}
          */
         this._glTextures = {};
+
         this._enabled = 0;
-        this._id = 0;
+        this._virtalBoundId = -1;
 
         // if no source passed don't try to load
         if (source)

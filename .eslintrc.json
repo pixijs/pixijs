@@ -162,7 +162,7 @@
         "keyword-spacing": [1, { "before": true, "after": true }],
         "linebreak-style": [1, "unix"],
         "lines-around-comment": 0,
-        "max-depth": [1, 5],
+        "max-depth": [1, 6],
         "max-len": [1, { "code": 125, "tabWidth": 4 }],
         "max-lines": 0,
         "max-nested-callbacks": [1, { "max": 5 }],

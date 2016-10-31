@@ -9,6 +9,7 @@ import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
 let TICK = 0;
+let TEXTURE_TICK = 0;
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -71,7 +72,7 @@ export default class SpriteRenderer extends ObjectRenderer
          * These shaders will also be generated on the fly as required.
          * @member {PIXI.Shader[]}
          */
-        this.shaders = null;
+        this.shader = null;
 
         this.currentIndex = 0;
         TICK = 0;
@@ -108,16 +109,10 @@ export default class SpriteRenderer extends ObjectRenderer
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
 
-        this.shaders = new Array(this.MAX_TEXTURES);
-        this.shaders[0] = generateMultiTextureShader(gl, 1);
-        this.shaders[1] = generateMultiTextureShader(gl, 2);
+        const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
-
-        // we use the second shader as the first one depending on your browser may omit aTextureId
-        // as it is not used by the shader so is optimized out.
-        const shader = this.shaders[1];
 
         for (let i = 0; i < this.vaoMax; i++)
         {
@@ -138,6 +133,8 @@ export default class SpriteRenderer extends ObjectRenderer
 
         this.vao = this.vaos[0];
         this.currentBlendMode = 99999;
+
+        this.boundTextures = new Array(this.MAX_TEXTURES);
     }
 
     /**
@@ -188,6 +185,7 @@ export default class SpriteRenderer extends ObjectRenderer
         }
 
         const gl = this.renderer.gl;
+        const MAX_TEXTURES = this.MAX_TEXTURES;
 
         const np2 = bitTwiddle.nextPow2(this.currentIndex);
         const log2 = bitTwiddle.log2(np2);
@@ -199,6 +197,10 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
+        const boundTextures = this.boundTextures;
+
+        const touch = this.renderer.textureGC.count;
+
         let index = 0;
         let nextTexture;
         let currentTexture;
@@ -206,11 +208,8 @@ export default class SpriteRenderer extends ObjectRenderer
         let textureCount = 0;
         let currentGroup = groups[0];
         let vertexData;
-        let tint;
         let uvs;
-        let textureId;
         let blendMode = sprites[0].blendMode;
-        let shader;
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -220,7 +219,14 @@ export default class SpriteRenderer extends ObjectRenderer
 
         let i;
 
-        for (i = 0; i < this.currentIndex; i++)
+        // copy textures..
+        for (i = 0; i < MAX_TEXTURES; ++i)
+        {
+            boundTextures[i] = this.renderer.boundTextures[i];
+            boundTextures[i]._virtalBoundId = i;
+        }
+
+        for (i = 0; i < this.currentIndex; ++i)
         {
             // upload the sprite elemetns...
             // they have all ready been calculated so we just need to push them into the buffer.
@@ -230,11 +236,12 @@ export default class SpriteRenderer extends ObjectRenderer
 
             if (blendMode !== sprite.blendMode)
             {
+                // finish a group..
                 blendMode = sprite.blendMode;
 
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = this.MAX_TEXTURES;
+                textureCount = MAX_TEXTURES;
                 TICK++;
             }
 
@@ -244,34 +251,56 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 if (nextTexture._enabled !== TICK)
                 {
-                    if (textureCount === this.MAX_TEXTURES)
+                    if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
 
-                        textureCount = 0;
-
                         currentGroup.size = i - currentGroup.start;
 
+                        textureCount = 0;
+
                         currentGroup = groups[groupCount++];
-                        currentGroup.textureCount = 0;
                         currentGroup.blend = blendMode;
+                        currentGroup.textureCount = 0;
                         currentGroup.start = i;
                     }
 
-                    nextTexture._enabled = TICK;
-                    nextTexture._id = textureCount;
+                    nextTexture.touched = touch;
 
-                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
-                    textureCount++;
+                    if (nextTexture._virtalBoundId === -1)
+                    {
+                        for (let j = 0; j < MAX_TEXTURES; ++j)
+                        {
+                            const tIndex = (j + TEXTURE_TICK) % MAX_TEXTURES;
+
+                            const t = boundTextures[tIndex];
+
+                            if (t._enabled !== TICK)
+                            {
+                                TEXTURE_TICK++;
+
+                                t._virtalBoundId = -1;
+
+                                nextTexture._virtalBoundId = tIndex;
+
+                                boundTextures[tIndex] = nextTexture;
+                                break;
+                            }
+                        }
+                    }
+
+                    nextTexture._enabled = TICK;
+
+                    currentGroup.textureCount++;
+                    currentGroup.ids[textureCount] = nextTexture._virtalBoundId;
+                    currentGroup.textures[textureCount++] = nextTexture;
                 }
             }
 
             vertexData = sprite.vertexData;
 
             // TODO this sum does not need to be set each frame..
-            tint = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
             uvs = sprite._texture._uvs.uvsUint32;
-            textureId = nextTexture._id;
 
             if (this.renderer.roundPixels)
             {
@@ -317,52 +346,54 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = tint;
-            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
+
+            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
             index += 20;
         }
 
         currentGroup.size = i - currentGroup.start;
 
-        this.vertexCount++;
-
+        // this is still needed for IOS performance..
+        // it realy doe not like uploading to  the same bufffer in a single frame!
         if (this.vaoMax <= this.vertexCount)
         {
             this.vaoMax++;
-            shader = this.shaders[1];
             this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+
             // build the vao object that will render..
             this.vaos[this.vertexCount] = this.renderer.createVao()
                 .addIndex(this.indexBuffer)
-                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-                .addAttribute(this.vertexBuffers[this.vertexCount], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
         }
 
-        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0);
-        this.vao = this.vaos[this.vertexCount].bind();
+        this.vaos[this.vertexCount].bind();
+        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
 
-        // / render the groups..
-        for (i = 0; i < groupCount; i++)
+        this.vertexCount++;
+
+        for (i = 0; i < MAX_TEXTURES; ++i)
+        {
+            this.renderer.boundTextures[i]._virtalBoundId = -1;
+        }
+
+        // render the groups..
+        for (i = 0; i < groupCount; ++i)
         {
             const group = groups[i];
             const groupTextureCount = group.textureCount;
 
-            shader = this.shaders[groupTextureCount - 1];
-
-            if (!shader)
-            {
-                shader = this.shaders[groupTextureCount - 1] = generateMultiTextureShader(gl, groupTextureCount);
-                // console.log("SHADER generated for " + textureCount + " textures")
-            }
-
-            this.renderer.bindShader(shader);
-
             for (let j = 0; j < groupTextureCount; j++)
             {
-                this.renderer.bindTexture(group.textures[j], j);
+                // reset virtual ids..
+                this.renderer.bindTexture(group.textures[j], group.ids[j]);
+
+                // reset the virtualId..
+                group.textures[j]._virtalBoundId = -1;
             }
 
             // set the blend mode..
@@ -377,12 +408,13 @@ export default class SpriteRenderer extends ObjectRenderer
 
     /**
      * Starts a new sprite batch.
-     *
      */
     start()
     {
         // this.renderer.bindShader(this.shader);
         // TICK %= 1000;
+        this.vao = this.vaos[0].bind();
+        this.renderer.bindShader(this.shader);
     }
 
     /**
@@ -428,7 +460,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         this.sprites = null;
 
-        for (let i = 0; i < this.buffers.length; i++)
+        for (let i = 0; i < this.buffers.length; ++i)
         {
             this.buffers[i].destroy();
         }
