@@ -946,7 +946,8 @@ export default class Graphics extends Container
                     const points = shape.points;
                     let x2 = 0;
                     let y2 = 0;
-                    let theta = 0;
+                    let dx = 0;
+                    let dy = 0;
                     let rw = 0;
                     let rh = 0;
                     let cx = 0;
@@ -958,18 +959,18 @@ export default class Graphics extends Container
                         y = points[j + 1];
                         x2 = points[j + 2];
                         y2 = points[j + 3];
+                        dx = Math.abs(x2 - x);
+                        dy = Math.abs(y2 - y);
                         h = lineWidth;
-                        w = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
+                        w = Math.sqrt((dx * dx) + (dy * dy));
 
-                        if (y2 - y === 0 && x2 - x === 0)
+                        if (w < 1e-9)
                         {
                             continue;
                         }
 
-                        theta = Math.atan2(y2 - y, x2 - x);
-
-                        rw = Math.abs((h * Math.sin(theta)) + (w * Math.cos(theta))) / 2;
-                        rh = Math.abs((w * Math.sin(theta)) + (h * Math.cos(theta))) / 2;
+                        rw = ((h / w * dy) + dx) / 2;
+                        rh = ((h / w * dx) + dy) / 2;
                         cx = (x2 + x) / 2;
                         cy = (y2 + y) / 2;
 
