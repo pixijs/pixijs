@@ -195,6 +195,18 @@ describe('PIXI.utils', function ()
                 .to.equal(32);
         });
 
+        it('should return a size object from an SVG string with inverted quotes', function ()
+        {
+            var svgSize = PIXI.utils.getSvgSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
+
+            expect(svgSize)
+                .to.be.an('object');
+            expect(svgSize.width)
+                .to.equal(64);
+            expect(svgSize.height)
+                .to.equal(32);
+        });
+
         it('should work with px values', function ()
         {
             var svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
