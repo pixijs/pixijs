@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.1.1",
+  "version": "4.1.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -9,7 +9,7 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
-  "main": "./bin/pixi.min.js",
+  "main": "./src/index.js",
   "homepage": "http://goodboydigital.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
