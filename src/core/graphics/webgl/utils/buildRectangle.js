@@ -58,10 +58,10 @@ export default function buildRectangle(graphicsData, webGLData)
         const tempPoints = graphicsData.points;
 
         graphicsData.points = [x, y,
-                  x + width, y,
-                  x + width, y + height,
-                  x, y + height,
-                  x, y];
+            x + width, y,
+            x + width, y + height,
+            x, y + height,
+            x, y];
 
         buildLine(graphicsData, webGLData);
 

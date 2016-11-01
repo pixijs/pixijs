@@ -38,7 +38,7 @@ function extractUniformsFromString(string)
             if (name.indexOf('[') > -1)
             {
                 // array!
-                nameSplit = name.split(/\[|\]/);
+                nameSplit = name.split(/\[|]/);
                 name = nameSplit[0];
                 size *= Number(nameSplit[1]);
             }
