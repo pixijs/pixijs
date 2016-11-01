@@ -51,7 +51,7 @@ describe('getBounds', function ()
         expect(bounds.width).to.equal(0);
         expect(bounds.height).to.equal(0);
 
-        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10, 10);// texture);
+        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
 
         parent.addChild(graphics);
 
@@ -87,7 +87,7 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
         parent.addChild(container);
 
@@ -116,9 +116,9 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container(); // Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10); // texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
 
         const texture = PIXI.RenderTexture.create(10, 10);
         const sprite = new PIXI.Sprite(texture);
@@ -161,9 +161,9 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
         parent.addChild(container);
         container.addChild(graphics);
@@ -221,9 +221,9 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);// texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);
 
         const texture = PIXI.RenderTexture.create(10, 10);
         const sprite = new PIXI.Sprite(texture);
@@ -268,7 +268,7 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container(); // Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
         const texture = PIXI.RenderTexture.create(10, 10);
         const sprite = new PIXI.Sprite(texture);
@@ -292,9 +292,9 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
         const texture = PIXI.RenderTexture.create(10, 10);
         const sprite = new PIXI.Sprite(texture);
@@ -329,9 +329,9 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);// texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
         container.addChild(graphics);
 
@@ -354,7 +354,7 @@ describe('getBounds', function ()
     {
         const parent = new PIXI.Container();
 
-        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();
 
         const text = new PIXI.Text('i am some text');
 
