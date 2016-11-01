@@ -221,6 +221,7 @@ export default class CanvasRenderer extends SystemRenderer
             return;
         }
 
+        this._activeBlendMode = blendMode;
         this.context.globalCompositeOperation = this.blendModes[blendMode];
     }
 
