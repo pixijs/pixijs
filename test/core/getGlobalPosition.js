@@ -4,9 +4,9 @@ describe('getGlobalPosition', function ()
 {
     it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var container = new PIXI.Container();
+        const container = new PIXI.Container();
 
         parent.addChild(container);
 
@@ -16,9 +16,7 @@ describe('getGlobalPosition', function ()
         container.position.set(10, -30);
         container.pivot.set(1000, 1000);
 
-        var globalPoint;
-
-        globalPoint = container.getGlobalPosition(globalPoint, false);
+        let globalPoint = container.getGlobalPosition();
 
         expect(globalPoint.x).to.equal(80);
         expect(globalPoint.y).to.equal(160);

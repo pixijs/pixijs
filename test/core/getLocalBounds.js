@@ -4,16 +4,14 @@ describe('getLocalBounds', function ()
 {
     it('should register correct local-bounds with a LOADED Sprite', function ()
     {
-        var parent = new PIXI.Container();
-        var texture = PIXI.RenderTexture.create(10, 10);
+        const parent = new PIXI.Container();
+        const texture = PIXI.RenderTexture.create(10, 10);
 
-        var sprite = new PIXI.Sprite(texture);
+        const sprite = new PIXI.Sprite(texture);
 
         parent.addChild(sprite);
 
-        var bounds;
-
-        bounds = sprite.getLocalBounds();
+        let bounds = sprite.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
@@ -36,9 +34,9 @@ describe('getLocalBounds', function ()
 
     it('should register correct local-bounds with Graphics', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var graphics = new PIXI.Graphics();
+        const graphics = new PIXI.Graphics();
 
         graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);// texture);
 
@@ -46,7 +44,7 @@ describe('getLocalBounds', function ()
 
         parent.addChild(graphics);
 
-        var bounds = graphics.getLocalBounds();
+        const bounds = graphics.getLocalBounds();
 
         expect(bounds.x).to.equal(-10);
         expect(bounds.y).to.equal(-10);
@@ -56,13 +54,13 @@ describe('getLocalBounds', function ()
 
     it('should register correct local-bounds with an empty Container', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
         parent.addChild(container);
 
-        var bounds = container.getLocalBounds();
+        const bounds = container.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
@@ -72,11 +70,11 @@ describe('getLocalBounds', function ()
 
     it('should register correct local-bounds with an item that has already had its parent Container transformed', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
+        const container = new PIXI.Container();// Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10, 10);//texture);
 
-        var graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
+        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);// texture);
 
         parent.addChild(container);
         container.addChild(graphics);
@@ -84,7 +82,7 @@ describe('getLocalBounds', function ()
         container.position.x = 100;
         container.position.y = 100;
 
-        var bounds = container.getLocalBounds();
+        const bounds = container.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
@@ -94,18 +92,18 @@ describe('getLocalBounds', function ()
 
     it('should register correct local-bounds with a Mesh', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var texture = PIXI.RenderTexture.create(10, 10);
+        const texture = PIXI.RenderTexture.create(10, 10);
 
-        var plane = new PIXI.mesh.Plane(texture);
+        const plane = new PIXI.mesh.Plane(texture);
 
         parent.addChild(plane);
 
         plane.position.x = 20;
         plane.position.y = 20;
 
-        var bounds = plane.getLocalBounds();
+        const bounds = plane.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
@@ -115,9 +113,9 @@ describe('getLocalBounds', function ()
 
     it('should register correct local-bounds with a cachAsBitmap item inside after a render', function ()
     {
-        var parent = new PIXI.Container();
+        const parent = new PIXI.Container();
 
-        var graphic = new PIXI.Graphics();
+        const graphic = new PIXI.Graphics();
 
         graphic.beginFill(0xffffff);
         graphic.drawRect(0, 0, 100, 100);
@@ -126,12 +124,12 @@ describe('getLocalBounds', function ()
 
         parent.addChild(graphic);
 
-        var renderer = new PIXI.CanvasRenderer(100, 100);
+        const renderer = new PIXI.CanvasRenderer(100, 100);
 
-        renderer.sayHello = function () { /* empty */ };
+        renderer.sayHello = () => { /* empty */ };
         renderer.render(parent);
 
-        var bounds = parent.getLocalBounds();
+        const bounds = parent.getLocalBounds();
 
         expect(bounds.x).to.equal(0);
         expect(bounds.y).to.equal(0);
