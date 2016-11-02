@@ -1,7 +1,7 @@
 import Ticker from './Ticker';
 
 /**
- * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
+ * The shared ticker instance used by {@link PIXI.extras.AnimatedSprite}.
  * and by {@link PIXI.interaction.InteractionManager}.
  * The property {@link PIXI.ticker.Ticker#autoStart} is set to `true`
  * for this instance. Please follow the examples for usage, including

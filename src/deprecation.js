@@ -177,9 +177,9 @@ Object.defineProperties(core, {
         enumerable: true,
         get()
         {
-            warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
+            warn('The MovieClip class has been moved to extras.AnimatedSprite, please use extras.AnimatedSprite.');
 
-            return extras.MovieClip;
+            return extras.AnimatedSprite;
         },
     },
 
@@ -344,6 +344,26 @@ Object.defineProperties(core, {
             warn('TransformManual has been renamed to TransformBase, please update your pixi-spine');
 
             return core.TransformBase;
+        },
+    },
+});
+
+Object.defineProperties(extras, {
+
+    /**
+     * @class
+     * @name MovieClip
+     * @memberof PIXI.extras
+     * @see PIXI.extras.AnimatedSprite
+     * @deprecated since version 4.2.0
+     */
+    MovieClip: {
+        enumerable: true,
+        get()
+        {
+            warn('The MovieClip class has been renamed to AnimatedSprite, please use AnimatedSprite from now on.');
+
+            return extras.AnimatedSprite;
         },
     },
 });
