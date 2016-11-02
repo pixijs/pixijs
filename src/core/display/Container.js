@@ -45,7 +45,7 @@ export default class Container extends DisplayObject
     /**
      * Adds a child or multiple children to the container.
      *
-     * Multple items can be added like so: `myContainer.addChild(thinkOne, thingTwo, thingThree)`
+     * Multple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
      *
      * @param {...PIXI.DisplayObject} child - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
