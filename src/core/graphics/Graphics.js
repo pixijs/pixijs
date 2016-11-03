@@ -480,7 +480,7 @@ export default class Graphics extends Container
             startAngle += Math.PI * 2;
         }
 
-        const sweep = anticlockwise ? (startAngle - endAngle) : (endAngle - startAngle);
+        const sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
         const segs = Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
         if (sweep === 0)
