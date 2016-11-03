@@ -3,6 +3,7 @@ import * as mesh from './mesh';
 import * as particles from './particles';
 import * as extras from './extras';
 import * as filters from './filters';
+import * as prepare from './prepare';
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -640,5 +641,51 @@ Object.defineProperty(core.utils, '_saidHello', {
     get()
     {
         return saidHello;
+    },
+});
+
+/**
+ * The number of graphics or textures to upload to the GPU.
+ *
+ * @name PIXI.prepare.canvas.UPLOADS_PER_FRAME
+ * @static
+ * @type {number}
+ * @see PIXI.prepare.BasePrepare.limiter
+ * @deprecated since 4.2.0
+ */
+Object.defineProperty(prepare.canvas, 'UPLOADS_PER_FRAME', {
+    set()
+    {
+        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please set '
+            + 'renderer.plugins.prepare.limiter.maxItemsPerFrame on your renderer');
+        // because we don't have a reference to the renderer, we can't actually set
+        // the uploads per frame, so we'll have to stick with the warning.
+    },
+    get()
+    {
+        return 4;
+    },
+});
+
+/**
+ * The number of graphics or textures to upload to the GPU.
+ *
+ * @name PIXI.prepare.webgl.UPLOADS_PER_FRAME
+ * @static
+ * @type {number}
+ * @see PIXI.prepare.BasePrepare.limiter
+ * @deprecated since 4.2.0
+ */
+Object.defineProperty(prepare.webgl, 'UPLOADS_PER_FRAME', {
+    set()
+    {
+        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please set '
+            + 'renderer.plugins.prepare.limiter.maxItemsPerFrame on your renderer');
+        // because we don't have a reference to the renderer, we can't actually set
+        // the uploads per frame, so we'll have to stick with the warning.
+    },
+    get()
+    {
+        return 4;
     },
 });
