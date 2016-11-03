@@ -8,7 +8,7 @@ import * as core from '../core';
  */
 
 /**
- * A AnimatedSprite is a simple way to display an animation depicted by a list of textures.
+ * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
  * let alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
@@ -58,7 +58,7 @@ export default class AnimatedSprite extends core.Sprite
         this.animationSpeed = 1;
 
         /**
-         * Whether or not the movie clip repeats after playing.
+         * Whether or not the animate sprite repeats after playing.
          *
          * @member {boolean}
          * @default true
@@ -261,7 +261,7 @@ export default class AnimatedSprite extends core.Sprite
      *
      * @static
      * @param {string[]} frames - The array of frames ids the movieclip will use as its texture frames
-     * @return {AnimatedSprite} The new movie clip with the specified frames.
+     * @return {AnimatedSprite} The new animated sprite with the specified frames.
      */
     static fromFrames(frames)
     {
@@ -280,7 +280,7 @@ export default class AnimatedSprite extends core.Sprite
      *
      * @static
      * @param {string[]} images - the array of image urls the movieclip will use as its texture frames
-     * @return {AnimatedSprite} The new movie clip with the specified images as frames.
+     * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
      */
     static fromImages(images)
     {
