@@ -646,7 +646,7 @@ export default class DisplayObject extends EventEmitter
      * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
      * To remove filters simply set this property to 'null'
      *
-     * @member {PIXI.AbstractFilter[]}
+     * @member {PIXI.Filter[]}
      * @memberof PIXI.DisplayObject#
      */
     get filters()
