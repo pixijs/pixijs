@@ -39,7 +39,7 @@ export default class BasePrepare
          * @type {PIXI.prepare.CanvasPrepare|PIXI.WebGLRenderer}
          * @protected
          */
-        this.uploadHookSource = null;
+        this.uploadHookHelper = null;
 
         /**
          * Collection of items to uploads at once.
@@ -136,7 +136,7 @@ export default class BasePrepare
 
             for (let i = 0, len = this.uploadHooks.length; i < len; i++)
             {
-                if (this.uploadHooks[i](this.uploadHookSource, item))
+                if (this.uploadHooks[i](this.uploadHookHelper, item))
                 {
                     this.queue.shift();
                     uploaded = true;
@@ -239,7 +239,7 @@ export default class BasePrepare
         this.completes = null;
         this.queue = null;
         this.limiter = null;
-        this.uploadHookSource = null;
+        this.uploadHookHelper = null;
     }
 
 }

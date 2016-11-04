@@ -21,7 +21,7 @@ export default class CanvasPrepare extends BasePrepare
     {
         super(renderer);
 
-        this.uploadHookSource = this;
+        this.uploadHookHelper = this;
 
         /**
         * An offline canvas to render textures to
