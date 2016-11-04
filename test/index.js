@@ -14,4 +14,5 @@ describe('PIXI', function ()
     require('./core');
     require('./interaction');
     require('./renders');
+    require('./prepare');
 });
