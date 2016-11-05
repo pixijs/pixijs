@@ -86,7 +86,7 @@ export default class Sprite extends Container
         /**
          * The shader that will be used to render the sprite. Set to null to remove a current shader.
          *
-         * @member {PIXI.AbstractFilter|PIXI.Shader}
+         * @member {PIXI.Filter|PIXI.Shader}
          */
         this.shader = null;
 
