@@ -37,9 +37,19 @@ function uploadBaseTextures(renderer, item)
 {
     if (item instanceof core.BaseTexture)
     {
-        renderer.textureManager.updateTexture(item);
+        // if the texture already has a GL texture, then the texture has been prepared or rendered
+        // before now. If the texture changed, then the changer should be calling texture.update() which
+        // reuploads the texture without need for preparing it again
+        if (!item._glTextures[renderer.CONTEXT_UID])
+        {
+            renderer.textureManager.updateTexture(item);
 
-        return true;
+            return true;
+        }
+        // return false here - if it was already prepared it shouldn't count against the maximum
+        // number of uploads per frame
+
+        return false;
     }
 
     return false;
@@ -57,9 +67,18 @@ function uploadGraphics(renderer, item)
 {
     if (item instanceof core.Graphics)
     {
-        renderer.plugins.graphics.updateGraphics(item);
+        // if the item is not dirty and already has webgl data, then it got prepared or rendered
+        // before now and we shouldn't waste time updating it again
+        if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID])
+        {
+            renderer.plugins.graphics.updateGraphics(item);
 
-        return true;
+            return true;
+        }
+        // return false here - if it was already prepared it shouldn't count against the maximum
+        // number of uploads per frame
+
+        return false;
     }
 
     return false;
