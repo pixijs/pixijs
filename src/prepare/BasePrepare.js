@@ -75,6 +75,21 @@ export default class BasePrepare
          * @private
          */
         this.ticking = false;
+
+        /**
+         * 'bound' call for prepareItems().
+         * @type {Function}
+         * @private
+         */
+        this.delayedTick = () =>
+        {
+            // unlikely, but in case we were destroyed between tick() and delayedTick()
+            if (!this.queue)
+            {
+                return;
+            }
+            this.prepareItems();
+        };
     }
 
     /**
@@ -111,7 +126,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.add(this.tick, this);
+                SharedTicker.addOnce(this.tick, this);
             }
         }
         else if (done)
@@ -126,6 +141,17 @@ export default class BasePrepare
      * @private
      */
     tick()
+    {
+        setTimeout(this.delayedTick, 0);
+    }
+
+    /**
+     * Actually prepare items. This is handled outside of the tick because it will take a while
+     * and we do NOT want to block the current animation frame from rendering.
+     *
+     * @private
+     */
+    prepareItems()
     {
         this.limiter.beginFrame();
         // Upload the graphics
@@ -155,8 +181,6 @@ export default class BasePrepare
         {
             this.ticking = false;
 
-            SharedTicker.remove(this.tick, this);
-
             const completes = this.completes.slice(0);
 
             this.completes.length = 0;
@@ -165,6 +189,11 @@ export default class BasePrepare
             {
                 completes[i]();
             }
+        }
+        else
+        {
+            // if we are not finished, on the next rAF do this again
+            SharedTicker.addOnce(this.tick, this);
         }
     }
 

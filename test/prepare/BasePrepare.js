@@ -63,7 +63,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
         expect(prep.queue).to.contain(uploadItem);
 
-        prep.tick();
+        prep.prepareItems();
 
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.calledOnce).to.be.true;
@@ -111,7 +111,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
         expect(prep.queue).to.have.lengthOf(1);
 
-        prep.tick();
+        prep.prepareItems();
 
         expect(prep.queue).to.be.empty;
         expect(addHook.calledOnce).to.be.true;
