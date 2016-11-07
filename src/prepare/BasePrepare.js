@@ -90,6 +90,9 @@ export default class BasePrepare
             }
             this.prepareItems();
         };
+
+        this.register(findText, drawText);
+        this.register(findTextStyle, calculateTextStyle);
     }
 
     /**
@@ -271,4 +274,114 @@ export default class BasePrepare
         this.uploadHookHelper = null;
     }
 
+}
+
+/**
+ * Built-in hook to draw PIXI.Text to its texture.
+ *
+ * @private
+ * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+function drawText(helper, item)
+{
+    if (item instanceof core.Text)
+    {
+        // updating text will return early if it is not dirty, but we won't know
+        // so a non-dirty Text will count against the max number of items per frame.
+        item.updateText(true);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to calculate a text style for a PIXI.Text object.
+ *
+ * @private
+ * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+function calculateTextStyle(helper, item)
+{
+    if (item instanceof core.TextStyle)
+    {
+        const font = core.Text.getFontStyle(item);
+
+        if (!core.Text.fontPropertiesCache[font])
+        {
+            core.Text.calculateTextStyle(font);
+
+            return true;
+        }
+        // return false here - if it was already prepared it shouldn't count against the maximum
+        // number of uploads per frame
+
+        return false;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find Text objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Text object was found.
+ */
+function findText(item, queue)
+{
+    if (item instanceof core.Text)
+    {
+        // push the text style to prepare it - this can be really expensive
+        if (queue.indexOf(item.style) === -1)
+        {
+            queue.push(item.style);
+        }
+        // also push the text object so that we can render it (to canvas/texture) if needed
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+        // also push the Text's texture for upload to GPU
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find TextStyle objects.
+ *
+ * @private
+ * @param {PIXI.TextStyle} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.TextStyle object was found.
+ */
+function findTextStyle(item, queue)
+{
+    if (item instanceof core.TextStyle)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+
+        return true;
+    }
+
+    return false;
 }

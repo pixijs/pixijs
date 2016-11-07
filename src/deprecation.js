@@ -451,6 +451,19 @@ core.Text.prototype.setStyle = function setStyle(style)
     warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
 
+/**
+ * @method
+ * @name PIXI.Text#determineFontProperties
+ * @see PIXI.Text#calculateFontProperties
+ * @private
+ * @param {string} fontStyle - String representing the style of the font
+ * @return {Object} Font properties object
+ */
+core.Text.prototype.determineFontProperties = function determineFontProperties(fontStyle)
+{
+    return Text.calculateFontProperties(fontStyle);
+};
+
 Object.defineProperties(core.TextStyle.prototype, {
     /**
      * Set all properties of a font as a single string

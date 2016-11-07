@@ -10,8 +10,8 @@ describe('PIXI.prepare.BasePrepare', function ()
         expect(prep.renderer).to.equal(renderer);
         expect(prep.uploadHookHelper).to.be.null;
         expect(prep.queue).to.be.empty;
-        expect(prep.addHooks).to.be.empty;
-        expect(prep.uploadHooks).to.be.empty;
+        expect(prep.addHooks).to.have.lengthOf(2);
+        expect(prep.uploadHooks).to.have.lengthOf(2);
         expect(prep.completes).to.be.empty;
 
         prep.destroy();
@@ -26,9 +26,9 @@ describe('PIXI.prepare.BasePrepare', function ()
         prep.register(addHook, uploadHook);
 
         expect(prep.addHooks).to.contain(addHook);
-        expect(prep.addHooks).to.have.lengthOf(1);
+        expect(prep.addHooks).to.have.lengthOf(3);
         expect(prep.uploadHooks).to.contain(uploadHook);
-        expect(prep.uploadHooks).to.have.lengthOf(1);
+        expect(prep.uploadHooks).to.have.lengthOf(3);
 
         prep.destroy();
     });
