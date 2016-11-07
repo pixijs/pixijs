@@ -314,7 +314,7 @@ function calculateTextStyle(helper, item)
 
         if (!core.Text.fontPropertiesCache[font])
         {
-            core.Text.calculateTextStyle(font);
+            core.Text.calculateFontProperties(font);
 
             return true;
         }
