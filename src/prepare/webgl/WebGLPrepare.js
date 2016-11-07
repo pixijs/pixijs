@@ -43,13 +43,9 @@ function uploadBaseTextures(renderer, item)
         if (!item._glTextures[renderer.CONTEXT_UID])
         {
             renderer.textureManager.updateTexture(item);
-
-            return true;
         }
-        // return false here - if it was already prepared it shouldn't count against the maximum
-        // number of uploads per frame
 
-        return false;
+        return true;
     }
 
     return false;
@@ -72,13 +68,9 @@ function uploadGraphics(renderer, item)
         if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID])
         {
             renderer.plugins.graphics.updateGraphics(item);
-
-            return true;
         }
-        // return false here - if it was already prepared it shouldn't count against the maximum
-        // number of uploads per frame
 
-        return false;
+        return true;
     }
 
     return false;

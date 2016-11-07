@@ -288,8 +288,7 @@ function drawText(helper, item)
 {
     if (item instanceof core.Text)
     {
-        // updating text will return early if it is not dirty, but we won't know
-        // so a non-dirty Text will count against the max number of items per frame.
+        // updating text will return early if it is not dirty
         item.updateText(true);
 
         return true;
@@ -315,13 +314,9 @@ function calculateTextStyle(helper, item)
         if (!core.Text.fontPropertiesCache[font])
         {
             core.Text.calculateFontProperties(font);
-
-            return true;
         }
-        // return false here - if it was already prepared it shouldn't count against the maximum
-        // number of uploads per frame
 
-        return false;
+        return true;
     }
 
     return false;
