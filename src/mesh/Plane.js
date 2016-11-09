@@ -63,17 +63,24 @@ export default class Plane extends Mesh
 
         for (let i = 0; i < total; i++)
         {
-            const x = (i % this.verticesX);
-            const y = ((i / this.verticesX) | 0);
+            if (texture._uvs)
+            {
+                const x = (i % this.verticesX);
+                const y = ((i / this.verticesX) | 0);
 
-            verts.push((x * sizeX),
-                       (y * sizeY));
+                verts.push((x * sizeX),
+                           (y * sizeY));
 
-            // this works for rectangular textures.
-            uvs.push(
-                texture._uvs.x0 + ((texture._uvs.x1 - texture._uvs.x0) * (x / (this.verticesX - 1))),
-                texture._uvs.y0 + ((texture._uvs.y3 - texture._uvs.y0) * (y / (this.verticesY - 1)))
-            );
+                // this works for rectangular textures.
+                uvs.push(
+                    texture._uvs.x0 + ((texture._uvs.x1 - texture._uvs.x0) * (x / (this.verticesX - 1))),
+                    texture._uvs.y0 + ((texture._uvs.y3 - texture._uvs.y0) * (y / (this.verticesY - 1)))
+                );
+            }
+            else
+            {
+                uvs.push(0);
+            }
         }
 
         //  cons

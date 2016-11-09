@@ -11,6 +11,7 @@ require('./toGlobal');
 require('./toLocal');
 require('./getGlobalPosition');
 require('./util');
+require('./Plane');
 require('./Point');
 require('./ObservablePoint');
 require('./Matrix');
