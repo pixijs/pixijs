@@ -90,7 +90,8 @@ export default class MeshRenderer extends core.ObjectRenderer {
         glData.vertexBuffer.upload();
 
         renderer.bindShader(glData.shader);
-        renderer.bindTexture(texture, 0);
+
+        glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
         renderer.state.setBlendMode(mesh.blendMode);
 
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);

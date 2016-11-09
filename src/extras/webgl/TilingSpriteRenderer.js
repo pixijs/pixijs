@@ -127,6 +127,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
             shader.uniforms.uClampFrame = uv.uClampFrame;
             shader.uniforms.uClampOffset = uv.uClampOffset;
         }
+
         shader.uniforms.uTransform = tempMat.toArray(true);
 
         const color = tempArray;
@@ -136,7 +137,8 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
-        renderer.bindTexture(tex);
+        shader.uniforms.uSampler = renderer.bindTexture(tex);
+
         renderer.setBlendMode(ts.blendMode);
 
         quad.draw();

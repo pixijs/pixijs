@@ -198,6 +198,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const uint32View = buffer.uint32View;
 
         const boundTextures = this.boundTextures;
+        const rendererBoundTextures = this.renderer.boundTextures;
 
         const touch = this.renderer.textureGC.count;
 
@@ -222,7 +223,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // copy textures..
         for (i = 0; i < MAX_TEXTURES; ++i)
         {
-            boundTextures[i] = this.renderer.boundTextures[i];
+            boundTextures[i] = rendererBoundTextures[i];
             boundTextures[i]._virtalBoundId = i;
         }
 
@@ -378,7 +379,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         for (i = 0; i < MAX_TEXTURES; ++i)
         {
-            this.renderer.boundTextures[i]._virtalBoundId = -1;
+            rendererBoundTextures[i]._virtalBoundId = -1;
         }
 
         // render the groups..
@@ -389,11 +390,17 @@ export default class SpriteRenderer extends ObjectRenderer
 
             for (let j = 0; j < groupTextureCount; j++)
             {
+                currentTexture = group.textures[j];
+
                 // reset virtual ids..
-                this.renderer.bindTexture(group.textures[j], group.ids[j]);
+                // lets do a quick check..
+                if (rendererBoundTextures[group.ids[j]] !== currentTexture)
+                {
+                    this.renderer.bindTexture(currentTexture, group.ids[j], true);
+                }
 
                 // reset the virtualId..
-                group.textures[j]._virtalBoundId = -1;
+                currentTexture._virtalBoundId = -1;
             }
 
             // set the blend mode..
