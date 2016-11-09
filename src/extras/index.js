@@ -7,6 +7,7 @@ export { default as TilingSprite } from './TilingSprite';
 export { default as TilingSpriteRenderer } from './webgl/TilingSpriteRenderer';
 export { default as BitmapText } from './BitmapText';
 
-export { default as cacheAsBitmap } from './cacheAsBitmap';
-export { default as getChildByName } from './getChildByName';
-export { default as getGlobalPosition } from './getGlobalPosition';
+// imported for side effect of extending the prototype only, contains no exports
+import './cacheAsBitmap';
+import './getChildByName';
+import './getGlobalPosition';
