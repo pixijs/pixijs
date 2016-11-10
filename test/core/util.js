@@ -310,4 +310,25 @@ describe('PIXI.utils', function ()
             expect(arr).to.be.deep.equal(res);
         });
     });
+
+    describe('EventEmitter', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.EventEmitter).to.be.a('function');
+        });
+    });
+
+    describe('isMobile', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.isMobile).to.be.an('object');
+        });
+
+        it('should return a boolean for .any', function ()
+        {
+            expect(PIXI.utils.isMobile.any).to.be.a('boolean');
+        });
+    });
 });

@@ -1,6 +1,7 @@
 import { RETINA_PREFIX, DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
+import * as isMobile from 'ismobilejs';
 
 let nextUid = 0;
 let saidHello = false;
@@ -8,7 +9,27 @@ let saidHello = false;
 /**
  * @namespace PIXI.utils
  */
-export { EventEmitter, pluginTarget };
+export {
+    /**
+     * @see {@link https://github.com/kaimallea/isMobile}
+     *
+     * @memberof PIXI.utils
+     * @type {Object}
+     */
+    isMobile,
+    /**
+     * @see {@link https://github.com/primus/eventemitter3}
+     *
+     * @memberof PIXI.utils
+     * @type {EventEmitter}
+     */
+    EventEmitter,
+    /**
+     * @memberof PIXI.utils
+     * @type {mixin}
+     */
+    pluginTarget,
+};
 
 /**
  * Gets the next unique identifier
