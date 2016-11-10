@@ -3,6 +3,7 @@ import * as mesh from './mesh';
 import * as particles from './particles';
 import * as extras from './extras';
 import * as filters from './filters';
+import * as prepare from './prepare';
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -470,6 +471,23 @@ core.Text.prototype.setStyle = function setStyle(style)
     warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
 
+/**
+ * @method
+ * @name PIXI.Text#determineFontProperties
+ * @see PIXI.Text#calculateFontProperties
+ * @deprecated since version 4.2.0
+ * @private
+ * @param {string} fontStyle - String representing the style of the font
+ * @return {Object} Font properties object
+ */
+core.Text.prototype.determineFontProperties = function determineFontProperties(fontStyle)
+{
+    warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
+        + 'e.g : Text.calculateFontProperties(fontStyle);');
+
+    return Text.calculateFontProperties(fontStyle);
+};
+
 Object.defineProperties(core.TextStyle.prototype, {
     /**
      * Set all properties of a font as a single string
@@ -660,5 +678,57 @@ Object.defineProperty(core.utils, '_saidHello', {
     get()
     {
         return saidHello;
+    },
+});
+
+/**
+ * The number of graphics or textures to upload to the GPU.
+ *
+ * @name PIXI.prepare.canvas.UPLOADS_PER_FRAME
+ * @static
+ * @type {number}
+ * @see PIXI.prepare.BasePrepare.limiter
+ * @deprecated since 4.2.0
+ */
+Object.defineProperty(prepare.canvas, 'UPLOADS_PER_FRAME', {
+    set()
+    {
+        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please set '
+            + 'renderer.plugins.prepare.limiter.maxItemsPerFrame on your renderer');
+        // because we don't have a reference to the renderer, we can't actually set
+        // the uploads per frame, so we'll have to stick with the warning.
+    },
+    get()
+    {
+        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please use '
+            + 'renderer.plugins.prepare.limiter');
+
+        return NaN;
+    },
+});
+
+/**
+ * The number of graphics or textures to upload to the GPU.
+ *
+ * @name PIXI.prepare.webgl.UPLOADS_PER_FRAME
+ * @static
+ * @type {number}
+ * @see PIXI.prepare.BasePrepare.limiter
+ * @deprecated since 4.2.0
+ */
+Object.defineProperty(prepare.webgl, 'UPLOADS_PER_FRAME', {
+    set()
+    {
+        warn('PIXI.WebGLPrepare.UPLOADS_PER_FRAME has been removed. Please set '
+            + 'renderer.plugins.prepare.limiter.maxItemsPerFrame on your renderer');
+        // because we don't have a reference to the renderer, we can't actually set
+        // the uploads per frame, so we'll have to stick with the warning.
+    },
+    get()
+    {
+        warn('PIXI.WebGLPrepare.UPLOADS_PER_FRAME has been removed. Please use '
+            + 'renderer.plugins.prepare.limiter');
+
+        return NaN;
     },
 });
