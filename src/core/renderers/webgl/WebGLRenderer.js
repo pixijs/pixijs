@@ -5,6 +5,7 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import ShaderManager from './ShaderManager';
 import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
 import WebGLState from './WebGLState';
@@ -97,6 +98,7 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.StencilManager}
          */
         this.stencilManager = new StencilManager(this);
+
 
         /**
          * An empty renderer.
@@ -199,6 +201,8 @@ export default class WebGLRenderer extends SystemRenderer
         // create a texture manager...
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
+
+        this.shaderManager = new ShaderManager(this);
 
         this.state.resetToDefault();
 
@@ -433,6 +437,11 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         return this;
+    }
+
+    bindShader(shader)
+    {
+        this.shaderManager.bindShader(shader);
     }
 
     /**
