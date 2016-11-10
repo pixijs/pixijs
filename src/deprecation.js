@@ -455,12 +455,16 @@ core.Text.prototype.setStyle = function setStyle(style)
  * @method
  * @name PIXI.Text#determineFontProperties
  * @see PIXI.Text#calculateFontProperties
+ * @deprecated since version 4.2.0
  * @private
  * @param {string} fontStyle - String representing the style of the font
  * @return {Object} Font properties object
  */
 core.Text.prototype.determineFontProperties = function determineFontProperties(fontStyle)
 {
+    warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
+        + 'e.g : Text.calculateFontProperties(fontStyle);');
+
     return Text.calculateFontProperties(fontStyle);
 };
 
@@ -676,7 +680,10 @@ Object.defineProperty(prepare.canvas, 'UPLOADS_PER_FRAME', {
     },
     get()
     {
-        return 4;
+        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please use '
+            + 'renderer.plugins.prepare.limiter');
+
+        return NaN;
     },
 });
 
@@ -692,13 +699,16 @@ Object.defineProperty(prepare.canvas, 'UPLOADS_PER_FRAME', {
 Object.defineProperty(prepare.webgl, 'UPLOADS_PER_FRAME', {
     set()
     {
-        warn('PIXI.CanvasPrepare.UPLOADS_PER_FRAME has been removed. Please set '
+        warn('PIXI.WebGLPrepare.UPLOADS_PER_FRAME has been removed. Please set '
             + 'renderer.plugins.prepare.limiter.maxItemsPerFrame on your renderer');
         // because we don't have a reference to the renderer, we can't actually set
         // the uploads per frame, so we'll have to stick with the warning.
     },
     get()
     {
-        return 4;
+        warn('PIXI.WebGLPrepare.UPLOADS_PER_FRAME has been removed. Please use '
+            + 'renderer.plugins.prepare.limiter');
+
+        return NaN;
     },
 });
