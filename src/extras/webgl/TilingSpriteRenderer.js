@@ -1,5 +1,6 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
+import { GLShader } from 'pixi-gl-core';
 
 const glslify = require('glslify'); // eslint-disable-line no-undef
 
@@ -34,12 +35,14 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
     {
         const gl = this.renderer.gl;
 
-        this.shader = new core.Shader(gl,
+        this.shader = new GLShader(gl,
             glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite.frag'));
-        this.simpleShader = new core.Shader(gl,
+            glslify('./tilingSprite.frag'),
+            core.PRECISION.DEFAULT);
+        this.simpleShader = new GLShader(gl,
             glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite_simple.frag'));
+            glslify('./tilingSprite_simple.frag'),
+            core.PRECISION.DEFAULT);
 
         this.renderer.bindVao(null);
         this.quad = new core.Quad(gl, this.renderer.state.attribState);

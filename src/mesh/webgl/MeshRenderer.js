@@ -30,9 +30,10 @@ export default class MeshRenderer extends core.ObjectRenderer {
     {
         const gl = this.renderer.gl;
 
-        this.shader = new core.Shader(gl,
+        this.shader = new glCore.GLShader(gl,
             glslify('./mesh.vert'),
-            glslify('./mesh.frag'));
+            glslify('./mesh.frag'),
+            core.PRECISION.DEFAULT);
     }
 
     /**

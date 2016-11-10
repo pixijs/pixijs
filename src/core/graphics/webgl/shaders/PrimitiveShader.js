@@ -1,4 +1,5 @@
-import Shader from '../../../Shader';
+import { GLShader } from 'pixi-gl-core';
+import { PRECISION } from '../../../const';
 
 /**
  * This shader is used to draw simple primitive shapes for {@link PIXI.Graphics}.
@@ -7,7 +8,7 @@ import Shader from '../../../Shader';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export default class PrimitiveShader extends Shader
+export default class PrimitiveShader extends GLShader
 {
     /**
      * @param {WebGLRenderingContext} gl - The webgl shader manager this shader works for.
@@ -40,7 +41,8 @@ export default class PrimitiveShader extends Shader
                 'void main(void){',
                 '   gl_FragColor = vColor;',
                 '}',
-            ].join('\n')
+            ].join('\n'),
+            PRECISION.DEFAULT
         );
     }
 }

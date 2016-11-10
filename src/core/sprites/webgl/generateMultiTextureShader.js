@@ -1,4 +1,6 @@
-import Shader from '../../Shader';
+import { GLShader } from 'pixi-gl-core';
+import { PRECISION } from '../../const';
+
 const glslify = require('glslify'); // eslint-disable-line no-undef
 
 const fragTemplate = [
@@ -23,7 +25,7 @@ export default function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    const shader = new Shader(gl, vertexSrc, fragmentSrc);
+    const shader = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
 
     const sampleValues = [];
 

@@ -2,7 +2,8 @@ import WebGLManager from './WebGLManager';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
 import { Rectangle } from '../../../math';
-import Shader from '../../../Shader';
+import { GLShader } from 'pixi-gl-core';
+import { PRECISION } from '../../../const';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
@@ -220,14 +221,15 @@ export default class FilterManager extends WebGLManager
 
                 if (!shader)
                 {
-                    shader = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+                    shader = new GLShader(this.gl, filter.vertexSrc, filter.fragmentSrc, PRECISION.DEFAULT);
 
                     filter.glShaders[renderer.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = shader;
                 }
             }
             else
             {
-                shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
+                shader = new GLShader(this.gl, filter.vertexSrc, filter.fragmentSrc, PRECISION.DEFAULT);
+                filter.glShaders[renderer.CONTEXT_UID] = shader;
             }
 
             // TODO - this only needs to be done once?
