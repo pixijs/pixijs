@@ -92,7 +92,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
 
         glData.vertexBuffer.upload(mesh.vertices);
 
-        renderer.bindShader(glData.shader);
+        renderer._bindGLShader(glData.shader);
 
         glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
 

@@ -103,7 +103,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
 
         const shader = isSimple ? this.simpleShader : this.shader;
 
-        renderer.bindShader(shader);
+        renderer._bindGLShader(shader);
 
         const w = tex.width;
         const h = tex.height;

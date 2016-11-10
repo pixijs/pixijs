@@ -110,7 +110,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
      */
     start()
     {
-        this.renderer.bindShader(this.shader);
+        this.renderer._bindGLShader(this.shader);
     }
 
     /**

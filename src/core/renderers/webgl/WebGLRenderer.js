@@ -441,7 +441,7 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {PIXI.Shader} shader - the new shader
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindShader(shader)
+    _bindGLShader(shader)
     {
         // TODO cache
         if (this._activeShader !== shader)

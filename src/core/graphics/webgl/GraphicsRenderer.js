@@ -88,7 +88,7 @@ export default class GraphicsRenderer extends ObjectRenderer
         // This  could be speeded up for sure!
         const shader = this.primitiveShader;
 
-        renderer.bindShader(shader);
+        renderer._bindGLShader(shader);
         renderer.state.setBlendMode(graphics.blendMode);
 
         for (let i = 0, n = webGL.data.length; i < n; i++)
@@ -96,7 +96,7 @@ export default class GraphicsRenderer extends ObjectRenderer
             webGLData = webGL.data[i];
             const shaderTemp = webGLData.shader;
 
-            renderer.bindShader(shaderTemp);
+            renderer._bindGLShader(shaderTemp);
             shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
             shaderTemp.uniforms.tint = hex2rgb(graphics.tint);
             shaderTemp.uniforms.alpha = graphics.worldAlpha;
