@@ -59,20 +59,40 @@ export default class Container extends DisplayObject
             // if the child has a parent then lets remove it as Pixi objects can only exist in one place
             if (child.parent)
             {
-                child.parent.removeChild(child);
+                // per flash usage of using addChild to quickly _bring child to front_, check if
+                // child's parent is already this container, and perform more efficient setChildIndex.
+                if (child.parent === this)
+                {
+                    // setChildIndex should do nothing if child is already at front
+                    this.setChildIndex(child, this.children.length - 1);
+                    // no need to callback or emit?
+                    // if position changed, then setChildIndex can handle it?
+
+                    // (in 4.0.3 when I made this patch, the loop was seperate, so it made sense
+                    //  to return here, avoiding unnecessary events, as might occur if child is
+                    //  **already frontmost**.  I'll have to add some extra code below 'on the fly'
+                    // return child;
+                }
+                else
+                {
+                    child.parent.removeChild(child);
+                }
             }
 
-            child.parent = this;
+            if (child.parent !== this)
+            {
+                child.parent = this;
 
-            // ensure a transform will be recalculated..
-            this.transform._parentID = -1;
-            this._boundsID++;
+                // ensure a transform will be recalculated..
+                this.transform._parentID = -1;
+                this._boundsID++;
 
-            this.children.push(child);
+                this.children.push(child);
 
-            // TODO - lets either do all callbacks or all events.. not both!
-            this.onChildrenChange(this.children.length - 1);
-            child.emit('added', this);
+                // TODO - lets either do all callbacks or all events.. not both!
+                this.onChildrenChange(this.children.length - 1);
+                child.emit('added', this);
+            }
         }
 
         return childs[0];
@@ -161,6 +181,18 @@ export default class Container extends DisplayObject
         }
 
         const currentIndex = this.getChildIndex(child);
+
+        // to compliment `addChild`'s use of bringing something to the front,
+        // check we are not going to move it back into the same position.  This
+        // way we can avoid work, callbacks and events if we haven't actually
+        // changed the order.
+        // Without this check, it might be possible for an infinite event loop,
+        // e.g.,
+        //     onChildrenChange: x => stage.addChild(stage.getChildAt(x))
+        if (currentIndex === index)
+        {
+            return;
+        }
 
         removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
