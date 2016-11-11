@@ -78,16 +78,16 @@ export default class MeshRenderer extends core.ObjectRenderer {
         if (mesh.dirty !== glData.dirty)
         {
             glData.dirty = mesh.dirty;
-            glData.uvBuffer.upload();
+            glData.uvBuffer.upload(mesh.uvs);
         }
 
         if (mesh.indexDirty !== glData.indexDirty)
         {
             glData.indexDirty = mesh.indexDirty;
-            glData.indexBuffer.upload();
+            glData.indexBuffer.upload(mesh.indices);
         }
 
-        glData.vertexBuffer.upload();
+        glData.vertexBuffer.upload(mesh.vertices);
 
         renderer.bindShader(glData.shader);
 
