@@ -62,7 +62,7 @@ describe('PIXI.Sprite', function ()
         });
     });
 
-    describe('getBounds()', function ()
+    describe('getBounds', function ()
     {
         it('must have correct value according to texture size, width, height and anchor', function ()
         {
@@ -86,6 +86,27 @@ describe('PIXI.Sprite', function ()
             expect(bounds.y).to.equal(-260);
             expect(bounds.width).to.equal(400);
             expect(bounds.height).to.equal(600);
+        });
+    });
+
+    describe('containsPoint', function ()
+    {
+        it('should return true when point inside', function ()
+        {
+            const point = new PIXI.Point(10, 10);
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+
+            expect(sprite.containsPoint(point)).to.be.true;
+        });
+
+        it('should return false when point outside', function ()
+        {
+            const point = new PIXI.Point(100, 100);
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+
+            expect(sprite.containsPoint(point)).to.be.false;
         });
     });
 });

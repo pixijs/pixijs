@@ -103,4 +103,29 @@ describe('PIXI.Graphics', () =>
             expect(graphics.height).to.be.equals(70);
         });
     });
+
+    describe('containsPoint', () =>
+    {
+        it('should return true when point inside', () =>
+        {
+            const point = new PIXI.Point(1, 1);
+            const graphics = new PIXI.Graphics();
+
+            graphics.beginFill(0);
+            graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.true;
+        });
+
+        it('should return false when point outside', () =>
+        {
+            const point = new PIXI.Point(20, 20);
+            const graphics = new PIXI.Graphics();
+
+            graphics.beginFill(0);
+            graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.false;
+        });
+    });
 });
