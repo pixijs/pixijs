@@ -56,9 +56,6 @@ class Filter extends Shader
      */
     apply(filterManager, input, output, clear)
     {
-        // --- //
-        //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
-
         // do as you please!
 
         filterManager.applyFilter(this, input, output, clear);
