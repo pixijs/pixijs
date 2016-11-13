@@ -461,7 +461,6 @@ export default class Container extends DisplayObject
         {
             renderer.filterManager.popFilter();
         }
-
     }
 
     /**
