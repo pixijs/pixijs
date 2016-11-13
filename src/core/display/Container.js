@@ -407,7 +407,7 @@ export default class Container extends DisplayObject
      */
     renderAdvancedWebGL(renderer)
     {
-        renderer.currentRenderer.flush();
+        renderer.flush();
 
         const filters = this._filters;
         const mask = this._mask;
@@ -441,8 +441,6 @@ export default class Container extends DisplayObject
             renderer.maskManager.pushMask(this, this._mask);
         }
 
-        renderer.currentRenderer.start();
-
         // add this object to the batch, only rendered if it has a texture.
         this._renderWebGL(renderer);
 
@@ -452,7 +450,7 @@ export default class Container extends DisplayObject
             this.children[i].renderWebGL(renderer);
         }
 
-        renderer.currentRenderer.flush();
+        renderer.flush();
 
         if (mask)
         {
@@ -464,7 +462,6 @@ export default class Container extends DisplayObject
             renderer.filterManager.popFilter();
         }
 
-        renderer.currentRenderer.start();
     }
 
     /**

@@ -381,6 +381,8 @@ export default class SpriteRenderer extends ObjectRenderer
             this.renderer.bindVao(this.vaos[this.vertexCount]);
 
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
+
+            this.vertexCount++;
         }
         else
         {
@@ -388,7 +390,6 @@ export default class SpriteRenderer extends ObjectRenderer
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
         }
 
-        this.vertexCount++;
 
         for (i = 0; i < MAX_TEXTURES; ++i)
         {
@@ -432,7 +433,10 @@ export default class SpriteRenderer extends ObjectRenderer
     start()
     {
         this.renderer.bindShader(this.shader);
+
         this.renderer.bindVao(this.vaos[this.vertexCount]);
+
+        this.vertexBuffers[this.vertexCount].bind();
     }
 
     /**
