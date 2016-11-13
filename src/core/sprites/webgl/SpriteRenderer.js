@@ -452,13 +452,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         super.destroy();
 
-        for (let i = 0; i < this.shaders.length; i++)
-        {
-            if (this.shaders[i])
-            {
-                this.shaders[i].destroy();
-            }
-        }
+        this.shader.destroy();
 
         this.vertexBuffers = null;
         this.vaos = null;
