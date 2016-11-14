@@ -26,7 +26,6 @@ before_script:
 
 script:
   - xvfb-maybe npm run coverage
-  - npm run build
   - npm run bundle
   - npm run docs
 

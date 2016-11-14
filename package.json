@@ -28,7 +28,7 @@
     "test:debug": "npm test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
     "renders": "electron scripts/renders",
-    "precoverage": "rimraf coverage && npm run build -- --noExternal",
+    "precoverage": "rimraf coverage && npm run build",
     "coverage": "npm test -- -c dist/pixi.js -s -h",
     "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
