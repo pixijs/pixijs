@@ -348,7 +348,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Convenience function to set the postion, scale, skew and pivot at once.
+     * Convenience function to set the position, scale, skew and pivot at once.
      *
      * @param {number} [x=0] - The X position
      * @param {number} [y=0] - The Y position

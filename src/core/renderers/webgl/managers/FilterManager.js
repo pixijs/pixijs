@@ -111,15 +111,15 @@ export default class FilterManager extends WebGLManager
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
 
-         // lets pplay the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occour when cropping to the edges
+        // lets apply the padding After we fit the element to the screen.
+        // this should stop the strange side effects that can occur when cropping to the edges
         sourceFrame.pad(padding);
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
 
         // lets play the padding after we fit the element to the screen.
-        // this should stop the strange side effects that can occour when cropping to the edges
+        // this should stop the strange side effects that can occur when cropping to the edges
 
         const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
@@ -128,7 +128,7 @@ export default class FilterManager extends WebGLManager
         currentState.resolution = resolution;
         currentState.renderTarget = renderTarget;
 
-        // bind the render taget to draw the shape in the top corner..
+        // bind the render target to draw the shape in the top corner..
 
         renderTarget.setFrame(destinationFrame, sourceFrame);
         // bind the render target
@@ -279,7 +279,7 @@ export default class FilterManager extends WebGLManager
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
-        // 0 is reserverd for the pixi texture so we start at 1!
+        // 0 is reserved for the pixi texture so we start at 1!
         let textureCount = 1;
         let currentState;
 
@@ -494,7 +494,7 @@ export default class FilterManager extends WebGLManager
      */
     getPotRenderTarget(gl, minWidth, minHeight, resolution)
     {
-        // TODO you coud return a bigger texture if there is not one in the pool?
+        // TODO you could return a bigger texture if there is not one in the pool?
         minWidth = bitTwiddle.nextPow2(minWidth * resolution);
         minHeight = bitTwiddle.nextPow2(minHeight * resolution);
 

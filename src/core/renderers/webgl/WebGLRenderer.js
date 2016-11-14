@@ -308,7 +308,7 @@ export default class WebGLRenderer extends SystemRenderer
     }
 
     /**
-     * This shoudl be called if you wish to do some custom rendering
+     * This should be called if you wish to do some custom rendering
      * It will basically render anything that may be batched up such as sprites
      *
      */
@@ -457,7 +457,7 @@ export default class WebGLRenderer extends SystemRenderer
     /**
      * Binds the texture. This will return the location of the bound texture.
      * It may not be the same as the one you pass in. This is due to optimisation that prevents
-     * needless binding of textures. For example if the texture isalready bound it will return the
+     * needless binding of textures. For example if the texture is already bound it will return the
      * current location of the texture instead of the one provided. To bypass this use force location
      *
      * @param {PIXI.Texture} texture - the new texture

@@ -245,7 +245,7 @@ export default class WebGLState
             this.nativeVaoExtension.bindVertexArrayOES(null);
         }
 
-        // reset all attributs..
+        // reset all attributes..
         this.resetAttributes();
 
         // set active state so we can force overrides of gl state

@@ -214,7 +214,7 @@ export default class RenderTarget
         // TOOD refactor usage of frame..
         const gl = this.gl;
 
-        // make surethe texture is unbound!
+        // make sure the texture is unbound!
         this.frameBuffer.bind();
 
         this.calculateProjection(this.destinationFrame, this.sourceFrame);
