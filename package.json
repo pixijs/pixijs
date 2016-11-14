@@ -9,7 +9,7 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
-  "main": "./bin/pixi.min.js",
+  "main": "./lib/index.js",
   "homepage": "http://goodboydigital.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -18,31 +18,33 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "clean": "rimraf bin && mkdirp bin",
+    "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
     "prestart": "npm run clean",
     "start": "parallelshell \"npm run watch:lint\" \"npm run watch\"",
-    "watch": "pixify -n PIXI -o pixi -w",
+    "watch": "npm run build -- --watch",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
+    "watch:bundle": "npm run bundle -- -w",
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
     "renders": "electron scripts/renders",
     "precoverage": "rimraf coverage && npm run build -- --noExternal",
-    "coverage": "npm test -- -c bin/pixi.js -s -h",
+    "coverage": "npm test -- -c dist/pixi.js -s -h",
     "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
-    "prebuild": "npm run lint && npm run clean",
-    "build": "pixify -n PIXI -o pixi",
+    "prebuild": "npm run lint",
+    "build": "babel src --out-dir lib",
+    "bundle": "pixify -d dist -n PIXI -o pixi",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish",
     "publish:major": "npm version major --no-git-tag-version && npm publish",
-    "postversion": "npm run build && npm test",
+    "postversion": "npm run clean && npm run build && npm run bundle && npm test",
     "postpublish": "node scripts/release.js"
   },
   "files": [
-    "bin/",
-    "src/",
+    "dist/",
+    "lib/",
     "CONTRIBUTING.md",
     "LICENSE",
     "package.json",
@@ -79,19 +81,7 @@
   },
   "browserify": {
     "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            [
-              "es2015",
-              {
-                "loose": true
-              }
-            ]
-          ]
-        }
-      ],
+      "babelify",
       "glslify",
       "browserify-versionify"
     ]
