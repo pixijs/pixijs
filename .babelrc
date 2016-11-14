@@ -1,5 +1,8 @@
 {
   presets: [
-    ["es2015", { "loose": true }]
+    ["es2015", { "loose": true }],
+  ],
+  plugins: [
+    "static-fs"
   ]
 }

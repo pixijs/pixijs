@@ -1,5 +1,6 @@
 import Shader from '../../Shader';
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const fragTemplate = [
     'varying vec2 vTextureCoord;',
@@ -17,7 +18,7 @@ const fragTemplate = [
 
 export default function generateMultiTextureShader(gl, maxTextures)
 {
-    const vertexSrc = glslify('./texture.vert');
+    const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
     let fragmentSrc = fragTemplate;
 
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);

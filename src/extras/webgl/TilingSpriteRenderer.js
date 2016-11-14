@@ -1,7 +1,7 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
-
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const tempMat = new core.Matrix();
 const tempArray = new Float32Array(4);
@@ -35,11 +35,11 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
         const gl = this.renderer.gl;
 
         this.shader = new core.Shader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite.frag'));
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'));
         this.simpleShader = new core.Shader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite_simple.frag'));
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'));
 
         this.quad = new core.Quad(gl, this.renderer.state.attribState);
         this.quad.initVao(this.shader);
