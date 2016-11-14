@@ -33,7 +33,7 @@
     "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint",
-    "build": "babel src --out-dir lib",
+    "build": "babel src --out-dir lib -s",
     "bundle": "pixify -d dist -n PIXI -o pixi",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish",
