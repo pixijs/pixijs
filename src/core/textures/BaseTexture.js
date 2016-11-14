@@ -155,7 +155,7 @@ export default class BaseTexture extends EventEmitter
         this.imageUrl = null;
 
         /**
-         * Wether or not the texture is a power of two, try to use power of two textures as much
+         * Whether or not the texture is a power of two, try to use power of two textures as much
          * as you can
          *
          * @private

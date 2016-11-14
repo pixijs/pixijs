@@ -177,7 +177,7 @@ export default class Texture extends EventEmitter
     {
         this._updateID++;
 
-        // TODO this code looks confusing.. boo to abusing getters and setterss!
+        // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
             this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
@@ -219,7 +219,7 @@ export default class Texture extends EventEmitter
             if (destroyBase)
             {
                 // delete the texture if it exists in the texture cache..
-                // this only needs to be removed if the base texture is actually destoryed too..
+                // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
                     delete TextureCache[this.baseTexture.imageUrl];
@@ -362,7 +362,7 @@ export default class Texture extends EventEmitter
 
     /**
      * Helper function that creates a new Texture based on the source you provide.
-     * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+     * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
      * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
