@@ -12,7 +12,7 @@ import { hex2rgb } from '../../../utils';
  */
 export default function buildComplexPoly(graphicsData, webGLData)
 {
-    // TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
+    // TODO - no need to copy this as it gets turned into a Float32Array anyways..
     const points = graphicsData.points.slice();
 
     if (points.length < 6)
@@ -27,7 +27,7 @@ export default function buildComplexPoly(graphicsData, webGLData)
     webGLData.alpha = graphicsData.fillAlpha;
     webGLData.color = hex2rgb(graphicsData.fillColor);
 
-    // calclate the bounds..
+    // calculate the bounds..
     let minX = Infinity;
     let maxX = -Infinity;
 

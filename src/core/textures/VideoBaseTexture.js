@@ -117,7 +117,7 @@ export default class VideoBaseTexture extends BaseTexture
      */
     _onPlayStart()
     {
-        // Just in case the video has not recieved its can play even yet..
+        // Just in case the video has not received its can play even yet..
         if (!this.hasLoaded)
         {
             this._onCanPlay();

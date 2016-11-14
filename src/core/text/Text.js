@@ -529,7 +529,7 @@ export default class Text extends Sprite
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
             gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
 
-            // we need to repeat the gradient so that each invididual line of text has the same vertical gradient effect
+            // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
             totalIterations = (style.fill.length + 1) * lines.length;
             currentIteration = 0;
@@ -731,7 +731,7 @@ export default class Text extends Sprite
             style = new TextStyle(style);
         }
 
-        // build canvas api font setting from invididual components. Convert a numeric style.fontSize to px
+        // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
         const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
 
         return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${style.fontFamily}`;

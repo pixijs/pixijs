@@ -746,7 +746,7 @@ export default class InteractionManager extends EventEmitter
      *
      * @param {PIXI.Point} point - the point that is tested for collision
      * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - the displayObject
-     *  that will be hit test (recurcsivly crawls its children)
+     *  that will be hit test (recursively crawls its children)
      * @param {Function} [func] - the function that will be called on each interactive object. The
      *  displayObject and hit will be passed to the function
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
@@ -804,7 +804,7 @@ export default class InteractionManager extends EventEmitter
 
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
-        // This will allow pixi to completly ignore and bypass checking the displayObjects children.
+        // This will allow pixi to completely ignore and bypass checking the displayObjects children.
         if (displayObject.interactiveChildren && displayObject.children)
         {
             const children = displayObject.children;
@@ -813,7 +813,7 @@ export default class InteractionManager extends EventEmitter
             {
                 const child = children[i];
 
-                // time to get recursive.. if this function will return if somthing is hit..
+                // time to get recursive.. if this function will return if something is hit..
                 if (this.processInteractive(point, child, func, hitTest, interactiveParent))
                 {
                     // its a good idea to check if a child has lost its parent.
@@ -1006,7 +1006,7 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.style.cursor = this.cursor;
         }
 
-        // TODO BUG for parents ineractive object (border order issue)
+        // TODO BUG for parents interactive object (border order issue)
     }
 
     /**

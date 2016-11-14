@@ -46,7 +46,7 @@ export default class RenderTexture extends Texture
      */
     constructor(baseRenderTexture, frame)
     {
-        // suport for legacy..
+        // support for legacy..
         let _legacyRenderer = null;
 
         if (!(baseRenderTexture instanceof BaseRenderTexture))

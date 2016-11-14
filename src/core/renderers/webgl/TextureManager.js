@@ -148,7 +148,7 @@ export default class TextureManager
                 glTexture.enableLinearScaling();
             }
         }
-        // the textur ealrady exists so we only need to update it..
+        // the texture already exists so we only need to update it..
         else if (isRenderTexture)
         {
             texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);

@@ -2,7 +2,7 @@ export default function validateContext(gl)
 {
     const attributes = gl.getContextAttributes();
 
-    // this is going to be fairly simple for now.. but at least we have rom to grow!
+    // this is going to be fairly simple for now.. but at least we have room to grow!
     if (!attributes.stencil)
     {
         /* eslint-disable no-console */
