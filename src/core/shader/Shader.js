@@ -33,21 +33,39 @@ class Shader
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types
         this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
-
         this.attributeData = extractAttributesFromSrc(this.vertexSrc);
-
 
         this.uniforms = {};
 
+        // time to build some getters and setters!
+        // I guess down the line this could sort of generate an instruction list rather than use dirty ids?
+        // does the trick for now though!
         for (const i in this.uniformData)
         {
-            this.uniforms[i] = this.uniformData[i].value;
+            var _this = this;
+
+            Object.defineProperty(this.uniforms, i, {
+                get: function(){
+                    return _this.uniformData[i].value;
+                },
+                set: function(value){
+
+                    _this.uniformData[i].dirtyId++;
+                    _this.uniformData[i].value = value;
+
+                }
+            });
         }
+
 
         // this is where we store shader references..
         // TODO we could cache this!
         this.glShaders = {};
+
+
+
     }
+
 
     /**
      * The default vertex shader source

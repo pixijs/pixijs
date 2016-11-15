@@ -49,9 +49,17 @@ export default class ShaderManager
             attribMap[i] = shader.attributeData[i].location;
         }
 
-        console.log(attribMap)
         const glShader = new GLShader(this.gl, shader.vertexSrc, shader.fragmentSrc, PRECISION.DEFAULT, attribMap);
+
+        //TODO should I add this a s a prototype
+        glShader.dirtyFlags = {};
+        for (var i in shader.realUniforms) {
+            glShader.dirtyFlags[i] = 0;
+        };
+        console.log(glShader.dirtyFlags)
+
         shader.glShaders[renderer.CONTEXT_UID] = glShader;
+
 
         return glShader
     }
@@ -62,28 +70,34 @@ export default class ShaderManager
      * @param {GLShader} shader - The underlying gl shader.
      * @param {PIXI.Filter} filter - The filter we are synchronizing.
      */
-    syncUniforms(shader, filter)
+    syncUniforms(glShader, shader)
     {
-        const uniformData = filter.uniformData;
-        const uniforms = filter.uniforms;
+        const uniformData = shader.uniformData;
+        const realUniforms = shader.realUniforms;
+        const dirtyFlags = glShader.dirtyFlags;
 
         // 0 is reserverd for the pixi texture so we start at 1!
         let textureCount = 1;
-        let currentState;
 
-        // TODO Cacheing layer..
+        // TODO don't need to use the uniform
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
+            if(dirtyFlags[i] === uniformData[i].dirtyId)
             {
-                shader.uniforms[i] = textureCount;
+                continue;
+            }
 
-                if (uniforms[i].baseTexture)
+            dirtyFlags[i] = uniformData[i].dirtyId;
+
+            if (uniformData[i].type === 'sampler2D' && uniformData[i].value !== 0)
+            {
+                if (uniformData[i].value.baseTexture)
                 {
-                    this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+                    glShader.uniforms[i] = this.renderer.bindTexture(uniformData[i].value, textureCount);
                 }
                 else
                 {
+                    glShader.uniforms[i] = textureCount;
                     // TODO
                     // this is helpful as renderTargets can also be set.
                     // Although thinking about it, we could probably
@@ -100,41 +114,41 @@ export default class ShaderManager
             else if (uniformData[i].type === 'mat3')
             {
                 // check if its pixi matrix..
-                if (uniforms[i].a !== undefined)
+                if (uniformData[i].value.a !== undefined)
                 {
-                    shader.uniforms[i] = uniforms[i].toArray(true);
+                    glShader.uniforms[i] = uniformData[i].value.toArray(true);
                 }
                 else
                 {
-                    shader.uniforms[i] = uniforms[i];
+                    glShader.uniforms[i] = uniformData[i].value;
                 }
             }
             else if (uniformData[i].type === 'vec2')
             {
                 // check if its a point..
-                if (uniforms[i].x !== undefined)
+                if (uniformData[i].value.x !== undefined)
                	{
-                    const val = shader.uniforms[i] || new Float32Array(2);
+                    const val = glShader.uniforms[i] || new Float32Array(2);
 
-                    val[0] = uniforms[i].x;
-                    val[1] = uniforms[i].y;
-                    shader.uniforms[i] = val;
+                    val[0] = uniformData[i].value.x;
+                    val[1] = uniformData[i].value.y;
+                    glShader.uniforms[i] = val;
                 }
                 else
                	{
-                    shader.uniforms[i] = uniforms[i];
+                    glShader.uniforms[i] = uniformData[i].value;
                 }
             }
             else if (uniformData[i].type === 'float')
             {
-                if (shader.uniforms.data[i].value !== uniformData[i])
+                if (glShader.uniforms.data[i].value !== uniformData[i].value)
                 {
-                    shader.uniforms[i] = uniforms[i];
+                    glShader.uniforms[i] = uniformData[i].value;
                 }
             }
             else
             {
-                shader.uniforms[i] = uniforms[i];
+                glShader.uniforms[i] = uniformData[i].value;
             }
         }
     }
