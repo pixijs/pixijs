@@ -162,6 +162,8 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this._activeShader = null;
 
+        this._activeVao = null;
+
         /**
          * Holds the current render target
          *
@@ -547,6 +549,34 @@ export default class WebGLRenderer extends SystemRenderer
     createVao()
     {
         return new glCore.VertexArrayObject(this.gl, this.state.attribState);
+    }
+
+    /**
+     * Changes the current Vao to the one given in parameter
+     *
+     * @param {PIXI.VertexArrayObject} vao - the new Vao
+     * @return {PIXI.WebGLRenderer} Returns itself.
+     */
+    bindVao(vao)
+    {
+        if (this._activeVao === vao)
+        {
+            return this;
+        }
+
+        if (vao)
+        {
+            vao.bind();
+        }
+        else if (this._activeVao)
+        {
+            // TODO this should always be true i think?
+            this._activeVao.unbind();
+        }
+
+        this._activeVao = vao;
+
+        return this;
     }
 
     /**

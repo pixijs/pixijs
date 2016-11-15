@@ -231,8 +231,12 @@ export default class FilterManager extends WebGLManager
             }
 
             // TODO - this only needs to be done once?
+            renderer.bindVao(null);
+
             this.quad.initVao(shader);
         }
+
+        renderer.bindVao(this.quad.vao);
 
         renderer.bindRenderTarget(output);
 
@@ -262,7 +266,7 @@ export default class FilterManager extends WebGLManager
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
 
-        this.quad.draw();
+        this.quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
 
         // restore cache.
         gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);

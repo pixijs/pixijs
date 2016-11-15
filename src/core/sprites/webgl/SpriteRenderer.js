@@ -4,7 +4,7 @@ import createIndicesForQuads from '../../utils/createIndicesForQuads';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
-import { SPRITE_BATCH_SIZE, SPRITE_MAX_TEXTURES } from '../../const';
+import { SPRITE_BATCH_SIZE, SPRITE_MAX_TEXTURES, CAN_UPLOAD_SAME_BUFFER } from '../../const';
 import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
@@ -114,6 +114,11 @@ export default class SpriteRenderer extends ObjectRenderer
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
+        // we use the second shader as the first one depending on your browser may omit aTextureId
+        // as it is not used by the shader so is optimized out.
+
+        this.renderer.bindVao(null);
+
         for (let i = 0; i < this.vaoMax; i++)
         {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
@@ -199,7 +204,6 @@ export default class SpriteRenderer extends ObjectRenderer
 
         const boundTextures = this.boundTextures;
         const rendererBoundTextures = this.renderer.boundTextures;
-
         const touch = this.renderer.textureGC.count;
 
         let index = 0;
@@ -356,26 +360,35 @@ export default class SpriteRenderer extends ObjectRenderer
 
         currentGroup.size = i - currentGroup.start;
 
-        // this is still needed for IOS performance..
-        // it realy doe not like uploading to  the same bufffer in a single frame!
-        if (this.vaoMax <= this.vertexCount)
+        if (!CAN_UPLOAD_SAME_BUFFER)
         {
-            this.vaoMax++;
-            this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+            // this is still needed for IOS performance..
+            // it realy doe not like uploading to  the same bufffer in a single frame!
+            if (this.vaoMax <= this.vertexCount)
+            {
+                this.vaoMax++;
+                this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
 
-            // build the vao object that will render..
-            this.vaos[this.vertexCount] = this.renderer.createVao()
-                .addIndex(this.indexBuffer)
-                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-                .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                // build the vao object that will render..
+                this.vaos[this.vertexCount] = this.renderer.createVao()
+                    .addIndex(this.indexBuffer)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+            }
+
+            this.renderer.bindVao(this.vaos[this.vertexCount]);
+
+            this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
+
+            this.vertexCount++;
         }
-
-        this.vaos[this.vertexCount].bind();
-        this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
-
-        this.vertexCount++;
+        else
+        {
+            // lets use the faster option..
+            this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
+        }
 
         for (i = 0; i < MAX_TEXTURES; ++i)
         {
@@ -418,10 +431,11 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-        // this.renderer.bindShader(this.shader);
-        // TICK %= 1000;
-        this.vao = this.vaos[0].bind();
         this.renderer.bindShader(this.shader);
+
+        this.renderer.bindVao(this.vaos[this.vertexCount]);
+
+        this.vertexBuffers[this.vertexCount].bind();
     }
 
     /**
@@ -431,7 +445,6 @@ export default class SpriteRenderer extends ObjectRenderer
     stop()
     {
         this.flush();
-        this.vao.unbind();
     }
 
     /**
