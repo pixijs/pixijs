@@ -452,7 +452,11 @@ export default class SpriteRenderer extends ObjectRenderer
 
         super.destroy();
 
-        this.shader.destroy();
+        if (this.shader)
+        {
+            this.shader.destroy();
+            this.shader = null;
+        }
 
         this.vertexBuffers = null;
         this.vaos = null;
