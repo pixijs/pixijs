@@ -8,7 +8,7 @@ import maxRecommendedTextures from './utils/maxRecommendedTextures';
  * @memberof PIXI
  * @type {string}
  */
-export const VERSION = '__VERSION__';
+export const VERSION = __VERSION__;
 
 /**
  * Two Pi.

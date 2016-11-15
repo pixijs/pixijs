@@ -5,7 +5,8 @@
         "node": true
     },
     "globals": {
-        "global": false
+        "global": false,
+        "__VERSION__": false
     },
     "parserOptions": {
         "ecmaVersion": 6,

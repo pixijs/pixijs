@@ -57,12 +57,12 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
-    "resource-loader": "^1.8.0",
-    "browserify-versionify": "^1.0.6"
+    "resource-loader": "^1.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-plugin-static-fs": "^1.1.0",
+    "babel-plugin-version-inline": "^1.0.0",
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
     "del": "^2.2.0",
@@ -82,8 +82,7 @@
   },
   "browserify": {
     "transform": [
-      "babelify",
-      "browserify-versionify"
+      "babelify"
     ]
   }
 }

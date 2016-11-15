@@ -3,6 +3,7 @@
     ["es2015", { "loose": true }],
   ],
   plugins: [
-    "static-fs"
+    "static-fs",
+    "version-inline"
   ]
 }
