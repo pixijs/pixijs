@@ -5,19 +5,21 @@ import * as core from '../core';
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.mesh
- * @param texture {PIXI.Texture} The texture to use
- * @param [vertices] {Float32Array} if you want to specify the vertices
- * @param [uvs] {Float32Array} if you want to specify the uvs
- * @param [indices] {Uint16Array} if you want to specify the indices
- * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
 export default class Mesh extends core.Container
 {
-
+    /**
+     * @param {PIXI.mesh.Geometry} geometry  the geometry the mesh will use
+     * @param {PIXI.Shader} shader  the shader the mesh will use
+     * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
+     */
     constructor(geometry, shader, drawMode = core.DRAW_MODES.TRIANGLES)
     {
         super();
-
+        /**
+         * the geometry the mesh will use
+         * @type {PIXI.mesh.Geometry}
+         */
         this.geometry = geometry;
 
         this.shader = shader;
@@ -32,12 +34,6 @@ export default class Mesh extends core.Container
         this.blendMode = core.BLEND_MODES.NORMAL;
 
         /**
-         * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
-         *
-         * @member {number}
-         */
-
-        /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
          *
          * @member {number}
@@ -49,7 +45,7 @@ export default class Mesh extends core.Container
     /**
      * Renders the object using the WebGL renderer
      *
-     * @param renderer {PIXI.WebGLRenderer} a reference to the WebGL renderer
+     * @param {PIXI.WebGLRenderer} renderer a reference to the WebGL renderer
      * @private
      */
     _renderWebGL(renderer)
@@ -60,9 +56,6 @@ export default class Mesh extends core.Container
 
     /**
      * Calculates the bounds of the mesh. The bounds calculation takes the worldTransform into account.
-     *
-     * @param [matrix=this.worldTransform] {PIXI.Matrix} the transformation matrix of the sprite
-     * @return {PIXI.Rectangle} the framing rectangle
      */
     _calculateBounds()
     {

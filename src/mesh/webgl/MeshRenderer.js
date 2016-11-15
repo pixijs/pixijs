@@ -1,6 +1,5 @@
 import * as core from '../../core';
 import glCore from 'pixi-gl-core';
-import { default as Mesh } from '../Mesh';
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -28,19 +27,16 @@ export default class MeshRenderer extends core.ObjectRenderer {
     {
         this.gl = this.renderer.gl;
 
-        //nothing to see here!
+        // nothing to see here!
     }
 
     /**
      * renders mesh
-     *
+     * @private
      * @param {PIXI.mesh.Mesh} mesh mesh instance
      */
     render(mesh)
     {
-        // get rid of any thing that may be batching.
-//        renderer.flush();
-
         // always use shaders - rather than GLShadr
 
         // generate geometry structure from a shader :)
@@ -53,11 +49,11 @@ export default class MeshRenderer extends core.ObjectRenderer {
         }
 
           // set the correct blend mode
-        renderer.state.setBlendMode(mesh.blendMode);
+        this.renderer.state.setBlendMode(mesh.blendMode);
 
         // bind the shader..
         // TODO rename filter to shader
-        renderer.bindShader(mesh.shader);
+        this.renderer.bindShader(mesh.shader);
 
         // now time for geometry..
 
@@ -65,21 +61,27 @@ export default class MeshRenderer extends core.ObjectRenderer {
         this.bindGeometry(mesh.geometry);
 
         // then render it..
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw( mesh.drawMode );
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode);
     }
 
+    /**
+     * Binds geometry so that is can be drawn. Creating a Vao if required
+     * @private
+     * @param {PIXI.mesh.Geometry} geometry instance of geometry to bind
+     */
     bindGeometry(geometry)
     {
         const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry);
 
         this.renderer.bindVao(vao);
+        const data = geometry.data;
 
-        if (geometry.autoUpdate)
+       // if (geometry.autoUpdate)
         {
             // TODO - optimise later!
-            for (let i = 0; i < geometry.buffers.length; i++)
+            for (let i = 0; i < data.buffers.length; i++)
             {
-                const buffer = geometry.buffers[i];
+                const buffer = data.buffers[i];
 
                 const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
@@ -94,6 +96,12 @@ export default class MeshRenderer extends core.ObjectRenderer {
         }
     }
 
+    /**
+     * Creates a Vao with the same structure as the geometry and stores it on the geometry
+     * @private
+     * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
+     * @return {PIXI.glCore.VertexArrayObject} Returns a fresh vao.
+     */
     initGeometryVao(geometry)
     {
         const gl = this.gl;
