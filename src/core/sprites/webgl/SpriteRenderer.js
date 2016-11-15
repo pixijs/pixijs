@@ -455,22 +455,29 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         for (let i = 0; i < this.vaoMax; i++)
         {
-            this.vertexBuffers[i].destroy();
-            this.vaos[i].destroy();
+            if (this.vertexBuffers[i])
+            {
+                this.vertexBuffers[i].destroy();
+            }
+            if (this.vaos[i])
+            {
+                this.vaos[i].destroy();
+            }
         }
 
-        this.indexBuffer.destroy();
+        if (this.indexBuffer)
+        {
+            this.indexBuffer.destroy();
+        }
 
         this.renderer.off('prerender', this.onPrerender, this);
 
         super.destroy();
 
-        for (let i = 0; i < this.shaders.length; i++)
+        if (this.shader)
         {
-            if (this.shaders[i])
-            {
-                this.shaders[i].destroy();
-            }
+            this.shader.destroy();
+            this.shader = null;
         }
 
         this.vertexBuffers = null;
