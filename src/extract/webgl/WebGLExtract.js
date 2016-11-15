@@ -17,6 +17,13 @@ export default class WebGLExtract
     constructor(renderer)
     {
         this.renderer = renderer;
+        /**
+         * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
+         *
+         * @member {PIXI.WebGLExtract} extract
+         * @memberof PIXI.WebGLRenderer#
+         * @see PIXI.WebGLExtract
+         */
         renderer.extract = this;
     }
 

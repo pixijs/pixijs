@@ -16,6 +16,13 @@ export default class CanvasExtract
     constructor(renderer)
     {
         this.renderer = renderer;
+        /**
+         * Collection of methods for extracting data (image, pixels, etc.) from a display object or render texture
+         *
+         * @member {PIXI.CanvasExtract} extract
+         * @memberof PIXI.CanvasRenderer#
+         * @see PIXI.CanvasExtract
+         */
         renderer.extract = this;
     }
 
