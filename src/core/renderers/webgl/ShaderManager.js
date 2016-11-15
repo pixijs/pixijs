@@ -1,5 +1,5 @@
-import { GLTexture } from 'pixi-gl-core';
-import { WRAP_MODES, SCALE_MODES } from '../../const';
+import { GLShader } from 'pixi-gl-core';
+import { WRAP_MODES, SCALE_MODES, PRECISION} from '../../const';
 import RenderTarget from './utils/RenderTarget';
 import { removeItems } from '../../utils';
 
@@ -35,14 +35,22 @@ export default class ShaderManager
     {
         let glShader = shader.glShaders[renderer.CONTEXT_UID] || this.generateShader(shader);
 
+        this.renderer._bindGLShader(glShader);
         this.syncUniforms(glShader, shader);
 
-        this.renderer._bindGLShader(glShader);
     }
 
     generateShader(shader)
     {
-        const glShader = new GLShader(this.gl, filter.vertexSrc, filter.fragmentSrc, PRECISION.DEFAULT);
+
+        const attribMap = {};
+        for (const i in shader.attributeData)
+        {
+            attribMap[i] = shader.attributeData[i].location;
+        }
+
+        console.log(attribMap)
+        const glShader = new GLShader(this.gl, shader.vertexSrc, shader.fragmentSrc, PRECISION.DEFAULT, attribMap);
         shader.glShaders[renderer.CONTEXT_UID] = glShader;
 
         return glShader

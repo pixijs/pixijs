@@ -2,8 +2,6 @@ import * as core from '../../core';
 import glCore from 'pixi-gl-core';
 import { default as Mesh } from '../Mesh';
 
-const glslify = require('glslify'); // eslint-disable-line no-undef
-
 /**
  * WebGL renderer plugin for tiling sprites
  */
@@ -28,12 +26,9 @@ export default class MeshRenderer extends core.ObjectRenderer {
      */
     onContextChange()
     {
-        const gl = this.renderer.gl;
+        this.gl = this.renderer.gl;
 
-        this.shader = new glCore.GLShader(gl,
-            glslify('./mesh.vert'),
-            glslify('./mesh.frag'),
-            core.PRECISION.DEFAULT);
+        //nothing to see here!
     }
 
     /**
@@ -43,69 +38,156 @@ export default class MeshRenderer extends core.ObjectRenderer {
      */
     render(mesh)
     {
-        const renderer = this.renderer;
-        const gl = renderer.gl;
-        const texture = mesh._texture;
+        // get rid of any thing that may be batching.
+//        renderer.flush();
 
-        if (!texture.valid)
+        // always use shaders - rather than GLShadr
+
+        // generate geometry structure from a shader :)
+
+        // set the shader props..
+        if (mesh.shader.uniforms.translationMatrix)
         {
-            return;
+            // the transform!
+            mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
         }
 
-        let glData = mesh._glDatas[renderer.CONTEXT_UID];
-
-        if (!glData)
-        {
-            renderer.bindVao(null);
-
-            glData = {
-                shader: this.shader,
-                vertexBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.vertices, gl.STREAM_DRAW),
-                uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.uvs, gl.STREAM_DRAW),
-                indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW),
-                // build the vao object that will render..
-                vao: new glCore.VertexArrayObject(gl),
-                dirty: mesh.dirty,
-                indexDirty: mesh.indexDirty,
-            };
-
-            // build the vao object that will render..
-            glData.vao = new glCore.VertexArrayObject(gl)
-                .addIndex(glData.indexBuffer)
-                .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
-                .addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
-
-            mesh._glDatas[renderer.CONTEXT_UID] = glData;
-        }
-
-        if (mesh.dirty !== glData.dirty)
-        {
-            glData.dirty = mesh.dirty;
-            glData.uvBuffer.upload(mesh.uvs);
-        }
-
-        if (mesh.indexDirty !== glData.indexDirty)
-        {
-            glData.indexDirty = mesh.indexDirty;
-            glData.indexBuffer.upload(mesh.indices);
-        }
-
-        glData.vertexBuffer.upload(mesh.vertices);
-
-        renderer._bindGLShader(glData.shader);
-
-        glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
-
+          // set the correct blend mode
         renderer.state.setBlendMode(mesh.blendMode);
 
-        glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
-        glData.shader.uniforms.alpha = mesh.worldAlpha;
-        glData.shader.uniforms.tint = mesh.tintRgb;
+        // bind the shader..
+        // TODO rename filter to shader
+        renderer.bindShader(mesh.shader);
 
-        const drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+        // now time for geometry..
 
-        renderer.bindVao(glData.vao);
-        glData.vao.draw(drawMode, mesh.indices.length, 0);
+        // bind the geometry...
+        this.bindGeometry(mesh.geometry);
+
+        // then render it..
+        this.renderGeometry(mesh.geometry, mesh.drawMode);
+
+        // then unbind it..
+        // TODO - maybe create a state in renderer for geometry?
+        // maybe renderer shouldxwww be a renderer?
+        // although pretty much ALL items will simply be geometry + shader
+        // TODO wont be required!
+//        this.unbindGeometry(mesh.geometry);
+
+    }
+
+    bindGeometry(geometry)
+    {
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry);
+
+        this.renderer.bindVao(vao);
+
+        if (geometry.autoUpdate)
+        {
+            // TODO - optimise later!
+            for (let i = 0; i < geometry.buffers.length; i++)
+            {
+                const buffer = geometry.buffers[i];
+
+                const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+                if (buffer._updateID !== glBuffer._updateID)
+                {
+                    glBuffer._updateID = buffer._updateID;
+
+                    // TODO - partial upload??
+                    glBuffer.upload(buffer.data, 0);
+                }
+            }
+        }
+    }
+
+    unbindGeometry(geometry)
+    {
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+        vao.unbind();
+    }
+
+    renderGeometry(geometry, drawMode)
+    {
+        const gl = this.gl;
+
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+
+        // TODO - build a map
+/*        if (drawMode === CONST.DRAW_MODES.TRIANGLE_MESH)
+        {
+<<<<<<< 79177787e99a4893e30f81fc1672bf6ccc026c1e
+            glData.dirty = mesh.dirty;
+            glData.uvBuffer.upload(mesh.uvs);
+=======
+            drawMode = gl.POINTS;
+>>>>>>> pass one of geom
+        }
+        else if (drawMode === CONST.DRAW_MODES.POINTS)
+        {
+            drawMode = gl.POINTS;
+        }
+        else
+        {
+            drawMode = gl.POINTS;
+        }*/
+
+        drawMode = gl.TRIANGLES;
+
+        vao.draw(drawMode);
+    }
+
+    initGeometryVao(geometry)
+    {
+        const gl = this.gl;
+
+        const vao = this.renderer.createVao();
+
+        const buffers = geometry.data.buffers;
+
+        // first update - and creat the buffers!
+        for (let i = 0; i < buffers.length; i++)
+        {
+            const buffer = buffers[i];
+
+            if (!buffer._glBuffers[this.CONTEXT_UID])
+            {
+                if (buffer.index)
+                {
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, buffer.data);
+                }
+                else
+                {
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
+                }
+            }
+        }
+
+        // first update the index buffer..
+        vao.addIndex(geometry.data.indexBuffer._glBuffers[this.CONTEXT_UID]);
+
+        const map = geometry.style.generateAttributeLocations();
+
+        // next update the attributes buffer..
+        for (const j in geometry.style.attributes)
+        {
+            const attribute = geometry.style.attributes[j];
+            const buffer = geometry.data[attribute.buffer];
+
+            // need to know the shader..
+            // or DO we... NOPE!
+            const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+            vao.addAttribute(glBuffer, {
+                size: attribute.size,
+                location: map[j],
+            }, gl.FLOAT, false, attribute.stride, attribute.start);
+        }
+
+        geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
+
+        return vao;
     }
 }
 
