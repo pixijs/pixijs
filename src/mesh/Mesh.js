@@ -14,7 +14,7 @@ import * as core from '../core';
 export default class Mesh extends core.Container
 {
 
-    constructor(geometry, shader, drawMode)
+    constructor(geometry, shader, drawMode = core.DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -43,7 +43,7 @@ export default class Mesh extends core.Container
          * @member {number}
          * @see PIXI.mesh.Mesh.DRAW_MODES
          */
-        this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
+        this.drawMode = drawMode;
     }
 
     /**

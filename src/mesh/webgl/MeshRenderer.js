@@ -65,15 +65,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
         this.bindGeometry(mesh.geometry);
 
         // then render it..
-        this.renderGeometry(mesh.geometry, mesh.drawMode);
-
-        // then unbind it..
-        // TODO - maybe create a state in renderer for geometry?
-        // maybe renderer shouldxwww be a renderer?
-        // although pretty much ALL items will simply be geometry + shader
-        // TODO wont be required!
-//        this.unbindGeometry(mesh.geometry);
-
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw( mesh.drawMode );
     }
 
     bindGeometry(geometry)
@@ -102,45 +94,11 @@ export default class MeshRenderer extends core.ObjectRenderer {
         }
     }
 
-    unbindGeometry(geometry)
-    {
-        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
-        vao.unbind();
-    }
-
-    renderGeometry(geometry, drawMode)
-    {
-        const gl = this.gl;
-
-        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID];
-
-        // TODO - build a map
-/*        if (drawMode === CONST.DRAW_MODES.TRIANGLE_MESH)
-        {
-<<<<<<< 79177787e99a4893e30f81fc1672bf6ccc026c1e
-            glData.dirty = mesh.dirty;
-            glData.uvBuffer.upload(mesh.uvs);
-=======
-            drawMode = gl.POINTS;
->>>>>>> pass one of geom
-        }
-        else if (drawMode === CONST.DRAW_MODES.POINTS)
-        {
-            drawMode = gl.POINTS;
-        }
-        else
-        {
-            drawMode = gl.POINTS;
-        }*/
-
-        drawMode = gl.TRIANGLES;
-
-        vao.draw(drawMode);
-    }
-
     initGeometryVao(geometry)
     {
         const gl = this.gl;
+
+        this.renderer.bindVao(null);
 
         const vao = this.renderer.createVao();
 
