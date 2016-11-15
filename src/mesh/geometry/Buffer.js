@@ -11,7 +11,7 @@ let UID = 0;
  */
 export default class Buffer
 {
-	                                        constructor(data)
+	constructor(data)
 	{
 		/**
 	     * The type of the buffer
@@ -32,13 +32,13 @@ export default class Buffer
 	     *
 	     * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
 	     */
-		                                        this.data = data;
+        this.data = data;
 
-		                                        this._glBuffers = [];
+        this._glBuffers = [];
 
-		                                        this._updateID = 0;
+        this._updateID = 0;
 
-		                                        this.id = UID++;
+        this.id = UID++;
 	}
 
 	/**
@@ -46,28 +46,28 @@ export default class Buffer
 	 * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
 	 * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
 	 */
-	                                        update()
+	update()
 	{
-		                                        this._updateID++;
+		this._updateID++;
 	}
 
 	/**
 	 * Destroys the buffer
 	 *
 	 */
-	                                        destroy()
+	destroy()
 	{
-		                                        for (let i = 0; i < this._glBuffers.length; i++)
+		for (let i = 0; i < this._glBuffers.length; i++)
 		{
-			                                        this._glBuffers[i].destroy();
+			this._glBuffers[i].destroy();
 		}
 
-		                                        this.data = null;
+		this.data = null;
 	}
 
-	                                        static from(data)
+	static from(data)
 	{
-		                                        return new Buffer(data);
+		return new Buffer(data);
 	}
 }
 
