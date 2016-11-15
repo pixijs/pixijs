@@ -42,7 +42,17 @@ export default function ()
 
             const frames = resource.data.frames;
             const frameKeys = Object.keys(frames);
-            const resolution = core.utils.getResolutionOfUrl(resource.url);
+            const baseTexture = res.texture.baseTexture;
+            let resolution = core.utils.getResolutionOfUrl(resource.url);
+            const scale = resource.data.meta.scale;
+
+            // Support scale field on spritesheet
+            if (scale !== undefined && scale !== 1)
+            {
+                baseTexture.resolution = resolution = scale;
+                baseTexture.update();
+            }
+
             let batchIndex = 0;
 
             function processFrames(initialFrameIndex, maxFrames)
@@ -96,7 +106,7 @@ export default function ()
                         }
 
                         resource.textures[i] = new core.Texture(
-                            res.texture.baseTexture,
+                            baseTexture,
                             frame,
                             orig,
                             trim,
