@@ -431,7 +431,7 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-        this.renderer.bindShader(this.shader);
+        this.renderer._bindGLShader(this.shader);
 
         this.renderer.bindVao(this.vaos[this.vertexCount]);
 
