@@ -3,8 +3,9 @@ import { DRAW_MODES } from '../../../const';
 /**
  * Generic Mask Stack data structure.
  *
- * @class
  * @memberof PIXI
+ * @function mapWebGLDrawModesToPixi
+ * @private
  * @param {WebGLRenderingContext} gl - The current WebGL drawing context
  * @param {object} [object={}] - The object to map into
  * @return {object} The mapped draw modes.
