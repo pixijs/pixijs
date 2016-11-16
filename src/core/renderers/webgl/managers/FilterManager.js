@@ -321,14 +321,16 @@ export default class FilterManager extends WebGLManager
         {
             if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
             {
-                shader.uniforms[i] = textureCount;
+
 
                 if (uniforms[i].baseTexture)
                 {
-                    this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+                    shader.uniforms[i] = this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
                 }
                 else
                 {
+                    shader.uniforms[i] = textureCount;
+
                     // TODO
                     // this is helpful as renderTargets can also be set.
                     // Although thinking about it, we could probably
