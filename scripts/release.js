@@ -9,9 +9,9 @@ const packageInfo = require(path.join(__dirname, '..', 'package.json'));
 
 const options = {
     src: [
-        'bin/**/*',
+        'dist/**/*',
+        'lib/**/*',
         'scripts/**/*',
-        'src/**/*',
         'test/**/*',
         '*.json',
         '*.md',

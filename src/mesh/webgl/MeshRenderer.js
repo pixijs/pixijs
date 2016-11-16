@@ -1,8 +1,8 @@
 import * as core from '../../core';
 import glCore from 'pixi-gl-core';
 import { default as Mesh } from '../Mesh';
-
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -31,8 +31,8 @@ export default class MeshRenderer extends core.ObjectRenderer {
         const gl = this.renderer.gl;
 
         this.shader = new core.Shader(gl,
-            glslify('./mesh.vert'),
-            glslify('./mesh.frag'));
+            readFileSync(join(__dirname, './mesh.vert'), 'utf8'),
+            readFileSync(join(__dirname, './mesh.frag'), 'utf8'));
     }
 
     /**

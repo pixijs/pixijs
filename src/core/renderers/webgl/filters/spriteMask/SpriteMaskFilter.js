@@ -1,8 +1,7 @@
 import Filter from '../Filter';
 import { Matrix } from '../../../../math';
-
-// @see https://github.com/substack/brfs/issues/25
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * The SpriteMaskFilter class
@@ -21,8 +20,8 @@ export default class SpriteMaskFilter extends Filter
         const maskMatrix = new Matrix();
 
         super(
-            glslify('./spriteMaskFilter.vert'),
-            glslify('./spriteMaskFilter.frag')
+            readFileSync(join(__dirname, './spriteMaskFilter.vert'), 'utf8'),
+            readFileSync(join(__dirname, './spriteMaskFilter.frag'), 'utf8')
         );
 
         sprite.renderable = false;

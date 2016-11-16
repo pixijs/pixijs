@@ -9,7 +9,7 @@ import canUploadSameBuffer from './utils/canUploadSameBuffer';
  * @memberof PIXI
  * @type {string}
  */
-export const VERSION = '__VERSION__';
+export const VERSION = __VERSION__;
 
 /**
  * Two Pi.

@@ -1,5 +1,6 @@
 import * as core from '../../core';
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  *
@@ -24,9 +25,9 @@ export default class FXAAFilter extends core.Filter
         // TODO - needs work
         super(
             // vertex shader
-            glslify('./fxaa.vert'),
+            readFileSync(join(__dirname, './fxaa.vert'), 'utf8'),
             // fragment shader
-            glslify('./fxaa.frag')
+            readFileSync(join(__dirname, './fxaa.frag'), 'utf8')
         );
     }
 }
