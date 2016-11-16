@@ -1,4 +1,3 @@
-import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
@@ -40,17 +39,6 @@ export const RAD_TO_DEG = 180 / Math.PI;
  * @type {number}
  */
 export const DEG_TO_RAD = Math.PI / 180;
-
-/**
- * Target frames per millisecond.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- * @default 0.06
- */
-export const TARGET_FPMS = 0.06;
 
 /**
  * Constant to identify the Renderer Type.
@@ -146,19 +134,17 @@ export const DRAW_MODES = {
 /**
  * The scale modes that are supported by pixi.
  *
- * The DEFAULT scale mode affects the default scaling mode of future operations.
+ * The PIXI.settings.SCALE_MODE scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  *
  * @static
  * @constant
  * @memberof PIXI
  * @type {object}
- * @property {number} DEFAULT=LINEAR
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
 export const SCALE_MODES = {
-    DEFAULT:    0,
     LINEAR:     0,
     NEAREST:    1,
 };
@@ -166,7 +152,7 @@ export const SCALE_MODES = {
 /**
  * The wrap modes that are supported by pixi.
  *
- * The DEFAULT wrap mode affects the default wraping mode of future operations.
+ * The PIXI.settings.WRAP_MODE wrap mode affects the default wraping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
  * If the texture is non power of two then clamp will be used regardless as webGL can
  * only use REPEAT if the texture is po2.
@@ -177,13 +163,11 @@ export const SCALE_MODES = {
  * @constant
  * @memberof PIXI
  * @type {object}
- * @property {number} DEFAULT=CLAMP
  * @property {number} CLAMP - The textures uvs are clamped
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
 export const WRAP_MODES = {
-    DEFAULT:        0,
     CLAMP:          0,
     REPEAT:         1,
     MIRRORED_REPEAT: 2,
@@ -192,8 +176,8 @@ export const WRAP_MODES = {
 /**
  * The gc modes that are supported by pixi.
  *
- * The DEFAULT Garbage Collection mode for pixi textures is MANUAL
- * If set to DEFAULT, the renderer will occasianally check textures usage. If they are not
+ * The PIXI.settings.GC_MODE Garbage Collection mode for pixi textures is AUTO
+ * If set to GC_MODE, the renderer will occasianally check textures usage. If they are not
  * used for a specified period of time they will be removed from the GPU. They will of course
  * be uploaded again when they are required. This is a silent behind the scenes process that
  * should ensure that the GPU does not  get filled up.
@@ -205,86 +189,12 @@ export const WRAP_MODES = {
  * @constant
  * @memberof PIXI
  * @type {object}
- * @property {number} DEFAULT=MANUAL
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
 export const GC_MODES = {
-    DEFAULT:        0,
     AUTO:           0,
     MANUAL:         1,
-};
-
-/**
- * If set to true WebGL will attempt make textures mimpaped by default.
- * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {boolean}
- */
-export const MIPMAP_TEXTURES = true;
-
-/**
- * The prefix that denotes a URL is for a retina asset.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {RegExp|string}
- * @example `@2x`
- */
-export const RETINA_PREFIX = /@(.+)x/;
-
-/**
- * Default resolution / device pixel ratio of the renderer.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- */
-export const RESOLUTION = 1;
-
-/**
- * Default filter resolution.
- *
- * @static
- * @constant
- * @type {number}
- */
-export const FILTER_RESOLUTION = 1;
-
-/**
- * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
- * or {@link PIXI.CanvasRenderer}.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {object}
- * @property {HTMLCanvasElement} view=null
- * @property {number} resolution=1
- * @property {boolean} antialias=false
- * @property {boolean} forceFXAA=false
- * @property {boolean} autoResize=false
- * @property {boolean} transparent=false
- * @property {number} backgroundColor=0x000000
- * @property {boolean} clearBeforeRender=true
- * @property {boolean} preserveDrawingBuffer=false
- * @property {boolean} roundPixels=false
- */
-export const DEFAULT_RENDER_OPTIONS = {
-    view: null,
-    antialias: false,
-    forceFXAA: false,
-    autoResize: false,
-    transparent: false,
-    backgroundColor: 0x000000,
-    clearBeforeRender: true,
-    preserveDrawingBuffer: false,
-    roundPixels: false,
 };
 
 /**
@@ -349,13 +259,11 @@ export const SHAPES = {
  * @constant
  * @memberof PIXI
  * @type {object}
- * @property {number} DEFAULT='mediump'
- * @property {number} LOW='lowp'
- * @property {number} MEDIUM='mediump'
- * @property {number} HIGH='highp'
+ * @property {string} LOW='lowp'
+ * @property {string} MEDIUM='mediump'
+ * @property {string} HIGH='highp'
  */
 export const PRECISION = {
-    DEFAULT: 'mediump',
     LOW: 'lowp',
     MEDIUM: 'mediump',
     HIGH: 'highp',
@@ -368,12 +276,10 @@ export const PRECISION = {
  * @constant
  * @memberof PIXI
  * @type {object}
- * @property {number} DEFAULT=STATIC
  * @property {number} STATIC
  * @property {number} DYNAMIC
  */
 export const TRANSFORM_MODE = {
-    DEFAULT:    0,
     STATIC:     0,
     DYNAMIC:    1,
 };
@@ -395,29 +301,6 @@ export const TEXT_GRADIENT = {
 
 // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
 // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-
-/**
- * The default sprite batch size.
- *
- * The default aims to balance desktop and mobile devices.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- * @default 4096
- */
-export const SPRITE_BATCH_SIZE = 4096;
-
-/**
- * The maximum textures that this device supports.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- */
-export const SPRITE_MAX_TEXTURES = maxRecommendedTextures(32);
 
 /**
  * Can we upload the same buffer in a single frame?

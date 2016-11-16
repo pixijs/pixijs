@@ -1,11 +1,13 @@
 import { sayHello, hex2string, hex2rgb } from '../utils';
 import { Matrix } from '../math';
-import { DEFAULT_RENDER_OPTIONS, RENDERER_TYPE, RESOLUTION } from '../const';
+import { RENDERER_TYPE } from '../const';
+import settings from '../settings';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
 
 const tempMatrix = new Matrix();
+const { RESOLUTION, RENDER_OPTIONS } = settings;
 
 /**
  * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -45,17 +47,17 @@ export default class SystemRenderer extends EventEmitter
         // prepare options
         if (options)
         {
-            for (const i in DEFAULT_RENDER_OPTIONS)
+            for (const i in RENDER_OPTIONS)
             {
                 if (typeof options[i] === 'undefined')
                 {
-                    options[i] = DEFAULT_RENDER_OPTIONS[i];
+                    options[i] = RENDER_OPTIONS[i];
                 }
             }
         }
         else
         {
-            options = DEFAULT_RENDER_OPTIONS;
+            options = RENDER_OPTIONS;
         }
 
         /**

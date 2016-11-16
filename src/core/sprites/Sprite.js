@@ -453,7 +453,7 @@ export default class Sprite extends Container
      * @static
      * @param {string} imageId - The image url of the texture
      * @param {boolean} [crossorigin=(auto)] - if you want to specify the cross-origin parameter
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - if you want to specify the scale mode,
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - if you want to specify the scale mode,
      *  see {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
      */

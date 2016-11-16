@@ -1,4 +1,5 @@
 import { GC_MODES } from '../../const';
+import settings from '../../settings';
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
@@ -21,7 +22,7 @@ export default class TextureGarbageCollector
         this.maxIdle = 60 * 60;
         this.checkCountMax = 60 * 10;
 
-        this.mode = GC_MODES.DEFAULT;
+        this.mode = settings.GC_MODE;
     }
 
     /**

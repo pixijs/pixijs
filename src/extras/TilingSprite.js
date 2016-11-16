@@ -369,7 +369,7 @@ export default class TilingSprite extends core.Sprite
      * @param {number} width - the width of the tiling sprite
      * @param {number} height - the height of the tiling sprite
      * @param {boolean} [crossorigin] - if you want to specify the cross-origin parameter
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - if you want to specify the scale mode,
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - if you want to specify the scale mode,
      *  see {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.extras.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
      */

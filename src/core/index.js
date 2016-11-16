@@ -6,10 +6,11 @@ export * from './math';
 
 import * as utils from './utils';
 import * as ticker from './ticker';
+import settings from './settings';
 import CanvasRenderer from './renderers/canvas/CanvasRenderer';
 import WebGLRenderer from './renderers/webgl/WebGLRenderer';
 
-export { utils, ticker, CanvasRenderer, WebGLRenderer };
+export { settings, utils, ticker, CanvasRenderer, WebGLRenderer };
 
 export { default as glCore } from 'pixi-gl-core';
 
