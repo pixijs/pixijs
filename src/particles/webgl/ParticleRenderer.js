@@ -185,10 +185,6 @@ export default class ParticleRenderer extends core.ObjectRenderer
             renderer.bindVao(buffer.vao);
             buffer.vao.draw(gl.TRIANGLES, amount * 6);
             renderer.bindVao(null);
-
-            // now draw those suckas!
-            // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
-            //  this.renderer.drawCount++;
         }
     }
 
