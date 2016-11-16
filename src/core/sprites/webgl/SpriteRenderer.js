@@ -4,9 +4,12 @@ import createIndicesForQuads from '../../utils/createIndicesForQuads';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
-import { SPRITE_BATCH_SIZE, SPRITE_MAX_TEXTURES, CAN_UPLOAD_SAME_BUFFER } from '../../const';
+import { CAN_UPLOAD_SAME_BUFFER } from '../../const';
+import settings from '../../settings';
 import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
+
+const { SPRITE_BATCH_SIZE, SPRITE_MAX_TEXTURES } = settings;
 
 let TICK = 0;
 let TEXTURE_TICK = 0;

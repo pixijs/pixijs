@@ -9,9 +9,10 @@ const packageInfo = require(path.join(__dirname, '..', 'package.json'));
 
 const options = {
     src: [
-        'bin/**/*',
-        'scripts/**/*',
+        'dist/**/*',
+        'lib/**/*',
         'src/**/*',
+        'scripts/**/*',
         'test/**/*',
         '*.json',
         '*.md',
@@ -19,6 +20,7 @@ const options = {
         '.eslintrc',
         '.editorconfig',
         '.travis.yml',
+        '.babelrc',
     ],
     dotfiles: true,
     branch: 'release',

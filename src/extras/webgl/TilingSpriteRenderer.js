@@ -1,8 +1,8 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
 import { GLShader } from 'pixi-gl-core';
-
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const tempMat = new core.Matrix();
 const tempArray = new Float32Array(4);
@@ -36,12 +36,12 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
         const gl = this.renderer.gl;
 
         this.shader = new GLShader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite.frag'),
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
             core.PRECISION.DEFAULT);
         this.simpleShader = new GLShader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite_simple.frag'),
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
             core.PRECISION.DEFAULT);
 
         this.renderer.bindVao(null);

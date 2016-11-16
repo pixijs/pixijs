@@ -4,6 +4,8 @@ import { BLEND_MODES } from '../../../const';
  * Maps gl blend combinations to WebGL.
  *
  * @memberof PIXI
+ * @function mapWebGLBlendModesToPixi
+ * @private
  * @param {WebGLRenderingContext} gl - The rendering context.
  * @param {string[]} [array=[]] - The array to output into.
  * @return {string[]} Mapped modes.
