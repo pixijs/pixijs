@@ -1,22 +1,20 @@
-var core = require('../core');
+import * as core from '../core';
 
 /**
-* Returns the global position of the displayObject
-*
-* @memberof PIXI.DisplayObject#
-* @param point {Point} the point to write the global value to. If null a new point will be returned
-* @return {Point}
-*/
-core.DisplayObject.prototype.getGlobalPosition = function (point)
+ * Returns the global position of the displayObject. Does not depend on object scale, rotation and pivot.
+ *
+ * @memberof PIXI.DisplayObject#
+ * @param {Point} point - the point to write the global value to. If null a new point will be returned
+ * @param {boolean} skipUpdate - setting to true will stop the transforms of the scene graph from
+ *  being updated. This means the calculation returned MAY be out of date BUT will give you a
+ *  nice performance boost
+ * @return {Point} The updated point
+ */
+core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new core.Point(), skipUpdate = false)
 {
-    point = point || new core.Point();
-
-    if(this.parent)
+    if (this.parent)
     {
-        this.displayObjectUpdateTransform();
-
-        point.x = this.worldTransform.tx;
-        point.y = this.worldTransform.ty;
+        this.parent.toGlobal(this.position, point, skipUpdate);
     }
     else
     {

@@ -1,18 +1,18 @@
-describe('toLocal', function () {
+'use strict';
 
-    it('should return correct local cordinates of a displayObject', function() {
+describe('toLocal', function ()
+{
+    it('should return correct local cordinates of a displayObject', function ()
+    {
+        const parent = new PIXI.Container();
 
-        var parent = new PIXI.Container();
-
-        var container = new PIXI.Container();
+        const container = new PIXI.Container();
 
         parent.addChild(container);
 
-        var point = new PIXI.Point(100, 100);
+        const point = new PIXI.Point(100, 100);
 
-        var localPoint;
-
-        localPoint = container.toLocal(point);
+        let localPoint = container.toLocal(point);
 
         expect(localPoint.x).to.equal(100);
         expect(localPoint.y).to.equal(100);
@@ -27,15 +27,14 @@ describe('toLocal', function () {
 
         expect(localPoint.x).to.equal(40);
         expect(localPoint.y).to.equal(40);
-
     });
 
-    it('should map the correct local cordinates of a displayObject to another', function() {
+    it('should map the correct local cordinates of a displayObject to another', function ()
+    {
+        const parent = new PIXI.Container();
 
-        var parent = new PIXI.Container();
-
-        var container = new PIXI.Container();
-        var container2 = new PIXI.Container();
+        const container = new PIXI.Container();
+        const container2 = new PIXI.Container();
 
         parent.addChild(container);
         parent.addChild(container2);
@@ -43,15 +42,14 @@ describe('toLocal', function () {
         container2.position.x = 100;
         container2.position.y = 100;
 
-        var point = new PIXI.Point(100, 100);
+        const point = new PIXI.Point(100, 100);
 
         container.scale.x = 2;
         container.scale.y = 2;
 
-        var localPoint = container.toLocal(point, container2);
+        const localPoint = container.toLocal(point, container2);
 
         expect(localPoint.x).to.equal(100);
         expect(localPoint.y).to.equal(100);
-
     });
 });

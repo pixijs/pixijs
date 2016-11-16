@@ -1,19 +1,18 @@
-describe('toGlobal', function () {
+'use strict';
 
+describe('toGlobal', function ()
+{
+    it('should return correct global cordinates of a point from within a displayObject', function ()
+    {
+        const parent = new PIXI.Container();
 
-    it('should return correct global cordinates of a point from within a displayObject', function() {
-
-        var parent = new PIXI.Container();
-
-        var container = new PIXI.Container();
+        const container = new PIXI.Container();
 
         parent.addChild(container);
 
-        var point = new PIXI.Point(100, 100);
+        const point = new PIXI.Point(100, 100);
 
-        var globalPoint;
-
-        globalPoint = container.toGlobal(point);
+        let globalPoint = container.toGlobal(point);
 
         expect(globalPoint.x).to.equal(100);
         expect(globalPoint.y).to.equal(100);
@@ -28,7 +27,5 @@ describe('toGlobal', function () {
 
         expect(globalPoint.x).to.equal(220);
         expect(globalPoint.y).to.equal(220);
-
     });
-
 });

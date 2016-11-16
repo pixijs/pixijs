@@ -113,11 +113,11 @@ vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,
 
 void main() {
 
-  	vec2 fragCoord = vTextureCoord * filterArea.xy;
+      vec2 fragCoord = vTextureCoord * filterArea.xy;
 
-  	vec4 color;
+      vec4 color;
 
     color = fxaa(uSampler, fragCoord, filterArea.xy, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);
 
-  	gl_FragColor = color;
+      gl_FragColor = color;
 }

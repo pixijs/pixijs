@@ -1,10 +1,15 @@
-describe('PIXI.interaction.InteractionData', function() {
-    describe('getLocalPosition', function() {
-        it('should populate second parameter with result', function() {
-            var data = new PIXI.interaction.InteractionData(),
-                stage = new PIXI.DisplayObject(),
-                displayObject = new PIXI.DisplayObject(),
-                point = new PIXI.Point();
+'use strict';
+
+describe('PIXI.interaction.InteractionData', function ()
+{
+    describe('getLocalPosition', function ()
+    {
+        it('should populate second parameter with result', function ()
+        {
+            const data = new PIXI.interaction.InteractionData();
+            const stage = new PIXI.DisplayObject();
+            const displayObject = new PIXI.DisplayObject();
+            const point = new PIXI.Point();
 
             data.global.set(10, 10);
             displayObject.position.set(5, 3);

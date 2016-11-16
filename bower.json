@@ -1,19 +1,15 @@
 {
     "name": "pixi.js",
-
-    "main": "bin/pixi.js",
-
+    "main": "bin/pixi.min.js",
     "ignore": [
         "**/.*",
         "docs",
-        "gulp",
         "node_modules",
         "bower_components",
         "test",
+        "scripts",
         "bower.json",
-        "gulpfile.js",
-        "inch.json",
-        "testem.json"
+        "inch.json"
     ],
     "dependencies": {
     },

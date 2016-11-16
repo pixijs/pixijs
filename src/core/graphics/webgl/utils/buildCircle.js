@@ -1,6 +1,6 @@
-var buildLine = require('./buildLine'),
-    CONST = require('../../../const'),
-    utils = require('../../../utils');
+import buildLine from './buildLine';
+import { SHAPES } from '../../../const';
+import { hex2rgb } from '../../../utils';
 
 /**
  * Builds a circle to draw
@@ -9,20 +9,20 @@ var buildLine = require('./buildLine'),
  *
  * @ignore
  * @private
- * @param graphicsData {PIXI.WebGLGraphicsData} The graphics object to draw
- * @param webGLData {object} an object containing all the webGL-specific information to create this shape
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object to draw
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-var buildCircle = function (graphicsData, webGLData)
+export default function buildCircle(graphicsData, webGLData)
 {
     // need to convert points to a nice regular data
-    var circleData = graphicsData.shape;
-    var x = circleData.x;
-    var y = circleData.y;
-    var width;
-    var height;
+    const circleData = graphicsData.shape;
+    const x = circleData.x;
+    const y = circleData.y;
+    let width;
+    let height;
 
     // TODO - bit hacky??
-    if (graphicsData.type === CONST.SHAPES.CIRC)
+    if (graphicsData.type === SHAPES.CIRC)
     {
         width = circleData.radius;
         height = circleData.radius;
@@ -33,58 +33,59 @@ var buildCircle = function (graphicsData, webGLData)
         height = circleData.height;
     }
 
-    var totalSegs = Math.floor(30 * Math.sqrt(circleData.radius)) || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
-    var seg = (Math.PI * 2) / totalSegs ;
+    const totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
+        || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
 
-    var i = 0;
+    const seg = (Math.PI * 2) / totalSegs;
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        const color = hex2rgb(graphicsData.fillColor);
+        const alpha = graphicsData.fillAlpha;
 
-        var r = color[0] * alpha;
-        var g = color[1] * alpha;
-        var b = color[2] * alpha;
+        const r = color[0] * alpha;
+        const g = color[1] * alpha;
+        const b = color[2] * alpha;
 
-        var verts = webGLData.points;
-        var indices = webGLData.indices;
+        const verts = webGLData.points;
+        const indices = webGLData.indices;
 
-        var vecPos = verts.length/6;
+        let vecPos = verts.length / 6;
 
         indices.push(vecPos);
 
-        for (i = 0; i < totalSegs + 1 ; i++)
+        for (let i = 0; i < totalSegs + 1; i++)
         {
-            verts.push(x,y, r, g, b, alpha);
+            verts.push(x, y, r, g, b, alpha);
 
-            verts.push(x + Math.sin(seg * i) * width,
-                       y + Math.cos(seg * i) * height,
-                       r, g, b, alpha);
+            verts.push(
+                x + (Math.sin(seg * i) * width),
+                y + (Math.cos(seg * i) * height),
+                r, g, b, alpha
+            );
 
             indices.push(vecPos++, vecPos++);
         }
 
-        indices.push(vecPos-1);
+        indices.push(vecPos - 1);
     }
 
     if (graphicsData.lineWidth)
     {
-        var tempPoints = graphicsData.points;
+        const tempPoints = graphicsData.points;
 
         graphicsData.points = [];
 
-        for (i = 0; i < totalSegs + 1; i++)
+        for (let i = 0; i < totalSegs + 1; i++)
         {
-            graphicsData.points.push(x + Math.sin(seg * i) * width,
-                                     y + Math.cos(seg * i) * height);
+            graphicsData.points.push(
+                x + (Math.sin(seg * i) * width),
+                y + (Math.cos(seg * i) * height)
+            );
         }
 
         buildLine(graphicsData, webGLData);
 
         graphicsData.points = tempPoints;
     }
-};
-
-
-module.exports = buildCircle;
+}

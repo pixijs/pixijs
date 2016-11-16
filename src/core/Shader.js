@@ -1,18 +1,26 @@
-var GLShader = require('pixi-gl-core').GLShader;
-var Const = require('./const');
+import { GLShader } from 'pixi-gl-core';
+import settings from './settings';
 
-function checkPrecision(src) {
-    if (src instanceof Array) {
-        if (src[0].substring(0,9) !== 'precision') {
-            var copy = src.slice(0);
-            copy.unshift('precision ' + Const.PRECISION.DEFAULT + ' float;');
+const { PRECISION } = settings;
+
+function checkPrecision(src)
+{
+    if (src instanceof Array)
+    {
+        if (src[0].substring(0, 9) !== 'precision')
+        {
+            const copy = src.slice(0);
+
+            copy.unshift(`precision ${PRECISION} float;`);
+
             return copy;
         }
-    } else {
-        if (src.substring(0,9) !== 'precision') {
-            return 'precision ' + Const.PRECISION.DEFAULT + ' float;\n' + src;
-        }
     }
+    else if (src.substring(0, 9) !== 'precision')
+    {
+        return `precision ${PRECISION} float;\n${src}`;
+    }
+
     return src;
 }
 
@@ -21,16 +29,19 @@ function checkPrecision(src) {
  * Adds precision string if vertexSrc or fragmentSrc have no mention of it.
  *
  * @class
+ * @extends GLShader
  * @memberof PIXI
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
- * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
- * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations.
  */
-var Shader = function(gl, vertexSrc, fragmentSrc, attributeLocations) {
-    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc), attributeLocations);
-};
-
-Shader.prototype = Object.create(GLShader.prototype);
-Shader.prototype.constructor = Shader;
-module.exports = Shader;
+export default class Shader extends GLShader
+{
+    /**
+     *
+     * @param {WebGLRenderingContext} gl - The current WebGL rendering context
+     * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
+     * @param {string|string[]} fragmentSrc - The fragment shader source as an array of strings.
+     */
+    constructor(gl, vertexSrc, fragmentSrc)
+    {
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+    }
+}

@@ -1,53 +1,10 @@
-var CONST = require('../const'),
-    utils = require('../utils');
+// disabling eslint for now, going to rewrite this in v5
+/* eslint-disable */
 
-/**
- * A TextStyle Object decorates a Text Object. It can be shared between
- * multiple Text objects. Changing the style will update all text objects using it.
- *
- * @class
- * @memberof PIXI
- * @param [style] {object} The style parameters
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.breakWords=false] {boolean} Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
- * @param [style.dropShadowBlur=0] {number} Set a shadow blur radius
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.fill='black'] {string|string[]|number|number[]|CanvasGradient|CanvasPattern} A canvas fillstyle that will be used on the
- *      text e.g 'red', '#00FF00'. Can be an array to create a gradient eg ['#000000','#FFFFFF'] @see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
- * @param [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] {number} If fills styles are supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
- * @param [style.fontFamily='Arial'] {string} The font family
- * @param [style.fontSize=26] {number|string} The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em')
- * @param [style.fontStyle='normal'] {string} The font style ('normal', 'italic' or 'oblique')
- * @param [style.fontVariant='normal'] {string} The font variant ('normal' or 'small-caps')
- * @param [style.fontWeight='normal'] {string} The font weight ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
- * @param [style.letterSpacing=0] {number} The amount of spacing between letters, default is 0
- * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
- * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
- *      spiked text issues. Default is 'miter' (creates a sharp corner).
- * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
- *      or increase the spikiness of rendered text.
- * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
- *      prevent this from happening by adding padding to the top and bottom of text height.
- * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
- */
-function TextStyle(style)
-{
-    this.styleID = 0;
-    Object.assign(this, this._defaults, style);
-}
+import { TEXT_GRADIENT } from '../const';
+import { hex2string } from '../utils';
 
-TextStyle.prototype.constructor = TextStyle;
-module.exports = TextStyle;
-
-// Default settings. Explained in the constructor.
-TextStyle.prototype._defaults = {
+const defaultStyle = {
     align: 'left',
     breakWords: false,
     dropShadow: false,
@@ -56,7 +13,7 @@ TextStyle.prototype._defaults = {
     dropShadowColor: '#000000',
     dropShadowDistance: 5,
     fill: 'black',
-    fillGradientType: CONST.TEXT_GRADIENT.LINEAR_VERTICAL,
+    fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
     fontFamily: 'Arial',
     fontSize: 26,
     fontStyle: 'normal',
@@ -71,419 +28,426 @@ TextStyle.prototype._defaults = {
     strokeThickness: 0,
     textBaseline: 'alphabetic',
     wordWrap: false,
-    wordWrapWidth: 100
+    wordWrapWidth: 100,
 };
 
 /**
- * Creates a new TextStyle object with the same values as this one.
- * Note that the only the properties of the object are cloned.
+ * A TextStyle Object decorates a Text Object. It can be shared between
+ * multiple Text objects. Changing the style will update all text objects using it.
  *
- * @return {PIXI.TextStyle} New cloned TextStyle object
+ * @class
+ * @memberof PIXI
  */
-TextStyle.prototype.clone = function ()
+export default class TextStyle
 {
-    var clonedProperties = {};
-    for (var key in this._defaults)
+    /**
+     * @param {object} [style] - The style parameters
+     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
+     *  does not affect single line text
+     * @param {boolean} [style.breakWords=false] - Indicates if lines can be wrapped within words, it
+     *  needs wordWrap to be set to true
+     * @param {boolean} [style.dropShadow=false] - Set a drop shadow for the text
+     * @param {number} [style.dropShadowAngle=Math.PI/6] - Set a angle of the drop shadow
+     * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
+     * @param {string} [style.dropShadowColor='#000000'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param {number} [style.dropShadowDistance=5] - Set a distance of the drop shadow
+     * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.fill='black'] - A canvas
+     *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
+     *  eg ['#000000','#FFFFFF']
+     * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+     * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fills styles are
+     *  supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
+     * @param {string} [style.fontFamily='Arial'] - The font family
+     * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
+     *  equivalents are '26px','20pt','160%' or '1.6em')
+     * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
+     * @param {string} [style.fontVariant='normal'] - The font variant ('normal' or 'small-caps')
+     * @param {string} [style.fontWeight='normal'] - The font weight ('normal', 'bold', 'bolder', 'lighter' and '100',
+     *  '200', '300', '400', '500', '600', '700', 800' or '900')
+     * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
+     * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
+     * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
+     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     *      or increase the spikiness of rendered text.
+     * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
+     *     happening by adding padding to all sides of the text.
+     * @param {string|number} [style.stroke='black'] - A canvas fillstyle that will be used on the text stroke
+     *  e.g 'blue', '#FCFF00'
+     * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
+     *  Default is 0 (no stroke)
+     * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
+     * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
+     * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
+     */
+    constructor(style)
     {
-        clonedProperties[key] = this[key];
+        this.styleID = 0;
+
+        Object.assign(this, defaultStyle, style);
     }
-    return new TextStyle(clonedProperties);
-};
 
-/**
- * Resets all properties to the defaults specified in TextStyle.prototype._default
- */
-TextStyle.prototype.reset = function ()
-{
-    Object.assign(this, this._defaults);
-};
+    /**
+     * Creates a new TextStyle object with the same values as this one.
+     * Note that the only the properties of the object are cloned.
+     *
+     * @return {PIXI.TextStyle} New cloned TextStyle object
+     */
+    clone()
+    {
+        const clonedProperties = {};
 
-/**
- * Create setters and getters for each of the style properties. Converts colors where necessary.
- */
-Object.defineProperties(TextStyle.prototype, {
-     align: {
-        get: function ()
+        for (const key in this._defaults)
         {
-            return this._align;
-        },
-        set: function (align)
-        {
-            if (this._align !== align)
-            {
-                this._align = align;
-                this.styleID++;
-            }
+            clonedProperties[key] = this[key];
         }
-    },
 
-    breakWords: {
-        get: function ()
-        {
-            return this._breakWords;
-        },
-        set: function (breakWords)
-        {
-            if (this._breakWords !== breakWords)
-            {
-                this._breakWords = breakWords;
-                this.styleID++;
-            }
-        }
-    },
+        return new TextStyle(clonedProperties);
+    }
 
-    dropShadow: {
-        get: function ()
-        {
-            return this._dropShadow;
-        },
-        set: function (dropShadow)
-        {
-            if (this._dropShadow !== dropShadow)
-            {
-                this._dropShadow = dropShadow;
-                this.styleID++;
-            }
-        }
-    },
+    /**
+     * Resets all properties to the defaults specified in TextStyle.prototype._default
+     */
+    reset()
+    {
+        Object.assign(this, this._defaults);
+    }
 
-    dropShadowAngle: {
-        get: function ()
+    get align()
+    {
+        return this._align;
+    }
+    set align(align)
+    {
+        if (this._align !== align)
         {
-            return this._dropShadowAngle;
-        },
-        set: function (dropShadowAngle)
-        {
-            if (this._dropShadowAngle !== dropShadowAngle)
-            {
-                this._dropShadowAngle = dropShadowAngle;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowBlur: {
-        get: function ()
-        {
-            return this._dropShadowBlur;
-        },
-        set: function (dropShadowBlur)
-        {
-            if (this._dropShadowBlur !== dropShadowBlur)
-            {
-                this._dropShadowBlur = dropShadowBlur;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowColor: {
-        get: function ()
-        {
-            return this._dropShadowColor;
-        },
-        set: function (dropShadowColor)
-        {
-            var outputColor = getColor(dropShadowColor);
-            if (this._dropShadowColor !== outputColor)
-            {
-                this._dropShadowColor = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    dropShadowDistance: {
-        get: function ()
-        {
-            return this._dropShadowDistance;
-        },
-        set: function (dropShadowDistance)
-        {
-            if (this._dropShadowDistance !== dropShadowDistance)
-            {
-                this._dropShadowDistance = dropShadowDistance;
-                this.styleID++;
-            }
-        }
-    },
-
-    fill: {
-        get: function ()
-        {
-            return this._fill;
-        },
-        set: function (fill)
-        {
-            var outputColor = getColor(fill);
-            if (this._fill !== outputColor)
-            {
-                this._fill = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    fillGradientType: {
-        get: function ()
-        {
-            return this._fillGradientType;
-        },
-        set: function (fillGradientType)
-        {
-            if (this._fillGradientType !== fillGradientType)
-            {
-                this._fillGradientType = fillGradientType;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontFamily: {
-        get: function ()
-        {
-            return this._fontFamily;
-        },
-        set: function (fontFamily)
-        {
-            if (this.fontFamily !== fontFamily)
-            {
-                this._fontFamily = fontFamily;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontSize: {
-        get: function ()
-        {
-            return this._fontSize;
-        },
-        set: function (fontSize)
-        {
-            if (this._fontSize !== fontSize)
-            {
-                this._fontSize = fontSize;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontStyle: {
-        get: function ()
-        {
-            return this._fontStyle;
-        },
-        set: function (fontStyle)
-        {
-            if (this._fontStyle !== fontStyle)
-            {
-                this._fontStyle = fontStyle;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontVariant: {
-        get: function ()
-        {
-            return this._fontVariant;
-        },
-        set: function (fontVariant)
-        {
-            if (this._fontVariant !== fontVariant)
-            {
-                this._fontVariant = fontVariant;
-                this.styleID++;
-            }
-        }
-    },
-
-    fontWeight: {
-        get: function ()
-        {
-            return this._fontWeight;
-        },
-        set: function (fontWeight)
-        {
-            if (this._fontWeight !== fontWeight)
-            {
-                this._fontWeight = fontWeight;
-                this.styleID++;
-            }
-        }
-    },
-
-    letterSpacing: {
-        get: function ()
-        {
-            return this._letterSpacing;
-        },
-        set: function (letterSpacing)
-        {
-            if (this._letterSpacing !== letterSpacing)
-            {
-                this._letterSpacing = letterSpacing;
-                this.styleID++;
-            }
-        }
-    },
-
-    lineHeight: {
-        get: function ()
-        {
-            return this._lineHeight;
-        },
-        set: function (lineHeight)
-        {
-            if (this._lineHeight !== lineHeight)
-            {
-                this._lineHeight = lineHeight;
-                this.styleID++;
-            }
-        }
-    },
-
-    lineJoin: {
-        get: function ()
-        {
-            return this._lineJoin;
-        },
-        set: function (lineJoin)
-        {
-            if (this._lineJoin !== lineJoin)
-            {
-                this._lineJoin = lineJoin;
-                this.styleID++;
-            }
-        }
-    },
-
-    miterLimit: {
-        get: function ()
-        {
-            return this._miterLimit;
-        },
-        set: function (miterLimit)
-        {
-            if (this._miterLimit !== miterLimit)
-            {
-                this._miterLimit = miterLimit;
-                this.styleID++;
-            }
-        }
-    },
-
-    padding: {
-        get: function ()
-        {
-            return this._padding;
-        },
-        set: function (padding)
-        {
-            if (this._padding !== padding)
-            {
-                this._padding = padding;
-                this.styleID++;
-            }
-        }
-    },
-
-    stroke: {
-        get: function ()
-        {
-            return this._stroke;
-        },
-        set: function (stroke)
-        {
-            var outputColor = getColor(stroke);
-            if (this._stroke !== outputColor)
-            {
-                this._stroke = outputColor;
-                this.styleID++;
-            }
-        }
-    },
-
-    strokeThickness: {
-        get: function ()
-        {
-            return this._strokeThickness;
-        },
-        set: function (strokeThickness)
-        {
-            if (this._strokeThickness !== strokeThickness)
-            {
-                this._strokeThickness = strokeThickness;
-                this.styleID++;
-            }
-        }
-    },
-
-    textBaseline: {
-        get: function ()
-        {
-            return this._textBaseline;
-        },
-        set: function (textBaseline)
-        {
-            if (this._textBaseline !== textBaseline)
-            {
-                this._textBaseline = textBaseline;
-                this.styleID++;
-            }
-        }
-    },
-
-    wordWrap: {
-        get: function ()
-        {
-            return this._wordWrap;
-        },
-        set: function (wordWrap)
-        {
-            if (this._wordWrap !== wordWrap)
-            {
-                this._wordWrap = wordWrap;
-                this.styleID++;
-            }
-        }
-    },
-
-    wordWrapWidth: {
-        get: function ()
-        {
-            return this._wordWrapWidth;
-        },
-        set: function (wordWrapWidth)
-        {
-            if (this._wordWrapWidth !== wordWrapWidth)
-            {
-                this._wordWrapWidth = wordWrapWidth;
-                this.styleID++;
-            }
+            this._align = align;
+            this.styleID++;
         }
     }
-});
+
+    get breakWords()
+    {
+        return this._breakWords;
+    }
+    set breakWords(breakWords)
+    {
+        if (this._breakWords !== breakWords)
+        {
+            this._breakWords = breakWords;
+            this.styleID++;
+        }
+    }
+
+    get dropShadow()
+    {
+        return this._dropShadow;
+    }
+    set dropShadow(dropShadow)
+    {
+        if (this._dropShadow !== dropShadow)
+        {
+            this._dropShadow = dropShadow;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowAngle()
+    {
+        return this._dropShadowAngle;
+    }
+    set dropShadowAngle(dropShadowAngle)
+    {
+        if (this._dropShadowAngle !== dropShadowAngle)
+        {
+            this._dropShadowAngle = dropShadowAngle;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowBlur()
+    {
+        return this._dropShadowBlur;
+    }
+    set dropShadowBlur(dropShadowBlur)
+    {
+        if (this._dropShadowBlur !== dropShadowBlur)
+        {
+            this._dropShadowBlur = dropShadowBlur;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowColor()
+    {
+        return this._dropShadowColor;
+    }
+    set dropShadowColor(dropShadowColor)
+    {
+        const outputColor = getColor(dropShadowColor);
+        if (this._dropShadowColor !== outputColor)
+        {
+            this._dropShadowColor = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowDistance()
+    {
+        return this._dropShadowDistance;
+    }
+    set dropShadowDistance(dropShadowDistance)
+    {
+        if (this._dropShadowDistance !== dropShadowDistance)
+        {
+            this._dropShadowDistance = dropShadowDistance;
+            this.styleID++;
+        }
+    }
+
+    get fill()
+    {
+        return this._fill;
+    }
+    set fill(fill)
+    {
+        const outputColor = getColor(fill);
+        if (this._fill !== outputColor)
+        {
+            this._fill = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get fillGradientType()
+    {
+        return this._fillGradientType;
+    }
+    set fillGradientType(fillGradientType)
+    {
+        if (this._fillGradientType !== fillGradientType)
+        {
+            this._fillGradientType = fillGradientType;
+            this.styleID++;
+        }
+    }
+
+    get fontFamily()
+    {
+        return this._fontFamily;
+    }
+    set fontFamily(fontFamily)
+    {
+        if (this.fontFamily !== fontFamily)
+        {
+            this._fontFamily = fontFamily;
+            this.styleID++;
+        }
+    }
+
+    get fontSize()
+    {
+        return this._fontSize;
+    }
+    set fontSize(fontSize)
+    {
+        if (this._fontSize !== fontSize)
+        {
+            this._fontSize = fontSize;
+            this.styleID++;
+        }
+    }
+
+    get fontStyle()
+    {
+        return this._fontStyle;
+    }
+    set fontStyle(fontStyle)
+    {
+        if (this._fontStyle !== fontStyle)
+        {
+            this._fontStyle = fontStyle;
+            this.styleID++;
+        }
+    }
+
+    get fontVariant()
+    {
+        return this._fontVariant;
+    }
+    set fontVariant(fontVariant)
+    {
+        if (this._fontVariant !== fontVariant)
+        {
+            this._fontVariant = fontVariant;
+            this.styleID++;
+        }
+    }
+
+    get fontWeight()
+    {
+        return this._fontWeight;
+    }
+    set fontWeight(fontWeight)
+    {
+        if (this._fontWeight !== fontWeight)
+        {
+            this._fontWeight = fontWeight;
+            this.styleID++;
+        }
+    }
+
+    get letterSpacing()
+    {
+        return this._letterSpacing;
+    }
+    set letterSpacing(letterSpacing)
+    {
+        if (this._letterSpacing !== letterSpacing)
+        {
+            this._letterSpacing = letterSpacing;
+            this.styleID++;
+        }
+    }
+
+    get lineHeight()
+    {
+        return this._lineHeight;
+    }
+    set lineHeight(lineHeight)
+    {
+        if (this._lineHeight !== lineHeight)
+        {
+            this._lineHeight = lineHeight;
+            this.styleID++;
+        }
+    }
+
+    get lineJoin()
+    {
+        return this._lineJoin;
+    }
+    set lineJoin(lineJoin)
+    {
+        if (this._lineJoin !== lineJoin)
+        {
+            this._lineJoin = lineJoin;
+            this.styleID++;
+        }
+    }
+
+    get miterLimit()
+    {
+        return this._miterLimit;
+    }
+    set miterLimit(miterLimit)
+    {
+        if (this._miterLimit !== miterLimit)
+        {
+            this._miterLimit = miterLimit;
+            this.styleID++;
+        }
+    }
+
+    get padding()
+    {
+        return this._padding;
+    }
+    set padding(padding)
+    {
+        if (this._padding !== padding)
+        {
+            this._padding = padding;
+            this.styleID++;
+        }
+    }
+
+    get stroke()
+    {
+        return this._stroke;
+    }
+    set stroke(stroke)
+    {
+        const outputColor = getColor(stroke);
+        if (this._stroke !== outputColor)
+        {
+            this._stroke = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get strokeThickness()
+    {
+        return this._strokeThickness;
+    }
+    set strokeThickness(strokeThickness)
+    {
+        if (this._strokeThickness !== strokeThickness)
+        {
+            this._strokeThickness = strokeThickness;
+            this.styleID++;
+        }
+    }
+
+    get textBaseline()
+    {
+        return this._textBaseline;
+    }
+    set textBaseline(textBaseline)
+    {
+        if (this._textBaseline !== textBaseline)
+        {
+            this._textBaseline = textBaseline;
+            this.styleID++;
+        }
+    }
+
+    get wordWrap()
+    {
+        return this._wordWrap;
+    }
+    set wordWrap(wordWrap)
+    {
+        if (this._wordWrap !== wordWrap)
+        {
+            this._wordWrap = wordWrap;
+            this.styleID++;
+        }
+    }
+
+    get wordWrapWidth()
+    {
+        return this._wordWrapWidth;
+    }
+    set wordWrapWidth(wordWrapWidth)
+    {
+        if (this._wordWrapWidth !== wordWrapWidth)
+        {
+            this._wordWrapWidth = wordWrapWidth;
+            this.styleID++;
+        }
+    }
+}
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  *
+ * @param {number|number[]} color
  * @return {string} The color as a string.
  */
 function getColor(color)
 {
     if (typeof color === 'number')
     {
-        return utils.hex2string(color);
+        return hex2string(color);
     }
     else if (Array.isArray(color))
     {
-        for (var i = 0; i < color.length; ++i)
+        for (let i = 0; i < color.length; ++i)
         {
             if (typeof color[i] === 'number')
             {
-                color[i] = utils.hex2string(color[i]);
+                color[i] = hex2string(color[i]);
             }
         }
     }
