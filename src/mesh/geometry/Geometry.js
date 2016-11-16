@@ -1,4 +1,5 @@
 import Attribute from './Attribute';
+import Buffer from './Buffer';
 import GeometryStyle from './GeometryStyle';
 import GeometryData from './GeometryData';
 
@@ -16,14 +17,32 @@ class Geometry
 
 	addAttribute(id, buffer, size = 2, stride = 0, start = 0, normalised = false)
 	{
+		// check if this is a buffer!
+		if(!buffer.data)
+		{
+			// its an array!
+			buffer = new Buffer(buffer);
+		}
+
 	    this.style.addAttribute(id, new Attribute(buffer.id, size, stride, start, normalised));
 	    this.data.add(buffer.id, buffer);
 
 	    return this;
 	}
 
+	getAttribute(id)
+	{
+		return this.data[ this.style.attributes[id].buffer ];
+	}
+
 	addIndex(buffer)
 	{
+		if(!buffer.data)
+		{
+			// its an array!
+			buffer = new Buffer(buffer);
+		}
+
 	    this.data.addIndex(buffer);
 
 	    return this;
