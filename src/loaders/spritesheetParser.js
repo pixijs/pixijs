@@ -46,8 +46,9 @@ export default function ()
             let resolution = core.utils.getResolutionOfUrl(resource.url);
             const scale = resource.data.meta.scale;
 
+            // for now (to keep things compatible) resolution overrides scale
             // Support scale field on spritesheet
-            if (scale !== undefined && scale !== 1)
+            if (resolution === 1 && scale !== undefined && scale !== 1)
             {
                 baseTexture.resolution = resolution = scale;
                 baseTexture.update();
