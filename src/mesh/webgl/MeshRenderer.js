@@ -63,7 +63,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
                 uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.uvs, gl.STREAM_DRAW),
                 indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW),
                 // build the vao object that will render..
-                vao: new glCore.VertexArrayObject(gl),
+                vao: null,
                 dirty: mesh.dirty,
                 indexDirty: mesh.indexDirty,
             };
