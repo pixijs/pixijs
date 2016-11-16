@@ -20,7 +20,7 @@ const options = {
         '.eslintrc',
         '.editorconfig',
         '.travis.yml',
-        '.babelrc'
+        '.babelrc',
     ],
     dotfiles: true,
     branch: 'release',
