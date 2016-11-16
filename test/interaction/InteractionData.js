@@ -6,10 +6,10 @@ describe('PIXI.interaction.InteractionData', function ()
     {
         it('should populate second parameter with result', function ()
         {
-            var data = new PIXI.interaction.InteractionData();
-            var stage = new PIXI.DisplayObject();
-            var displayObject = new PIXI.DisplayObject();
-            var point = new PIXI.Point();
+            const data = new PIXI.interaction.InteractionData();
+            const stage = new PIXI.DisplayObject();
+            const displayObject = new PIXI.DisplayObject();
+            const point = new PIXI.Point();
 
             data.global.set(10, 10);
             displayObject.position.set(5, 3);

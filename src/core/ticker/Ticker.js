@@ -1,8 +1,10 @@
-import { TARGET_FPMS } from '../const';
+import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 
 // Internal event used by composed emitter
 const TICK = 'tick';
+
+const { TARGET_FPMS } = settings;
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
@@ -351,7 +353,7 @@ export default class Ticker
      * This value is used to cap {@link PIXI.ticker.Ticker#deltaTime},
      * but does not effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
      * When setting this property it is clamped to a value between
-     * `0` and `PIXI.TARGET_FPMS * 1000`.
+     * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
      *
      * @memberof PIXI.ticker.Ticker#
      * @default 10

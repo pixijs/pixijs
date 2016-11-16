@@ -71,7 +71,7 @@ describe('PIXI.utils', function ()
 
         it('should decompose a data URI', function ()
         {
-            var dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
+            const dataUri = PIXI.utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
             expect(dataUri)
                 .to.be.an('object');
@@ -87,7 +87,7 @@ describe('PIXI.utils', function ()
 
         it('should return undefined for anything else', function ()
         {
-            var dataUri = PIXI.utils.decomposeDataUri('foo');
+            const dataUri = PIXI.utils.decomposeDataUri('foo');
 
             expect(dataUri)
                 .to.be.an('undefined');
@@ -96,7 +96,7 @@ describe('PIXI.utils', function ()
 
     describe('getUrlFileExtension', function ()
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(PIXI.utils.getUrlFileExtension)
                 .to.be.a('function');
@@ -104,7 +104,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL in lower case', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -112,7 +112,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when absolute', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('/you/baz.PNG');
+            const imageType = PIXI.utils.getUrlFileExtension('/you/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -120,7 +120,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when relative', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('me/baz.PNG');
+            const imageType = PIXI.utils.getUrlFileExtension('me/baz.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -128,7 +128,7 @@ describe('PIXI.utils', function ()
 
         it('should return extension of URL when just an extension', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('.PNG');
+            const imageType = PIXI.utils.getUrlFileExtension('.PNG');
 
             expect(imageType)
                 .to.equal('png');
@@ -136,7 +136,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash on the url', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp');
 
             expect(imageType)
                 .to.equal('png');
@@ -144,7 +144,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash path on the url', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp/this/is/a/path/me.jpg');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG#derp/this/is/a/path/me.jpg');
 
             expect(imageType)
                 .to.equal('png');
@@ -152,7 +152,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a query string on the url', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg');
 
             expect(imageType)
                 .to.equal('png');
@@ -160,7 +160,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash and query string on the url', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#not-today');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#not-today');
 
             expect(imageType)
                 .to.equal('png');
@@ -168,7 +168,7 @@ describe('PIXI.utils', function ()
 
         it('should work with a hash path and query string on the url', function ()
         {
-            var imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#path/self/not-today.svg');
+            const imageType = PIXI.utils.getUrlFileExtension('http://foo.bar/baz.PNG?v=1&file=me.jpg#path/s/not-today.svg');
 
             expect(imageType)
                 .to.equal('png');
@@ -185,7 +185,19 @@ describe('PIXI.utils', function ()
 
         it('should return a size object with width and height from an SVG string', function ()
         {
-            var svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+            const svgSize = PIXI.utils.getSvgSize('<svg height="32" width="64"></svg>');
+
+            expect(svgSize)
+                .to.be.an('object');
+            expect(svgSize.width)
+                .to.equal(64);
+            expect(svgSize.height)
+                .to.equal(32);
+        });
+
+        it('should return a size object from an SVG string with inverted quotes', function ()
+        {
+            var svgSize = PIXI.utils.getSvgSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
 
             expect(svgSize)
                 .to.be.an('object');
@@ -197,7 +209,7 @@ describe('PIXI.utils', function ()
 
         it('should work with px values', function ()
         {
-            var svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
+            const svgSize = PIXI.utils.getSvgSize('<svg height="32px" width="64px"></svg>');
 
             expect(svgSize)
                 .to.be.an('object');
@@ -209,7 +221,7 @@ describe('PIXI.utils', function ()
 
         it('should return an empty object when width and/or height is missing', function ()
         {
-            var svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
+            const svgSize = PIXI.utils.getSvgSize('<svg width="64"></svg>');
 
             expect(Object.keys(svgSize).length)
                 .to.equal(0);
@@ -244,7 +256,7 @@ describe('PIXI.utils', function ()
 
         it('should return -1 for negative numbers', function ()
         {
-            for (var i = 0; i < 10; i += 1)
+            for (let i = 0; i < 10; i += 1)
             {
                 expect(PIXI.utils.sign(-Math.random()))
                     .to.be.equal(-1);
@@ -253,7 +265,7 @@ describe('PIXI.utils', function ()
 
         it('should return 1 for positive numbers', function ()
         {
-            for (var i = 0; i < 10; i += 1)
+            for (let i = 0; i < 10; i += 1)
             {
                 expect(PIXI.utils.sign(Math.random() + 0.000001))
                     .to.be.equal(1);
@@ -265,7 +277,7 @@ describe('PIXI.utils', function ()
     {
         var arr;
 
-        beforeEach(function ()
+        beforeEach(() =>
         {
             arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         });
@@ -284,7 +296,7 @@ describe('PIXI.utils', function ()
 
         it('should remove the number of elements specified from the array, starting from the start index', function ()
         {
-            var res = [1, 2, 3, 8, 9, 10];
+            const res = [1, 2, 3, 8, 9, 10];
 
             PIXI.utils.removeItems(arr, 3, 4);
             expect(arr).to.be.deep.equal(res);
@@ -292,10 +304,31 @@ describe('PIXI.utils', function ()
 
         it('should remove other elements if delete count is > than the number of elements after start index', function ()
         {
-            var res = [1, 2, 3, 4, 5, 6, 7];
+            const res = [1, 2, 3, 4, 5, 6, 7];
 
             PIXI.utils.removeItems(arr, 7, 10);
             expect(arr).to.be.deep.equal(res);
+        });
+    });
+
+    describe('EventEmitter', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.EventEmitter).to.be.a('function');
+        });
+    });
+
+    describe('isMobile', function ()
+    {
+        it('should exist', function ()
+        {
+            expect(PIXI.utils.isMobile).to.be.an('object');
+        });
+
+        it('should return a boolean for .any', function ()
+        {
+            expect(PIXI.utils.isMobile.any).to.be.a('boolean');
         });
     });
 });

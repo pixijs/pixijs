@@ -61,11 +61,16 @@ export default class TextureManager
      * Updates and/or Creates a WebGL texture for the renderer's context.
      *
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
+     * @param {Number} location - the location the texture will be bound to.
      * @return {GLTexture} The gl texture.
      */
-    updateTexture(texture)
+    updateTexture(texture, location)
     {
-        texture = texture.baseTexture || texture;
+        // assume it good!
+        // texture = texture.baseTexture || texture;
+        location = location || 0;
+
+        const gl = this.gl;
 
         const isRenderTexture = !!texture._glRenderTargets;
 
@@ -73,6 +78,8 @@ export default class TextureManager
         {
             return null;
         }
+
+        gl.activeTexture(gl.TEXTURE0 + location);
 
         let glTexture = texture._glTextures[this.renderer.CONTEXT_UID];
 
@@ -94,7 +101,8 @@ export default class TextureManager
             }
             else
             {
-                glTexture = new GLTexture(this.gl);
+                glTexture = new GLTexture(this.gl, null, null, null, null);
+                glTexture.bind(location);
                 glTexture.premultiplyAlpha = true;
                 glTexture.upload(texture.source);
             }
@@ -140,7 +148,7 @@ export default class TextureManager
                 glTexture.enableLinearScaling();
             }
         }
-        // the textur ealrady exists so we only need to update it..
+        // the texture already exists so we only need to update it..
         else if (isRenderTexture)
         {
             texture._glRenderTargets[this.renderer.CONTEXT_UID].resize(texture.width, texture.height);
@@ -149,6 +157,8 @@ export default class TextureManager
         {
             glTexture.upload(texture.source);
         }
+
+        this.renderer.boundTextures[location] = texture;
 
         return glTexture;
     }
@@ -170,6 +180,8 @@ export default class TextureManager
 
         if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
+            this.renderer.unbindTexture(texture);
+
             texture._glTextures[this.renderer.CONTEXT_UID].destroy();
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);

@@ -25,8 +25,8 @@ before_script:
   - Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
 
 script:
-  - xvfb-maybe npm run coverage
   - npm run build
+  - xvfb-maybe npm run coverage
   - npm run docs
 
 deploy:
@@ -39,7 +39,7 @@ deploy:
     acl: public_read
     region: eu-west-1
     cache_control: "max-age=60"
-    local_dir: bin
+    local_dir: dist
     upload-dir: "$TRAVIS_BRANCH"
     on:
         all_branches: true
@@ -79,7 +79,7 @@ deploy:
     acl: public_read
     region: eu-west-1
     cache_control: "max-age=2592000"
-    local_dir: bin
+    local_dir: dist
     upload-dir: "$TRAVIS_BRANCH"
     on:
         all_branches: true

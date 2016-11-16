@@ -111,15 +111,15 @@ export default class FilterManager extends WebGLManager
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
 
-         // lets pplay the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occour when cropping to the edges
+        // lets apply the padding After we fit the element to the screen.
+        // this should stop the strange side effects that can occur when cropping to the edges
         sourceFrame.pad(padding);
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
 
         // lets play the padding after we fit the element to the screen.
-        // this should stop the strange side effects that can occour when cropping to the edges
+        // this should stop the strange side effects that can occur when cropping to the edges
 
         const renderTarget = this.getPotRenderTarget(renderer.gl, sourceFrame.width, sourceFrame.height, resolution);
 
@@ -128,7 +128,7 @@ export default class FilterManager extends WebGLManager
         currentState.resolution = resolution;
         currentState.renderTarget = renderTarget;
 
-        // bind the render taget to draw the shape in the top corner..
+        // bind the render target to draw the shape in the top corner..
 
         renderTarget.setFrame(destinationFrame, sourceFrame);
         // bind the render target
@@ -207,6 +207,8 @@ export default class FilterManager extends WebGLManager
     applyFilter(filter, input, output, clear)
     {
         const renderer = this.renderer;
+        const gl = renderer.gl;
+
         let shader = filter.glShaders[renderer.CONTEXT_UID];
 
         // cacheing..
@@ -229,15 +231,17 @@ export default class FilterManager extends WebGLManager
             }
 
             // TODO - this only needs to be done once?
+            renderer.bindVao(null);
+
             this.quad.initVao(shader);
         }
+
+        renderer.bindVao(this.quad.vao);
 
         renderer.bindRenderTarget(output);
 
         if (clear)
         {
-            const gl = renderer.gl;
-
             gl.disable(gl.SCISSOR_TEST);
             renderer.clear();// [1, 1, 1, 1]);
             gl.enable(gl.SCISSOR_TEST);
@@ -254,14 +258,18 @@ export default class FilterManager extends WebGLManager
         // this syncs the pixi filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
-        // bind the input texture..
-        input.texture.bind(0);
-        // when you manually bind a texture, please switch active texture location to it
-        renderer._activeTextureLocation = 0;
-
         renderer.state.setBlendMode(filter.blendMode);
 
-        this.quad.draw();
+        // temporary bypass cache..
+        const tex = this.renderer.boundTextures[0];
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
+
+        this.quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
+
+        // restore cache.
+        gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
     }
 
     /**
@@ -275,7 +283,7 @@ export default class FilterManager extends WebGLManager
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
-        // 0 is reserverd for the pixi texture so we start at 1!
+        // 0 is reserved for the pixi texture so we start at 1!
         let textureCount = 1;
         let currentState;
 
@@ -311,23 +319,22 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D')
+            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
             {
-                shader.uniforms[i] = textureCount;
-
                 if (uniforms[i].baseTexture)
                 {
-                    this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+                    shader.uniforms[i] = this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
                 }
                 else
                 {
+                    shader.uniforms[i] = textureCount;
+
+                    // TODO
                     // this is helpful as renderTargets can also be set.
                     // Although thinking about it, we could probably
                     // make the filter texture cache return a RenderTexture
                     // rather than a renderTarget
                     const gl = this.renderer.gl;
-
-                    this.renderer._activeTextureLocation = gl.TEXTURE0 + textureCount;
 
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
                     uniforms[i].texture.bind();
@@ -491,7 +498,7 @@ export default class FilterManager extends WebGLManager
      */
     getPotRenderTarget(gl, minWidth, minHeight, resolution)
     {
-        // TODO you coud return a bigger texture if there is not one in the pool?
+        // TODO you could return a bigger texture if there is not one in the pool?
         minWidth = bitTwiddle.nextPow2(minWidth * resolution);
         minHeight = bitTwiddle.nextPow2(minHeight * resolution);
 
@@ -502,7 +509,22 @@ export default class FilterManager extends WebGLManager
             this.pool[key] = [];
         }
 
-        const renderTarget = this.pool[key].pop() || new RenderTarget(gl, minWidth, minHeight, null, 1);
+        let renderTarget = this.pool[key].pop();
+
+        // creating render target will cause texture to be bound!
+        if (!renderTarget)
+        {
+            // temporary bypass cache..
+            const tex = this.renderer.boundTextures[0];
+
+            gl.activeTexture(gl.TEXTURE0);
+
+            // internally - this will cause a texture to be bound..
+            renderTarget = new RenderTarget(gl, minWidth, minHeight, null, 1);
+
+            // set the current one back
+            gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
+        }
 
         // manually tweak the resolution...
         // this will not modify the size of the frame buffer, just its resolution.

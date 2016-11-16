@@ -94,7 +94,7 @@ export default class Polygon
         // https://github.com/substack/point-in-polygon/blob/master/index.js
         const length = this.points.length / 2;
 
-        for (let i = 0, j = length - 1; i < length; j = ++i)
+        for (let i = 0, j = length - 1; i < length; j = i++)
         {
             const xi = this.points[i * 2];
             const yi = this.points[(i * 2) + 1];

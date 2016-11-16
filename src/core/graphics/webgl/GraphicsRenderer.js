@@ -101,9 +101,8 @@ export default class GraphicsRenderer extends ObjectRenderer
             shaderTemp.uniforms.tint = hex2rgb(graphics.tint);
             shaderTemp.uniforms.alpha = graphics.worldAlpha;
 
-            webGLData.vao.bind()
-            .draw(gl.TRIANGLE_STRIP, webGLData.indices.length)
-            .unbind();
+            renderer.bindVao(webGLData.vao);
+            webGLData.vao.draw(gl.TRIANGLE_STRIP, webGLData.indices.length);
         }
     }
 
@@ -176,6 +175,8 @@ export default class GraphicsRenderer extends ObjectRenderer
 
             webGL.lastIndex++;
         }
+
+        this.renderer.bindVao(null);
 
         // upload all the dirty data...
         for (let i = 0; i < webGL.data.length; i++)

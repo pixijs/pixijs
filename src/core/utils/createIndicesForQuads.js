@@ -1,8 +1,9 @@
 /**
  * Generic Mask Stack data structure
  *
- * @class
  * @memberof PIXI
+ * @function createIndicesForQuads
+ * @private
  * @param {number} size - Number of quads
  * @return {Uint16Array} indices
  */

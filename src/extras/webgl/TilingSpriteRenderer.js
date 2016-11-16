@@ -1,7 +1,7 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
-
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const tempMat = new core.Matrix();
 const tempArray = new Float32Array(4);
@@ -9,7 +9,7 @@ const tempArray = new Float32Array(4);
 /**
  * WebGL renderer plugin for tiling sprites
  */
-export class TilingSpriteRenderer extends core.ObjectRenderer {
+export default class TilingSpriteRenderer extends core.ObjectRenderer {
 
     /**
      * constructor for renderer
@@ -35,13 +35,14 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
         const gl = this.renderer.gl;
 
         this.shader = new core.Shader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite.frag'));
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'));
         this.simpleShader = new core.Shader(gl,
-            glslify('./tilingSprite.vert'),
-            glslify('./tilingSprite_simple.frag'));
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'));
 
-        this.quad = new core.Quad(gl);
+        this.renderer.bindVao(null);
+        this.quad = new core.Quad(gl, this.renderer.state.attribState);
         this.quad.initVao(this.shader);
     }
 
@@ -51,7 +52,11 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
      */
     render(ts)
     {
+        const renderer = this.renderer;
         const quad = this.quad;
+
+        renderer.bindVao(quad.vao);
+
         let vertices = quad.vertices;
 
         vertices[0] = vertices[6] = (ts._width) * -ts.anchor.x;
@@ -70,7 +75,6 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
 
         quad.upload();
 
-        const renderer = this.renderer;
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
@@ -127,6 +131,7 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
             shader.uniforms.uClampFrame = uv.uClampFrame;
             shader.uniforms.uClampOffset = uv.uClampOffset;
         }
+
         shader.uniforms.uTransform = tempMat.toArray(true);
 
         const color = tempArray;
@@ -136,10 +141,11 @@ export class TilingSpriteRenderer extends core.ObjectRenderer {
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
-        renderer.bindTexture(tex);
+        shader.uniforms.uSampler = renderer.bindTexture(tex);
+
         renderer.setBlendMode(ts.blendMode);
 
-        quad.draw();
+        quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
 

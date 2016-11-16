@@ -54,6 +54,8 @@ export default class MeshSpriteRenderer
             );
         }
 
+        renderer.setBlendMode(mesh.blendMode);
+
         if (mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
         {
             this._renderTriangleMesh(mesh);

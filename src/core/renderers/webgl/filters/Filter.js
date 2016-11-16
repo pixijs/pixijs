@@ -39,6 +39,13 @@ class Filter
         // currently this does not extract structs only default types
         this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
 
+        /**
+         * An object containing the current values of custom uniforms.
+         * @example <caption>Updating the value of a custom uniform</caption>
+         * filter.uniforms.time = performance.now();
+         *
+         * @member {object}
+         */
         this.uniforms = {};
 
         for (const i in this.uniformData)

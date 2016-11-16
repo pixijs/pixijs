@@ -123,6 +123,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
         const children = container.children;
         const maxSize = container._maxSize;
         const batchSize = container._batchSize;
+        const renderer = this.renderer;
         let totalChildren = children.length;
 
         if (totalChildren === 0)
@@ -134,21 +135,21 @@ export default class ParticleRenderer extends core.ObjectRenderer
             totalChildren = maxSize;
         }
 
-        let buffers = container._glBuffers[this.renderer.CONTEXT_UID];
+        let buffers = container._glBuffers[renderer.CONTEXT_UID];
 
         if (!buffers)
         {
-            buffers = container._glBuffers[this.renderer.CONTEXT_UID] = this.generateBuffers(container);
+            buffers = container._glBuffers[renderer.CONTEXT_UID] = this.generateBuffers(container);
         }
 
         // if the uvs have not updated then no point rendering just yet!
         this.renderer.setBlendMode(container.blendMode);
 
-        const gl = this.renderer.gl;
+        const gl = renderer.gl;
 
         const m = container.worldTransform.copy(this.tempMatrix);
 
-        m.prepend(this.renderer._activeRenderTarget.projectionMatrix);
+        m.prepend(renderer._activeRenderTarget.projectionMatrix);
 
         this.shader.uniforms.projectionMatrix = m.toArray(true);
         this.shader.uniforms.uAlpha = container.worldAlpha;
@@ -156,7 +157,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
         // make sure the texture is bound..
         const baseTexture = children[0]._texture.baseTexture;
 
-        this.renderer.bindTexture(baseTexture);
+        this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
 
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
@@ -181,13 +182,8 @@ export default class ParticleRenderer extends core.ObjectRenderer
             }
 
             // bind the buffer
-            buffer.vao.bind()
-                .draw(gl.TRIANGLES, amount * 6)
-                .unbind();
-
-            // now draw those suckas!
-            // gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);
-            //  this.renderer.drawCount++;
+            renderer.bindVao(buffer.vao);
+            buffer.vao.draw(gl.TRIANGLES, amount * 6);
         }
     }
 

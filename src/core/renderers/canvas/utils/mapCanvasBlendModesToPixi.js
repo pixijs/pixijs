@@ -5,6 +5,8 @@ import canUseNewCanvasBlendModes from './canUseNewCanvasBlendModes';
  * Maps blend combinations to Canvas.
  *
  * @memberof PIXI
+ * @function mapCanvasBlendModesToPixi
+ * @private
  * @param {string[]} [array=[]] - The array to output into.
  * @return {string[]} Mapped modes.
  */

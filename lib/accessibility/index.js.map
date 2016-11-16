@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/accessibility/index.js"],"names":["default"],"mappings":";;;;;;;;;qDAGSA,O;;;;;;;;;yDACAA,O","file":"index.js","sourcesContent":["/**\n * @namespace PIXI.AccessibilityManager\n */\nexport { default as accessibleTarget } from './accessibleTarget';\nexport { default as AccessibilityManager } from './AccessibilityManager';\n"]}

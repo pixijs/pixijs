@@ -133,20 +133,6 @@ export default class Quad
     }
 
     /**
-     * Draws the quad
-     *
-     * @return {PIXI.Quad} Returns itself.
-     */
-    draw()
-    {
-        this.vao.bind()
-            .draw(this.gl.TRIANGLES, 6, 0)
-            .unbind();
-
-        return this;
-    }
-
-    /**
      * Binds the buffer and uploads the data
      *
      * @return {PIXI.Quad} Returns itself.

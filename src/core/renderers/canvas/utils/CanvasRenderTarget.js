@@ -1,4 +1,5 @@
-import { RESOLUTION } from '../../../const';
+import settings from '../../../settings';
+const { RESOLUTION } = settings;
 
 /**
  * Creates a Canvas element of the given size.

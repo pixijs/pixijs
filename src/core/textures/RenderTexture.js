@@ -46,7 +46,7 @@ export default class RenderTexture extends Texture
      */
     constructor(baseRenderTexture, frame)
     {
-        // suport for legacy..
+        // support for legacy..
         let _legacyRenderer = null;
 
         if (!(baseRenderTexture instanceof BaseRenderTexture))
@@ -116,7 +116,7 @@ export default class RenderTexture extends Texture
      *
      * @param {number} [width=100] - The width of the render texture
      * @param {number} [height=100] - The height of the render texture
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
      * @return {PIXI.RenderTexture} The new render texture
      */

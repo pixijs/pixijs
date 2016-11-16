@@ -1,13 +1,13 @@
 import * as core from '../../core';
 import glCore from 'pixi-gl-core';
 import { default as Mesh } from '../Mesh';
-
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * WebGL renderer plugin for tiling sprites
  */
-export class MeshRenderer extends core.ObjectRenderer {
+export default class MeshRenderer extends core.ObjectRenderer {
 
     /**
      * constructor for renderer
@@ -31,8 +31,8 @@ export class MeshRenderer extends core.ObjectRenderer {
         const gl = this.renderer.gl;
 
         this.shader = new core.Shader(gl,
-            glslify('./mesh.vert'),
-            glslify('./mesh.frag'));
+            readFileSync(join(__dirname, './mesh.vert'), 'utf8'),
+            readFileSync(join(__dirname, './mesh.frag'), 'utf8'));
     }
 
     /**
@@ -55,13 +55,15 @@ export class MeshRenderer extends core.ObjectRenderer {
 
         if (!glData)
         {
+            renderer.bindVao(null);
+
             glData = {
                 shader: this.shader,
                 vertexBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.vertices, gl.STREAM_DRAW),
                 uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.uvs, gl.STREAM_DRAW),
                 indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW),
                 // build the vao object that will render..
-                vao: new glCore.VertexArrayObject(gl),
+                vao: null,
                 dirty: mesh.dirty,
                 indexDirty: mesh.indexDirty,
             };
@@ -78,19 +80,21 @@ export class MeshRenderer extends core.ObjectRenderer {
         if (mesh.dirty !== glData.dirty)
         {
             glData.dirty = mesh.dirty;
-            glData.uvBuffer.upload();
+            glData.uvBuffer.upload(mesh.uvs);
         }
 
         if (mesh.indexDirty !== glData.indexDirty)
         {
             glData.indexDirty = mesh.indexDirty;
-            glData.indexBuffer.upload();
+            glData.indexBuffer.upload(mesh.indices);
         }
 
-        glData.vertexBuffer.upload();
+        glData.vertexBuffer.upload(mesh.vertices);
 
         renderer.bindShader(glData.shader);
-        renderer.bindTexture(texture, 0);
+
+        glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
+
         renderer.state.setBlendMode(mesh.blendMode);
 
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
@@ -99,9 +103,8 @@ export class MeshRenderer extends core.ObjectRenderer {
 
         const drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
-        glData.vao.bind()
-            .draw(drawMode, mesh.indices.length)
-            .unbind();
+        renderer.bindVao(glData.vao);
+        glData.vao.draw(drawMode, mesh.indices.length, 0);
     }
 }
 

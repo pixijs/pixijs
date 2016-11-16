@@ -226,15 +226,6 @@ export default class ParticleBuffer
     }
 
     /**
-     * Binds the buffers to the GPU
-     *
-     */
-    bind()
-    {
-        this.vao.bind();
-    }
-
-    /**
      * Destroys the ParticleBuffer.
      *
      */

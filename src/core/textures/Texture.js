@@ -177,7 +177,7 @@ export default class Texture extends EventEmitter
     {
         this._updateID++;
 
-        // TODO this code looks confusing.. boo to abusing getters and setterss!
+        // TODO this code looks confusing.. boo to abusing getters and setters!
         if (this.noFrame)
         {
             this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
@@ -219,7 +219,7 @@ export default class Texture extends EventEmitter
             if (destroyBase)
             {
                 // delete the texture if it exists in the texture cache..
-                // this only needs to be removed if the base texture is actually destoryed too..
+                // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
                     delete TextureCache[this.baseTexture.imageUrl];
@@ -279,7 +279,7 @@ export default class Texture extends EventEmitter
      * @static
      * @param {string} imageUrl - The image url of the texture
      * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
      * @return {PIXI.Texture} The newly created texture
      */
@@ -321,7 +321,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromCanvas(canvas, scaleMode)
@@ -334,7 +334,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {HTMLVideoElement|string} video - The URL or actual element of the video
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideo(video, scaleMode)
@@ -352,7 +352,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {string} videoUrl - URL of the video
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideoUrl(videoUrl, scaleMode)
@@ -362,7 +362,7 @@ export default class Texture extends EventEmitter
 
     /**
      * Helper function that creates a new Texture based on the source you provide.
-     * The soucre can be - frame id, image url, video url, canvae element, video element, base texture
+     * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
      * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from

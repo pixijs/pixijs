@@ -4,6 +4,7 @@ import CanvasRenderTarget from './utils/CanvasRenderTarget';
 import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
 import { pluginTarget } from '../../utils';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '../../const';
+import settings from '../../settings';
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should
@@ -221,6 +222,7 @@ export default class CanvasRenderer extends SystemRenderer
             return;
         }
 
+        this._activeBlendMode = blendMode;
         this.context.globalCompositeOperation = this.blendModes[blendMode];
     }
 
@@ -262,7 +264,7 @@ export default class CanvasRenderer extends SystemRenderer
         // surely a browser bug?? Let pixi fix that for you..
         if (this.smoothProperty)
         {
-            this.rootContext[this.smoothProperty] = (SCALE_MODES.DEFAULT === SCALE_MODES.LINEAR);
+            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
         }
     }
 }

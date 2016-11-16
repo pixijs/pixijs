@@ -35,7 +35,7 @@ export {
  * @memberof PIXI
  * @property {PIXI.loaders.Loader}
  */
-const loader = new loaders.Loader();
+const loader = loaders && loaders.Loader ? new loaders.Loader() : null; // check is there in case user excludes loader lib
 
 export { loader };
 

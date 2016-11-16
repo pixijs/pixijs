@@ -32,7 +32,7 @@ export default class VideoBaseTexture extends BaseTexture
 {
     /**
      * @param {HTMLVideoElement} source - Video source
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      */
     constructor(source, scaleMode)
     {
@@ -117,7 +117,7 @@ export default class VideoBaseTexture extends BaseTexture
      */
     _onPlayStart()
     {
-        // Just in case the video has not recieved its can play even yet..
+        // Just in case the video has not received its can play even yet..
         if (!this.hasLoaded)
         {
             this._onCanPlay();
@@ -204,7 +204,7 @@ export default class VideoBaseTexture extends BaseTexture
      *
      * @static
      * @param {HTMLVideoElement} video - Video to create texture from
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
     static fromVideo(video, scaleMode)

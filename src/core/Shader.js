@@ -1,5 +1,7 @@
 import { GLShader } from 'pixi-gl-core';
-import { PRECISION } from './const';
+import settings from './settings';
+
+const { PRECISION } = settings;
 
 function checkPrecision(src)
 {
@@ -9,14 +11,14 @@ function checkPrecision(src)
         {
             const copy = src.slice(0);
 
-            copy.unshift(`precision ${PRECISION.DEFAULT} float;`);
+            copy.unshift(`precision ${PRECISION} float;`);
 
             return copy;
         }
     }
     else if (src.substring(0, 9) !== 'precision')
     {
-        return `precision ${PRECISION.DEFAULT} float;\n${src}`;
+        return `precision ${PRECISION} float;\n${src}`;
     }
 
     return src;

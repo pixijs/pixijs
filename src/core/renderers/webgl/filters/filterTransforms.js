@@ -7,7 +7,7 @@ import { Matrix } from '../../../math';
  * @param outputMatrix {Matrix} @alvin
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
-// thia returns a matrix that will normalise map filter cords in the filter to screen space
+// this returns a matrix that will normalise map filter cords in the filter to screen space
 export function calculateScreenSpaceMatrix(outputMatrix, filterArea, textureSize)
 {
      // let worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX),

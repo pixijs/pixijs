@@ -1,6 +1,8 @@
-import { RETINA_PREFIX, DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
+import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
+import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
+import * as isMobile from 'ismobilejs';
 
 let nextUid = 0;
 let saidHello = false;
@@ -8,12 +10,36 @@ let saidHello = false;
 /**
  * @namespace PIXI.utils
  */
-export { EventEmitter, pluginTarget };
+export {
+    /**
+     * @see {@link https://github.com/kaimallea/isMobile}
+     *
+     * @memberof PIXI.utils
+     * @function isMobile
+     * @type {Object}
+     */
+    isMobile,
+    /**
+     * @see {@link https://github.com/primus/eventemitter3}
+     *
+     * @memberof PIXI.utils
+     * @class EventEmitter
+     * @type {EventEmitter}
+     */
+    EventEmitter,
+    /**
+     * @memberof PIXI.utils
+     * @function pluginTarget
+     * @type {mixin}
+     */
+    pluginTarget,
+};
 
 /**
  * Gets the next unique identifier
  *
  * @memberof PIXI.utils
+ * @function uid
  * @return {number} The next unique identifier to use.
  */
 export function uid()
@@ -25,6 +51,7 @@ export function uid()
  * Converts a hex color number to an [R, G, B] array
  *
  * @memberof PIXI.utils
+ * @function hex2rgb
  * @param {number} hex - The number to convert
  * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
  * @return {number[]} An array representing the [R, G, B] of the color.
@@ -44,6 +71,7 @@ export function hex2rgb(hex, out)
  * Converts a hex color number to a string.
  *
  * @memberof PIXI.utils
+ * @function hex2string
  * @param {number} hex - Number in hex
  * @return {string} The string color.
  */
@@ -59,6 +87,7 @@ export function hex2string(hex)
  * Converts a color as an [R, G, B] array to a hex number
  *
  * @memberof PIXI.utils
+ * @function rgb2hex
  * @param {number[]} rgb - rgb array
  * @return {number} The color number
  */
@@ -72,12 +101,13 @@ export function rgb2hex(rgb)
  * used by spritesheets and image urls
  *
  * @memberof PIXI.utils
+ * @function getResolutionOfUrl
  * @param {string} url - the image path
  * @return {number} resolution / device pixel ratio of an asset
  */
 export function getResolutionOfUrl(url)
 {
-    const resolution = RETINA_PREFIX.exec(url);
+    const resolution = settings.RETINA_PREFIX.exec(url);
 
     if (resolution)
     {
@@ -102,6 +132,7 @@ export function getResolutionOfUrl(url)
  * parameter `dataUri` is not a valid data URI.
  *
  * @memberof PIXI.utils
+ * @function decomposeDataUri
  * @param {string} dataUri - the data URI to check
  * @return {DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
@@ -126,6 +157,7 @@ export function decomposeDataUri(dataUri)
  * Get type of the image by regexp for extension. Returns undefined for unknown extensions.
  *
  * @memberof PIXI.utils
+ * @function getUrlFileExtension
  * @param {string} url - the image path
  * @return {string|undefined} image extension
  */
@@ -153,6 +185,7 @@ export function getUrlFileExtension(url)
  * Get size from an svg string using regexp.
  *
  * @memberof PIXI.utils
+ * @function getSvgSize
  * @param {string} svgString - a serialized svg element
  * @return {Size|undefined} image extension
  */
@@ -163,8 +196,8 @@ export function getSvgSize(svgString)
 
     if (sizeMatch)
     {
-        size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[2]));
-        size[sizeMatch[3]] = Math.round(parseFloat(sizeMatch[4]));
+        size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
+        size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
     }
 
     return size;
@@ -173,6 +206,8 @@ export function getSvgSize(svgString)
 /**
  * Skips the hello message of renderers that are created after this is run.
  *
+ * @function skipHello
+ * @memberof PIXI.utils
  */
 export function skipHello()
 {
@@ -185,6 +220,7 @@ export function skipHello()
  * creating your renderer. Keep in mind that doing that will forever makes you a jerk face.
  *
  * @static
+ * @function sayHello
  * @memberof PIXI.utils
  * @param {string} type - The string renderer type to log.
  */
@@ -224,6 +260,7 @@ export function sayHello(type)
  * Helper for checking for webgl support
  *
  * @memberof PIXI.utils
+ * @function isWebGLSupported
  * @return {boolean} is webgl supported
  */
 export function isWebGLSupported()
@@ -266,6 +303,7 @@ export function isWebGLSupported()
  * Returns sign of number
  *
  * @memberof PIXI.utils
+ * @function sign
  * @param {number} n - the number to check the sign of
  * @returns {number} 0 if `n` is 0, -1 if `n` is negative, 1 if `n` is positive
  */
@@ -280,6 +318,7 @@ export function sign(n)
  * Remove a range of items from an array
  *
  * @memberof PIXI.utils
+ * @function removeItems
  * @param {Array<*>} arr The target array
  * @param {number} startIdx The index to begin removing from (inclusive)
  * @param {number} removeCount How many items to remove

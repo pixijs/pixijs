@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { TRANSFORM_MODE } from '../const';
+import settings from '../settings';
 import TransformStatic from './TransformStatic';
 import Transform from './Transform';
 import Bounds from './Bounds';
@@ -24,7 +25,7 @@ export default class DisplayObject extends EventEmitter
     {
         super();
 
-        const TransformClass = TRANSFORM_MODE.DEFAULT === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+        const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
         this.tempDisplayObjectParent = null;
 
@@ -348,7 +349,7 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
-     * Convenience function to set the postion, scale, skew and pivot at once.
+     * Convenience function to set the position, scale, skew and pivot at once.
      *
      * @param {number} [x=0] - The X position
      * @param {number} [y=0] - The Y position
@@ -646,7 +647,7 @@ export default class DisplayObject extends EventEmitter
      * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
      * To remove filters simply set this property to 'null'
      *
-     * @member {PIXI.AbstractFilter[]}
+     * @member {PIXI.Filter[]}
      * @memberof PIXI.DisplayObject#
      */
     get filters()

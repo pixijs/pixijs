@@ -1,5 +1,6 @@
 import * as core from '../../core';
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
@@ -25,9 +26,9 @@ export default class ColorMatrixFilter extends core.Filter
     {
         super(
             // vertex shader
-            glslify('../fragments/default.vert'),
+            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
             // fragment shader
-            glslify('./colorMatrix.frag')
+            readFileSync(join(__dirname, './colorMatrix.frag'), 'utf8')
         );
 
         this.uniforms.m = [

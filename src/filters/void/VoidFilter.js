@@ -1,7 +1,6 @@
 import * as core from '../../core';
-
-// @see https://github.com/substack/brfs/issues/25
-const glslify = require('glslify'); // eslint-disable-line no-undef
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * Does nothing. Very handy.
@@ -19,9 +18,9 @@ export default class VoidFilter extends core.Filter
     {
         super(
             // vertex shader
-            glslify('../fragments/default.vert'),
+            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
             // fragment shader
-            glslify('./void.frag')
+            readFileSync(join(__dirname, './void.frag'), 'utf8')
         );
 
         this.glShaderKey = 'void';

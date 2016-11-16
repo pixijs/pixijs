@@ -72,10 +72,10 @@ $> npm install pixi.js
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.0.0/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.1.1/pixi.min.js"></script>
 ```
 
-_Note: `4.0.0` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.1.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
