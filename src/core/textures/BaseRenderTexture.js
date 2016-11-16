@@ -1,8 +1,7 @@
 import BaseTexture from './BaseTexture';
-import { SCALE_MODES } from '../const';
 import settings from '../settings';
 
-const { RESOLUTION } = settings;
+const { RESOLUTION, SCALE_MODE } = settings;
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -49,7 +48,7 @@ export default class BaseRenderTexture extends BaseTexture
     /**
      * @param {number} [width=100] - The width of the base render texture
      * @param {number} [height=100] - The height of the base render texture
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
      */
     constructor(width = 100, height = 100, scaleMode, resolution)
@@ -64,7 +63,7 @@ export default class BaseRenderTexture extends BaseTexture
         this.realWidth = this.width * this.resolution;
         this.realHeight = this.height * this.resolution;
 
-        this.scaleMode = scaleMode || SCALE_MODES.DEFAULT;
+        this.scaleMode = scaleMode || SCALE_MODE;
         this.hasLoaded = true;
 
         /**

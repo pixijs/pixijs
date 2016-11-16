@@ -279,7 +279,7 @@ export default class Texture extends EventEmitter
      * @static
      * @param {string} imageUrl - The image url of the texture
      * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
      * @return {PIXI.Texture} The newly created texture
      */
@@ -321,7 +321,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromCanvas(canvas, scaleMode)
@@ -334,7 +334,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {HTMLVideoElement|string} video - The URL or actual element of the video
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideo(video, scaleMode)
@@ -352,7 +352,7 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {string} videoUrl - URL of the video
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @return {PIXI.Texture} The newly created texture
      */
     static fromVideoUrl(videoUrl, scaleMode)

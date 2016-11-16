@@ -1,4 +1,5 @@
-import { RETINA_PREFIX, DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
+import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
+import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
 import * as isMobile from 'ismobilejs';
@@ -98,7 +99,7 @@ export function rgb2hex(rgb)
  */
 export function getResolutionOfUrl(url)
 {
-    const resolution = RETINA_PREFIX.exec(url);
+    const resolution = settings.RETINA_PREFIX.exec(url);
 
     if (resolution)
     {

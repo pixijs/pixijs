@@ -8,7 +8,7 @@ describe('PIXI.TilingSprite', function ()
         {
             const parent = new PIXI.Container();
             const texture = new PIXI.Texture(new PIXI.BaseTexture());
-            const tilingSprite = new PIXI.TilingSprite(texture, 200, 300);
+            const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
 
             parent.addChild(tilingSprite);
 

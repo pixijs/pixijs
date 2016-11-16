@@ -16,13 +16,13 @@ describe('PIXI.DisplayObject', () =>
 
         it('should set the correct Transform', () =>
         {
-            PIXI.TRANSFORM_MODE.DEFAULT = PIXI.TRANSFORM_MODE.DYNAMIC;
+            PIXI.settings.TRANSFORM_MODE = PIXI.TRANSFORM_MODE.DYNAMIC;
 
             const dynamicTransform = new PIXI.DisplayObject();
 
             expect(dynamicTransform.transform).to.be.instanceof(PIXI.Transform);
 
-            PIXI.TRANSFORM_MODE.DEFAULT = PIXI.TRANSFORM_MODE.STATIC;
+            PIXI.settings.TRANSFORM_MODE = PIXI.TRANSFORM_MODE.STATIC;
 
             const staticTransform = new PIXI.DisplayObject();
 

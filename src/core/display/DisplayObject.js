@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { TRANSFORM_MODE } from '../const';
+import settings from '../settings';
 import TransformStatic from './TransformStatic';
 import Transform from './Transform';
 import Bounds from './Bounds';
@@ -24,7 +25,7 @@ export default class DisplayObject extends EventEmitter
     {
         super();
 
-        const TransformClass = TRANSFORM_MODE.DEFAULT === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+        const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
 
         this.tempDisplayObjectParent = null;
 

@@ -485,7 +485,77 @@ Object.defineProperties(core, {
             core.settings.SPRITE_MAX_TEXTURES = value;
         },
     },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.RETINA_PREFIX
+     * @see PIXI.settings.RETINA_PREFIX
+     * @deprecated since version 4.2.0
+     */
+    RETINA_PREFIX: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.RETINA_PREFIX has been deprecated, please use PIXI.settings.RETINA_PREFIX');
+
+            return core.settings.RETINA_PREFIX;
+        },
+        set(value)
+        {
+            warn('PIXI.RETINA_PREFIX has been deprecated, please use PIXI.settings.RETINA_PREFIX');
+
+            core.settings.RETINA_PREFIX = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.DEFAULT_RENDER_OPTIONS
+     * @see PIXI.settings.RENDER_OPTIONS
+     * @deprecated since version 4.2.0
+     */
+    DEFAULT_RENDER_OPTIONS: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.DEFAULT_RENDER_OPTIONS has been deprecated, please use PIXI.settings.DEFAULT_RENDER_OPTIONS');
+
+            return core.settings.RENDER_OPTIONS;
+        },
+    },
 });
+
+// Move the default properties to settings
+const defaults = [
+    { parent: 'TRANSFORM_MODE', target: 'TRANSFORM_MODE' },
+    { parent: 'GC_MODES', target: 'GC_MODE' },
+    { parent: 'WRAP_MODES', target: 'WRAP_MODE' },
+    { parent: 'SCALE_MODES', target: 'SCALE_MODE' },
+    { parent: 'PRECISION', target: 'PRECISION' },
+];
+
+for (let i = 0; i < defaults.length; i++)
+{
+    const deprecation = defaults[i];
+
+    Object.defineProperty(core[deprecation.parent], 'DEFAULT', {
+        enumerable: true,
+        get()
+        {
+            warn(`PIXI.${deprecation.parent}.DEFAULT has been deprecated, please use PIXI.settings.${deprecation.target}`);
+
+            return core.settings[deprecation.target];
+        },
+        set(value)
+        {
+            warn(`PIXI.${deprecation.parent}.DEFAULT has been deprecated, please use PIXI.settings.${deprecation.target}`);
+
+            core.settings[deprecation.target] = value;
+        },
+    });
+}
 
 Object.defineProperties(extras, {
 

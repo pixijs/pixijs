@@ -3,7 +3,7 @@ import { SCALE_MODES } from '../../../const';
 import settings from '../../../settings';
 import { GLFramebuffer } from 'pixi-gl-core';
 
-const { RESOLUTION } = settings;
+const { RESOLUTION, SCALE_MODE } = settings;
 
 /**
  * @class
@@ -15,7 +15,7 @@ export default class RenderTarget
      * @param {WebGLRenderingContext} gl - The current WebGL drawing context
      * @param {number} [width=0] - the horizontal range of the filter
      * @param {number} [height=0] - the vertical range of the filter
-     * @param {number} [scaleMode=PIXI.SCALE_MODES.DEFAULT] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [resolution=1] - The current resolution / device pixel ratio
      * @param {boolean} [root=false] - Whether this object is the root element or not
      */
@@ -123,10 +123,10 @@ export default class RenderTarget
          * The scale mode.
          *
          * @member {number}
-         * @default PIXI.SCALE_MODES.DEFAULT
+         * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode || SCALE_MODES.DEFAULT;
+        this.scaleMode = scaleMode || SCALE_MODE;
 
         /**
          * Whether this object is the root element or not
