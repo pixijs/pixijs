@@ -3,8 +3,11 @@ import Sprite from '../sprites/Sprite';
 import Texture from '../textures/Texture';
 import { Rectangle } from '../math';
 import { sign } from '../utils';
-import { TEXT_GRADIENT, RESOLUTION } from '../const';
+import { TEXT_GRADIENT } from '../const';
+import settings from '../settings';
 import TextStyle from './TextStyle';
+
+const { RESOLUTION } = settings;
 
 const defaultDestroyOptions = {
     texture: true,

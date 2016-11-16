@@ -2,10 +2,13 @@ import {
     uid, getUrlFileExtension, decomposeDataUri, getSvgSize,
     getResolutionOfUrl, BaseTextureCache, TextureCache,
 } from '../utils';
-import { RESOLUTION, SCALE_MODES, MIPMAP_TEXTURES, WRAP_MODES } from '../const';
+import { SCALE_MODES, WRAP_MODES } from '../const';
+import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 import determineCrossOrigin from '../utils/determineCrossOrigin';
 import bitTwiddle from 'bit-twiddle';
+
+const { RESOLUTION, MIPMAP_TEXTURES } = settings;
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.

@@ -1,4 +1,3 @@
-import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
@@ -40,17 +39,6 @@ export const RAD_TO_DEG = 180 / Math.PI;
  * @type {number}
  */
 export const DEG_TO_RAD = Math.PI / 180;
-
-/**
- * Target frames per millisecond.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- * @default 0.06
- */
-export const TARGET_FPMS = 0.06;
 
 /**
  * Constant to identify the Renderer Type.
@@ -216,17 +204,6 @@ export const GC_MODES = {
 };
 
 /**
- * If set to true WebGL will attempt make textures mimpaped by default.
- * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {boolean}
- */
-export const MIPMAP_TEXTURES = true;
-
-/**
  * The prefix that denotes a URL is for a retina asset.
  *
  * @static
@@ -236,25 +213,6 @@ export const MIPMAP_TEXTURES = true;
  * @example `@2x`
  */
 export const RETINA_PREFIX = /@(.+)x/;
-
-/**
- * Default resolution / device pixel ratio of the renderer.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- */
-export const RESOLUTION = 1;
-
-/**
- * Default filter resolution.
- *
- * @static
- * @constant
- * @type {number}
- */
-export const FILTER_RESOLUTION = 1;
 
 /**
  * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
@@ -395,29 +353,6 @@ export const TEXT_GRADIENT = {
 
 // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
 // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-
-/**
- * The default sprite batch size.
- *
- * The default aims to balance desktop and mobile devices.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- * @default 4096
- */
-export const SPRITE_BATCH_SIZE = 4096;
-
-/**
- * The maximum textures that this device supports.
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {number}
- */
-export const SPRITE_MAX_TEXTURES = maxRecommendedTextures(32);
 
 /**
  * Can we upload the same buffer in a single frame?

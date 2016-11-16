@@ -1,6 +1,9 @@
 import { Rectangle, Matrix } from '../../../math';
-import { RESOLUTION, SCALE_MODES } from '../../../const';
+import { SCALE_MODES } from '../../../const';
+import settings from '../../../settings';
 import { GLFramebuffer } from 'pixi-gl-core';
+
+const { RESOLUTION } = settings;
 
 /**
  * @class

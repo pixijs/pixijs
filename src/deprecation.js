@@ -347,6 +347,144 @@ Object.defineProperties(core, {
             return core.TransformBase;
         },
     },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.TARGET_FPMS
+     * @see PIXI.settings.TARGET_FPMS
+     * @deprecated since version 4.2.0
+     */
+    TARGET_FPMS: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.TARGET_FPMS has been deprecated, please use PIXI.settings.TARGET_FPMS');
+
+            return core.settings.TARGET_FPMS;
+        },
+        set(value)
+        {
+            warn('PIXI.TARGET_FPMS has been deprecated, please use PIXI.settings.TARGET_FPMS');
+
+            core.settings.TARGET_FPMS = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.FILTER_RESOLUTION
+     * @see PIXI.settings.FILTER_RESOLUTION
+     * @deprecated since version 4.2.0
+     */
+    FILTER_RESOLUTION: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.FILTER_RESOLUTION has been deprecated, please use PIXI.settings.FILTER_RESOLUTION');
+
+            return core.settings.FILTER_RESOLUTION;
+        },
+        set(value)
+        {
+            warn('PIXI.FILTER_RESOLUTION has been deprecated, please use PIXI.settings.FILTER_RESOLUTION');
+
+            core.settings.FILTER_RESOLUTION = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.RESOLUTION
+     * @see PIXI.settings.RESOLUTION
+     * @deprecated since version 4.2.0
+     */
+    RESOLUTION: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.RESOLUTION has been deprecated, please use PIXI.settings.RESOLUTION');
+
+            return core.settings.RESOLUTION;
+        },
+        set(value)
+        {
+            warn('PIXI.RESOLUTION has been deprecated, please use PIXI.settings.RESOLUTION');
+
+            core.settings.RESOLUTION = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.MIPMAP_TEXTURES
+     * @see PIXI.settings.MIPMAP_TEXTURES
+     * @deprecated since version 4.2.0
+     */
+    MIPMAP_TEXTURES: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.MIPMAP_TEXTURES has been deprecated, please use PIXI.settings.MIPMAP_TEXTURES');
+
+            return core.settings.MIPMAP_TEXTURES;
+        },
+        set(value)
+        {
+            warn('PIXI.MIPMAP_TEXTURES has been deprecated, please use PIXI.settings.MIPMAP_TEXTURES');
+
+            core.settings.MIPMAP_TEXTURES = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.SPRITE_BATCH_SIZE
+     * @see PIXI.settings.SPRITE_BATCH_SIZE
+     * @deprecated since version 4.2.0
+     */
+    SPRITE_BATCH_SIZE: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.SPRITE_BATCH_SIZE has been deprecated, please use PIXI.settings.SPRITE_BATCH_SIZE');
+
+            return core.settings.SPRITE_BATCH_SIZE;
+        },
+        set(value)
+        {
+            warn('PIXI.SPRITE_BATCH_SIZE has been deprecated, please use PIXI.settings.SPRITE_BATCH_SIZE');
+
+            core.settings.SPRITE_BATCH_SIZE = value;
+        },
+    },
+
+    /**
+     * @static
+     * @constant
+     * @name PIXI.SPRITE_MAX_TEXTURES
+     * @see PIXI.settings.SPRITE_MAX_TEXTURES
+     * @deprecated since version 4.2.0
+     */
+    SPRITE_MAX_TEXTURES: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.SPRITE_MAX_TEXTURES has been deprecated, please use PIXI.settings.SPRITE_MAX_TEXTURES');
+
+            return core.settings.SPRITE_MAX_TEXTURES;
+        },
+        set(value)
+        {
+            warn('PIXI.SPRITE_MAX_TEXTURES has been deprecated, please use PIXI.settings.SPRITE_MAX_TEXTURES');
+
+            core.settings.SPRITE_MAX_TEXTURES = value;
+        },
+    },
 });
 
 Object.defineProperties(extras, {

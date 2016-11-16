@@ -1,5 +1,8 @@
 import BaseTexture from './BaseTexture';
-import { RESOLUTION, SCALE_MODES } from '../const';
+import { SCALE_MODES } from '../const';
+import settings from '../settings';
+
+const { RESOLUTION } = settings;
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
