@@ -184,7 +184,6 @@ export default class ParticleRenderer extends core.ObjectRenderer
             // bind the buffer
             renderer.bindVao(buffer.vao);
             buffer.vao.draw(gl.TRIANGLES, amount * 6);
-            renderer.bindVao(null);
         }
     }
 
