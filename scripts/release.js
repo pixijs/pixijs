@@ -11,6 +11,7 @@ const options = {
     src: [
         'dist/**/*',
         'lib/**/*',
+        'src/**/*',
         'scripts/**/*',
         'test/**/*',
         '*.json',
