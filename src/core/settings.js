@@ -131,6 +131,26 @@ export default {
     GC_MODE: 0,
 
     /**
+     * Default Garbage Collection max idle.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default 3600
+     */
+    GC_MAX_IDLE: 60 * 60,
+
+    /**
+     * Default Garbage Collection maximum check count.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default 600
+     */
+    GC_MAX_CHECK_COUNT: 60 * 10,
+
+    /**
      * Default wrap modes that are supported by pixi.
      *
      * @static
