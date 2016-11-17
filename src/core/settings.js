@@ -1,4 +1,5 @@
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
+import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
  * @namespace PIXI.settings
@@ -55,6 +56,9 @@ export default {
      * @default 32
      */
     SPRITE_MAX_TEXTURES: maxRecommendedTextures(32),
+
+    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
 
     /**
      * The default sprite batch size.
@@ -159,5 +163,15 @@ export default {
      * @default PIXI.PRECISION.MEDIUM
      */
     PRECISION: 'mediump',
+
+    /**
+     * Can we upload the same buffer in a single frame?
+     *
+     * @static
+     * @constant
+     * @memberof PIXI
+     * @type {boolean}
+     */
+    CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
 };
