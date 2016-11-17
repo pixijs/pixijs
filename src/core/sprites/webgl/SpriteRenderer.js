@@ -366,7 +366,7 @@ export default class SpriteRenderer extends ObjectRenderer
         if (!CAN_UPLOAD_SAME_BUFFER)
         {
             // this is still needed for IOS performance..
-            // it realy doe not like uploading to  the same bufffer in a single frame!
+            // it really does not like uploading to  the same buffer in a single frame!
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
@@ -389,7 +389,7 @@ export default class SpriteRenderer extends ObjectRenderer
         }
         else
         {
-            // lets use the faster option..
+            // lets use the faster option, always use buffer number 0
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
         }
 
@@ -436,9 +436,13 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         this.renderer.bindShader(this.shader);
 
-        this.renderer.bindVao(this.vaos[this.vertexCount]);
+        if (CAN_UPLOAD_SAME_BUFFER)
+        {
+            // bind buffer #0, we don't need others
+            this.renderer.bindVao(this.vaos[this.vertexCount]);
 
-        this.vertexBuffers[this.vertexCount].bind();
+            this.vertexBuffers[this.vertexCount].bind();
+        }
     }
 
     /**
