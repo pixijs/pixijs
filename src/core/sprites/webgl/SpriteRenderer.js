@@ -436,8 +436,9 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         this.renderer.bindShader(this.shader);
 
-        if (CAN_UPLOAD_SAME_BUFFER) {
-            //bind buffer #0, we don't need others
+        if (CAN_UPLOAD_SAME_BUFFER)
+        {
+            // bind buffer #0, we don't need others
             this.renderer.bindVao(this.vaos[this.vertexCount]);
 
             this.vertexBuffers[this.vertexCount].bind();
