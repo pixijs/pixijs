@@ -2,7 +2,16 @@ import * as core from '../core';
 import CountLimiter from './limiters/CountLimiter';
 const SharedTicker = core.ticker.shared;
 
-const DEFAULT_UPLOADS_PER_FRAME = 4;
+/**
+ * Default number of uploads per frame using prepare plugin.
+ *
+ * @static
+ * @memberof PIXI.settings
+ * @name UPLOADS_PER_FRAME
+ * @type {number}
+ * @default 4
+ */
+core.settings.UPLOADS_PER_FRAME = 4;
 
 /**
  * The prepare manager provides functionality to upload content to the GPU. BasePrepare handles
@@ -24,7 +33,7 @@ export default class BasePrepare
          * The limiter to be used to control how quickly items are prepared.
          * @type {PIXI.prepare.CountLimiter|PIXI.prepare.TimeLimiter}
          */
-        this.limiter = new CountLimiter(DEFAULT_UPLOADS_PER_FRAME);
+        this.limiter = new CountLimiter(core.settings.UPLOADS_PER_FRAME);
 
         /**
          * Reference to the renderer.
