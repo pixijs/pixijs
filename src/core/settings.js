@@ -1,4 +1,5 @@
 import maxRecommendedTextures from './utils/maxRecommendedTextures';
+import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
  * @namespace PIXI.settings
@@ -55,6 +56,9 @@ export default {
      * @default 32
      */
     SPRITE_MAX_TEXTURES: maxRecommendedTextures(32),
+
+    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
 
     /**
      * The default sprite batch size.
@@ -131,6 +135,26 @@ export default {
     GC_MODE: 0,
 
     /**
+     * Default Garbage Collection max idle.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default 3600
+     */
+    GC_MAX_IDLE: 60 * 60,
+
+    /**
+     * Default Garbage Collection maximum check count.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {number}
+     * @default 600
+     */
+    GC_MAX_CHECK_COUNT: 60 * 10,
+
+    /**
      * Default wrap modes that are supported by pixi.
      *
      * @static
@@ -159,5 +183,15 @@ export default {
      * @default PIXI.PRECISION.MEDIUM
      */
     PRECISION: 'mediump',
+
+    /**
+     * Can we upload the same buffer in a single frame?
+     *
+     * @static
+     * @constant
+     * @memberof PIXI
+     * @type {boolean}
+     */
+    CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
 };

@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.2.1
- * Compiled Wed, 16 Nov 2016 22:09:43 UTC
+ * pixi.js - v4.2.2
+ * Compiled Thu, 17 Nov 2016 13:51:35 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -7325,14 +7325,6 @@ exports.default = Shader;
 'use strict';
 
 exports.__esModule = true;
-exports.CAN_UPLOAD_SAME_BUFFER = exports.TEXT_GRADIENT = exports.TRANSFORM_MODE = exports.PRECISION = exports.SHAPES = exports.SVG_SIZE = exports.DATA_URI = exports.URL_FILE_EXTENSION = exports.GC_MODES = exports.WRAP_MODES = exports.SCALE_MODES = exports.DRAW_MODES = exports.BLEND_MODES = exports.RENDERER_TYPE = exports.DEG_TO_RAD = exports.RAD_TO_DEG = exports.PI_2 = exports.VERSION = undefined;
-
-var _canUploadSameBuffer = require('./utils/canUploadSameBuffer');
-
-var _canUploadSameBuffer2 = _interopRequireDefault(_canUploadSameBuffer);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /**
  * String of the current PIXI version.
  *
@@ -7341,7 +7333,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @memberof PIXI
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.2.1';
+var VERSION = exports.VERSION = '4.2.2';
 
 /**
  * Two Pi.
@@ -7632,20 +7624,7 @@ var TEXT_GRADIENT = exports.TEXT_GRADIENT = {
   LINEAR_HORIZONTAL: 1
 };
 
-// TODO: maybe change to SPRITE.BATCH_SIZE: 2000
-// TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-
-/**
- * Can we upload the same buffer in a single frame?
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {boolean}
- */
-var CAN_UPLOAD_SAME_BUFFER = exports.CAN_UPLOAD_SAME_BUFFER = (0, _canUploadSameBuffer2.default)();
-
-},{"./utils/canUploadSameBuffer":114}],43:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15701,6 +15680,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var GC_MODE = _settings2.default.GC_MODE,
+    GC_MAX_IDLE = _settings2.default.GC_MAX_IDLE,
+    GC_MAX_CHECK_COUNT = _settings2.default.GC_MAX_CHECK_COUNT;
+
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
  * up with textures that are no longer being used.
@@ -15708,6 +15691,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @class
  * @memberof PIXI
  */
+
 var TextureGarbageCollector = function () {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
@@ -15719,10 +15703,9 @@ var TextureGarbageCollector = function () {
 
         this.count = 0;
         this.checkCount = 0;
-        this.maxIdle = 60 * 60;
-        this.checkCountMax = 60 * 10;
-
-        this.mode = _settings2.default.GC_MODE;
+        this.maxIdle = GC_MAX_IDLE;
+        this.checkCountMax = GC_MAX_CHECK_COUNT;
+        this.mode = GC_MODE;
     }
 
     /**
@@ -19120,6 +19103,10 @@ var _maxRecommendedTextures = require('./utils/maxRecommendedTextures');
 
 var _maxRecommendedTextures2 = _interopRequireDefault(_maxRecommendedTextures);
 
+var _canUploadSameBuffer = require('./utils/canUploadSameBuffer');
+
+var _canUploadSameBuffer2 = _interopRequireDefault(_canUploadSameBuffer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -19177,6 +19164,9 @@ exports.default = {
    * @default 32
    */
   SPRITE_MAX_TEXTURES: (0, _maxRecommendedTextures2.default)(32),
+
+  // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+  // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
 
   /**
    * The default sprite batch size.
@@ -19253,6 +19243,26 @@ exports.default = {
   GC_MODE: 0,
 
   /**
+   * Default Garbage Collection max idle.
+   *
+   * @static
+   * @memberof PIXI.settings
+   * @type {number}
+   * @default 3600
+   */
+  GC_MAX_IDLE: 60 * 60,
+
+  /**
+   * Default Garbage Collection maximum check count.
+   *
+   * @static
+   * @memberof PIXI.settings
+   * @type {number}
+   * @default 600
+   */
+  GC_MAX_CHECK_COUNT: 60 * 10,
+
+  /**
    * Default wrap modes that are supported by pixi.
    *
    * @static
@@ -19280,11 +19290,21 @@ exports.default = {
    * @type {string}
    * @default PIXI.PRECISION.MEDIUM
    */
-  PRECISION: 'mediump'
+  PRECISION: 'mediump',
+
+  /**
+   * Can we upload the same buffer in a single frame?
+   *
+   * @static
+   * @constant
+   * @memberof PIXI
+   * @type {boolean}
+   */
+  CAN_UPLOAD_SAME_BUFFER: (0, _canUploadSameBuffer2.default)()
 
 };
 
-},{"./utils/maxRecommendedTextures":118}],98:[function(require,module,exports){
+},{"./utils/canUploadSameBuffer":114,"./utils/maxRecommendedTextures":118}],98:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20391,8 +20411,6 @@ var _BatchBuffer = require('./BatchBuffer');
 
 var _BatchBuffer2 = _interopRequireDefault(_BatchBuffer);
 
-var _const = require('../../const');
-
 var _settings = require('../../settings');
 
 var _settings2 = _interopRequireDefault(_settings);
@@ -20414,7 +20432,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var SPRITE_BATCH_SIZE = _settings2.default.SPRITE_BATCH_SIZE,
-    SPRITE_MAX_TEXTURES = _settings2.default.SPRITE_MAX_TEXTURES;
+    SPRITE_MAX_TEXTURES = _settings2.default.SPRITE_MAX_TEXTURES,
+    CAN_UPLOAD_SAME_BUFFER = _settings2.default.CAN_UPLOAD_SAME_BUFFER;
 
 
 var TICK = 0;
@@ -20754,9 +20773,9 @@ var SpriteRenderer = function (_ObjectRenderer) {
 
         currentGroup.size = i - currentGroup.start;
 
-        if (!_const.CAN_UPLOAD_SAME_BUFFER) {
+        if (!CAN_UPLOAD_SAME_BUFFER) {
             // this is still needed for IOS performance..
-            // it realy doe not like uploading to  the same bufffer in a single frame!
+            // it really does not like uploading to  the same buffer in a single frame!
             if (this.vaoMax <= this.vertexCount) {
                 this.vaoMax++;
                 this.vertexBuffers[this.vertexCount] = _pixiGlCore2.default.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
@@ -20771,7 +20790,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
 
             this.vertexCount++;
         } else {
-            // lets use the faster option..
+            // lets use the faster option, always use buffer number 0
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
         }
 
@@ -20815,9 +20834,12 @@ var SpriteRenderer = function (_ObjectRenderer) {
     SpriteRenderer.prototype.start = function start() {
         this.renderer.bindShader(this.shader);
 
-        this.renderer.bindVao(this.vaos[this.vertexCount]);
+        if (CAN_UPLOAD_SAME_BUFFER) {
+            // bind buffer #0, we don't need others
+            this.renderer.bindVao(this.vaos[this.vertexCount]);
 
-        this.vertexBuffers[this.vertexCount].bind();
+            this.vertexBuffers[this.vertexCount].bind();
+        }
     };
 
     /**
@@ -20879,7 +20901,7 @@ exports.default = SpriteRenderer;
 
 _WebGLRenderer2.default.registerPlugin('sprite', SpriteRenderer);
 
-},{"../../const":42,"../../renderers/webgl/WebGLRenderer":80,"../../renderers/webgl/utils/ObjectRenderer":90,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":93,"../../settings":97,"../../utils/createIndicesForQuads":115,"./BatchBuffer":101,"./generateMultiTextureShader":103,"bit-twiddle":1,"pixi-gl-core":12}],103:[function(require,module,exports){
+},{"../../renderers/webgl/WebGLRenderer":80,"../../renderers/webgl/utils/ObjectRenderer":90,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":93,"../../settings":97,"../../utils/createIndicesForQuads":115,"./BatchBuffer":101,"./generateMultiTextureShader":103,"bit-twiddle":1,"pixi-gl-core":12}],103:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35334,7 +35356,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var SharedTicker = core.ticker.shared;
 
-var DEFAULT_UPLOADS_PER_FRAME = 4;
+/**
+ * Default number of uploads per frame using prepare plugin.
+ *
+ * @static
+ * @memberof PIXI.settings
+ * @name UPLOADS_PER_FRAME
+ * @type {number}
+ * @default 4
+ */
+core.settings.UPLOADS_PER_FRAME = 4;
 
 /**
  * The prepare manager provides functionality to upload content to the GPU. BasePrepare handles
@@ -35359,7 +35390,7 @@ var BasePrepare = function () {
          * The limiter to be used to control how quickly items are prepared.
          * @type {PIXI.prepare.CountLimiter|PIXI.prepare.TimeLimiter}
          */
-        this.limiter = new _CountLimiter2.default(DEFAULT_UPLOADS_PER_FRAME);
+        this.limiter = new _CountLimiter2.default(core.settings.UPLOADS_PER_FRAME);
 
         /**
          * Reference to the renderer.

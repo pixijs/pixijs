@@ -1,5 +1,3 @@
-import canUploadSameBuffer from './utils/canUploadSameBuffer';
-
 /**
  * String of the current PIXI version.
  *
@@ -298,16 +296,3 @@ export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,
     LINEAR_HORIZONTAL: 1,
 };
-
-// TODO: maybe change to SPRITE.BATCH_SIZE: 2000
-// TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-
-/**
- * Can we upload the same buffer in a single frame?
- *
- * @static
- * @constant
- * @memberof PIXI
- * @type {boolean}
- */
-export const CAN_UPLOAD_SAME_BUFFER = canUploadSameBuffer();
