@@ -365,6 +365,8 @@ export default class SpriteRenderer extends ObjectRenderer
 
         if (!CAN_UPLOAD_SAME_BUFFER)
         {
+            // vertexCount is last used buffer, but in beginning its 0, so we actually use 1,2,3,4,5 and 0 is reserved
+            this.vertexCount++;
             // this is still needed for IOS performance..
             // it realy doe not like uploading to  the same bufffer in a single frame!
             if (this.vaoMax <= this.vertexCount)
@@ -384,12 +386,10 @@ export default class SpriteRenderer extends ObjectRenderer
             this.renderer.bindVao(this.vaos[this.vertexCount]);
 
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
-
-            this.vertexCount++;
         }
         else
         {
-            // lets use the faster option..
+            // lets use the faster option, always use buffer number 0
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
         }
 
