@@ -7,8 +7,6 @@ import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
 import TextStyle from './TextStyle';
 
-const { RESOLUTION } = settings;
-
 const defaultDestroyOptions = {
     texture: true,
     children: false,
@@ -67,7 +65,7 @@ export default class Text extends Sprite
          * @member {number}
          * @default 1
          */
-        this.resolution = RESOLUTION;
+        this.resolution = settings.RESOLUTION;
 
         /**
          * Private tracker for the current text.

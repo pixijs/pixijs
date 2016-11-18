@@ -7,7 +7,6 @@ import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
 
 const tempMatrix = new Matrix();
-const { RESOLUTION, RENDER_OPTIONS } = settings;
 
 /**
  * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -47,17 +46,17 @@ export default class SystemRenderer extends EventEmitter
         // prepare options
         if (options)
         {
-            for (const i in RENDER_OPTIONS)
+            for (const i in settings.RENDER_OPTIONS)
             {
                 if (typeof options[i] === 'undefined')
                 {
-                    options[i] = RENDER_OPTIONS[i];
+                    options[i] = settings.RENDER_OPTIONS[i];
                 }
             }
         }
         else
         {
-            options = RENDER_OPTIONS;
+            options = settings.RENDER_OPTIONS;
         }
 
         /**
@@ -98,7 +97,7 @@ export default class SystemRenderer extends EventEmitter
          * @member {number}
          * @default 1
          */
-        this.resolution = options.resolution || RESOLUTION;
+        this.resolution = options.resolution || settings.RESOLUTION;
 
         /**
          * Whether the render view is transparent
