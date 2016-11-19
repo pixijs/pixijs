@@ -4,6 +4,7 @@
  * @static
  * @constant
  * @memberof PIXI
+ * @name VERSION
  * @type {string}
  */
 export const VERSION = __VERSION__;
@@ -44,6 +45,7 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @static
  * @constant
  * @memberof PIXI
+ * @name RENDERER_TYPE
  * @type {object}
  * @property {number} UNKNOWN - Unknown render type.
  * @property {number} WEBGL - WebGL render type.
@@ -64,6 +66,7 @@ export const RENDERER_TYPE = {
  * @static
  * @constant
  * @memberof PIXI
+ * @name BLEND_MODES
  * @type {object}
  * @property {number} NORMAL
  * @property {number} ADD
@@ -110,6 +113,7 @@ export const BLEND_MODES = {
  * @static
  * @constant
  * @memberof PIXI
+ * @name DRAW_MODES
  * @type {object}
  * @property {number} POINTS
  * @property {number} LINES
@@ -132,12 +136,13 @@ export const DRAW_MODES = {
 /**
  * The scale modes that are supported by pixi.
  *
- * The PIXI.settings.SCALE_MODE scale mode affects the default scaling mode of future operations.
+ * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  *
  * @static
  * @constant
  * @memberof PIXI
+ * @name SCALE_MODES
  * @type {object}
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
@@ -150,7 +155,7 @@ export const SCALE_MODES = {
 /**
  * The wrap modes that are supported by pixi.
  *
- * The PIXI.settings.WRAP_MODE wrap mode affects the default wraping mode of future operations.
+ * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wraping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
  * If the texture is non power of two then clamp will be used regardless as webGL can
  * only use REPEAT if the texture is po2.
@@ -159,6 +164,7 @@ export const SCALE_MODES = {
  *
  * @static
  * @constant
+ * @name WRAP_MODES
  * @memberof PIXI
  * @type {object}
  * @property {number} CLAMP - The textures uvs are clamped
@@ -174,7 +180,7 @@ export const WRAP_MODES = {
 /**
  * The gc modes that are supported by pixi.
  *
- * The PIXI.settings.GC_MODE Garbage Collection mode for pixi textures is AUTO
+ * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for pixi textures is AUTO
  * If set to GC_MODE, the renderer will occasianally check textures usage. If they are not
  * used for a specified period of time they will be removed from the GPU. They will of course
  * be uploaded again when they are required. This is a silent behind the scenes process that
@@ -185,6 +191,7 @@ export const WRAP_MODES = {
  *
  * @static
  * @constant
+ * @name GC_MODES
  * @memberof PIXI
  * @type {object}
  * @property {number} AUTO - Garbage collection will happen periodically automatically
@@ -208,13 +215,14 @@ export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
 
 /**
  * Regexp for data URI.
- * Based on: https://github.com/ragingwind/data-uri-regex
+ * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  *
  * @static
  * @constant
+ * @name DATA_URI
  * @memberof PIXI
  * @type {RegExp|string}
- * @example `data:image/png;base64`
+ * @example data:image/png;base64
  */
 export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|base64))?,(.*)/i;
 
@@ -223,9 +231,10 @@ export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|b
  *
  * @static
  * @constant
+ * @name SVG_SIZE
  * @memberof PIXI
  * @type {RegExp|string}
- * @example `<svg width="100" height="100"></svg>`
+ * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */
 export const SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
 
@@ -234,13 +243,14 @@ export const SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)
  *
  * @static
  * @constant
+ * @name SHAPES
  * @memberof PIXI
  * @type {object}
- * @property {number} POLY
- * @property {number} RECT
- * @property {number} CIRC
- * @property {number} ELIP
- * @property {number} RREC
+ * @property {number} POLY Polygon
+ * @property {number} RECT Rectangle
+ * @property {number} CIRC Circle
+ * @property {number} ELIP Ellipse
+ * @property {number} RREC Rounded Rectangle
  */
 export const SHAPES = {
     POLY: 0,
@@ -255,6 +265,7 @@ export const SHAPES = {
  *
  * @static
  * @constant
+ * @name PRECISION
  * @memberof PIXI
  * @type {object}
  * @property {string} LOW='lowp'
@@ -272,6 +283,7 @@ export const PRECISION = {
  *
  * @static
  * @constant
+ * @name TRANSFORM_MODE
  * @memberof PIXI
  * @type {object}
  * @property {number} STATIC
@@ -287,10 +299,11 @@ export const TRANSFORM_MODE = {
  *
  * @static
  * @constant
+ * @name TEXT_GRADIENT
  * @memberof PIXI
  * @type {object}
- * @property {number} LINEAR_VERTICAL
- * @property {number} LINEAR_HORIZONTAL
+ * @property {number} LINEAR_VERTICAL Vertical gradient
+ * @property {number} LINEAR_HORIZONTAL Linear gradient
  */
 export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,

@@ -119,7 +119,7 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {number}
+     * @type {PIXI.TRANSFORM_MODE}
      * @default PIXI.TRANSFORM_MODE.STATIC
      */
     TRANSFORM_MODE: 0,
@@ -129,7 +129,7 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {number}
+     * @type {PIXI.GC_MODES}
      * @default PIXI.GC_MODES.AUTO
      */
     GC_MODE: 0,
@@ -159,7 +159,7 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {number}
+     * @type {PIXI.WRAP_MODES}
      * @default PIXI.WRAP_MODES.CLAMP
      */
     WRAP_MODE: 0,
@@ -169,7 +169,7 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {number}
+     * @type {PIXI.SCALE_MODES}
      * @default PIXI.SCALE_MODES.LINEAR
      */
     SCALE_MODE: 0,
@@ -179,7 +179,7 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {string}
+     * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.MEDIUM
      */
     PRECISION: 'mediump',
