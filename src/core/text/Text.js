@@ -499,7 +499,7 @@ export default class Text extends Sprite
      *
      * @private
      * @param {object} style - The style.
-     * @param {string} lines - The lines of text.
+     * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
     _generateFillStyle(style, lines)
