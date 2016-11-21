@@ -1,6 +1,6 @@
 {
     "name": "pixi.js",
-    "main": "bin/pixi.min.js",
+    "main": "dist/pixi.min.js",
     "ignore": [
         "**/.*",
         "docs",
