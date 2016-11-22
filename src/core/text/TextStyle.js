@@ -443,7 +443,7 @@ function getSingleColor(color)
     }
     else if ( typeof color === 'string' )
     {
-        if ( color.includes('0x') )
+        if ( color.indexOf('0x') === 0 )
         {
             color = color.replace('0x', '#');
         }
