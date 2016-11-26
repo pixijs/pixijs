@@ -491,9 +491,9 @@ export default class Graphics extends Container
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
 
-        const points = this.currentPath.shape.points;
+        let points = this.currentPath ? this.currentPath.shape.points : null;
 
-        if (this.currentPath)
+        if (points)
         {
             if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
             {
@@ -503,6 +503,7 @@ export default class Graphics extends Container
         else
         {
             this.moveTo(startX, startY);
+            points = this.currentPath.shape.points;
         }
 
         const theta = sweep / (segs * 2);
