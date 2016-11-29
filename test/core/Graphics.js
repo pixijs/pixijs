@@ -129,10 +129,11 @@ describe('PIXI.Graphics', () =>
         });
     });
 
-    describe('complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)', () =>
+    describe('arc', () =>
     {
         it('should not throw', () =>
         {
+            // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
             const graphics = new PIXI.Graphics();
 
             // set a fill and line style

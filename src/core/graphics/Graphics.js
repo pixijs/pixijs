@@ -491,6 +491,7 @@ export default class Graphics extends Container
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
 
+        // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
         let points = this.currentPath ? this.currentPath.shape.points : null;
 
         if (points)
