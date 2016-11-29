@@ -255,6 +255,13 @@ export default class InteractionManager extends EventEmitter
         this.onTouchEnd = this.onTouchEnd.bind(this);
         this.processTouchEnd = this.processTouchEnd.bind(this);
 
+         /**
+         * @private
+         * @member {Function}
+         */
+        this.onTouchCancel = this.onTouchCancel.bind(this);
+        this.processTouchCancel = this.processTouchCancel.bind(this);
+
         /**
          * @private
          * @member {Function}
@@ -524,6 +531,7 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
             this.interactionDOMElement.addEventListener('pointerout', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
+            window.addEventListener('pointercancel', this.onPointerCancel, true);
             window.addEventListener('pointerup', this.onPointerUp, true);
         }
         else
@@ -536,6 +544,7 @@ export default class InteractionManager extends EventEmitter
             if (this.normalizeTouchEvents)
             {
                 this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
+                this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
                 this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
                 this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
             }
@@ -559,6 +568,7 @@ export default class InteractionManager extends EventEmitter
         if (this.supportsTouchEvents)
         {
             this.interactionDOMElement.addEventListener('touchstart', this.onTouchStart, true);
+            this.interactionDOMElement.addEventListener('touchcancel', this.onTouchCancel, true);
             this.interactionDOMElement.addEventListener('touchend', this.onTouchEnd, true);
             this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
         }
@@ -596,6 +606,7 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
             this.interactionDOMElement.removeEventListener('pointerout', this.onPointerOut, true);
             this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
+            window.removeEventListener('pointercancel', this.onPointerCancel, true);
             window.removeEventListener('pointerup', this.onPointerUp, true);
         }
         else
@@ -608,6 +619,7 @@ export default class InteractionManager extends EventEmitter
             if (this.normalizeTouchEvents)
             {
                 this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
+                this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
                 this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
                 this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
             }
@@ -631,6 +643,7 @@ export default class InteractionManager extends EventEmitter
         if (this.supportsTouchEvents)
         {
             this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+            this.interactionDOMElement.removeEventListener('touchcancel', this.onTouchCancel, true);
             this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
             this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
         }
@@ -1152,8 +1165,10 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {PointerEvent} event - The DOM event of a pointer button being released
+     * @param {boolean} cancelled - true if the pointer is cancelled
+     * @param {Function} func - Function passed to {@link processInteractive}
      */
-    onPointerUp(event)
+    onPointerComplete(event, cancelled, func)
     {
         this.normalizeToPointerData(event);
         this.pointer.originalEvent = event;
@@ -1163,9 +1178,46 @@ export default class InteractionManager extends EventEmitter
         // Update internal pointer reference
         this.mapPositionToPoint(this.pointer.global, event.clientX, event.clientY);
 
-        this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, this.processPointerUp, true);
+        this.processInteractive(this.pointer.global, this.renderer._lastObjectRendered, func, true);
 
-        this.emit('pointerup', this.eventData);
+        this.emit(cancelled ? 'pointercancel' : 'pointerup', this.eventData);
+    }
+
+    /**
+     * Is called when the pointer button is cancelled
+     *
+     * @private
+     * @param {PointerEvent} event - The DOM event of a pointer button being released
+     */
+    onPointerCancel(event)
+    {
+        this.onPointerComplete(event, true, this.processPointerCancel);
+    }
+
+    /**
+     * Processes the result of the pointer cancel check and dispatches the event if need be
+     *
+     * @private
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     */
+    processPointerCancel(displayObject)
+    {
+        if (displayObject._pointerDown)
+        {
+            displayObject._pointerDown = false;
+            this.dispatchEvent(displayObject, 'pointercancel', this.eventData);
+        }
+    }
+
+    /**
+     * Is called when the pointer button is released on the renderer element
+     *
+     * @private
+     * @param {PointerEvent} event - The DOM event of a pointer button being released
+     */
+    onPointerUp(event)
+    {
+        this.onPointerComplete(event, false, this.processPointerUp);
     }
 
     /**
@@ -1345,12 +1397,14 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Is called when a touch ends on the renderer element
+     * Is called when a touch ends or is cancelled on the renderer element
      *
      * @private
      * @param {TouchEvent} event - The DOM event of a touch ending on the renderer view
+     * @param {boolean} cancelled - The DOM event of a touch ending on the renderer view
+     * @param {Function} func - Function that will be passed to {@link ProcessInteractive}
      */
-    onTouchEnd(event)
+    onTouchComplete(event, cancelled, func)
     {
         if (this.autoPreventDefault)
         {
@@ -1372,12 +1426,49 @@ export default class InteractionManager extends EventEmitter
             this.eventData.data = touchData;
             this.eventData._reset();
 
-            this.processInteractive(touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true);
+            this.processInteractive(touchData.global, this.renderer._lastObjectRendered, func, true);
 
-            this.emit('touchend', this.eventData);
+            this.emit(cancelled ? 'touchcancel' : 'touchend', this.eventData);
 
             this.returnTouchData(touchData);
         }
+    }
+
+    /**
+     * Is called when a touch is cancelled on the renderer element
+     *
+     * @private
+     * @param {TouchEvent} event - The DOM event of a touch cancel on the renderer view
+     */
+    onTouchCancel(event)
+    {
+        this.onTouchComplete(event, true, this.processTouchCancel);
+    }
+
+    /**
+     * Processes the result of the end of a touch and dispatches the event if need be
+     *
+     * @private
+     * @param {PIXI.Container|PIXI.Sprite|PIXI.extras.TilingSprite} displayObject - The display object that was tested
+     */
+    processTouchCancel(displayObject)
+    {
+        if (displayObject._touchCount > 0)
+        {
+            displayObject._touchCount --;
+            this.dispatchEvent(displayObject, 'touchcancel', this.eventData);
+        }
+    }
+
+    /**
+     * Is called when a touch ends on the renderer element
+     *
+     * @private
+     * @param {TouchEvent} event - The DOM event of a touch ending on the renderer view
+     */
+    onTouchEnd(event)
+    {
+        this.onTouchComplete(event, false, this.processTouchEnd);
     }
 
     /**
@@ -1596,6 +1687,9 @@ export default class InteractionManager extends EventEmitter
 
         this.onTouchEnd = null;
         this.processTouchEnd = null;
+
+        this.onTouchCancel = null;
+        this.processTouchCancel = null;
 
         this.onTouchMove = null;
         this.processTouchMove = null;
