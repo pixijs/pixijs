@@ -72,10 +72,10 @@ $> npm install pixi.js
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.1.1/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.2.2/pixi.min.js"></script>
 ```
 
-_Note: `4.1.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.2.2` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
@@ -187,22 +187,22 @@ $> npm install
 Then, to build the source, run:
 
 ```
-$> npm run build
+$> npm run dist
 ```
 
-This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
+This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
 with all the plugins in the pixi.js project.
 
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> npm run build -- --exclude extras --exclude interaction
+$> npm run dist -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> npm run build -- -e extras -e interaction -e filters
+$> npm run dist -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
