@@ -50,7 +50,7 @@ describe('PIXI.TransformStatic', () =>
             const mat = transform.worldTransform;
 
             expect(mat.a).to.be.closeTo(0.563, eps);
-            expect(mat.b).to.be.closeTo(0.010, eps);
+            expect(mat.b).to.be.closeTo(0.100, eps);
             expect(mat.c).to.be.closeTo(-3.142, eps);
             expect(mat.d).to.be.closeTo(2.635, eps);
             expect(mat.tx).to.be.closeTo(387.8, eps);
