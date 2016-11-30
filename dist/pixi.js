@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.2.2
- * Compiled Thu, 17 Nov 2016 13:51:35 UTC
+ * pixi.js - v4.2.3
+ * Compiled Wed, 30 Nov 2016 19:02:25 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -7331,9 +7331,10 @@ exports.__esModule = true;
  * @static
  * @constant
  * @memberof PIXI
+ * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.2.2';
+var VERSION = exports.VERSION = '4.2.3';
 
 /**
  * Two Pi.
@@ -7371,6 +7372,7 @@ var DEG_TO_RAD = exports.DEG_TO_RAD = Math.PI / 180;
  * @static
  * @constant
  * @memberof PIXI
+ * @name RENDERER_TYPE
  * @type {object}
  * @property {number} UNKNOWN - Unknown render type.
  * @property {number} WEBGL - WebGL render type.
@@ -7391,6 +7393,7 @@ var RENDERER_TYPE = exports.RENDERER_TYPE = {
  * @static
  * @constant
  * @memberof PIXI
+ * @name BLEND_MODES
  * @type {object}
  * @property {number} NORMAL
  * @property {number} ADD
@@ -7437,6 +7440,7 @@ var BLEND_MODES = exports.BLEND_MODES = {
  * @static
  * @constant
  * @memberof PIXI
+ * @name DRAW_MODES
  * @type {object}
  * @property {number} POINTS
  * @property {number} LINES
@@ -7459,12 +7463,13 @@ var DRAW_MODES = exports.DRAW_MODES = {
 /**
  * The scale modes that are supported by pixi.
  *
- * The PIXI.settings.SCALE_MODE scale mode affects the default scaling mode of future operations.
+ * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  *
  * @static
  * @constant
  * @memberof PIXI
+ * @name SCALE_MODES
  * @type {object}
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
@@ -7477,7 +7482,7 @@ var SCALE_MODES = exports.SCALE_MODES = {
 /**
  * The wrap modes that are supported by pixi.
  *
- * The PIXI.settings.WRAP_MODE wrap mode affects the default wraping mode of future operations.
+ * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wraping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
  * If the texture is non power of two then clamp will be used regardless as webGL can
  * only use REPEAT if the texture is po2.
@@ -7486,6 +7491,7 @@ var SCALE_MODES = exports.SCALE_MODES = {
  *
  * @static
  * @constant
+ * @name WRAP_MODES
  * @memberof PIXI
  * @type {object}
  * @property {number} CLAMP - The textures uvs are clamped
@@ -7501,7 +7507,7 @@ var WRAP_MODES = exports.WRAP_MODES = {
 /**
  * The gc modes that are supported by pixi.
  *
- * The PIXI.settings.GC_MODE Garbage Collection mode for pixi textures is AUTO
+ * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for pixi textures is AUTO
  * If set to GC_MODE, the renderer will occasianally check textures usage. If they are not
  * used for a specified period of time they will be removed from the GPU. They will of course
  * be uploaded again when they are required. This is a silent behind the scenes process that
@@ -7512,6 +7518,7 @@ var WRAP_MODES = exports.WRAP_MODES = {
  *
  * @static
  * @constant
+ * @name GC_MODES
  * @memberof PIXI
  * @type {object}
  * @property {number} AUTO - Garbage collection will happen periodically automatically
@@ -7535,13 +7542,14 @@ var URL_FILE_EXTENSION = exports.URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
 
 /**
  * Regexp for data URI.
- * Based on: https://github.com/ragingwind/data-uri-regex
+ * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  *
  * @static
  * @constant
+ * @name DATA_URI
  * @memberof PIXI
  * @type {RegExp|string}
- * @example `data:image/png;base64`
+ * @example data:image/png;base64
  */
 var DATA_URI = exports.DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|base64))?,(.*)/i;
 
@@ -7550,9 +7558,10 @@ var DATA_URI = exports.DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charse
  *
  * @static
  * @constant
+ * @name SVG_SIZE
  * @memberof PIXI
  * @type {RegExp|string}
- * @example `<svg width="100" height="100"></svg>`
+ * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */
 var SVG_SIZE = exports.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
 
@@ -7561,13 +7570,14 @@ var SVG_SIZE = exports.SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d
  *
  * @static
  * @constant
+ * @name SHAPES
  * @memberof PIXI
  * @type {object}
- * @property {number} POLY
- * @property {number} RECT
- * @property {number} CIRC
- * @property {number} ELIP
- * @property {number} RREC
+ * @property {number} POLY Polygon
+ * @property {number} RECT Rectangle
+ * @property {number} CIRC Circle
+ * @property {number} ELIP Ellipse
+ * @property {number} RREC Rounded Rectangle
  */
 var SHAPES = exports.SHAPES = {
   POLY: 0,
@@ -7582,6 +7592,7 @@ var SHAPES = exports.SHAPES = {
  *
  * @static
  * @constant
+ * @name PRECISION
  * @memberof PIXI
  * @type {object}
  * @property {string} LOW='lowp'
@@ -7599,6 +7610,7 @@ var PRECISION = exports.PRECISION = {
  *
  * @static
  * @constant
+ * @name TRANSFORM_MODE
  * @memberof PIXI
  * @type {object}
  * @property {number} STATIC
@@ -7614,10 +7626,11 @@ var TRANSFORM_MODE = exports.TRANSFORM_MODE = {
  *
  * @static
  * @constant
+ * @name TEXT_GRADIENT
  * @memberof PIXI
  * @type {object}
- * @property {number} LINEAR_VERTICAL
- * @property {number} LINEAR_HORIZONTAL
+ * @property {number} LINEAR_VERTICAL Vertical gradient
+ * @property {number} LINEAR_HORIZONTAL Linear gradient
  */
 var TEXT_GRADIENT = exports.TEXT_GRADIENT = {
   LINEAR_VERTICAL: 0,
@@ -12450,7 +12463,7 @@ function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
 'use strict';
 
 exports.__esModule = true;
-exports.Filter = exports.SpriteMaskFilter = exports.Quad = exports.RenderTarget = exports.ObjectRenderer = exports.WebGLManager = exports.Shader = exports.CanvasRenderTarget = exports.TextureUvs = exports.VideoBaseTexture = exports.BaseRenderTexture = exports.RenderTexture = exports.BaseTexture = exports.Texture = exports.CanvasGraphicsRenderer = exports.GraphicsRenderer = exports.GraphicsData = exports.Graphics = exports.TextStyle = exports.Text = exports.SpriteRenderer = exports.CanvasTinter = exports.CanvasSpriteRenderer = exports.Sprite = exports.TransformBase = exports.TransformStatic = exports.Transform = exports.Container = exports.DisplayObject = exports.glCore = exports.WebGLRenderer = exports.CanvasRenderer = exports.ticker = exports.utils = exports.settings = undefined;
+exports.Filter = exports.SpriteMaskFilter = exports.Quad = exports.RenderTarget = exports.ObjectRenderer = exports.WebGLManager = exports.Shader = exports.CanvasRenderTarget = exports.TextureUvs = exports.VideoBaseTexture = exports.BaseRenderTexture = exports.RenderTexture = exports.BaseTexture = exports.Texture = exports.CanvasGraphicsRenderer = exports.GraphicsRenderer = exports.GraphicsData = exports.Graphics = exports.TextStyle = exports.Text = exports.SpriteRenderer = exports.CanvasTinter = exports.CanvasSpriteRenderer = exports.Sprite = exports.TransformBase = exports.TransformStatic = exports.Transform = exports.Container = exports.DisplayObject = exports.Bounds = exports.glCore = exports.WebGLRenderer = exports.CanvasRenderer = exports.ticker = exports.utils = exports.settings = undefined;
 
 var _const = require('./const');
 
@@ -12482,6 +12495,15 @@ Object.defineProperty(exports, 'glCore', {
   enumerable: true,
   get: function get() {
     return _interopRequireDefault(_pixiGlCore).default;
+  }
+});
+
+var _Bounds = require('./display/Bounds');
+
+Object.defineProperty(exports, 'Bounds', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Bounds).default;
   }
 });
 
@@ -12811,7 +12833,7 @@ function autoDetectRenderer() {
   return new _CanvasRenderer2.default(width, height, options);
 }
 
-},{"./Shader":41,"./const":42,"./display/Container":44,"./display/DisplayObject":45,"./display/Transform":46,"./display/TransformBase":47,"./display/TransformStatic":48,"./graphics/Graphics":49,"./graphics/GraphicsData":50,"./graphics/canvas/CanvasGraphicsRenderer":51,"./graphics/webgl/GraphicsRenderer":53,"./math":66,"./renderers/canvas/CanvasRenderer":73,"./renderers/canvas/utils/CanvasRenderTarget":75,"./renderers/webgl/WebGLRenderer":80,"./renderers/webgl/filters/Filter":82,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":85,"./renderers/webgl/managers/WebGLManager":89,"./renderers/webgl/utils/ObjectRenderer":90,"./renderers/webgl/utils/Quad":91,"./renderers/webgl/utils/RenderTarget":92,"./settings":97,"./sprites/Sprite":98,"./sprites/canvas/CanvasSpriteRenderer":99,"./sprites/canvas/CanvasTinter":100,"./sprites/webgl/SpriteRenderer":102,"./text/Text":104,"./text/TextStyle":105,"./textures/BaseRenderTexture":106,"./textures/BaseTexture":107,"./textures/RenderTexture":108,"./textures/Texture":109,"./textures/TextureUvs":110,"./textures/VideoBaseTexture":111,"./ticker":113,"./utils":117,"pixi-gl-core":12}],62:[function(require,module,exports){
+},{"./Shader":41,"./const":42,"./display/Bounds":43,"./display/Container":44,"./display/DisplayObject":45,"./display/Transform":46,"./display/TransformBase":47,"./display/TransformStatic":48,"./graphics/Graphics":49,"./graphics/GraphicsData":50,"./graphics/canvas/CanvasGraphicsRenderer":51,"./graphics/webgl/GraphicsRenderer":53,"./math":66,"./renderers/canvas/CanvasRenderer":73,"./renderers/canvas/utils/CanvasRenderTarget":75,"./renderers/webgl/WebGLRenderer":80,"./renderers/webgl/filters/Filter":82,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":85,"./renderers/webgl/managers/WebGLManager":89,"./renderers/webgl/utils/ObjectRenderer":90,"./renderers/webgl/utils/Quad":91,"./renderers/webgl/utils/RenderTarget":92,"./settings":97,"./sprites/Sprite":98,"./sprites/canvas/CanvasSpriteRenderer":99,"./sprites/canvas/CanvasTinter":100,"./sprites/webgl/SpriteRenderer":102,"./text/Text":104,"./text/TextStyle":105,"./textures/BaseRenderTexture":106,"./textures/BaseTexture":107,"./textures/RenderTexture":108,"./textures/Texture":109,"./textures/TextureUvs":110,"./textures/VideoBaseTexture":111,"./ticker":113,"./utils":117,"pixi-gl-core":12}],62:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14638,8 +14660,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var tempMatrix = new _math.Matrix();
-var RESOLUTION = _settings2.default.RESOLUTION,
-    RENDER_OPTIONS = _settings2.default.RENDER_OPTIONS;
 
 /**
  * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
@@ -14681,13 +14701,13 @@ var SystemRenderer = function (_EventEmitter) {
 
     // prepare options
     if (options) {
-      for (var i in RENDER_OPTIONS) {
+      for (var i in _settings2.default.RENDER_OPTIONS) {
         if (typeof options[i] === 'undefined') {
-          options[i] = RENDER_OPTIONS[i];
+          options[i] = _settings2.default.RENDER_OPTIONS[i];
         }
       }
     } else {
-      options = RENDER_OPTIONS;
+      options = _settings2.default.RENDER_OPTIONS;
     }
 
     /**
@@ -14728,7 +14748,7 @@ var SystemRenderer = function (_EventEmitter) {
      * @member {number}
      * @default 1
      */
-    _this.resolution = options.resolution || RESOLUTION;
+    _this.resolution = options.resolution || _settings2.default.RESOLUTION;
 
     /**
      * Whether the render view is transparent
@@ -15680,10 +15700,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GC_MODE = _settings2.default.GC_MODE,
-    GC_MAX_IDLE = _settings2.default.GC_MAX_IDLE,
-    GC_MAX_CHECK_COUNT = _settings2.default.GC_MAX_CHECK_COUNT;
-
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
  * up with textures that are no longer being used.
@@ -15691,7 +15707,6 @@ var GC_MODE = _settings2.default.GC_MODE,
  * @class
  * @memberof PIXI
  */
-
 var TextureGarbageCollector = function () {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
@@ -15703,9 +15718,9 @@ var TextureGarbageCollector = function () {
 
         this.count = 0;
         this.checkCount = 0;
-        this.maxIdle = GC_MAX_IDLE;
-        this.checkCountMax = GC_MAX_CHECK_COUNT;
-        this.mode = GC_MODE;
+        this.maxIdle = _settings2.default.GC_MAX_IDLE;
+        this.checkCountMax = _settings2.default.GC_MAX_CHECK_COUNT;
+        this.mode = _settings2.default.GC_MODE;
     }
 
     /**
@@ -18617,14 +18632,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RESOLUTION = _settings2.default.RESOLUTION,
-    SCALE_MODE = _settings2.default.SCALE_MODE;
-
 /**
  * @class
  * @memberof PIXI
  */
-
 var RenderTarget = function () {
   /**
    * @param {WebGLRenderingContext} gl - The current WebGL drawing context
@@ -18682,7 +18693,7 @@ var RenderTarget = function () {
      * @member {number}
      * @default 1
      */
-    this.resolution = resolution || RESOLUTION;
+    this.resolution = resolution || _settings2.default.RESOLUTION;
 
     /**
      * The projection matrix
@@ -18742,7 +18753,7 @@ var RenderTarget = function () {
      * @default PIXI.settings.SCALE_MODE
      * @see PIXI.SCALE_MODES
      */
-    this.scaleMode = scaleMode || SCALE_MODE;
+    this.scaleMode = scaleMode || _settings2.default.SCALE_MODE;
 
     /**
      * Whether this object is the root element or not
@@ -19227,7 +19238,7 @@ exports.default = {
    *
    * @static
    * @memberof PIXI.settings
-   * @type {number}
+   * @type {PIXI.TRANSFORM_MODE}
    * @default PIXI.TRANSFORM_MODE.STATIC
    */
   TRANSFORM_MODE: 0,
@@ -19237,7 +19248,7 @@ exports.default = {
    *
    * @static
    * @memberof PIXI.settings
-   * @type {number}
+   * @type {PIXI.GC_MODES}
    * @default PIXI.GC_MODES.AUTO
    */
   GC_MODE: 0,
@@ -19267,7 +19278,7 @@ exports.default = {
    *
    * @static
    * @memberof PIXI.settings
-   * @type {number}
+   * @type {PIXI.WRAP_MODES}
    * @default PIXI.WRAP_MODES.CLAMP
    */
   WRAP_MODE: 0,
@@ -19277,7 +19288,7 @@ exports.default = {
    *
    * @static
    * @memberof PIXI.settings
-   * @type {number}
+   * @type {PIXI.SCALE_MODES}
    * @default PIXI.SCALE_MODES.LINEAR
    */
   SCALE_MODE: 0,
@@ -19287,7 +19298,7 @@ exports.default = {
    *
    * @static
    * @memberof PIXI.settings
-   * @type {string}
+   * @type {PIXI.PRECISION}
    * @default PIXI.PRECISION.MEDIUM
    */
   PRECISION: 'mediump',
@@ -20431,11 +20442,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SPRITE_BATCH_SIZE = _settings2.default.SPRITE_BATCH_SIZE,
-    SPRITE_MAX_TEXTURES = _settings2.default.SPRITE_MAX_TEXTURES,
-    CAN_UPLOAD_SAME_BUFFER = _settings2.default.CAN_UPLOAD_SAME_BUFFER;
-
-
 var TICK = 0;
 var TEXTURE_TICK = 0;
 
@@ -20479,7 +20485,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
          *
          * @member {number}
          */
-        _this.size = SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
+        _this.size = _settings2.default.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
         // the total number of bytes in our batch
         // let numVerts = this.size * 4 * this.vertByteSize;
@@ -20535,7 +20541,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
         var gl = this.renderer.gl;
 
         // step 1: first check max textures the GPU can handle.
-        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), SPRITE_MAX_TEXTURES);
+        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), _settings2.default.SPRITE_MAX_TEXTURES);
 
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = (0, _checkMaxIfStatmentsInShader2.default)(this.MAX_TEXTURES, gl);
@@ -20773,7 +20779,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
 
         currentGroup.size = i - currentGroup.start;
 
-        if (!CAN_UPLOAD_SAME_BUFFER) {
+        if (!_settings2.default.CAN_UPLOAD_SAME_BUFFER) {
             // this is still needed for IOS performance..
             // it really does not like uploading to  the same buffer in a single frame!
             if (this.vaoMax <= this.vertexCount) {
@@ -20834,7 +20840,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
     SpriteRenderer.prototype.start = function start() {
         this.renderer.bindShader(this.shader);
 
-        if (CAN_UPLOAD_SAME_BUFFER) {
+        if (_settings2.default.CAN_UPLOAD_SAME_BUFFER) {
             // bind buffer #0, we don't need others
             this.renderer.bindVao(this.vaos[this.vertexCount]);
 
@@ -21002,9 +21008,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint max-depth: [2, 8] */
 
 
-var RESOLUTION = _settings2.default.RESOLUTION;
-
-
 var defaultDestroyOptions = {
     texture: true,
     children: false,
@@ -21066,7 +21069,7 @@ var Text = function (_Sprite) {
          * @member {number}
          * @default 1
          */
-        _this.resolution = RESOLUTION;
+        _this.resolution = _settings2.default.RESOLUTION;
 
         /**
          * Private tracker for the current text.
@@ -21457,7 +21460,7 @@ var Text = function (_Sprite) {
      *
      * @private
      * @param {object} style - The style.
-     * @param {string} lines - The lines of text.
+     * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
 
@@ -21573,7 +21576,7 @@ var Text = function (_Sprite) {
         // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
         var fontSizeString = typeof style.fontSize === 'number' ? style.fontSize + 'px' : style.fontSize;
 
-        return style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' ' + style.fontFamily;
+        return style.fontStyle + ' ' + style.fontVariant + ' ' + style.fontWeight + ' ' + fontSizeString + ' "' + style.fontFamily + '"';
     };
 
     /**
@@ -22412,11 +22415,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var RESOLUTION = _settings2.default.RESOLUTION,
-    MIPMAP_TEXTURES = _settings2.default.MIPMAP_TEXTURES,
-    SCALE_MODE = _settings2.default.SCALE_MODE,
-    WRAP_MODE = _settings2.default.WRAP_MODE;
-
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
@@ -22424,7 +22422,6 @@ var RESOLUTION = _settings2.default.RESOLUTION,
  * @extends EventEmitter
  * @memberof PIXI
  */
-
 var BaseTexture = function (_EventEmitter) {
     _inherits(BaseTexture, _EventEmitter);
 
@@ -22448,7 +22445,7 @@ var BaseTexture = function (_EventEmitter) {
          * @member {number}
          * @default 1
          */
-        _this.resolution = resolution || RESOLUTION;
+        _this.resolution = resolution || _settings2.default.RESOLUTION;
 
         /**
          * The width of the base texture set when the image has loaded
@@ -22490,7 +22487,7 @@ var BaseTexture = function (_EventEmitter) {
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        _this.scaleMode = scaleMode || SCALE_MODE;
+        _this.scaleMode = scaleMode || _settings2.default.SCALE_MODE;
 
         /**
          * Set to true once the base texture has successfully loaded.
@@ -22587,7 +22584,7 @@ var BaseTexture = function (_EventEmitter) {
          * @member {boolean}
          * @see PIXI.MIPMAP_TEXTURES
          */
-        _this.mipmap = MIPMAP_TEXTURES;
+        _this.mipmap = _settings2.default.MIPMAP_TEXTURES;
 
         /**
          *
@@ -22596,7 +22593,7 @@ var BaseTexture = function (_EventEmitter) {
          * @member {number}
          * @see PIXI.WRAP_MODES
          */
-        _this.wrapMode = WRAP_MODE;
+        _this.wrapMode = _settings2.default.WRAP_MODE;
 
         /**
          * A map of renderer IDs to webgl textures
@@ -24272,8 +24269,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // Internal event used by composed emitter
 var TICK = 'tick';
 
-var TARGET_FPMS = _settings2.default.TARGET_FPMS;
-
 /**
  * A Ticker class that runs an update loop that other objects listen to.
  * This class is composed around an EventEmitter object to add listeners
@@ -24344,7 +24339,7 @@ var Ticker = function () {
          * @member {number}
          * @default 1 / TARGET_FPMS
          */
-        this.elapsedMS = 1 / TARGET_FPMS; // default to target frame time
+        this.elapsedMS = 1 / _settings2.default.TARGET_FPMS; // default to target frame time
 
         /**
          * The last time {@link PIXI.ticker.Ticker#update} was invoked.
@@ -24588,7 +24583,7 @@ var Ticker = function () {
                 elapsedMS = this._maxElapsedMS;
             }
 
-            this.deltaTime = elapsedMS * TARGET_FPMS * this.speed;
+            this.deltaTime = elapsedMS * _settings2.default.TARGET_FPMS * this.speed;
 
             // Invoke listeners added to internal emitter
             this._emitter.emit(TICK, this.deltaTime);
@@ -24643,7 +24638,7 @@ var Ticker = function () {
         ,
         set: function set(fps) {
             // Clamp: 0 to TARGET_FPMS
-            var minFPMS = Math.min(Math.max(0, fps) / 1000, TARGET_FPMS);
+            var minFPMS = Math.min(Math.max(0, fps) / 1000, _settings2.default.TARGET_FPMS);
 
             this._maxElapsedMS = 1 / minFPMS;
         }

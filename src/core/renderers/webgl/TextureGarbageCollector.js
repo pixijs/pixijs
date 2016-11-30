@@ -1,8 +1,6 @@
 import { GC_MODES } from '../../const';
 import settings from '../../settings';
 
-const { GC_MODE, GC_MAX_IDLE, GC_MAX_CHECK_COUNT } = settings;
-
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
  * up with textures that are no longer being used.
@@ -21,9 +19,9 @@ export default class TextureGarbageCollector
 
         this.count = 0;
         this.checkCount = 0;
-        this.maxIdle = GC_MAX_IDLE;
-        this.checkCountMax = GC_MAX_CHECK_COUNT;
-        this.mode = GC_MODE;
+        this.maxIdle = settings.GC_MAX_IDLE;
+        this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
+        this.mode = settings.GC_MODE;
     }
 
     /**
