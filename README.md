@@ -20,8 +20,6 @@ as any breakthroughs will be posted up there too!
 
 **Your support helps us make Pixi.js even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
 
-[![gallery](http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg)](http://www.pixijs.com/gallery/)
-
 ### What to Use Pixi.js for and When to Use It
 
 Pixi.js is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
@@ -187,22 +185,22 @@ $> npm install
 Then, to build the source, run:
 
 ```
-$> npm run build
+$> npm run dist
 ```
 
-This will create a minified version at `bin/pixi.min.js` and a non-minified version at `bin/pixi.js`
+This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
 with all the plugins in the pixi.js project.
 
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
 ```
-$> npm run build -- --exclude extras --exclude interaction
+$> npm run dist -- --exclude extras --exclude interaction
 ```
 
 You can also use the short-form `-e`:
 
 ```
-$> npm run build -- -e extras -e interaction -e filters
+$> npm run dist -- -e extras -e interaction -e filters
 ```
 
 ### How to generate the documentation ###
