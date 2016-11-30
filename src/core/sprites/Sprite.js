@@ -28,6 +28,8 @@ export default class Sprite extends Container
     {
         super();
 
+        this.rendererName = 'sprite';
+
         /**
          * The anchor sets the origin point of the texture.
          * The default is 0,0 this means the texture's origin is the top left
@@ -282,8 +284,8 @@ export default class Sprite extends Container
     {
         this.calculateVertices();
 
-        renderer.setObjectRenderer(renderer.plugins.sprite);
-        renderer.plugins.sprite.render(this);
+        renderer.setObjectRenderer(renderer.plugins[this.rendererName]);
+        renderer.plugins[this.rendererName].render(this);
     }
 
     /**
@@ -294,7 +296,7 @@ export default class Sprite extends Container
     */
     _renderCanvas(renderer)
     {
-        renderer.plugins.sprite.render(this);
+        renderer.plugins[this.rendererName].render(this);
     }
 
     /**
