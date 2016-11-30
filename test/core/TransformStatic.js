@@ -32,7 +32,7 @@ describe('PIXI.TransformStatic', () =>
             expect(otherTransform.rotation).to.be.closeTo(Math.PI / 4, eps);
         });
 
-        it('should apply skew before scale, like in CSS', () =>
+        it('should apply skew before scale, like in adobe animate and spine', () =>
         {
             // this example looks the same in CSS and in pixi, made with pixi-animate by @bigtimebuddy
 
