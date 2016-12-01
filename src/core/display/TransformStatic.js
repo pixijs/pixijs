@@ -73,10 +73,10 @@ export default class TransformStatic extends TransformBase
      */
     updateSkew()
     {
-        this._cx = Math.cos(this.rotation + this.skew._y);
-        this._sx = Math.sin(this.rotation + this.skew._y);
-        this._cy = -Math.sin(this.rotation - this.skew._x); // cos, added PI/2
-        this._sy = Math.cos(this.rotation - this.skew._x); // sin, added PI/2
+        this._cx = Math.cos(this._rotation + this.skew._y);
+        this._sx = Math.sin(this._rotation + this.skew._y);
+        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
 
         this._localID ++;
     }
