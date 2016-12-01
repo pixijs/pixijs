@@ -88,18 +88,10 @@ export default {
     _pointerOver: false,
 
     /**
-     * Internal check to detect if the pointer is down on the displayObject
+     * Internal set of all active pointers, by identifier
      *
-     * @inner {boolean}
+     * @inner {Set}
      * @private
      */
-    _pointerDown: false,
-
-    /**
-     * Internal check to detect the number of active touches on the displayObject
-     *
-     * @inner {number}
-     * @private
-     */
-    _touchCount: 0,
+    _pointerIdentifiers: new Set(),
 };
