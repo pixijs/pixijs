@@ -4,7 +4,7 @@ describe('PIXI.TransformStatic', () =>
 {
     describe('setFromMatrix', () =>
     {
-        it('should decompose correct rotation', () =>
+        it('should decompose negative scale into rotation', () =>
         {
             const eps = 1e-3;
 
@@ -13,8 +13,8 @@ describe('PIXI.TransformStatic', () =>
             const otherTransform = new PIXI.TransformStatic();
 
             transform.position.set(20, 10);
-            transform.scale.set(2, -3);
-            transform.rotation = Math.PI / 4;
+            transform.scale.set(-2, -3);
+            transform.rotation = Math.PI / 6;
             transform.updateTransform(parent);
 
             otherTransform.setFromMatrix(transform.worldTransform);
@@ -26,10 +26,38 @@ describe('PIXI.TransformStatic', () =>
             expect(position.x).to.be.closeTo(20, eps);
             expect(position.y).to.be.closeTo(10, eps);
             expect(scale.x).to.be.closeTo(2, eps);
-            expect(scale.y).to.be.closeTo(-3, eps);
-            expect(skew.x).to.be.equal(0);
-            expect(skew.y).to.be.equal(0);
-            expect(otherTransform.rotation).to.be.closeTo(Math.PI / 4, eps);
+            expect(scale.y).to.be.closeTo(3, eps);
+            expect(skew.x).to.equal(0);
+            expect(skew.y).to.equal(0);
+            expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
+        });
+
+        it('should decompose mirror into skew', () =>
+        {
+            const eps = 1e-3;
+
+            const transform = new PIXI.TransformStatic();
+            const parent = new PIXI.TransformStatic();
+            const otherTransform = new PIXI.TransformStatic();
+
+            transform.position.set(20, 10);
+            transform.scale.set(2, -3);
+            transform.rotation = Math.PI / 6;
+            transform.updateTransform(parent);
+
+            otherTransform.setFromMatrix(transform.worldTransform);
+
+            const position = otherTransform.position;
+            const scale = otherTransform.scale;
+            const skew = otherTransform.skew;
+
+            expect(position.x).to.be.closeTo(20, eps);
+            expect(position.y).to.be.closeTo(10, eps);
+            expect(scale.x).to.be.closeTo(2, eps);
+            expect(scale.y).to.be.closeTo(3, eps);
+            expect(skew.x).to.be.closeTo(5 * Math.PI / 6, eps);
+            expect(skew.y).to.be.closeTo(Math.PI / 6, eps);
+            expect(otherTransform.rotation).to.equal(0);
         });
 
         it('should apply skew before scale, like in adobe animate and spine', () =>
@@ -66,8 +94,8 @@ describe('PIXI.TransformStatic', () =>
             expect(position.y).to.be.closeTo(313.95, eps);
             expect(scale.x).to.be.closeTo(0.572, eps);
             expect(scale.y).to.be.closeTo(4.101, eps);
-            expect(skew.x).to.be.equal(-0.873);
-            expect(skew.y).to.be.equal(0.175);
+            expect(skew.x).to.be.closeTo(-0.873, eps);
+            expect(skew.y).to.be.closeTo(0.175, eps);
             expect(otherTransform.rotation).to.be.equal(0);
         });
     });
