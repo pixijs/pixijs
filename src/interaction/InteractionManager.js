@@ -593,7 +593,8 @@ export default class InteractionManager extends EventEmitter
 
                 if (interactionData.originalEvent && interactionData.pointerType !== 'touch')
                 {
-                    const interactionEvent = this.getInteractionEventForDOMEvent(
+                    const interactionEvent = this.configureInteractionEventForDOMEvent(
+                        this.eventData,
                         interactionData.originalEvent,
                         interactionData
                     );
@@ -817,7 +818,7 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerDown(originalEvent)
     {
-        this.normalizeToPointerData(originalEvent);
+        const events = this.normalizeToPointerData(originalEvent);
 
         /**
          * No need to prevent default on natural pointer events, as there are no side effects
@@ -829,15 +830,15 @@ export default class InteractionManager extends EventEmitter
             originalEvent.preventDefault();
         }
 
-        const events = originalEvent.changedTouches || [originalEvent];
-
         const eventLen = events.length;
 
         for (let i = 0; i < eventLen; i++)
         {
             const event = events[i];
 
-            const interactionEvent = this.getInteractionEventForDOMEvent(event);
+            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+
+            const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
             interactionEvent.data.originalEvent = originalEvent;
 
@@ -898,9 +899,7 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerComplete(originalEvent, cancelled, func)
     {
-        this.normalizeToPointerData(originalEvent);
-
-        const events = originalEvent.changedTouches || [originalEvent];
+        const events = this.normalizeToPointerData(originalEvent);
 
         const eventLen = events.length;
 
@@ -908,7 +907,9 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionEvent = this.getInteractionEventForDOMEvent(event);
+            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+
+            const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
             interactionEvent.data.originalEvent = originalEvent;
 
@@ -1045,7 +1046,7 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerMove(originalEvent)
     {
-        this.normalizeToPointerData(originalEvent);
+        const events = this.normalizeToPointerData(originalEvent);
 
         if (originalEvent.pointerType === 'mouse')
         {
@@ -1054,19 +1055,19 @@ export default class InteractionManager extends EventEmitter
             this.cursor = this.defaultCursorStyle;
         }
 
-        const interactive = originalEvent.pointerType === 'touch' ? this.moveWhenInside : true;
-
-        const events = originalEvent.changedTouches || [originalEvent];
-
         const eventLen = events.length;
 
         for (let i = 0; i < eventLen; i++)
         {
             const event = events[i];
 
-            const interactionEvent = this.getInteractionEventForDOMEvent(event);
+            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+
+            const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
             interactionEvent.data.originalEvent = originalEvent;
+
+            const interactive = event.pointerType === 'touch' ? this.moveWhenInside : true;
 
             this.processInteractive(
                 interactionEvent,
@@ -1079,7 +1080,7 @@ export default class InteractionManager extends EventEmitter
             if (originalEvent.pointerType === 'mouse') this.emit('mousemove', interactionEvent);
         }
 
-        if (originalEvent.pointerType === 'mouse')
+        if (events[0].pointerType === 'mouse')
         {
             if (this.currentCursorStyle !== this.cursor)
             {
@@ -1120,11 +1121,14 @@ export default class InteractionManager extends EventEmitter
      * Is called when the pointer is moved out of the renderer element
      *
      * @private
-     * @param {PointerEvent} event - The DOM event of a pointer being moved out
+     * @param {PointerEvent} originalEvent - The DOM event of a pointer being moved out
      */
-    onPointerOut(event)
+    onPointerOut(originalEvent)
     {
-        this.normalizeToPointerData(event);
+        const events = this.normalizeToPointerData(originalEvent);
+
+        // Only mouse and pointer can call onPointerOut, so events will always be length 1
+        const event = events[0];
 
         if (event.pointerType === 'mouse')
         {
@@ -1132,7 +1136,9 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.style.cursor = this.defaultCursorStyle;
         }
 
-        const interactionEvent = this.getInteractionEventForDOMEvent(event);
+        const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+
+        const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
         interactionEvent.data.originalEvent = event;
 
@@ -1191,12 +1197,18 @@ export default class InteractionManager extends EventEmitter
      * Is called when the pointer is moved into the renderer element
      *
      * @private
-     * @param {PointerEvent} event - The DOM event of a pointer button being moved into the renderer view
+     * @param {PointerEvent} originalEvent - The DOM event of a pointer button being moved into the renderer view
      */
-    onPointerOver(event)
+    onPointerOver(originalEvent)
     {
-        this.normalizeToPointerData(event);
-        const interactionEvent = this.getInteractionEventForDOMEvent(event);
+        const events = this.normalizeToPointerData(originalEvent);
+
+        // Only mouse and pointer can call onPointerOver, so events will always be length 1
+        const event = events[0];
+
+        const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+
+        const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
         interactionEvent.data.originalEvent = event;
 
@@ -1279,35 +1291,38 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {TouchEvent|MouseEvent|PointerEvent} event - The original event data from a touch or mouse event
+     * @return {PointerEvent[]} An array containing a single normalized pointer event, in the case of a pointer
+     *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
      */
     normalizeToPointerData(event)
     {
-        const type = typeof event;
+        const normalizedEvents = [];
 
-        if (type === 'TouchEvent')
+        if (event instanceof TouchEvent)
         {
-            if (typeof event.button === 'undefined') event.button = event.touches.length ? 1 : 0;
-            if (typeof event.buttons === 'undefined') event.buttons = event.touches.length ? 1 : 0;
-            if (typeof event.isPrimary === 'undefined') event.isPrimary = event.touches.length === 1;
-            if (typeof event.width === 'undefined') event.width = event.changedTouches[0].radiusX || 1;
-            if (typeof event.height === 'undefined') event.height = event.changedTouches[0].radiusY || 1;
-            if (typeof event.tiltX === 'undefined') event.tiltX = 0;
-            if (typeof event.tiltY === 'undefined') event.tiltY = 0;
-            if (typeof event.pointerType === 'undefined') event.pointerType = 'touch';
-            if (typeof event.pointerId === 'undefined') event.pointerId = event.changedTouches[0].identifier || 0;
-            if (typeof event.pressure === 'undefined') event.pressure = event.changedTouches[0].force || 0.5;
-            if (typeof event.rotation === 'undefined') event.rotation = event.changedTouches[0].rotationAngle || 0;
+            for (let i = 0, li = event.changedTouches.length; i < li; i++)
+            {
+                const touch = event.changedTouches[i];
 
-            if (typeof event.clientX === 'undefined') event.clientX = event.changedTouches[0].clientX;
-            if (typeof event.clientY === 'undefined') event.clientY = event.changedTouches[0].clientY;
-            if (typeof event.pageX === 'undefined') event.pageX = event.changedTouches[0].pageX;
-            if (typeof event.pageY === 'undefined') event.pageY = event.changedTouches[0].pageY;
-            if (typeof event.screenX === 'undefined') event.screenX = event.changedTouches[0].screenX;
-            if (typeof event.screenY === 'undefined') event.screenY = event.changedTouches[0].screenY;
-            if (typeof event.layerX === 'undefined') event.layerX = event.offsetX = event.clientX;
-            if (typeof event.layerY === 'undefined') event.layerY = event.offsetY = event.clientY;
+                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.isPrimary === 'undefined') touch.isPrimary = event.touches.length === 1;
+                if (typeof touch.width === 'undefined') touch.width = touch.radiusX || 1;
+                if (typeof touch.height === 'undefined') touch.height = touch.radiusY || 1;
+                if (typeof touch.tiltX === 'undefined') touch.tiltX = 0;
+                if (typeof touch.tiltY === 'undefined') touch.tiltY = 0;
+                if (typeof touch.pointerType === 'undefined') touch.pointerType = 'touch';
+                if (typeof touch.pointerId === 'undefined') touch.pointerId = touch.identifier || 0;
+                if (typeof touch.pressure === 'undefined') touch.pressure = touch.force || 0.5;
+                if (typeof touch.rotation === 'undefined') touch.rotation = touch.rotationAngle || 0;
+
+                if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
+                if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
+
+                normalizedEvents.push(touch);
+            }
         }
-        else if (type === 'MouseEvent')
+        else if (event instanceof MouseEvent)
         {
             if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
             if (typeof event.width === 'undefined') event.width = 1;
@@ -1318,7 +1333,15 @@ export default class InteractionManager extends EventEmitter
             if (typeof event.pointerId === 'undefined') event.pointerId = MOUSE_POINTER_ID;
             if (typeof event.pressure === 'undefined') event.pressure = 0.5;
             if (typeof event.rotation === 'undefined') event.rotation = 0;
+
+            normalizedEvents.push(event);
         }
+        else
+        {
+            normalizedEvents.push(event);
+        }
+
+        return normalizedEvents;
     }
 
     /**
