@@ -488,9 +488,9 @@ export default class InteractionManager extends EventEmitter
 
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.addEventListener('touchstart', this.onPointerStart, true);
+            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
             this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.addEventListener('touchend', this.onPointerEnd, true);
+            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
             this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
         }
 
@@ -539,9 +539,9 @@ export default class InteractionManager extends EventEmitter
 
         if (this.supportsTouchEvents)
         {
-            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerStart, true);
+            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
             this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.removeEventListener('touchend', this.onPointerEnd, true);
+            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
             this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
         }
 
