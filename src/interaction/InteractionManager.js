@@ -80,7 +80,7 @@ export default class InteractionManager extends EventEmitter
          * @member {Object.<number,PIXI.interation.InteractionData>}
          */
         this.activeInteractionData = {};
-        this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse();
+        this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
 
         /**
          * An event data object to handle all the event tracking/dispatching
