@@ -178,6 +178,13 @@ export default class InteractionManager extends EventEmitter
          * @private
          * @member {Function}
          */
+        this.onPointerCancel = this.onPointerCancel.bind(this);
+        this.processPointerCancel = this.processPointerCancel.bind(this);
+
+        /**
+         * @private
+         * @member {Function}
+         */
         this.onPointerDown = this.onPointerDown.bind(this);
         this.processPointerDown = this.processPointerDown.bind(this);
 
