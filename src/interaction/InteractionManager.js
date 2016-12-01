@@ -825,7 +825,10 @@ export default class InteractionManager extends EventEmitter
          * Normalized events, however, may have the double mousedown/touchstart issue on the native android browser,
          * so still need to be prevented.
          */
-        if (this.autoPreventDefault && (originalEvent.pointerType === 'touch' || originalEvent.pointerType === 'mouse'))
+
+        // Guaranteed that there will be at least one event in events, and all events must have the same pointer type
+
+        if (this.autoPreventDefault && (events[0].pointerType === 'touch' || events[0].pointerType === 'mouse'))
         {
             originalEvent.preventDefault();
         }
@@ -917,13 +920,13 @@ export default class InteractionManager extends EventEmitter
 
             this.emit(cancelled ? 'pointercancel' : 'pointerup', interactionEvent);
 
-            if (originalEvent.pointerType === 'mouse')
+            if (event.pointerType === 'mouse')
             {
                 const isRightButton = event.button === 2 || event.which === 3;
 
                 this.emit(isRightButton ? 'rightup' : 'mouseup', interactionEvent);
             }
-            else if (originalEvent.pointerType === 'touch')
+            else if (event.pointerType === 'touch')
             {
                 this.emit(cancelled ? 'touchcancel' : 'touchend', interactionEvent);
             }
@@ -1048,7 +1051,7 @@ export default class InteractionManager extends EventEmitter
     {
         const events = this.normalizeToPointerData(originalEvent);
 
-        if (originalEvent.pointerType === 'mouse')
+        if (events[0].pointerType === 'mouse')
         {
             this.didMove = true;
 
@@ -1075,9 +1078,9 @@ export default class InteractionManager extends EventEmitter
                 this.processPointerMove,
                 interactive
             );
-            this.emit('pointermove', this.eventData);
-            if (originalEvent.pointerType === 'touch') this.emit('touchmove', interactionEvent);
-            if (originalEvent.pointerType === 'mouse') this.emit('mousemove', interactionEvent);
+            this.emit('pointermove', interactionEvent);
+            if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
+            if (event.pointerType === 'mouse') this.emit('mousemove', interactionEvent);
         }
 
         if (events[0].pointerType === 'mouse')
