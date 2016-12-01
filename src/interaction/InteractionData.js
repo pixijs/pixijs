@@ -33,6 +33,13 @@ export default class InteractionData
          * @member {Event}
          */
         this.originalEvent = null;
+
+        /**
+         * Unique identifier for this interaction
+         *
+         * @member {number}
+         */
+        this.identifier = null;
     }
 
     /**

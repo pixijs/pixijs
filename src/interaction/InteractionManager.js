@@ -68,6 +68,7 @@ export default class InteractionManager extends EventEmitter
          * @member {PIXI.interaction.InteractionData}
          */
         this.mouse = new InteractionData();
+        this.mouse.identifier = MOUSE_POINTER_ID;
 
         // setting the mouse to start off far off screen will mean that mouse over does
         //  not get called before we even move the mouse.
@@ -873,9 +874,11 @@ export default class InteractionManager extends EventEmitter
     {
         const e = interactionEvent.data.originalEvent;
 
+        const id = interactionEvent.data.identifier;
+
         if (hit)
         {
-            displayObject._pointerIdentifiers.add(e.pointerId);
+            displayObject._pointerIdentifiers.add(id);
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (e.type === 'touchstart')
@@ -955,9 +958,11 @@ export default class InteractionManager extends EventEmitter
     {
         const e = interactionEvent.data.originalEvent;
 
-        if (displayObject._pointerIdentifiers.has(e.pointerId))
+        const id = interactionEvent.data.identifier;
+
+        if (displayObject._pointerIdentifiers.has(id))
         {
-            displayObject._pointerIdentifiers.delete(e.pointerId);
+            displayObject._pointerIdentifiers.delete(id);
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
             if (e.type === 'touchcancel')
@@ -990,22 +995,24 @@ export default class InteractionManager extends EventEmitter
     {
         const e = interactionEvent.data.originalEvent;
 
+        const id = interactionEvent.data.identifier;
+
         // Pointers and Touches
         if (hit)
         {
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchend', interactionEvent);
 
-            if (displayObject._pointerIdentifiers.has(e.pointerId))
+            if (displayObject._pointerIdentifiers.has(id))
             {
-                displayObject._pointerIdentifiers.delete(e.pointerId);
+                displayObject._pointerIdentifiers.delete(id);
                 this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
                 if (e.type === 'touchend') this.dispatchEvent(displayObject, 'tap', interactionEvent);
             }
         }
-        else if (displayObject._pointerIdentifiers.has(e.pointerId))
+        else if (displayObject._pointerIdentifiers.has(id))
         {
-            displayObject._pointerIdentifiers.delete(e.pointerId);
+            displayObject._pointerIdentifiers.delete(id);
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
@@ -1243,6 +1250,7 @@ export default class InteractionManager extends EventEmitter
 
         const interactionData = new InteractionData();
 
+        interactionData.identifier = pointerId;
         this.activeInteractionData[pointerId] = interactionData;
 
         return interactionData;
