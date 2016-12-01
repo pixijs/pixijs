@@ -1,5 +1,6 @@
 'use strict';
 
+require('./TransformStatic');
 require('./Bounds');
 require('./Container');
 require('./DisplayObject');
