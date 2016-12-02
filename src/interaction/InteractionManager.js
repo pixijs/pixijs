@@ -1,6 +1,7 @@
 import * as core from '../core';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
+import InteractionTrackingData from './InteractionTrackingData';
 import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
 import MobileDevice from 'ismobilejs';
@@ -885,7 +886,7 @@ export default class InteractionManager extends EventEmitter
 
         if (hit)
         {
-            displayObject._pointerIdentifiers.add(id);
+            displayObject._trackedPointers[id] = new InteractionTrackingData(id);
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (e.type === 'touchstart')
@@ -896,7 +897,15 @@ export default class InteractionManager extends EventEmitter
             {
                 const isRightButton = e.button === 2 || e.which === 3;
 
-                displayObject[isRightButton ? '_isRightDown' : '_isLeftDown'] = true;
+                if (isRightButton)
+                {
+                    displayObject._trackedPointers[id].rightDown = true;
+                }
+                else
+                {
+                    displayObject._trackedPointers[id].leftDown = true;
+                }
+
                 this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
             }
         }
@@ -967,9 +976,9 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
-        if (displayObject._pointerIdentifiers.has(id))
+        if (displayObject._trackedPointers[id] !== undefined)
         {
-            displayObject._pointerIdentifiers.delete(id);
+            delete displayObject._trackedPointers[id];
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
             if (e.type === 'touchcancel')
@@ -1004,22 +1013,24 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
+        const trackingData = displayObject._trackedPointers[id];
+
         // Pointers and Touches
         if (hit)
         {
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchend', interactionEvent);
 
-            if (displayObject._pointerIdentifiers.has(id))
+            if (displayObject._trackedPointers[id] !== undefined)
             {
-                displayObject._pointerIdentifiers.delete(id);
+                delete displayObject._trackedPointers[id];
                 this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
                 if (e.type === 'touchend') this.dispatchEvent(displayObject, 'tap', interactionEvent);
             }
         }
-        else if (displayObject._pointerIdentifiers.has(id))
+        else if (displayObject._trackedPointers[id] !== undefined)
         {
-            displayObject._pointerIdentifiers.delete(id);
+            delete displayObject._trackedPointers[id];
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
@@ -1029,21 +1040,23 @@ export default class InteractionManager extends EventEmitter
         {
             const isRightButton = e.button === 2 || e.which === 3;
 
-            const isDown = isRightButton ? '_isRightDown' : '_isLeftDown';
+            const flags = InteractionTrackingData.FLAGS;
+
+            const test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
+
+            const isDown = trackingData !== undefined && (trackingData.flags | test);
 
             if (hit)
             {
                 this.dispatchEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', interactionEvent);
 
-                if (displayObject[isDown])
+                if (isDown)
                 {
-                    displayObject[isDown] = false;
                     this.dispatchEvent(displayObject, isRightButton ? 'rightclick' : 'click', interactionEvent);
                 }
             }
-            else if (displayObject[isDown])
+            else if (isDown)
             {
-                displayObject[isDown] = false;
                 this.dispatchEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', interactionEvent);
             }
         }
@@ -1174,15 +1187,19 @@ export default class InteractionManager extends EventEmitter
     {
         const e = interactionEvent.data.originalEvent;
 
+        const id = interactionEvent.data.identifier;
+
         const isMouse = (e.type === 'mouseover' || e.type === 'mouseout');
 
-        const overFlag = isMouse ? '_mouseOver' : '_pointerOver';
+        const trackingData = displayObject._trackedPointers[id];
+
+        if (trackingData === undefined) return;
 
         if (hit && this.mouseOverRenderer)
         {
-            if (!displayObject[overFlag])
+            if (!trackingData.over)
             {
-                displayObject[overFlag] = true;
+                trackingData.over = true;
                 this.dispatchEvent(displayObject, 'pointerover', interactionEvent);
                 if (isMouse)
                 {
@@ -1195,9 +1212,9 @@ export default class InteractionManager extends EventEmitter
                 this.cursor = displayObject.defaultCursor;
             }
         }
-        else if (displayObject[overFlag])
+        else if (trackingData.over)
         {
-            displayObject[overFlag] = false;
+            trackingData.over = false;
             this.dispatchEvent(displayObject, 'pointerout', this.eventData);
             if (isMouse === 'mouse')
             {

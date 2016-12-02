@@ -54,44 +54,11 @@ export default {
      */
     defaultCursor: 'pointer',
 
-    // some internal checks..
-    /**
-     * Internal check to detect if the mouse cursor is hovered over the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _over: false,
-
-    /**
-     * Internal check to detect if the left mouse button is pressed on the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _isLeftDown: false,
-
-    /**
-     * Internal check to detect if the right mouse button is pressed on the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _isRightDown: false,
-
-    /**
-     * Internal check to detect if the pointer cursor is hovered over the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _pointerOver: false,
-
     /**
      * Internal set of all active pointers, by identifier
      *
-     * @inner {Set}
+     * @inner {InteractionTrackingData[]}
      * @private
      */
-    _pointerIdentifiers: new Set(),
+    _trackedPointers: {},
 };
