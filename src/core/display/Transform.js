@@ -109,6 +109,7 @@ export default class Transform extends TransformBase
         // concat the parent matrix with the objects transform.
         const pt = parentTransform.worldTransform;
         const wt = this.worldTransform;
+
         wt.a = (lt.a * pt.a) + (lt.b * pt.c);
         wt.b = (lt.a * pt.b) + (lt.b * pt.d);
         wt.c = (lt.c * pt.a) + (lt.d * pt.c);
