@@ -735,8 +735,16 @@ export default class InteractionManager extends EventEmitter
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
-        point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) / this.resolution;
-        point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) / this.resolution;
+        if (navigator.isCocoonJS)
+        {
+            point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) * this.resolution;
+            point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) * this.resolution;
+        }
+        else
+        {
+            point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) / this.resolution;
+            point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) / this.resolution;
+        }
     }
 
     /**
