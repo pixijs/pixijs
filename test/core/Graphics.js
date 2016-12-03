@@ -128,4 +128,14 @@ describe('PIXI.Graphics', () =>
             expect(graphics.containsPoint(point)).to.be.false;
         });
     });
+
+    describe('arc', () =>
+    {
+        it('should draw arc', () =>
+        {
+            const graphics = new PIXI.Graphics();
+
+            expect(() => graphics.arc(100, 30, 20, 0, Math.PI)).to.not.throw();
+        });
+    });
 });
