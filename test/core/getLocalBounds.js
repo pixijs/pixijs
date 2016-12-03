@@ -40,8 +40,6 @@ describe('getLocalBounds', function ()
 
         graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        graphics.scale.set(2);
-
         parent.addChild(graphics);
 
         const bounds = graphics.getLocalBounds();
