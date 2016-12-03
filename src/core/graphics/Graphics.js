@@ -691,6 +691,7 @@ export default class Graphics extends Container
             this.lineWidth = 0;
             this.filling = false;
 
+            this.boundsDirty = -1;
             this.dirty++;
             this.clearDirty++;
             this.graphicsData.length = 0;
