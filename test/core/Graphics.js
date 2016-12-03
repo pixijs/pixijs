@@ -128,4 +128,34 @@ describe('PIXI.Graphics', () =>
             expect(graphics.containsPoint(point)).to.be.false;
         });
     });
+
+    describe('arc', () =>
+    {
+        it('should not throw', () =>
+        {
+            // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
+            const graphics = new PIXI.Graphics();
+
+            // set a fill and line style
+            graphics.beginFill(0xFF3300);
+            graphics.lineStyle(4, 0xffd900, 1);
+
+            // draw a shape
+            graphics.moveTo(50, 50);
+            graphics.lineTo(250, 50);
+            graphics.lineTo(100, 100);
+            graphics.lineTo(50, 50);
+            graphics.endFill();
+
+            graphics.lineStyle(2, 0xFF00FF, 1);
+            graphics.beginFill(0xFF00BB, 0.25);
+            graphics.drawRoundedRect(150, 450, 300, 100, 15);
+            graphics.endFill();
+
+            graphics.beginFill();
+            graphics.lineStyle(4, 0x00ff00, 1);
+            graphics.arc(300, 100, 20, 0, Math.PI);
+            graphics.endFill();
+        });
+    });
 });
