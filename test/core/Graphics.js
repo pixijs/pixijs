@@ -131,7 +131,18 @@ describe('PIXI.Graphics', () =>
 
     describe('arc', () =>
     {
-        it('should not throw', () =>
+        it('should draw an arc', () =>
+        {
+            const graphics = new PIXI.Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            expect(() => graphics.arc(100, 30, 20, 0, Math.PI)).to.not.throw();
+
+            expect(graphics.currentPath).to.be.not.null;
+        });
+
+        it('should not throw with other shapes', () =>
         {
             // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
             const graphics = new PIXI.Graphics();
@@ -154,8 +165,30 @@ describe('PIXI.Graphics', () =>
 
             graphics.beginFill();
             graphics.lineStyle(4, 0x00ff00, 1);
-            graphics.arc(300, 100, 20, 0, Math.PI);
-            graphics.endFill();
+
+            expect(() => graphics.arc(300, 100, 20, 0, Math.PI)).to.not.throw();
+        });
+
+        it('should do nothing when startAngle and endAngle are equal', () =>
+        {
+            const graphics = new PIXI.Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.arc(0, 0, 10, 0, 0);
+
+            expect(graphics.currentPath).to.be.null;
+        });
+
+        it('should do nothing if sweep equals zero', () =>
+        {
+            const graphics = new PIXI.Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.arc(0, 0, 10, 10, 10);
+
+            expect(graphics.currentPath).to.be.null;
         });
     });
 });
