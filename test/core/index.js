@@ -21,3 +21,4 @@ require('./RoundedRectangle');
 require('./Circle');
 require('./Graphics');
 require('./SpriteRenderer');
+require('./Ellipse');
