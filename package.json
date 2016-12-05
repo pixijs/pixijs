@@ -34,7 +34,7 @@
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint",
     "build": "npm run dist",
-    "predist": "rimraf dist/pixi*.js dist/pixi*.map",
+    "predist": "rimraf dist/pixi.*js dist/pixi.*.map",
     "dist": "pixify -d dist -n PIXI -o pixi -t babelify",
     "lib": "babel src --out-dir lib -s",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
