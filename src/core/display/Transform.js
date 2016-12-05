@@ -54,25 +54,23 @@ export default class Transform extends TransformBase
          */
         this._rotation = 0;
 
-        this._sr = Math.sin(0);
-        this._cr = Math.cos(0);
-        this._cy = Math.cos(0);// skewY);
-        this._sy = Math.sin(0);// skewY);
-        this._nsx = Math.sin(0);// skewX);
-        this._cx = Math.cos(0);// skewX);
+        this._cx = 1; // cos rotation + skewY;
+        this._sx = 0; // sin rotation + skewY;
+        this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+        this._sy = 1; // sin rotation + Math.PI/2 - skewX;
     }
 
     /**
-     * Updates the skew values when the skew changes.
+     * Updates the skew values when the skew or rotation changes.
      *
      * @private
      */
     updateSkew()
     {
-        this._cy = Math.cos(this.skew.y);
-        this._sy = Math.sin(this.skew.y);
-        this._nsx = Math.sin(this.skew.x);
-        this._cx = Math.cos(this.skew.x);
+        this._cx = Math.cos(this._rotation + this.skew._y);
+        this._sx = Math.sin(this._rotation + this.skew._y);
+        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
     }
 
     /**
@@ -81,15 +79,14 @@ export default class Transform extends TransformBase
     updateLocalTransform()
     {
         const lt = this.localTransform;
-        const a  =  this._cr * this.scale.x;
-        const b  =  this._sr * this.scale.x;
-        const c  = -this._sr * this.scale.y;
-        const d  =  this._cr * this.scale.y;
 
-        lt.a = (this._cy * a) + (this._sy * c);
-        lt.b = (this._cy * b) + (this._sy * d);
-        lt.c = (this._nsx * a) + (this._cx * c);
-        lt.d = (this._nsx * b) + (this._cx * d);
+        lt.a = this._cx * this.scale._x;
+        lt.b = this._sx * this.scale._x;
+        lt.c = this._cy * this.scale._y;
+        lt.d = this._sy * this.scale._y;
+
+        lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
+        lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
     }
 
     /**
@@ -103,15 +100,10 @@ export default class Transform extends TransformBase
         const wt = this.worldTransform;
         const lt = this.localTransform;
 
-        const a  =  this._cr * this.scale.x;
-        const b  =  this._sr * this.scale.x;
-        const c  = -this._sr * this.scale.y;
-        const d  =  this._cr * this.scale.y;
-
-        lt.a = (this._cy * a) + (this._sy * c);
-        lt.b = (this._cy * b) + (this._sy * d);
-        lt.c = (this._nsx * a) + (this._cx * c);
-        lt.d = (this._nsx * b) + (this._cx * d);
+        lt.a = this._cx * this.scale._x;
+        lt.b = this._sx * this.scale._x;
+        lt.c = this._cy * this.scale._y;
+        lt.d = this._sy * this.scale._y;
 
         lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
         lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
@@ -156,7 +148,6 @@ export default class Transform extends TransformBase
     set rotation(value)
     {
         this._rotation = value;
-        this._sr = Math.sin(value);
-        this._cr = Math.cos(value);
+        this.updateSkew();
     }
 }

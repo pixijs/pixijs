@@ -7,8 +7,6 @@ import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
 import TextStyle from './TextStyle';
 
-const { RESOLUTION } = settings;
-
 const defaultDestroyOptions = {
     texture: true,
     children: false,
@@ -67,7 +65,7 @@ export default class Text extends Sprite
          * @member {number}
          * @default 1
          */
-        this.resolution = RESOLUTION;
+        this.resolution = settings.RESOLUTION;
 
         /**
          * Private tracker for the current text.
@@ -501,7 +499,7 @@ export default class Text extends Sprite
      *
      * @private
      * @param {object} style - The style.
-     * @param {string} lines - The lines of text.
+     * @param {string[]} lines - The lines of text.
      * @return {string|number|CanvasGradient} The fill style
      */
     _generateFillStyle(style, lines)
@@ -737,7 +735,7 @@ export default class Text extends Sprite
         // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
         const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
 
-        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${style.fontFamily}`;
+        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} "${style.fontFamily}"`;
     }
 
     /**

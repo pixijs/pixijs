@@ -12,7 +12,9 @@ import bitmapFontParser from './bitmapFontParser';
  * //or
  * let loader = new PIXI.loaders.Loader(); // you can also create your own if you want
  *
- * loader.add('bunny',"data/bunny.png");
+ * loader.add('bunny', 'data/bunny.png');
+ * loader.add('spaceship', 'assets/spritesheet.json');
+ * loader.add('scoreFont', 'assets/score.fnt');
  *
  * loader.once('complete',onAssetsLoaded);
  *
