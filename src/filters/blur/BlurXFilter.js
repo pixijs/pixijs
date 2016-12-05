@@ -16,7 +16,7 @@ export default class BlurXFilter extends core.Filter
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
      * @param {number} resolution - The reoslution of the blur filter.
-     * @param {number} kernelSize - The kernelSize of the blur filter.Options: 3, 5, 7, 9, 11, 13, 15.
+     * @param {number} kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(strength, quality, resolution, kernelSize)
     {
