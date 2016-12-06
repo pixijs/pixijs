@@ -64,7 +64,7 @@ export default class TilingSprite extends core.Sprite
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+         * Allows to customize the rendering process without overriding '_renderWebGL' method.
          *
          * @member {string}
          */
