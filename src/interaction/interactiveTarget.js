@@ -8,18 +8,16 @@
  * @example
  *      function MyObject() {}
  *
- *      Object.assign(
- *          MyObject.prototype,
- *          PIXI.interaction.interactiveTarget
- *      );
+ *      PIXI.interaction.interactiveTarget.call(MyObject.prototype)
  */
-export default {
+export default function ()
+{
     /**
      * Determines if the displayObject be clicked/touched
      *
      * @inner {boolean}
      */
-    interactive: false,
+    this.interactive = false;
 
     /**
      * Determines if the children to the displayObject can be clicked/touched
@@ -27,7 +25,7 @@ export default {
      *
      * @inner {boolean}
      */
-    interactiveChildren: true,
+    this.interactiveChildren = true;
 
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
@@ -35,14 +33,14 @@ export default {
      *
      * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
-    hitArea: null,
+    this.hitArea = null;
 
     /**
      * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive
      *
      * @inner {boolean}
      */
-    buttonMode: false,
+    this.buttonMode = false;
 
     /**
      * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor
@@ -52,13 +50,18 @@ export default {
      *
      * @inner {string}
      */
-    defaultCursor: 'pointer',
+    this.defaultCursor = 'pointer';
 
     /**
      * Internal set of all active pointers, by identifier
      *
-     * @inner {InteractionTrackingData[]}
+     * @returns {Map<number, InteractionTrackingData>} Map of all tracked pointers, by identifier
      * @private
      */
-    _trackedPointers: {},
-};
+    this.getTrackedPointers = function getTrackedPointers()
+    {
+        if (this._trackedPointers === undefined) this._trackedPointers = {};
+
+        return this._trackedPointers;
+    };
+}

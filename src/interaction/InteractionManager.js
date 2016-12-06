@@ -7,10 +7,7 @@ import interactiveTarget from './interactiveTarget';
 import MobileDevice from 'ismobilejs';
 
 // Mix interactiveTarget into core.DisplayObject.prototype
-Object.assign(
-    core.DisplayObject.prototype,
-    interactiveTarget
-);
+interactiveTarget.call(core.DisplayObject.prototype);
 
 const MOUSE_POINTER_ID = 1;
 
@@ -886,7 +883,7 @@ export default class InteractionManager extends EventEmitter
 
         if (hit)
         {
-            displayObject._trackedPointers[id] = new InteractionTrackingData(id);
+            displayObject.getTrackedPointers()[id] = new InteractionTrackingData(id);
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (e.type === 'touchstart')
@@ -899,11 +896,11 @@ export default class InteractionManager extends EventEmitter
 
                 if (isRightButton)
                 {
-                    displayObject._trackedPointers[id].rightDown = true;
+                    displayObject.getTrackedPointers()[id].rightDown = true;
                 }
                 else
                 {
-                    displayObject._trackedPointers[id].leftDown = true;
+                    displayObject.getTrackedPointers()[id].leftDown = true;
                 }
 
                 this.dispatchEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
@@ -976,9 +973,9 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
-        if (displayObject._trackedPointers[id] !== undefined)
+        if (displayObject.getTrackedPointers()[id] !== undefined)
         {
-            delete displayObject._trackedPointers[id];
+            delete displayObject.getTrackedPointers()[id];
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
             if (e.type === 'touchcancel')
@@ -1013,7 +1010,7 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
-        const trackingData = displayObject._trackedPointers[id];
+        const trackingData = displayObject.getTrackedPointers()[id];
 
         // Pointers and Touches
         if (hit)
@@ -1021,16 +1018,16 @@ export default class InteractionManager extends EventEmitter
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchend', interactionEvent);
 
-            if (displayObject._trackedPointers[id] !== undefined)
+            if (displayObject.getTrackedPointers()[id] !== undefined)
             {
-                delete displayObject._trackedPointers[id];
+                delete displayObject.getTrackedPointers()[id];
                 this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
                 if (e.type === 'touchend') this.dispatchEvent(displayObject, 'tap', interactionEvent);
             }
         }
-        else if (displayObject._trackedPointers[id] !== undefined)
+        else if (displayObject.getTrackedPointers()[id] !== undefined)
         {
-            delete displayObject._trackedPointers[id];
+            delete displayObject.getTrackedPointers()[id];
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
             if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
@@ -1191,7 +1188,7 @@ export default class InteractionManager extends EventEmitter
 
         const isMouse = (e.type === 'mouseover' || e.type === 'mouseout');
 
-        const trackingData = displayObject._trackedPointers[id];
+        const trackingData = displayObject.getTrackedPointers()[id];
 
         if (trackingData === undefined) return;
 
