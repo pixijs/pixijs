@@ -63,7 +63,8 @@ export default class TilingSprite extends core.Sprite
         this.uvTransform = texture.transform || new TextureTransform(texture);
 
         /**
-         * Plugin that is responsible for rendering this element. Allows to customize the rendering process without overriding 'renderWebGL' method.
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding 'renderWebGL' method.
          *
          * @member {string}
          */

@@ -122,7 +122,8 @@ export default class Sprite extends Container
         this._textureID = -1;
 
         /**
-         * Plugin that is responsible for rendering this element. Allows to customize the rendering process without overriding 'renderWebGL' method.
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding 'renderWebGL' method.
          *
          * @member {string}
          */

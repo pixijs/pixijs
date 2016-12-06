@@ -124,7 +124,8 @@ export default class Mesh extends core.Container
         this._glDatas = {};
 
         /**
-         * Plugin that is responsible for rendering this element. Allows to customize the rendering process without overriding 'renderWebGL' method.
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding 'renderWebGL' method.
          *
          * @member {string}
          */
