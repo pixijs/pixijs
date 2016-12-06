@@ -123,7 +123,7 @@ export default class Sprite extends Container
 
         /**
          * Plugin that is responsible for rendering this element.
-         * Allows to customize the rendering process without overriding 'renderWebGL' method.
+         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
          *
          * @member {string}
          */
