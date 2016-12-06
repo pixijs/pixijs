@@ -120,6 +120,13 @@ export default class Sprite extends Container
 
         this._transformID = -1;
         this._textureID = -1;
+
+        /**
+         * Plugin that is responsible for rendering this element. Allows to customize the rendering process without overriding 'renderWebGL' method.
+         *
+         * @member {string}
+         */
+        this.pluginName = 'sprite';
     }
 
     /**
@@ -282,8 +289,8 @@ export default class Sprite extends Container
     {
         this.calculateVertices();
 
-        renderer.setObjectRenderer(renderer.plugins.sprite);
-        renderer.plugins.sprite.render(this);
+        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.plugins[this.pluginName].render(this);
     }
 
     /**
@@ -294,7 +301,7 @@ export default class Sprite extends Container
     */
     _renderCanvas(renderer)
     {
-        renderer.plugins.sprite.render(this);
+        renderer.plugins[this.pluginName].render(this);
     }
 
     /**
