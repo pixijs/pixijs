@@ -128,6 +128,7 @@ export default class Mesh extends core.Container
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
          *
          * @member {string}
+         * @default 'mesh'
          */
         this.pluginName = 'mesh';
     }

@@ -126,6 +126,7 @@ export default class Sprite extends Container
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
          *
          * @member {string}
+         * @default 'sprite'
          */
         this.pluginName = 'sprite';
     }
