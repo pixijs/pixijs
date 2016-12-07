@@ -40,6 +40,14 @@ export default class Mesh extends core.Container
          * @see PIXI.mesh.Mesh.DRAW_MODES
          */
         this.drawMode = drawMode;
+
+        this.uniforms = {};
+
+//        geometry//
+//        shader//
+//        uniforms//
+//        state//
+
     }
 
     /**

@@ -33,10 +33,10 @@ export default class ShaderManager
 
     bindShader(shader)
     {
-        let glShader = shader.glShaders[renderer.CONTEXT_UID] || this.generateShader(shader);
+        let glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
         this.renderer._bindGLShader(glShader);
-        this.syncUniforms(glShader, shader);
+//        this.syncUniforms(glShader, shader);
 
     }
 
@@ -58,7 +58,7 @@ export default class ShaderManager
         };
         console.log(glShader.dirtyFlags)
 
-        shader.glShaders[renderer.CONTEXT_UID] = glShader;
+        shader.glShaders[this.renderer.CONTEXT_UID] = glShader;
 
 
         return glShader
@@ -84,7 +84,7 @@ export default class ShaderManager
         {
             if(dirtyFlags[i] === uniformData[i].dirtyId)
             {
-                continue;
+                //continue;
             }
 
             dirtyFlags[i] = uniformData[i].dirtyId;
@@ -93,7 +93,8 @@ export default class ShaderManager
             {
                 if (uniformData[i].value.baseTexture)
                 {
-                    glShader.uniforms[i] = this.renderer.bindTexture(uniformData[i].value, textureCount);
+                    glShader.uniforms[i] = this.renderer.bindTexture(uniformData[i].value, textureCount, true);
+              //      console.log( glShader.uniforms[i])
                 }
                 else
                 {
@@ -152,6 +153,7 @@ export default class ShaderManager
             }
         }
     }
+
 
 
     /**

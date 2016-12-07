@@ -1,6 +1,8 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
 import extractAttributesFromSrc from './extractAttributesFromSrc';
 
+let UID = 0;
+
 // let math = require('../../../math');
 /**
  * @class
@@ -63,7 +65,7 @@ class Shader
         this.glShaders = {};
 
 
-
+        this.id = UID++;
     }
 
 

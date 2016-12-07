@@ -26,7 +26,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
     onContextChange()
     {
         this.gl = this.renderer.gl;
-
+        this.CONTEXT_UID = this.renderer.CONTEXT_UID
         // nothing to see here!
     }
 

@@ -3,6 +3,7 @@ import Buffer from './Buffer';
 import GeometryStyle from './GeometryStyle';
 import GeometryData from './GeometryData';
 
+var UID = 0;
 class Geometry
 {
 
@@ -13,6 +14,7 @@ class Geometry
 
 	    this.glVertexArrayObjects = [];
 
+	    this.id = UID++;
 	}
 
 	addAttribute(id, buffer, size = 2, stride = 0, start = 0, normalised = false)
