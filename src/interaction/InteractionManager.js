@@ -1355,7 +1355,7 @@ export default class InteractionManager extends EventEmitter
     {
         const normalizedEvents = [];
 
-        if (event instanceof TouchEvent)
+        if (this.supportsTouchEvents && event instanceof TouchEvent)
         {
             for (let i = 0, li = event.changedTouches.length; i < li; i++)
             {
