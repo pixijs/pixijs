@@ -13,7 +13,7 @@ export default class InteractionTrackingData
     constructor(pointerId)
     {
         this._pointerId = pointerId;
-        this._flags = this.constructor.FLAGS.NONE;
+        this._flags = InteractionTrackingData.FLAGS.NONE;
     }
 
     /**
@@ -86,7 +86,7 @@ export default class InteractionTrackingData
     }
 
     /**
-     * Is the right mouse button down?
+     * Did the right mouse button come down in the DisplayObject?
      *
      * @member {boolean}
      * @memberof PIXI.interaction.InteractionTrackingData#
@@ -107,7 +107,7 @@ export default class InteractionTrackingData
     }
 
     /**
-     * Is the left mouse button down?
+     * Did the left mouse button come down in the DisplayObject?
      *
      * @member {boolean}
      * @memberof PIXI.interaction.InteractionTrackingData#
