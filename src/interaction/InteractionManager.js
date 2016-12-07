@@ -7,7 +7,10 @@ import interactiveTarget from './interactiveTarget';
 import MobileDevice from 'ismobilejs';
 
 // Mix interactiveTarget into core.DisplayObject.prototype
-interactiveTarget.call(core.DisplayObject.prototype);
+Object.assign(
+    core.DisplayObject.prototype,
+    interactiveTarget
+);
 
 const MOUSE_POINTER_ID = 1;
 
@@ -80,6 +83,14 @@ export default class InteractionManager extends EventEmitter
          */
         this.activeInteractionData = {};
         this.activeInteractionData[MOUSE_POINTER_ID] = this.mouse;
+
+        /**
+         * Pool of unused InteractionData
+         *
+         * @private
+         * @member {PIXI.interation.InteractionData[]}
+         */
+        this.interactionDataPool = [];
 
         /**
          * An event data object to handle all the event tracking/dispatching
@@ -845,7 +856,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -926,7 +937,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -945,6 +956,7 @@ export default class InteractionManager extends EventEmitter
             else if (event.pointerType === 'touch')
             {
                 this.emit(cancelled ? 'touchcancel' : 'touchend', interactionEvent);
+                this.releaseInteractionDataForPointerId(event.pointerId, interactionData);
             }
         }
     }
@@ -1082,7 +1094,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1157,7 +1169,7 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.style.cursor = this.defaultCursorStyle;
         }
 
-        const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+        const interactionData = this.getInteractionDataForPointerId(event.pointerId);
 
         const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1233,7 +1245,7 @@ export default class InteractionManager extends EventEmitter
         // Only mouse and pointer can call onPointerOver, so events will always be length 1
         const event = events[0];
 
-        const interactionData = this.getIteractionDataForPointerId(event.pointerId);
+        const interactionData = this.getInteractionDataForPointerId(event.pointerId);
 
         const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1256,9 +1268,9 @@ export default class InteractionManager extends EventEmitter
      *
      * @private
      * @param {number} pointerId - Identifier from a pointer event
-     * @return {InteractionData} - Interaction data for the givent pointer identifier
+     * @return {InteractionData} - Interaction data for the given pointer identifier
      */
-    getIteractionDataForPointerId(pointerId)
+    getInteractionDataForPointerId(pointerId)
     {
         if (pointerId === MOUSE_POINTER_ID)
         {
@@ -1269,12 +1281,29 @@ export default class InteractionManager extends EventEmitter
             return this.activeInteractionData[pointerId];
         }
 
-        const interactionData = new InteractionData();
+        const interactionData = this.interactionDataPool.pop() || new InteractionData();
 
         interactionData.identifier = pointerId;
         this.activeInteractionData[pointerId] = interactionData;
 
         return interactionData;
+    }
+
+    /**
+     * Return unused InteractionData to the pool, for a given pointerId
+     *
+     * @private
+     * @param {number} pointerId - Identifier from a pointer event
+     */
+    releaseInteractionDataForPointerId(pointerId)
+    {
+        const interactionData = this.activeInteractionData[pointerId];
+
+        if (interactionData)
+        {
+            delete this.activeInteractionData[pointerId];
+            this.interactionDataPool.push(interactionData);
+        }
     }
 
     /**
