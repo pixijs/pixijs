@@ -221,7 +221,8 @@ export default class CanvasRenderer extends SystemRenderer
 
         clearColor = clearColor || this._backgroundColorString;
 
-        if (!this.transparent && clearColor) {
+        if (!this.transparent && clearColor)
+        {
             context.fillStyle = clearColor;
             context.fillRect(0, 0, this.width, this.height);
         }
