@@ -85,8 +85,8 @@ export default class Transform extends TransformBase
         lt.c = this._cy * this.scale._y;
         lt.d = this._sy * this.scale._y;
 
-        lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
-        lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
+        lt.tx = this.position._x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
+        lt.ty = this.position._y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
     }
 
     /**
@@ -100,10 +100,10 @@ export default class Transform extends TransformBase
         const wt = this.worldTransform;
         const lt = this.localTransform;
 
-        lt.a = this._cx * this.scale._x;
-        lt.b = this._sx * this.scale._x;
-        lt.c = this._cy * this.scale._y;
-        lt.d = this._sy * this.scale._y;
+        lt.a = this._cx * this.scale.x;
+        lt.b = this._sx * this.scale.x;
+        lt.c = this._cy * this.scale.y;
+        lt.d = this._sy * this.scale.y;
 
         lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
         lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
