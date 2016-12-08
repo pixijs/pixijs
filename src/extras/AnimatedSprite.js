@@ -32,10 +32,13 @@ export default class AnimatedSprite extends core.Sprite
     /**
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
+     * @param {boolean} [autoUpdate=true] - Whether use core.ticker.shared to update animation.
      */
-    constructor(textures)
+    constructor(textures, autoUpdate)
     {
         super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+
+        this.autoUpdate = autoUpdate !== false;
 
         /**
          * @private
@@ -110,7 +113,10 @@ export default class AnimatedSprite extends core.Sprite
         }
 
         this.playing = false;
-        core.ticker.shared.remove(this.update, this);
+        if (this.autoUpdate)
+        {
+            core.ticker.shared.remove(this.update, this);
+        }
     }
 
     /**
@@ -125,7 +131,10 @@ export default class AnimatedSprite extends core.Sprite
         }
 
         this.playing = true;
-        core.ticker.shared.add(this.update, this);
+        if (this.autoUpdate)
+        {
+            core.ticker.shared.add(this.update, this);
+        }
     }
 
     /**
