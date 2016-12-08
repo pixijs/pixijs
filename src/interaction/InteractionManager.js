@@ -604,7 +604,8 @@ export default class InteractionManager extends EventEmitter
         // In this case, mouseover and mouseevents would not pass the flag test in dispatchEvent function
         for (const k in this.activeInteractionData)
         {
-            if (Object.prototype.hasOwnProperty.call(this.activeInteractionData, k))
+            // eslint-disable-next-line no-prototype-builtins
+            if (this.activeInteractionData.hasOwnProperty(k))
             {
                 const interactionData = this.activeInteractionData[k];
 
