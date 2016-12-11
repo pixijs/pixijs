@@ -205,7 +205,7 @@ describe('PIXI.Graphics', () =>
 
             graphics._calculateBounds();
 
-            expect(spy).to.not.have.been.called;
+            expect(spy).to.have.been.calledOnce;
         });
     });
 });
