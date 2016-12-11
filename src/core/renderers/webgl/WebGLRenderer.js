@@ -162,6 +162,7 @@ export default class WebGLRenderer extends SystemRenderer
         this._activeRenderTarget = null;
 
         this._initContext();
+
         /**
          * Manages the filters.
          *
