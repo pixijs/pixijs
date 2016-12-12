@@ -38,6 +38,7 @@
     "dist": "pixify -d dist -n PIXI -o pixi -t babelify",
     "prelib": "rimraf lib/**",
     "lib": "babel src --out-dir lib -s",
+    "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish",
