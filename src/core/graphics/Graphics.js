@@ -10,7 +10,6 @@ import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
 
-let canvasRenderer;
 const tempMatrix = new Matrix();
 const tempPoint = new Point();
 const tempColor1 = new Float32Array(4);
