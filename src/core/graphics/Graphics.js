@@ -696,6 +696,9 @@ export default class Graphics extends Container
             this.graphicsData.length = 0;
         }
 
+        this.currentPath = null;
+        this._spriteRect = null;
+        
         return this;
     }
 
