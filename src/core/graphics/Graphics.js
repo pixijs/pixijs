@@ -1058,17 +1058,14 @@ export default class Graphics extends Container
 
         const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
 
-        if (!canvasRenderer)
-        {
-            canvasRenderer = new CanvasRenderer();
-        }
+        const canvasRenderer = new CanvasRenderer(bounds.width, bounds.height);
 
         tempMatrix.tx = -bounds.x;
         tempMatrix.ty = -bounds.y;
 
         canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
 
-        const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+        const texture = Texture.fromCanvas(canvasRenderer.view, scaleMode);
 
         texture.baseTexture.resolution = resolution;
         texture.baseTexture.update();
