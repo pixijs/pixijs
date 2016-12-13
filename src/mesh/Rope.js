@@ -26,9 +26,23 @@ export default class Rope extends Mesh
     {
         super(texture);
 
-        /*
-         * @member {PIXI.Point[]} An array of points that determine the rope
+        /**
+         * Whether the rope is _vertical.
+         *
+         * @member {boolean}
+         * @private
          */
+        this._vertical = false;
+
+
+        /**
+         * The array of points that determine the rope
+         *
+         * @member {PIXI.Point[]}
+         * @private
+         */
+        this._points = null;
+
         this.points = points;
 
         /*
@@ -69,7 +83,7 @@ export default class Rope extends Mesh
      */
     refresh()
     {
-        const points = this.points;
+        const points = this._points;
 
         // if too little points, or texture hasn't got UVs set yet just move on.
         if (points.length < 1 || !this._texture._uvs)
@@ -93,12 +107,20 @@ export default class Rope extends Mesh
 
         const textureUvs = this._texture._uvs;
         const offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
+        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
 
         uvs[0] = 0 + offset.x;
         uvs[1] = 0 + offset.y;
-        uvs[2] = 0 + offset.x;
-        uvs[3] = Number(factor.y) + offset.y;
+        if (this._vertical)
+        {
+            uvs[2] = factor.x + offset.x;
+            uvs[3] = 0 + offset.y;
+        }
+        else
+        {
+            uvs[2] = 0 + offset.x;
+            uvs[3] = factor.y + offset.y;
+        }
 
         colors[0] = 1;
         colors[1] = 1;
@@ -114,11 +136,20 @@ export default class Rope extends Mesh
             let index = i * 4;
             const amount = i / (total - 1);
 
-            uvs[index] = (amount * factor.x) + offset.x;
-            uvs[index + 1] = 0 + offset.y;
-
-            uvs[index + 2] = (amount * factor.x) + offset.x;
-            uvs[index + 3] = Number(factor.y) + offset.y;
+            if (this._vertical)
+            {
+                uvs[index + 0] = 0 + offset.x;
+                uvs[index + 1] = amount * factor.y + offset.y;
+                uvs[index + 2] = factor.x + offset.x;
+                uvs[index + 3] = amount * factor.y + offset.y;
+            }
+            else
+            {
+                uvs[index + 0] = (amount * factor.x) + offset.x;
+                uvs[index + 1] = 0 + offset.y;
+                uvs[index + 2] = (amount * factor.x) + offset.x;
+                uvs[index + 3] = factor.y + offset.y;
+            }
 
             index = i * 2;
             colors[index] = 1;
@@ -157,7 +188,7 @@ export default class Rope extends Mesh
      */
     updateTransform()
     {
-        const points = this.points;
+        const points = this._points;
 
         if (points.length < 1)
         {
@@ -173,6 +204,8 @@ export default class Rope extends Mesh
 
         const vertices = this.vertices;
         const total = points.length;
+
+        const num = (this._vertical ? this._texture.width : this._texture.height) / 2;
 
         for (let i = 0; i < total; i++)
         {
@@ -191,15 +224,17 @@ export default class Rope extends Mesh
             perpY = -(nextPoint.x - lastPoint.x);
             perpX = nextPoint.y - lastPoint.y;
 
-            let ratio = (1 - (i / (total - 1))) * 10;
 
-            if (ratio > 1)
-            {
-                ratio = 1;
-            }
+            // let ratio = (1 - (i / (total - 1))) * 10;
+
+            // if (ratio > 1)
+            // {
+            //     ratio = 1;
+            // }
+
+            // const num = (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this._texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -218,4 +253,34 @@ export default class Rope extends Mesh
         this.containerUpdateTransform();
     }
 
+    /**
+     * Get the array of {@link PIXI.Point} objects to construct this rope.
+     *
+     * @member {PIXI.Point[]}
+     */
+    get points()
+    {
+        return this._points;
+    }
+
+    /**
+     * Set the array of {@link PIXI.Point} objects to construct this rope.
+     *
+     * @param {PIXI.Point[]} value - The value to set to.
+     */
+    set points(value)
+    {
+        this._points = value;
+        if (!value || value.length < 2)
+        {
+            this._vertical = false;
+        }
+
+        const first = value[0];
+        const last = value[value.length - 1];
+        const dx = last.x - first.x;
+        const dy = last.y - first.y;
+
+        this._vertical = dx === 0 || Math.abs(dy / dx) > 1;
+    }
 }
