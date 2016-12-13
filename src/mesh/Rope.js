@@ -34,7 +34,6 @@ export default class Rope extends Mesh
          */
         this._vertical = false;
 
-
         /**
          * The array of points that determine the rope
          *
@@ -139,9 +138,9 @@ export default class Rope extends Mesh
             if (this._vertical)
             {
                 uvs[index + 0] = 0 + offset.x;
-                uvs[index + 1] = amount * factor.y + offset.y;
+                uvs[index + 1] = (amount * factor.y) + offset.y;
                 uvs[index + 2] = factor.x + offset.x;
-                uvs[index + 3] = amount * factor.y + offset.y;
+                uvs[index + 3] = (amount * factor.y) + offset.y;
             }
             else
             {
@@ -205,7 +204,7 @@ export default class Rope extends Mesh
         const vertices = this.vertices;
         const total = points.length;
 
-        const num = (this._vertical ? this._texture.width : this._texture.height) / 2;
+        const num = (this._vertical ? this._texture.frame.width : this._texture.frame.height) / 2;
 
         for (let i = 0; i < total; i++)
         {
@@ -223,7 +222,6 @@ export default class Rope extends Mesh
 
             perpY = -(nextPoint.x - lastPoint.x);
             perpX = nextPoint.y - lastPoint.y;
-
 
             // let ratio = (1 - (i / (total - 1))) * 10;
 
