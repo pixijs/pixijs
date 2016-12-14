@@ -43,8 +43,10 @@ export default function ()
             const frames = resource.data.frames;
             const frameKeys = Object.keys(frames);
             const baseTexture = res.texture.baseTexture;
-            let resolution = core.utils.getResolutionOfUrl(resource.url, null);
             const scale = resource.data.meta.scale;
+
+            // Use a defaultValue of `null` to check if a url-based resolution is set
+            let resolution = core.utils.getResolutionOfUrl(resource.url, null);
 
             // No resolution found via URL
             if (resolution === null)
