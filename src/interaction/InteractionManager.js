@@ -12,7 +12,7 @@ Object.assign(
     interactiveTarget
 );
 
-const MOUSE_POINTER_ID = 1;
+const MOUSE_POINTER_ID = 'MOUSE';
 
 /**
  * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
