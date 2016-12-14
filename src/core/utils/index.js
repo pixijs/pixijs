@@ -115,7 +115,7 @@ export function getResolutionOfUrl(url, defaultValue)
         return parseFloat(resolution[1]);
     }
 
-    return defaultValue || 1;
+    return defaultValue !== undefined ? defaultValue : 1;
 }
 
 /**
