@@ -204,7 +204,7 @@ export default class Rope extends Mesh
         const vertices = this.vertices;
         const total = points.length;
 
-        const num = (this._vertical ? this._texture.frame.width : this._texture.frame.height) / 2;
+        const num = (this._vertical ? -this._texture.frame.width : this._texture.frame.height) / 2;
 
         for (let i = 0; i < total; i++)
         {
