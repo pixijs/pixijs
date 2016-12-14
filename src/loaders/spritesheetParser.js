@@ -43,14 +43,20 @@ export default function ()
             const frames = resource.data.frames;
             const frameKeys = Object.keys(frames);
             const baseTexture = res.texture.baseTexture;
-            let resolution = core.utils.getResolutionOfUrl(resource.url);
+            let resolution = core.utils.getResolutionOfUrl(resource.url, null);
             const scale = resource.data.meta.scale;
 
-            // for now (to keep things compatible) resolution overrides scale
-            // Support scale field on spritesheet
-            if (resolution === 1 && scale !== undefined && scale !== 1)
+            // No resolution found via URL
+            if (resolution === null)
             {
-                baseTexture.resolution = resolution = scale;
+                // Use the scale value or default to 1
+                resolution = scale !== undefined ? scale : 1;
+            }
+
+            // For non-1 resolutions, update baseTexture
+            if (resolution !== 1)
+            {
+                baseTexture.resolution = resolution;
                 baseTexture.update();
             }
 
