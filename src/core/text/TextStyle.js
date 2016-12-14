@@ -97,7 +97,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in this._defaults)
+        for (const key in defaultStyle)
         {
             clonedProperties[key] = this[key];
         }
@@ -110,7 +110,7 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, this._defaults);
+        Object.assign(this, defaultStyle);
     }
 
     get align()
