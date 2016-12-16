@@ -47,12 +47,10 @@ export default class TransformStatic extends TransformBase
 
         this._rotation = 0;
 
-        this._sr = Math.sin(0);
-        this._cr = Math.cos(0);
-        this._cy = Math.cos(0);// skewY);
-        this._sy = Math.sin(0);// skewY);
-        this._nsx = Math.sin(0);// skewX);
-        this._cx = Math.cos(0);// skewX);
+        this._cx = 1; // cos rotation + skewY;
+        this._sx = 0; // sin rotation + skewY;
+        this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+        this._sy = 1; // sin rotation + Math.PI/2 - skewX;
 
         this._localID = 0;
         this._currentLocalID = 0;
@@ -69,16 +67,16 @@ export default class TransformStatic extends TransformBase
     }
 
     /**
-     * Called when skew changes
+     * Called when skew or rotation changes
      *
      * @private
      */
     updateSkew()
     {
-        this._cy = Math.cos(this.skew._y);
-        this._sy = Math.sin(this.skew._y);
-        this._nsx = Math.sin(this.skew._x);
-        this._cx = Math.cos(this.skew._x);
+        this._cx = Math.cos(this._rotation + this.skew._y);
+        this._sx = Math.sin(this._rotation + this.skew._y);
+        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
 
         this._localID ++;
     }
@@ -93,15 +91,10 @@ export default class TransformStatic extends TransformBase
         if (this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            const a  =  this._cr * this.scale._x;
-            const b  =  this._sr * this.scale._x;
-            const c  = -this._sr * this.scale._y;
-            const d  =  this._cr * this.scale._y;
-
-            lt.a = (this._cy * a) + (this._sy * c);
-            lt.b = (this._cy * b) + (this._sy * d);
-            lt.c = (this._nsx * a) + (this._cx * c);
-            lt.d = (this._nsx * b) + (this._cx * d);
+            lt.a = this._cx * this.scale._x;
+            lt.b = this._sx * this.scale._x;
+            lt.c = this._cy * this.scale._y;
+            lt.d = this._sy * this.scale._y;
 
             lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
             lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
@@ -119,22 +112,15 @@ export default class TransformStatic extends TransformBase
      */
     updateTransform(parentTransform)
     {
-        const pt = parentTransform.worldTransform;
-        const wt = this.worldTransform;
         const lt = this.localTransform;
 
         if (this._localID !== this._currentLocalID)
         {
             // get the matrix values of the displayobject based on its transform properties..
-            const a  =  this._cr * this.scale._x;
-            const b  =  this._sr * this.scale._x;
-            const c  = -this._sr * this.scale._y;
-            const d  =  this._cr * this.scale._y;
-
-            lt.a = (this._cy * a) + (this._sy * c);
-            lt.b = (this._cy * b) + (this._sy * d);
-            lt.c = (this._nsx * a) + (this._cx * c);
-            lt.d = (this._nsx * b) + (this._cx * d);
+            lt.a = this._cx * this.scale._x;
+            lt.b = this._sx * this.scale._x;
+            lt.c = this._cy * this.scale._y;
+            lt.d = this._sy * this.scale._y;
 
             lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
             lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
@@ -147,6 +133,9 @@ export default class TransformStatic extends TransformBase
         if (this._parentID !== parentTransform._worldID)
         {
             // concat the parent matrix with the objects transform.
+            const pt = parentTransform.worldTransform;
+            const wt = this.worldTransform;
+
             wt.a = (lt.a * pt.a) + (lt.b * pt.c);
             wt.b = (lt.a * pt.b) + (lt.b * pt.d);
             wt.c = (lt.c * pt.a) + (lt.d * pt.c);
@@ -191,8 +180,6 @@ export default class TransformStatic extends TransformBase
     set rotation(value)
     {
         this._rotation = value;
-        this._sr = Math.sin(value);
-        this._cr = Math.cos(value);
-        this._localID ++;
+        this.updateSkew();
     }
 }

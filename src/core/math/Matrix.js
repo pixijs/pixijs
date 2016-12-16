@@ -353,10 +353,10 @@ export default class Matrix
         const c = this.c;
         const d = this.d;
 
-        const skewX = Math.atan2(-c, d);
+        const skewX = -Math.atan2(-c, d);
         const skewY = Math.atan2(b, a);
 
-        const delta = Math.abs(1 - (skewX / skewY));
+        const delta = Math.abs(skewX + skewY);
 
         if (delta < 0.00001)
         {
