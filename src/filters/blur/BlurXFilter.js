@@ -15,12 +15,14 @@ export default class BlurXFilter extends core.Filter
     /**
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The reoslution of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength, quality, resolution)
+    constructor(strength, quality, resolution, kernelSize)
     {
-        const vertSrc = generateBlurVertSource(5, true);
-        const fragSrc = generateBlurFragSource(5);
+        kernelSize = kernelSize || 5;
+        const vertSrc = generateBlurVertSource(kernelSize, true);
+        const fragSrc = generateBlurFragSource(kernelSize);
 
         super(
             // vertex shader
