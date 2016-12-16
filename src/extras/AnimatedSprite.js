@@ -54,6 +54,7 @@ export default class AnimatedSprite extends core.Sprite
          * `true` uses PIXI.ticker.shared to auto update animation time.
          * @type {boolean}
          * @default true
+         * @private
          */
         this.autoUpdate = autoUpdate !== false;
 
