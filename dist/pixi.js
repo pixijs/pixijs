@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.2.3
- * Compiled Wed, 30 Nov 2016 19:02:25 UTC
+ * pixi.js - v4.3.0
+ * Compiled Fri, 16 Dec 2016 17:40:07 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -7334,7 +7334,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.2.3';
+var VERSION = exports.VERSION = '4.3.0';
 
 /**
  * Two Pi.
@@ -9402,27 +9402,25 @@ var Transform = function (_TransformBase) {
      */
     _this._rotation = 0;
 
-    _this._sr = Math.sin(0);
-    _this._cr = Math.cos(0);
-    _this._cy = Math.cos(0); // skewY);
-    _this._sy = Math.sin(0); // skewY);
-    _this._nsx = Math.sin(0); // skewX);
-    _this._cx = Math.cos(0); // skewX);
+    _this._cx = 1; // cos rotation + skewY;
+    _this._sx = 0; // sin rotation + skewY;
+    _this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+    _this._sy = 1; // sin rotation + Math.PI/2 - skewX;
     return _this;
   }
 
   /**
-   * Updates the skew values when the skew changes.
+   * Updates the skew values when the skew or rotation changes.
    *
    * @private
    */
 
 
   Transform.prototype.updateSkew = function updateSkew() {
-    this._cy = Math.cos(this.skew.y);
-    this._sy = Math.sin(this.skew.y);
-    this._nsx = Math.sin(this.skew.x);
-    this._cx = Math.cos(this.skew.x);
+    this._cx = Math.cos(this._rotation + this.skew._y);
+    this._sx = Math.sin(this._rotation + this.skew._y);
+    this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+    this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
   };
 
   /**
@@ -9432,15 +9430,14 @@ var Transform = function (_TransformBase) {
 
   Transform.prototype.updateLocalTransform = function updateLocalTransform() {
     var lt = this.localTransform;
-    var a = this._cr * this.scale.x;
-    var b = this._sr * this.scale.x;
-    var c = -this._sr * this.scale.y;
-    var d = this._cr * this.scale.y;
 
-    lt.a = this._cy * a + this._sy * c;
-    lt.b = this._cy * b + this._sy * d;
-    lt.c = this._nsx * a + this._cx * c;
-    lt.d = this._nsx * b + this._cx * d;
+    lt.a = this._cx * this.scale.x;
+    lt.b = this._sx * this.scale.x;
+    lt.c = this._cy * this.scale.y;
+    lt.d = this._sy * this.scale.y;
+
+    lt.tx = this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
+    lt.ty = this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
   };
 
   /**
@@ -9451,24 +9448,20 @@ var Transform = function (_TransformBase) {
 
 
   Transform.prototype.updateTransform = function updateTransform(parentTransform) {
-    var pt = parentTransform.worldTransform;
-    var wt = this.worldTransform;
     var lt = this.localTransform;
 
-    var a = this._cr * this.scale.x;
-    var b = this._sr * this.scale.x;
-    var c = -this._sr * this.scale.y;
-    var d = this._cr * this.scale.y;
-
-    lt.a = this._cy * a + this._sy * c;
-    lt.b = this._cy * b + this._sy * d;
-    lt.c = this._nsx * a + this._cx * c;
-    lt.d = this._nsx * b + this._cx * d;
+    lt.a = this._cx * this.scale.x;
+    lt.b = this._sx * this.scale.x;
+    lt.c = this._cy * this.scale.y;
+    lt.d = this._sy * this.scale.y;
 
     lt.tx = this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
     lt.ty = this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
 
     // concat the parent matrix with the objects transform.
+    var pt = parentTransform.worldTransform;
+    var wt = this.worldTransform;
+
     wt.a = lt.a * pt.a + lt.b * pt.c;
     wt.b = lt.a * pt.b + lt.b * pt.d;
     wt.c = lt.c * pt.a + lt.d * pt.c;
@@ -9512,8 +9505,7 @@ var Transform = function (_TransformBase) {
     ,
     set: function set(value) {
       this._rotation = value;
-      this._sr = Math.sin(value);
-      this._cr = Math.cos(value);
+      this.updateSkew();
     }
   }]);
 
@@ -9678,12 +9670,10 @@ var TransformStatic = function (_TransformBase) {
 
     _this._rotation = 0;
 
-    _this._sr = Math.sin(0);
-    _this._cr = Math.cos(0);
-    _this._cy = Math.cos(0); // skewY);
-    _this._sy = Math.sin(0); // skewY);
-    _this._nsx = Math.sin(0); // skewX);
-    _this._cx = Math.cos(0); // skewX);
+    _this._cx = 1; // cos rotation + skewY;
+    _this._sx = 0; // sin rotation + skewY;
+    _this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+    _this._sy = 1; // sin rotation + Math.PI/2 - skewX;
 
     _this._localID = 0;
     _this._currentLocalID = 0;
@@ -9702,17 +9692,17 @@ var TransformStatic = function (_TransformBase) {
   };
 
   /**
-   * Called when skew changes
+   * Called when skew or rotation changes
    *
    * @private
    */
 
 
   TransformStatic.prototype.updateSkew = function updateSkew() {
-    this._cy = Math.cos(this.skew._y);
-    this._sy = Math.sin(this.skew._y);
-    this._nsx = Math.sin(this.skew._x);
-    this._cx = Math.cos(this.skew._x);
+    this._cx = Math.cos(this._rotation + this.skew._y);
+    this._sx = Math.sin(this._rotation + this.skew._y);
+    this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+    this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
 
     this._localID++;
   };
@@ -9727,15 +9717,10 @@ var TransformStatic = function (_TransformBase) {
 
     if (this._localID !== this._currentLocalID) {
       // get the matrix values of the displayobject based on its transform properties..
-      var a = this._cr * this.scale._x;
-      var b = this._sr * this.scale._x;
-      var c = -this._sr * this.scale._y;
-      var d = this._cr * this.scale._y;
-
-      lt.a = this._cy * a + this._sy * c;
-      lt.b = this._cy * b + this._sy * d;
-      lt.c = this._nsx * a + this._cx * c;
-      lt.d = this._nsx * b + this._cx * d;
+      lt.a = this._cx * this.scale._x;
+      lt.b = this._sx * this.scale._x;
+      lt.c = this._cy * this.scale._y;
+      lt.d = this._sy * this.scale._y;
 
       lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
       lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
@@ -9754,21 +9739,14 @@ var TransformStatic = function (_TransformBase) {
 
 
   TransformStatic.prototype.updateTransform = function updateTransform(parentTransform) {
-    var pt = parentTransform.worldTransform;
-    var wt = this.worldTransform;
     var lt = this.localTransform;
 
     if (this._localID !== this._currentLocalID) {
       // get the matrix values of the displayobject based on its transform properties..
-      var a = this._cr * this.scale._x;
-      var b = this._sr * this.scale._x;
-      var c = -this._sr * this.scale._y;
-      var d = this._cr * this.scale._y;
-
-      lt.a = this._cy * a + this._sy * c;
-      lt.b = this._cy * b + this._sy * d;
-      lt.c = this._nsx * a + this._cx * c;
-      lt.d = this._nsx * b + this._cx * d;
+      lt.a = this._cx * this.scale._x;
+      lt.b = this._sx * this.scale._x;
+      lt.c = this._cy * this.scale._y;
+      lt.d = this._sy * this.scale._y;
 
       lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
       lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
@@ -9780,6 +9758,9 @@ var TransformStatic = function (_TransformBase) {
 
     if (this._parentID !== parentTransform._worldID) {
       // concat the parent matrix with the objects transform.
+      var pt = parentTransform.worldTransform;
+      var wt = this.worldTransform;
+
       wt.a = lt.a * pt.a + lt.b * pt.c;
       wt.b = lt.a * pt.b + lt.b * pt.d;
       wt.c = lt.c * pt.a + lt.d * pt.c;
@@ -9828,9 +9809,7 @@ var TransformStatic = function (_TransformBase) {
     ,
     set: function set(value) {
       this._rotation = value;
-      this._sr = Math.sin(value);
-      this._cr = Math.cos(value);
-      this._localID++;
+      this.updateSkew();
     }
   }]);
 
@@ -10360,14 +10339,16 @@ var Graphics = function (_Container) {
         var startX = cx + Math.cos(startAngle) * radius;
         var startY = cy + Math.sin(startAngle) * radius;
 
-        var points = this.currentPath.shape.points;
+        // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
+        var points = this.currentPath ? this.currentPath.shape.points : null;
 
-        if (this.currentPath) {
+        if (points) {
             if (points[points.length - 2] !== startX || points[points.length - 1] !== startY) {
                 points.push(startX, startY);
             }
         } else {
             this.moveTo(startX, startY);
+            points = this.currentPath.shape.points;
         }
 
         var theta = sweep / (segs * 2);
@@ -10557,6 +10538,7 @@ var Graphics = function (_Container) {
             this.lineWidth = 0;
             this.filling = false;
 
+            this.boundsDirty = -1;
             this.dirty++;
             this.clearDirty++;
             this.graphicsData.length = 0;
@@ -13397,10 +13379,10 @@ var Matrix = function () {
         var c = this.c;
         var d = this.d;
 
-        var skewX = Math.atan2(-c, d);
+        var skewX = -Math.atan2(-c, d);
         var skewY = Math.atan2(b, a);
 
-        var delta = Math.abs(1 - skewX / skewY);
+        var delta = Math.abs(skewX + skewY);
 
         if (delta < 0.00001) {
             transform.rotation = skewY;
@@ -15565,7 +15547,7 @@ exports.default = canUseNewCanvasBlendModes;
  * Creates a little colored canvas
  *
  * @ignore
- * @param {number} color - The color to make the canvas
+ * @param {string} color - The color to make the canvas
  * @return {canvas} a small canvas element
  */
 function createColoredCanvas(color) {
@@ -19463,6 +19445,15 @@ var Sprite = function (_Container) {
 
         _this._transformID = -1;
         _this._textureID = -1;
+
+        /**
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+         *
+         * @member {string}
+         * @default 'sprite'
+         */
+        _this.pluginName = 'sprite';
         return _this;
     }
 
@@ -19624,8 +19615,8 @@ var Sprite = function (_Container) {
     Sprite.prototype._renderWebGL = function _renderWebGL(renderer) {
         this.calculateVertices();
 
-        renderer.setObjectRenderer(renderer.plugins.sprite);
-        renderer.plugins.sprite.render(this);
+        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.plugins[this.pluginName].render(this);
     };
 
     /**
@@ -19637,7 +19628,7 @@ var Sprite = function (_Container) {
 
 
     Sprite.prototype._renderCanvas = function _renderCanvas(renderer) {
-        renderer.plugins.sprite.render(this);
+        renderer.plugins[this.pluginName].render(this);
     };
 
     /**
@@ -21907,7 +21898,7 @@ var TextStyle = function () {
     TextStyle.prototype.clone = function clone() {
         var clonedProperties = {};
 
-        for (var key in this._defaults) {
+        for (var key in defaultStyle) {
             clonedProperties[key] = this[key];
         }
 
@@ -21920,7 +21911,7 @@ var TextStyle = function () {
 
 
     TextStyle.prototype.reset = function reset() {
-        Object.assign(this, this._defaults);
+        Object.assign(this, defaultStyle);
     };
 
     _createClass(TextStyle, [{
@@ -22204,18 +22195,35 @@ var TextStyle = function () {
 
 
 exports.default = TextStyle;
-function getColor(color) {
+function getSingleColor(color) {
     if (typeof color === 'number') {
         return (0, _utils.hex2string)(color);
-    } else if (Array.isArray(color)) {
-        for (var i = 0; i < color.length; ++i) {
-            if (typeof color[i] === 'number') {
-                color[i] = (0, _utils.hex2string)(color[i]);
-            }
+    } else if (typeof color === 'string') {
+        if (color.indexOf('0x') === 0) {
+            color = color.replace('0x', '#');
         }
     }
 
     return color;
+}
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ * This version can also convert array of colors
+ *
+ * @param {number|number[]} color
+ * @return {string} The color as a string.
+ */
+function getColor(color) {
+    if (!Array.isArray(color)) {
+        return getSingleColor(color);
+    } else {
+        for (var i = 0; i < color.length; ++i) {
+            color[i] = getSingleColor(color[i]);
+        }
+
+        return color;
+    }
 }
 
 },{"../const":42,"../utils":117}],106:[function(require,module,exports){
@@ -24933,16 +24941,17 @@ function rgb2hex(rgb) {
  * @memberof PIXI.utils
  * @function getResolutionOfUrl
  * @param {string} url - the image path
+ * @param {number} [defaultValue=1] - the defaultValue if no filename prefix is set.
  * @return {number} resolution / device pixel ratio of an asset
  */
-function getResolutionOfUrl(url) {
+function getResolutionOfUrl(url, defaultValue) {
     var resolution = _settings2.default.RETINA_PREFIX.exec(url);
 
     if (resolution) {
         return parseFloat(resolution[1]);
     }
 
-    return 1;
+    return defaultValue !== undefined ? defaultValue : 1;
 }
 
 /**
@@ -27622,6 +27631,15 @@ var TilingSprite = function (_core$Sprite) {
          * @member {PIXI.extras.TextureTransform}
          */
         _this.uvTransform = texture.transform || new _TextureTransform2.default(texture);
+
+        /**
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding '_renderWebGL' method.
+         *
+         * @member {string}
+         * @default 'tilingSprite'
+         */
+        _this.pluginName = 'tilingSprite';
         return _this;
     }
     /**
@@ -27662,8 +27680,8 @@ var TilingSprite = function (_core$Sprite) {
         this.tileTransform.updateLocalTransform();
         this.uvTransform.update();
 
-        renderer.setObjectRenderer(renderer.plugins.tilingSprite);
-        renderer.plugins.tilingSprite.render(this);
+        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.plugins[this.pluginName].render(this);
     };
 
     /**
@@ -28667,15 +28685,16 @@ var BlurFilter = function (_core$Filter) {
   /**
    * @param {number} strength - The strength of the blur filter.
    * @param {number} quality - The quality of the blur filter.
-   * @param {number} resolution - The reoslution of the blur filter.
+   * @param {number} resolution - The resolution of the blur filter.
+   * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
    */
-  function BlurFilter(strength, quality, resolution) {
+  function BlurFilter(strength, quality, resolution, kernelSize) {
     _classCallCheck(this, BlurFilter);
 
     var _this = _possibleConstructorReturn(this, _core$Filter.call(this));
 
-    _this.blurXFilter = new _BlurXFilter2.default();
-    _this.blurYFilter = new _BlurYFilter2.default();
+    _this.blurXFilter = new _BlurXFilter2.default(strength, quality, resolution, kernelSize);
+    _this.blurYFilter = new _BlurYFilter2.default(strength, quality, resolution, kernelSize);
     _this.resolution = 1;
 
     _this.padding = 0;
@@ -28855,13 +28874,15 @@ var BlurXFilter = function (_core$Filter) {
     /**
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The reoslution of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    function BlurXFilter(strength, quality, resolution) {
+    function BlurXFilter(strength, quality, resolution, kernelSize) {
         _classCallCheck(this, BlurXFilter);
 
-        var vertSrc = (0, _generateBlurVertSource2.default)(5, true);
-        var fragSrc = (0, _generateBlurFragSource2.default)(5);
+        kernelSize = kernelSize || 5;
+        var vertSrc = (0, _generateBlurVertSource2.default)(kernelSize, true);
+        var fragSrc = (0, _generateBlurFragSource2.default)(kernelSize);
 
         var _this = _possibleConstructorReturn(this, _core$Filter.call(this,
         // vertex shader
@@ -29033,13 +29054,15 @@ var BlurYFilter = function (_core$Filter) {
     /**
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The reoslution of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    function BlurYFilter(strength, quality, resolution) {
+    function BlurYFilter(strength, quality, resolution, kernelSize) {
         _classCallCheck(this, BlurYFilter);
 
-        var vertSrc = (0, _generateBlurVertSource2.default)(5, false);
-        var fragSrc = (0, _generateBlurFragSource2.default)(5);
+        kernelSize = kernelSize || 5;
+        var vertSrc = (0, _generateBlurVertSource2.default)(kernelSize, false);
+        var fragSrc = (0, _generateBlurFragSource2.default)(kernelSize);
 
         var _this = _possibleConstructorReturn(this, _core$Filter.call(this,
         // vertex shader
@@ -30281,14 +30304,15 @@ var InteractionEvent = function () {
     _classCallCheck(this, InteractionEvent);
 
     /**
-     * Which this event will continue propagating in the tree
+     * Whether this event will continue propagating in the tree
      *
      * @member {boolean}
      */
     this.stopped = false;
 
     /**
-     * The object to which event is dispatched.
+     * The object which caused this event to be dispatched.
+     * For listener callback see {@link PIXI.interaction.InteractionEvent.currentTarget}.
      *
      * @member {PIXI.DisplayObject}
      */
@@ -30483,15 +30507,16 @@ var InteractionManager = function (_EventEmitter) {
         _this.interactionDOMElement = null;
 
         /**
-         * This property determins if mousemove and touchmove events are fired only when the cursror
+         * This property determines if mousemove and touchmove events are fired only when the cursror
          * is over the object.
          * Setting to true will make things work more in line with how the DOM verison works.
          * Setting to false can make things easier for things like dragging
          * It is currently set to false as this is how pixi used to work. This will be set to true in
          * future versions of pixi.
          *
-         * @private
-         * @member {boolean}
+         * @member {boolean} moveWhenInside
+         * @memberof PIXI.interaction.InteractionManager#
+         * @default false
          */
         _this.moveWhenInside = false;
 
@@ -31093,8 +31118,10 @@ var InteractionManager = function (_EventEmitter) {
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
-        point.x = (x - rect.left) * (this.interactionDOMElement.width / rect.width) / this.resolution;
-        point.y = (y - rect.top) * (this.interactionDOMElement.height / rect.height) / this.resolution;
+        var resolutionMultiplier = navigator.isCocoonJS ? this.resolution : 1.0 / this.resolution;
+
+        point.x = (x - rect.left) * (this.interactionDOMElement.width / rect.width) * resolutionMultiplier;
+        point.y = (y - rect.top) * (this.interactionDOMElement.height / rect.height) * resolutionMultiplier;
     };
 
     /**
@@ -32303,7 +32330,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * //or
  * let loader = new PIXI.loaders.Loader(); // you can also create your own if you want
  *
- * loader.add('bunny',"data/bunny.png");
+ * loader.add('bunny', 'data/bunny.png');
+ * loader.add('spaceship', 'assets/spritesheet.json');
+ * loader.add('scoreFont', 'assets/score.fnt');
  *
  * loader.once('complete',onAssetsLoaded);
  *
@@ -32404,13 +32433,20 @@ exports.default = function () {
             var frames = resource.data.frames;
             var frameKeys = Object.keys(frames);
             var baseTexture = res.texture.baseTexture;
-            var resolution = core.utils.getResolutionOfUrl(resource.url);
             var scale = resource.data.meta.scale;
 
-            // for now (to keep things compatible) resolution overrides scale
-            // Support scale field on spritesheet
-            if (resolution === 1 && scale !== undefined && scale !== 1) {
-                baseTexture.resolution = resolution = scale;
+            // Use a defaultValue of `null` to check if a url-based resolution is set
+            var resolution = core.utils.getResolutionOfUrl(resource.url, null);
+
+            // No resolution found via URL
+            if (resolution === null) {
+                // Use the scale value or default to 1
+                resolution = scale !== undefined ? scale : 1;
+            }
+
+            // For non-1 resolutions, update baseTexture
+            if (resolution !== 1) {
+                baseTexture.resolution = resolution;
                 baseTexture.update();
             }
 
@@ -32668,6 +32704,15 @@ var Mesh = function (_core$Container) {
      * @member {object<number, object>}
      */
     _this._glDatas = {};
+
+    /**
+     * Plugin that is responsible for rendering this element.
+     * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+     *
+     * @member {string}
+     * @default 'mesh'
+     */
+    _this.pluginName = 'mesh';
     return _this;
   }
 
@@ -32680,8 +32725,8 @@ var Mesh = function (_core$Container) {
 
 
   Mesh.prototype._renderWebGL = function _renderWebGL(renderer) {
-    renderer.setObjectRenderer(renderer.plugins.mesh);
-    renderer.plugins.mesh.render(this);
+    renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+    renderer.plugins[this.pluginName].render(this);
   };
 
   /**
@@ -32693,7 +32738,7 @@ var Mesh = function (_core$Container) {
 
 
   Mesh.prototype._renderCanvas = function _renderCanvas(renderer) {
-    renderer.plugins.mesh.render(this);
+    renderer.plugins[this.pluginName].render(this);
   };
 
   /**

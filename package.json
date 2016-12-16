@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.2.3",
+  "version": "4.3.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -34,8 +34,11 @@
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint",
     "build": "npm run dist",
+    "predist": "rimraf dist/**",
     "dist": "pixify -d dist -n PIXI -o pixi -t babelify",
+    "prelib": "rimraf lib/**",
     "lib": "babel src --out-dir lib -s",
+    "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish",

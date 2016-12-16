@@ -97,7 +97,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in this._defaults)
+        for (const key in defaultStyle)
         {
             clonedProperties[key] = this[key];
         }
@@ -110,7 +110,7 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, this._defaults);
+        Object.assign(this, defaultStyle);
     }
 
     get align()
@@ -435,22 +435,43 @@ export default class TextStyle
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
-function getColor(color)
+function getSingleColor(color)
 {
     if (typeof color === 'number')
     {
         return hex2string(color);
     }
-    else if (Array.isArray(color))
+    else if ( typeof color === 'string' )
     {
-        for (let i = 0; i < color.length; ++i)
+        if ( color.indexOf('0x') === 0 )
         {
-            if (typeof color[i] === 'number')
-            {
-                color[i] = hex2string(color[i]);
-            }
+            color = color.replace('0x', '#');
         }
     }
 
     return color;
+}
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ * This version can also convert array of colors
+ *
+ * @param {number|number[]} color
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (!Array.isArray(color))
+    {
+        return getSingleColor(color);
+    }
+    else
+    {
+        for (let i = 0; i < color.length; ++i)
+        {
+            color[i] = getSingleColor(color[i]);
+        }
+
+        return color;
+    }
 }

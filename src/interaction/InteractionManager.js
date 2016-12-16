@@ -105,15 +105,16 @@ export default class InteractionManager extends EventEmitter
         this.interactionDOMElement = null;
 
         /**
-         * This property determins if mousemove and touchmove events are fired only when the cursror
+         * This property determines if mousemove and touchmove events are fired only when the cursror
          * is over the object.
          * Setting to true will make things work more in line with how the DOM verison works.
          * Setting to false can make things easier for things like dragging
          * It is currently set to false as this is how pixi used to work. This will be set to true in
          * future versions of pixi.
          *
-         * @private
-         * @member {boolean}
+         * @member {boolean} moveWhenInside
+         * @memberof PIXI.interaction.InteractionManager#
+         * @default false
          */
         this.moveWhenInside = false;
 
@@ -735,8 +736,10 @@ export default class InteractionManager extends EventEmitter
             rect = this.interactionDOMElement.getBoundingClientRect();
         }
 
-        point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) / this.resolution;
-        point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) / this.resolution;
+        const resolutionMultiplier = navigator.isCocoonJS ? this.resolution : (1.0 / this.resolution);
+
+        point.x = ((x - rect.left) * (this.interactionDOMElement.width / rect.width)) * resolutionMultiplier;
+        point.y = ((y - rect.top) * (this.interactionDOMElement.height / rect.height)) * resolutionMultiplier;
     }
 
     /**
