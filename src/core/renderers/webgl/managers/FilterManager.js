@@ -533,6 +533,7 @@ export default class FilterManager extends WebGLManager
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+        renderTarget.attachStencilBuffer();
 
         return renderTarget;
     }

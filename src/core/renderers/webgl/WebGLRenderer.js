@@ -439,9 +439,9 @@ export default class WebGLRenderer extends SystemRenderer
         return this;
     }
 
-    bindShader(shader)
+    bindShader(shader, dontSync)
     {
-        this.shaderManager.bindShader(shader);
+        this.shaderManager.bindShader(shader, dontSync);
     }
 
     /**

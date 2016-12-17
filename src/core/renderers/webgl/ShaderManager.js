@@ -31,13 +31,15 @@ export default class ShaderManager
         this.gl = renderer.gl;
     }
 
-    bindShader(shader)
+    bindShader(shader, dontSync)
     {
         let glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
         this.renderer._bindGLShader(glShader);
-//        this.syncUniforms(glShader, shader);
-
+        if(!dontSync)
+        {
+            this.syncUniforms(glShader, shader);
+        }
     }
 
     generateShader(shader)

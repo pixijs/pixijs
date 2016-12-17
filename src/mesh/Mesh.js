@@ -48,6 +48,31 @@ export default class Mesh extends core.Container
 //        uniforms//
 //        state//
 
+        /**
+         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
+         * tint effect.
+         *
+         * @member {number}
+         * @memberof PIXI.mesh.Mesh#
+         */
+        this.tintRgb = new Float32Array([1, 1, 1]);
+
+        /**
+         * A map of renderer IDs to webgl render data
+         *
+         * @private
+         * @member {object<number, object>}
+         */
+        this._glDatas = {};
+
+        /**
+         * Plugin that is responsible for rendering this element.
+         * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
+         *
+         * @member {string}
+         * @default 'mesh'
+         */
+        this.pluginName = 'mesh';
     }
 
     /**
@@ -58,12 +83,34 @@ export default class Mesh extends core.Container
      */
     _renderWebGL(renderer)
     {
-        renderer.setObjectRenderer(renderer.plugins.mesh);
-        renderer.plugins.mesh.render(this);
+        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.plugins[this.pluginName].render(this);
     }
 
     /**
-     * Calculates the bounds of the mesh. The bounds calculation takes the worldTransform into account.
+     * Renders the object using the Canvas renderer
+     *
+     * @private
+     * @param {PIXI.CanvasRenderer} renderer - The canvas renderer.
+     */
+    _renderCanvas(renderer)
+    {
+        renderer.plugins[this.pluginName].render(this);
+    }
+
+    /**
+     * When the texture is updated, this event will fire to update the scale and frame
+     *
+     * @private
+     */
+    _onTextureUpdate()
+    {
+        /* empty */
+    }
+
+    /**
+     * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
+     *
      */
     _calculateBounds()
     {

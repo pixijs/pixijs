@@ -15,14 +15,15 @@ export default class BlurFilter extends core.Filter
     /**
      * @param {number} strength - The strength of the blur filter.
      * @param {number} quality - The quality of the blur filter.
-     * @param {number} resolution - The reoslution of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength, quality, resolution)
+    constructor(strength, quality, resolution, kernelSize)
     {
         super();
 
-        this.blurXFilter = new BlurXFilter();
-        this.blurYFilter = new BlurYFilter();
+        this.blurXFilter = new BlurXFilter(strength, quality, resolution, kernelSize);
+        this.blurYFilter = new BlurYFilter(strength, quality, resolution, kernelSize);
         this.resolution = 1;
 
         this.padding = 0;
