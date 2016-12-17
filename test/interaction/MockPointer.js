@@ -72,6 +72,44 @@ class MockPointer {
         this.render();
         this.interaction.onMouseUp({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
     }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     */
+    tap(x, y)
+    {
+        this.touchstart(x, y);
+        this.touchend(x, y);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     */
+    touchstart(x, y)
+    {
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onTouchStart({
+            preventDefault: sinon.stub(),
+            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
+        });
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     */
+    touchend(x, y)
+    {
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onTouchEnd({
+            preventDefault: sinon.stub(),
+            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
+        });
+    }
 }
 
 module.exports = MockPointer;
