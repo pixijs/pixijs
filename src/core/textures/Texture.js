@@ -517,7 +517,7 @@ export default class Texture extends EventEmitter
      */
     get width()
     {
-        return this.orig ? this.orig.width : 0;
+        return this.orig.width;
     }
 
     /**
@@ -527,7 +527,7 @@ export default class Texture extends EventEmitter
      */
     get height()
     {
-        return this.orig ? this.orig.height : 0;
+        return this.orig.height;
     }
 }
 
