@@ -900,11 +900,11 @@ export default class InteractionManager extends EventEmitter
             displayObject.getTrackedPointers()[id] = new InteractionTrackingData(id);
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
-            if (e.type === 'touchstart')
+            if (e.type === 'touchstart' || e.pointerType === 'touch')
             {
                 this.dispatchEvent(displayObject, 'touchstart', interactionEvent);
             }
-            else if (e.type === 'mousedown')
+            else if (e.type === 'mousedown' || e.pointerType === 'mouse')
             {
                 const isRightButton = e.button === 2 || e.which === 3;
 
@@ -993,7 +993,7 @@ export default class InteractionManager extends EventEmitter
             delete displayObject.getTrackedPointers()[id];
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
-            if (e.type === 'touchcancel')
+            if (e.type === 'touchcancel' || e.pointerType === 'touch')
             {
                 this.dispatchEvent(displayObject, 'touchcancel', interactionEvent);
             }
@@ -1027,28 +1027,32 @@ export default class InteractionManager extends EventEmitter
 
         const trackingData = displayObject.getTrackedPointers()[id];
 
+        const isTouch = (e.type === 'touchend' || e.pointerType === 'touch');
+
+        const isMouse = (e.type.startsWith('mouse') || e.pointerType === 'mouse');
+
         // Pointers and Touches
         if (hit)
         {
             this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
-            if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchend', interactionEvent);
+            if (isTouch) this.dispatchEvent(displayObject, 'touchend', interactionEvent);
 
             if (displayObject.getTrackedPointers()[id] !== undefined)
             {
                 delete displayObject.getTrackedPointers()[id];
                 this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
-                if (e.type === 'touchend') this.dispatchEvent(displayObject, 'tap', interactionEvent);
+                if (isTouch) this.dispatchEvent(displayObject, 'tap', interactionEvent);
             }
         }
         else if (displayObject.getTrackedPointers()[id] !== undefined)
         {
             delete displayObject.getTrackedPointers()[id];
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
-            if (e.type === 'touchend') this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
+            if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
 
         // Mouse only
-        if (e.type === 'mouseup' || e.type === 'mouseupoutside')
+        if (isMouse)
         {
             const isRightButton = e.button === 2 || e.which === 3;
 
@@ -1140,6 +1144,10 @@ export default class InteractionManager extends EventEmitter
     {
         const e = interactionEvent.data.originalEvent;
 
+        const isTouch = (e.type === 'touchmove' || e.pointerType === 'touch');
+
+        const isMouse = (e.type === 'mousemove' || e.pointerType === 'mouse');
+
         if (e.type !== 'touchmove')
         {
             this.processPointerOverOut(interactionEvent, displayObject, hit);
@@ -1148,8 +1156,8 @@ export default class InteractionManager extends EventEmitter
         if (!this.moveWhenInside || hit)
         {
             this.dispatchEvent(displayObject, 'pointermove', interactionEvent);
-            if (e.type === 'touchmove') this.dispatchEvent(displayObject, 'touchmove', interactionEvent);
-            if (e.type === 'mousemove') this.dispatchEvent(displayObject, 'mousemove', interactionEvent);
+            if (isTouch) this.dispatchEvent(displayObject, 'touchmove', interactionEvent);
+            if (isMouse) this.dispatchEvent(displayObject, 'mousemove', interactionEvent);
         }
     }
 
@@ -1201,7 +1209,7 @@ export default class InteractionManager extends EventEmitter
 
         const id = interactionEvent.data.identifier;
 
-        const isMouse = (e.type === 'mouseover' || e.type === 'mouseout');
+        const isMouse = (e.type === 'mouseover' || e.type === 'mouseout' || e.pointerType === 'mouse');
 
         const trackingData = displayObject.getTrackedPointers()[id];
 
@@ -1228,7 +1236,7 @@ export default class InteractionManager extends EventEmitter
         {
             trackingData.over = false;
             this.dispatchEvent(displayObject, 'pointerout', this.eventData);
-            if (isMouse === 'mouse')
+            if (isMouse)
             {
                 this.dispatchEvent(displayObject, 'mouseout', interactionEvent);
             }
