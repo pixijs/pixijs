@@ -17,8 +17,32 @@ describe('PIXI.interaction.InteractionManager', function ()
                 point.y = y;
             };
 
-            renderer.plugins.interaction.onMouseDown({ clientX: x, clientY: y, preventDefault: sinon.stub() });
-            renderer.plugins.interaction.onMouseUp({ clientX: x, clientY: y, preventDefault: sinon.stub() });
+            const downEvent = {
+                pointerId: 1,
+                type: 'pointerdown',
+                bubbles: true,
+                cancelable: true,
+                pointerType: 'mouse',
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+                isPrimary: true,
+            };
+
+            const upEvent = {
+                pointerId: 1,
+                type: 'pointerup',
+                bubbles: true,
+                cancelable: true,
+                pointerType: 'mouse',
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+                isPrimary: true,
+            };
+
+            renderer.plugins.interaction.onPointerDown(downEvent);
+            renderer.plugins.interaction.onPointerUp(upEvent);
         }
 
         it('should call handler when inside', function ()
