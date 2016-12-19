@@ -72,10 +72,12 @@ export default class Plane extends Mesh
         for (let i = 0; i < this.verticesY; i++)
         {
             const row = [];
+
             this.points.push(row);
             for (let j = 0; j < this.verticesX; j++)
             {
                 const point = new Point(j, i);
+
                 point.originalX = point.x;
                 point.originalY = point.y;
                 row.push(point);
