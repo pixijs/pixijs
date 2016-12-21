@@ -44,7 +44,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.vertByteSize = this.vertSize * 4;
 
         /**
-         * The number of images in the SpriteBatch before it flushes.
+         * The number of images in the SpriteRenderer before it flushes.
          *
          * @member {number}
          */
@@ -452,7 +452,7 @@ export default class SpriteRenderer extends ObjectRenderer
     }
 
     /**
-     * Destroys the SpriteBatch.
+     * Destroys the SpriteRenderer.
      *
      */
     destroy()
