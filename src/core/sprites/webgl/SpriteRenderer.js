@@ -452,7 +452,7 @@ export default class SpriteRenderer extends ObjectRenderer
     }
 
     /**
-     * Destroys the SpriteBatch.
+     * Destroys the SpriteRenderer.
      *
      */
     destroy()
