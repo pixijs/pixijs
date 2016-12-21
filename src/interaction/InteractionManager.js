@@ -498,18 +498,21 @@ export default class InteractionManager extends EventEmitter
             window.addEventListener('pointerup', this.onPointerUp, true);
         }
 
-        window.document.addEventListener('mousemove', this.onPointerMove, true);
-        this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
-        this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
-        this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
-        window.addEventListener('mouseup', this.onPointerUp, true);
-
-        if (this.supportsTouchEvents)
+        else
         {
-            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+            window.document.addEventListener('mousemove', this.onPointerMove, true);
+            this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
+            this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
+            this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
+            window.addEventListener('mouseup', this.onPointerUp, true);
+
+            if (this.supportsTouchEvents)
+            {
+                this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
+                this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
+                this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
+                this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+            }
         }
 
         this.eventsAdded = true;
