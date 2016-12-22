@@ -291,6 +291,15 @@ export default class SpriteRenderer extends ObjectRenderer
                                 boundTextures[tIndex] = nextTexture;
                                 break;
                             }
+                            /**
+                             * If can't find the correct new `tIndex` in current for-loop,
+                             *     then TICK++ , and find again.
+                             */
+                            if (j + 1 === MAX_TEXTURES)
+                            {
+                                TICK++;
+                                j = -1;
+                            }
                         }
                     }
 
