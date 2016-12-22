@@ -32,10 +32,11 @@ export default class Text extends Sprite
     /**
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
+     * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text, style)
+    constructor(text, style, canvas)
     {
-        const canvas = document.createElement('canvas');
+        canvas = canvas || document.createElement('canvas');
 
         canvas.width = 3;
         canvas.height = 3;
