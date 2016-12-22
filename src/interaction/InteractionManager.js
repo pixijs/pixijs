@@ -1033,7 +1033,7 @@ export default class InteractionManager extends EventEmitter
 
         const isTouch = (e.type === 'touchend' || e.pointerType === 'touch');
 
-        const isMouse = (/^mouse/.test(e.type) || e.pointerType === 'mouse');
+        const isMouse = (e.type.indexOf('mouse') === 0 || e.pointerType === 'mouse');
 
         // Pointers and Touches
         if (hit)
