@@ -4,6 +4,9 @@ const tempMat = new Matrix();
 
 /**
  * class controls uv transform and frame clamp for texture
+ *
+ * @class
+ * @memberof PIXI.extras
  */
 export default class TextureTransform {
     /**
@@ -27,7 +30,7 @@ export default class TextureTransform {
         /**
          * Changes frame clamping
          * Works with TilingSprite and Mesh
-         * Change to 1.5 if you tex ture has repeated right and bottom lines, that leads to smoother borders
+         * Change to 1.5 if you texture has repeated right and bottom lines, that leads to smoother borders
          *
          * @default 0
          * @member {number}
