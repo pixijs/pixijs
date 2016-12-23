@@ -363,7 +363,7 @@ export default class SpriteRenderer extends ObjectRenderer
         if (!settings.CAN_UPLOAD_SAME_BUFFER)
         {
             // this is still needed for IOS performance..
-            // it really does not like uploading to  the same buffer in a single frame!
+            // it really does not like uploading to the same buffer in a single frame!
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
