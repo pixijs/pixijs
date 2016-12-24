@@ -168,7 +168,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // get the uvs for the texture
 
         // if the uvs have not updated then no point rendering just yet!
-        if (!sprite.texture._uvs)
+        if (!sprite._texture._uvs)
         {
             return;
         }
