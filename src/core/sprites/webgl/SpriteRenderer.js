@@ -351,7 +351,7 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (Math.min(sprite.worldAlpha, 1) * 255 << 24);
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
