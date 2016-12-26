@@ -1,4 +1,5 @@
 import ResourceLoader from 'resource-loader';
+import EventEmitter from 'eventemitter3';
 import textureParser from './textureParser';
 import spritesheetParser from './spritesheetParser';
 import bitmapFontParser from './bitmapFontParser';
@@ -36,11 +37,19 @@ export default class Loader extends ResourceLoader
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
+        EventEmitter.call(this);
 
         for (let i = 0; i < Loader._pixiMiddleware.length; ++i)
         {
             this.use(Loader._pixiMiddleware[i]());
         }
+
+        // Compat layer, translate the new v2 signals into old v1 events.
+        this.onStart.add((l) => this.emit('start', l));
+        this.onProgress.add((l, r) => this.emit('progress', l, r));
+        this.onError.add((e, l, r) => this.emit('error', e, l, r));
+        this.onLoad.add((l, r) => this.emit('load', l, r));
+        this.onComplete.add((l, r) => this.emit('complete', l, r));
     }
 
     /**
@@ -53,6 +62,12 @@ export default class Loader extends ResourceLoader
     {
         Loader._pixiMiddleware.push(fn);
     }
+}
+
+// Copy EE3 prototype (mixin)
+for (const k in EventEmitter.prototype)
+{
+    Loader.prototype[k] = EventEmitter.prototype[k];
 }
 
 Loader._pixiMiddleware = [

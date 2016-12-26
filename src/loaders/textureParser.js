@@ -1,11 +1,12 @@
 import * as core from '../core';
+import { Resource } from 'resource-loader';
 
 export default function ()
 {
     return function textureParser(resource, next)
     {
         // create a new texture if the data is an Image object
-        if (resource.data && resource.isImage)
+        if (resource.data && resource.type === Resource.TYPE.IMAGE)
         {
             const baseTexture = new core.BaseTexture(resource.data, null, core.utils.getResolutionOfUrl(resource.url));
 
