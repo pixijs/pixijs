@@ -1,4 +1,5 @@
 import ResourceLoader from 'resource-loader';
+import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
 import EventEmitter from 'eventemitter3';
 import textureParser from './textureParser';
 import spritesheetParser from './spritesheetParser';
@@ -72,7 +73,7 @@ for (const k in EventEmitter.prototype)
 
 Loader._pixiMiddleware = [
     // parse any blob into more usable objects (e.g. Image)
-    ResourceLoader.middleware.parsing.blob,
+    blobMiddlewareFactory,
     // parse any Image objects into textures
     textureParser,
     // parse any spritesheet data into multiple textures
