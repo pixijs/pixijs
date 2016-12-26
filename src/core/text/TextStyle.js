@@ -57,7 +57,7 @@ export default class TextStyle
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fills styles are
      *  supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
-     * @param {string} [style.fontFamily='Arial'] - The font family
+     * @param {string|Array<string>} [style.fontFamily='Arial'] - The font family
      * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
      *  equivalents are '26px','20pt','160%' or '1.6em')
      * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
