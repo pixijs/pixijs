@@ -402,8 +402,9 @@ export default class Text extends Sprite
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
         let result = '';
+        const style = this._style;
         const lines = text.split('\n');
-        const wordWrapWidth = this._style.wordWrapWidth;
+        const wordWrapWidth = style.wordWrapWidth;
 
         for (let i = 0; i < lines.length; i++)
         {
@@ -414,7 +415,7 @@ export default class Text extends Sprite
             {
                 const wordWidth = this.context.measureText(words[j]).width;
 
-                if (this._style.breakWords && wordWidth > wordWrapWidth)
+                if (style.breakWords && wordWidth > wordWrapWidth)
                 {
                     // Word should be split in the middle
                     const characters = words[j].split('');
