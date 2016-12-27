@@ -104,6 +104,7 @@ export default class Text extends Sprite
         this.localStyleID = -1;
     }
 
+
     /**
      * Renders text and updates it when needed.
      *
@@ -162,7 +163,7 @@ export default class Text extends Sprite
         this.canvas.width = Math.ceil((width + this.context.lineWidth) * this.resolution);
 
         // calculate text height
-        const lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
         let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
             + ((lines.length - 1) * lineHeight);
