@@ -157,7 +157,7 @@ export default class Text extends Sprite
             width += style.dropShadowDistance;
         }
 
-        this.canvas.width = Math.ceil((width + (style.padding * 2) * this.resolution);
+        this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
 
         // calculate text height
         const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
