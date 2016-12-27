@@ -157,12 +157,10 @@ export default class Text extends Sprite
             width += style.dropShadowDistance;
         }
 
-        width += style.padding * 2;
-
-        this.canvas.width = Math.ceil(width * this.resolution);
+        this.canvas.width = Math.ceil((width + (style.padding * 2) * this.resolution);
 
         // calculate text height
-        const lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
         let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
             + ((lines.length - 1) * lineHeight);
@@ -172,7 +170,7 @@ export default class Text extends Sprite
             height += style.dropShadowDistance;
         }
 
-        this.canvas.height = Math.ceil((height + (this._style.padding * 2)) * this.resolution);
+        this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
 
         this.context.scale(this.resolution, this.resolution);
 
