@@ -68,7 +68,6 @@ export default class TextureManager
     {
         // assume it good!
         // texture = texture.baseTexture || texture;
-        location = location || 0;
 
         const gl = this.gl;
 
@@ -78,6 +77,25 @@ export default class TextureManager
         {
             return null;
         }
+
+        const boundTextures = this.renderer.boundTextures;
+
+        if (location === undefined)
+        {
+            location = 0;
+
+            // TODO maybe we can use texture bound ids later on...
+            // check if texture is already bound..
+            for (let i = 0; i < boundTextures.length; i++)
+            {
+                if (boundTextures[i] === texture)
+                {
+                    location = i;
+                }
+            }
+        }
+
+        boundTextures[location] = texture;
 
         gl.activeTexture(gl.TEXTURE0 + location);
 
@@ -157,8 +175,6 @@ export default class TextureManager
         {
             glTexture.upload(texture.source);
         }
-
-        this.renderer.boundTextures[location] = texture;
 
         return glTexture;
     }
