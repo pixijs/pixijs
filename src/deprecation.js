@@ -4,6 +4,7 @@ import * as particles from './particles';
 import * as extras from './extras';
 import * as filters from './filters';
 import * as prepare from './prepare';
+import * as loaders from './loaders';
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -938,5 +939,67 @@ Object.defineProperty(prepare.webgl, 'UPLOADS_PER_FRAME', {
             + 'renderer.plugins.prepare.limiter');
 
         return NaN;
+    },
+});
+
+Object.defineProperties(loaders.Resource.prototype, {
+    isJson: {
+        get()
+        {
+            warn('The isJson property is deprecated, please use `resource.type === Resource.TYPE.JSON`.');
+
+            return this.type === loaders.Loader.Resource.TYPE.JSON;
+        },
+    },
+    isXml: {
+        get()
+        {
+            warn('The isXml property is deprecated, please use `resource.type === Resource.TYPE.XML`.');
+
+            return this.type === loaders.Loader.Resource.TYPE.XML;
+        },
+    },
+    isImage: {
+        get()
+        {
+            warn('The isImage property is deprecated, please use `resource.type === Resource.TYPE.IMAGE`.');
+
+            return this.type === loaders.Loader.Resource.TYPE.IMAGE;
+        },
+    },
+    isAudio: {
+        get()
+        {
+            warn('The isAudio property is deprecated, please use `resource.type === Resource.TYPE.AUDIO`.');
+
+            return this.type === loaders.Loader.Resource.TYPE.AUDIO;
+        },
+    },
+    isVideo: {
+        get()
+        {
+            warn('The isVideo property is deprecated, please use `resource.type === Resource.TYPE.VIDEO`.');
+
+            return this.type === loaders.Loader.Resource.TYPE.VIDEO;
+        },
+    },
+});
+
+Object.defineProperties(loaders.Loader.prototype, {
+    before: {
+        get()
+        {
+            warn('The before() method is deprecated, please use pre().');
+
+            return this.pre;
+        },
+    },
+    after: {
+        get()
+        {
+            warn('The after() method is deprecated, please use use().');
+
+            return this.use;
+        },
     },
 });
