@@ -133,9 +133,6 @@ export default class FilterManager extends WebGLManager
         renderTarget.setFrame(destinationFrame, sourceFrame);
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
-
-        // clear the renderTarget
-        renderer.clear();// [0.5,0.5,0.5, 1.0]);
     }
 
     /**
@@ -336,7 +333,10 @@ export default class FilterManager extends WebGLManager
                     // rather than a renderTarget
                     const gl = this.renderer.gl;
 
+                       //this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
+                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
+
                     uniforms[i].texture.bind();
                 }
 
@@ -531,6 +531,9 @@ export default class FilterManager extends WebGLManager
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
+
+        // finally lets clear the render target before returning..
+        renderTarget.clear();
 
         return renderTarget;
     }
