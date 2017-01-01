@@ -5,6 +5,7 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import StateManager from './managers/StateManager';
 import ShaderManager from './ShaderManager';
 import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
@@ -138,7 +139,8 @@ export default class WebGLRenderer extends SystemRenderer
          *
          * @member {PIXI.WebGLState}
          */
-        this.state = new WebGLState(this.gl);
+//        this.state = new WebGLState(this.gl);
+        this.state = new StateManager(this.gl);
 
         this.renderingToScreen = true;
 

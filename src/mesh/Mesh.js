@@ -13,9 +13,11 @@ export default class Mesh extends core.Container
      * @param {PIXI.Shader} shader  the shader the mesh will use
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry, shader, drawMode = core.DRAW_MODES.TRIANGLES, uniforms = {})
+    constructor(geometry, shader, uniforms, state, drawMode = core.DRAW_MODES.TRIANGLES)
     {
+        //drawMode = core.DRAW_MODES.TRIANGLES, uniforms = {})
         super();
+
         /**
          * the geometry the mesh will use
          * @type {PIXI.mesh.Geometry}
@@ -23,6 +25,8 @@ export default class Mesh extends core.Container
         this.geometry = geometry;
 
         this.shader = shader;
+
+        this.state = state || new core.State();
 
         /**
          * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
@@ -39,7 +43,7 @@ export default class Mesh extends core.Container
          * @member {number}
          * @see PIXI.mesh.Mesh.DRAW_MODES
          */
-        this.drawMode = drawMode;
+        this.drawMode = 4//drawMode;
 
         this.uniforms = uniforms;
 

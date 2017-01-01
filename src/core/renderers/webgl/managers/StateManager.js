@@ -1,4 +1,4 @@
-import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
+import mapWebGLBlendModesToPixi from '../utils/mapWebGLBlendModesToPixi';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -101,7 +101,7 @@ export default class StateManager
      *
      * @param {*} state - The state to set.
      */
-    set state(state)
+    setState(state)
     {
         // TODO maybe to an object check? ( this.state === state )?
         if(this.stateId === state.data)return;
@@ -115,7 +115,7 @@ export default class StateManager
             if(diff & 1)
             {
                 // state change!
-                this.map[i](state.data ^= (1 << i));
+                this.map[i].call(this, !!(state.data & (1 << i)) );
             }
 
             diff = diff >> 1;
@@ -129,6 +129,8 @@ export default class StateManager
         {
             this.checks[i](this, state);
         };
+
+        this.stateId = state.data;
     }
 
 
