@@ -52,8 +52,10 @@ export default class MeshRenderer extends core.ObjectRenderer {
 //        this.renderer.state.setBlendMode(mesh.blendMode);
 
         // bind the shader..
-        // TODO rename filter to shader
-        this.renderer.bindShader(mesh.shader);
+        this.renderer.shaderManager.bindShader(mesh.shader, true);
+
+        // set unifomrs..
+        this.renderer.shaderManager.setUniforms(mesh.uniforms);
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);

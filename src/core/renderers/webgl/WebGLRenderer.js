@@ -448,6 +448,8 @@ export default class WebGLRenderer extends SystemRenderer
         this.shaderManager.bindShader(shader, dontSync);
     }
 
+
+
     /**
      * Changes the current shader to the one given in parameter
      *

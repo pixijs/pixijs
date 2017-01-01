@@ -57,43 +57,6 @@ export default class StateManager
         this.map[WINDING] = this.setFrontFace;
 
         this.checks = [];
-
-/*
-        this.p1 = true;
-        this.p2 = false;
-        this.p3 = false;
-        this.p4 = true;
-        this.p5 = true;
-        this.p5 = false;
-
-
-        // pack into bitfield..
-        this.st = (true << 0) | (false << 1) | (true << 2);
-        this.st2 = (false << 0) | (false << 1) | (true << 2);
-
-        this.st &= ~(1<<2);
-
-        console.log(this.st);
-
-        console.log("0 is " + !!(this.st & (1 << 0)) );
-        console.log("1 is " + !!(this.st & (1 << 1)) );
-        console.log("2 is " + !!(this.st & (1 << 2)) );
-
-        //if(this.st !== )
-        let diff = this.st ^ this.st2;
-        let i = 0;
-
-        // order from least to most common
-        while(diff)
-        {
-            if(diff & 1)
-            {
-                //skips least common..
-                console.log(' diff is ' + i)
-            }
-            diff = diff >> 1;
-            i++;
-        }*/
     }
 
     /**
