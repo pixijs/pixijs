@@ -32,10 +32,11 @@ export default class Text extends Sprite
     /**
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
+     * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
      */
-    constructor(text, style)
+    constructor(text, style, canvas)
     {
-        const canvas = document.createElement('canvas');
+        canvas = canvas || document.createElement('canvas');
 
         canvas.width = 3;
         canvas.height = 3;
@@ -606,7 +607,7 @@ export default class Text extends Sprite
     {
         this.updateText(true);
 
-        return Math.abs(this.scale.x) * this.texture.orig.width;
+        return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
     /**
@@ -620,7 +621,7 @@ export default class Text extends Sprite
 
         const s = sign(this.scale.x) || 1;
 
-        this.scale.x = s * value / this.texture.orig.width;
+        this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
     }
 
@@ -648,7 +649,7 @@ export default class Text extends Sprite
 
         const s = sign(this.scale.y) || 1;
 
-        this.scale.y = s * value / this.texture.orig.height;
+        this.scale.y = s * value / this._texture.orig.height;
         this._height = value;
     }
 
@@ -704,8 +705,7 @@ export default class Text extends Sprite
      */
     set text(text)
     {
-        text = text || ' ';
-        text = text.toString();
+        text = String(text || ' ');
 
         if (this._text === text)
         {
@@ -735,7 +735,29 @@ export default class Text extends Sprite
         // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
         const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
 
-        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} "${style.fontFamily}"`;
+        // Clean-up fontFamily property by quoting each font name
+        // this will support font names with spaces
+        let fontFamilies = style.fontFamily;
+
+        if (!Array.isArray(style.fontFamily))
+        {
+            fontFamilies = style.fontFamily.split(',');
+        }
+
+        for (let i = fontFamilies.length - 1; i >= 0; i--)
+        {
+            // Trim any extra white-space
+            let fontFamily = fontFamilies[i].trim();
+
+            // Check if font already contains strings
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
+            {
+                fontFamily = `"${fontFamily}"`;
+            }
+            fontFamilies[i] = fontFamily;
+        }
+
+        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
     }
 
     /**

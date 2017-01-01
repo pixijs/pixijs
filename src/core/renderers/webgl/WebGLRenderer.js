@@ -148,16 +148,6 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this.boundTextures = null;
 
-        this._initContext();
-        /**
-         * Manages the filters.
-         *
-         * @member {PIXI.FilterManager}
-         */
-        this.filterManager = new FilterManager(this);
-        // map some webGL blend and drawmodes..
-        this.drawModes = mapWebGLDrawModesToPixi(this.gl);
-
         /**
          * Holds the current shader
          *
@@ -173,6 +163,17 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.RenderTarget}
          */
         this._activeRenderTarget = null;
+
+        this._initContext();
+
+        /**
+         * Manages the filters.
+         *
+         * @member {PIXI.FilterManager}
+         */
+        this.filterManager = new FilterManager(this);
+        // map some webGL blend and drawmodes..
+        this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
         this._nextTextureLocation = 0;
 
