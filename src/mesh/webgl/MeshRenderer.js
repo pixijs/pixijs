@@ -55,6 +55,8 @@ export default class MeshRenderer extends core.ObjectRenderer {
         // TODO rename filter to shader
         this.renderer.bindShader(mesh.shader);
 
+        // sync uniforms..
+
         // now time for geometry..
 
         // bind the geometry...

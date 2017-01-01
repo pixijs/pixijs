@@ -1,5 +1,10 @@
 import Mesh from './Mesh';
+import Geometry from './geometry/Geometry';
 import * as core from '../core';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+let meshShader;
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -24,32 +29,22 @@ export default class Rope extends Mesh
      */
     constructor(texture, points)
     {
-        super(texture);
+        if(!meshShader)meshShader = new core.Shader( readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),  readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+
+        const geometry = new Geometry();
+
+        geometry.addAttribute('aVertexPosition', new Float32Array(points.length * 4), 2)
+        geometry.addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
+        geometry.addIndex(new Uint16Array(points.length * 2))
+
+        super(geometry, meshShader, 5);
+
+        this.texture = texture;
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
         this.points = points;
-
-        /*
-         * @member {Float32Array} An array of vertices used to construct this rope.
-         */
-        this.vertices = new Float32Array(points.length * 4);
-
-        /*
-         * @member {Float32Array} The WebGL Uvs of the rope.
-         */
-        this.uvs = new Float32Array(points.length * 4);
-
-        /*
-         * @member {Float32Array} An array containing the color components
-         */
-        this.colors = new Float32Array(points.length * 2);
-
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
-         */
-        this.indices = new Uint16Array(points.length * 2);
 
         /**
          * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
@@ -60,38 +55,49 @@ export default class Rope extends Mesh
          */
         this._ready = true;
 
-        this.refresh();
+        this.tint = 0xFFFFFF;
+
+         // wait for the texture to load
+        if (texture.baseTexture.hasLoaded)
+        {
+            this._onTextureUpdate();
+        }
+        else
+        {
+            texture.once('update', this._onTextureUpdate, this);
+        }
     }
 
     /**
      * Refreshes
-     *
      */
     refresh()
     {
         const points = this.points;
+        const vertices = this.geometry.getAttribute('aVertexPosition').data;
+        const uvs = this.geometry.getAttribute('aTextureCoord').data;
+
+        //TODO - lets make this more accessable... maybe a getIndx()?
+        const indices = this.geometry.data.indexBuffer.data;
 
         // if too little points, or texture hasn't got UVs set yet just move on.
-        if (points.length < 1 || !this._texture._uvs)
+        if (points.length < 1 || !this.texture._uvs)
         {
             return;
         }
 
         // if the number of points has changed we will need to recreate the arraybuffers
-        if (this.vertices.length / 4 !== points.length)
+        if (vertices.length / 4 !== points.length)
         {
+            /*
             this.vertices = new Float32Array(points.length * 4);
             this.uvs = new Float32Array(points.length * 4);
             this.colors = new Float32Array(points.length * 2);
             this.indices = new Uint16Array(points.length * 2);
+            */
         }
 
-        const uvs = this.uvs;
-
-        const indices = this.indices;
-        const colors = this.colors;
-
-        const textureUvs = this._texture._uvs;
+        const textureUvs = this.texture._uvs;
         const offset = new core.Point(textureUvs.x0, textureUvs.y0);
         const factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
@@ -99,9 +105,6 @@ export default class Rope extends Mesh
         uvs[1] = 0 + offset.y;
         uvs[2] = 0 + offset.x;
         uvs[3] = Number(factor.y) + offset.y;
-
-        colors[0] = 1;
-        colors[1] = 1;
 
         indices[0] = 0;
         indices[1] = 1;
@@ -121,17 +124,16 @@ export default class Rope extends Mesh
             uvs[index + 3] = Number(factor.y) + offset.y;
 
             index = i * 2;
-            colors[index] = 1;
-            colors[index + 1] = 1;
-
-            index = i * 2;
             indices[index] = index;
             indices[index + 1] = index + 1;
         }
 
         // ensure that the changes are uploaded
-        this.dirty++;
-        this.indexDirty++;
+        this.geometry.getAttribute('aVertexPosition').update();
+        this.geometry.getAttribute('aTextureCoord').update();
+        this.geometry.data.indexBuffer.update();
+
+      //  console.log(this.geometry.data)
     }
 
     /**
@@ -141,7 +143,7 @@ export default class Rope extends Mesh
      */
     _onTextureUpdate()
     {
-        super._onTextureUpdate();
+        //super._onTextureUpdate();
 
         // wait for the Rope ctor to finish before calling refresh
         if (this._ready)
@@ -171,7 +173,8 @@ export default class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        const vertices = this.vertices;
+        const vertices =  this.geometry.getAttribute('aVertexPosition').data;
+
         const total = points.length;
 
         for (let i = 0; i < total; i++)
@@ -197,9 +200,8 @@ export default class Rope extends Mesh
             {
                 ratio = 1;
             }
-
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this._texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this.texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -215,7 +217,19 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
+        this.shader.uniforms.alpha = 1;
+        this.shader.uniforms.uSampler2 = this.texture;//
+
+        this.geometry.getAttribute('aVertexPosition').update();
         this.containerUpdateTransform();
     }
 
+    _renderWebGL(renderer)
+    {
+        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint,temp)
+        this.shader.uniforms.uSampler2 = this.texture;//
+
+        renderer.setObjectRenderer(renderer.plugins.mesh);
+        renderer.plugins.mesh.render(this);
+    }
 }

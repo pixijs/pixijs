@@ -108,9 +108,10 @@ export default class SpriteRenderer extends ObjectRenderer
 
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
-
+        console.log(this.MAX_TEXTURE)
         const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
+        console.log(shader)
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
@@ -122,7 +123,8 @@ export default class SpriteRenderer extends ObjectRenderer
         for (let i = 0; i < this.vaoMax; i++)
         {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
-
+            console.log(this.vertexBuffers)
+            console.log(shader.attributes)
             /* eslint-disable max-len */
 
             // build the vao object that will render..
@@ -131,8 +133,10 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
-
+                if(shader.attributes.aTextureId)
+                {
+                    this.vaos[i].addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                }
             /* eslint-disable max-len */
         }
 

@@ -13,7 +13,7 @@ export default class Mesh extends core.Container
      * @param {PIXI.Shader} shader  the shader the mesh will use
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry, shader, drawMode = core.DRAW_MODES.TRIANGLES)
+    constructor(geometry, shader, drawMode = core.DRAW_MODES.TRIANGLES, uniforms = {})
     {
         super();
         /**
@@ -41,7 +41,7 @@ export default class Mesh extends core.Container
          */
         this.drawMode = drawMode;
 
-        this.uniforms = {};
+        this.uniforms = uniforms;
 
 //        geometry//
 //        shader//
