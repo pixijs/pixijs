@@ -121,6 +121,8 @@ export default class CanvasRenderer extends SystemRenderer
 
         this.emit('prerender');
 
+        const rootResolution = this.resolution;
+
         if (renderTexture)
         {
             renderTexture = renderTexture.baseTexture || renderTexture;
@@ -206,6 +208,8 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = context;
         displayObject.renderCanvas(this);
         this.context = tempContext;
+
+        this.resolution = rootResolution;
 
         this.emit('postrender');
     }
