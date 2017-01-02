@@ -97,27 +97,25 @@ class Filter
      * @param {PIXI.RenderTarget} input - The input render target.
      * @param {PIXI.RenderTarget} output - The target to output to.
      * @param {boolean} clear - Should the output be cleared before rendering to it
-     * @param {object} [currentState] - filter.currentState
+     * @param {object} [currentState] - filter.currentState. There are some useful properties
      */
     apply(filterManager, input, output, clear, currentState)
     {
         // --- //
         //  this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(tempMatrix, window.panda );
 
-        // do as you please!
+        /**
+         * There are some useful properties in currentState :
+         *     filters
+         *     target
+         *     renderTarget
+         *     resolution
+         *     sourceFrame
+         *     destinationFrame
+         */
+        const currentDisplayObject = currentState.target; // eslint-disable-line no-unused-vars
 
-        if (currentState)
-        {
-            /**
-             * There are some useful properties in currentState :
-             *     filters
-             *     target
-             *     renderTarget
-             *     resolution
-             *     sourceFrame
-             *     destinationFrame
-             */
-        }
+        // do as you please!
 
         filterManager.applyFilter(this, input, output, clear);
 
