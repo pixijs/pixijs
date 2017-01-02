@@ -1121,10 +1121,10 @@ export default class Graphics extends Container
      *  options have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well -
-     *  Only used for child Sprites if options.children is set to true
-     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well -
-     *  Only used for child Sprites if options.children is set to true
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
     destroy(options)
     {
