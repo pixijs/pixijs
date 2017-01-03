@@ -131,8 +131,10 @@ export default class FilterManager extends WebGLManager
         // bind the render target to draw the shape in the top corner..
 
         renderTarget.setFrame(destinationFrame, sourceFrame);
+
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
+        renderTarget.clear();
     }
 
     /**
@@ -167,6 +169,9 @@ export default class FilterManager extends WebGLManager
 
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
+            // finally lets clear the render target before drawing to it..
+            flop.clear();
+
             let i = 0;
 
             for (i = 0; i < filters.length - 1; ++i)
@@ -179,7 +184,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, false);
+            filters[i].apply(this, flip, lastState.renderTarget, true);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
@@ -530,9 +535,6 @@ export default class FilterManager extends WebGLManager
         renderTarget.resolution = resolution;
         renderTarget.defaultFrame.width = renderTarget.size.width = minWidth / resolution;
         renderTarget.defaultFrame.height = renderTarget.size.height = minHeight / resolution;
-
-        // finally lets clear the render target before returning..
-        renderTarget.clear();
 
         return renderTarget;
     }
