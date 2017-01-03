@@ -45,19 +45,7 @@ class Shader
         // does the trick for now though!
         for (const i in this.uniformData)
         {
-            var _this = this;
-
-            Object.defineProperty(this.uniforms, i, {
-                get: function(){
-                    return _this.uniformData[i].value;
-                },
-                set: function(value){
-
-                    _this.uniformData[i].dirtyId++;
-                    _this.uniformData[i].value = value;
-
-                }
-            });
+            this.uniforms[i] = this.uniformData[i].value;
         }
 
 
