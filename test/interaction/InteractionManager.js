@@ -439,7 +439,7 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent clicking behind child', function ()
+                it('should callback parent when clicking behind child', function ()
                 {
                     const stage = new PIXI.Container();
                     const pointer = new MockPointer(stage);
