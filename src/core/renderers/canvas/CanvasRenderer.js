@@ -211,6 +211,28 @@ export default class CanvasRenderer extends SystemRenderer
     }
 
     /**
+     * Clear the canvas of renderer.
+     *
+     * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
+     */
+    clear(clearColor)
+    {
+        const context = this.context;
+
+        clearColor = clearColor || this._backgroundColorString;
+
+        if (!this.transparent && clearColor)
+        {
+            context.fillStyle = clearColor;
+            context.fillRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            context.clearRect(0, 0, this.width, this.height);
+        }
+    }
+
+    /**
      * Sets the blend mode of the renderer.
      *
      * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
