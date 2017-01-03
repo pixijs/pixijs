@@ -1,5 +1,6 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
 import extractAttributesFromSrc from './extractAttributesFromSrc';
+import generateUniformsSync from './generateUniformsSync';
 
 let UID = 0;
 
@@ -64,7 +65,7 @@ class Shader
         // TODO we could cache this!
         this.glShaders = {};
 
-
+        this.syncUniforms = generateUniformsSync(this.uniformData);
         this.id = UID++;
     }
 
