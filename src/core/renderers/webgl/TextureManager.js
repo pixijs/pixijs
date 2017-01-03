@@ -82,7 +82,7 @@ export default class TextureManager
 
         // if the location is undefined then this may have been called by n event.
         // this being the case the texture may already be bound to a slot. As a texture can only be bound once
-        // we need tofind its current location if it exists.
+        // we need to find its current location if it exists.
         if (location === undefined)
         {
             location = 0;
