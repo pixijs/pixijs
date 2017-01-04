@@ -37,10 +37,10 @@ export default class MeshRenderer extends core.ObjectRenderer {
     render(mesh)
     {
         // set the shader props..
-        if (mesh.shader.uniforms.translationMatrix)
+        if (mesh.uniforms.translationMatrix)
         {
             // the transform!
-            mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
+            mesh.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
         }
 
         // bind the shader..

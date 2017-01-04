@@ -1,5 +1,4 @@
 import Shader from '../../../shader/Shader';
-import { uid } from '../../../utils';
 import { BLEND_MODES } from '../../../const';
 
 // let math = require('../../../math');
@@ -17,7 +16,7 @@ class Filter extends Shader
      */
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
-        super(vertexSrc, fragmentSrc, uniforms)
+        super(vertexSrc, fragmentSrc, uniforms);
 
         this.blendMode = BLEND_MODES.NORMAL;
 

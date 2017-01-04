@@ -46,7 +46,7 @@ export default class Mesh extends core.Container
 
         // TODO uniform auto generation?
         // make sure to add required feilds
-        this.uniforms = uniforms;
+        this.uniforms = uniforms || shader.uniforms;
 
         /**
          * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any

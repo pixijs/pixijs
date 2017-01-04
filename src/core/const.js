@@ -104,7 +104,7 @@ export const BLEND_MODES = {
     SATURATION:     14,
     COLOR:          15,
     LUMINOSITY:     16,
-    NONE:           17
+    NONE:           17,
 };
 
 /**

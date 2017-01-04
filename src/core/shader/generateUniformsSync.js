@@ -50,12 +50,14 @@ export default function generateUniformsSync(uniformData)
         // TODO && uniformData[i].value !== 0 <-- do we still need this?
         if (data.type === 'sampler2D')
         {
-            func += `\ngl.uniform1iv(uniformData.${i}.location, renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true) );\n`; // eslint-disable-line max-len
+            func += `\n
+
+            gl.uniform1i(uniformData.${i}.location, renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true) );\n`; // eslint-disable-line max-len
         }
         else if (data.type === 'mat3')
         {
             func += `\nvalue = uniformValues.${i};
-gl.uniformMatrix3fv(uniformData.${i}.location, false, (value.a !== undefined) ? value : value.toArray(true));\n`;
+gl.uniformMatrix3fv(uniformData.${i}.location, false, (value.a === undefined) ? value : value.toArray(true));\n`;
         }
         else if (data.type === 'vec2')
         {

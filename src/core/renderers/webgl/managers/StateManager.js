@@ -19,7 +19,6 @@ export default class StateManager
      */
     constructor(gl)
     {
-
         /**
          * The current WebGL rendering context
          *
@@ -51,7 +50,7 @@ export default class StateManager
 
         // map functions for when we set state..
         this.map[BLEND] = this.setBlend;
-        this.map[OFFSET] = this.setPolygonOffset;
+        this.map[OFFSET] = this.setOffset;
         this.map[CULLING] = this.setCullFace;
         this.map[DEPTH_TEST] = this.setDepthTest;
         this.map[WINDING] = this.setFrontFace;
@@ -67,18 +66,18 @@ export default class StateManager
     setState(state)
     {
         // TODO maybe to an object check? ( this.state === state )?
-        if(this.stateId === state.data)return;
+        if (this.stateId === state.data) return;
 
         let diff = this.stateId ^ state.data;
         let i = 0;
 
         // order from least to most common
-        while(diff)
+        while (diff)
         {
-            if(diff & 1)
+            if (diff & 1)
             {
                 // state change!
-                this.map[i].call(this, !!(state.data & (1 << i)) );
+                this.map[i].call(this, !!(state.data & (1 << i)));
             }
 
             diff = diff >> 1;
@@ -91,11 +90,10 @@ export default class StateManager
         for (let i = 0; i < this.checks.length; i++)
         {
             this.checks[i](this, state);
-        };
+        }
 
         this.stateId = state.data;
     }
-
 
     /**
      * Enables or disabled blending.
@@ -109,7 +107,7 @@ export default class StateManager
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
 
-    setPolygonOffset(value)
+    setOffset(value)
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.POLYGON_OFFSET_FILL);
     }
@@ -209,26 +207,25 @@ export default class StateManager
 
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
-        //TO DO?
-        //this.setState(this.defaultState);
+        // TODO?
+        // this.setState(this.defaultState);
     }
 
     updateCheck(func, value)
     {
         const index = this.checks.indexOf(func);
 
-        if(value && index === -1)
+        if (value && index === -1)
         {
             this.checks.push(func);
         }
-        else if(!value && index !== -1)
+        else if (!value && index !== -1)
         {
             this.checks.splice(index, 1);
         }
-
     }
 
-    //static function maintains scope!
+    // static function maintains scope!
     static checkBlendMode(manager, state)
     {
         manager.setBlendMode(state.blendMode);

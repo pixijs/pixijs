@@ -42,7 +42,12 @@ export default class Rope extends Mesh
         .addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
         .addIndex(new Uint16Array(points.length * 2));
 
-        super(geometry, meshShader, {}, 5);
+        super(geometry, meshShader, {
+            uSample2:texture,
+            alpha:1,
+            tint:new Float32Array([0, 0, 0]),
+            translationMatrix:this.transform.worldTransform
+        }, null, 5);
 
         this.texture = texture;
 
@@ -60,6 +65,7 @@ export default class Rope extends Mesh
          */
         this._ready = true;
 
+        this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
          // wait for the texture to load
@@ -137,6 +143,17 @@ export default class Rope extends Mesh
         this.geometry.getAttribute('aVertexPosition').update();
         this.geometry.getAttribute('aTextureCoord').update();
         this.geometry.data.indexBuffer.update();
+    }
+
+    set tint(value)
+    {
+        this._tint = value;
+        core.utils.hex2rgb(this._tint, this.uniforms.tint);
+    }
+
+    get tint()
+    {
+        return this._tint;
     }
 
     /**
@@ -218,19 +235,10 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
-        this.shader.uniforms.alpha = 1;
+        this.shader.uniforms.alpha = this.alpha;
         this.shader.uniforms.uSampler2 = this.texture;
 
         this.geometry.getAttribute('aVertexPosition').update();
         this.containerUpdateTransform();
-    }
-
-    _renderWebGL(renderer)
-    {
-        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint, temp);
-        this.shader.uniforms.uSampler2 = this.texture;
-
-        renderer.setObjectRenderer(renderer.plugins.mesh);
-        renderer.plugins.mesh.render(this);
     }
 }

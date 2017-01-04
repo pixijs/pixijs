@@ -1,7 +1,5 @@
 import { GLShader } from 'pixi-gl-core';
-import { WRAP_MODES, SCALE_MODES, PRECISION} from '../../const';
-import RenderTarget from './utils/RenderTarget';
-import { removeItems } from '../../utils';
+import { PRECISION } from '../../const';
 
 /**
  * Helper class to create a webGL Texture
@@ -35,14 +33,15 @@ export default class ShaderManager
 
     bindShader(shader, dontSync)
     {
-     //   if(this.shader === shader)return;
+        const glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
-        this.shader = shader;
+        if (this.shader !== shader)
+        {
+            this.shader = shader;
+            this.renderer._bindGLShader(glShader);
+        }
 
-        let glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
-
-        this.renderer._bindGLShader(glShader);
-        if(!dontSync)
+        if (!dontSync)
         {
             this.syncUniforms(glShader, shader);
         }
@@ -58,8 +57,8 @@ export default class ShaderManager
 
     generateShader(shader)
     {
-
         const attribMap = {};
+
         for (const i in shader.attributeData)
         {
             attribMap[i] = shader.attributeData[i].location;
@@ -67,17 +66,9 @@ export default class ShaderManager
 
         const glShader = new GLShader(this.gl, shader.vertexSrc, shader.fragmentSrc, PRECISION.DEFAULT, attribMap);
 
-        //TODO should I add this a s a prototype
-        glShader.dirtyFlags = {};
-        for (var i in shader.realUniforms) {
-            glShader.dirtyFlags[i] = 0;
-        };
-        console.log(glShader.dirtyFlags)
-
         shader.glShaders[this.renderer.CONTEXT_UID] = glShader;
 
-
-        return glShader
+        return glShader;
     }
 
     /**
@@ -89,8 +80,6 @@ export default class ShaderManager
     syncUniforms(glShader, shader)
     {
         const uniformData = shader.uniformData;
-        const realUniforms = shader.realUniforms;
-        const dirtyFlags = glShader.dirtyFlags;
 
         // 0 is reserverd for the pixi texture so we start at 1!
         let textureCount = 1;
@@ -98,23 +87,16 @@ export default class ShaderManager
         // TODO don't need to use the uniform
         for (const i in uniformData)
         {
-            if(dirtyFlags[i] === uniformData[i].dirtyId)
-            {
-                //continue;
-            }
-
-            dirtyFlags[i] = uniformData[i].dirtyId;
-
             if (uniformData[i].type === 'sampler2D' && uniformData[i].value !== 0)
             {
                 if (uniformData[i].value.baseTexture)
                 {
                     glShader.uniforms[i] = this.renderer.bindTexture(uniformData[i].value, textureCount, true);
-              //      console.log( glShader.uniforms[i])
                 }
                 else
                 {
                     glShader.uniforms[i] = textureCount;
+
                     // TODO
                     // this is helpful as renderTargets can also be set.
                     // Although thinking about it, we could probably
@@ -144,7 +126,7 @@ export default class ShaderManager
             {
                 // check if its a point..
                 if (uniformData[i].value.x !== undefined)
-               	{
+                {
                     const val = glShader.uniforms[i] || new Float32Array(2);
 
                     val[0] = uniformData[i].value.x;
@@ -152,7 +134,7 @@ export default class ShaderManager
                     glShader.uniforms[i] = val;
                 }
                 else
-               	{
+                {
                     glShader.uniforms[i] = uniformData[i].value;
                 }
             }
@@ -170,13 +152,12 @@ export default class ShaderManager
         }
     }
 
-
-
     /**
      * Destroys this manager and removes all its textures
      */
     destroy()
     {
-
+        // TODO implement destroy method for ShaderManager
+        this.destroyed = true;
     }
 }

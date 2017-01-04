@@ -9,7 +9,6 @@ import StateManager from './managers/StateManager';
 import ShaderManager from './ShaderManager';
 import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
-import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
 import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
@@ -99,7 +98,6 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.StencilManager}
          */
         this.stencilManager = new StencilManager(this);
-
 
         /**
          * An empty renderer.
@@ -446,8 +444,6 @@ export default class WebGLRenderer extends SystemRenderer
     {
         this.shaderManager.bindShader(shader, dontSync);
     }
-
-
 
     /**
      * Changes the current shader to the one given in parameter
