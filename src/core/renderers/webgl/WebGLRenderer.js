@@ -15,7 +15,6 @@ import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
 import glCore from 'pixi-gl-core';
 import { RENDERER_TYPE } from '../../const';
-import settings from '../../settings';
 
 let CONTEXT_UID = 0;
 
@@ -197,7 +196,7 @@ export default class WebGLRenderer extends SystemRenderer
             gl.getExtension('WEBGL_lose_context').restoreContext();
         }
 
-        const maxTextures = settings.SPRITE_MAX_TEXTURES;
+        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
         this.boundTextures = new Array(maxTextures);
         this.emptyTextures = new Array(maxTextures);
