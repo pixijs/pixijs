@@ -35,7 +35,8 @@ export default class Mesh extends core.Container
          *
          * @member {Float32Array}
          */
-        this.uvs = uvs || new Float32Array([0, 0,
+        this.uvs = uvs || new Float32Array([
+            0, 0,
             1, 0,
             1, 1,
             0, 1]);
@@ -45,7 +46,8 @@ export default class Mesh extends core.Container
          *
          * @member {Float32Array}
          */
-        this.vertices = vertices || new Float32Array([0, 0,
+        this.vertices = vertices || new Float32Array([
+            0, 0,
             100, 0,
             100, 100,
             0, 100]);

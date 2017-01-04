@@ -237,7 +237,7 @@ export default class ParticleContainer extends core.Container
                 continue;
             }
 
-            const frame = child.texture.frame;
+            const frame = child._texture.frame;
 
             context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -305,10 +305,10 @@ export default class ParticleContainer extends core.Container
                 finalHeight = frame.height;
             }
 
-            const resolution = child.texture.baseTexture.resolution;
+            const resolution = child._texture.baseTexture.resolution;
 
             context.drawImage(
-                child.texture.baseTexture.source,
+                child._texture.baseTexture.source,
                 frame.x * resolution,
                 frame.y * resolution,
                 frame.width * resolution,

@@ -12,7 +12,11 @@ export default function ()
         const imageResourceName = `${resource.name}_image`;
 
         // skip if no data, its not json, it isn't spritesheet data, or the image resource already exists
-        if (!resource.data || !resource.isJson || !resource.data.frames || this.resources[imageResourceName])
+        if (!resource.data
+            || resource.type !== Resource.TYPE.JSON
+            || !resource.data.frames
+            || this.resources[imageResourceName]
+        )
         {
             next();
 
@@ -23,6 +27,7 @@ export default function ()
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata,
+            parentResource: resource,
         };
 
         // Prepend url path unless the resource image is a data url
