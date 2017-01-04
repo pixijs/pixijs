@@ -479,7 +479,7 @@ export default class Sprite extends Container
      */
     get width()
     {
-        return Math.abs(this.scale.x) * this.texture.orig.width;
+        return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
     /**
@@ -491,7 +491,7 @@ export default class Sprite extends Container
     {
         const s = sign(this.scale.x) || 1;
 
-        this.scale.x = s * value / this.texture.orig.width;
+        this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
     }
 
@@ -503,7 +503,7 @@ export default class Sprite extends Container
      */
     get height()
     {
-        return Math.abs(this.scale.y) * this.texture.orig.height;
+        return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
     /**
@@ -515,7 +515,7 @@ export default class Sprite extends Container
     {
         const s = sign(this.scale.y) || 1;
 
-        this.scale.y = s * value / this.texture.orig.height;
+        this.scale.y = s * value / this._texture.orig.height;
         this._height = value;
     }
 
