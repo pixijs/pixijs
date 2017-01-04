@@ -5,6 +5,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 let meshShader;
+const temp = new Float32Array([0, 0, 0]);
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -29,15 +30,19 @@ export default class Rope extends Mesh
      */
     constructor(texture, points)
     {
-        if(!meshShader)meshShader = new core.Shader( readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),  readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+        if (!meshShader)
+        {
+            meshShader = new core.Shader(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
+                                         readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+        }
 
         const geometry = new Geometry();
 
         geometry.addAttribute('aVertexPosition', new Float32Array(points.length * 4), 2)
-        geometry.addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
-        geometry.addIndex(new Uint16Array(points.length * 2))
+        .addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
+        .addIndex(new Uint16Array(points.length * 2));
 
-        super(geometry, meshShader, 5);
+        super(geometry, meshShader, {}, 5);
 
         this.texture = texture;
 
@@ -77,7 +82,7 @@ export default class Rope extends Mesh
         const vertices = this.geometry.getAttribute('aVertexPosition').data;
         const uvs = this.geometry.getAttribute('aTextureCoord').data;
 
-        //TODO - lets make this more accessable... maybe a getIndx()?
+        // TODO - lets make this more accessable... maybe a getIndx()?
         const indices = this.geometry.data.indexBuffer.data;
 
         // if too little points, or texture hasn't got UVs set yet just move on.
@@ -132,8 +137,6 @@ export default class Rope extends Mesh
         this.geometry.getAttribute('aVertexPosition').update();
         this.geometry.getAttribute('aTextureCoord').update();
         this.geometry.data.indexBuffer.update();
-
-      //  console.log(this.geometry.data)
     }
 
     /**
@@ -143,8 +146,6 @@ export default class Rope extends Mesh
      */
     _onTextureUpdate()
     {
-        //super._onTextureUpdate();
-
         // wait for the Rope ctor to finish before calling refresh
         if (this._ready)
         {
@@ -218,7 +219,7 @@ export default class Rope extends Mesh
         }
 
         this.shader.uniforms.alpha = 1;
-        this.shader.uniforms.uSampler2 = this.texture;//
+        this.shader.uniforms.uSampler2 = this.texture;
 
         this.geometry.getAttribute('aVertexPosition').update();
         this.containerUpdateTransform();
@@ -226,8 +227,8 @@ export default class Rope extends Mesh
 
     _renderWebGL(renderer)
     {
-        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint,temp)
-        this.shader.uniforms.uSampler2 = this.texture;//
+        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint, temp);
+        this.shader.uniforms.uSampler2 = this.texture;
 
         renderer.setObjectRenderer(renderer.plugins.mesh);
         renderer.plugins.mesh.render(this);

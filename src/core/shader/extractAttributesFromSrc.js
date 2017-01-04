@@ -15,7 +15,6 @@ function extractAttributesFromString(string)
 
     const attributesArray = [];
     let nameSplit;
-    const a = 20;
 
     // clean the lines a little - remove extra spaces / teabs etc
     // then split along ';'
@@ -55,9 +54,7 @@ function extractAttributesFromString(string)
         }
     }
 
-    attributesArray.sort(function (a, b) {
-        return (a.name > b.name) ? 1 : -1;
-    });
+    attributesArray.sort((a, b) => (a.name > b.name) ? 1 : -1); // eslint-disable-line no-confusing-arrow
 
     const attributes = {};
 
@@ -65,6 +62,7 @@ function extractAttributesFromString(string)
     for (let i = 0; i < attributesArray.length; i++)
     {
         const attrib = attributesArray[i];
+
         attrib.location = i;
         attributes[attrib.name] = attrib;
     }

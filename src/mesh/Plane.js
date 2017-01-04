@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 let meshShader;
-const temp = [0,0,0];
+const temp = [0, 0, 0];
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -33,11 +33,15 @@ export default class Plane extends Mesh
     {
         const geometry = new Geometry();
 
-        if(!meshShader)meshShader = new core.Shader( readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),  readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+        if (!meshShader)
+        {
+            meshShader = new core.Shader(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
+                                         readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+        }
 
         geometry.addAttribute('aVertexPosition', new Float32Array(2), 2)
-        geometry.addAttribute('aTextureCoord', new Float32Array(2), 2)
-        geometry.addIndex(new Uint16Array(2))
+        .addAttribute('aTextureCoord', new Float32Array(2), 2)
+        .addIndex(new Uint16Array(2));
 
         super(geometry, meshShader, 4);
 
@@ -69,7 +73,7 @@ export default class Plane extends Mesh
 
         this.refresh();
 
-        this.tint;
+        this.tint = 0xFFFFFF;
     }
 
     /**
@@ -80,7 +84,6 @@ export default class Plane extends Mesh
     {
         const total = this.verticesX * this.verticesY;
         const verts = [];
-        const colors = [];
         const uvs = [];
         const indices = [];
         const texture = this.texture;
@@ -113,8 +116,6 @@ export default class Plane extends Mesh
             }
         }
 
-        //  cons
-
         const totalSub = segmentsX * segmentsY;
 
         for (let i = 0; i < totalSub; i++)
@@ -131,24 +132,21 @@ export default class Plane extends Mesh
             indices.push(value2, value4, value3);
         }
 
-        // console.log(indices)
         this.shader.uniforms.alpha = 1;
-        this.shader.uniforms.uSampler2 = this.texture;//
-
+        this.shader.uniforms.uSampler2 = this.texture;
 
         this.vertices = new Float32Array(verts);
         this.uvs = new Float32Array(uvs);
         this.indices = new Uint16Array(indices);
 
-        this.geometry.getAttribute('aVertexPosition').data =  this.vertices;
-        this.geometry.getAttribute('aTextureCoord').data =  this.uvs;
-        this.geometry.data.indexBuffer.data =  this.indices;
+        this.geometry.getAttribute('aVertexPosition').data = this.vertices;
+        this.geometry.getAttribute('aTextureCoord').data = this.uvs;
+        this.geometry.data.indexBuffer.data = this.indices;
 
-          // ensure that the changes are uploaded
+        // ensure that the changes are uploaded
         this.geometry.getAttribute('aVertexPosition').update();
         this.geometry.getAttribute('aTextureCoord').update();
-        this.geometry.data.indexBuffer.update();//
-
+        this.geometry.data.indexBuffer.update();
     }
 
     /**
@@ -165,10 +163,10 @@ export default class Plane extends Mesh
         }
     }
 
-     _renderWebGL(renderer)
+    _renderWebGL(renderer)
     {
-        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint,temp)
-        this.shader.uniforms.uSampler2 = this.texture;//
+        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint, temp);
+        this.shader.uniforms.uSampler2 = this.texture;
 
         renderer.setObjectRenderer(renderer.plugins.mesh);
         renderer.plugins.mesh.render(this);
@@ -176,11 +174,7 @@ export default class Plane extends Mesh
 
     updateTransform()
     {
-
         this.geometry.getAttribute('aVertexPosition').update();
         this.containerUpdateTransform();
     }
-
-
-
 }

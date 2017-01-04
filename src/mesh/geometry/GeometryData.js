@@ -1,35 +1,33 @@
-class GeometryData
+export default class GeometryData
 {
-	constructor()
-	{
-		this.buffers = [];
-		this.indexBuffer = null;
-	}
+    constructor()
+    {
+        this.buffers = [];
+        this.indexBuffer = null;
+    }
 
-	add(id, buffer)
-	{
-		// only one!
-		if (this.buffers.indexOf(buffer) === -1)
-		{
-			this.buffers.push(buffer);
-			this[id] = buffer;
-		}
+    add(id, buffer)
+    {
+        // only one!
+        if (this.buffers.indexOf(buffer) === -1)
+        {
+            this.buffers.push(buffer);
+            this[id] = buffer;
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	addIndex(buffer)
-	{
-		buffer.index = true;
-		this.indexBuffer = buffer;
+    addIndex(buffer)
+    {
+        buffer.index = true;
+        this.indexBuffer = buffer;
 
-		if (this.buffers.indexOf(buffer) === -1)
-		{
-			this.buffers.push(buffer);
-		}
+        if (this.buffers.indexOf(buffer) === -1)
+        {
+            this.buffers.push(buffer);
+        }
 
-		return this;
-	}
+        return this;
+    }
 }
-
-export default GeometryData;

@@ -162,8 +162,6 @@ export default class RenderTarget
 
         this.setFrame();
 
-
-
         this.resize(width, height);
     }
 

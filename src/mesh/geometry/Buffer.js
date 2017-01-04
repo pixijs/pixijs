@@ -11,27 +11,27 @@ let UID = 0;
  */
 export default class Buffer
 {
-	constructor(data)
-	{
-		/**
-	     * The type of the buffer
-	     *
-	     * @member {gl.ARRAY_BUFFER|gl.ELEMENT_ARRAY_BUFFER}
-	     */
-		// this.type = type || gl.ARRAY_BUFFER;
+    constructor(data)
+    {
+        /**
+         * The type of the buffer
+         *
+         * @member {gl.ARRAY_BUFFER|gl.ELEMENT_ARRAY_BUFFER}
+         */
+        // this.type = type || gl.ARRAY_BUFFER;
 
-		/**
-	     * The draw type of the buffer
-	     *
-	     * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
-	     */
-		// this.drawType = drawType || gl.STATIC_DRAW;
+        /**
+         * The draw type of the buffer
+         *
+         * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
+         */
+        // this.drawType = drawType || gl.STATIC_DRAW;
 
-		/**
-	     * The data in the buffer, as a typed array
-	     *
-	     * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
-	     */
+        /**
+         * The data in the buffer, as a typed array
+         *
+         * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
+         */
         this.data = data;
 
         this._glBuffers = [];
@@ -39,35 +39,35 @@ export default class Buffer
         this._updateID = 0;
 
         this.id = UID++;
-	}
+    }
 
-	/**
-	 * Uploads the buffer to the GPU
-	 * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
-	 * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
-	 */
-	update()
-	{
-		this._updateID++;
-	}
+    /**
+     * Uploads the buffer to the GPU
+     * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
+     * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
+     */
+    update()
+    {
+        this._updateID++;
+    }
 
-	/**
-	 * Destroys the buffer
-	 *
-	 */
-	destroy()
-	{
-		for (let i = 0; i < this._glBuffers.length; i++)
-		{
-			this._glBuffers[i].destroy();
-		}
+    /**
+     * Destroys the buffer
+     *
+     */
+    destroy()
+    {
+        for (let i = 0; i < this._glBuffers.length; i++)
+        {
+            this._glBuffers[i].destroy();
+        }
 
-		this.data = null;
-	}
+        this.data = null;
+    }
 
-	static from(data)
-	{
-		return new Buffer(data);
-	}
+    static from(data)
+    {
+        return new Buffer(data);
+    }
 }
 

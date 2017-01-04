@@ -1,6 +1,5 @@
-class GeometryStyle
+export default class GeometryStyle
 {
-
     constructor()
     {
         this.attributes = {};
@@ -53,5 +52,3 @@ class GeometryStyle
         this.indexBuffer = null;
     }
 }
-
-export default GeometryStyle;

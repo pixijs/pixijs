@@ -15,7 +15,6 @@ export default class Mesh extends core.Container
      */
     constructor(geometry, shader, uniforms, state, drawMode = core.DRAW_MODES.TRIANGLES)
     {
-        //drawMode = core.DRAW_MODES.TRIANGLES, uniforms = {})
         super();
 
         /**
@@ -43,14 +42,11 @@ export default class Mesh extends core.Container
          * @member {number}
          * @see PIXI.mesh.Mesh.DRAW_MODES
          */
-        this.drawMode = 4//drawMode;
+        this.drawMode = drawMode;
 
+        // TODO uniform auto generation?
+        // make sure to add required feilds
         this.uniforms = uniforms;
-
-//        geometry//
-//        shader//
-//        uniforms//
-//        state//
 
         /**
          * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any

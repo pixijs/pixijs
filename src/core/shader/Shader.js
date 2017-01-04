@@ -48,7 +48,6 @@ class Shader
             this.uniforms[i] = this.uniformData[i].value;
         }
 
-
         // this is where we store shader references..
         // TODO we could cache this!
         this.glShaders = {};
@@ -56,7 +55,6 @@ class Shader
         this.syncUniforms = generateUniformsSync(this.uniformData);
         this.id = UID++;
     }
-
 
     /**
      * The default vertex shader source

@@ -26,8 +26,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
     onContextChange()
     {
         this.gl = this.renderer.gl;
-        this.CONTEXT_UID = this.renderer.CONTEXT_UID
-        // nothing to see here!
+        this.CONTEXT_UID = this.renderer.CONTEXT_UID;
     }
 
     /**
@@ -37,19 +36,12 @@ export default class MeshRenderer extends core.ObjectRenderer {
      */
     render(mesh)
     {
-        // always use shaders - rather than GLShadr
-
-        // generate geometry structure from a shader :)
-
         // set the shader props..
         if (mesh.shader.uniforms.translationMatrix)
         {
             // the transform!
             mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
         }
-
-          // set the correct blend mode
-//        this.renderer.state.setBlendMode(mesh.blendMode);
 
         // bind the shader..
         this.renderer.shaderManager.bindShader(mesh.shader, true);
@@ -59,8 +51,6 @@ export default class MeshRenderer extends core.ObjectRenderer {
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);
-
-        // now time for geometry..
 
         // bind the geometry...
         this.bindGeometry(mesh.geometry);
@@ -81,22 +71,21 @@ export default class MeshRenderer extends core.ObjectRenderer {
         this.renderer.bindVao(vao);
         const data = geometry.data;
 
-       // if (geometry.autoUpdate)
+        // TODO - optimise later!
+        // don't need to loop through if nothing changed!
+        // maybe look to add an 'autoupdate' to geometry?
+        for (let i = 0; i < data.buffers.length; i++)
         {
-            // TODO - optimise later!
-            for (let i = 0; i < data.buffers.length; i++)
+            const buffer = data.buffers[i];
+
+            const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+
+            if (buffer._updateID !== glBuffer._updateID)
             {
-                const buffer = data.buffers[i];
+                glBuffer._updateID = buffer._updateID;
 
-                const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
-
-                if (buffer._updateID !== glBuffer._updateID)
-                {
-                    glBuffer._updateID = buffer._updateID;
-
-                    // TODO - partial upload??
-                    glBuffer.upload(buffer.data, 0);
-                }
+                // TODO - partial upload??
+                glBuffer.upload(buffer.data, 0);
             }
         }
     }
