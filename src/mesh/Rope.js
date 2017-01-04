@@ -229,6 +229,7 @@ export default class Rope extends Mesh
         this.geometry.getAttribute('aVertexPosition').update();
 
         this.uniforms.alpha = this.worldAlpha;
+        this.uniforms.uSample2 = this.texture;
 
         this.containerUpdateTransform();
     }
