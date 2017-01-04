@@ -43,18 +43,16 @@ export default class Plane extends Mesh
         .addAttribute('aTextureCoord', new Float32Array(2), 2)
         .addIndex(new Uint16Array(2));
 
-        super(geometry, meshShader, 4);
+        const uniforms = {
+            uSampler2:texture,
+            alpha:1,
+            translationMatrix:null,
+            tint:new Float32Array([1, 1, 1])
+        }
+
+        super(geometry, meshShader, uniforms, 4);
 
         this.texture = texture;
-
-        /**
-         * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._ready = true;
 
         this.segmentsX = this.verticesX = verticesX || 10;
         this.segmentsY = this.verticesY = verticesY || 10;
@@ -64,16 +62,37 @@ export default class Plane extends Mesh
 
         if (texture.baseTexture.hasLoaded)
         {
-            this._onTextureUpdate();
+            this.refresh();
         }
         else
         {
-            texture.once('update', this._onTextureUpdate, this);
+            texture.once('update', this.refresh, this);
         }
 
-        this.refresh();
-
+        this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
+    }
+
+    set tint(value)
+    {
+        this._tint = value;
+        core.utils.hex2rgb(this._tint, this.uniforms.tint);
+    }
+
+    get tint()
+    {
+        return this._tint;
+    }
+
+    set texture(value)
+    {
+        this._texture = value;
+        this.uniforms.uSample2 = this.texture;
+    }
+
+    get texture()
+    {
+        return this._texture;
     }
 
     /**
@@ -147,29 +166,6 @@ export default class Plane extends Mesh
         this.geometry.getAttribute('aVertexPosition').update();
         this.geometry.getAttribute('aTextureCoord').update();
         this.geometry.data.indexBuffer.update();
-    }
-
-    /**
-     * Clear texture UVs when new texture is set
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        // wait for the Plane ctor to finish before calling refresh
-        if (this._ready)
-        {
-            this.refresh();
-        }
-    }
-
-    _renderWebGL(renderer)
-    {
-        this.shader.uniforms.tint = core.utils.hex2rgb(this.tint, temp);
-        this.shader.uniforms.uSampler2 = this.texture;
-
-        renderer.setObjectRenderer(renderer.plugins.mesh);
-        renderer.plugins.mesh.render(this);
     }
 
     updateTransform()

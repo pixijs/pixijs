@@ -50,8 +50,6 @@ export default function generateUniformsSync(uniformData)
         // TODO && uniformData[i].value !== 0 <-- do we still need this?
         if (data.type === 'float')
         {
-            //const template = GLSL_TO_SINGLE_SETTERS_CACHED[data.type].replace('location', `uniformData.${i}.location`);
-
             func += `\nif(uniformValues.${i} !== uniformData.${i}.value)
 {
     uniformData.${i}.value = uniformValues.${i}

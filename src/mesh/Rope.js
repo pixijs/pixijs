@@ -53,8 +53,6 @@ export default class Rope extends Mesh
 
         uniforms.translationMatrix = this.transform.worldTransform;
 
-        this.texture = texture;
-
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
@@ -63,14 +61,15 @@ export default class Rope extends Mesh
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
+        this.texture = texture;
          // wait for the texture to load
         if (texture.baseTexture.hasLoaded)
         {
-            this._onTextureUpdate();
+            this.refresh();
         }
         else
         {
-            texture.once('update', this._onTextureUpdate, this);
+            texture.once('update', this.refresh, this);
         }
     }
 
@@ -85,17 +84,27 @@ export default class Rope extends Mesh
         return this._tint;
     }
 
+    set texture(value)
+    {
+        this._texture = value;
+        this.uniforms.uSampler2 = this.texture;
+    }
+
+    get texture()
+    {
+        return this._texture;
+    }
+
     /**
      * Refreshes
      */
     refresh()
     {
         const points = this.points;
-        const vertices = this.geometry.getAttribute('aVertexPosition').data;
-        const uvs = this.geometry.getAttribute('aTextureCoord').data;
 
-        // TODO - lets make this more accessable... maybe a getIndx()?
-        const indices = this.geometry.data.indexBuffer.data;
+        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
+        const uvBuffer = this.geometry.getAttribute('aTextureCoord');
+        const indexBuffer = this.geometry.getIndex();
 
         // if too little points, or texture hasn't got UVs set yet just move on.
         if (points.length < 1 || !this.texture._uvs)
@@ -104,15 +113,16 @@ export default class Rope extends Mesh
         }
 
         // if the number of points has changed we will need to recreate the arraybuffers
-        if (vertices.length / 4 !== points.length)
+        if (vertexBuffer.data.length / 4 !== points.length)
         {
-            /*
-            this.vertices = new Float32Array(points.length * 4);
-            this.uvs = new Float32Array(points.length * 4);
-            this.colors = new Float32Array(points.length * 2);
-            this.indices = new Uint16Array(points.length * 2);
-            */
+            vertexBuffer.data = new Float32Array(points.length * 4);
+            uvBuffer.data = new Float32Array(points.length * 4);
+            indexBuffer.data = new Uint16Array(points.length * 2);
         }
+
+        const vertices = vertexBuffer.data;
+        const uvs = uvBuffer.data;
+        const indices = indexBuffer.data;
 
         const textureUvs = this.texture._uvs;
         const offset = new core.Point(textureUvs.x0, textureUvs.y0);
@@ -146,19 +156,9 @@ export default class Rope extends Mesh
         }
 
         // ensure that the changes are uploaded
-        this.geometry.getAttribute('aVertexPosition').update();
-        this.geometry.getAttribute('aTextureCoord').update();
-        this.geometry.data.indexBuffer.update();
-    }
-
-    /**
-     * Clear texture UVs when new texture is set
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        this.refresh();
+        vertexBuffer.update();
+        uvBuffer.update();
+        indexBuffer.update();
     }
 
     /**
@@ -182,7 +182,8 @@ export default class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        const vertices =  this.geometry.getAttribute('aVertexPosition').data;
+        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
+        const vertices = vertexBuffer.data;
 
         const total = points.length;
 
@@ -226,10 +227,10 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
-        this.geometry.getAttribute('aVertexPosition').update();
+        // mark the buffer as requiring an upload..
+        vertexBuffer.update();
 
         this.uniforms.alpha = this.worldAlpha;
-        this.uniforms.uSample2 = this.texture;
 
         this.containerUpdateTransform();
     }

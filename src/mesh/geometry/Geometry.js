@@ -7,7 +7,6 @@ var UID = 0;
 
 class Geometry
 {
-
     constructor(data, style)
     {
         this.style = style || new GeometryStyle();
@@ -49,6 +48,11 @@ class Geometry
         this.data.addIndex(buffer);
 
         return this;
+    }
+
+    getIndex()
+    {
+        return this.data.indexBuffer;
     }
 
     destroy()

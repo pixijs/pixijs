@@ -34,8 +34,8 @@ export default class Mesh extends core.Container
          * @default PIXI.BLEND_MODES.NORMAL
          * @see PIXI.BLEND_MODES
          */
-        this.blendMode = core.BLEND_MODES.NORMAL;
-
+        this.blendMode = core.BLEND_MODES.SCREEN;
+        this.state.blendMode = this.blendMode
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
          *
@@ -44,18 +44,18 @@ export default class Mesh extends core.Container
          */
         this.drawMode = drawMode;
 
-        // TODO uniform auto generation?
-        // make sure to add required feilds
-        this.uniforms = uniforms || shader.uniforms;
+        uniforms = uniforms || {};
 
-        /**
-         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
-         * tint effect.
-         *
-         * @member {number}
-         * @memberof PIXI.mesh.Mesh#
-         */
-        this.tintRgb = new Float32Array([1, 1, 1]);
+        // make sure to add required feilds
+        for(let i in shader.uniforms)
+        {
+            if(uniforms[i] === undefined)
+            {
+                uniforms[i] = shader.uniforms[i];
+            }
+        }
+
+        this.uniforms = uniforms;
 
         /**
          * A map of renderer IDs to webgl render data
@@ -96,16 +96,6 @@ export default class Mesh extends core.Container
     _renderCanvas(renderer)
     {
         renderer.plugins[this.pluginName].render(this);
-    }
-
-    /**
-     * When the texture is updated, this event will fire to update the scale and frame
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        /* empty */
     }
 
     /**

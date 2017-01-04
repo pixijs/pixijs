@@ -35,7 +35,7 @@ export default class ShaderManager
     {
         const glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
-        if (this.shader !== shader)
+    //    if (this.shader !== shader)
         {
             this.shader = shader;
             this.renderer._bindGLShader(glShader);
