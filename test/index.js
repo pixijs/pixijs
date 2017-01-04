@@ -13,6 +13,7 @@ describe('PIXI', function ()
     });
     require('./core');
     require('./interaction');
+    require('./loaders');
     require('./renders');
     require('./prepare');
 });

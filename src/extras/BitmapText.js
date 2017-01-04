@@ -37,22 +37,20 @@ export default class BitmapText extends core.Container
         super();
 
         /**
-         * The width of the overall text, different from fontSize,
-         * which is defined in the style object
+         * Private tracker for the width of the overall text
          *
          * @member {number}
-         * @readonly
+         * @private
          */
-        this.textWidth = 0;
+        this._textWidth = 0;
 
         /**
-         * The height of the overall text, different from fontSize,
-         * which is defined in the style object
+         * Private tracker for the height of the overall text
          *
          * @member {number}
-         * @readonly
+         * @private
          */
-        this.textHeight = 0;
+        this._textHeight = 0;
 
         /**
          * Private tracker for the letter sprite pool.
@@ -264,16 +262,16 @@ export default class BitmapText extends core.Container
             this.removeChild(this._glyphs[i]);
         }
 
-        this.textWidth = maxLineWidth * scale;
-        this.textHeight = (pos.y + data.lineHeight) * scale;
+        this._textWidth = maxLineWidth * scale;
+        this._textHeight = (pos.y + data.lineHeight) * scale;
 
         // apply anchor
         if (this.anchor.x !== 0 || this.anchor.y !== 0)
         {
             for (let i = 0; i < lenChars; i++)
             {
-                this._glyphs[i].x -= this.textWidth * this.anchor.x;
-                this._glyphs[i].y -= this.textHeight * this.anchor.y;
+                this._glyphs[i].x -= this._textWidth * this.anchor.x;
+                this._glyphs[i].y -= this._textHeight * this.anchor.y;
             }
         }
         this.maxLineHeight = maxLineHeight * scale;
@@ -458,6 +456,36 @@ export default class BitmapText extends core.Container
         }
         this._text = value;
         this.dirty = true;
+    }
+
+    /**
+     * The width of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @member {number}
+     * @memberof PIXI.extras.BitmapText#
+     * @readonly
+     */
+    get textWidth()
+    {
+        this.validate();
+
+        return this._textWidth;
+    }
+
+    /**
+     * The height of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @member {number}
+     * @memberof PIXI.extras.BitmapText#
+     * @readonly
+     */
+    get textHeight()
+    {
+        this.validate();
+
+        return this._textHeight;
     }
 }
 

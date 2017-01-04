@@ -44,7 +44,7 @@ export default class SpriteRenderer extends ObjectRenderer
         this.vertByteSize = this.vertSize * 4;
 
         /**
-         * The number of images in the SpriteBatch before it flushes.
+         * The number of images in the SpriteRenderer before it flushes.
          *
          * @member {number}
          */
@@ -168,7 +168,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // get the uvs for the texture
 
         // if the uvs have not updated then no point rendering just yet!
-        if (!sprite.texture._uvs)
+        if (!sprite._texture._uvs)
         {
             return;
         }
@@ -351,7 +351,7 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (sprite.worldAlpha * 255 << 24);
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (Math.min(sprite.worldAlpha, 1) * 255 << 24);
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
 
@@ -363,7 +363,7 @@ export default class SpriteRenderer extends ObjectRenderer
         if (!settings.CAN_UPLOAD_SAME_BUFFER)
         {
             // this is still needed for IOS performance..
-            // it really does not like uploading to  the same buffer in a single frame!
+            // it really does not like uploading to the same buffer in a single frame!
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
@@ -452,7 +452,7 @@ export default class SpriteRenderer extends ObjectRenderer
     }
 
     /**
-     * Destroys the SpriteBatch.
+     * Destroys the SpriteRenderer.
      *
      */
     destroy()

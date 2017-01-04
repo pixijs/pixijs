@@ -131,11 +131,10 @@ export default class FilterManager extends WebGLManager
         // bind the render target to draw the shape in the top corner..
 
         renderTarget.setFrame(destinationFrame, sourceFrame);
+
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
-
-        // clear the renderTarget
-        renderer.clear();// [0.5,0.5,0.5, 1.0]);
+        renderTarget.clear();
     }
 
     /**
@@ -170,6 +169,9 @@ export default class FilterManager extends WebGLManager
 
             flop.setFrame(currentState.destinationFrame, currentState.sourceFrame);
 
+            // finally lets clear the render target before drawing to it..
+            flop.clear();
+
             let i = 0;
 
             for (i = 0; i < filters.length - 1; ++i)
@@ -182,7 +184,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, false);
+            filters[i].apply(this, flip, lastState.renderTarget, true);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
@@ -336,7 +338,9 @@ export default class FilterManager extends WebGLManager
                     // rather than a renderTarget
                     const gl = this.renderer.gl;
 
+                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
                     gl.activeTexture(gl.TEXTURE0 + textureCount);
+
                     uniforms[i].texture.bind();
                 }
 

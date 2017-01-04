@@ -4,6 +4,9 @@ const tempMat = new Matrix();
 
 /**
  * class controls uv transform and frame clamp for texture
+ *
+ * @class
+ * @memberof PIXI.extras
  */
 export default class TextureTransform {
     /**
@@ -27,7 +30,7 @@ export default class TextureTransform {
         /**
          * Changes frame clamping
          * Works with TilingSprite and Mesh
-         * Change to 1.5 if you tex ture has repeated right and bottom lines, that leads to smoother borders
+         * Change to 1.5 if you texture has repeated right and bottom lines, that leads to smoother borders
          *
          * @default 0
          * @member {number}
@@ -71,7 +74,7 @@ export default class TextureTransform {
      */
     update(forceUpdate)
     {
-        const tex = this.texture;
+        const tex = this._texture;
 
         if (!tex || !tex.valid)
         {
@@ -79,14 +82,14 @@ export default class TextureTransform {
         }
 
         if (!forceUpdate
-            && this._lastTextureID === this.texture._updateID)
+            && this._lastTextureID === tex._updateID)
         {
             return;
         }
 
-        this._lastTextureID = this.texture._updateID;
+        this._lastTextureID = tex._updateID;
 
-        const uvs = this.texture._uvs;
+        const uvs = tex._uvs;
 
         this.mapCoord.set(uvs.x1 - uvs.x0, uvs.y1 - uvs.y0, uvs.x3 - uvs.x0, uvs.y3 - uvs.y0, uvs.x0, uvs.y0);
 
