@@ -15,6 +15,7 @@ Object.assign(
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
  * This manager also supports multitouch.
+ * By default, an instance of this class is automatically created, and can be found at renderer.plugins.interaction
  *
  * @class
  * @extends EventEmitter
@@ -53,7 +54,7 @@ export default class InteractionManager extends EventEmitter
         this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
 
         /**
-         * As this frequency increases the interaction events will be checked more often.
+         * Frequency in milliseconds that the mousemove, moveover & mouseout interaction events will be checked.
          *
          * @member {number}
          * @default 10
@@ -105,7 +106,7 @@ export default class InteractionManager extends EventEmitter
         this.interactionDOMElement = null;
 
         /**
-         * This property determines if mousemove and touchmove events are fired only when the cursror
+         * This property determines if mousemove and touchmove events are fired only when the cursor
          * is over the object.
          * Setting to true will make things work more in line with how the DOM verison works.
          * Setting to false can make things easier for things like dragging

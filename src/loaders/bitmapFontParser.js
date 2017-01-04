@@ -65,7 +65,7 @@ export default function ()
     return function bitmapFontParser(resource, next)
     {
         // skip if no data or not xml data
-        if (!resource.data || !resource.isXml)
+        if (!resource.data || resource.type !== Resource.TYPE.XML)
         {
             next();
 
@@ -125,6 +125,7 @@ export default function ()
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE,
                 metadata: resource.metadata.imageMetadata,
+                parentResource: resource,
             };
 
             // load the texture for the font

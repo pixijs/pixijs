@@ -191,4 +191,21 @@ describe('PIXI.Graphics', () =>
             expect(graphics.currentPath).to.be.null;
         });
     });
+
+    describe('_calculateBounds', () =>
+    {
+        it('should only call updateLocalBounds once', () =>
+        {
+            const graphics = new PIXI.Graphics();
+            const spy = sinon.spy(graphics, 'updateLocalBounds');
+
+            graphics._calculateBounds();
+
+            expect(spy).to.have.been.calledOnce;
+
+            graphics._calculateBounds();
+
+            expect(spy).to.have.been.calledOnce;
+        });
+    });
 });
