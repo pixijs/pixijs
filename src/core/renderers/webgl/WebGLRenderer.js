@@ -516,7 +516,12 @@ export default class WebGLRenderer extends SystemRenderer
         }
         else
         {
-            // bind the current texture
+
+            if(this.boundTextures[location] === texture)
+            {
+                return location;
+            }
+
             this.boundTextures[location] = texture;
             gl.activeTexture(gl.TEXTURE0 + location);
             gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);

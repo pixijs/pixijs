@@ -82,7 +82,7 @@ export default class ShaderManager
         const uniformData = shader.uniformData;
 
         // 0 is reserverd for the pixi texture so we start at 1!
-        let textureCount = 1;
+        let textureCount = 0;
 
         // TODO don't need to use the uniform
         for (const i in uniformData)

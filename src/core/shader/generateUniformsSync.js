@@ -2,7 +2,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
 
     float:    `if(cacheValue !== value)
 {
-    cacheValue = value;
+    cacheValue.value = value;
     gl.uniform1f(location, value)
 }`,
 
@@ -48,11 +48,25 @@ export default function generateUniformsSync(uniformData)
         const data = uniformData[i];
 
         // TODO && uniformData[i].value !== 0 <-- do we still need this?
-        if (data.type === 'sampler2D')
+        if (data.type === 'float')
         {
-            func += `\n
+            //const template = GLSL_TO_SINGLE_SETTERS_CACHED[data.type].replace('location', `uniformData.${i}.location`);
 
-            gl.uniform1i(uniformData.${i}.location, renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true) );\n`; // eslint-disable-line max-len
+            func += `\nif(uniformValues.${i} !== uniformData.${i}.value)
+{
+    uniformData.${i}.value = uniformValues.${i}
+    gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
+}\n`;
+        }
+        else if (data.type === 'sampler2D')
+        {
+            func += `\nvar location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
+
+if(uniformData.${i}.value !== location)
+{
+    uniformData.${i}.value = location;
+    gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
+}`
         }
         else if (data.type === 'mat3')
         {
@@ -75,7 +89,8 @@ ${template};\n`;
         }
     }
 
-    // console.log(func);
+     console.log(' --------------- ')
+     console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
 }

@@ -42,12 +42,16 @@ export default class Rope extends Mesh
         .addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
         .addIndex(new Uint16Array(points.length * 2));
 
-        super(geometry, meshShader, {
-            uSample2:texture,
+        const uniforms = {
+            uSampler2:texture,
             alpha:1,
-            tint:new Float32Array([0, 0, 0]),
-            translationMatrix:this.transform.worldTransform
-        }, null, 5);
+            translationMatrix:null,
+            tint:new Float32Array([1, 1, 1])
+        }
+
+        super(geometry, meshShader, uniforms, null, 5);
+
+        uniforms.translationMatrix = this.transform.worldTransform;
 
         this.texture = texture;
 
@@ -55,15 +59,6 @@ export default class Rope extends Mesh
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
         this.points = points;
-
-        /**
-         * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._ready = true;
 
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
@@ -77,6 +72,17 @@ export default class Rope extends Mesh
         {
             texture.once('update', this._onTextureUpdate, this);
         }
+    }
+
+    set tint(value)
+    {
+        this._tint = value;
+        core.utils.hex2rgb(this._tint, this.uniforms.tint);
+    }
+
+    get tint()
+    {
+        return this._tint;
     }
 
     /**
@@ -145,17 +151,6 @@ export default class Rope extends Mesh
         this.geometry.data.indexBuffer.update();
     }
 
-    set tint(value)
-    {
-        this._tint = value;
-        core.utils.hex2rgb(this._tint, this.uniforms.tint);
-    }
-
-    get tint()
-    {
-        return this._tint;
-    }
-
     /**
      * Clear texture UVs when new texture is set
      *
@@ -163,11 +158,7 @@ export default class Rope extends Mesh
      */
     _onTextureUpdate()
     {
-        // wait for the Rope ctor to finish before calling refresh
-        if (this._ready)
-        {
-            this.refresh();
-        }
+        this.refresh();
     }
 
     /**
@@ -235,10 +226,10 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
-        this.shader.uniforms.alpha = this.alpha;
-        this.shader.uniforms.uSampler2 = this.texture;
-
         this.geometry.getAttribute('aVertexPosition').update();
+
+        this.uniforms.alpha = this.worldAlpha;
+
         this.containerUpdateTransform();
     }
 }
