@@ -83,13 +83,13 @@ export default class TextureManager
         // if the location is undefined then this may have been called by n event.
         // this being the case the texture may already be bound to a slot. As a texture can only be bound once
         // we need to find its current location if it exists.
-        if (location === undefined)
+        if (location == null)
         {
             location = 0;
 
             // TODO maybe we can use texture bound ids later on...
             // check if texture is already bound..
-            for (let i = 0; i < boundTextures.length; i++)
+            for (let i = 0; i < boundTextures.length; ++i)
             {
                 if (boundTextures[i] === texture)
                 {
