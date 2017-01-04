@@ -74,7 +74,7 @@ export default class TextureTransform {
      */
     update(forceUpdate)
     {
-        const tex = this.texture;
+        const tex = this._texture;
 
         if (!tex || !tex.valid)
         {
@@ -82,14 +82,14 @@ export default class TextureTransform {
         }
 
         if (!forceUpdate
-            && this._lastTextureID === this.texture._updateID)
+            && this._lastTextureID === tex._updateID)
         {
             return;
         }
 
-        this._lastTextureID = this.texture._updateID;
+        this._lastTextureID = tex._updateID;
 
-        const uvs = this.texture._uvs;
+        const uvs = tex._uvs;
 
         this.mapCoord.set(uvs.x1 - uvs.x0, uvs.y1 - uvs.y0, uvs.x3 - uvs.x0, uvs.y3 - uvs.y0, uvs.x0, uvs.y0);
 
