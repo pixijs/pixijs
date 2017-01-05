@@ -6,6 +6,10 @@ import { join } from 'path';
 
 /**
  * WebGL renderer plugin for tiling sprites
+ *
+ * @class
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
  */
 export default class MeshRenderer extends core.ObjectRenderer {
 

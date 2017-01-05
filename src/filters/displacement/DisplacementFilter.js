@@ -70,19 +70,13 @@ export default class DisplacementFilter extends core.Filter
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
      * @member {PIXI.Texture}
-     * @memberof PIXI.filters.DisplacementFilter#
      */
     get map()
     {
         return this.uniforms.mapSampler;
     }
 
-    /**
-     * Sets the texture to use for the displacement.
-     *
-     * @param {PIXI.Texture} value - The texture to set to.
-     */
-    set map(value)
+    set map(value) // eslint-disable-line require-jsdoc
     {
         this.uniforms.mapSampler = value;
     }
