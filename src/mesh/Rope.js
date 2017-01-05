@@ -5,7 +5,6 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 let meshShader;
-const temp = new Float32Array([0, 0, 0]);
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -43,11 +42,11 @@ export default class Rope extends Mesh
         .addIndex(new Uint16Array(points.length * 2));
 
         const uniforms = {
-            uSampler2:texture,
-            alpha:1,
-            translationMatrix:null,
-            tint:new Float32Array([1, 1, 1])
-        }
+            uSampler2: texture,
+            alpha: 1,
+            translationMatrix: null,
+            tint: new Float32Array([1, 1, 1]),
+        };
 
         super(geometry, meshShader, uniforms, null, 5);
 
@@ -58,6 +57,13 @@ export default class Rope extends Mesh
          */
         this.points = points;
 
+        /**
+         * The tint applied to the rope. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+         *
+         * @private
+         * @member {number}
+         * @default 0xFFFFFF
+         */
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
@@ -73,23 +79,47 @@ export default class Rope extends Mesh
         }
     }
 
+    /**
+     * The tint applied to the Rope. This is a hex value. A value of
+     * 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.Sprite#
+     * @default 0xFFFFFF
+     */
+    get tint()
+    {
+        return this._tint;
+    }
+
+    /**
+     * Sets the tint of the rope.
+     *
+     * @param {number} value - The value to set to.
+     */
     set tint(value)
     {
         this._tint = value;
         core.utils.hex2rgb(this._tint, this.uniforms.tint);
     }
 
-    get tint()
-    {
-        return this._tint;
-    }
-
+    /**
+     * Sets the texture of the rope.
+     *
+     * @param {PIXI.Texture} value - The value to set to.
+     */
     set texture(value)
     {
         this._texture = value;
         this.uniforms.uSampler2 = this.texture;
     }
 
+    /**
+     * The texture that the rope is using
+     *
+     * @member {PIXI.Texture}
+     * @memberof PIXI.Sprite#
+     */
     get texture()
     {
         return this._texture;
@@ -120,7 +150,6 @@ export default class Rope extends Mesh
             indexBuffer.data = new Uint16Array(points.length * 2);
         }
 
-        const vertices = vertexBuffer.data;
         const uvs = uvBuffer.data;
         const indices = indexBuffer.data;
 
