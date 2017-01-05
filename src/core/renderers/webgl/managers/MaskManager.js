@@ -40,6 +40,7 @@ export default class MaskManager extends WebGLManager
         }
         else if (this.enableScissor
             && !this.scissor
+            && this.renderer._activeRenderTarget.root
             && !this.renderer.stencilManager.stencilMaskStack.length
             && maskData.isFastRect())
         {
