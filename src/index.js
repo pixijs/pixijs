@@ -1,5 +1,5 @@
-// import polyfills
-import './polyfill';
+// import polyfills. Done as an export to make sure polyfills are imported first
+export * from './polyfill';
 
 // export core
 export * from './deprecation';
