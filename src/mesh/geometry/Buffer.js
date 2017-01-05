@@ -67,6 +67,10 @@ export default class Buffer
 
     static from(data)
     {
+        if(data instanceof Array)
+        {
+            data = new Float32Array(data);
+        }
         return new Buffer(data);
     }
 }

@@ -23,6 +23,11 @@ class Geometry
         if (!buffer.data)
         {
             // its an array!
+            if(buffer instanceof Array)
+            {
+                buffer = new Float32Array(buffer);
+            }
+
             buffer = new Buffer(buffer);
         }
 
@@ -42,6 +47,11 @@ class Geometry
         if (!buffer.data)
         {
             // its an array!
+            if(buffer instanceof Array)
+            {
+                buffer = new Uint16Array(buffer);
+            }
+
             buffer = new Buffer(buffer);
         }
 

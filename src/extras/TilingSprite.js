@@ -70,6 +70,14 @@ export default class TilingSprite extends core.Sprite
          * @default 'tilingSprite'
          */
         this.pluginName = 'tilingSprite';
+
+        /**
+         * Whether or not anchor affects uvs
+         *
+         * @member {boolean}
+         * @default false
+         */
+        this.uvRespectAnchor = false;
     }
     /**
      * Changes frame clamping in corresponding textureTransform, shortcut
