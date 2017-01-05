@@ -74,7 +74,7 @@ export default class TilingSprite extends core.Sprite
         /**
          * Whether or not anchor affects uvs
          *
-         * @member{boolean}
+         * @member {boolean}
          * @default false
          */
         this.uvRespectAnchor = false;
