@@ -134,18 +134,12 @@ export default class Transform extends TransformBase
      * The rotation of the object in radians.
      *
      * @member {number}
-     * @memberof PIXI.Transform#
      */
     get rotation()
     {
         return this._rotation;
     }
 
-    /**
-     * Set the rotation of the transform.
-     *
-     * @param {number} value - The value to set to.
-     */
     set rotation(value)
     {
         this._rotation = value;

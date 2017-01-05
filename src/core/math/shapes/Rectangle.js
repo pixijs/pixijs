@@ -56,7 +56,6 @@ export default class Rectangle
      * returns the left edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle#
      */
     get left()
     {
@@ -67,7 +66,6 @@ export default class Rectangle
      * returns the right edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get right()
     {
@@ -78,7 +76,6 @@ export default class Rectangle
      * returns the top edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get top()
     {
@@ -89,7 +86,6 @@ export default class Rectangle
      * returns the bottom edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get bottom()
     {

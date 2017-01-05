@@ -35,7 +35,6 @@ export default class NoiseFilter extends core.Filter
      * The amount of noise to apply.
      *
      * @member {number}
-     * @memberof PIXI.filters.NoiseFilter#
      * @default 0.5
      */
     get noise()
@@ -43,11 +42,6 @@ export default class NoiseFilter extends core.Filter
         return this.uniforms.noise;
     }
 
-    /**
-     * Sets the amount of noise to apply.
-     *
-     * @param {number} value - The value to set to.
-     */
     set noise(value)
     {
         this.uniforms.noise = value;

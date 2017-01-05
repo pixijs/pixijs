@@ -267,18 +267,12 @@ export default class VideoBaseTexture extends BaseTexture
      * Should the base texture automatically update itself, set to true by default
      *
      * @member {boolean}
-     * @memberof PIXI.VideoBaseTexture#
      */
     get autoUpdate()
     {
         return this._autoUpdate;
     }
 
-    /**
-     * Sets autoUpdate property.
-     *
-     * @param {number} value - enable auto update or not
-     */
     set autoUpdate(value)
     {
         if (value !== this._autoUpdate)

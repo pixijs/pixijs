@@ -280,18 +280,12 @@ export default class SystemRenderer extends EventEmitter
      * The background color to fill if not transparent
      *
      * @member {number}
-     * @memberof PIXI.SystemRenderer#
      */
     get backgroundColor()
     {
         return this._backgroundColor;
     }
 
-    /**
-     * Sets the background color.
-     *
-     * @param {number} value - The value to set to.
-     */
     set backgroundColor(value)
     {
         this._backgroundColor = value;

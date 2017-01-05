@@ -475,18 +475,12 @@ export default class Sprite extends Container
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      */
     get width()
     {
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    /**
-     * Sets the width of the sprite by modifying the scale.
-     *
-     * @param {number} value - The value to set to.
-     */
     set width(value)
     {
         const s = sign(this.scale.x) || 1;
@@ -499,18 +493,12 @@ export default class Sprite extends Container
      * The height of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      */
     get height()
     {
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    /**
-     * Sets the height of the sprite by modifying the scale.
-     *
-     * @param {number} value - The value to set to.
-     */
     set height(value)
     {
         const s = sign(this.scale.y) || 1;
@@ -526,18 +514,12 @@ export default class Sprite extends Container
      * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
      * @member {PIXI.ObservablePoint}
-     * @memberof PIXI.Sprite#
      */
     get anchor()
     {
         return this._anchor;
     }
 
-    /**
-     * Copies the anchor to the sprite.
-     *
-     * @param {number} value - The value to set to.
-     */
     set anchor(value)
     {
         this._anchor.copy(value);
@@ -548,7 +530,6 @@ export default class Sprite extends Container
      * 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      * @default 0xFFFFFF
      */
     get tint()
@@ -556,11 +537,6 @@ export default class Sprite extends Container
         return this._tint;
     }
 
-    /**
-     * Sets the tint of the sprite.
-     *
-     * @param {number} value - The value to set to.
-     */
     set tint(value)
     {
         this._tint = value;
@@ -571,18 +547,12 @@ export default class Sprite extends Container
      * The texture that the sprite is using
      *
      * @member {PIXI.Texture}
-     * @memberof PIXI.Sprite#
      */
     get texture()
     {
         return this._texture;
     }
 
-    /**
-     * Sets the texture of the sprite.
-     *
-     * @param {PIXI.Texture} value - The value to set to.
-     */
     set texture(value)
     {
         if (this._texture === value)
