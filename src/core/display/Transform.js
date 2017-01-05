@@ -140,7 +140,7 @@ export default class Transform extends TransformBase
         return this._rotation;
     }
 
-    set rotation(value)
+    set rotation(value) // eslint-disable-line require-jsdoc
     {
         this._rotation = value;
         this.updateSkew();

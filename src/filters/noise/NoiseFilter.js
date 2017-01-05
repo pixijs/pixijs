@@ -42,7 +42,7 @@ export default class NoiseFilter extends core.Filter
         return this.uniforms.noise;
     }
 
-    set noise(value)
+    set noise(value) // eslint-disable-line require-jsdoc
     {
         this.uniforms.noise = value;
     }

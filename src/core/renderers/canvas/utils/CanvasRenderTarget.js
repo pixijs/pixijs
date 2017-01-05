@@ -78,7 +78,7 @@ export default class CanvasRenderTarget
         return this.canvas.width;
     }
 
-    set width(val)
+    set width(val) // eslint-disable-line require-jsdoc
     {
         this.canvas.width = val;
     }
@@ -93,7 +93,7 @@ export default class CanvasRenderTarget
         return this.canvas.height;
     }
 
-    set height(val)
+    set height(val) // eslint-disable-line require-jsdoc
     {
         this.canvas.height = val;
     }

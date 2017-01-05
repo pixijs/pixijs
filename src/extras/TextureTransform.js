@@ -57,7 +57,7 @@ export default class TextureTransform {
         return this._texture;
     }
 
-    set texture(value)
+    set texture(value) // eslint-disable-line require-jsdoc
     {
         this._texture = value;
         this._lastTextureID = -1;

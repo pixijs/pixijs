@@ -76,7 +76,7 @@ export default class DisplacementFilter extends core.Filter
         return this.uniforms.mapSampler;
     }
 
-    set map(value)
+    set map(value) // eslint-disable-line require-jsdoc
     {
         this.uniforms.mapSampler = value;
     }

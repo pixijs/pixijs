@@ -608,7 +608,7 @@ export default class Text extends Sprite
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         this.updateText(true);
 
@@ -630,7 +630,7 @@ export default class Text extends Sprite
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         this.updateText(true);
 
@@ -651,7 +651,7 @@ export default class Text extends Sprite
         return this._style;
     }
 
-    set style(style)
+    set style(style) // eslint-disable-line require-jsdoc
     {
         style = style || {};
 
@@ -678,7 +678,7 @@ export default class Text extends Sprite
         return this._text;
     }
 
-    set text(text)
+    set text(text) // eslint-disable-line require-jsdoc
     {
         text = String(text || ' ');
 

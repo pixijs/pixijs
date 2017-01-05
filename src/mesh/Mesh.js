@@ -230,7 +230,7 @@ export default class Mesh extends core.Container
         return this._texture;
     }
 
-    set texture(value)
+    set texture(value) // eslint-disable-line require-jsdoc
     {
         if (this._texture === value)
         {
@@ -264,7 +264,7 @@ export default class Mesh extends core.Container
         return core.utils.rgb2hex(this.tintRgb);
     }
 
-    set tint(value)
+    set tint(value) // eslint-disable-line require-jsdoc
     {
         this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
     }

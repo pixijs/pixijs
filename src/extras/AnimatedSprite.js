@@ -315,7 +315,7 @@ export default class AnimatedSprite extends core.Sprite
         return this._textures;
     }
 
-    set textures(value)
+    set textures(value) // eslint-disable-line require-jsdoc
     {
         if (value[0] instanceof core.Texture)
         {

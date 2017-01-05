@@ -481,7 +481,7 @@ export default class Sprite extends Container
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         const s = sign(this.scale.x) || 1;
 
@@ -499,7 +499,7 @@ export default class Sprite extends Container
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         const s = sign(this.scale.y) || 1;
 
@@ -520,7 +520,7 @@ export default class Sprite extends Container
         return this._anchor;
     }
 
-    set anchor(value)
+    set anchor(value) // eslint-disable-line require-jsdoc
     {
         this._anchor.copy(value);
     }
@@ -537,7 +537,7 @@ export default class Sprite extends Container
         return this._tint;
     }
 
-    set tint(value)
+    set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
@@ -553,7 +553,7 @@ export default class Sprite extends Container
         return this._texture;
     }
 
-    set texture(value)
+    set texture(value) // eslint-disable-line require-jsdoc
     {
         if (this._texture === value)
         {

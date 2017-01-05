@@ -416,7 +416,7 @@ export default class DisplayObject extends EventEmitter
         return this.position.x;
     }
 
-    set x(value)
+    set x(value) // eslint-disable-line require-jsdoc
     {
         this.transform.position.x = value;
     }
@@ -432,7 +432,7 @@ export default class DisplayObject extends EventEmitter
         return this.position.y;
     }
 
-    set y(value)
+    set y(value) // eslint-disable-line require-jsdoc
     {
         this.transform.position.y = value;
     }
@@ -470,7 +470,7 @@ export default class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value)
+    set position(value) // eslint-disable-line require-jsdoc
     {
         this.transform.position.copy(value);
     }
@@ -486,7 +486,7 @@ export default class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value)
+    set scale(value) // eslint-disable-line require-jsdoc
     {
         this.transform.scale.copy(value);
     }
@@ -502,7 +502,7 @@ export default class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value)
+    set pivot(value) // eslint-disable-line require-jsdoc
     {
         this.transform.pivot.copy(value);
     }
@@ -518,7 +518,7 @@ export default class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value)
+    set skew(value) // eslint-disable-line require-jsdoc
     {
         this.transform.skew.copy(value);
     }
@@ -533,7 +533,7 @@ export default class DisplayObject extends EventEmitter
         return this.transform.rotation;
     }
 
-    set rotation(value)
+    set rotation(value) // eslint-disable-line require-jsdoc
     {
         this.transform.rotation = value;
     }
@@ -576,7 +576,7 @@ export default class DisplayObject extends EventEmitter
         return this._mask;
     }
 
-    set mask(value)
+    set mask(value) // eslint-disable-line require-jsdoc
     {
         if (this._mask)
         {
@@ -603,7 +603,7 @@ export default class DisplayObject extends EventEmitter
         return this._filters && this._filters.slice();
     }
 
-    set filters(value)
+    set filters(value) // eslint-disable-line require-jsdoc
     {
         this._filters = value && value.slice();
     }

@@ -91,7 +91,7 @@ export default class TilingSprite extends core.Sprite
         return this.uvTransform.clampMargin;
     }
 
-    set clampMargin(value)
+    set clampMargin(value) // eslint-disable-line require-jsdoc
     {
         this.uvTransform.clampMargin = value;
         this.uvTransform.update(true);
@@ -107,7 +107,7 @@ export default class TilingSprite extends core.Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value)
+    set tileScale(value) // eslint-disable-line require-jsdoc
     {
         this.tileTransform.scale.copy(value);
     }
@@ -122,7 +122,7 @@ export default class TilingSprite extends core.Sprite
         return this.tileTransform.position;
     }
 
-    set tilePosition(value)
+    set tilePosition(value) // eslint-disable-line require-jsdoc
     {
         this.tileTransform.position.copy(value);
     }
@@ -387,7 +387,7 @@ export default class TilingSprite extends core.Sprite
         return this._width;
     }
 
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         this._width = value;
     }
@@ -402,7 +402,7 @@ export default class TilingSprite extends core.Sprite
         return this._height;
     }
 
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         this._height = value;
     }

@@ -273,7 +273,7 @@ export default class VideoBaseTexture extends BaseTexture
         return this._autoUpdate;
     }
 
-    set autoUpdate(value)
+    set autoUpdate(value) // eslint-disable-line require-jsdoc
     {
         if (value !== this._autoUpdate)
         {

@@ -259,7 +259,7 @@ export default class NineSlicePlane extends Plane
         return this._width;
     }
 
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         this._width = value;
         this.updateVerticalVertices();
@@ -275,7 +275,7 @@ export default class NineSlicePlane extends Plane
         return this._height;
     }
 
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         this._height = value;
         this.updateHorizontalVertices();
@@ -291,7 +291,7 @@ export default class NineSlicePlane extends Plane
         return this._leftWidth;
     }
 
-    set leftWidth(value)
+    set leftWidth(value) // eslint-disable-line require-jsdoc
     {
         this._leftWidth = value;
 
@@ -314,7 +314,7 @@ export default class NineSlicePlane extends Plane
         return this._rightWidth;
     }
 
-    set rightWidth(value)
+    set rightWidth(value) // eslint-disable-line require-jsdoc
     {
         this._rightWidth = value;
 
@@ -337,7 +337,7 @@ export default class NineSlicePlane extends Plane
         return this._topHeight;
     }
 
-    set topHeight(value)
+    set topHeight(value) // eslint-disable-line require-jsdoc
     {
         this._topHeight = value;
 
@@ -360,7 +360,7 @@ export default class NineSlicePlane extends Plane
         return this._bottomHeight;
     }
 
-    set bottomHeight(value)
+    set bottomHeight(value) // eslint-disable-line require-jsdoc
     {
         this._bottomHeight = value;
 

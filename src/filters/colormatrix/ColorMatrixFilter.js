@@ -571,7 +571,7 @@ export default class ColorMatrixFilter extends core.Filter
         return this.uniforms.m;
     }
 
-    set matrix(value)
+    set matrix(value) // eslint-disable-line require-jsdoc
     {
         this.uniforms.m = value;
     }

@@ -555,7 +555,7 @@ export default class Container extends DisplayObject
         return this.scale.x * this.getLocalBounds().width;
     }
 
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         const width = this.getLocalBounds().width;
 
@@ -581,7 +581,7 @@ export default class Container extends DisplayObject
         return this.scale.y * this.getLocalBounds().height;
     }
 
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         const height = this.getLocalBounds().height;
 

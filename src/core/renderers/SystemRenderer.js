@@ -286,7 +286,7 @@ export default class SystemRenderer extends EventEmitter
         return this._backgroundColor;
     }
 
-    set backgroundColor(value)
+    set backgroundColor(value) // eslint-disable-line require-jsdoc
     {
         this._backgroundColor = value;
         this._backgroundColorString = hex2string(value);

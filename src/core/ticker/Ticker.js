@@ -361,7 +361,7 @@ export default class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    set minFPS(fps)
+    set minFPS(fps) // eslint-disable-line require-jsdoc
     {
         // Clamp: 0 to TARGET_FPMS
         const minFPMS = Math.min(Math.max(0, fps) / 1000, settings.TARGET_FPMS);

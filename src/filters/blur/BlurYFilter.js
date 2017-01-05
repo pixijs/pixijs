@@ -104,7 +104,7 @@ export default class BlurYFilter extends core.Filter
         return this.strength;
     }
 
-    set blur(value)
+    set blur(value) // eslint-disable-line require-jsdoc
     {
         this.padding = Math.abs(value) * 2;
         this.strength = value;
@@ -122,7 +122,7 @@ export default class BlurYFilter extends core.Filter
         return this._quality;
     }
 
-    set quality(value)
+    set quality(value) // eslint-disable-line require-jsdoc
     {
         this._quality = value;
         this.passes = value;

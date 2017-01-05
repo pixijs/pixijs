@@ -324,7 +324,7 @@ export default class BitmapText extends core.Container
         return this._font.tint;
     }
 
-    set tint(value)
+    set tint(value) // eslint-disable-line require-jsdoc
     {
         this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
@@ -342,7 +342,7 @@ export default class BitmapText extends core.Container
         return this._font.align;
     }
 
-    set align(value)
+    set align(value) // eslint-disable-line require-jsdoc
     {
         this._font.align = value || 'left';
 
@@ -362,7 +362,7 @@ export default class BitmapText extends core.Container
         return this._anchor;
     }
 
-    set anchor(value)
+    set anchor(value) // eslint-disable-line require-jsdoc
     {
         if (typeof value === 'number')
         {
@@ -384,7 +384,7 @@ export default class BitmapText extends core.Container
         return this._font;
     }
 
-    set font(value)
+    set font(value) // eslint-disable-line require-jsdoc
     {
         if (!value)
         {
@@ -417,7 +417,7 @@ export default class BitmapText extends core.Container
         return this._text;
     }
 
-    set text(value)
+    set text(value) // eslint-disable-line require-jsdoc
     {
         value = value.toString() || ' ';
         if (this._text === value)

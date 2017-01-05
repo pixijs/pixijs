@@ -68,7 +68,7 @@ export default class ObservablePoint
         return this._x;
     }
 
-    set x(value)
+    set x(value) // eslint-disable-line require-jsdoc
     {
         if (this._x !== value)
         {
@@ -87,7 +87,7 @@ export default class ObservablePoint
         return this._y;
     }
 
-    set y(value)
+    set y(value) // eslint-disable-line require-jsdoc
     {
         if (this._y !== value)
         {
