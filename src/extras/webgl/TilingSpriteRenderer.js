@@ -65,7 +65,8 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer {
         vertices[2] = vertices[4] = (ts._width) * (1.0 - ts.anchor.x);
         vertices[5] = vertices[7] = ts._height * (1.0 - ts.anchor.y);
 
-        if (ts.uvRespectAnchor) {
+        if (ts.uvRespectAnchor)
+        {
             vertices = quad.uvs;
 
             vertices[0] = vertices[6] = -ts.anchor.x;
