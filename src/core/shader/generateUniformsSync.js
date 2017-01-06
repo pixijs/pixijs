@@ -58,7 +58,29 @@ export default function generateUniformsSync(uniformData)
         }
         else if (data.type === 'sampler2D')
         {
-            func += `\nvar location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
+            func += `\n
+
+if (uniforms.${i}.baseTexture)
+{
+    var location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
+
+    if(uniformData.${i}.value !== location)
+    {
+        uniformData.${i}.value = location;
+        gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
+    }
+}
+else
+{
+    uniformData.${i}.value = textureCount;
+    renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
+    gl.activeTexture(gl.TEXTURE0 + textureCount);
+
+    uniforms.${i}.value.bind();
+}
+
+
+            var location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
 
 if(uniformData.${i}.value !== location)
 {
@@ -73,9 +95,29 @@ gl.uniformMatrix3fv(uniformData.${i}.location, false, (value.a === undefined) ? 
         }
         else if (data.type === 'vec2')
         {
-            func += `\nvalue = uniformValues.${i};
-if(value.x !== undefined)gl.uniform2f(uniformData.${i}.location, value.x, value.y);
-else gl.uniform2f(uniformData.'+i+'.location, value[0], value[1]);\n`;
+            // TODO - do we need both here?
+            // maybe we can get away with only using points?
+            func += `\ncacheValue = uniformData.${i}.value;
+value = uniformValues.${i};
+
+if(value.x !== undefined)
+{
+    if(cacheValue[0] !== value.x || cacheValue[1] !== value.y)
+    {
+        cacheValue[0] = value.x;
+        cacheValue[1] = value.y;
+        gl.uniform2f(uniformData.${i}.location, value.x, value.y);
+    }
+}
+else
+{
+    if(cacheValue[0] !== value[0] || cacheValue[1] !== value[1])
+    {
+        cacheValue[0] = value[0];
+        cacheValue[1] = value[1];
+        gl.uniform2f(uniformData.${i}.location, value[0], value[1]);
+    }
+}\n`
         }
         else
         {
@@ -87,8 +129,8 @@ ${template};\n`;
         }
     }
 
-     console.log(' --------------- ')
-     console.log(func);
+     // console.log(' --------------- ')
+ //     console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
 }

@@ -55,6 +55,11 @@ export default class ShaderManager
         shader.syncUniforms(glShader.uniformData, uniforms, this.gl);
     }
 
+    getGLShader()
+    {
+        return this.shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
+    }
+
     generateShader(shader)
     {
         const attribMap = {};

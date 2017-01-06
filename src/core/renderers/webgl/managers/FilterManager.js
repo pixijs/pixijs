@@ -24,6 +24,8 @@ class FilterState
         this.filters = [];
         this.target = null;
         this.resolution = 1;
+
+        this.firstRun = true;
     }
 }
 
@@ -44,6 +46,7 @@ export default class FilterManager extends WebGLManager
         this.gl = this.renderer.gl;
         // know about sprites!
         this.quad = new Quad(this.gl, renderer.state.attribState);
+
 
         this.shaderCache = {};
         // todo add default!
@@ -136,6 +139,8 @@ export default class FilterManager extends WebGLManager
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
         renderTarget.clear();
+
+
     }
 
     /**
@@ -212,6 +217,7 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
         const gl = renderer.gl;
 
+/*
         let shader = filter.glShaders[renderer.CONTEXT_UID];
 
         // cacheing..
@@ -239,6 +245,22 @@ export default class FilterManager extends WebGLManager
 
             this.quad.initVao(shader);
         }
+*/
+        renderer.bindShader(filter, true);
+
+        // TODO theres a better way!
+        // quad can be a mesh and we then should be able to pull this off without accessing the shader directly
+        const shader = renderer.shaderManager.getGLShader();
+//        renderer.shaderManager.upd
+
+        if(!this.firstRun)
+        {
+            this.firstRun = true;
+            renderer.bindVao(null);
+
+            this.quad.initVao(shader);
+        }
+
 
         renderer.bindVao(this.quad.vao);
 
@@ -257,10 +279,43 @@ export default class FilterManager extends WebGLManager
             renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
         }
 
-        renderer._bindGLShader(shader);
+      //  renderer._bindGLShader(shader);
+
+        let currentState;
 
         // this syncs the pixi filters  uniforms with glsl uniforms
-        this.syncUniforms(shader, filter);
+
+        if (shader.uniforms.data.filterArea)
+        {
+            currentState = this.filterData.stack[this.filterData.index];
+            const filterArea = shader.uniforms.filterArea;
+
+            filterArea[0] = currentState.renderTarget.size.width;
+            filterArea[1] = currentState.renderTarget.size.height;
+            filterArea[2] = currentState.sourceFrame.x;
+            filterArea[3] = currentState.sourceFrame.y;
+
+            filter.uniforms.filterArea = filterArea;
+        }
+
+        // use this to clamp displaced texture coords so they belong to filterArea
+        // see displacementFilter fragment shader for an example
+        if (shader.uniforms.data.filterClamp)
+        {
+            currentState = this.filterData.stack[this.filterData.index];
+
+            const filterClamp = shader.uniforms.filterClamp;
+
+            filterClamp[0] = 0;
+            filterClamp[1] = 0;
+            filterClamp[2] = (currentState.sourceFrame.width - 1) / currentState.renderTarget.size.width;
+            filterClamp[3] = (currentState.sourceFrame.height - 1) / currentState.renderTarget.size.height;
+
+            filter.uniforms.filterClamp = filterClamp;
+        }
+
+        renderer.shaderManager.setUniforms(filter.uniforms);
+      //  this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
 
@@ -364,7 +419,7 @@ export default class FilterManager extends WebGLManager
             {
                 // check if its a point..
                 if (uniforms[i].x !== undefined)
-               {
+                {
                     const val = shader.uniforms[i] || new Float32Array(2);
 
                     val[0] = uniforms[i].x;

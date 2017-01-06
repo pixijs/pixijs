@@ -5,7 +5,6 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 let meshShader;
-const temp = [0, 0, 0];
 
 /**
  * The Plane allows you to draw a texture across several points and them manipulate these points
@@ -29,7 +28,7 @@ export default class Plane extends Mesh
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
      */
-    constructor(texture, verticesX, verticesY, data)
+    constructor(texture, verticesX, verticesY)
     {
         const geometry = new Geometry();
 
@@ -44,11 +43,11 @@ export default class Plane extends Mesh
         .addIndex(new Uint16Array(2));
 
         const uniforms = {
-            uSampler2:texture,
-            alpha:1,
-            translationMatrix:null,
-            tint:new Float32Array([1, 1, 1])
-        }
+            uSampler2: texture,
+            alpha: 1,
+            translationMatrix: null,
+            tint: new Float32Array([1, 1, 1]),
+        };
 
         super(geometry, meshShader, uniforms, 4);
 
@@ -56,9 +55,6 @@ export default class Plane extends Mesh
 
         this.segmentsX = this.verticesX = verticesX || 10;
         this.segmentsY = this.verticesY = verticesY || 10;
-
-        this.meshWidth = data.meshWidth;
-        this.meshHeight = data.meshHeight;
 
         if (texture.baseTexture.hasLoaded)
         {
@@ -73,23 +69,47 @@ export default class Plane extends Mesh
         this.tint = 0xFFFFFF;
     }
 
+     /**
+     * The tint applied to the Rope. This is a hex value. A value of
+     * 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @memberof PIXI.Sprite#
+     * @default 0xFFFFFF
+     */
+    get tint()
+    {
+        return this._tint;
+    }
+
+    /**
+     * Sets the tint of the rope.
+     *
+     * @param {number} value - The value to set to.
+     */
     set tint(value)
     {
         this._tint = value;
         core.utils.hex2rgb(this._tint, this.uniforms.tint);
     }
 
-    get tint()
-    {
-        return this._tint;
-    }
-
+    /**
+     * Sets the texture of the rope.
+     *
+     * @param {PIXI.Texture} value - The value to set to.
+     */
     set texture(value)
     {
         this._texture = value;
-        this.uniforms.uSample2 = this.texture;
+        this.uniforms.uSampler2 = this.texture;
     }
 
+    /**
+     * The texture that the rope is using
+     *
+     * @member {PIXI.Texture}
+     * @memberof PIXI.Sprite#
+     */
     get texture()
     {
         return this._texture;
@@ -110,8 +130,8 @@ export default class Plane extends Mesh
         const segmentsX = this.verticesX - 1;
         const segmentsY = this.verticesY - 1;
 
-        const sizeX = this.meshWidth / segmentsX;
-        const sizeY = this.meshHeight / segmentsY;
+        const sizeX = texture.width / segmentsX;
+        const sizeY =  texture.height / segmentsY;
 
         for (let i = 0; i < total; i++)
         {
@@ -168,6 +188,11 @@ export default class Plane extends Mesh
         this.geometry.data.indexBuffer.update();
     }
 
+    /**
+     * Updates the object transform for rendering
+     *
+     * @private
+     */
     updateTransform()
     {
         this.geometry.getAttribute('aVertexPosition').update();
