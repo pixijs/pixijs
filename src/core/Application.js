@@ -80,8 +80,9 @@ export default class Application
     }
 
     /**
-     * Read-only reference to the canvas element.
+     * Reference to the renderer's canvas element.
      * @member {HTMLCanvasElement}
+     * @readonly
      */
     get view()
     {
