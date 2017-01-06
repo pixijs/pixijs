@@ -93,12 +93,12 @@ export default class Rope extends Mesh
 
         const textureUvs = this._texture._uvs;
         const offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
+        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
 
         uvs[0] = 0 + offset.x;
         uvs[1] = 0 + offset.y;
         uvs[2] = 0 + offset.x;
-        uvs[3] = Number(factor.y) + offset.y;
+        uvs[3] = factor.y + offset.y;
 
         colors[0] = 1;
         colors[1] = 1;
@@ -118,7 +118,7 @@ export default class Rope extends Mesh
             uvs[index + 1] = 0 + offset.y;
 
             uvs[index + 2] = (amount * factor.x) + offset.x;
-            uvs[index + 3] = Number(factor.y) + offset.y;
+            uvs[index + 3] = factor.y + offset.y;
 
             index = i * 2;
             colors[index] = 1;
