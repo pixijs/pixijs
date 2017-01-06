@@ -296,8 +296,6 @@ export default class Container extends DisplayObject
 
     /**
      * Updates the transform on all children of this container for rendering
-     *
-     * @private
      */
     updateTransform()
     {
