@@ -15,7 +15,8 @@ Object.assign(
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
  * This manager also supports multitouch.
- * By default, an instance of this class is automatically created, and can be found at renderer.plugins.interaction
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.interaction
  *
  * @class
  * @extends EventEmitter
@@ -113,8 +114,7 @@ export default class InteractionManager extends EventEmitter
          * It is currently set to false as this is how pixi used to work. This will be set to true in
          * future versions of pixi.
          *
-         * @member {boolean} moveWhenInside
-         * @memberof PIXI.interaction.InteractionManager#
+         * @member {boolean}
          * @default false
          */
         this.moveWhenInside = false;

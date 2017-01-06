@@ -549,19 +549,13 @@ export default class Container extends DisplayObject
      * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Container#
      */
     get width()
     {
         return this.scale.x * this.getLocalBounds().width;
     }
 
-    /**
-     * Sets the width of the container by modifying the scale.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         const width = this.getLocalBounds().width;
 
@@ -581,19 +575,13 @@ export default class Container extends DisplayObject
      * The height of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Container#
      */
     get height()
     {
         return this.scale.y * this.getLocalBounds().height;
     }
 
-    /**
-     * Sets the height of the container by modifying the scale.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         const height = this.getLocalBounds().height;
 

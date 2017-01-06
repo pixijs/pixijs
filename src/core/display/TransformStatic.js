@@ -165,19 +165,13 @@ export default class TransformStatic extends TransformBase
      * The rotation of the object in radians.
      *
      * @member {number}
-     * @memberof PIXI.TransformStatic#
      */
     get rotation()
     {
         return this._rotation;
     }
 
-    /**
-     * Sets the rotation of the transform.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set rotation(value)
+    set rotation(value) // eslint-disable-line require-jsdoc
     {
         this._rotation = value;
         this.updateSkew();

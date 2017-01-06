@@ -600,7 +600,6 @@ export default class Text extends Sprite
      * The width of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Text#
      */
     get width()
     {
@@ -609,12 +608,7 @@ export default class Text extends Sprite
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    /**
-     * Sets the width of the text.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set width(value)
+    set width(value) // eslint-disable-line require-jsdoc
     {
         this.updateText(true);
 
@@ -628,7 +622,6 @@ export default class Text extends Sprite
      * The height of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Text#
      */
     get height()
     {
@@ -637,12 +630,7 @@ export default class Text extends Sprite
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    /**
-     * Sets the height of the text.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set height(value)
+    set height(value) // eslint-disable-line require-jsdoc
     {
         this.updateText(true);
 
@@ -657,19 +645,13 @@ export default class Text extends Sprite
      * object and mark the text as dirty.
      *
      * @member {object|PIXI.TextStyle}
-     * @memberof PIXI.Text#
      */
     get style()
     {
         return this._style;
     }
 
-    /**
-     * Sets the style of the text.
-     *
-     * @param {object} style - The value to set to.
-     */
-    set style(style)
+    set style(style) // eslint-disable-line require-jsdoc
     {
         style = style || {};
 
@@ -690,19 +672,13 @@ export default class Text extends Sprite
      * Set the copy for the text object. To split a line you can use '\n'.
      *
      * @member {string}
-     * @memberof PIXI.Text#
      */
     get text()
     {
         return this._text;
     }
 
-    /**
-     * Sets the text.
-     *
-     * @param {string} text - The value to set to.
-     */
-    set text(text)
+    set text(text) // eslint-disable-line require-jsdoc
     {
         text = String(text || ' ');
 

@@ -68,16 +68,14 @@ export default class AnimatedSprite extends core.Sprite
         /**
          * Function to call when a AnimatedSprite finishes playing
          *
-         * @method
-         * @memberof PIXI.extras.AnimatedSprite#
+         * @member {Function}
          */
         this.onComplete = null;
 
         /**
          * Function to call when a AnimatedSprite changes which texture is being rendered
          *
-         * @method
-         * @memberof PIXI.extras.AnimatedSprite#
+         * @member {Function}
          */
         this.onFrameChange = null;
 
@@ -300,7 +298,6 @@ export default class AnimatedSprite extends core.Sprite
      *
      * @readonly
      * @member {number}
-     * @memberof PIXI.extras.AnimatedSprite#
      * @default 0
      */
     get totalFrames()
@@ -312,19 +309,13 @@ export default class AnimatedSprite extends core.Sprite
      * The array of textures used for this AnimatedSprite
      *
      * @member {PIXI.Texture[]}
-     * @memberof PIXI.extras.AnimatedSprite#
      */
     get textures()
     {
         return this._textures;
     }
 
-    /**
-     * Sets the textures.
-     *
-     * @param {PIXI.Texture[]} value - The texture to set.
-     */
-    set textures(value)
+    set textures(value) // eslint-disable-line require-jsdoc
     {
         if (value[0] instanceof core.Texture)
         {
@@ -348,7 +339,6 @@ export default class AnimatedSprite extends core.Sprite
     * The AnimatedSprites current frame index
     *
     * @member {number}
-    * @memberof PIXI.extras.AnimatedSprite#
     * @readonly
     */
     get currentFrame()
