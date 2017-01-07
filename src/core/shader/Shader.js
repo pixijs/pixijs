@@ -45,7 +45,7 @@ class Shader
         // does the trick for now though!
         for (const i in this.uniformData)
         {
-            if(!this.uniforms[i])
+            if (!this.uniforms[i])
             {
                 this.uniforms[i] = this.uniformData[i].value;
             }

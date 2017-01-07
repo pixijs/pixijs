@@ -2,8 +2,6 @@ import WebGLManager from './WebGLManager';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
 import { Rectangle } from '../../../math';
-import { GLShader } from 'pixi-gl-core';
-import { PRECISION } from '../../../const';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
@@ -46,7 +44,6 @@ export default class FilterManager extends WebGLManager
         this.gl = this.renderer.gl;
         // know about sprites!
         this.quad = new Quad(this.gl, renderer.state.attribState);
-
 
         this.shaderCache = {};
         // todo add default!
@@ -139,8 +136,6 @@ export default class FilterManager extends WebGLManager
         // bind the render target
         renderer.bindRenderTarget(renderTarget);
         renderTarget.clear();
-
-
     }
 
     /**
@@ -217,50 +212,20 @@ export default class FilterManager extends WebGLManager
         const renderer = this.renderer;
         const gl = renderer.gl;
 
-/*
-        let shader = filter.glShaders[renderer.CONTEXT_UID];
-
-        // cacheing..
-        if (!shader)
-        {
-            if (filter.glShaderKey)
-            {
-                shader = this.shaderCache[filter.glShaderKey];
-
-                if (!shader)
-                {
-                    shader = new GLShader(this.gl, filter.vertexSrc, filter.fragmentSrc, PRECISION.DEFAULT);
-
-                    filter.glShaders[renderer.CONTEXT_UID] = this.shaderCache[filter.glShaderKey] = shader;
-                }
-            }
-            else
-            {
-                shader = new GLShader(this.gl, filter.vertexSrc, filter.fragmentSrc, PRECISION.DEFAULT);
-                filter.glShaders[renderer.CONTEXT_UID] = shader;
-            }
-
-            // TODO - this only needs to be done once?
-            renderer.bindVao(null);
-
-            this.quad.initVao(shader);
-        }
-*/
         renderer.bindShader(filter, true);
 
         // TODO theres a better way!
         // quad can be a mesh and we then should be able to pull this off without accessing the shader directly
         const shader = renderer.shaderManager.getGLShader();
-//        renderer.shaderManager.upd
 
-        if(!this.firstRun)
+        // TODO change quad to mesh..
+        if (!this.firstRun)
         {
             this.firstRun = true;
             renderer.bindVao(null);
 
             this.quad.initVao(shader);
         }
-
 
         renderer.bindVao(this.quad.vao);
 
@@ -315,7 +280,6 @@ export default class FilterManager extends WebGLManager
         }
 
         renderer.shaderManager.setUniforms(filter.uniforms);
-      //  this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
 
@@ -329,120 +293,6 @@ export default class FilterManager extends WebGLManager
 
         // restore cache.
         gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
-    }
-
-    /**
-     * Uploads the uniforms of the filter.
-     *
-     * @param {GLShader} shader - The underlying gl shader.
-     * @param {PIXI.Filter} filter - The filter we are synchronizing.
-     */
-    syncUniforms(shader, filter)
-    {
-        const uniformData = filter.uniformData;
-        const uniforms = filter.uniforms;
-
-        // 0 is reserved for the pixi texture so we start at 1!
-        let textureCount = 1;
-        let currentState;
-
-        if (shader.uniforms.data.filterArea)
-        {
-            currentState = this.filterData.stack[this.filterData.index];
-            const filterArea = shader.uniforms.filterArea;
-
-            filterArea[0] = currentState.renderTarget.size.width;
-            filterArea[1] = currentState.renderTarget.size.height;
-            filterArea[2] = currentState.sourceFrame.x;
-            filterArea[3] = currentState.sourceFrame.y;
-
-            shader.uniforms.filterArea = filterArea;
-        }
-
-        // use this to clamp displaced texture coords so they belong to filterArea
-        // see displacementFilter fragment shader for an example
-        if (shader.uniforms.data.filterClamp)
-        {
-            currentState = this.filterData.stack[this.filterData.index];
-
-            const filterClamp = shader.uniforms.filterClamp;
-
-            filterClamp[0] = 0;
-            filterClamp[1] = 0;
-            filterClamp[2] = (currentState.sourceFrame.width - 1) / currentState.renderTarget.size.width;
-            filterClamp[3] = (currentState.sourceFrame.height - 1) / currentState.renderTarget.size.height;
-
-            shader.uniforms.filterClamp = filterClamp;
-        }
-
-        // TODO Cacheing layer..
-        for (const i in uniformData)
-        {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
-            {
-                if (uniforms[i].baseTexture)
-                {
-                    shader.uniforms[i] = this.renderer.bindTexture(uniforms[i].baseTexture, textureCount);
-                }
-                else
-                {
-                    shader.uniforms[i] = textureCount;
-
-                    // TODO
-                    // this is helpful as renderTargets can also be set.
-                    // Although thinking about it, we could probably
-                    // make the filter texture cache return a RenderTexture
-                    // rather than a renderTarget
-                    const gl = this.renderer.gl;
-
-                    this.renderer.boundTextures[textureCount] = this.renderer.emptyTextures[textureCount];
-                    gl.activeTexture(gl.TEXTURE0 + textureCount);
-
-                    uniforms[i].texture.bind();
-                }
-
-                textureCount++;
-            }
-            else if (uniformData[i].type === 'mat3')
-            {
-                // check if its pixi matrix..
-                if (uniforms[i].a !== undefined)
-                {
-                    shader.uniforms[i] = uniforms[i].toArray(true);
-                }
-                else
-                {
-                    shader.uniforms[i] = uniforms[i];
-                }
-            }
-            else if (uniformData[i].type === 'vec2')
-            {
-                // check if its a point..
-                if (uniforms[i].x !== undefined)
-                {
-                    const val = shader.uniforms[i] || new Float32Array(2);
-
-                    val[0] = uniforms[i].x;
-                    val[1] = uniforms[i].y;
-                    shader.uniforms[i] = val;
-                }
-                else
-               {
-                    shader.uniforms[i] = uniforms[i];
-                }
-            }
-            else if (uniformData[i].type === 'float')
-            {
-                if (shader.uniforms.data[i].value !== uniformData[i])
-                {
-                    shader.uniforms[i] = uniforms[i];
-                }
-            }
-            else
-            {
-                shader.uniforms[i] = uniforms[i];
-            }
-        }
     }
 
     /**

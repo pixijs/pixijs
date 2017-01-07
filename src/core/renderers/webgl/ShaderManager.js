@@ -31,11 +31,17 @@ export default class ShaderManager
         this.shader = null;
     }
 
+    /**
+     * Changes the current shader to the one given in parameter
+     *
+     * @param {PIXI.Shader} shader - the new shader
+     * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
+     */
     bindShader(shader, dontSync)
     {
         const glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
-    //    if (this.shader !== shader)
+        if (this.shader !== shader)
         {
             this.shader = shader;
             this.renderer._bindGLShader(glShader);
@@ -43,10 +49,15 @@ export default class ShaderManager
 
         if (!dontSync)
         {
-            this.syncUniforms(glShader, shader);
+            this.setUniforms(shader.uniforms);
         }
     }
 
+    /**
+     * Uploads the uniforms values to the currently bound shader.
+     *
+     * @param {object} uniforms - the uniforms valiues that be applied to the current shader
+     */
     setUniforms(uniforms)
     {
         const shader = this.shader;
@@ -55,11 +66,24 @@ export default class ShaderManager
         shader.syncUniforms(glShader.uniformData, uniforms, this.gl);
     }
 
+    /**
+     * Returns the underlying GLShade rof the currently bound shader.
+     * This can be handy for when you to have a little more control over the setting of your uniforms.
+     *
+     * @return {PIXI.glCore.Shader} the glShader for the currently bound Shader for this context
+     */
     getGLShader()
     {
-        return this.shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
+        return this.shader.glShaders[this.renderer.CONTEXT_UID];
     }
 
+    /**
+     * Generates a GLShader verion of the Shader provided.
+     *
+     * @private
+     * @param {PIXI.Shader} shader the shader that the glShader will be based on.
+     * @return {PIXI.glCore.GLShader} A shiney new GLShader
+     */
     generateShader(shader)
     {
         const attribMap = {};
@@ -74,87 +98,6 @@ export default class ShaderManager
         shader.glShaders[this.renderer.CONTEXT_UID] = glShader;
 
         return glShader;
-    }
-
-    /**
-     * Uploads the uniforms of the filter.
-     *
-     * @param {GLShader} shader - The underlying gl shader.
-     * @param {PIXI.Filter} filter - The filter we are synchronizing.
-     */
-    syncUniforms(glShader, shader)
-    {
-        const uniformData = shader.uniformData;
-
-        // 0 is reserverd for the pixi texture so we start at 1!
-        let textureCount = 0;
-
-        // TODO don't need to use the uniform
-        for (const i in uniformData)
-        {
-            if (uniformData[i].type === 'sampler2D' && uniformData[i].value !== 0)
-            {
-                if (uniformData[i].value.baseTexture)
-                {
-                    glShader.uniforms[i] = this.renderer.bindTexture(uniformData[i].value, textureCount, true);
-                }
-                else
-                {
-                    glShader.uniforms[i] = textureCount;
-
-                    // TODO
-                    // this is helpful as renderTargets can also be set.
-                    // Although thinking about it, we could probably
-                    // make the filter texture cache return a RenderTexture
-                    // rather than a renderTarget
-                    const gl = this.renderer.gl;
-
-                    gl.activeTexture(gl.TEXTURE0 + textureCount);
-                    uniforms[i].texture.bind();
-                }
-
-                textureCount++;
-            }
-            else if (uniformData[i].type === 'mat3')
-            {
-                // check if its pixi matrix..
-                if (uniformData[i].value.a !== undefined)
-                {
-                    glShader.uniforms[i] = uniformData[i].value.toArray(true);
-                }
-                else
-                {
-                    glShader.uniforms[i] = uniformData[i].value;
-                }
-            }
-            else if (uniformData[i].type === 'vec2')
-            {
-                // check if its a point..
-                if (uniformData[i].value.x !== undefined)
-                {
-                    const val = glShader.uniforms[i] || new Float32Array(2);
-
-                    val[0] = uniformData[i].value.x;
-                    val[1] = uniformData[i].value.y;
-                    glShader.uniforms[i] = val;
-                }
-                else
-                {
-                    glShader.uniforms[i] = uniformData[i].value;
-                }
-            }
-            else if (uniformData[i].type === 'float')
-            {
-                if (glShader.uniforms.data[i].value !== uniformData[i].value)
-                {
-                    glShader.uniforms[i] = uniformData[i].value;
-                }
-            }
-            else
-            {
-                glShader.uniforms[i] = uniformData[i].value;
-            }
-        }
     }
 
     /**

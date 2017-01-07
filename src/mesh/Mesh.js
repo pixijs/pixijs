@@ -1,7 +1,18 @@
 import * as core from '../core';
 
 /**
- * Base mesh class
+ * Base mesh class.
+ * The reason for this class is to empower you to have maximum flexbilty to render any kind of webGL you can think of.
+ * This class assumes a certain level of webGL knowledge.
+ * If you know a bit this should abstract enough away to make you life easier!
+ * Pretty much ALL WebGL can be broken down into the following:
+ * Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
+ * Shader - This is the shader that pixi will render the geometry with. (attributes in the shader must match the geometry!)
+ * Uniforms - These are the values passed to the shader when the mesh is rendered.
+ * As a shader can be resued accross multiple objects, it made sense to allow uniforms to exist outside of the shader
+ * State - This is the state of WebGL required to render the mesh.
+ * Through a combination of the above elements you can render anything you want, 2D or 3D!
+ *
  * @class
  * @extends PIXI.Container
  * @memberof PIXI.mesh
@@ -11,6 +22,9 @@ export default class Mesh extends core.Container
     /**
      * @param {PIXI.mesh.Geometry} geometry  the geometry the mesh will use
      * @param {PIXI.Shader} shader  the shader the mesh will use
+     * @param {Object} uniforms the uniform values that this mesh will specifically use
+     * (will automatically be generated of not supplied)
+     * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
     constructor(geometry, shader, uniforms, state, drawMode = core.DRAW_MODES.TRIANGLES)
@@ -23,8 +37,16 @@ export default class Mesh extends core.Container
          */
         this.geometry = geometry;
 
+        /**
+         * the shader the mesh will use
+         * @type {PIXI.Shader}
+         */
         this.shader = shader;
 
+        /**
+         * the webGL state the mesh requires to render
+         * @type {PIXI.Shader}
+         */
         this.state = state || new core.State();
 
         /**
@@ -35,7 +57,8 @@ export default class Mesh extends core.Container
          * @see PIXI.BLEND_MODES
          */
         this.blendMode = core.BLEND_MODES.SCREEN;
-        this.state.blendMode = this.blendMode
+        this.state.blendMode = this.blendMode;
+
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
          *
@@ -47,14 +70,19 @@ export default class Mesh extends core.Container
         uniforms = uniforms || {};
 
         // make sure to add required feilds
-        for(let i in shader.uniforms)
+        // if the user misses any uniforms we can add the default valujes from the shader
+        for (const i in shader.uniforms)
         {
-            if(uniforms[i] === undefined)
+            if (uniforms[i] === undefined)
             {
                 uniforms[i] = shader.uniforms[i];
             }
         }
 
+        /**
+         * The way uniforms that will be used by the mesh's shader.
+         * @member {Object}
+         */
         this.uniforms = uniforms;
 
         /**

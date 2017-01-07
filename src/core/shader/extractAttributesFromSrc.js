@@ -31,7 +31,7 @@ function extractAttributesFromString(string)
             const splitLine = line.split(' ');
             const startIndex = splitLine.indexOf('attribute');
 
-            const type = splitLine[startIndex+1];
+            const type = splitLine[startIndex + 1];
 
             let name = splitLine[startIndex + 2];
             let size = 1;
@@ -68,7 +68,7 @@ function extractAttributesFromString(string)
         attrib.location = i;
         attributes[attrib.name] = attrib;
     }
-    
+
     return attributes;
 }
 

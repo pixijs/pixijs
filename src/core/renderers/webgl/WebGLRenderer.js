@@ -440,15 +440,24 @@ export default class WebGLRenderer extends SystemRenderer
         return this;
     }
 
-    bindShader(shader, dontSync)
-    {
-        this.shaderManager.bindShader(shader, dontSync);
-    }
-
     /**
      * Changes the current shader to the one given in parameter
      *
      * @param {PIXI.Shader} shader - the new shader
+     * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
+     * @return {PIXI.WebGLRenderer} Returns itself.
+     */
+    bindShader(shader, dontSync)
+    {
+        this.shaderManager.bindShader(shader, dontSync);
+
+        return this;
+    }
+
+    /**
+     * Changes the current GLShader to the one given in parameter
+     *
+     * @param {PIXI.glCore.Shader} shader - the new glShader
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
     _bindGLShader(shader)
@@ -516,8 +525,7 @@ export default class WebGLRenderer extends SystemRenderer
         }
         else
         {
-
-            if(this.boundTextures[location] === texture)
+            if (this.boundTextures[location] === texture)
             {
                 return location;
             }

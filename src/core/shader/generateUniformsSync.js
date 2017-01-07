@@ -86,7 +86,7 @@ if(uniformData.${i}.value !== location)
 {
     uniformData.${i}.value = location;
     gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
-}`
+}`;
         }
         else if (data.type === 'mat3')
         {
@@ -117,7 +117,7 @@ else
         cacheValue[1] = value[1];
         gl.uniform2f(uniformData.${i}.location, value[0], value[1]);
     }
-}\n`
+}\n`;
         }
         else
         {

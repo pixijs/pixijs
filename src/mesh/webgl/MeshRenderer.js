@@ -50,8 +50,6 @@ export default class MeshRenderer extends core.ObjectRenderer {
         // bind the shader..
         this.renderer.shaderManager.bindShader(mesh.shader, true);
 
-        var glShader = this.renderer.shaderManager.getGLShader();
-
         // set unifomrs..
         this.renderer.shaderManager.setUniforms(mesh.uniforms);
 
@@ -150,7 +148,6 @@ export default class MeshRenderer extends core.ObjectRenderer {
                 location: map[j],
             }, gl.FLOAT, false, attribute.stride, attribute.start);
         }
-
 
         geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
 

@@ -160,7 +160,8 @@ export default class StateManager
     /**
      * Sets the polygon offset.
      *
-     * @param {number} value - The blend mode to set to.
+     * @param {number} value - the polygon offset
+     * @param {number} scale - the polygon offset scale
      */
     setPolygonOffset(value, scale)
     {

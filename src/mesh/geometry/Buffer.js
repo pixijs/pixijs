@@ -1,39 +1,32 @@
 let UID = 0;
+/* eslint-disable max-len */
+
 /**
- * Helper class to create a webGL buffer
+ * A wrapper for data so that it can be used and uploaded by webGL
  *
  * @class
- * @memberof PIXI.glCore
- * @param gl {WebGLRenderingContext} The current WebGL rendering context
- * @param type {gl.ARRAY_BUFFER | gl.ELEMENT_ARRAY_BUFFER} @mat
- * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data
- * @param drawType {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
+ * @memberof PIXI
  */
 export default class Buffer
 {
+    /**
+     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
+     */
     constructor(data)
     {
         /**
-         * The type of the buffer
-         *
-         * @member {gl.ARRAY_BUFFER|gl.ELEMENT_ARRAY_BUFFER}
-         */
-        // this.type = type || gl.ARRAY_BUFFER;
-
-        /**
-         * The draw type of the buffer
-         *
-         * @member {gl.STATIC_DRAW|gl.DYNAMIC_DRAW|gl.STREAM_DRAW}
-         */
-        // this.drawType = drawType || gl.STATIC_DRAW;
-
-        /**
          * The data in the buffer, as a typed array
          *
-         * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView}
+         * @type {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data  the array / typedArray
          */
         this.data = data;
 
+        /**
+         * A map of renderer IDs to webgl buffer
+         *
+         * @private
+         * @member {object<number, GLBuffer>}
+         */
         this._glBuffers = [];
 
         this._updateID = 0;
@@ -41,10 +34,9 @@ export default class Buffer
         this.id = UID++;
     }
 
+    // TODO could explore flagging only a partial upload?
     /**
-     * Uploads the buffer to the GPU
-     * @param data {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} an array of data to upload
-     * @param offset {Number} if only a subset of the data should be uploaded, this is the amount of data to subtract
+     * flags this buffer as requiring an upload to the GPU
      */
     update()
     {
@@ -53,7 +45,6 @@ export default class Buffer
 
     /**
      * Destroys the buffer
-     *
      */
     destroy()
     {
@@ -65,12 +56,20 @@ export default class Buffer
         this.data = null;
     }
 
+    /**
+     * Helper function that creates a buffer based on an array or TypedArray
+     *
+     * @static
+     * @param {TypedArray| Array} data the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
+     * @return {PIXI.Buffer} A new Buffer based on the data provided.
+     */
     static from(data)
     {
-        if(data instanceof Array)
+        if (data instanceof Array)
         {
             data = new Float32Array(data);
         }
+
         return new Buffer(data);
     }
 }
