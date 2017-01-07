@@ -237,7 +237,7 @@ export default class Sprite extends Container
      */
     calculateTrimmedVertices()
     {
-        if (this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+        if (this.vertexTrimmedData && this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
         {
             return;
         }
