@@ -29,9 +29,11 @@ function extractAttributesFromString(string)
         if (line.indexOf('attribute') > -1)
         {
             const splitLine = line.split(' ');
-            const type = splitLine[1];
+            const startIndex = splitLine.indexOf('attribute');
 
-            let name = splitLine[2];
+            const type = splitLine[startIndex+1];
+
+            let name = splitLine[startIndex + 2];
             let size = 1;
 
             if (name.indexOf('[') > -1)
@@ -66,7 +68,7 @@ function extractAttributesFromString(string)
         attrib.location = i;
         attributes[attrib.name] = attrib;
     }
-
+    
     return attributes;
 }
 
