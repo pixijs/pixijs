@@ -97,7 +97,6 @@ export default class BlurYFilter extends core.Filter
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
      * @default 2
      */
     get blur()
@@ -105,12 +104,7 @@ export default class BlurYFilter extends core.Filter
         return this.strength;
     }
 
-    /**
-     * Sets the strength of the blur.
-     *
-     * @param {number} value - The value to set.
-     */
-    set blur(value)
+    set blur(value) // eslint-disable-line require-jsdoc
     {
         this.padding = Math.abs(value) * 2;
         this.strength = value;
@@ -121,7 +115,6 @@ export default class BlurYFilter extends core.Filter
      * quaility bluring but the lower the performance.
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurXFilter#
      * @default 4
      */
     get quality()
@@ -129,12 +122,7 @@ export default class BlurYFilter extends core.Filter
         return this._quality;
     }
 
-    /**
-     * Sets the quality of the blur.
-     *
-     * @param {number} value - The value to set.
-     */
-    set quality(value)
+    set quality(value) // eslint-disable-line require-jsdoc
     {
         this._quality = value;
         this.passes = value;

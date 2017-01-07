@@ -445,19 +445,13 @@ export default class Texture extends EventEmitter
      * The frame specifies the region of the base texture that this texture uses.
      *
      * @member {PIXI.Rectangle}
-     * @memberof PIXI.Texture#
      */
     get frame()
     {
         return this._frame;
     }
 
-    /**
-     * Set the frame.
-     *
-     * @param {Rectangle} frame - The new frame to set.
-     */
-    set frame(frame)
+    set frame(frame) // eslint-disable-line require-jsdoc
     {
         this._frame = frame;
 
@@ -496,12 +490,7 @@ export default class Texture extends EventEmitter
         return this._rotate;
     }
 
-    /**
-     * Set the rotation
-     *
-     * @param {number} rotate - The new rotation to set.
-     */
-    set rotate(rotate)
+    set rotate(rotate) // eslint-disable-line require-jsdoc
     {
         this._rotate = rotate;
         if (this.valid)
