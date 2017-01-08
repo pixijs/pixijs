@@ -1,5 +1,8 @@
 import * as core from '../core';
 
+const tempPoint = new core.Point();
+const tempPolygon = new core.Polygon();
+
 /**
  * Base mesh class.
  * The reason for this class is to empower you to have maximum flexbilty to render any kind of webGL you can think of.
@@ -33,7 +36,7 @@ export default class Mesh extends core.Container
 
         /**
          * the geometry the mesh will use
-         * @type {PIXI.mesh.Geometry}
+         * @type {PIXI.Geometry}
          */
         this.geometry = geometry;
 
@@ -45,7 +48,7 @@ export default class Mesh extends core.Container
 
         /**
          * the webGL state the mesh requires to render
-         * @type {PIXI.Shader}
+         * @type {PIXI.State}
          */
         this.state = state || new core.State();
 
@@ -133,13 +136,18 @@ export default class Mesh extends core.Container
     _calculateBounds()
     {
         // The position property could be set manually?
-        if (this.geometry.attributes.aVertexPosition)
+        if (this.geometry.style.attributes.aVertexPosition)
         {
-            const vertices = this.geometry.attributes.aVertexPosition.buffer.data;
+            const vertices = this.geometry.getAttribute('aVertexPosition').data;
 
             // TODO - we can cache local bounds and use them if they are dirty (like graphics)
             this._bounds.addVertices(this.transform, vertices, 0, vertices.length);
         }
+        else
+        {
+            return core.Rectangle.EMPTY;
+        }
+
     }
 
      /**
@@ -148,7 +156,43 @@ export default class Mesh extends core.Container
      * @param point {PIXI.Point} the point to test
      * @return {boolean} the result of the test
      */
+     containsPoint(point)
+     {
+        if (!this.getBounds().contains(point.x, point.y))
+        {
+            return false;
+        }
 
+        this.worldTransform.applyInverse(point, tempPoint);
+
+        const vertices = this.geometry.getAttribute('aVertexPosition').data;
+
+        const points = tempPolygon.points;
+        const indices =  this.geometry.getIndex().data;
+        const len = indices.length;
+        const step = this.drawMode === 4 ? 3 : 1;
+
+        for (let i = 0; i + 2 < len; i += step)
+        {
+            const ind0 = indices[i] * 2;
+            const ind1 = indices[i + 1] * 2;
+            const ind2 = indices[i + 2] * 2;
+
+            points[0] = vertices[ind0];
+            points[1] = vertices[ind0 + 1];
+            points[2] = vertices[ind1];
+            points[3] = vertices[ind1 + 1];
+            points[4] = vertices[ind2];
+            points[5] = vertices[ind2 + 1];
+
+            if (tempPolygon.contains(tempPoint.x, tempPoint.y))
+            {
+                return true;
+            }
+        }
+
+        return false;
+     }
 }
 /**
  * Different drawing buffer modes supported

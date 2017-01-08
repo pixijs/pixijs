@@ -58,11 +58,9 @@ export default function generateUniformsSync(uniformData)
         }
         else if (data.type === 'sampler2D')
         {
-            func += `\n
-
-if (uniforms.${i}.baseTexture)
+            func += `\nif (uniformValues.${i}.baseTexture)
 {
-    var location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
+    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount++}, true);
 
     if(uniformData.${i}.value !== location)
     {
@@ -72,18 +70,11 @@ if (uniforms.${i}.baseTexture)
 }
 else
 {
-    uniformData.${i}.value = textureCount;
-    renderer.boundTextures[textureCount] = renderer.emptyTextures[textureCount];
-    gl.activeTexture(gl.TEXTURE0 + textureCount);
+    uniformData.${i}.value = ${textureCount};
+    renderer.boundTextures[${textureCount}] = renderer.emptyTextures[${textureCount}];
+    gl.activeTexture(gl.TEXTURE0 + ${textureCount++});
 
-    uniforms.${i}.value.bind();
-}
-            var location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
-
-if(uniformData.${i}.value !== location)
-{
-    uniformData.${i}.value = location;
-    gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
+    uniformValues.${i}.bind();
 }`;
         }
         else if (data.type === 'mat3')
@@ -128,7 +119,7 @@ ${template};\n`;
     }
 
     // console.log(' --------------- ')
-    // console.log(func);
+     console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
 }

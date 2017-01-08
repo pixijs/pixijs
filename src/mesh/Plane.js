@@ -49,7 +49,9 @@ export default class Plane extends Mesh
             tint: new Float32Array([1, 1, 1]),
         };
 
-        super(geometry, meshShader, uniforms, 4);
+        super(geometry, meshShader, uniforms, null, 4);
+
+        uniforms.translationMatrix = this.transform.worldTransform;
 
         this.texture = texture;
 
