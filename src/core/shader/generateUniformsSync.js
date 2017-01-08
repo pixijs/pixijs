@@ -78,8 +78,6 @@ else
 
     uniforms.${i}.value.bind();
 }
-
-
             var location = renderer.bindTexture(uniformValues.${i}, ${textureCount++}, true);
 
 if(uniformData.${i}.value !== location)
@@ -129,8 +127,8 @@ ${template};\n`;
         }
     }
 
-     // console.log(' --------------- ')
- //     console.log(func);
+    //console.log(' --------------- ')
+    //console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
 }
