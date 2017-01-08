@@ -1,4 +1,5 @@
 import mapWebGLBlendModesToPixi from '../utils/mapWebGLBlendModesToPixi';
+import WebGLState from '../State';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -44,7 +45,7 @@ export default class StateManager
 
         this.stateId = 0;
         this.polygonOffset = 0;
-        this.blendMode = 0;
+        this.blendMode = 17;
 
         this.map = [];
 
@@ -56,6 +57,11 @@ export default class StateManager
         this.map[WINDING] = this.setFrontFace;
 
         this.checks = [];
+
+        this.defaultState = new WebGLState();
+        this.defaultState.blend = true;
+
+        this.setState(this.defaultState);
     }
 
     /**
@@ -65,6 +71,8 @@ export default class StateManager
      */
     setState(state)
     {
+        state = state || this.defaultState;
+
         // TODO maybe to an object check? ( this.state === state )?
         if (this.stateId === state.data) return;
 
@@ -159,6 +167,7 @@ export default class StateManager
             return;
         }
 
+        this.blendMode = value;
         this.gl.blendFunc(this.blendModes[value][0], this.blendModes[value][1]);
     }
 

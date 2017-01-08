@@ -311,6 +311,8 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.currentRenderer.stop();
         this.currentRenderer = objectRenderer;
+        this.state.setState(objectRenderer.state);
+
         this.currentRenderer.start();
     }
 

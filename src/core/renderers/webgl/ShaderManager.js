@@ -41,7 +41,8 @@ export default class ShaderManager
     {
         const glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
-        if (this.shader !== shader)
+        // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
+        // if (this.shader !== shader)
         {
             this.shader = shader;
             this.renderer._bindGLShader(glShader);
