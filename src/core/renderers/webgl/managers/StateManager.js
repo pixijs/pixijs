@@ -74,22 +74,25 @@ export default class StateManager
         state = state || this.defaultState;
 
         // TODO maybe to an object check? ( this.state === state )?
-        if (this.stateId === state.data) return;
-
-        let diff = this.stateId ^ state.data;
-        let i = 0;
-
-        // order from least to most common
-        while (diff)
+        if (this.stateId !== state.data)
         {
-            if (diff & 1)
+            let diff = this.stateId ^ state.data;
+            let i = 0;
+
+            // order from least to most common
+            while (diff)
             {
-                // state change!
-                this.map[i].call(this, !!(state.data & (1 << i)));
+                if (diff & 1)
+                {
+                    // state change!
+                    this.map[i].call(this, !!(state.data & (1 << i)));
+                }
+
+                diff = diff >> 1;
+                i++;
             }
 
-            diff = diff >> 1;
-            i++;
+            this.stateId = state.data;
         }
 
         // based on the above settings we check for specific modes..
@@ -99,8 +102,6 @@ export default class StateManager
         {
             this.checks[i](this, state);
         }
-
-        this.stateId = state.data;
     }
 
     /**

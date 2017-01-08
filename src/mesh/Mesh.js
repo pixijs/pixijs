@@ -59,7 +59,7 @@ export default class Mesh extends core.Container
          * @default PIXI.BLEND_MODES.NORMAL
          * @see PIXI.BLEND_MODES
          */
-        this.blendMode = core.BLEND_MODES.SCREEN;
+        this.blendMode = core.BLEND_MODES.NORMAL;
         this.state.blendMode = this.blendMode;
 
         /**

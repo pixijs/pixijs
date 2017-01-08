@@ -135,7 +135,7 @@ export default class State
     set blendMode(value) // eslint-disable-line require-jsdoc
     {
         // 17 is NO BLEND
-        this.blend = (value === 17);
+        this.blend = (value !== 17);
         this._blendMode = value;
     }
 
