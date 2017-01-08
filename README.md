@@ -125,48 +125,38 @@ before submitting changes.
 ### Basic Usage Example ###
 
 ```js
-// You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
-// which will try to choose the best renderer for the environment you are in.
-var renderer = new PIXI.WebGLRenderer(800, 600);
+// The application will create a renderer using WebGL, if possible,
+// with a fallback to a canvas render. It will also setup the ticker
+// and the root stage PIXI.Container.
+var app = new PIXI.Application();
 
-// The renderer will create a canvas element for you that you can then insert into the DOM.
-document.body.appendChild(renderer.view);
-
-// You need to create a root container that will hold the scene you want to draw.
-var stage = new PIXI.Container();
-
-// Declare a global variable for our sprite so that the animate function can access it.
-var bunny = null;
+// The application will create a canvas element for you that you 
+// can then insert into the DOM.
+document.body.appendChild(app.view);
 
 // load the texture we need
-PIXI.loader.add('bunny', 'bunny.png').load(function (loader, resources) {
+PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
+
     // This creates a texture from a 'bunny.png' image.
-    bunny = new PIXI.Sprite(resources.bunny.texture);
+    var bunny = new PIXI.Sprite(resources.bunny.texture);
 
-    // Setup the position and scale of the bunny
-    bunny.position.x = 400;
-    bunny.position.y = 300;
+    // Setup the position of the bunny
+    bunny.x = app.renderer.width / 2;
+    bunny.y = app.renderer.height / 2;
 
-    bunny.scale.x = 2;
-    bunny.scale.y = 2;
+    // Rotate around the center
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
 
     // Add the bunny to the scene we are building.
-    stage.addChild(bunny);
-
-    // kick off the animation loop (defined below)
-    animate();
+    app.stage.addChild(bunny);
+    
+    // Listen for frame updates
+    app.ticker.add(function() {
+         // each frame we spin the bunny around a bit
+        bunny.rotation += 0.01;
+    });
 });
-
-function animate() {
-    // start the timer for the next animation loop
-    requestAnimationFrame(animate);
-
-    // each frame we spin the bunny around a bit
-    bunny.rotation += 0.01;
-
-    // this is the main render call that makes pixi draw your container and its children.
-    renderer.render(stage);
-}
 ```
 
 ### How to build ###
