@@ -43,10 +43,10 @@ export default class ShaderManager
 
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
         // if (this.shader !== shader)
-        {
-            this.shader = shader;
-            this.renderer._bindGLShader(glShader);
-        }
+        // {
+        this.shader = shader;
+        this.renderer._bindGLShader(glShader);
+        // }
 
         if (!dontSync)
         {
