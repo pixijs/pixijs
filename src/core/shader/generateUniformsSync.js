@@ -127,8 +127,8 @@ ${template};\n`;
         }
     }
 
-    //console.log(' --------------- ')
-    //console.log(func);
+    // console.log(' --------------- ')
+    // console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
 }
