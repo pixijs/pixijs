@@ -130,8 +130,10 @@ export default class Mesh extends core.Container
     }
 
     /**
-     * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
+     * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
+     * there must be a aVertexPosition attribute present in the geometry for bounds to be calcualted correctly.
      *
+     * @private
      */
     _calculateBounds()
     {
@@ -143,21 +145,16 @@ export default class Mesh extends core.Container
             // TODO - we can cache local bounds and use them if they are dirty (like graphics)
             this._bounds.addVertices(this.transform, vertices, 0, vertices.length);
         }
-        else
-        {
-            return core.Rectangle.EMPTY;
-        }
-
     }
 
-     /**
+    /**
      * Tests if a point is inside this mesh. Works only for TRIANGLE_MESH
      *
-     * @param point {PIXI.Point} the point to test
+     * @param {PIXI.Point} point the point to test
      * @return {boolean} the result of the test
      */
-     containsPoint(point)
-     {
+    containsPoint(point)
+    {
         if (!this.getBounds().contains(point.x, point.y))
         {
             return false;
@@ -192,8 +189,9 @@ export default class Mesh extends core.Container
         }
 
         return false;
-     }
+    }
 }
+
 /**
  * Different drawing buffer modes supported
  *
