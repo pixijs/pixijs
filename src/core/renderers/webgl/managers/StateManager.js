@@ -107,6 +107,11 @@ export default class StateManager
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
 
+    /**
+     * Enables or disable polygon offset fill
+     *
+     * @param {boolean} value - Turn on or off webgl polygon offset testing.
+     */
     setOffset(value)
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.POLYGON_OFFSET_FILL);
@@ -212,6 +217,15 @@ export default class StateManager
         // this.setState(this.defaultState);
     }
 
+    /**
+     * checks to see which updates should be checked based on which settings have been activated
+     * for example if blend is enabled then we shold check the blend modes each time the state is changed
+     * or if poygon fill is activated then we need to check if the polygone offset changes.
+     * The idea is that we only check what we have too.
+     *
+     * @param {Function} func  the checking function to add or remove
+     * @param {boolean} value  should the check function be added or removed.
+     */
     updateCheck(func, value)
     {
         const index = this.checks.indexOf(func);
@@ -226,11 +240,18 @@ export default class StateManager
         }
     }
 
-    // static function maintains scope!
+    /**
+     * A private little wrapper function that we call to check the blend mode.
+     *
+     * @static
+     * @private
+     * @param {PIXI.StateManager} manager  the manager to perform the state check on
+     * @param {PIXI.State} state  the state that the blendMode will pulled from
+     */
     static checkBlendMode(manager, state)
     {
         manager.setBlendMode(state.blendMode);
     }
 
-    // TODO - polygon offset?
+    // TODO - add polygon offset?
 }

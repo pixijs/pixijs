@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import Buffer from './Buffer';
 
 /**
  * GeometryData - the data of the geometry - this consits of attribute buffers and one index buffer.
