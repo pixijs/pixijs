@@ -95,7 +95,7 @@ export default class MeshSpriteRenderer
     _renderTriangles(mesh)
     {
         // draw triangles!!
-        const indices = mesh.indices;
+        const indices = mesh.geometry.getIndex().data;
         const length = indices.length;
 
         for (let i = 0; i < length; i += 3)
@@ -121,8 +121,8 @@ export default class MeshSpriteRenderer
     _renderDrawTriangle(mesh, index0, index1, index2)
     {
         const context = this.renderer.context;
-        const uvs = mesh.uvs;
-        const vertices = mesh.vertices;
+        const uvs = mesh.geometry.getAttribute('aTextureCoord').data;
+        const vertices = mesh.geometry.getAttribute('aVertexPosition').data;
         const texture = mesh._texture;
 
         if (!texture.valid)
@@ -234,7 +234,7 @@ export default class MeshSpriteRenderer
     renderMeshFlat(mesh)
     {
         const context = this.renderer.context;
-        const vertices = mesh.vertices;
+        const vertices = mesh.geometry.getAttribute('aVertexPosition').data;
         const length = vertices.length / 2;
 
         // this.count++;

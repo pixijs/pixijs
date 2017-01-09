@@ -27,8 +27,9 @@ export default class Plane extends Mesh
      * @param {PIXI.Texture} texture - The texture to use on the Plane.
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
+     * @param {object} opts - an options object - add meshWidth and meshHeight
      */
-    constructor(texture, verticesX, verticesY, opts)
+    constructor(texture, verticesX, verticesY, opts = {})
     {
         const geometry = new Geometry();
 
@@ -58,8 +59,8 @@ export default class Plane extends Mesh
         this.segmentsX = this.verticesX = verticesX || 10;
         this.segmentsY = this.verticesY = verticesY || 10;
 
-        this.meshWidth = opts.meshWidth;
-        this.meshHeight = opts.meshHeight;
+        this.meshWidth = opts.meshWidth || texture.width;
+        this.meshHeight = opts.meshHeight || texture.height;
 
         if (texture.baseTexture.hasLoaded)
         {
