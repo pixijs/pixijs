@@ -2,14 +2,14 @@
  * GeometryStyle represents the structure of the geometry such as the attributes layout.
  *
  * ```js
- * let geometryStyle = new PIXI.GeometryStyle();
+ * let geometryStyle = new PIXI.mesh.GeometryStyle();
  *
- * geometryStyle.addAttribute('positions, new PIXI.Attribute('positionBuffer', 2));
- * geometryStyle.addAttribute('uvs', new PIXI.Attribute('uvsBuffer', 2);
+ * geometryStyle.addAttribute('positions, new PIXI.mesh.Attribute('positionBuffer', 2));
+ * geometryStyle.addAttribute('uvs', new PIXI.mesh.Attribute('uvsBuffer', 2);
  *
  * ```
  * @class
- * @memberof PIXI.GeometryStyle
+ * @memberof PIXI.mesh.GeometryStyle
  */
 export default class GeometryStyle
 {
@@ -33,9 +33,9 @@ export default class GeometryStyle
     * Adds an attribute to the geometryStyle
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.Attribute} [attribute] the Attribute that you would like to add to the style.
+    * @param {PIXI.mesh.Attribute} [attribute] the Attribute that you would like to add to the style.
     *
-    * @return {PIXI.GeometryStyle} returns self, useful for chaining.
+    * @return {PIXI.mesh.GeometryStyle} returns self, useful for chaining.
     */
     addAttribute(id, attribute)
     {

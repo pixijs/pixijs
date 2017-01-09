@@ -15,7 +15,7 @@ import GeometryData from './GeometryData';
  * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
  *
  * ```js
- * let geometry = new PIXI.Geometry();
+ * let geometry = new PIXI.mesh.Geometry();
  *
  * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
@@ -23,25 +23,25 @@ import GeometryData from './GeometryData';
  *
  * ```
  * @class
- * @memberof PIXI.Geometry
+ * @memberof PIXI.mesh.Geometry
  */
 export default class Geometry
 {
     /**
-     * @param {PIXI.GeometryData} data  optional structure of the model such as the attributes layout
-     * @param {PIXI.GeometryStyle} style optional data of the model, this consists of buffers.
+     * @param {PIXI.mesh.GeometryData} data  optional structure of the model such as the attributes layout
+     * @param {PIXI.mesh.GeometryStyle} style optional data of the model, this consists of buffers.
      */
     constructor(data, style)
     {
         /**
          * the style of the geometry
-         * @type {PIXI.GeometryStyle}
+         * @type {PIXI.mesh.GeometryStyle}
          */
         this.style = style || new GeometryStyle();
 
         /**
          * the data of the geometry
-         * @type {PIXI.GeometryData}
+         * @type {PIXI.mesh.GeometryData}
          */
         this.data = data || new GeometryData();
 
@@ -59,13 +59,13 @@ export default class Geometry
     * Adds an attribute to the geometry
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
     * @param {Number} [size=2] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
     * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
     * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
     * @param {Boolean} [normalised=false] should the data be normalised.
     *
-    * @return {PIXI.Geometry} returns self, useful for chaining.
+    * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
     */
     addAttribute(id, buffer, size = 2, stride = 0, start = 0, normalised = false)
     {
@@ -91,7 +91,7 @@ export default class Geometry
      * returns the requested attribute
      *
      * @param {String} id  the name of the attribute required
-     * @return {PIXI.Attribute} the attribute requested.
+     * @return {PIXI.mesh.Attribute} the attribute requested.
      */
     getAttribute(id)
     {
@@ -103,8 +103,8 @@ export default class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
-    * @return {PIXI.Geometry} returns self, useful for chaining.
+    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
     */
     addIndex(buffer)
     {
@@ -116,7 +116,7 @@ export default class Geometry
     /**
      * returns the index buffer
      *
-     * @return {PIXI.Buffer} the index buffer.
+     * @return {PIXI.mesh.Buffer} the index buffer.
      */
     getIndex()
     {

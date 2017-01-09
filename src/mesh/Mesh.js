@@ -36,7 +36,7 @@ export default class Mesh extends core.Container
 
         /**
          * the geometry the mesh will use
-         * @type {PIXI.Geometry}
+         * @type {PIXI.mesh.Geometry}
          */
         this.geometry = geometry;
 

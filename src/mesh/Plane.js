@@ -28,7 +28,7 @@ export default class Plane extends Mesh
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
      */
-    constructor(texture, verticesX, verticesY)
+    constructor(texture, verticesX, verticesY, opts)
     {
         const geometry = new Geometry();
 
@@ -57,6 +57,9 @@ export default class Plane extends Mesh
 
         this.segmentsX = this.verticesX = verticesX || 10;
         this.segmentsY = this.verticesY = verticesY || 10;
+
+        this.meshWidth = opts.meshWidth;
+        this.meshHeight = opts.meshHeight;
 
         if (texture.baseTexture.hasLoaded)
         {
@@ -132,8 +135,8 @@ export default class Plane extends Mesh
         const segmentsX = this.verticesX - 1;
         const segmentsY = this.verticesY - 1;
 
-        const sizeX = texture.width / segmentsX;
-        const sizeY =  texture.height / segmentsY;
+        const sizeX = this.meshWidth / segmentsX;
+        const sizeY =  this.meshHeight / segmentsY;
 
         for (let i = 0; i < total; i++)
         {

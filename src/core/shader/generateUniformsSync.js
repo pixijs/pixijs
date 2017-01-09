@@ -41,7 +41,9 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
 export default function generateUniformsSync(uniformData)
 {
     let textureCount = 1;
-    let func = 'var value = null; var cacheValue = null';
+    let func = `var value = null;
+    var cacheValue = null
+    var gl = renderer.gl`;
 
     for (const i in uniformData)
     {
@@ -121,5 +123,5 @@ ${template};\n`;
     // console.log(' --------------- ')
     // console.log(func);
 
-    return new Function('uniformData', 'uniformValues', 'gl', func); // eslint-disable-line no-new-func
+    return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
 }

@@ -7,7 +7,7 @@ import Buffer from './Buffer';
  * This can include anything from positions, uvs, normals, colors etc..
  *
  * ```js
- * let geometryData = new PIXI.GeometryData();
+ * let geometryData = new PIXI.mesh.GeometryData();
  *
  * geometryData.add('positions', [0,1,0,2,3]);
  * geometryData.add('uvs', [0,0,1,0,1,1,0,1]);
@@ -15,7 +15,7 @@ import Buffer from './Buffer';
  *
  * ```
  * @class
- * @memberof PIXI.GeometryData
+ * @memberof PIXI.mesh.GeometryData
  */
 export default class GeometryData
 {
@@ -25,14 +25,14 @@ export default class GeometryData
     constructor()
     {
         /**
-         * an array of {PIXI.Buffer} belonging to the geometryData
+         * an array of {PIXI.mesh.Buffer} belonging to the geometryData
          * @type {Array}
          */
         this.buffers = [];
 
         /**
          * the index buffer data for the geometry
-         * @type {PIXI.Buffer}
+         * @type {PIXI.mesh.Buffer}
          */
         this.indexBuffer = null;
     }
@@ -42,9 +42,9 @@ export default class GeometryData
     * Adds an buffer to the geometryData
     *
     * @param {String} id - the name of the buffer (matching up to a geometry style)
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data mapping to a geometry attribute. You can also provide an Array and a buffer will be created from it.
+    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data mapping to a geometry attribute. You can also provide an Array and a buffer will be created from it.
     *
-    * @return {PIXI.GeometryData} returns self, useful for chaining.
+    * @return {PIXI.mesh.GeometryData} returns self, useful for chaining.
     */
     add(id, buffer)
     {
@@ -75,8 +75,8 @@ export default class GeometryData
     * Adds an index buffer to the geometryData
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
-    * @return {PIXI.GeometryData} returns self, useful for chaining.
+    * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @return {PIXI.mesh.GeometryData} returns self, useful for chaining.
     */
     addIndex(buffer)
     {

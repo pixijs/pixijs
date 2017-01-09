@@ -64,7 +64,7 @@ export default class ShaderManager
         const shader = this.shader;
         const glShader = shader.glShaders[this.renderer.CONTEXT_UID];
 
-        shader.syncUniforms(glShader.uniformData, uniforms, this.gl);
+        shader.syncUniforms(glShader.uniformData, uniforms, this.renderer);
     }
 
     /**

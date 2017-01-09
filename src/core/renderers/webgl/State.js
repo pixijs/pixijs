@@ -24,6 +24,8 @@ export default class State
 
         this.blendMode = 0;
         this.polygonOffset = 0;
+
+        this.blend = true;
     }
 
     /**

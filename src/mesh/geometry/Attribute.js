@@ -2,11 +2,11 @@
 
 /**
  * holds the information for a single attribute structure required to render geometry.
- * this does not conatina the actul data, but instead has a buffer id that maps to a {PIXI.Buffer}
+ * this does not conatina the actul data, but instead has a buffer id that maps to a {PIXI.mesh.Buffer}
  * This can include anything from positions, uvs, normals, colors etc..
  *
  * @class
- * @memberof PIXI.Attribute
+ * @memberof PIXI.mesh.Attribute
  */
 class Attribute
 {
@@ -45,7 +45,7 @@ class Attribute
      * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
      * @param {Boolean} [normalised=false] should the data be normalised.
      *
-     * @returns {PIXI.Attribute} A new {PIXI.Attribute} based on the information provided
+     * @returns {PIXI.mesh.Attribute} A new {PIXI.mesh.Attribute} based on the information provided
      */
     static from(buffer, size, stride, start, normalised)
     {
