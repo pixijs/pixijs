@@ -121,6 +121,9 @@ export default class Sprite extends Container
         this._transformID = -1;
         this._textureID = -1;
 
+        this._transformTrimmedID = -1;
+        this._textureTrimmedID = -1;
+        
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
@@ -241,10 +244,13 @@ export default class Sprite extends Container
         {
             this.vertexTrimmedData = new Float32Array(8);
         }
-        else if (this._transformID === this.transform._worldID && this._textureID === this._texture._updateID)
+        else if (this._transformTrimmedID === this.transform._worldID && this._textureTrimmedID === this._texture._updateID)
         {
             return;
         }
+
+        this._transformTrimmedID = this.transform._worldID;
+        this._textureTrimmedID = this._texture._updateID;
 
         // lets do some special trim code!
         const texture = this._texture;
