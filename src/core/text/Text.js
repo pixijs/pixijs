@@ -33,8 +33,9 @@ export default class Text extends Sprite
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
+     * @param {boolean} [trim] - Trim transparent borders
      */
-    constructor(text, style, canvas)
+    constructor(text, style, canvas, trim)
     {
         canvas = canvas || document.createElement('canvas');
 
@@ -103,6 +104,13 @@ export default class Text extends Sprite
         this.style = style;
 
         this.localStyleID = -1;
+
+        /**
+         * Trim transparent borders
+         *
+         * @member {boolean}
+         */
+        this.trim = trim;
     }
 
     /**
@@ -326,6 +334,15 @@ export default class Text extends Sprite
      */
     updateTexture()
     {
+        if (this.trim)
+        {
+            const trimmed = this.trim(this.canvas);
+
+            this.canvas.width = trimmed.trimWidth;
+            this.canvas.height = trimmed.trimHeight;
+            this.context.putImageData(trimmed.trimmed, 0, 0);
+        }
+
         const texture = this._texture;
         const style = this._style;
 
@@ -351,6 +368,79 @@ export default class Text extends Sprite
         texture.baseTexture.emit('update', texture.baseTexture);
 
         this.dirty = false;
+    }
+
+    /**
+     * Get trimmed transparent borders
+     *
+     * @private
+     * @returns {object} Trim data
+     */
+    getTrimmed()
+    {
+        // https://gist.github.com/remy/784508
+        const pixels = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const l = pixels.data.length;
+        const bound = {
+            top: null,
+            left: null,
+            right: null,
+            bottom: null,
+        };
+        let i;
+        let x;
+        let y;
+
+        for (i = 0; i < l; i += 4)
+        {
+            if (pixels.data[i + 3] !== 0)
+            {
+                x = (i / 4) % this.canvas.width;
+                y = ~~((i / 4) / this.canvas.width);
+
+                if (bound.top === null)
+                {
+                    bound.top = y;
+                }
+
+                if (bound.left === null)
+                {
+                    bound.left = x;
+                }
+                else if (x < bound.left)
+                {
+                    bound.left = x;
+                }
+
+                if (bound.right === null)
+                {
+                    bound.right = x + 1;
+                }
+                else if (bound.right < x)
+                {
+                    bound.right = x + 1;
+                }
+
+                if (bound.bottom === null)
+                {
+                    bound.bottom = y;
+                }
+                else if (bound.bottom < y)
+                {
+                    bound.bottom = y;
+                }
+            }
+        }
+
+        const trimHeight = bound.bottom - bound.top + 1;
+        const trimWidth = bound.right - bound.left;
+        const trimmed = this.context.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+        return {
+            trimHeight,
+            trimWidth,
+            trimmed,
+        };
     }
 
     /**
