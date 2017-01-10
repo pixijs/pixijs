@@ -123,7 +123,7 @@ export default class Sprite extends Container
 
         this._transformTrimmedID = -1;
         this._textureTrimmedID = -1;
-        
+
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
