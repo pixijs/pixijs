@@ -142,6 +142,7 @@ export default class Sprite extends Container
     _onTextureUpdate()
     {
         this._textureID = -1;
+        this._textureTrimmedID = -1;
 
         // so if _width is 0 then width was not set..
         if (this._width)
@@ -575,6 +576,7 @@ export default class Sprite extends Container
         this.cachedTint = 0xFFFFFF;
 
         this._textureID = -1;
+        this._textureTrimmedID = -1;
 
         if (value)
         {
