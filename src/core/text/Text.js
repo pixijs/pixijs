@@ -336,7 +336,7 @@ export default class Text extends Sprite
     {
         if (this.trim)
         {
-            const trimmed = this.trim(this.canvas);
+            const trimmed = this.getTrimmed(this.canvas);
 
             this.canvas.width = trimmed.trimWidth;
             this.canvas.height = trimmed.trimHeight;
