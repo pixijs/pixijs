@@ -163,6 +163,7 @@ export default class Sprite extends Container
     _onAnchorUpdate()
     {
         this._transformID = -1;
+        this._transformTrimmedID = -1;
     }
 
     /**
