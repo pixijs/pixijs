@@ -287,7 +287,7 @@ export default class Mesh extends core.Container
      * A value of [1,1,1] will remove any tint effect.
      *
      * @member {Float32Array}
-     * @memberof PIXI.Sprite#
+     * @memberof PIXI.mesh.Mesh#
      * @default [1.0,1.0,1.0]
      */
     get tintRgb()
