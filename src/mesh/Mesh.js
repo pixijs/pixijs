@@ -300,7 +300,6 @@ export default class Mesh extends core.Container
         this._tintRgb = value;
         this._tint = core.utils.rgb2hex(this._tintRgb);
     }
-    }
 }
 
 /**
