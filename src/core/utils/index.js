@@ -1,6 +1,7 @@
 import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
+import Signal from 'mini-signals';
 import pluginTarget from './pluginTarget';
 import * as isMobile from 'ismobilejs';
 
@@ -27,6 +28,14 @@ export {
      * @type {EventEmitter}
      */
     EventEmitter,
+    /**
+     * @see {@link https://github.com/Hypercubed/mini-signals}
+     *
+     * @memberof PIXI.utils
+     * @class Signal
+     * @type {Signal}
+     */
+    Signal,
     /**
      * @memberof PIXI.utils
      * @function pluginTarget
