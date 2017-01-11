@@ -73,7 +73,7 @@ export default class Mesh extends core.Container
         this.indexDirty = 0;
 
         /**
-         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
+         * The blend mode to be applied to the mesh. Set to `PIXI.BLEND_MODES.NORMAL` to remove
          * any blend mode.
          *
          * @member {number}
@@ -109,12 +109,22 @@ export default class Mesh extends core.Container
         this.shader = null;
 
         /**
-         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
-         * tint effect.
+         * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
          *
+         * @private
          * @member {number}
+         * @default 0xFFFFFF
          */
-        this.tintRgb = new Float32Array([1, 1, 1]);
+        this._tint = 0xFFFFFF;
+
+        /**
+         * The tint applied to the mesh. This is a [r, g, b] value. A value of [1,1,1] will remove any tint effect.
+         *
+         * @private
+         * @member {number}
+         * @default [1,1,1]
+         */
+        this._tintRgb = new Float32Array([1, 1, 1]);
 
         /**
          * A map of renderer IDs to webgl render data
@@ -254,19 +264,42 @@ export default class Mesh extends core.Container
     }
 
     /**
-     * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     * The tint applied to the mesh. This is a hex value.
+     * A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
      * @default 0xFFFFFF
      */
     get tint()
     {
-        return core.utils.rgb2hex(this.tintRgb);
+        return this._tint;
     }
 
     set tint(value) // eslint-disable-line require-jsdoc
     {
-        this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+        this._tint = value;
+        this._tintRgb = core.utils.hex2rgb(value);
+    }
+
+    /**
+     * The immutable rgb value of tint applied to the mesh.
+     * This is a float array of a size of three.
+     * A value of [1,1,1] will remove any tint effect.
+     *
+     * @member {Float32Array}
+     * @memberof PIXI.Sprite#
+     * @default [1.0,1.0,1.0]
+     */
+    get tintRgb()
+    {
+        return this._tintRgb;
+    }
+
+    set tintRgb(value) // eslint-disable-line require-jsdoc
+    {
+        this._tintRgb = value;
+        this._tint = core.utils.rgb2hex(this._tintRgb);
+    }
     }
 }
 
