@@ -131,7 +131,7 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aAlpha, gl.FLOAT, true, this.vertByteSize, 6 * 4)
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
 
             /* eslint-enable max-len */
@@ -384,7 +384,7 @@ export default class SpriteRenderer extends ObjectRenderer
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aAlpha, gl.FLOAT, true, this.vertByteSize, 6 * 4)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4)
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
 
                 /* eslint-enable max-len */
