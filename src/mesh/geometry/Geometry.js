@@ -85,6 +85,7 @@ export default class Geometry
         this.data.add(buffer.id, buffer);
 
         // dynamically create an access point..
+        // TODO - is this good or Bad?
         this[id] = buffer;
 
         return this;
