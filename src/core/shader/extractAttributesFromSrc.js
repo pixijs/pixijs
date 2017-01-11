@@ -11,8 +11,6 @@ function extractAttributesFromSrc(vertexSrc, mask)
 
 function extractAttributesFromString(string)
 {
-    const maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
-
     const attributesArray = [];
     let nameSplit;
 
@@ -44,15 +42,12 @@ function extractAttributesFromString(string)
                 size *= Number(nameSplit[1]);
             }
 
-            if (!name.match(maskRegex))
-            {
-                attributesArray.push({
-                    value: defaultValue(type, size),
-                    name,
-                    location: 0,
-                    type,
-                });
-            }
+            attributesArray.push({
+                value: defaultValue(type, size),
+                name,
+                location: 0,
+                type,
+            });
         }
     }
 

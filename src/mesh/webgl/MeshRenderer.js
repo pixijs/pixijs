@@ -36,19 +36,19 @@ export default class MeshRenderer extends core.ObjectRenderer {
     /**
      * renders mesh
      * @private
-     * @param {PIXI.mesh.Mesh} mesh mesh instance
+     * @param {PIXI.mesh.RawMesh} mesh mesh instance
      */
     render(mesh)
     {
+        // bind the shader..
+        const glShader = this.renderer.shaderManager.bindShader(mesh.shader, true);
+
         // set the shader props..
-        if (mesh.uniforms.translationMatrix)
+        if (glShader.uniformData.translationMatrix)
         {
             // the transform!
-            mesh.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
+            glShader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
         }
-
-        // bind the shader..
-        this.renderer.shaderManager.bindShader(mesh.shader, true);
 
         // set unifomrs..
         this.renderer.shaderManager.setUniforms(mesh.uniforms);
@@ -60,7 +60,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
         this.bindGeometry(mesh.geometry);
 
         // then render it..
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode);
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
     }
 
     /**
@@ -73,6 +73,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
         const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry);
 
         this.renderer.bindVao(vao);
+
         const data = geometry.data;
 
         // TODO - optimise later!
@@ -87,7 +88,6 @@ export default class MeshRenderer extends core.ObjectRenderer {
             if (buffer._updateID !== glBuffer._updateID)
             {
                 glBuffer._updateID = buffer._updateID;
-
                 // TODO - partial upload??
                 glBuffer.upload(buffer.data, 0);
             }
@@ -128,8 +128,11 @@ export default class MeshRenderer extends core.ObjectRenderer {
             }
         }
 
-        // first update the index buffer..
-        vao.addIndex(geometry.data.indexBuffer._glBuffers[this.CONTEXT_UID]);
+        if (geometry.data.indexBuffer)
+        {
+            // first update the index buffer if we have one..
+            vao.addIndex(geometry.data.indexBuffer._glBuffers[this.CONTEXT_UID]);
+        }
 
         const map = geometry.style.generateAttributeLocations();
 

@@ -84,6 +84,9 @@ export default class Geometry
         this.style.addAttribute(id, new Attribute(buffer.id, size, stride, start, normalised));
         this.data.add(buffer.id, buffer);
 
+        // dynamically create an access point..
+        this[id] = buffer;
+
         return this;
     }
 

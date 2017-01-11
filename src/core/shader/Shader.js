@@ -35,7 +35,9 @@ class Shader
 
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types
-        this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+        this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc);
+        // TODO - 'projectionMatrix|uSampler|translationMatrix');
+
         this.attributeData = extractAttributesFromSrc(this.vertexSrc);
 
         this.uniforms = {};

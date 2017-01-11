@@ -1,10 +1,5 @@
 import Mesh from './Mesh';
-import Geometry from './geometry/Geometry';
 import * as core from '../core';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
-let meshShader;
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -29,100 +24,15 @@ export default class Rope extends Mesh
      */
     constructor(texture, points)
     {
-        if (!meshShader)
-        {
-            meshShader = new core.Shader(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
-                                         readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
-        }
-
-        const geometry = new Geometry();
-
-        geometry.addAttribute('aVertexPosition', new Float32Array(points.length * 4), 2)
-        .addAttribute('aTextureCoord', new Float32Array(points.length * 4), 2)
-        .addIndex(new Uint16Array(points.length * 2));
-
-        const uniforms = {
-            uSampler2: texture,
-            alpha: 1,
-            translationMatrix: null,
-            tint: new Float32Array([1, 1, 1]),
-        };
-
-        super(geometry, meshShader, uniforms, null, 5);
-
-        uniforms.translationMatrix = this.transform.worldTransform;
+        super(texture, new Float32Array(points.length * 4),
+                       new Float32Array(points.length * 4),
+                       new Uint16Array(points.length * 2),
+                       5);
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
         this.points = points;
-
-        /**
-         * The tint applied to the rope. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-         *
-         * @private
-         * @member {number}
-         * @default 0xFFFFFF
-         */
-        this._tint = 0xFFFFFF;
-        this.tint = 0xFFFFFF;
-
-        this.texture = texture;
-         // wait for the texture to load
-        if (texture.baseTexture.hasLoaded)
-        {
-            this.refresh();
-        }
-        else
-        {
-            texture.once('update', this.refresh, this);
-        }
-    }
-
-    /**
-     * The tint applied to the Rope. This is a hex value. A value of
-     * 0xFFFFFF will remove any tint effect.
-     *
-     * @member {number}
-     * @memberof PIXI.Sprite#
-     * @default 0xFFFFFF
-     */
-    get tint()
-    {
-        return this._tint;
-    }
-
-    /**
-     * Sets the tint of the rope.
-     *
-     * @param {number} value - The value to set to.
-     */
-    set tint(value)
-    {
-        this._tint = value;
-        core.utils.hex2rgb(this._tint, this.uniforms.tint);
-    }
-
-    /**
-     * Sets the texture of the rope.
-     *
-     * @param {PIXI.Texture} value - The value to set to.
-     */
-    set texture(value)
-    {
-        this._texture = value;
-        this.uniforms.uSampler2 = this.texture;
-    }
-
-    /**
-     * The texture that the rope is using
-     *
-     * @member {PIXI.Texture}
-     * @memberof PIXI.Sprite#
-     */
-    get texture()
-    {
-        return this._texture;
     }
 
     /**
@@ -262,5 +172,15 @@ export default class Rope extends Mesh
         this.uniforms.alpha = this.worldAlpha;
 
         this.containerUpdateTransform();
+    }
+
+    /**
+     * When the texture is updated, this event will fire to update the scale and frame
+     *
+     * @private
+     */
+    _onTextureUpdate()
+    {
+        this.refresh();
     }
 }

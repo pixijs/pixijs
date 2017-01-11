@@ -36,6 +36,7 @@ export default class ShaderManager
      *
      * @param {PIXI.Shader} shader - the new shader
      * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
+     * @returns {PIXI.glCore.GLShader} the glShader that belongs to the shader.
      */
     bindShader(shader, dontSync)
     {
@@ -52,6 +53,8 @@ export default class ShaderManager
         {
             this.setUniforms(shader.uniforms);
         }
+
+        return glShader;
     }
 
     /**
