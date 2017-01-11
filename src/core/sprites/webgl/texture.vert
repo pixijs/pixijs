@@ -17,5 +17,5 @@ void main(void){
 
     vTextureCoord = aTextureCoord;
     vTextureId = aTextureId;
-    vColor = vec4(aColor.rgb * aAlpha, aAlpha);
+    vColor = vec4(aColor * aAlpha, aAlpha);
 }
