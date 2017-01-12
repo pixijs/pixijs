@@ -1,6 +1,6 @@
-var core = require('../../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
+import * as core from '../../core';
+import BlurXFilter from './BlurXFilter';
+import BlurYFilter from './BlurYFilter';
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -10,109 +10,109 @@ var core = require('../../core'),
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-function BlurFilter(strength, quality, resolution)
+export default class BlurFilter extends core.Filter
 {
-    core.Filter.call(this);
+    /**
+     * @param {number} strength - The strength of the blur filter.
+     * @param {number} quality - The quality of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     */
+    constructor(strength, quality, resolution, kernelSize)
+    {
+        super();
 
-    this.blurXFilter = new BlurXFilter();
-    this.blurYFilter = new BlurYFilter();
-    this.resolution = 1;
+        this.blurXFilter = new BlurXFilter(strength, quality, resolution, kernelSize);
+        this.blurYFilter = new BlurYFilter(strength, quality, resolution, kernelSize);
+        this.resolution = 1;
 
-    this.padding = 0;
-    this.resolution = resolution || 1;
-    this.quality = quality || 4;
-    this.blur = strength || 8;
-}
+        this.padding = 0;
+        this.resolution = resolution || 1;
+        this.quality = quality || 4;
+        this.blur = strength || 8;
+    }
 
-BlurFilter.prototype = Object.create(core.Filter.prototype);
-BlurFilter.prototype.constructor = BlurFilter;
-module.exports = BlurFilter;
+    /**
+     * Applies the filter.
+     *
+     * @param {PIXI.FilterManager} filterManager - The manager.
+     * @param {PIXI.RenderTarget} input - The input target.
+     * @param {PIXI.RenderTarget} output - The output target.
+     */
+    apply(filterManager, input, output)
+    {
+        const renderTarget = filterManager.getRenderTarget(true);
 
-BlurFilter.prototype.apply = function (filterManager, input, output)
-{
+        this.blurXFilter.apply(filterManager, input, renderTarget, true);
+        this.blurYFilter.apply(filterManager, renderTarget, output, false);
 
-    var renderTarget = filterManager.getRenderTarget(true);
+        filterManager.returnRenderTarget(renderTarget);
+    }
 
-    this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output, false);
-
-    filterManager.returnRenderTarget(renderTarget);
-};
-
-Object.defineProperties(BlurFilter.prototype, {
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blur: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = this.blurYFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
-    },
+    get blur()
+    {
+        return this.blurXFilter.blur;
+    }
+
+    set blur(value) // eslint-disable-line require-jsdoc
+    {
+        this.blurXFilter.blur = this.blurYFilter.blur = value;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+    }
 
     /**
      * Sets the number of passes for blur. More passes means higher quaility bluring.
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
      * @default 1
      */
-    quality: {
-        get: function ()
-        {
-            return  this.blurXFilter.quality;
-        },
-        set: function (value)
-        {
+    get quality()
+    {
+        return this.blurXFilter.quality;
+    }
 
-            this.blurXFilter.quality = this.blurYFilter.quality = value;
-        }
-    },
+    set quality(value) // eslint-disable-line require-jsdoc
+    {
+        this.blurXFilter.quality = this.blurYFilter.quality = value;
+    }
 
     /**
      * Sets the strength of the blurX property
      *
      * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blurX: {
-        get: function ()
-        {
-            return this.blurXFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurXFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
-    },
+    get blurX()
+    {
+        return this.blurXFilter.blur;
+    }
+
+    set blurX(value) // eslint-disable-line require-jsdoc
+    {
+        this.blurXFilter.blur = value;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+    }
 
     /**
      * Sets the strength of the blurY property
      *
      * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
-    blurY: {
-        get: function ()
-        {
-            return this.blurYFilter.blur;
-        },
-        set: function (value)
-        {
-            this.blurYFilter.blur = value;
-            this.padding = Math.max( Math.abs(this.blurYFilter.strength),  Math.abs(this.blurYFilter.strength)) * 2;
-        }
+    get blurY()
+    {
+        return this.blurYFilter.blur;
     }
-});
+
+    set blurY(value) // eslint-disable-line require-jsdoc
+    {
+        this.blurYFilter.blur = value;
+        this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+    }
+}

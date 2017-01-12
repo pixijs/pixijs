@@ -1,147 +1,148 @@
-var math = require('../math');
-
+import { Point, ObservablePoint } from '../math';
+import TransformBase from './TransformBase';
 
 /**
  * Generic class to deal with traditional 2D matrix transforms
- * This will be reworked in v4.1, please do not use it yet unless you know what are you doing!
+ * local transformation is calculated from position,scale,skew and rotation
  *
  * @class
+ * @extends PIXI.TransformBase
  * @memberof PIXI
  */
-function Transform()
+export default class Transform extends TransformBase
 {
     /**
-     * @member {PIXI.Matrix} The global matrix transform
-     */
-    this.worldTransform = new math.Matrix();
-    /**
-     * @member {PIXI.Matrix} The local matrix transform
-     */
-    this.localTransform = new math.Matrix();
-
-     /**
-     * The coordinate of the object relative to the local coordinates of the parent.
      *
-     * @member {PIXI.Point}
      */
-    this.position = new math.Point(0.0);
+    constructor()
+    {
+        super();
+
+         /**
+         * The coordinate of the object relative to the local coordinates of the parent.
+         *
+         * @member {PIXI.Point}
+         */
+        this.position = new Point(0, 0);
+
+        /**
+         * The scale factor of the object.
+         *
+         * @member {PIXI.Point}
+         */
+        this.scale = new Point(1, 1);
+
+        /**
+         * The skew amount, on the x and y axis.
+         *
+         * @member {PIXI.ObservablePoint}
+         */
+        this.skew = new ObservablePoint(this.updateSkew, this, 0, 0);
+
+        /**
+         * The pivot point of the displayObject that it rotates around
+         *
+         * @member {PIXI.Point}
+         */
+        this.pivot = new Point(0, 0);
+
+        /**
+         * The rotation value of the object, in radians
+         *
+         * @member {Number}
+         * @private
+         */
+        this._rotation = 0;
+
+        this._cx = 1; // cos rotation + skewY;
+        this._sx = 0; // sin rotation + skewY;
+        this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+        this._sy = 1; // sin rotation + Math.PI/2 - skewX;
+    }
 
     /**
-     * The scale factor of the object.
+     * Updates the skew values when the skew or rotation changes.
      *
-     * @member {PIXI.Point}
-     */
-    this.scale = new math.Point(1,1);
-
-    /**
-     * The skew amount, on the x and y axis.
-     *
-     * @member {PIXI.ObservablePoint}
-     */
-    this.skew = new math.ObservablePoint(this.updateSkew, this, 0,0);
-
-    /**
-     * The pivot point of the displayObject that it rotates around
-     *
-     * @member {PIXI.Point}
-     */
-    this.pivot = new math.Point(0.0);
-
-
-    /**
-     * The rotation value of the object, in radians
-     *
-     * @member {Number}
      * @private
      */
-    this._rotation = 0;
+    updateSkew()
+    {
+        this._cx = Math.cos(this._rotation + this.skew._y);
+        this._sx = Math.sin(this._rotation + this.skew._y);
+        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
+    }
 
-    this._sr = Math.sin(0);
-    this._cr = Math.cos(0);
-    this._cy  = Math.cos(0);//skewY);
-    this._sy  = Math.sin(0);//skewY);
-    this._nsx = Math.sin(0);//skewX);
-    this._cx  = Math.cos(0);//skewX);
+    /**
+     * Updates only local matrix
+     */
+    updateLocalTransform()
+    {
+        const lt = this.localTransform;
 
-    this._dirty = false;
-    this.updated = true;
+        lt.a = this._cx * this.scale.x;
+        lt.b = this._sx * this.scale.x;
+        lt.c = this._cy * this.scale.y;
+        lt.d = this._sy * this.scale.y;
 
-    this._worldID = 0;
-}
+        lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
+        lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
+    }
 
-Transform.prototype.constructor = Transform;
+    /**
+     * Updates the values of the object and applies the parent's transform.
+     *
+     * @param {PIXI.Transform} parentTransform - The transform of the parent of this object
+     */
+    updateTransform(parentTransform)
+    {
+        const lt = this.localTransform;
 
-Transform.prototype.updateSkew = function ()
-{
-    this._cy  = Math.cos(this.skew.y);
-    this._sy  = Math.sin(this.skew.y);
-    this._nsx = Math.sin(this.skew.x);
-    this._cx  = Math.cos(this.skew.x);
-};
+        lt.a = this._cx * this.scale.x;
+        lt.b = this._sx * this.scale.x;
+        lt.c = this._cy * this.scale.y;
+        lt.d = this._sy * this.scale.y;
 
-/**
- * Updates the values of the object and applies the parent's transform.
- * @param parentTransform {PIXI.Transform} The transform of the parent of this object
- */
-Transform.prototype.updateTransform = function (parentTransform)
-{
+        lt.tx = this.position.x - ((this.pivot.x * lt.a) + (this.pivot.y * lt.c));
+        lt.ty = this.position.y - ((this.pivot.x * lt.b) + (this.pivot.y * lt.d));
 
-    var pt = parentTransform.worldTransform;
-    var wt = this.worldTransform;
-    var lt = this.localTransform;
-    var a, b, c, d;
+        // concat the parent matrix with the objects transform.
+        const pt = parentTransform.worldTransform;
+        const wt = this.worldTransform;
 
-    a  =  this._cr * this.scale.x;
-    b  =  this._sr * this.scale.x;
-    c  = -this._sr * this.scale.y;
-    d  =  this._cr * this.scale.y;
+        wt.a = (lt.a * pt.a) + (lt.b * pt.c);
+        wt.b = (lt.a * pt.b) + (lt.b * pt.d);
+        wt.c = (lt.c * pt.a) + (lt.d * pt.c);
+        wt.d = (lt.c * pt.b) + (lt.d * pt.d);
+        wt.tx = (lt.tx * pt.a) + (lt.ty * pt.c) + pt.tx;
+        wt.ty = (lt.tx * pt.b) + (lt.ty * pt.d) + pt.ty;
 
-    lt.a  = this._cy * a + this._sy * c;
-    lt.b  = this._cy * b + this._sy * d;
-    lt.c  = this._nsx * a + this._cx * c;
-    lt.d  = this._nsx * b + this._cx * d;
+        this._worldID ++;
+    }
 
-    lt.tx =  this.position.x - (this.pivot.x * lt.a + this.pivot.y * lt.c);
-    lt.ty =  this.position.y - (this.pivot.x * lt.b + this.pivot.y * lt.d);
+    /**
+     * Decomposes a matrix and sets the transforms properties based on it.
+     *
+     * @param {PIXI.Matrix} matrix - The matrix to decompose
+     */
+    setFromMatrix(matrix)
+    {
+        matrix.decompose(this);
+    }
 
-    // concat the parent matrix with the objects transform.
-    wt.a  = lt.a  * pt.a + lt.b  * pt.c;
-    wt.b  = lt.a  * pt.b + lt.b  * pt.d;
-    wt.c  = lt.c  * pt.a + lt.d  * pt.c;
-    wt.d  = lt.c  * pt.b + lt.d  * pt.d;
-    wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-    wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
-
-    this._worldID ++;
-};
-
-/**
- * Decomposes a matrix and sets the transforms properties based on it.
- * @param {PIXI.Matrix} The matrix to decompose
- */
-Transform.prototype.setFromMatrix = function (matrix)
-{
-    matrix.decompose(this);
-};
-
-
-Object.defineProperties(Transform.prototype, {
     /**
      * The rotation of the object in radians.
      *
      * @member {number}
-     * @memberof PIXI.Transform#
      */
-    rotation: {
-        get: function () {
-            return this._rotation;
-        },
-        set: function (value) {
-            this._rotation = value;
-            this._sr = Math.sin(value);
-            this._cr = Math.cos(value);
-        }
+    get rotation()
+    {
+        return this._rotation;
     }
-});
 
-module.exports = Transform;
+    set rotation(value) // eslint-disable-line require-jsdoc
+    {
+        this._rotation = value;
+        this.updateSkew();
+    }
+}

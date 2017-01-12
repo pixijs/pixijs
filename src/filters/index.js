@@ -1,20 +1,11 @@
 /**
- * @file        Main export of the PIXI filters library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/pixijs/pixi.js/blob/master/LICENSE|MIT License}
- */
-
-/**
  * @namespace PIXI.filters
  */
-module.exports = {
-    FXAAFilter:          require('./fxaa/FXAAFilter'),
-    NoiseFilter:        require('./noise/NoiseFilter'),
-    DisplacementFilter: require('./displacement/DisplacementFilter'),
-    BlurFilter:         require('./blur/BlurFilter'),
-    BlurXFilter:        require('./blur/BlurXFilter'),
-    BlurYFilter:        require('./blur/BlurYFilter'),
-    ColorMatrixFilter:  require('./colormatrix/ColorMatrixFilter'),
-    VoidFilter:         require('./void/VoidFilter')
-};
+export { default as FXAAFilter } from './fxaa/FXAAFilter';
+export { default as NoiseFilter } from './noise/NoiseFilter';
+export { default as DisplacementFilter } from './displacement/DisplacementFilter';
+export { default as BlurFilter } from './blur/BlurFilter';
+export { default as BlurXFilter } from './blur/BlurXFilter';
+export { default as BlurYFilter } from './blur/BlurYFilter';
+export { default as ColorMatrixFilter } from './colormatrix/ColorMatrixFilter';
+export { default as VoidFilter } from './void/VoidFilter';

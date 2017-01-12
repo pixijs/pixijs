@@ -1,37 +1,59 @@
+/**
+ * Creates a little colored canvas
+ *
+ * @ignore
+ * @param {string} color - The color to make the canvas
+ * @return {canvas} a small canvas element
+ */
+function createColoredCanvas(color)
+{
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 6;
+    canvas.height = 1;
+
+    const context = canvas.getContext('2d');
+
+    context.fillStyle = color;
+    context.fillRect(0, 0, 6, 1);
+
+    return canvas;
+}
 
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
  *
  * @return {boolean} whether they are supported
  */
-var canUseNewCanvasBlendModes = function ()
+export default function canUseNewCanvasBlendModes()
 {
     if (typeof document === 'undefined')
     {
         return false;
     }
 
-    var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
-    var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
+    const magenta = createColoredCanvas('#ff00ff');
+    const yellow = createColoredCanvas('#ffff00');
 
-    var magenta = new Image();
-    magenta.src = pngHead + 'AP804Oa6' + pngEnd;
+    const canvas = document.createElement('canvas');
 
-    var yellow = new Image();
-    yellow.src = pngHead + '/wCKxvRF' + pngEnd;
-
-    var canvas = document.createElement('canvas');
     canvas.width = 6;
     canvas.height = 1;
 
-    var context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
+
     context.globalCompositeOperation = 'multiply';
     context.drawImage(magenta, 0, 0);
     context.drawImage(yellow, 2, 0);
 
-    var data = context.getImageData(2,0,1,1).data;
+    const imageData = context.getImageData(2, 0, 1, 1);
+
+    if (!imageData)
+    {
+        return false;
+    }
+
+    const data = imageData.data;
 
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
-};
-
-module.exports = canUseNewCanvasBlendModes;
+}

@@ -1,5 +1,6 @@
-var core = require('../../core');
-var glslify  = require('glslify');
+import * as core from '../../core';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  *
@@ -11,23 +12,22 @@ var glslify  = require('glslify');
  *
  * @class
  * @extends PIXI.Filter
- * @memberof PIXI
+ * @memberof PIXI.filters
  *
  */
-function FXAAFilter()
+export default class FXAAFilter extends core.Filter
 {
-    //TODO - needs work
-    core.Filter.call(this,
-
-        // vertex shader
-        glslify('./fxaa.vert'),
-        // fragment shader
-        glslify('./fxaa.frag')
-    );
-
+    /**
+     *
+     */
+    constructor()
+    {
+        // TODO - needs work
+        super(
+            // vertex shader
+            readFileSync(join(__dirname, './fxaa.vert'), 'utf8'),
+            // fragment shader
+            readFileSync(join(__dirname, './fxaa.frag'), 'utf8')
+        );
+    }
 }
-
-FXAAFilter.prototype = Object.create(core.Filter.prototype);
-FXAAFilter.prototype.constructor = FXAAFilter;
-
-module.exports = FXAAFilter;

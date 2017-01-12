@@ -1,59 +1,126 @@
-var core = require('../../core');
+import * as core from '../../core';
+import BasePrepare from '../BasePrepare';
+
+const CANVAS_START_SIZE = 16;
 
 /**
- * Prepare uploads elements to the GPU. The CanvasRenderer version of prepare
- * provides the same APIs as the WebGL version, but doesn't do anything.
+ * The prepare manager provides functionality to upload content to the GPU
+ * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
+ * textures to an offline canvas.
+ * This draw call will force the texture to be moved onto the GPU.
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.prepare
+ *
  * @class
  * @memberof PIXI
- * @param renderer {PIXI.CanvasRenderer} A reference to the current renderer
  */
-function CanvasPrepare()
+export default class CanvasPrepare extends BasePrepare
 {
+    /**
+     * @param {PIXI.CanvasRenderer} renderer - A reference to the current renderer
+     */
+    constructor(renderer)
+    {
+        super(renderer);
+
+        this.uploadHookHelper = this;
+
+        /**
+        * An offline canvas to render textures to
+        * @type {HTMLCanvasElement}
+        * @private
+        */
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = CANVAS_START_SIZE;
+        this.canvas.height = CANVAS_START_SIZE;
+
+        /**
+         * The context to the canvas
+        * @type {CanvasRenderingContext2D}
+        * @private
+        */
+        this.ctx = this.canvas.getContext('2d');
+
+        // Add textures to upload
+        this.register(findBaseTextures, uploadBaseTextures);
+    }
+
+    /**
+     * Destroys the plugin, don't use after this.
+     *
+     */
+    destroy()
+    {
+        super.destroy();
+        this.ctx = null;
+        this.canvas = null;
+    }
+
 }
 
-CanvasPrepare.prototype.constructor = CanvasPrepare;
-module.exports = CanvasPrepare;
-
 /**
- * Stub method for upload.
- * @param {Function|PIXI.DisplayObject|PIXI.Container} item Either
- *        the container or display object to search for items to upload or
- *        the callback function, if items have been added using `prepare.add`.
- * @param {Function} done When completed
+ * Built-in hook to upload PIXI.Texture objects to the GPU.
+ *
+ * @private
+ * @param {*} prepare - Instance of CanvasPrepare
+ * @param {*} item - Item to check
+ * @return {boolean} If item was uploaded.
  */
-CanvasPrepare.prototype.upload = function(displayObject, done)
+function uploadBaseTextures(prepare, item)
 {
-    if (typeof displayObject === 'function')
+    if (item instanceof core.BaseTexture)
     {
-        done = displayObject;
-        displayObject = null;
+        const image = item.source;
+
+        // Sometimes images (like atlas images) report a size of zero, causing errors on windows phone.
+        // So if the width or height is equal to zero then use the canvas size
+        // Otherwise use whatever is smaller, the image dimensions or the canvas dimensions.
+        const imageWidth = image.width === 0 ? prepare.canvas.width : Math.min(prepare.canvas.width, image.width);
+        const imageHeight = image.height === 0 ? prepare.canvas.height : Math.min(prepare.canvas.height, image.height);
+
+        // Only a small subsections is required to be drawn to have the whole texture uploaded to the GPU
+        // A smaller draw can be faster.
+        prepare.ctx.drawImage(image, 0, 0, imageWidth, imageHeight, 0, 0, prepare.canvas.width, prepare.canvas.height);
+
+        return true;
     }
-    done();
-};
+
+    return false;
+}
 
 /**
- * Stub method for registering hooks.
- * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
+ * Built-in hook to find textures from Sprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item  -Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
  */
-CanvasPrepare.prototype.register = function()
+function findBaseTextures(item, queue)
 {
-    return this;
-};
+    // Objects with textures, like Sprites/Text
+    if (item instanceof core.BaseTexture)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
 
-/**
- * Stub method for adding items.
- * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
- */
-CanvasPrepare.prototype.add = function()
-{
-    return this;
-};
+        return true;
+    }
+    else if (item._texture && item._texture instanceof core.Texture)
+    {
+        const texture = item._texture.baseTexture;
 
-/**
- * Stub method for destroying plugin.
- */
-CanvasPrepare.prototype.destroy = function()
-{
-};
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
 
 core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);

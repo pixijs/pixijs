@@ -3,6 +3,7 @@
  * used by {@link PIXI.accessibility.AccessibilityManager}.
  *
  * @mixin
+ * @name accessibleTarget
  * @memberof PIXI
  * @example
  *      function MyObject() {}
@@ -12,15 +13,14 @@
  *          PIXI.accessibility.accessibleTarget
  *      );
  */
-var accessibleTarget = {
-
+export default {
     /**
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
      *   shadow div with attributes set
      *
      * @member {boolean}
      */
-    accessible:false,
+    accessible: false,
 
     /**
      * Sets the title attribute of the shadow div
@@ -28,30 +28,27 @@ var accessibleTarget = {
      *
      * @member {string}
      */
-    accessibleTitle:null,
+    accessibleTitle: null,
 
     /**
      * Sets the aria-label attribute of the shadow div
      *
      * @member {string}
      */
-    accessibleHint:null,
+    accessibleHint: null,
 
     /**
      * @todo Needs docs.
      */
-    tabIndex:0,
+    tabIndex: 0,
 
     /**
      * @todo Needs docs.
      */
-    _accessibleActive:false,
+    _accessibleActive: false,
 
     /**
      * @todo Needs docs.
      */
-    _accessibleDiv:false
-
+    _accessibleDiv: false,
 };
-
-module.exports = accessibleTarget;

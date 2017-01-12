@@ -1,31 +1,43 @@
-// run the polyfills
-require('./polyfill');
+// import polyfills. Done as an export to make sure polyfills are imported first
+export * from './polyfill';
 
-var core = module.exports = require('./core');
+// export core
+export * from './deprecation';
+export * from './core';
 
-// add core plugins.
-core.extras         = require('./extras');
-core.filters        = require('./filters');
-core.interaction    = require('./interaction');
-core.loaders        = require('./loaders');
-core.mesh           = require('./mesh');
-core.particles      = require('./particles');
-core.accessibility  = require('./accessibility');
-core.extract  		= require('./extract');
-core.prepare        = require('./prepare');
+// export libs
+import * as accessibility from './accessibility';
+import * as extract from './extract';
+import * as extras from './extras';
+import * as filters from './filters';
+import * as interaction from './interaction';
+import * as loaders from './loaders';
+import * as mesh from './mesh';
+import * as particles from './particles';
+import * as prepare from './prepare';
 
-// export a premade loader instance
+export {
+    accessibility,
+    extract,
+    extras,
+    filters,
+    interaction,
+    loaders,
+    mesh,
+    particles,
+    prepare,
+};
+
 /**
- * A premade instance of the loader that can be used to loader resources.
+ * A premade instance of the loader that can be used to load resources.
  *
  * @name loader
  * @memberof PIXI
  * @property {PIXI.loaders.Loader}
  */
-core.loader = new core.loaders.Loader();
+const loader = loaders && loaders.Loader ? new loaders.Loader() : null; // check is there in case user excludes loader lib
 
-// mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
+export { loader };
 
 // Always export pixi globally.
-global.PIXI = core;
+global.PIXI = exports; // eslint-disable-line

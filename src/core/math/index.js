@@ -3,20 +3,13 @@
  *
  * @lends PIXI
  */
-module.exports = {
-    // These will be mixed to be made publicly available,
-    // while this module is used internally in core
-    // to avoid circular dependencies and cut down on
-    // internal module requires.
+export { default as Point } from './Point';
+export { default as ObservablePoint } from './ObservablePoint';
+export { default as Matrix } from './Matrix';
+export { default as GroupD8 } from './GroupD8';
 
-    Point:              require('./Point'),
-    ObservablePoint:    require('./ObservablePoint'),
-    Matrix:             require('./Matrix'),
-    GroupD8:            require('./GroupD8'),
-
-    Circle:             require('./shapes/Circle'),
-    Ellipse:            require('./shapes/Ellipse'),
-    Polygon:            require('./shapes/Polygon'),
-    Rectangle:          require('./shapes/Rectangle'),
-    RoundedRectangle:   require('./shapes/RoundedRectangle')
-};
+export { default as Circle } from './shapes/Circle';
+export { default as Ellipse } from './shapes/Ellipse';
+export { default as Polygon } from './shapes/Polygon';
+export { default as Rectangle } from './shapes/Rectangle';
+export { default as RoundedRectangle } from './shapes/RoundedRectangle';

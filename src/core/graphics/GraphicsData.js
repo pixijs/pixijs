@@ -3,103 +3,108 @@
  *
  * @class
  * @memberof PIXI
- * @param lineWidth {number} the width of the line to draw
- * @param lineColor {number} the color of the line to draw
- * @param lineAlpha {number} the alpha of the line to draw
- * @param fillColor {number} the color of the fill
- * @param fillAlpha {number} the alpha of the fill
- * @param fill      {boolean} whether or not the shape is filled with a colour
- * @param shape     {PIXI.math.Circle|PIXI.math.Rectangle|PIXI.math.Ellipse|PIXI.math.Polygon} The shape object to draw.
  */
-function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
+export default class GraphicsData
 {
-    /*
-     * @member {number} the width of the line to draw
+    /**
+     *
+     * @param {number} lineWidth - the width of the line to draw
+     * @param {number} lineColor - the color of the line to draw
+     * @param {number} lineAlpha - the alpha of the line to draw
+     * @param {number} fillColor - the color of the fill
+     * @param {number} fillAlpha - the alpha of the fill
+     * @param {boolean} fill - whether or not the shape is filled with a colour
+     * @param {PIXI.Circle|PIXI.Rectangle|PIXI.Ellipse|PIXI.Polygon} shape - The shape object to draw.
      */
-    this.lineWidth = lineWidth;
+    constructor(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
+    {
+        /**
+         * @member {number} the width of the line to draw
+         */
+        this.lineWidth = lineWidth;
 
-    /*
-     * @member {number} the color of the line to draw
+        /**
+         * @member {number} the color of the line to draw
+         */
+        this.lineColor = lineColor;
+
+        /**
+         * @member {number} the alpha of the line to draw
+         */
+        this.lineAlpha = lineAlpha;
+
+        /**
+         * @member {number} cached tint of the line to draw
+         */
+        this._lineTint = lineColor;
+
+        /**
+         * @member {number} the color of the fill
+         */
+        this.fillColor = fillColor;
+
+        /**
+         * @member {number} the alpha of the fill
+         */
+        this.fillAlpha = fillAlpha;
+
+        /**
+         * @member {number} cached tint of the fill
+         */
+        this._fillTint = fillColor;
+
+        /**
+         * @member {boolean} whether or not the shape is filled with a colour
+         */
+        this.fill = fill;
+
+        this.holes = [];
+
+        /**
+         * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+         */
+        this.shape = shape;
+
+        /**
+         * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
+         */
+        this.type = shape.type;
+    }
+
+    /**
+     * Creates a new GraphicsData object with the same values as this one.
+     *
+     * @return {PIXI.GraphicsData} Cloned GraphicsData object
      */
-    this.lineColor = lineColor;
+    clone()
+    {
+        return new GraphicsData(
+            this.lineWidth,
+            this.lineColor,
+            this.lineAlpha,
+            this.fillColor,
+            this.fillAlpha,
+            this.fill,
+            this.shape
+        );
+    }
 
-    /*
-     * @member {number} the alpha of the line to draw
+    /**
+     * Adds a hole to the shape.
+     *
+     * @param {PIXI.Rectangle|PIXI.Circle} shape - The shape of the hole.
      */
-    this.lineAlpha = lineAlpha;
+    addHole(shape)
+    {
+        this.holes.push(shape);
+    }
 
-    /*
-     * @member {number} cached tint of the line to draw
+    /**
+     * Destroys the Graphics data.
      */
-    this._lineTint = lineColor;
-
-    /*
-     * @member {number} the color of the fill
-     */
-    this.fillColor = fillColor;
-
-    /*
-     * @member {number} the alpha of the fill
-     */
-    this.fillAlpha = fillAlpha;
-
-    /*
-     * @member {number} cached tint of the fill
-     */
-    this._fillTint = fillColor;
-
-    /*
-     * @member {boolean} whether or not the shape is filled with a colour
-     */
-    this.fill = fill;
-
-    this.holes = [];
-
-    /*
-     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
-     */
-    this.shape = shape;
-
-    /*
-     * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
-     */
-    this.type = shape.type;
+    destroy()
+    {
+        this.shape = null;
+        this.holes = null;
+    }
 }
-
-GraphicsData.prototype.constructor = GraphicsData;
-module.exports = GraphicsData;
-
-/**
- * Creates a new GraphicsData object with the same values as this one.
- *
- * @return {PIXI.GraphicsData} Cloned GraphicsData object
- */
-GraphicsData.prototype.clone = function ()
-{
-    return new GraphicsData(
-        this.lineWidth,
-        this.lineColor,
-        this.lineAlpha,
-        this.fillColor,
-        this.fillAlpha,
-        this.fill,
-        this.shape
-    );
-};
-
-/**
- *
- *
- */
-GraphicsData.prototype.addHole = function (shape)
-{
-    this.holes.push(shape);
-};
-
-/**
- * Destroys the Graphics data.
- */
-GraphicsData.prototype.destroy = function () {
-    this.shape = null;
-    this.holes = null;
-};
