@@ -572,7 +572,6 @@ export default class Text extends Sprite
                 {
                     stop = currentIteration / totalIterations;
                 }
-
                 gradient.addColorStop(stop, style.fill[i]);
                 currentIteration++;
             }
