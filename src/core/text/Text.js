@@ -539,7 +539,14 @@ export default class Text extends Sprite
                 currentIteration += 1;
                 for (let j = 0; j < style.fill.length; j++)
                 {
-                    stop = (currentIteration / totalIterations);
+                    if (style.fillGradientStops[j])
+                    {
+                        stop = (i / lines.length) + (style.fillGradientStops[j] / lines.length);
+                    }
+                    else
+                    {
+                        stop = currentIteration / totalIterations;
+                    }
                     gradient.addColorStop(stop, style.fill[j]);
                     currentIteration++;
                 }
@@ -557,7 +564,15 @@ export default class Text extends Sprite
 
             for (let i = 0; i < style.fill.length; i++)
             {
-                stop = currentIteration / totalIterations;
+                if (style.fillGradientStops[i])
+                {
+                    stop = style.fillGradientStops[i];
+                }
+                else
+                {
+                    stop = currentIteration / totalIterations;
+                }
+
                 gradient.addColorStop(stop, style.fill[i]);
                 currentIteration++;
             }
@@ -569,7 +584,7 @@ export default class Text extends Sprite
     /**
      * Destroys this text object.
      * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
-     * the majorety of the time the texture will not be shared with any other Sprites.
+     * the majority of the time the texture will not be shared with any other Sprites.
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value
