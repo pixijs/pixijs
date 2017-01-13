@@ -163,7 +163,7 @@ export default class Rectangle
     pad(paddingX, paddingY)
     {
         paddingX = paddingX || 0;
-        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
+        paddingY = paddingY || paddingX;
 
         this.x -= paddingX;
         this.y -= paddingY;
@@ -222,19 +222,23 @@ export default class Rectangle
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
-     * @param {PIXI.Rectangle} rect - The rectangle to include.
+     * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      */
-    enlarge(rect)
+    enlarge(rectangle)
     {
-        if (rect === Rectangle.EMPTY)
+        if (rectangle.left === 0
+            && rectangle.top === 0
+            && rectangle.right === 0
+            && rectangle.bottom === 0
+            && rectangle.type === SHAPES.RECT)
         {
             return;
         }
 
-        const x1 = Math.min(this.x, rect.x);
-        const x2 = Math.max(this.x + this.width, rect.x + rect.width);
-        const y1 = Math.min(this.y, rect.y);
-        const y2 = Math.max(this.y + this.height, rect.y + rect.height);
+        const x1 = Math.min(this.x, rectangle.x);
+        const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
+        const y1 = Math.min(this.y, rectangle.y);
+        const y2 = Math.max(this.y + this.height, rectangle.y + rectangle.height);
 
         this.x = x1;
         this.width = x2 - x1;
