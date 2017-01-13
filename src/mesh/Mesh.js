@@ -31,8 +31,8 @@ export default class Mesh extends RawMesh
                                          readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
         }
 
-        geometry.addAttribute('aVertexPosition', vertices, 2)
-        .addAttribute('aTextureCoord', uvs, 2)
+        geometry.addAttribute('aVertexPosition', vertices, 2 * 4)
+        .addAttribute('aTextureCoord', uvs, 2 * 4)
         .addIndex(indices);
 
         const uniforms = {

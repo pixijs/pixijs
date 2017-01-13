@@ -60,6 +60,7 @@ export default class StateManager
 
         this.defaultState = new WebGLState();
         this.defaultState.blend = true;
+        this.defaultState.depth = true;
 
         this.setState(this.defaultState);
     }

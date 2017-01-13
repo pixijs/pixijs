@@ -57,7 +57,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
         this.renderer.state.setState(mesh.state);
 
         // bind the geometry...
-        this.bindGeometry(mesh.geometry);
+        this.bindGeometry(mesh.geometry, glShader);
 
         // then render it..
         mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
@@ -68,20 +68,18 @@ export default class MeshRenderer extends core.ObjectRenderer {
      * @private
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to bind
      */
-    bindGeometry(geometry)
+    bindGeometry(geometry, glShader)
     {
-        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry);
+        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry, glShader);
 
         this.renderer.bindVao(vao);
-
-        const data = geometry.data;
 
         // TODO - optimise later!
         // don't need to loop through if nothing changed!
         // maybe look to add an 'autoupdate' to geometry?
-        for (let i = 0; i < data.buffers.length; i++)
+        for (let i = 0; i < geometry.buffers.length; i++)
         {
-            const buffer = data.buffers[i];
+            const buffer = geometry.buffers[i];
 
             const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
@@ -100,7 +98,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
      * @return {PIXI.glCore.VertexArrayObject} Returns a fresh vao.
      */
-    initGeometryVao(geometry)
+    initGeometryVao(geometry, glShader)
     {
         const gl = this.gl;
 
@@ -108,7 +106,9 @@ export default class MeshRenderer extends core.ObjectRenderer {
 
         const vao = this.renderer.createVao();
 
-        const buffers = geometry.data.buffers;
+        const buffers = geometry.buffers;
+        const attributes = geometry.attributes;
+
 
         // first update - and creat the buffers!
         for (let i = 0; i < buffers.length; i++)
@@ -128,29 +128,52 @@ export default class MeshRenderer extends core.ObjectRenderer {
             }
         }
 
-        if (geometry.data.indexBuffer)
+
+        if (geometry.indexBuffer)
         {
             // first update the index buffer if we have one..
-            vao.addIndex(geometry.data.indexBuffer._glBuffers[this.CONTEXT_UID]);
+            vao.addIndex(geometry.indexBuffer._glBuffers[this.CONTEXT_UID]);
         }
 
-        const map = geometry.style.generateAttributeLocations();
+        var stride = 0;
+        const tempStride = {};
+        const tempStart = {};
+
+        for(const j in buffers)
+        {
+            tempStride[buffers[j].id] = 0;
+            tempStart[buffers[j].id] = 0;
+        }
+
+        for (const j in attributes)
+        {
+            // calculate stride..
+            tempStride[attributes[j].buffer] += glShader.attributes[j].size;
+            //assuming float for now!
+        }
+
+        let start = 0;
+
+
+        console.log(buffers)
+        console.log(attributes)
 
         // next update the attributes buffer..
-        for (const j in geometry.style.attributes)
+        for (const j in attributes)
         {
-            const attribute = geometry.style.attributes[j];
-            const buffer = geometry.data[attribute.buffer];
+            const attribute = attributes[j];
+            const buffer = buffers[attribute.buffer];
 
-            // need to know the shader..
-            // or DO we... NOPE!
             const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
-            vao.addAttribute(glBuffer, {
-                size: attribute.size,
-                location: map[j],
-            }, gl.FLOAT, false, attribute.stride, attribute.start);
+            // need to know the shader as it means we can be lazy and let pixi do the work for us..
+            // stride, start, type?
+            vao.addAttribute(glBuffer, glShader.attributes[j], attribute.type || 5126, attribute.normalized, 0, 0)//, tempStride[attribute.buffer] * 4, tempStart[attribute.buffer] * 4);
+
+            tempStart[attribute.buffer] += glShader.attributes[j].size
         }
+
+        console.log(vao);
 
         geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
 
