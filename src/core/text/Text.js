@@ -33,9 +33,8 @@ export default class Text extends Sprite
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
-     * @param {boolean} [trim] - Trim transparent borders
      */
-    constructor(text, style, canvas, trim)
+    constructor(text, style, canvas)
     {
         canvas = canvas || document.createElement('canvas');
 
@@ -104,13 +103,6 @@ export default class Text extends Sprite
         this.style = style;
 
         this.localStyleID = -1;
-
-        /**
-         * Trim transparent borders
-         *
-         * @member {boolean}
-         */
-        this.trim = trim;
     }
 
     /**
@@ -334,7 +326,7 @@ export default class Text extends Sprite
      */
     updateTexture()
     {
-        if (this.trim)
+        if (this._style.trim)
         {
             const trimmed = this.getTrimmed(this.canvas);
 

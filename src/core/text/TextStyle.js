@@ -27,6 +27,7 @@ const defaultStyle = {
     stroke: 'black',
     strokeThickness: 0,
     textBaseline: 'alphabetic',
+    trim: false,
     wordWrap: false,
     wordWrapWidth: 100,
 };
@@ -76,6 +77,7 @@ export default class TextStyle
      *  e.g 'blue', '#FCFF00'
      * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
      *  Default is 0 (no stroke)
+     * @param {boolean} [style.trim=false] - Trim transparent borders
      * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
@@ -398,6 +400,19 @@ export default class TextStyle
         if (this._textBaseline !== textBaseline)
         {
             this._textBaseline = textBaseline;
+            this.styleID++;
+        }
+    }
+
+    get trim()
+    {
+        return this._trim;
+    }
+    set trim(trim)
+    {
+        if (this._trim !== trim)
+        {
+            this._trim = trim;
             this.styleID++;
         }
     }
