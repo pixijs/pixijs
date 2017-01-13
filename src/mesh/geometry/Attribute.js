@@ -17,14 +17,13 @@ class Attribute
      * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
      * @param {Boolean} [normalised=false] should the data be normalised.
      */
-    constructor(buffer, size = 2, stride = 0, start = 0, normalised = false)
+    constructor(buffer, normalised = false, type, stride, start)
     {
         this.buffer = buffer;
         this.normalized = normalised;
-        this.size = size;
+        this.type = type;
         this.stride = stride;
         this.start = start;
-        this.type = null;
     }
 
     /**

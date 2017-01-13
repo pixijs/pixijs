@@ -59,8 +59,8 @@ export default class RawMesh extends core.Container
          * @default PIXI.BLEND_MODES.NORMAL
          * @see PIXI.BLEND_MODES
          */
-        this.blendMode = core.BLEND_MODES.NORMAL;
-        this.state.blendMode = this.blendMode;
+        //this.blendMode = core.BLEND_MODES.NORMAL;
+        //this.state.blendMode = this.blendMode;
 
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.RawMesh.DRAW_MODES} consts

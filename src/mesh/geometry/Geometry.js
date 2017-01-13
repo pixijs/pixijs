@@ -1,7 +1,5 @@
 import Attribute from './Attribute';
 import Buffer from './Buffer';
-import GeometryStyle from './GeometryStyle';
-import GeometryData from './GeometryData';
 
 /* eslint-disable max-len */
 
@@ -28,22 +26,16 @@ import GeometryData from './GeometryData';
 export default class Geometry
 {
     /**
-     * @param {PIXI.mesh.GeometryData} data  optional structure of the model such as the attributes layout
-     * @param {PIXI.mesh.GeometryStyle} style optional data of the model, this consists of buffers.
+     * @param {array} data  this consists of buffers. optional.
+     * @param {object} attributes of the geometry, optional structure of the attributes layout
      */
-    constructor(data, style)
+    constructor(buffers, attributes)
     {
-        /**
-         * the style of the geometry
-         * @type {PIXI.mesh.GeometryStyle}
-         */
-        this.style = style || new GeometryStyle();
+        this.buffers = buffers || [];
 
-        /**
-         * the data of the geometry
-         * @type {PIXI.mesh.GeometryData}
-         */
-        this.data = data || new GeometryData();
+        this.indexBuffer = null;
+
+        this.attributes = attributes || {};
 
         /**
          * A map of renderer IDs to webgl VAOs
@@ -67,7 +59,7 @@ export default class Geometry
     *
     * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
     */
-    addAttribute(id, buffer, size = 2, stride = 0, start = 0, normalised = false)
+    addAttribute(id, buffer, normalised = false, type, stride, start)
     {
         // check if this is a buffer!
         if (!buffer.data)
@@ -81,12 +73,27 @@ export default class Geometry
             buffer = new Buffer(buffer);
         }
 
-        this.style.addAttribute(id, new Attribute(buffer.id, size, stride, start, normalised));
-        this.data.add(buffer.id, buffer);
+        var ids = id.split('|');
 
-        // dynamically create an access point..
-        // TODO - is this good or Bad?
-        this[id] = buffer;
+        if(ids.length > 1)
+        {
+            for (var i = 0; i < ids.length; i++)
+            {
+                this.addAttribute(ids[i], buffer, normalised, type)
+            }
+
+            return this;
+        }
+
+        let bufferIndex = this.buffers.indexOf(buffer);
+
+        if (bufferIndex === -1)
+        {
+            this.buffers.push(buffer);
+            bufferIndex = this.buffers.length-1
+        }
+
+        this.attributes[id] = new Attribute(bufferIndex, normalised, type, stride, start);
 
         return this;
     }
@@ -99,7 +106,7 @@ export default class Geometry
      */
     getAttribute(id)
     {
-        return this.data[this.style.attributes[id].buffer];
+        return this.buffers[this.attributes[id].buffer];
     }
 
     /**
@@ -112,7 +119,24 @@ export default class Geometry
     */
     addIndex(buffer)
     {
-        this.data.addIndex(buffer);
+        if (!buffer.data)
+        {
+            // its an array!
+            if (buffer instanceof Array)
+            {
+                buffer = new Uint16Array(buffer);
+            }
+
+            buffer = new Buffer(buffer);
+        }
+
+        buffer.index = true;
+        this.indexBuffer = buffer;
+
+        if (this.buffers.indexOf(buffer) === -1)
+        {
+            this.buffers.push(buffer);
+        }
 
         return this;
     }
@@ -124,7 +148,7 @@ export default class Geometry
      */
     getIndex()
     {
-        return this.data.indexBuffer;
+        return this.indexBuffer;
     }
 
     /**
@@ -139,7 +163,14 @@ export default class Geometry
 
         this.glVertexArrayObjects = null;
 
-        this.data.destroy();
-        this.style.destroy();
+        for (let i = 0; i < this.buffers.length; i++)
+        {
+            this.buffers[i].destroy();
+        }
+
+        this.buffers = null;
+        this.indexBuffer.destroy();
+
+        this.attributes = null;
     }
 }

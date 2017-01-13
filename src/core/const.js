@@ -134,6 +134,12 @@ export const DRAW_MODES = {
     TRIANGLE_FAN:   6,
 };
 
+export const TYPES = {
+    FLOAT:         5126,
+    UNSIGNED_SHORT:5123,
+    UNSIGNED_BYTE: 5121
+};
+
 /**
  * The scale modes that are supported by pixi.
  *
