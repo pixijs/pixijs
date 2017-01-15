@@ -99,14 +99,14 @@ export default class Plane extends Mesh
         this.uvs = new Float32Array(uvs);
         this.indices = new Uint16Array(indices);
 
-        this.geometry.aVertexPosition.data = this.vertices;
-        this.geometry.aTextureCoord.data = this.uvs;
-        this.geometry.data.indexBuffer.data = this.indices;
+        this.geometry.buffers[0].data = this.vertices;
+        this.geometry.buffers[1].data = this.uvs;
+        this.geometry.indexBuffer.data = this.indices;
 
         // ensure that the changes are uploaded
-        this.geometry.aVertexPosition.update();
-        this.geometry.aTextureCoord.update();
-        this.geometry.data.indexBuffer.update();
+        this.geometry.buffers[0].update();
+        this.geometry.buffers[1].update();
+        this.geometry.indexBuffer.update();
     }
 
     /**
@@ -116,7 +116,7 @@ export default class Plane extends Mesh
      */
     updateTransform()
     {
-        this.geometry.aVertexPosition.update();
+        this.geometry.buffers[0].update();
         this.containerUpdateTransform();
     }
 }
