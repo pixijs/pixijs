@@ -31,6 +31,8 @@ export default class Buffer
 
         this._updateID = 0;
 
+        this.index = false;
+
         this.id = UID++;
     }
 

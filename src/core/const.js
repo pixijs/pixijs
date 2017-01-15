@@ -135,9 +135,9 @@ export const DRAW_MODES = {
 };
 
 export const TYPES = {
-    FLOAT:         5126,
-    UNSIGNED_SHORT:5123,
-    UNSIGNED_BYTE: 5121
+    FLOAT:          5126,
+    UNSIGNED_SHORT: 5123,
+    UNSIGNED_BYTE:  5121,
 };
 
 /**

@@ -1,5 +1,17 @@
 import Attribute from './Attribute';
 import Buffer from './Buffer';
+import interleaveTypedArrays from '../../core/utils/interleaveTypedArrays';
+import getBufferType from '../../core/utils/getBufferType';
+
+const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
+
+/* eslint-disable object-shorthand */
+const map = {
+    Float32Array: Float32Array,
+    Uint32Array: Uint32Array,
+    Int32Array: Int32Array,
+    Uint16Array: Uint16Array,
+};
 
 /* eslint-disable max-len */
 
@@ -26,7 +38,7 @@ import Buffer from './Buffer';
 export default class Geometry
 {
     /**
-     * @param {array} data  this consists of buffers. optional.
+     * @param {array} buffers  an array of buffers. optional.
      * @param {object} attributes of the geometry, optional structure of the attributes layout
      */
     constructor(buffers, attributes)
@@ -52,14 +64,15 @@ export default class Geometry
     *
     * @param {String} id - the name of the attribute (matching up to a shader)
     * @param {PIXI.mesh.Buffer} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
-    * @param {Number} [size=2] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
+    * @param {Number} [size=0] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
+    * @param {Boolean} [normalised=false] should the data be normalised.
+    * @param {Number} [type=PIXI.TYPES.FLOAT] what type of numbe is the attribute. Check {PIXI.TYPES} to see the ones available
     * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
     * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
-    * @param {Boolean} [normalised=false] should the data be normalised.
     *
     * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
     */
-    addAttribute(id, buffer, normalised = false, type, stride, start)
+    addAttribute(id, buffer, size, normalised = false, type, stride, start)
     {
         // check if this is a buffer!
         if (!buffer.data)
@@ -73,13 +86,13 @@ export default class Geometry
             buffer = new Buffer(buffer);
         }
 
-        var ids = id.split('|');
+        const ids = id.split('|');
 
-        if(ids.length > 1)
+        if (ids.length > 1)
         {
-            for (var i = 0; i < ids.length; i++)
+            for (let i = 0; i < ids.length; i++)
             {
-                this.addAttribute(ids[i], buffer, normalised, type)
+                this.addAttribute(ids[i], buffer, size, normalised, type);
             }
 
             return this;
@@ -90,10 +103,10 @@ export default class Geometry
         if (bufferIndex === -1)
         {
             this.buffers.push(buffer);
-            bufferIndex = this.buffers.length-1
+            bufferIndex = this.buffers.length - 1;
         }
 
-        this.attributes[id] = new Attribute(bufferIndex, normalised, type, stride, start);
+        this.attributes[id] = new Attribute(bufferIndex, size, normalised, type, stride, start);
 
         return this;
     }
@@ -152,6 +165,56 @@ export default class Geometry
     }
 
     /**
+     * this function modifies the structure so that all current attributes become interleaved into a single buffer
+     * This can be useful if your model remains static as it offers a little performance boost
+     *
+     * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
+     */
+    interleave()
+    {
+        // a simple check to see if buffers are already interleaved..
+        if (this.buffers.length === 1 || (this.buffers.length === 2 && this.indexBuffer)) return this;
+
+        // assume already that no buffers are interleaved
+        const arrays = [];
+        const sizes = [];
+        const interleavedBuffer = new Buffer();
+        let i;
+
+        for (i in this.attributes)
+        {
+            const attribute = this.attributes[i];
+
+            const buffer = this.buffers[attribute.buffer];
+
+            arrays.push(buffer.data);
+
+            sizes.push((attribute.size * byteSizeMap[attribute.type]) / 4);
+
+            attribute.buffer = 0;
+        }
+
+        interleavedBuffer.data = interleaveTypedArrays(arrays, sizes);
+
+        for (i = 0; i < this.buffers.length; i++)
+        {
+            if (this.buffers[i] !== this.indexBuffer)
+            {
+                this.buffers[i].destroy();
+            }
+        }
+
+        this.buffers = [interleavedBuffer];
+
+        if (this.indexBuffer)
+        {
+            this.buffers.push(this.indexBuffer);
+        }
+
+        return this;
+    }
+
+    /**
      * Destroys the geometry.
      */
     destroy()
@@ -172,5 +235,109 @@ export default class Geometry
         this.indexBuffer.destroy();
 
         this.attributes = null;
+    }
+
+    /**
+     * merges an array of geometries into a new single one
+     * geometry attribute styles must match for this operation to work
+     *
+     * @param {array|PIXI.mesh.Geometry} geometries array of geometries to merge
+     * @returns {PIXI.mesh.Geometry} shiney new geometry
+     */
+    static merge(geometries)
+    {
+        // todo add a geometry check!
+        // also a size check.. cant be too big!]
+
+        const geometryOut = new Geometry();
+
+        const arrays = [];
+        const sizes = [];
+        const offsets = [];
+
+        let geometry;
+
+        // pass one.. get sizes..
+        for (let i = 0; i < geometries.length; i++)
+        {
+            geometry = geometries[i];
+
+            for (let j = 0; j < geometry.buffers.length; j++)
+            {
+                sizes[j] = sizes[j] || 0;
+                sizes[j] += geometry.buffers[j].data.length;
+                offsets[j] = 0;
+            }
+        }
+
+        // build the correct size arrays..
+        for (let i = 0; i < geometry.buffers.length; i++)
+        {
+            // TODO types!
+            arrays[i] = new map[getBufferType(geometry.buffers[i].data)](sizes[i]);
+            geometryOut.buffers[i] = new Buffer(arrays[i]);
+        }
+
+        // pass to set data..
+        for (let i = 0; i < geometries.length; i++)
+        {
+            geometry = geometries[i];
+
+            for (let j = 0; j < geometry.buffers.length; j++)
+            {
+                arrays[j].set(geometry.buffers[j].data, offsets[j]);
+                offsets[j] += geometry.buffers[j].data.length;
+            }
+        }
+
+        geometryOut.attributes = geometry.attributes;
+
+        if (geometry.indexBuffer)
+        {
+            geometryOut.indexBuffer = geometryOut.buffers[geometry.buffers.indexOf(geometry.indexBuffer)];
+            geometryOut.indexBuffer.index = true;
+
+            let offset = 0;
+            let stride = 0;
+            let offset2 = 0;
+            let bufferIndexToCount = 0;
+
+            // get a buffer
+            for (let i = 0; i < geometry.buffers.length; i++)
+            {
+                if (geometry.buffers[i] !== geometry.indexBuffer)
+                {
+                    bufferIndexToCount = i;
+                    break;
+                }
+            }
+
+            // figure out the stride of one buffer..
+            for (const i in geometry.attributes)
+            {
+                const attribute = geometry.attributes[i];
+
+                if ((attribute.buffer | 0) === bufferIndexToCount)
+                {
+                    stride += ((attribute.size * byteSizeMap[attribute.type]) / 4);
+                }
+            }
+
+            // time to off set all indexes..
+            for (let i = 0; i < geometries.length; i++)
+            {
+                const indexBufferData = geometries[i].indexBuffer.data;
+
+                for (let j = 0; j < indexBufferData.length; j++)
+                {
+                    geometryOut.indexBuffer.data[j + offset2] += offset;
+                }
+
+                offset += geometry.buffers[bufferIndexToCount].data.length / (stride);
+                offset2 += indexBufferData.length;
+            }
+        }
+
+        return geometryOut;
     }
 }

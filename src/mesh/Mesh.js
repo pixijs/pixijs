@@ -47,6 +47,8 @@ export default class Mesh extends RawMesh
 
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
+
+        this.blendMode = core.BLEND_MODES.NORMAL;
     }
 
      /**
@@ -71,6 +73,23 @@ export default class Mesh extends RawMesh
     {
         this._tint = value;
         core.utils.hex2rgb(this._tint, this.uniforms.tint);
+    }
+
+    /**
+     * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     * @see PIXI.BLEND_MODES
+     */
+    get blendMode()
+    {
+        return this.state.blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        this.state.blendMode = value;
     }
 
     /**

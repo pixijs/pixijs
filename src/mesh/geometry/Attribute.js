@@ -12,14 +12,16 @@ class Attribute
 {
     /**
      * @param {string} buffer  the id of the buffer that this attribute will look for
-     * @param {Number} [size=2] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2
+     * @param {Number} [size=0] the size of the attribute. If you hava 2 floats per vertex (eg position x and y) this would be 2.
+     * @param {Boolean} [normalised=false] should the data be normalised.
+     * @param {Number} [type=PIXI.TYPES.FLOAT] what type of numbe is the attribute. Check {PIXI.TYPES} to see the ones available
      * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
      * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
-     * @param {Boolean} [normalised=false] should the data be normalised.
      */
-    constructor(buffer, normalised = false, type, stride, start)
+    constructor(buffer, size, normalised = false, type = 5126, stride, start)
     {
         this.buffer = buffer;
+        this.size = size;
         this.normalized = normalised;
         this.type = type;
         this.stride = stride;

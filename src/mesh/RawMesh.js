@@ -53,16 +53,6 @@ export default class RawMesh extends core.Container
         this.state = state || new core.State();
 
         /**
-         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove any blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
-        //this.blendMode = core.BLEND_MODES.NORMAL;
-        //this.state.blendMode = this.blendMode;
-
-        /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.RawMesh.DRAW_MODES} consts
          *
          * @member {number}
@@ -141,7 +131,7 @@ export default class RawMesh extends core.Container
     _calculateBounds()
     {
         // The position property could be set manually?
-        if (this.geometry.style.attributes.aVertexPosition)
+        if (this.geometry.attributes.aVertexPosition)
         {
             const vertices = this.geometry.getAttribute('aVertexPosition').data;
 

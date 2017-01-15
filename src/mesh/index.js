@@ -6,8 +6,6 @@ export { default as RawMesh } from './RawMesh';
 export { default as MeshRenderer } from './webgl/MeshRenderer';
 export { default as CanvasMeshRenderer } from './canvas/CanvasMeshRenderer';
 export { default as Attribute } from './geometry/Attribute';
-export { default as GeometryData } from './geometry/GeometryData';
-export { default as GeometryStyle } from './geometry/GeometryStyle';
 export { default as Buffer } from './geometry/Buffer';
 export { default as Geometry } from './geometry/Geometry';
 export { default as Plane } from './Plane';
