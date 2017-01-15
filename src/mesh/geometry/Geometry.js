@@ -238,6 +238,43 @@ export default class Geometry
     }
 
     /**
+     * returns a clone of the geometry
+     *
+     * @returns {PIXI.mesh.Geometry} a new clone of this geometry
+     */
+    clone()
+    {
+        const geometry = new Geometry();
+
+        for (let i = 0; i < this.buffers.length; i++)
+        {
+            geometry.buffers[i] = new Buffer(this.buffers[i].data.slice());
+        }
+
+        for (const i in this.attributes)
+        {
+            const attrib = this.attributes[i];
+
+            geometry.attributes[i] = new Attribute(
+                attrib.buffer,
+                attrib.size,
+                attrib.normalized,
+                attrib.type,
+                attrib.stride,
+                attrib.start
+            );
+        }
+
+        if (this.indexBuffer)
+        {
+            geometry.indexBuffer = geometry.buffers[this.buffers.indexOf(this.indexBuffer)];
+            geometry.indexBuffer.index = true;
+        }
+
+        return geometry;
+    }
+
+    /**
      * merges an array of geometries into a new single one
      * geometry attribute styles must match for this operation to work
      *
