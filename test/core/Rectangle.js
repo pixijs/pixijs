@@ -145,12 +145,15 @@ describe('PIXI.Rectangle', () =>
         expect(rect2.right).to.equal(0);
         expect(rect2.bottom).to.equal(0);
 
-        const rect3 = new PIXI.Rectangle(0, 0, 10, 10);
-        const rect4 = new PIXI.Rectangle(10, 10, 20, 20);
+        const rect3 = new PIXI.Rectangle(0, 0, 20, 20);
+        const rect4 = new PIXI.Rectangle(10, 0, 20, 20);
 
-        rect4.fit(rect3);
+        rect3.fit(rect4);
 
-        expect(rect4.top).to.equal(10);
+        expect(rect3.left).to.equal(10);
+        expect(rect3.top).to.equal(0);
+        expect(rect3.right).to.equal(30);
+        expect(rect3.bottom).to.equal(20);
     });
 
     it('should generate an empty rectangle', () =>

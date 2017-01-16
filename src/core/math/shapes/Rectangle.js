@@ -163,7 +163,7 @@ export default class Rectangle
     pad(paddingX, paddingY)
     {
         paddingX = paddingX || 0;
-        paddingY = paddingY || paddingX;
+        paddingY = paddingY || ((paddingY !== 0) ? paddingX : 0);
 
         this.x -= paddingX;
         this.y -= paddingY;
@@ -226,15 +226,6 @@ export default class Rectangle
      */
     enlarge(rectangle)
     {
-        if (rectangle.left === 0
-            && rectangle.top === 0
-            && rectangle.right === 0
-            && rectangle.bottom === 0
-            && rectangle.type === SHAPES.RECT)
-        {
-            return;
-        }
-
         const x1 = Math.min(this.x, rectangle.x);
         const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
         const y1 = Math.min(this.y, rectangle.y);
