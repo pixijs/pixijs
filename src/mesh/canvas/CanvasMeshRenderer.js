@@ -1,5 +1,4 @@
 import * as core from '../../core';
-import { default as Mesh } from '../Mesh';
 
 /**
  * Renderer dedicated to meshes.
@@ -56,7 +55,7 @@ export default class MeshSpriteRenderer
 
         renderer.setBlendMode(mesh.blendMode);
 
-        if (mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
+        if (mesh.drawMode !== core.DRAW_MODES.TRIANGLES)
         {
             this._renderTriangleMesh(mesh);
         }
@@ -75,7 +74,7 @@ export default class MeshSpriteRenderer
     _renderTriangleMesh(mesh)
     {
         // draw triangles!!
-        const length = mesh.vertices.length / 2;
+        const length = mesh.geometry.buffers[0].data.length;
 
         for (let i = 0; i < length - 2; i++)
         {
@@ -121,8 +120,8 @@ export default class MeshSpriteRenderer
     _renderDrawTriangle(mesh, index0, index1, index2)
     {
         const context = this.renderer.context;
-        const uvs = mesh.geometry.getAttribute('aTextureCoord').data;
-        const vertices = mesh.geometry.getAttribute('aVertexPosition').data;
+        const vertices = mesh.geometry.buffers[0].data;
+        const uvs = mesh.geometry.buffers[1].data;
         const texture = mesh._texture;
 
         if (!texture.valid)
