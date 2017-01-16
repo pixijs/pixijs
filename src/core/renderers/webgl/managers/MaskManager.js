@@ -34,12 +34,17 @@ export default class MaskManager extends WebGLManager
      */
     pushMask(target, maskData)
     {
+        // TODO the root check means scissor rect will not
+        // be used on render textures more info here:
+        // https://github.com/pixijs/pixi.js/pull/3545
+
         if (maskData.texture)
         {
             this.pushSpriteMask(target, maskData);
         }
         else if (this.enableScissor
             && !this.scissor
+            && this.renderer._activeRenderTarget.root
             && !this.renderer.stencilManager.stencilMaskStack.length
             && maskData.isFastRect())
         {
