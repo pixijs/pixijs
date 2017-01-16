@@ -7,8 +7,7 @@ import Texture from './Texture';
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
  *
- * A RenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects is ignored. For example:
+ * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
