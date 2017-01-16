@@ -84,8 +84,8 @@ describe('PIXI.Rectangle', () =>
 
         rect4.enlarge(rect3);
 
-        expect(rect4.left).to.equal(10);
-        expect(rect4.top).to.equal(10);
+        expect(rect4.left).to.equal(0);
+        expect(rect4.top).to.equal(0);
         expect(rect4.right).to.equal(20);
         expect(rect4.bottom).to.equal(20);
     });
