@@ -33,6 +33,8 @@ export default class Buffer
 
         this.index = false;
 
+        this.static = true;
+
         this.id = UID++;
     }
 

@@ -90,6 +90,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
             {
                 glBuffer._updateID = buffer._updateID;
                 // TODO - partial upload??
+
                 glBuffer.upload(buffer.data, 0);
             }
         }
@@ -104,6 +105,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
      */
     initGeometryVao(geometry, glShader)
     {
+
         const gl = this.gl;
 
         this.renderer.bindVao(null);
@@ -126,7 +128,7 @@ export default class MeshRenderer extends core.ObjectRenderer {
                 }
                 else
                 {
-                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data);
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW );
                 }
             }
         }

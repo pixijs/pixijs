@@ -31,15 +31,18 @@ export default class Mesh extends RawMesh
                                          readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
         }
 
-        geometry.addAttribute('aVertexPosition', vertices, 2 * 4)
-        .addAttribute('aTextureCoord', uvs, 2 * 4)
+        geometry.addAttribute('aVertexPosition', vertices)
+        .addAttribute('aTextureCoord', uvs)
         .addIndex(indices);
+
+        geometry.getAttribute('aVertexPosition').static = false;
 
         const uniforms = {
             uSampler2: texture,
             alpha: 1,
             tint: new Float32Array([1, 1, 1]),
         };
+
 
         super(geometry, meshShader, uniforms, null, drawMode);
 
