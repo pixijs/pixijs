@@ -1,8 +1,8 @@
 'use strict';
 
-describe('PIXI.Rectangle', () =>
+describe('PIXI.Rectangle', function ()
 {
-    it('should create a new rectangle', () =>
+    it('should create a new rectangle', function ()
     {
         const rect = new PIXI.Rectangle(5, 5, 1, 1);
 
@@ -12,7 +12,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect.bottom).to.equal(6);
     });
 
-    it('should clone a new rectangle', () =>
+    it('should clone a new rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
 
@@ -30,7 +30,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect1).to.not.equal(rect2);
     });
 
-    it('should copy from one rectangle to another', () =>
+    it('should copy from one rectangle to another', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
         const rect2 = new PIXI.Rectangle(2, 2, 5, 5);
@@ -43,7 +43,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect1.height).to.equal(5);
     });
 
-    it('should check if point is within rectangle', () =>
+    it('should check if point is within rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
 
@@ -67,7 +67,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect2.contains(21, 21)).to.be.false;
     });
 
-    it('should enlarge rectangle', () =>
+    it('should enlarge rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
         const rect2 = new PIXI.Rectangle(15, 15, 10, 10);
@@ -90,7 +90,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect4.bottom).to.equal(20);
     });
 
-    it('should pad a rectangle', () =>
+    it('should pad a rectangle', function ()
     {
         // Pad with X & Y
         const rect = new PIXI.Rectangle(10, 10, 10, 10);
@@ -133,7 +133,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect3.bottom).to.equal(30);
     });
 
-    it('should fit a rectangle', () =>
+    it('should fit a rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(0, 0, -10, -10);
         const rect2 = new PIXI.Rectangle(-10, -10, 5, 5);
@@ -156,7 +156,7 @@ describe('PIXI.Rectangle', () =>
         expect(rect3.bottom).to.equal(20);
     });
 
-    it('should generate an empty rectangle', () =>
+    it('should generate an empty rectangle', function ()
     {
         const rect = PIXI.Rectangle.EMPTY;
 
