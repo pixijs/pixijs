@@ -67,25 +67,6 @@ describe('PIXI.Rectangle', function ()
         expect(rect2.contains(21, 21)).to.be.false;
     });
 
-    it('should make rectangle grow', function ()
-    {
-        const rect = new PIXI.Rectangle(10, 10, 10, 10);
-
-        rect.pad(1, 1);
-
-        expect(rect.left).to.equal(9);
-        expect(rect.top).to.equal(9);
-        expect(rect.right).to.equal(21);
-        expect(rect.bottom).to.equal(21);
-
-        rect.pad(10, 10);
-
-        expect(rect.left).to.equal(-1);
-        expect(rect.top).to.equal(-1);
-        expect(rect.right).to.equal(31);
-        expect(rect.bottom).to.equal(31);
-    });
-
     it('should enlarge rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
@@ -97,5 +78,91 @@ describe('PIXI.Rectangle', function ()
         expect(rect1.top).to.equal(10);
         expect(rect1.right).to.equal(25);
         expect(rect1.bottom).to.equal(25);
+
+        const rect3 = new PIXI.Rectangle(0, 0, 0, 0);
+        const rect4 = new PIXI.Rectangle(10, 10, 10, 10);
+
+        rect4.enlarge(rect3);
+
+        expect(rect4.left).to.equal(0);
+        expect(rect4.top).to.equal(0);
+        expect(rect4.right).to.equal(20);
+        expect(rect4.bottom).to.equal(20);
+    });
+
+    it('should pad a rectangle', function ()
+    {
+        // Pad with X & Y
+        const rect = new PIXI.Rectangle(10, 10, 10, 10);
+
+        rect.pad(10, 10);
+
+        expect(rect.left).to.equal(0);
+        expect(rect.top).to.equal(0);
+        expect(rect.right).to.equal(30);
+        expect(rect.bottom).to.equal(30);
+
+        // Pad with X
+        const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
+
+        rect1.pad(10);
+
+        expect(rect1.left).to.equal(0);
+        expect(rect1.top).to.equal(0);
+        expect(rect1.right).to.equal(30);
+        expect(rect1.bottom).to.equal(30);
+
+        // Pad with nothing
+        const rect2 = new PIXI.Rectangle(10, 10, 10, 10);
+
+        rect2.pad();
+
+        expect(rect2.left).to.equal(10);
+        expect(rect2.top).to.equal(10);
+        expect(rect2.right).to.equal(20);
+        expect(rect2.bottom).to.equal(20);
+
+        // Pad with Y
+        const rect3 = new PIXI.Rectangle(10, 10, 10, 10);
+
+        rect3.pad(null, 10);
+
+        expect(rect3.left).to.equal(10);
+        expect(rect3.top).to.equal(0);
+        expect(rect3.right).to.equal(20);
+        expect(rect3.bottom).to.equal(30);
+    });
+
+    it('should fit a rectangle', function ()
+    {
+        const rect1 = new PIXI.Rectangle(0, 0, -10, -10);
+        const rect2 = new PIXI.Rectangle(-10, -10, 5, 5);
+
+        rect2.fit(rect1);
+
+        expect(rect2.left).to.equal(0);
+        expect(rect2.top).to.equal(0);
+        expect(rect2.right).to.equal(0);
+        expect(rect2.bottom).to.equal(0);
+
+        const rect3 = new PIXI.Rectangle(0, 0, 20, 20);
+        const rect4 = new PIXI.Rectangle(10, 0, 20, 20);
+
+        rect3.fit(rect4);
+
+        expect(rect3.left).to.equal(10);
+        expect(rect3.top).to.equal(0);
+        expect(rect3.right).to.equal(30);
+        expect(rect3.bottom).to.equal(20);
+    });
+
+    it('should generate an empty rectangle', function ()
+    {
+        const rect = PIXI.Rectangle.EMPTY;
+
+        expect(rect.left).to.equal(0);
+        expect(rect.top).to.equal(0);
+        expect(rect.right).to.equal(0);
+        expect(rect.bottom).to.equal(0);
     });
 });
