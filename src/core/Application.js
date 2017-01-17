@@ -104,7 +104,7 @@ export default class Application
         this.ticker.remove(this.render, this);
         this.ticker = null;
 
-        this.stage.removeChildren();
+        this.stage.destroy();
         this.stage = null;
 
         this.renderer.destroy(removeView);
