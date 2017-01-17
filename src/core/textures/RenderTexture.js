@@ -22,15 +22,16 @@ import Texture from './Texture';
  * renderer.render(sprite, renderTexture);
  * ```
  *
- * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
- * position a Container should be used:
+ * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * you can clear the transform
  *
  * ```js
- * let doc = new PIXI.Container();
  *
- * doc.addChild(sprite);
+ * sprite.setTransform()
  *
- * renderer.render(doc, renderTexture);  // Renders to center of renderTexture
+ * let renderTexture = new PIXI.RenderTexture.create(100, 100);
+ *
+ * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
  * ```
  *
  * @class
