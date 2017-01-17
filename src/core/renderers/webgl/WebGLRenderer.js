@@ -294,6 +294,8 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.textureGC.update();
 
+        this.gl.flush();
+
         this.emit('postrender');
     }
 
