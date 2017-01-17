@@ -71,7 +71,7 @@ init();
  * This is the small part of gameofbombs.com portal system. It works.
  *
  * @author Ivan @ivanpopelyshev
- * @class 
+ * @class
  * @memberof PIXI
  */
 const GroupD8 = {
@@ -112,7 +112,7 @@ const GroupD8 = {
 
     /**
      * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
-     * 
+     *
      * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to check.
      * @returns {boolean} Whether or not the width/height should be swapped.
