@@ -54,13 +54,18 @@ export default class Application
          */
         this.ticker = new Ticker();
 
-        this.ticker.add(() =>
-        {
-            this.renderer.render(this.stage);
-        });
+        this.ticker.add(this.render, this);
 
         // Start the rendering
         this.start();
+    }
+
+    /**
+     * Render the current stage.
+     */
+    render()
+    {
+        this.renderer.render(this.stage);
     }
 
     /**
@@ -87,5 +92,22 @@ export default class Application
     get view()
     {
         return this.renderer.view;
+    }
+
+    /**
+     * Destroy and don't use after this.
+     * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
+     */
+    destroy(removeView)
+    {
+        this.stop();
+        this.ticker.remove(this.render, this);
+        this.ticker = null;
+
+        this.stage.removeChildren();
+        this.stage = null;
+
+        this.renderer.destroy(removeView);
+        this.renderer = null;
     }
 }
