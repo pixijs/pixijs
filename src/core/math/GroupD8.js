@@ -104,7 +104,7 @@ const GroupD8 = {
     /**
      * Adds 180 degrees to rotation. Commutative operation.
      *
-     * @method PIXI.GroupD8.rotate180
+     * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to rotate.
      * @returns {number} rotated number
      */
@@ -113,14 +113,14 @@ const GroupD8 = {
     /**
      * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
      * 
-     * @method PIXI.GroupD8.isSwapWidthHeight
+     * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to check.
      * @returns {boolean} Whether or not the width/height should be swapped.
      */
     isSwapWidthHeight: (rotation) => (rotation & 3) === 2,
 
     /**
-     * @method PIXI.GroupD8.byDirection
+     * @memberof PIXI.GroupD8
      * @param {number} dx - TODO
      * @param {number} dy - TODO
      *
@@ -166,7 +166,7 @@ const GroupD8 = {
     /**
      * Helps sprite to compensate texture packer rotation.
      *
-     * @method PIXI.GroupD8.matrixAppendRotationInv
+     * @memberof PIXI.GroupD8
      * @param {PIXI.Matrix} matrix - sprite world matrix
      * @param {number} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring
