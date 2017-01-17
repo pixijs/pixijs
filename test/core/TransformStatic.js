@@ -1,10 +1,10 @@
 'use strict';
 
-describe('PIXI.TransformStatic', () =>
+describe('PIXI.TransformStatic', function ()
 {
-    describe('setFromMatrix', () =>
+    describe('setFromMatrix', function ()
     {
-        it('should decompose negative scale into rotation', () =>
+        it('should decompose negative scale into rotation', function ()
         {
             const eps = 1e-3;
 
@@ -32,7 +32,7 @@ describe('PIXI.TransformStatic', () =>
             expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
         });
 
-        it('should decompose mirror into skew', () =>
+        it('should decompose mirror into skew', function ()
         {
             const eps = 1e-3;
 
@@ -60,7 +60,7 @@ describe('PIXI.TransformStatic', () =>
             expect(otherTransform.rotation).to.equal(0);
         });
 
-        it('should apply skew before scale, like in adobe animate and spine', () =>
+        it('should apply skew before scale, like in adobe animate and spine', function ()
         {
             // this example looks the same in CSS and in pixi, made with pixi-animate by @bigtimebuddy
 

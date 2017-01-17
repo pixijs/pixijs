@@ -1,5 +1,6 @@
 'use strict';
 
+require('./Application');
 require('./TransformStatic');
 require('./Bounds');
 require('./Container');
