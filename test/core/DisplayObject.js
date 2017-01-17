@@ -1,10 +1,10 @@
 'use strict';
 
-describe('PIXI.DisplayObject', () =>
+describe('PIXI.DisplayObject', function ()
 {
-    describe('constructor', () =>
+    describe('constructor', function ()
     {
-        it('should initialise properties', () =>
+        it('should initialise properties', function ()
         {
             const object = new PIXI.DisplayObject();
 
@@ -14,7 +14,7 @@ describe('PIXI.DisplayObject', () =>
             expect(object.visible).to.be.true;
         });
 
-        it('should set the correct Transform', () =>
+        it('should set the correct Transform', function ()
         {
             PIXI.settings.TRANSFORM_MODE = PIXI.TRANSFORM_MODE.DYNAMIC;
 
@@ -30,9 +30,9 @@ describe('PIXI.DisplayObject', () =>
         });
     });
 
-    describe('setParent', () =>
+    describe('setParent', function ()
     {
-        it('should add itself to a Container', () =>
+        it('should add itself to a Container', function ()
         {
             const child = new PIXI.DisplayObject();
             const container = new PIXI.Container();
@@ -43,7 +43,7 @@ describe('PIXI.DisplayObject', () =>
             expect(child.parent).to.equal(container);
         });
 
-        it('should throw if not Container', () =>
+        it('should throw if not Container', function ()
         {
             const child = new PIXI.DisplayObject();
             const notAContainer = {};
@@ -53,9 +53,9 @@ describe('PIXI.DisplayObject', () =>
         });
     });
 
-    describe('setTransform', () =>
+    describe('setTransform', function ()
     {
-        it('should set correct properties', () =>
+        it('should set correct properties', function ()
         {
             const object = new PIXI.DisplayObject();
 
@@ -72,7 +72,7 @@ describe('PIXI.DisplayObject', () =>
             expect(object.pivot.y).to.be.equal(9);
         });
 
-        it('should convert zero scale to one', () =>
+        it('should convert zero scale to one', function ()
         {
             const object = new PIXI.DisplayObject();
 
@@ -83,9 +83,9 @@ describe('PIXI.DisplayObject', () =>
         });
     });
 
-    describe('worldVisible', () =>
+    describe('worldVisible', function ()
     {
-        it('should traverse parents', () =>
+        it('should traverse parents', function ()
         {
             const grandParent = new PIXI.Container();
             const parent = new PIXI.Container();

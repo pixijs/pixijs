@@ -1,10 +1,10 @@
 'use strict';
 
-describe('PIXI.Container', () =>
+describe('PIXI.Container', function ()
 {
-    describe('parent', () =>
+    describe('parent', function ()
     {
-        it('should be present when adding children to Container', () =>
+        it('should be present when adding children to Container', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -16,9 +16,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('events', () =>
+    describe('events', function ()
     {
-        it('should trigger "added" and "removed" events on its children', () =>
+        it('should trigger "added" and "removed" events on its children', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -48,9 +48,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('addChild', () =>
+    describe('addChild', function ()
     {
-        it('should remove from current parent', () =>
+        it('should remove from current parent', function ()
         {
             const parent = new PIXI.Container();
             const container = new PIXI.Container();
@@ -59,7 +59,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -72,9 +72,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('removeChildAt', () =>
+    describe('removeChildAt', function ()
     {
-        it('should remove from current parent', () =>
+        it('should remove from current parent', function ()
         {
             const parent = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -82,7 +82,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
         });
 
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -97,9 +97,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('addChildAt', () =>
+    describe('addChildAt', function ()
     {
-        it('should allow placements at start', () =>
+        it('should allow placements at start', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -111,7 +111,7 @@ describe('PIXI.Container', () =>
             expect(container.children[0]).to.be.equals(child);
         });
 
-        it('should allow placements at end', () =>
+        it('should allow placements at end', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -123,7 +123,7 @@ describe('PIXI.Container', () =>
             expect(container.children[1]).to.be.equals(child);
         });
 
-        it('should throw on out-of-bounds', () =>
+        it('should throw on out-of-bounds', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -134,7 +134,7 @@ describe('PIXI.Container', () =>
             expect(() => container.addChildAt(child, 2)).to.throw('The index 2 supplied is out of bounds 1');
         });
 
-        it('should remove from current parent', () =>
+        it('should remove from current parent', function ()
         {
             const parent = new PIXI.Container();
             const container = new PIXI.Container();
@@ -143,7 +143,7 @@ describe('PIXI.Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
 
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -159,9 +159,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('removeChild', () =>
+    describe('removeChild', function ()
     {
-        it('should ignore non-children', () =>
+        it('should ignore non-children', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -173,7 +173,7 @@ describe('PIXI.Container', () =>
             expect(container.children.length).to.be.equals(1);
         });
 
-        it('should remove all children supplied', () =>
+        it('should remove all children supplied', function ()
         {
             const container = new PIXI.Container();
             const child1 = new PIXI.DisplayObject();
@@ -188,7 +188,7 @@ describe('PIXI.Container', () =>
             expect(container.children.length).to.be.equals(0);
         });
 
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -204,9 +204,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('getChildIndex', () =>
+    describe('getChildIndex', function ()
     {
-        it('should return the correct index', () =>
+        it('should return the correct index', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -216,7 +216,7 @@ describe('PIXI.Container', () =>
             expect(container.getChildIndex(child)).to.be.equals(1);
         });
 
-        it('should throw when child does not exist', () =>
+        it('should throw when child does not exist', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -226,9 +226,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('getChildAt', () =>
+    describe('getChildAt', function ()
     {
-        it('should throw when out-of-bounds', () =>
+        it('should throw when out-of-bounds', function ()
         {
             const container = new PIXI.Container();
 
@@ -237,9 +237,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('setChildIndex', () =>
+    describe('setChildIndex', function ()
     {
-        it('should throw on out-of-bounds', () =>
+        it('should throw on out-of-bounds', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -250,7 +250,7 @@ describe('PIXI.Container', () =>
             expect(() => container.setChildIndex(child, 1)).to.throw('The supplied index is out of bounds');
         });
 
-        it('should throw when child does not belong', () =>
+        it('should throw when child does not belong', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -261,7 +261,7 @@ describe('PIXI.Container', () =>
                 .to.throw('The supplied DisplayObject must be a child of the caller');
         });
 
-        it('should set index', () =>
+        it('should set index', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -279,7 +279,7 @@ describe('PIXI.Container', () =>
             expect(container.children.indexOf(child)).to.be.equals(0);
         });
 
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -295,9 +295,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('swapChildren', () =>
+    describe('swapChildren', function ()
     {
-        it('should call onChildrenChange', () =>
+        it('should call onChildrenChange', function ()
         {
             const container = new PIXI.Container();
             const child1 = new PIXI.DisplayObject();
@@ -317,7 +317,7 @@ describe('PIXI.Container', () =>
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should not call onChildrenChange if supplied children are equal', () =>
+        it('should not call onChildrenChange if supplied children are equal', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -331,7 +331,7 @@ describe('PIXI.Container', () =>
             expect(spy).to.not.have.been.called;
         });
 
-        it('should throw if children do not belong', () =>
+        it('should throw if children do not belong', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
@@ -344,7 +344,7 @@ describe('PIXI.Container', () =>
                 .to.throw('The supplied DisplayObject must be a child of the caller');
         });
 
-        it('should result in swapped child positions', () =>
+        it('should result in swapped child positions', function ()
         {
             const container = new PIXI.Container();
             const child1 = new PIXI.DisplayObject();
@@ -362,9 +362,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('render', () =>
+    describe('render', function ()
     {
-        it('should not render when object not visible', () =>
+        it('should not render when object not visible', function ()
         {
             const container = new PIXI.Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
@@ -379,7 +379,7 @@ describe('PIXI.Container', () =>
             expect(canvasSpy).to.not.have.been.called;
         });
 
-        it('should not render when alpha is zero', () =>
+        it('should not render when alpha is zero', function ()
         {
             const container = new PIXI.Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
@@ -394,7 +394,7 @@ describe('PIXI.Container', () =>
             expect(canvasSpy).to.not.have.been.called;
         });
 
-        it('should not render when object not renderable', () =>
+        it('should not render when object not renderable', function ()
         {
             const container = new PIXI.Container();
             const webGLSpy = sinon.spy(container._renderWebGL);
@@ -409,7 +409,7 @@ describe('PIXI.Container', () =>
             expect(canvasSpy).to.not.have.been.called;
         });
 
-        it('should render children', () =>
+        it('should render children', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
@@ -426,9 +426,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('removeChildren', () =>
+    describe('removeChildren', function ()
     {
-        it('should remove all children when no arguments supplied', () =>
+        it('should remove all children when no arguments supplied', function ()
         {
             const container = new PIXI.Container();
             let removed = [];
@@ -443,7 +443,7 @@ describe('PIXI.Container', () =>
             expect(removed.length).to.be.equals(3);
         });
 
-        it('should return empty array if no children', () =>
+        it('should return empty array if no children', function ()
         {
             const container = new PIXI.Container();
             const removed = container.removeChildren();
@@ -451,7 +451,7 @@ describe('PIXI.Container', () =>
             expect(removed.length).to.be.equals(0);
         });
 
-        it('should handle a range greater than length', () =>
+        it('should handle a range greater than length', function ()
         {
             const container = new PIXI.Container();
             let removed = [];
@@ -462,7 +462,7 @@ describe('PIXI.Container', () =>
             expect(removed.length).to.be.equals(1);
         });
 
-        it('should throw outside acceptable range', () =>
+        it('should throw outside acceptable range', function ()
         {
             const container = new PIXI.Container();
 
@@ -477,9 +477,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('destroy', () =>
+    describe('destroy', function ()
     {
-        it('should not destroy children by default', () =>
+        it('should not destroy children by default', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.DisplayObject();
@@ -491,7 +491,7 @@ describe('PIXI.Container', () =>
             expect(child.transform).to.not.be.null;
         });
 
-        it('should allow children destroy', () =>
+        it('should allow children destroy', function ()
         {
             let container = new PIXI.Container();
             let child = new PIXI.DisplayObject();
@@ -515,9 +515,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('width', () =>
+    describe('width', function ()
     {
-        it('should reflect scale', () =>
+        it('should reflect scale', function ()
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
@@ -529,7 +529,7 @@ describe('PIXI.Container', () =>
             expect(container.width).to.be.equals(20);
         });
 
-        it('should adjust scale', () =>
+        it('should adjust scale', function ()
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
@@ -543,7 +543,7 @@ describe('PIXI.Container', () =>
             expect(container.scale.x).to.be.equals(2);
         });
 
-        it('should reset scale', () =>
+        it('should reset scale', function ()
         {
             const container = new PIXI.Container();
 
@@ -555,9 +555,9 @@ describe('PIXI.Container', () =>
         });
     });
 
-    describe('height', () =>
+    describe('height', function ()
     {
-        it('should reflect scale', () =>
+        it('should reflect scale', function ()
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
@@ -569,7 +569,7 @@ describe('PIXI.Container', () =>
             expect(container.height).to.be.equals(20);
         });
 
-        it('should adjust scale', () =>
+        it('should adjust scale', function ()
         {
             const container = new PIXI.Container();
             const graphics = new PIXI.Graphics();
@@ -583,7 +583,7 @@ describe('PIXI.Container', () =>
             expect(container.scale.y).to.be.equals(2);
         });
 
-        it('should reset scale', () =>
+        it('should reset scale', function ()
         {
             const container = new PIXI.Container();
 
