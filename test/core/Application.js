@@ -14,7 +14,7 @@ describe('PIXI.Application', function ()
         app.ticker.addOnce(() =>
         {
             app.destroy();
-            done();   
+            done();
         });
     });
 });
