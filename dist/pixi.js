@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.3.2
- * Compiled Mon, 09 Jan 2017 14:29:41 UTC
+ * pixi.js - v4.3.3
+ * Compiled Tue, 17 Jan 2017 20:35:33 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -1310,8 +1310,15 @@ if ('undefined' !== typeof module) {
 })(this);
 
 },{}],5:[function(require,module,exports){
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
 'use strict';
 /* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
@@ -1332,7 +1339,7 @@ function shouldUseNative() {
 		// Detect buggy property enumeration order in older V8 versions.
 
 		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
 		test1[5] = 'de';
 		if (Object.getOwnPropertyNames(test1)[0] === '5') {
 			return false;
@@ -1361,7 +1368,7 @@ function shouldUseNative() {
 		}
 
 		return true;
-	} catch (e) {
+	} catch (err) {
 		// We don't expect any of the above to throw, but better to be safe.
 		return false;
 	}
@@ -1381,8 +1388,8 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 			}
 		}
 
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
 			for (var i = 0; i < symbols.length; i++) {
 				if (propIsEnumerable.call(from, symbols[i])) {
 					to[symbols[i]] = from[symbols[i]];
@@ -7217,8 +7224,10 @@ var DIV_HOOK_ZINDEX = 2;
  * Much like interaction any DisplayObject can be made accessible. This manager will map the
  * events as if the mouse was being used, minimizing the efferot required to implement.
  *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.accessibility
+ *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.accessibility
  */
 
 var AccessibilityManager = function () {
@@ -7663,7 +7672,7 @@ exports.default = AccessibilityManager;
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
-},{"../core":61,"./accessibleTarget":39,"ismobilejs":4}],39:[function(require,module,exports){
+},{"../core":63,"./accessibleTarget":39,"ismobilejs":4}],39:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7671,9 +7680,8 @@ exports.__esModule = true;
  * Default property values of accessible objects
  * used by {@link PIXI.accessibility.AccessibilityManager}.
  *
- * @mixin
- * @name accessibleTarget
- * @memberof PIXI
+ * @function accessibleTarget
+ * @memberof PIXI.accessibility
  * @example
  *      function MyObject() {}
  *
@@ -7752,6 +7760,147 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.__esModule = true;
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _autoDetectRenderer = require('./autoDetectRenderer');
+
+var _Container = require('./display/Container');
+
+var _Container2 = _interopRequireDefault(_Container);
+
+var _Ticker = require('./ticker/Ticker');
+
+var _Ticker2 = _interopRequireDefault(_Ticker);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Convenience class to create a new PIXI application.
+ * This class automatically creates the renderer, ticker
+ * and root container.
+ *
+ * @example
+ * // Create the application
+ * const app = new PIXI.Application();
+ *
+ * // Add the view to the DOM
+ * document.body.appendChild(app.view);
+ *
+ * // ex, add display objects
+ * app.stage.addChild(PIXI.Sprite.fromImage('something.png'));
+ *
+ * @class
+ * @memberof PIXI
+ */
+var Application = function () {
+  /**
+   * @param {number} [width=800] - the width of the renderers view
+   * @param {number} [height=600] - the height of the renderers view
+   * @param {object} [options] - The optional renderer parameters
+   * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+   * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+   * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
+   * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
+   *      need to call toDataUrl on the webgl context
+   * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
+   * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
+   */
+  function Application(width, height, options, noWebGL) {
+    _classCallCheck(this, Application);
+
+    /**
+     * WebGL renderer if available, otherwise CanvasRenderer
+     * @member {PIXI.WebGLRenderer|PIXI.CanvasRenderer}
+     */
+    this.renderer = (0, _autoDetectRenderer.autoDetectRenderer)(width, height, options, noWebGL);
+
+    /**
+     * The root display container that's renderered.
+     * @member {PIXI.Container}
+     */
+    this.stage = new _Container2.default();
+
+    /**
+     * Ticker for doing render updates.
+     * @member {PIXI.ticker.Ticker}
+     */
+    this.ticker = new _Ticker2.default();
+
+    this.ticker.add(this.render, this);
+
+    // Start the rendering
+    this.start();
+  }
+
+  /**
+   * Render the current stage.
+   */
+
+
+  Application.prototype.render = function render() {
+    this.renderer.render(this.stage);
+  };
+
+  /**
+   * Convenience method for stopping the render.
+   */
+
+
+  Application.prototype.stop = function stop() {
+    this.ticker.stop();
+  };
+
+  /**
+   * Convenience method for starting the render.
+   */
+
+
+  Application.prototype.start = function start() {
+    this.ticker.start();
+  };
+
+  /**
+   * Reference to the renderer's canvas element.
+   * @member {HTMLCanvasElement}
+   * @readonly
+   */
+
+
+  /**
+   * Destroy and don't use after this.
+   * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
+   */
+  Application.prototype.destroy = function destroy(removeView) {
+    this.stop();
+    this.ticker.remove(this.render, this);
+    this.ticker = null;
+
+    this.stage.destroy();
+    this.stage = null;
+
+    this.renderer.destroy(removeView);
+    this.renderer = null;
+  };
+
+  _createClass(Application, [{
+    key: 'view',
+    get: function get() {
+      return this.renderer.view;
+    }
+  }]);
+
+  return Application;
+}();
+
+exports.default = Application;
+
+},{"./autoDetectRenderer":43,"./display/Container":46,"./ticker/Ticker":114}],42:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
 var _pixiGlCore = require('pixi-gl-core');
 
 var _settings = require('./settings');
@@ -7814,7 +7963,61 @@ var Shader = function (_GLShader) {
 
 exports.default = Shader;
 
-},{"./settings":97,"pixi-gl-core":12}],42:[function(require,module,exports){
+},{"./settings":99,"pixi-gl-core":12}],43:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.autoDetectRenderer = autoDetectRenderer;
+
+var _utils = require('./utils');
+
+var utils = _interopRequireWildcard(_utils);
+
+var _CanvasRenderer = require('./renderers/canvas/CanvasRenderer');
+
+var _CanvasRenderer2 = _interopRequireDefault(_CanvasRenderer);
+
+var _WebGLRenderer = require('./renderers/webgl/WebGLRenderer');
+
+var _WebGLRenderer2 = _interopRequireDefault(_WebGLRenderer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * This helper function will automatically detect which renderer you should be using.
+ * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
+ * the browser then this function will return a canvas renderer
+ *
+ * @memberof PIXI
+ * @function autoDetectRenderer
+ * @param {number} [width=800] - the width of the renderers view
+ * @param {number} [height=600] - the height of the renderers view
+ * @param {object} [options] - The optional renderer parameters
+ * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+ * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
+ * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
+ * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
+ *      need to call toDataUrl on the webgl context
+ * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
+ * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
+ * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+ */
+function autoDetectRenderer() {
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 800;
+    var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
+    var options = arguments[2];
+    var noWebGL = arguments[3];
+
+    if (!noWebGL && utils.isWebGLSupported()) {
+        return new _WebGLRenderer2.default(width, height, options);
+    }
+
+    return new _CanvasRenderer2.default(width, height, options);
+}
+
+},{"./renderers/canvas/CanvasRenderer":75,"./renderers/webgl/WebGLRenderer":82,"./utils":119}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7827,7 +8030,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.3.2';
+var VERSION = exports.VERSION = '4.3.3';
 
 /**
  * Two Pi.
@@ -8130,7 +8333,7 @@ var TEXT_GRADIENT = exports.TEXT_GRADIENT = {
   LINEAR_HORIZONTAL: 1
 };
 
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8473,7 +8676,7 @@ var Bounds = function () {
 
 exports.default = Bounds;
 
-},{"../math":66}],44:[function(require,module,exports){
+},{"../math":68}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8785,8 +8988,6 @@ var Container = function (_DisplayObject) {
 
     /**
      * Updates the transform on all children of this container for rendering
-     *
-     * @private
      */
 
 
@@ -8995,6 +9196,10 @@ var Container = function (_DisplayObject) {
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
      *  method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
 
 
@@ -9016,7 +9221,6 @@ var Container = function (_DisplayObject) {
      * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Container#
      */
 
 
@@ -9024,15 +9228,9 @@ var Container = function (_DisplayObject) {
         key: 'width',
         get: function get() {
             return this.scale.x * this.getLocalBounds().width;
-        }
-
-        /**
-         * Sets the width of the container by modifying the scale.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             var width = this.getLocalBounds().width;
 
             if (width !== 0) {
@@ -9048,22 +9246,15 @@ var Container = function (_DisplayObject) {
          * The height of the Container, setting this will actually modify the scale to achieve the value set
          *
          * @member {number}
-         * @memberof PIXI.Container#
          */
 
     }, {
         key: 'height',
         get: function get() {
             return this.scale.y * this.getLocalBounds().height;
-        }
-
-        /**
-         * Sets the height of the container by modifying the scale.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             var height = this.getLocalBounds().height;
 
             if (height !== 0) {
@@ -9085,7 +9276,7 @@ var Container = function (_DisplayObject) {
 exports.default = Container;
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-},{"../utils":117,"./DisplayObject":45}],45:[function(require,module,exports){
+},{"../utils":119,"./DisplayObject":47}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9524,7 +9715,6 @@ var DisplayObject = function (_EventEmitter) {
      * An alias to position.x
      *
      * @member {number}
-     * @memberof PIXI.DisplayObject#
      */
 
 
@@ -9541,15 +9731,9 @@ var DisplayObject = function (_EventEmitter) {
         key: 'x',
         get: function get() {
             return this.position.x;
-        }
-
-        /**
-         * Sets the X position of the object.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.position.x = value;
         }
 
@@ -9558,22 +9742,15 @@ var DisplayObject = function (_EventEmitter) {
          * An alias to position.y
          *
          * @member {number}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'y',
         get: function get() {
             return this.position.y;
-        }
-
-        /**
-         * Sets the Y position of the object.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.position.y = value;
         }
 
@@ -9581,7 +9758,6 @@ var DisplayObject = function (_EventEmitter) {
          * Current transform of the object based on world (parent) factors
          *
          * @member {PIXI.Matrix}
-         * @memberof PIXI.DisplayObject#
          * @readonly
          */
 
@@ -9595,7 +9771,6 @@ var DisplayObject = function (_EventEmitter) {
          * Current transform of the object based on local factors: position, scale, other stuff
          *
          * @member {PIXI.Matrix}
-         * @memberof PIXI.DisplayObject#
          * @readonly
          */
 
@@ -9610,22 +9785,15 @@ var DisplayObject = function (_EventEmitter) {
          * Assignment by value since pixi-v4.
          *
          * @member {PIXI.Point|PIXI.ObservablePoint}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'position',
         get: function get() {
             return this.transform.position;
-        }
-
-        /**
-         * Copies the point to the position of the object.
-         *
-         * @param {PIXI.Point} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.position.copy(value);
         }
 
@@ -9634,22 +9802,15 @@ var DisplayObject = function (_EventEmitter) {
          * Assignment by value since pixi-v4.
          *
          * @member {PIXI.Point|PIXI.ObservablePoint}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'scale',
         get: function get() {
             return this.transform.scale;
-        }
-
-        /**
-         * Copies the point to the scale of the object.
-         *
-         * @param {PIXI.Point} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.scale.copy(value);
         }
 
@@ -9658,22 +9819,15 @@ var DisplayObject = function (_EventEmitter) {
          * Assignment by value since pixi-v4.
          *
          * @member {PIXI.Point|PIXI.ObservablePoint}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'pivot',
         get: function get() {
             return this.transform.pivot;
-        }
-
-        /**
-         * Copies the point to the pivot of the object.
-         *
-         * @param {PIXI.Point} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.pivot.copy(value);
         }
 
@@ -9682,22 +9836,15 @@ var DisplayObject = function (_EventEmitter) {
          * Assignment by value since pixi-v4.
          *
          * @member {PIXI.ObservablePoint}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'skew',
         get: function get() {
             return this.transform.skew;
-        }
-
-        /**
-         * Copies the point to the skew of the object.
-         *
-         * @param {PIXI.Point} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.skew.copy(value);
         }
 
@@ -9705,22 +9852,15 @@ var DisplayObject = function (_EventEmitter) {
          * The rotation of the object in radians.
          *
          * @member {number}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'rotation',
         get: function get() {
             return this.transform.rotation;
-        }
-
-        /**
-         * Sets the rotation of the object.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.transform.rotation = value;
         }
 
@@ -9728,7 +9868,6 @@ var DisplayObject = function (_EventEmitter) {
          * Indicates if the object is globally visible.
          *
          * @member {boolean}
-         * @memberof PIXI.DisplayObject#
          * @readonly
          */
 
@@ -9757,22 +9896,15 @@ var DisplayObject = function (_EventEmitter) {
          * @todo For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
          *
          * @member {PIXI.Graphics|PIXI.Sprite}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'mask',
         get: function get() {
             return this._mask;
-        }
-
-        /**
-         * Sets the mask.
-         *
-         * @param {PIXI.Graphics|PIXI.Sprite} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (this._mask) {
                 this._mask.renderable = true;
             }
@@ -9790,22 +9922,15 @@ var DisplayObject = function (_EventEmitter) {
          * To remove filters simply set this property to 'null'
          *
          * @member {PIXI.Filter[]}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'filters',
         get: function get() {
             return this._filters && this._filters.slice();
-        }
-
-        /**
-         * Shallow copies the array to the filters of the object.
-         *
-         * @param {PIXI.Filter[]} value - The filters to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._filters = value && value.slice();
         }
     }]);
@@ -9819,7 +9944,7 @@ var DisplayObject = function (_EventEmitter) {
 exports.default = DisplayObject;
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
-},{"../const":42,"../math":66,"../settings":97,"./Bounds":43,"./Transform":46,"./TransformStatic":48,"eventemitter3":3}],46:[function(require,module,exports){
+},{"../const":44,"../math":68,"../settings":99,"./Bounds":45,"./Transform":48,"./TransformStatic":50,"eventemitter3":3}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9980,7 +10105,6 @@ var Transform = function (_TransformBase) {
    * The rotation of the object in radians.
    *
    * @member {number}
-   * @memberof PIXI.Transform#
    */
 
 
@@ -9988,15 +10112,9 @@ var Transform = function (_TransformBase) {
     key: 'rotation',
     get: function get() {
       return this._rotation;
-    }
-
-    /**
-     * Set the rotation of the transform.
-     *
-     * @param {number} value - The value to set to.
-     */
-    ,
-    set: function set(value) {
+    },
+    set: function set(value) // eslint-disable-line require-jsdoc
+    {
       this._rotation = value;
       this.updateSkew();
     }
@@ -10007,7 +10125,7 @@ var Transform = function (_TransformBase) {
 
 exports.default = Transform;
 
-},{"../math":66,"./TransformBase":47}],47:[function(require,module,exports){
+},{"../math":68,"./TransformBase":49}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10094,7 +10212,7 @@ TransformBase.prototype.updateWorldTransform = TransformBase.prototype.updateTra
 
 TransformBase.IDENTITY = new TransformBase();
 
-},{"../math":66}],48:[function(require,module,exports){
+},{"../math":68}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10123,195 +10241,188 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @memberof PIXI
  */
 var TransformStatic = function (_TransformBase) {
-  _inherits(TransformStatic, _TransformBase);
-
-  /**
-   *
-   */
-  function TransformStatic() {
-    _classCallCheck(this, TransformStatic);
+    _inherits(TransformStatic, _TransformBase);
 
     /**
-    * The coordinate of the object relative to the local coordinates of the parent.
-    *
-    * @member {PIXI.ObservablePoint}
-    */
-    var _this = _possibleConstructorReturn(this, _TransformBase.call(this));
-
-    _this.position = new _math.ObservablePoint(_this.onChange, _this, 0, 0);
-
-    /**
-     * The scale factor of the object.
      *
-     * @member {PIXI.ObservablePoint}
      */
-    _this.scale = new _math.ObservablePoint(_this.onChange, _this, 1, 1);
+    function TransformStatic() {
+        _classCallCheck(this, TransformStatic);
 
-    /**
-     * The pivot point of the displayObject that it rotates around
-     *
-     * @member {PIXI.ObservablePoint}
-     */
-    _this.pivot = new _math.ObservablePoint(_this.onChange, _this, 0, 0);
+        /**
+        * The coordinate of the object relative to the local coordinates of the parent.
+        *
+        * @member {PIXI.ObservablePoint}
+        */
+        var _this = _possibleConstructorReturn(this, _TransformBase.call(this));
 
-    /**
-     * The skew amount, on the x and y axis.
-     *
-     * @member {PIXI.ObservablePoint}
-     */
-    _this.skew = new _math.ObservablePoint(_this.updateSkew, _this, 0, 0);
+        _this.position = new _math.ObservablePoint(_this.onChange, _this, 0, 0);
 
-    _this._rotation = 0;
+        /**
+         * The scale factor of the object.
+         *
+         * @member {PIXI.ObservablePoint}
+         */
+        _this.scale = new _math.ObservablePoint(_this.onChange, _this, 1, 1);
 
-    _this._cx = 1; // cos rotation + skewY;
-    _this._sx = 0; // sin rotation + skewY;
-    _this._cy = 0; // cos rotation + Math.PI/2 - skewX;
-    _this._sy = 1; // sin rotation + Math.PI/2 - skewX;
+        /**
+         * The pivot point of the displayObject that it rotates around
+         *
+         * @member {PIXI.ObservablePoint}
+         */
+        _this.pivot = new _math.ObservablePoint(_this.onChange, _this, 0, 0);
 
-    _this._localID = 0;
-    _this._currentLocalID = 0;
-    return _this;
-  }
+        /**
+         * The skew amount, on the x and y axis.
+         *
+         * @member {PIXI.ObservablePoint}
+         */
+        _this.skew = new _math.ObservablePoint(_this.updateSkew, _this, 0, 0);
 
-  /**
-   * Called when a value changes.
-   *
-   * @private
-   */
+        _this._rotation = 0;
 
+        _this._cx = 1; // cos rotation + skewY;
+        _this._sx = 0; // sin rotation + skewY;
+        _this._cy = 0; // cos rotation + Math.PI/2 - skewX;
+        _this._sy = 1; // sin rotation + Math.PI/2 - skewX;
 
-  TransformStatic.prototype.onChange = function onChange() {
-    this._localID++;
-  };
-
-  /**
-   * Called when skew or rotation changes
-   *
-   * @private
-   */
-
-
-  TransformStatic.prototype.updateSkew = function updateSkew() {
-    this._cx = Math.cos(this._rotation + this.skew._y);
-    this._sx = Math.sin(this._rotation + this.skew._y);
-    this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
-    this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
-
-    this._localID++;
-  };
-
-  /**
-   * Updates only local matrix
-   */
-
-
-  TransformStatic.prototype.updateLocalTransform = function updateLocalTransform() {
-    var lt = this.localTransform;
-
-    if (this._localID !== this._currentLocalID) {
-      // get the matrix values of the displayobject based on its transform properties..
-      lt.a = this._cx * this.scale._x;
-      lt.b = this._sx * this.scale._x;
-      lt.c = this._cy * this.scale._y;
-      lt.d = this._sy * this.scale._y;
-
-      lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
-      lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
-      this._currentLocalID = this._localID;
-
-      // force an update..
-      this._parentID = -1;
-    }
-  };
-
-  /**
-   * Updates the values of the object and applies the parent's transform.
-   *
-   * @param {PIXI.Transform} parentTransform - The transform of the parent of this object
-   */
-
-
-  TransformStatic.prototype.updateTransform = function updateTransform(parentTransform) {
-    var lt = this.localTransform;
-
-    if (this._localID !== this._currentLocalID) {
-      // get the matrix values of the displayobject based on its transform properties..
-      lt.a = this._cx * this.scale._x;
-      lt.b = this._sx * this.scale._x;
-      lt.c = this._cy * this.scale._y;
-      lt.d = this._sy * this.scale._y;
-
-      lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
-      lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
-      this._currentLocalID = this._localID;
-
-      // force an update..
-      this._parentID = -1;
-    }
-
-    if (this._parentID !== parentTransform._worldID) {
-      // concat the parent matrix with the objects transform.
-      var pt = parentTransform.worldTransform;
-      var wt = this.worldTransform;
-
-      wt.a = lt.a * pt.a + lt.b * pt.c;
-      wt.b = lt.a * pt.b + lt.b * pt.d;
-      wt.c = lt.c * pt.a + lt.d * pt.c;
-      wt.d = lt.c * pt.b + lt.d * pt.d;
-      wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
-      wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
-
-      this._parentID = parentTransform._worldID;
-
-      // update the id of the transform..
-      this._worldID++;
-    }
-  };
-
-  /**
-   * Decomposes a matrix and sets the transforms properties based on it.
-   *
-   * @param {PIXI.Matrix} matrix - The matrix to decompose
-   */
-
-
-  TransformStatic.prototype.setFromMatrix = function setFromMatrix(matrix) {
-    matrix.decompose(this);
-    this._localID++;
-  };
-
-  /**
-   * The rotation of the object in radians.
-   *
-   * @member {number}
-   * @memberof PIXI.TransformStatic#
-   */
-
-
-  _createClass(TransformStatic, [{
-    key: 'rotation',
-    get: function get() {
-      return this._rotation;
+        _this._localID = 0;
+        _this._currentLocalID = 0;
+        return _this;
     }
 
     /**
-     * Sets the rotation of the transform.
+     * Called when a value changes.
      *
-     * @param {number} value - The value to set to.
+     * @private
      */
-    ,
-    set: function set(value) {
-      this._rotation = value;
-      this.updateSkew();
-    }
-  }]);
 
-  return TransformStatic;
+
+    TransformStatic.prototype.onChange = function onChange() {
+        this._localID++;
+    };
+
+    /**
+     * Called when skew or rotation changes
+     *
+     * @private
+     */
+
+
+    TransformStatic.prototype.updateSkew = function updateSkew() {
+        this._cx = Math.cos(this._rotation + this.skew._y);
+        this._sx = Math.sin(this._rotation + this.skew._y);
+        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
+        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
+
+        this._localID++;
+    };
+
+    /**
+     * Updates only local matrix
+     */
+
+
+    TransformStatic.prototype.updateLocalTransform = function updateLocalTransform() {
+        var lt = this.localTransform;
+
+        if (this._localID !== this._currentLocalID) {
+            // get the matrix values of the displayobject based on its transform properties..
+            lt.a = this._cx * this.scale._x;
+            lt.b = this._sx * this.scale._x;
+            lt.c = this._cy * this.scale._y;
+            lt.d = this._sy * this.scale._y;
+
+            lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
+            lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
+            this._currentLocalID = this._localID;
+
+            // force an update..
+            this._parentID = -1;
+        }
+    };
+
+    /**
+     * Updates the values of the object and applies the parent's transform.
+     *
+     * @param {PIXI.Transform} parentTransform - The transform of the parent of this object
+     */
+
+
+    TransformStatic.prototype.updateTransform = function updateTransform(parentTransform) {
+        var lt = this.localTransform;
+
+        if (this._localID !== this._currentLocalID) {
+            // get the matrix values of the displayobject based on its transform properties..
+            lt.a = this._cx * this.scale._x;
+            lt.b = this._sx * this.scale._x;
+            lt.c = this._cy * this.scale._y;
+            lt.d = this._sy * this.scale._y;
+
+            lt.tx = this.position._x - (this.pivot._x * lt.a + this.pivot._y * lt.c);
+            lt.ty = this.position._y - (this.pivot._x * lt.b + this.pivot._y * lt.d);
+            this._currentLocalID = this._localID;
+
+            // force an update..
+            this._parentID = -1;
+        }
+
+        if (this._parentID !== parentTransform._worldID) {
+            // concat the parent matrix with the objects transform.
+            var pt = parentTransform.worldTransform;
+            var wt = this.worldTransform;
+
+            wt.a = lt.a * pt.a + lt.b * pt.c;
+            wt.b = lt.a * pt.b + lt.b * pt.d;
+            wt.c = lt.c * pt.a + lt.d * pt.c;
+            wt.d = lt.c * pt.b + lt.d * pt.d;
+            wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
+            wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
+
+            this._parentID = parentTransform._worldID;
+
+            // update the id of the transform..
+            this._worldID++;
+        }
+    };
+
+    /**
+     * Decomposes a matrix and sets the transforms properties based on it.
+     *
+     * @param {PIXI.Matrix} matrix - The matrix to decompose
+     */
+
+
+    TransformStatic.prototype.setFromMatrix = function setFromMatrix(matrix) {
+        matrix.decompose(this);
+        this._localID++;
+    };
+
+    /**
+     * The rotation of the object in radians.
+     *
+     * @member {number}
+     */
+
+
+    _createClass(TransformStatic, [{
+        key: 'rotation',
+        get: function get() {
+            return this._rotation;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this._rotation = value;
+            this.updateSkew();
+        }
+    }]);
+
+    return TransformStatic;
 }(_TransformBase3.default);
 
 exports.default = TransformStatic;
 
-},{"../math":66,"./TransformBase":47}],49:[function(require,module,exports){
+},{"../math":68,"./TransformBase":49}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11429,6 +11540,10 @@ var Graphics = function (_Container) {
      *  options have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
 
 
@@ -11466,7 +11581,7 @@ exports.default = Graphics;
 
 Graphics._SPRITE_TEXTURE = null;
 
-},{"../const":42,"../display/Bounds":43,"../display/Container":44,"../math":66,"../renderers/canvas/CanvasRenderer":73,"../sprites/Sprite":98,"../textures/RenderTexture":108,"../textures/Texture":109,"../utils":117,"./GraphicsData":50,"./utils/bezierCurveTo":52}],50:[function(require,module,exports){
+},{"../const":44,"../display/Bounds":45,"../display/Container":46,"../math":68,"../renderers/canvas/CanvasRenderer":75,"../sprites/Sprite":100,"../textures/RenderTexture":110,"../textures/Texture":111,"../utils":119,"./GraphicsData":52,"./utils/bezierCurveTo":54}],52:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -11583,7 +11698,7 @@ var GraphicsData = function () {
 
 exports.default = GraphicsData;
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11607,7 +11722,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasGraphicsRenderer.java
+ * https://github.com/libgdx/libgdx/blob/1.0.0/gdx/src/com/badlogic/gdx/graphics/glutils/ShapeRenderer.java
  */
 
 /**
@@ -11852,7 +11967,7 @@ exports.default = CanvasGraphicsRenderer;
 
 _CanvasRenderer2.default.registerPlugin('graphics', CanvasGraphicsRenderer);
 
-},{"../../const":42,"../../renderers/canvas/CanvasRenderer":73}],52:[function(require,module,exports){
+},{"../../const":44,"../../renderers/canvas/CanvasRenderer":75}],54:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -11902,7 +12017,7 @@ function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY) {
     return path;
 }
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12155,7 +12270,7 @@ exports.default = GraphicsRenderer;
 
 _WebGLRenderer2.default.registerPlugin('graphics', GraphicsRenderer);
 
-},{"../../const":42,"../../renderers/webgl/WebGLRenderer":80,"../../renderers/webgl/utils/ObjectRenderer":90,"../../utils":117,"./WebGLGraphicsData":54,"./shaders/PrimitiveShader":55,"./utils/buildCircle":56,"./utils/buildPoly":58,"./utils/buildRectangle":59,"./utils/buildRoundedRectangle":60}],54:[function(require,module,exports){
+},{"../../const":44,"../../renderers/webgl/WebGLRenderer":82,"../../renderers/webgl/utils/ObjectRenderer":92,"../../utils":119,"./WebGLGraphicsData":56,"./shaders/PrimitiveShader":57,"./utils/buildCircle":58,"./utils/buildPoly":60,"./utils/buildRectangle":61,"./utils/buildRoundedRectangle":62}],56:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12292,7 +12407,7 @@ var WebGLGraphicsData = function () {
 
 exports.default = WebGLGraphicsData;
 
-},{"pixi-gl-core":12}],55:[function(require,module,exports){
+},{"pixi-gl-core":12}],57:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12337,7 +12452,7 @@ var PrimitiveShader = function (_Shader) {
 
 exports.default = PrimitiveShader;
 
-},{"../../../Shader":41}],56:[function(require,module,exports){
+},{"../../../Shader":42}],58:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12425,7 +12540,7 @@ function buildCircle(graphicsData, webGLData) {
     }
 }
 
-},{"../../../const":42,"../../../utils":117,"./buildLine":57}],57:[function(require,module,exports){
+},{"../../../const":44,"../../../utils":119,"./buildLine":59}],59:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12634,7 +12749,7 @@ function buildLine(graphicsData, webGLData) {
     indices.push(indexStart - 1);
 }
 
-},{"../../../math":66,"../../../utils":117}],58:[function(require,module,exports){
+},{"../../../math":68,"../../../utils":119}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12719,7 +12834,7 @@ function buildPoly(graphicsData, webGLData) {
     }
 }
 
-},{"../../../utils":117,"./buildLine":57,"earcut":2}],59:[function(require,module,exports){
+},{"../../../utils":119,"./buildLine":59,"earcut":2}],61:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12794,7 +12909,7 @@ function buildRectangle(graphicsData, webGLData) {
     }
 }
 
-},{"../../../utils":117,"./buildLine":57}],60:[function(require,module,exports){
+},{"../../../utils":119,"./buildLine":59}],62:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12936,11 +13051,11 @@ function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
     return points;
 }
 
-},{"../../../utils":117,"./buildLine":57,"earcut":2}],61:[function(require,module,exports){
+},{"../../../utils":119,"./buildLine":59,"earcut":2}],63:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
-exports.Filter = exports.SpriteMaskFilter = exports.Quad = exports.RenderTarget = exports.ObjectRenderer = exports.WebGLManager = exports.Shader = exports.CanvasRenderTarget = exports.TextureUvs = exports.VideoBaseTexture = exports.BaseRenderTexture = exports.RenderTexture = exports.BaseTexture = exports.Texture = exports.CanvasGraphicsRenderer = exports.GraphicsRenderer = exports.GraphicsData = exports.Graphics = exports.TextStyle = exports.Text = exports.SpriteRenderer = exports.CanvasTinter = exports.CanvasSpriteRenderer = exports.Sprite = exports.TransformBase = exports.TransformStatic = exports.Transform = exports.Container = exports.DisplayObject = exports.Bounds = exports.glCore = exports.WebGLRenderer = exports.CanvasRenderer = exports.ticker = exports.utils = exports.settings = undefined;
+exports.autoDetectRenderer = exports.Application = exports.Filter = exports.SpriteMaskFilter = exports.Quad = exports.RenderTarget = exports.ObjectRenderer = exports.WebGLManager = exports.Shader = exports.CanvasRenderTarget = exports.TextureUvs = exports.VideoBaseTexture = exports.BaseRenderTexture = exports.RenderTexture = exports.BaseTexture = exports.Texture = exports.CanvasGraphicsRenderer = exports.GraphicsRenderer = exports.GraphicsData = exports.Graphics = exports.TextStyle = exports.Text = exports.SpriteRenderer = exports.CanvasTinter = exports.CanvasSpriteRenderer = exports.Sprite = exports.TransformBase = exports.TransformStatic = exports.Transform = exports.Container = exports.DisplayObject = exports.Bounds = exports.glCore = exports.WebGLRenderer = exports.CanvasRenderer = exports.ticker = exports.utils = exports.settings = undefined;
 
 var _const = require('./const');
 
@@ -13244,7 +13359,24 @@ Object.defineProperty(exports, 'Filter', {
     return _interopRequireDefault(_Filter).default;
   }
 });
-exports.autoDetectRenderer = autoDetectRenderer;
+
+var _Application = require('./Application');
+
+Object.defineProperty(exports, 'Application', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Application).default;
+  }
+});
+
+var _autoDetectRenderer = require('./autoDetectRenderer');
+
+Object.defineProperty(exports, 'autoDetectRenderer', {
+  enumerable: true,
+  get: function get() {
+    return _autoDetectRenderer.autoDetectRenderer;
+  }
+});
 
 var _utils = require('./utils');
 
@@ -13278,39 +13410,7 @@ exports.WebGLRenderer = _WebGLRenderer2.default; /**
                                                   * @namespace PIXI
                                                   */
 
-/**
- * This helper function will automatically detect which renderer you should be using.
- * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
- * the browser then this function will return a canvas renderer
- *
- * @memberof PIXI
- * @function autoDetectRenderer
- * @param {number} [width=800] - the width of the renderers view
- * @param {number} [height=600] - the height of the renderers view
- * @param {object} [options] - The optional renderer parameters
- * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
- * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
- * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
- * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
- *      need to call toDataUrl on the webgl context
- * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
- * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
- * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
- */
-function autoDetectRenderer() {
-  var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 800;
-  var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
-  var options = arguments[2];
-  var noWebGL = arguments[3];
-
-  if (!noWebGL && utils.isWebGLSupported()) {
-    return new _WebGLRenderer2.default(width, height, options);
-  }
-
-  return new _CanvasRenderer2.default(width, height, options);
-}
-
-},{"./Shader":41,"./const":42,"./display/Bounds":43,"./display/Container":44,"./display/DisplayObject":45,"./display/Transform":46,"./display/TransformBase":47,"./display/TransformStatic":48,"./graphics/Graphics":49,"./graphics/GraphicsData":50,"./graphics/canvas/CanvasGraphicsRenderer":51,"./graphics/webgl/GraphicsRenderer":53,"./math":66,"./renderers/canvas/CanvasRenderer":73,"./renderers/canvas/utils/CanvasRenderTarget":75,"./renderers/webgl/WebGLRenderer":80,"./renderers/webgl/filters/Filter":82,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":85,"./renderers/webgl/managers/WebGLManager":89,"./renderers/webgl/utils/ObjectRenderer":90,"./renderers/webgl/utils/Quad":91,"./renderers/webgl/utils/RenderTarget":92,"./settings":97,"./sprites/Sprite":98,"./sprites/canvas/CanvasSpriteRenderer":99,"./sprites/canvas/CanvasTinter":100,"./sprites/webgl/SpriteRenderer":102,"./text/Text":104,"./text/TextStyle":105,"./textures/BaseRenderTexture":106,"./textures/BaseTexture":107,"./textures/RenderTexture":108,"./textures/Texture":109,"./textures/TextureUvs":110,"./textures/VideoBaseTexture":111,"./ticker":113,"./utils":117,"pixi-gl-core":12}],62:[function(require,module,exports){
+},{"./Application":41,"./Shader":42,"./autoDetectRenderer":43,"./const":44,"./display/Bounds":45,"./display/Container":46,"./display/DisplayObject":47,"./display/Transform":48,"./display/TransformBase":49,"./display/TransformStatic":50,"./graphics/Graphics":51,"./graphics/GraphicsData":52,"./graphics/canvas/CanvasGraphicsRenderer":53,"./graphics/webgl/GraphicsRenderer":55,"./math":68,"./renderers/canvas/CanvasRenderer":75,"./renderers/canvas/utils/CanvasRenderTarget":77,"./renderers/webgl/WebGLRenderer":82,"./renderers/webgl/filters/Filter":84,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":87,"./renderers/webgl/managers/WebGLManager":91,"./renderers/webgl/utils/ObjectRenderer":92,"./renderers/webgl/utils/Quad":93,"./renderers/webgl/utils/RenderTarget":94,"./settings":99,"./sprites/Sprite":100,"./sprites/canvas/CanvasSpriteRenderer":101,"./sprites/canvas/CanvasTinter":102,"./sprites/webgl/SpriteRenderer":104,"./text/Text":106,"./text/TextStyle":107,"./textures/BaseRenderTexture":108,"./textures/BaseTexture":109,"./textures/RenderTexture":110,"./textures/Texture":111,"./textures/TextureUvs":112,"./textures/VideoBaseTexture":113,"./ticker":115,"./utils":119,"pixi-gl-core":12}],64:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13383,8 +13483,8 @@ init();
  * This is the small part of gameofbombs.com portal system. It works.
  *
  * @author Ivan @ivanpopelyshev
- *
- * @namespace PIXI.GroupD8
+ * @class
+ * @memberof PIXI
  */
 var GroupD8 = {
     E: 0,
@@ -13426,7 +13526,7 @@ var GroupD8 = {
     /**
      * Adds 180 degrees to rotation. Commutative operation.
      *
-     * @method
+     * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to rotate.
      * @returns {number} rotated number
      */
@@ -13437,6 +13537,7 @@ var GroupD8 = {
     /**
      * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
      *
+     * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to check.
      * @returns {boolean} Whether or not the width/height should be swapped.
      */
@@ -13445,6 +13546,7 @@ var GroupD8 = {
     },
 
     /**
+     * @memberof PIXI.GroupD8
      * @param {number} dx - TODO
      * @param {number} dy - TODO
      *
@@ -13479,6 +13581,7 @@ var GroupD8 = {
     /**
      * Helps sprite to compensate texture packer rotation.
      *
+     * @memberof PIXI.GroupD8
      * @param {PIXI.Matrix} matrix - sprite world matrix
      * @param {number} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring
@@ -13499,7 +13602,7 @@ var GroupD8 = {
 
 exports.default = GroupD8;
 
-},{"./Matrix":63}],63:[function(require,module,exports){
+},{"./Matrix":65}],65:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14018,7 +14121,7 @@ var Matrix = function () {
 
 exports.default = Matrix;
 
-},{"./Point":65}],64:[function(require,module,exports){
+},{"./Point":67}],66:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -14094,7 +14197,6 @@ var ObservablePoint = function () {
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      *
      * @member {number}
-     * @memberof PIXI.ObservablePoint#
      */
 
 
@@ -14102,15 +14204,9 @@ var ObservablePoint = function () {
         key: "x",
         get: function get() {
             return this._x;
-        }
-
-        /**
-         * Sets the X component.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (this._x !== value) {
                 this._x = value;
                 this.cb.call(this.scope);
@@ -14121,22 +14217,15 @@ var ObservablePoint = function () {
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          *
          * @member {number}
-         * @memberof PIXI.ObservablePoint#
          */
 
     }, {
         key: "y",
         get: function get() {
             return this._y;
-        }
-
-        /**
-         * Sets the Y component.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (this._y !== value) {
                 this._y = value;
                 this.cb.call(this.scope);
@@ -14149,7 +14238,7 @@ var ObservablePoint = function () {
 
 exports.default = ObservablePoint;
 
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -14240,7 +14329,7 @@ var Point = function () {
 
 exports.default = Point;
 
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14328,7 +14417,7 @@ Object.defineProperty(exports, 'RoundedRectangle', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./GroupD8":62,"./Matrix":63,"./ObservablePoint":64,"./Point":65,"./shapes/Circle":67,"./shapes/Ellipse":68,"./shapes/Polygon":69,"./shapes/Rectangle":70,"./shapes/RoundedRectangle":71}],67:[function(require,module,exports){
+},{"./GroupD8":64,"./Matrix":65,"./ObservablePoint":66,"./Point":67,"./shapes/Circle":69,"./shapes/Ellipse":70,"./shapes/Polygon":71,"./shapes/Rectangle":72,"./shapes/RoundedRectangle":73}],69:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14442,7 +14531,7 @@ var Circle = function () {
 
 exports.default = Circle;
 
-},{"../../const":42,"./Rectangle":70}],68:[function(require,module,exports){
+},{"../../const":44,"./Rectangle":72}],70:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14564,7 +14653,7 @@ var Ellipse = function () {
 
 exports.default = Ellipse;
 
-},{"../../const":42,"./Rectangle":70}],69:[function(require,module,exports){
+},{"../../const":44,"./Rectangle":72}],71:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14695,7 +14784,7 @@ var Polygon = function () {
 
 exports.default = Polygon;
 
-},{"../../const":42,"../Point":65}],70:[function(require,module,exports){
+},{"../../const":44,"../Point":67}],72:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -14767,7 +14856,6 @@ var Rectangle = function () {
      * returns the left edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle#
      */
 
 
@@ -14882,19 +14970,15 @@ var Rectangle = function () {
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
-     * @param {PIXI.Rectangle} rect - The rectangle to include.
+     * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      */
 
 
-    Rectangle.prototype.enlarge = function enlarge(rect) {
-        if (rect === Rectangle.EMPTY) {
-            return;
-        }
-
-        var x1 = Math.min(this.x, rect.x);
-        var x2 = Math.max(this.x + this.width, rect.x + rect.width);
-        var y1 = Math.min(this.y, rect.y);
-        var y2 = Math.max(this.y + this.height, rect.y + rect.height);
+    Rectangle.prototype.enlarge = function enlarge(rectangle) {
+        var x1 = Math.min(this.x, rectangle.x);
+        var x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
+        var y1 = Math.min(this.y, rectangle.y);
+        var y2 = Math.max(this.y + this.height, rectangle.y + rectangle.height);
 
         this.x = x1;
         this.width = x2 - x1;
@@ -14912,7 +14996,6 @@ var Rectangle = function () {
          * returns the right edge of the rectangle
          *
          * @member {number}
-         * @memberof PIXI.Rectangle
          */
 
     }, {
@@ -14925,7 +15008,6 @@ var Rectangle = function () {
          * returns the top edge of the rectangle
          *
          * @member {number}
-         * @memberof PIXI.Rectangle
          */
 
     }, {
@@ -14938,7 +15020,6 @@ var Rectangle = function () {
          * returns the bottom edge of the rectangle
          *
          * @member {number}
-         * @memberof PIXI.Rectangle
          */
 
     }, {
@@ -14966,7 +15047,7 @@ var Rectangle = function () {
 
 exports.default = Rectangle;
 
-},{"../../const":42}],71:[function(require,module,exports){
+},{"../../const":44}],73:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15099,7 +15180,7 @@ var RoundedRectangle = function () {
 
 exports.default = RoundedRectangle;
 
-},{"../../const":42}],72:[function(require,module,exports){
+},{"../../const":44}],74:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15410,7 +15491,6 @@ var SystemRenderer = function (_EventEmitter) {
    * The background color to fill if not transparent
    *
    * @member {number}
-   * @memberof PIXI.SystemRenderer#
    */
 
 
@@ -15418,15 +15498,9 @@ var SystemRenderer = function (_EventEmitter) {
     key: 'backgroundColor',
     get: function get() {
       return this._backgroundColor;
-    }
-
-    /**
-     * Sets the background color.
-     *
-     * @param {number} value - The value to set to.
-     */
-    ,
-    set: function set(value) {
+    },
+    set: function set(value) // eslint-disable-line require-jsdoc
+    {
       this._backgroundColor = value;
       this._backgroundColorString = (0, _utils.hex2string)(value);
       (0, _utils.hex2rgb)(value, this._backgroundColorRgba);
@@ -15438,7 +15512,7 @@ var SystemRenderer = function (_EventEmitter) {
 
 exports.default = SystemRenderer;
 
-},{"../const":42,"../display/Container":44,"../math":66,"../settings":97,"../textures/RenderTexture":108,"../utils":117,"eventemitter3":3}],73:[function(require,module,exports){
+},{"../const":44,"../display/Container":46,"../math":68,"../settings":99,"../textures/RenderTexture":110,"../utils":119,"eventemitter3":3}],75:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15748,7 +15822,7 @@ exports.default = CanvasRenderer;
 
 _utils.pluginTarget.mixin(CanvasRenderer);
 
-},{"../../const":42,"../../settings":97,"../../utils":117,"../SystemRenderer":72,"./utils/CanvasMaskManager":74,"./utils/CanvasRenderTarget":75,"./utils/mapCanvasBlendModesToPixi":77}],74:[function(require,module,exports){
+},{"../../const":44,"../../settings":99,"../../utils":119,"../SystemRenderer":74,"./utils/CanvasMaskManager":76,"./utils/CanvasRenderTarget":77,"./utils/mapCanvasBlendModesToPixi":79}],76:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15916,7 +15990,7 @@ var CanvasMaskManager = function () {
 
 exports.default = CanvasMaskManager;
 
-},{"../../../const":42}],75:[function(require,module,exports){
+},{"../../../const":44}],77:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16008,7 +16082,6 @@ var CanvasRenderTarget = function () {
    * The width of the canvas buffer in pixels.
    *
    * @member {number}
-   * @memberof PIXI.CanvasRenderTarget#
    */
 
 
@@ -16016,15 +16089,9 @@ var CanvasRenderTarget = function () {
     key: 'width',
     get: function get() {
       return this.canvas.width;
-    }
-
-    /**
-     * Sets the width.
-     *
-     * @param {number} val - The value to set.
-     */
-    ,
-    set: function set(val) {
+    },
+    set: function set(val) // eslint-disable-line require-jsdoc
+    {
       this.canvas.width = val;
     }
 
@@ -16032,22 +16099,15 @@ var CanvasRenderTarget = function () {
      * The height of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof PIXI.CanvasRenderTarget#
      */
 
   }, {
     key: 'height',
     get: function get() {
       return this.canvas.height;
-    }
-
-    /**
-     * Sets the height.
-     *
-     * @param {number} val - The value to set.
-     */
-    ,
-    set: function set(val) {
+    },
+    set: function set(val) // eslint-disable-line require-jsdoc
+    {
       this.canvas.height = val;
     }
   }]);
@@ -16057,7 +16117,7 @@ var CanvasRenderTarget = function () {
 
 exports.default = CanvasRenderTarget;
 
-},{"../../../settings":97}],76:[function(require,module,exports){
+},{"../../../settings":99}],78:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16118,7 +16178,7 @@ function canUseNewCanvasBlendModes() {
     return data[0] === 255 && data[1] === 0 && data[2] === 0;
 }
 
-},{}],77:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16186,7 +16246,7 @@ function mapCanvasBlendModesToPixi() {
     return array;
 }
 
-},{"../../../const":42,"./canUseNewCanvasBlendModes":76}],78:[function(require,module,exports){
+},{"../../../const":44,"./canUseNewCanvasBlendModes":78}],80:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16306,7 +16366,7 @@ var TextureGarbageCollector = function () {
 
 exports.default = TextureGarbageCollector;
 
-},{"../../const":42,"../../settings":97}],79:[function(require,module,exports){
+},{"../../const":44,"../../settings":99}],81:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -16553,7 +16613,7 @@ var TextureManager = function () {
 
 exports.default = TextureManager;
 
-},{"../../const":42,"../../utils":117,"./utils/RenderTarget":92,"pixi-gl-core":12}],80:[function(require,module,exports){
+},{"../../const":44,"../../utils":119,"./utils/RenderTarget":94,"pixi-gl-core":12}],82:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17277,7 +17337,7 @@ exports.default = WebGLRenderer;
 
 _utils.pluginTarget.mixin(WebGLRenderer);
 
-},{"../../const":42,"../../textures/BaseTexture":107,"../../utils":117,"../SystemRenderer":72,"./TextureGarbageCollector":78,"./TextureManager":79,"./WebGLState":81,"./managers/FilterManager":86,"./managers/MaskManager":87,"./managers/StencilManager":88,"./utils/ObjectRenderer":90,"./utils/RenderTarget":92,"./utils/mapWebGLDrawModesToPixi":95,"./utils/validateContext":96,"pixi-gl-core":12}],81:[function(require,module,exports){
+},{"../../const":44,"../../textures/BaseTexture":109,"../../utils":119,"../SystemRenderer":74,"./TextureGarbageCollector":80,"./TextureManager":81,"./WebGLState":83,"./managers/FilterManager":88,"./managers/MaskManager":89,"./managers/StencilManager":90,"./utils/ObjectRenderer":92,"./utils/RenderTarget":94,"./utils/mapWebGLDrawModesToPixi":97,"./utils/validateContext":98,"pixi-gl-core":12}],83:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17549,7 +17609,7 @@ var WebGLState = function () {
 
 exports.default = WebGLState;
 
-},{"./utils/mapWebGLBlendModesToPixi":94}],82:[function(require,module,exports){
+},{"./utils/mapWebGLBlendModesToPixi":96}],84:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17711,7 +17771,7 @@ var Filter = function () {
 
 exports.default = Filter;
 
-},{"../../../const":42,"../../../utils":117,"./extractUniformsFromSrc":83}],83:[function(require,module,exports){
+},{"../../../const":44,"../../../utils":119,"./extractUniformsFromSrc":85}],85:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17773,7 +17833,7 @@ function extractUniformsFromString(string) {
     return uniforms;
 }
 
-},{"pixi-gl-core":12}],84:[function(require,module,exports){
+},{"pixi-gl-core":12}],86:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17855,7 +17915,7 @@ function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite) {
     return mappedMatrix;
 }
 
-},{"../../../math":66}],85:[function(require,module,exports){
+},{"../../../math":68}],87:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -17927,7 +17987,7 @@ var SpriteMaskFilter = function (_Filter) {
 
 exports.default = SpriteMaskFilter;
 
-},{"../../../../math":66,"../Filter":82,"path":22}],86:[function(require,module,exports){
+},{"../../../../math":68,"../Filter":84,"path":22}],88:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18491,7 +18551,7 @@ var FilterManager = function (_WebGLManager) {
 
 exports.default = FilterManager;
 
-},{"../../../Shader":41,"../../../math":66,"../filters/filterTransforms":84,"../utils/Quad":91,"../utils/RenderTarget":92,"./WebGLManager":89,"bit-twiddle":1}],87:[function(require,module,exports){
+},{"../../../Shader":42,"../../../math":68,"../filters/filterTransforms":86,"../utils/Quad":93,"../utils/RenderTarget":94,"./WebGLManager":91,"bit-twiddle":1}],89:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18549,9 +18609,13 @@ var MaskManager = function (_WebGLManager) {
 
 
     MaskManager.prototype.pushMask = function pushMask(target, maskData) {
+        // TODO the root check means scissor rect will not
+        // be used on render textures more info here:
+        // https://github.com/pixijs/pixi.js/pull/3545
+
         if (maskData.texture) {
             this.pushSpriteMask(target, maskData);
-        } else if (this.enableScissor && !this.scissor && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect()) {
+        } else if (this.enableScissor && !this.scissor && this.renderer._activeRenderTarget.root && !this.renderer.stencilManager.stencilMaskStack.length && maskData.isFastRect()) {
             var matrix = maskData.worldTransform;
 
             var rot = Math.atan2(matrix.b, matrix.a);
@@ -18697,7 +18761,7 @@ var MaskManager = function (_WebGLManager) {
 
 exports.default = MaskManager;
 
-},{"../filters/spriteMask/SpriteMaskFilter":85,"./WebGLManager":89}],88:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":87,"./WebGLManager":91}],90:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18831,7 +18895,7 @@ var StencilManager = function (_WebGLManager) {
 
 exports.default = StencilManager;
 
-},{"./WebGLManager":89}],89:[function(require,module,exports){
+},{"./WebGLManager":91}],91:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18886,7 +18950,7 @@ var WebGLManager = function () {
 
 exports.default = WebGLManager;
 
-},{}],90:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -18964,7 +19028,7 @@ var ObjectRenderer = function (_WebGLManager) {
 
 exports.default = ObjectRenderer;
 
-},{"../managers/WebGLManager":89}],91:[function(require,module,exports){
+},{"../managers/WebGLManager":91}],93:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19137,7 +19201,7 @@ var Quad = function () {
 
 exports.default = Quad;
 
-},{"../../../utils/createIndicesForQuads":115,"pixi-gl-core":12}],92:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":117,"pixi-gl-core":12}],94:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19464,7 +19528,7 @@ var RenderTarget = function () {
 
 exports.default = RenderTarget;
 
-},{"../../../const":42,"../../../math":66,"../../../settings":97,"pixi-gl-core":12}],93:[function(require,module,exports){
+},{"../../../const":44,"../../../math":68,"../../../settings":99,"pixi-gl-core":12}],95:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19537,7 +19601,7 @@ function generateIfTestSrc(maxIfs) {
     return src;
 }
 
-},{"pixi-gl-core":12}],94:[function(require,module,exports){
+},{"pixi-gl-core":12}],96:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19581,7 +19645,7 @@ function mapWebGLBlendModesToPixi(gl) {
     return array;
 }
 
-},{"../../../const":42}],95:[function(require,module,exports){
+},{"../../../const":44}],97:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19613,7 +19677,7 @@ function mapWebGLDrawModesToPixi(gl) {
   return object;
 }
 
-},{"../../../const":42}],96:[function(require,module,exports){
+},{"../../../const":44}],98:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19629,7 +19693,7 @@ function validateContext(gl) {
     }
 }
 
-},{}],97:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19839,7 +19903,7 @@ exports.default = {
 
 };
 
-},{"./utils/canUploadSameBuffer":114,"./utils/maxRecommendedTextures":118}],98:[function(require,module,exports){
+},{"./utils/canUploadSameBuffer":116,"./utils/maxRecommendedTextures":120}],100:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19988,6 +20052,9 @@ var Sprite = function (_Container) {
         _this._transformID = -1;
         _this._textureID = -1;
 
+        _this._transformTrimmedID = -1;
+        _this._textureTrimmedID = -1;
+
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
@@ -20008,6 +20075,7 @@ var Sprite = function (_Container) {
 
     Sprite.prototype._onTextureUpdate = function _onTextureUpdate() {
         this._textureID = -1;
+        this._textureTrimmedID = -1;
 
         // so if _width is 0 then width was not set..
         if (this._width) {
@@ -20028,6 +20096,7 @@ var Sprite = function (_Container) {
 
     Sprite.prototype._onAnchorUpdate = function _onAnchorUpdate() {
         this._transformID = -1;
+        this._transformTrimmedID = -1;
     };
 
     /**
@@ -20105,7 +20174,12 @@ var Sprite = function (_Container) {
     Sprite.prototype.calculateTrimmedVertices = function calculateTrimmedVertices() {
         if (!this.vertexTrimmedData) {
             this.vertexTrimmedData = new Float32Array(8);
+        } else if (this._transformTrimmedID === this.transform._worldID && this._textureTrimmedID === this._texture._updateID) {
+            return;
         }
+
+        this._transformTrimmedID = this.transform._worldID;
+        this._textureTrimmedID = this._texture._updateID;
 
         // lets do some special trim code!
         var texture = this._texture;
@@ -20339,7 +20413,6 @@ var Sprite = function (_Container) {
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Sprite#
      */
 
 
@@ -20347,15 +20420,9 @@ var Sprite = function (_Container) {
         key: 'width',
         get: function get() {
             return Math.abs(this.scale.x) * this._texture.orig.width;
-        }
-
-        /**
-         * Sets the width of the sprite by modifying the scale.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             var s = (0, _utils.sign)(this.scale.x) || 1;
 
             this.scale.x = s * value / this._texture.orig.width;
@@ -20366,22 +20433,15 @@ var Sprite = function (_Container) {
          * The height of the sprite, setting this will actually modify the scale to achieve the value set
          *
          * @member {number}
-         * @memberof PIXI.Sprite#
          */
 
     }, {
         key: 'height',
         get: function get() {
             return Math.abs(this.scale.y) * this._texture.orig.height;
-        }
-
-        /**
-         * Sets the height of the sprite by modifying the scale.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             var s = (0, _utils.sign)(this.scale.y) || 1;
 
             this.scale.y = s * value / this._texture.orig.height;
@@ -20395,22 +20455,15 @@ var Sprite = function (_Container) {
          * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
          *
          * @member {PIXI.ObservablePoint}
-         * @memberof PIXI.Sprite#
          */
 
     }, {
         key: 'anchor',
         get: function get() {
             return this._anchor;
-        }
-
-        /**
-         * Copies the anchor to the sprite.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._anchor.copy(value);
         }
 
@@ -20419,7 +20472,6 @@ var Sprite = function (_Container) {
          * 0xFFFFFF will remove any tint effect.
          *
          * @member {number}
-         * @memberof PIXI.Sprite#
          * @default 0xFFFFFF
          */
 
@@ -20427,15 +20479,9 @@ var Sprite = function (_Container) {
         key: 'tint',
         get: function get() {
             return this._tint;
-        }
-
-        /**
-         * Sets the tint of the sprite.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._tint = value;
             this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
         }
@@ -20444,22 +20490,15 @@ var Sprite = function (_Container) {
          * The texture that the sprite is using
          *
          * @member {PIXI.Texture}
-         * @memberof PIXI.Sprite#
          */
 
     }, {
         key: 'texture',
         get: function get() {
             return this._texture;
-        }
-
-        /**
-         * Sets the texture of the sprite.
-         *
-         * @param {PIXI.Texture} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (this._texture === value) {
                 return;
             }
@@ -20468,6 +20507,7 @@ var Sprite = function (_Container) {
             this.cachedTint = 0xFFFFFF;
 
             this._textureID = -1;
+            this._textureTrimmedID = -1;
 
             if (value) {
                 // wait for the texture to load
@@ -20485,7 +20525,7 @@ var Sprite = function (_Container) {
 
 exports.default = Sprite;
 
-},{"../const":42,"../display/Container":44,"../math":66,"../textures/Texture":109,"../utils":117}],99:[function(require,module,exports){
+},{"../const":44,"../display/Container":46,"../math":68,"../textures/Texture":111,"../utils":119}],101:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20638,7 +20678,7 @@ exports.default = CanvasSpriteRenderer;
 
 _CanvasRenderer2.default.registerPlugin('sprite', CanvasSpriteRenderer);
 
-},{"../../const":42,"../../math":66,"../../renderers/canvas/CanvasRenderer":73,"./CanvasTinter":100}],100:[function(require,module,exports){
+},{"../../const":44,"../../math":68,"../../renderers/canvas/CanvasRenderer":75,"./CanvasTinter":102}],102:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20654,7 +20694,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * Utility methods for Sprite/Texture tinting.
  *
- * @namespace PIXI.CanvasTinter
+ * @class
+ * @memberof PIXI
  */
 var CanvasTinter = {
     /**
@@ -20874,7 +20915,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
 
 exports.default = CanvasTinter;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":76,"../../utils":117}],101:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":78,"../../utils":119}],103:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -20883,6 +20924,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * @class
+ * @memberof PIXI
  */
 var Buffer = function () {
   /**
@@ -20926,7 +20968,7 @@ var Buffer = function () {
 
 exports.default = Buffer;
 
-},{}],102:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21097,7 +21139,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
             // build the vao object that will render..
             this.vaos[i] = this.renderer.createVao().addIndex(this.indexBuffer).addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0).addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4).addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4).addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
 
-            /* eslint-disable max-len */
+            /* eslint-enable max-len */
         }
 
         this.vao = this.vaos[0];
@@ -21303,9 +21345,11 @@ var SpriteRenderer = function (_ObjectRenderer) {
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
 
+            /* eslint-disable max-len */
             uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (Math.min(sprite.worldAlpha, 1) * 255 << 24);
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
+            /* eslint-enable max-len */
 
             index += 20;
         }
@@ -21319,8 +21363,12 @@ var SpriteRenderer = function (_ObjectRenderer) {
                 this.vaoMax++;
                 this.vertexBuffers[this.vertexCount] = _pixiGlCore2.default.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
 
+                /* eslint-disable max-len */
+
                 // build the vao object that will render..
                 this.vaos[this.vertexCount] = this.renderer.createVao().addIndex(this.indexBuffer).addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0).addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4).addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4).addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+
+                /* eslint-enable max-len */
             }
 
             this.renderer.bindVao(this.vaos[this.vertexCount]);
@@ -21440,7 +21488,7 @@ exports.default = SpriteRenderer;
 
 _WebGLRenderer2.default.registerPlugin('sprite', SpriteRenderer);
 
-},{"../../renderers/webgl/WebGLRenderer":80,"../../renderers/webgl/utils/ObjectRenderer":90,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":93,"../../settings":97,"../../utils/createIndicesForQuads":115,"./BatchBuffer":101,"./generateMultiTextureShader":103,"bit-twiddle":1,"pixi-gl-core":12}],103:[function(require,module,exports){
+},{"../../renderers/webgl/WebGLRenderer":82,"../../renderers/webgl/utils/ObjectRenderer":92,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":95,"../../settings":99,"../../utils/createIndicesForQuads":117,"./BatchBuffer":103,"./generateMultiTextureShader":105,"bit-twiddle":1,"pixi-gl-core":12}],105:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21457,7 +21505,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var fragTemplate = ['varying vec2 vTextureCoord;', 'varying vec4 vColor;', 'varying float vTextureId;', 'uniform sampler2D uSamplers[%count%];', 'void main(void){', 'vec4 color;', 'float textureId = floor(vTextureId+0.5);', '%forloop%', 'gl_FragColor = color * vColor;', '}'].join('\n');
 
 function generateMultiTextureShader(gl, maxTextures) {
-    var vertexSrc = 'attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n    vTextureId = aTextureId;\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n';
+    var vertexSrc = 'precision highp float;\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n    vTextureId = aTextureId;\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n';
     var fragmentSrc = fragTemplate;
 
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
@@ -21503,7 +21551,7 @@ function generateSampleSrc(maxTextures) {
     return src;
 }
 
-},{"../../Shader":41,"path":22}],104:[function(require,module,exports){
+},{"../../Shader":42,"path":22}],106:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21693,12 +21741,10 @@ var Text = function (_Sprite) {
             width += style.dropShadowDistance;
         }
 
-        width += style.padding * 2;
-
-        this.canvas.width = Math.ceil((width + this.context.lineWidth) * this.resolution);
+        this.canvas.width = Math.ceil((width + style.padding * 2) * this.resolution);
 
         // calculate text height
-        var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        var lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
         var height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness) + (lines.length - 1) * lineHeight;
 
@@ -21706,7 +21752,7 @@ var Text = function (_Sprite) {
             height += style.dropShadowDistance;
         }
 
-        this.canvas.height = Math.ceil((height + this._style.padding * 2) * this.resolution);
+        this.canvas.height = Math.ceil((height + style.padding * 2) * this.resolution);
 
         this.context.scale(this.resolution, this.resolution);
 
@@ -21912,8 +21958,9 @@ var Text = function (_Sprite) {
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
         var result = '';
+        var style = this._style;
         var lines = text.split('\n');
-        var wordWrapWidth = this._style.wordWrapWidth;
+        var wordWrapWidth = style.wordWrapWidth;
 
         for (var i = 0; i < lines.length; i++) {
             var spaceLeft = wordWrapWidth;
@@ -21922,7 +21969,7 @@ var Text = function (_Sprite) {
             for (var j = 0; j < words.length; j++) {
                 var wordWidth = this.context.measureText(words[j]).width;
 
-                if (this._style.breakWords && wordWidth > wordWrapWidth) {
+                if (style.breakWords && wordWidth > wordWrapWidth) {
                     // Word should be split in the middle
                     var characters = words[j].split('');
 
@@ -22088,7 +22135,6 @@ var Text = function (_Sprite) {
      * The width of the Text, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Text#
      */
 
 
@@ -22230,15 +22276,9 @@ var Text = function (_Sprite) {
             this.updateText(true);
 
             return Math.abs(this.scale.x) * this._texture.orig.width;
-        }
-
-        /**
-         * Sets the width of the text.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.updateText(true);
 
             var s = (0, _utils.sign)(this.scale.x) || 1;
@@ -22251,7 +22291,6 @@ var Text = function (_Sprite) {
          * The height of the Text, setting this will actually modify the scale to achieve the value set
          *
          * @member {number}
-         * @memberof PIXI.Text#
          */
 
     }, {
@@ -22260,15 +22299,9 @@ var Text = function (_Sprite) {
             this.updateText(true);
 
             return Math.abs(this.scale.y) * this._texture.orig.height;
-        }
-
-        /**
-         * Sets the height of the text.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.updateText(true);
 
             var s = (0, _utils.sign)(this.scale.y) || 1;
@@ -22282,22 +22315,15 @@ var Text = function (_Sprite) {
          * object and mark the text as dirty.
          *
          * @member {object|PIXI.TextStyle}
-         * @memberof PIXI.Text#
          */
 
     }, {
         key: 'style',
         get: function get() {
             return this._style;
-        }
-
-        /**
-         * Sets the style of the text.
-         *
-         * @param {object} style - The value to set to.
-         */
-        ,
-        set: function set(style) {
+        },
+        set: function set(style) // eslint-disable-line require-jsdoc
+        {
             style = style || {};
 
             if (style instanceof _TextStyle2.default) {
@@ -22314,22 +22340,15 @@ var Text = function (_Sprite) {
          * Set the copy for the text object. To split a line you can use '\n'.
          *
          * @member {string}
-         * @memberof PIXI.Text#
          */
 
     }, {
         key: 'text',
         get: function get() {
             return this._text;
-        }
-
-        /**
-         * Sets the text.
-         *
-         * @param {string} text - The value to set to.
-         */
-        ,
-        set: function set(text) {
+        },
+        set: function set(text) // eslint-disable-line require-jsdoc
+        {
             text = String(text || ' ');
 
             if (this._text === text) {
@@ -22350,7 +22369,7 @@ Text.fontPropertiesCache = {};
 Text.fontPropertiesCanvas = document.createElement('canvas');
 Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
 
-},{"../const":42,"../math":66,"../settings":97,"../sprites/Sprite":98,"../textures/Texture":109,"../utils":117,"./TextStyle":105}],105:[function(require,module,exports){
+},{"../const":44,"../math":68,"../settings":99,"../sprites/Sprite":100,"../textures/Texture":111,"../utils":119,"./TextStyle":107}],107:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22787,7 +22806,7 @@ function getColor(color) {
     }
 }
 
-},{"../const":42,"../utils":117}],106:[function(require,module,exports){
+},{"../const":44,"../utils":119}],108:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22833,18 +22852,17 @@ var RESOLUTION = _settings2.default.RESOLUTION,
  * baseRenderTexture.render(sprite);
  * ```
  *
- * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
- * position a Container should be used:
+ * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * you can clear the transform
  *
  * ```js
- * let doc = new PIXI.Container();
  *
- * doc.addChild(sprite);
+ * sprite.setTransform()
  *
  * let baseRenderTexture = new PIXI.BaseRenderTexture(100, 100);
  * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
  *
- * renderer.render(doc, renderTexture);  // Renders to center of RenderTexture
+ * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
  * ```
  *
  * @class
@@ -22951,7 +22969,7 @@ var BaseRenderTexture = function (_BaseTexture) {
 
 exports.default = BaseRenderTexture;
 
-},{"../settings":97,"./BaseTexture":107}],107:[function(require,module,exports){
+},{"../settings":99,"./BaseTexture":109}],109:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23654,7 +23672,7 @@ var BaseTexture = function (_EventEmitter) {
 
 exports.default = BaseTexture;
 
-},{"../settings":97,"../utils":117,"../utils/determineCrossOrigin":116,"bit-twiddle":1,"eventemitter3":3}],108:[function(require,module,exports){
+},{"../settings":99,"../utils":119,"../utils/determineCrossOrigin":118,"bit-twiddle":1,"eventemitter3":3}],110:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23681,8 +23699,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
  *
- * A RenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects is ignored. For example:
+ * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
@@ -23697,15 +23714,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * renderer.render(sprite, renderTexture);
  * ```
  *
- * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
- * position a Container should be used:
+ * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * you can clear the transform
  *
  * ```js
- * let doc = new PIXI.Container();
  *
- * doc.addChild(sprite);
+ * sprite.setTransform()
  *
- * renderer.render(doc, renderTexture);  // Renders to center of renderTexture
+ * let renderTexture = new PIXI.RenderTexture.create(100, 100);
+ *
+ * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
  * ```
  *
  * @class
@@ -23805,7 +23823,7 @@ var RenderTexture = function (_Texture) {
 
 exports.default = RenderTexture;
 
-},{"./BaseRenderTexture":106,"./Texture":109}],109:[function(require,module,exports){
+},{"./BaseRenderTexture":108,"./Texture":111}],111:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24267,7 +24285,6 @@ var Texture = function (_EventEmitter) {
      * The frame specifies the region of the base texture that this texture uses.
      *
      * @member {PIXI.Rectangle}
-     * @memberof PIXI.Texture#
      */
 
 
@@ -24275,15 +24292,9 @@ var Texture = function (_EventEmitter) {
         key: 'frame',
         get: function get() {
             return this._frame;
-        }
-
-        /**
-         * Set the frame.
-         *
-         * @param {Rectangle} frame - The new frame to set.
-         */
-        ,
-        set: function set(frame) {
+        },
+        set: function set(frame) // eslint-disable-line require-jsdoc
+        {
             this._frame = frame;
 
             this.noFrame = false;
@@ -24318,15 +24329,9 @@ var Texture = function (_EventEmitter) {
         key: 'rotate',
         get: function get() {
             return this._rotate;
-        }
-
-        /**
-         * Set the rotation
-         *
-         * @param {number} rotate - The new rotation to set.
-         */
-        ,
-        set: function set(rotate) {
+        },
+        set: function set(rotate) // eslint-disable-line require-jsdoc
+        {
             this._rotate = rotate;
             if (this.valid) {
                 this._updateUvs();
@@ -24377,7 +24382,7 @@ Texture.EMPTY.on = function _emptyOn() {/* empty */};
 Texture.EMPTY.once = function _emptyOnce() {/* empty */};
 Texture.EMPTY.emit = function _emptyEmit() {/* empty */};
 
-},{"../math":66,"../utils":117,"./BaseTexture":107,"./TextureUvs":110,"./VideoBaseTexture":111,"eventemitter3":3}],110:[function(require,module,exports){
+},{"../math":68,"../utils":119,"./BaseTexture":109,"./TextureUvs":112,"./VideoBaseTexture":113,"eventemitter3":3}],112:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24482,7 +24487,7 @@ var TextureUvs = function () {
 
 exports.default = TextureUvs;
 
-},{"../math/GroupD8":62}],111:[function(require,module,exports){
+},{"../math/GroupD8":64}],113:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24764,7 +24769,6 @@ var VideoBaseTexture = function (_BaseTexture) {
      * Should the base texture automatically update itself, set to true by default
      *
      * @member {boolean}
-     * @memberof PIXI.VideoBaseTexture#
      */
 
 
@@ -24772,15 +24776,9 @@ var VideoBaseTexture = function (_BaseTexture) {
         key: 'autoUpdate',
         get: function get() {
             return this._autoUpdate;
-        }
-
-        /**
-         * Sets autoUpdate property.
-         *
-         * @param {number} value - enable auto update or not
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (value !== this._autoUpdate) {
                 this._autoUpdate = value;
 
@@ -24816,7 +24814,7 @@ function createSource(path, type) {
     return source;
 }
 
-},{"../ticker":113,"../utils":117,"./BaseTexture":107}],112:[function(require,module,exports){
+},{"../ticker":115,"../utils":119,"./BaseTexture":109}],114:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25170,7 +25168,7 @@ var Ticker = function () {
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @memberof PIXI.ticker.Ticker#
+     * @member {number}
      * @readonly
      */
 
@@ -25189,7 +25187,7 @@ var Ticker = function () {
          * When setting this property it is clamped to a value between
          * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
          *
-         * @memberof PIXI.ticker.Ticker#
+         * @member {number}
          * @default 10
          */
 
@@ -25197,15 +25195,9 @@ var Ticker = function () {
         key: 'minFPS',
         get: function get() {
             return 1000 / this._maxElapsedMS;
-        }
-
-        /**
-         * Sets the min fps.
-         *
-         * @param {number} fps - value to set.
-         */
-        ,
-        set: function set(fps) {
+        },
+        set: function set(fps) // eslint-disable-line require-jsdoc
+        {
             // Clamp: 0 to TARGET_FPMS
             var minFPMS = Math.min(Math.max(0, fps) / 1000, _settings2.default.TARGET_FPMS);
 
@@ -25218,7 +25210,7 @@ var Ticker = function () {
 
 exports.default = Ticker;
 
-},{"../settings":97,"eventemitter3":3}],113:[function(require,module,exports){
+},{"../settings":99,"eventemitter3":3}],115:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25282,7 +25274,7 @@ shared.autoStart = true;
 exports.shared = shared;
 exports.Ticker = _Ticker2.default;
 
-},{"./Ticker":112}],114:[function(require,module,exports){
+},{"./Ticker":114}],116:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -25296,7 +25288,7 @@ function canUploadSameBuffer() {
 	return !ios;
 }
 
-},{}],115:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -25330,7 +25322,7 @@ function createIndicesForQuads(size) {
     return indices;
 }
 
-},{}],116:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25386,7 +25378,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":28}],117:[function(require,module,exports){
+},{"url":28}],119:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25724,7 +25716,7 @@ var TextureCache = exports.TextureCache = {};
  */
 var BaseTextureCache = exports.BaseTextureCache = {};
 
-},{"../const":42,"../settings":97,"./pluginTarget":119,"eventemitter3":3,"ismobilejs":4}],118:[function(require,module,exports){
+},{"../const":44,"../settings":99,"./pluginTarget":121,"eventemitter3":3,"ismobilejs":4}],120:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25746,7 +25738,7 @@ function maxRecommendedTextures(max) {
     return max;
 }
 
-},{"ismobilejs":4}],119:[function(require,module,exports){
+},{"ismobilejs":4}],121:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -25812,7 +25804,7 @@ exports.default = {
     }
 };
 
-},{}],120:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 'use strict';
 
 var _core = require('./core');
@@ -26729,7 +26721,7 @@ Object.defineProperties(loaders.Loader.prototype, {
     }
 });
 
-},{"./core":61,"./extras":131,"./filters":142,"./loaders":151,"./mesh":160,"./particles":163,"./prepare":173}],121:[function(require,module,exports){
+},{"./core":63,"./extras":133,"./filters":144,"./loaders":153,"./mesh":162,"./particles":165,"./prepare":175}],123:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26746,6 +26738,8 @@ var TEMP_RECT = new core.Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers.
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.extract
  *
  * @class
  * @memberof PIXI
@@ -26907,7 +26901,7 @@ exports.default = CanvasExtract;
 
 core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
 
-},{"../../core":61}],122:[function(require,module,exports){
+},{"../../core":63}],124:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26932,7 +26926,7 @@ Object.defineProperty(exports, 'canvas', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./canvas/CanvasExtract":121,"./webgl/WebGLExtract":123}],123:[function(require,module,exports){
+},{"./canvas/CanvasExtract":123,"./webgl/WebGLExtract":125}],125:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26950,6 +26944,8 @@ var BYTES_PER_PIXEL = 4;
 
 /**
  * The extract manager provides functionality to export content from the renderers.
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.extract
  *
  * @class
  * @memberof PIXI
@@ -27153,7 +27149,7 @@ exports.default = WebGLExtract;
 
 core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
 
-},{"../../core":61}],124:[function(require,module,exports){
+},{"../../core":63}],126:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27205,8 +27201,9 @@ var AnimatedSprite = function (_core$Sprite) {
     /**
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
+     * @param {boolean} [autoUpdate=true] - Whether use PIXI.ticker.shared to auto update animation time.
      */
-    function AnimatedSprite(textures) {
+    function AnimatedSprite(textures, autoUpdate) {
         _classCallCheck(this, AnimatedSprite);
 
         /**
@@ -27222,6 +27219,14 @@ var AnimatedSprite = function (_core$Sprite) {
         _this._durations = null;
 
         _this.textures = textures;
+
+        /**
+         * `true` uses PIXI.ticker.shared to auto update animation time.
+         * @type {boolean}
+         * @default true
+         * @private
+         */
+        _this._autoUpdate = autoUpdate !== false;
 
         /**
          * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower
@@ -27242,16 +27247,14 @@ var AnimatedSprite = function (_core$Sprite) {
         /**
          * Function to call when a AnimatedSprite finishes playing
          *
-         * @method
-         * @memberof PIXI.extras.AnimatedSprite#
+         * @member {Function}
          */
         _this.onComplete = null;
 
         /**
          * Function to call when a AnimatedSprite changes which texture is being rendered
          *
-         * @method
-         * @memberof PIXI.extras.AnimatedSprite#
+         * @member {Function}
          */
         _this.onFrameChange = null;
 
@@ -27285,7 +27288,9 @@ var AnimatedSprite = function (_core$Sprite) {
         }
 
         this.playing = false;
-        core.ticker.shared.remove(this.update, this);
+        if (this._autoUpdate) {
+            core.ticker.shared.remove(this.update, this);
+        }
     };
 
     /**
@@ -27300,7 +27305,9 @@ var AnimatedSprite = function (_core$Sprite) {
         }
 
         this.playing = true;
-        core.ticker.shared.add(this.update, this);
+        if (this._autoUpdate) {
+            core.ticker.shared.add(this.update, this);
+        }
     };
 
     /**
@@ -27465,7 +27472,6 @@ var AnimatedSprite = function (_core$Sprite) {
      *
      * @readonly
      * @member {number}
-     * @memberof PIXI.extras.AnimatedSprite#
      * @default 0
      */
 
@@ -27480,22 +27486,15 @@ var AnimatedSprite = function (_core$Sprite) {
          * The array of textures used for this AnimatedSprite
          *
          * @member {PIXI.Texture[]}
-         * @memberof PIXI.extras.AnimatedSprite#
          */
 
     }, {
         key: 'textures',
         get: function get() {
             return this._textures;
-        }
-
-        /**
-         * Sets the textures.
-         *
-         * @param {PIXI.Texture[]} value - The texture to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (value[0] instanceof core.Texture) {
                 this._textures = value;
                 this._durations = null;
@@ -27514,7 +27513,6 @@ var AnimatedSprite = function (_core$Sprite) {
         * The AnimatedSprites current frame index
         *
         * @member {number}
-        * @memberof PIXI.extras.AnimatedSprite#
         * @readonly
         */
 
@@ -27536,7 +27534,7 @@ var AnimatedSprite = function (_core$Sprite) {
 
 exports.default = AnimatedSprite;
 
-},{"../core":61}],125:[function(require,module,exports){
+},{"../core":63}],127:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27870,7 +27868,6 @@ var BitmapText = function (_core$Container) {
      * The tint of the BitmapText object
      *
      * @member {number}
-     * @memberof PIXI.extras.BitmapText#
      */
 
 
@@ -27878,15 +27875,9 @@ var BitmapText = function (_core$Container) {
         key: 'tint',
         get: function get() {
             return this._font.tint;
-        }
-
-        /**
-         * Sets the tint.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._font.tint = typeof value === 'number' && value >= 0 ? value : 0xFFFFFF;
 
             this.dirty = true;
@@ -27897,22 +27888,15 @@ var BitmapText = function (_core$Container) {
          *
          * @member {string}
          * @default 'left'
-         * @memberof PIXI.extras.BitmapText#
          */
 
     }, {
         key: 'align',
         get: function get() {
             return this._font.align;
-        }
-
-        /**
-         * Sets the alignment
-         *
-         * @param {string} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._font.align = value || 'left';
 
             this.dirty = true;
@@ -27925,22 +27909,15 @@ var BitmapText = function (_core$Container) {
          * Setting the anchor to 1,1 would mean the text's origin point will be the bottom right corner
          *
          * @member {PIXI.Point | number}
-         * @memberof PIXI.extras.BitmapText#
          */
 
     }, {
         key: 'anchor',
         get: function get() {
             return this._anchor;
-        }
-
-        /**
-         * Sets the anchor.
-         *
-         * @param {PIXI.Point|number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (typeof value === 'number') {
                 this._anchor.set(value);
             } else {
@@ -27952,22 +27929,15 @@ var BitmapText = function (_core$Container) {
          * The font descriptor of the BitmapText object
          *
          * @member {string|object}
-         * @memberof PIXI.extras.BitmapText#
          */
 
     }, {
         key: 'font',
         get: function get() {
             return this._font;
-        }
-
-        /**
-         * Sets the font.
-         *
-         * @param {string|object} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             if (!value) {
                 return;
             }
@@ -27989,22 +27959,15 @@ var BitmapText = function (_core$Container) {
          * The text of the BitmapText object
          *
          * @member {string}
-         * @memberof PIXI.extras.BitmapText#
          */
 
     }, {
         key: 'text',
         get: function get() {
             return this._text;
-        }
-
-        /**
-         * Sets the text.
-         *
-         * @param {string} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             value = value.toString() || ' ';
             if (this._text === value) {
                 return;
@@ -28018,7 +27981,6 @@ var BitmapText = function (_core$Container) {
          * which is defined in the style object
          *
          * @member {number}
-         * @memberof PIXI.extras.BitmapText#
          * @readonly
          */
 
@@ -28035,7 +27997,6 @@ var BitmapText = function (_core$Container) {
          * which is defined in the style object
          *
          * @member {number}
-         * @memberof PIXI.extras.BitmapText#
          * @readonly
          */
 
@@ -28056,7 +28017,7 @@ exports.default = BitmapText;
 
 BitmapText.fonts = {};
 
-},{"../core":61,"../core/math/ObservablePoint":64}],126:[function(require,module,exports){
+},{"../core":63,"../core/math/ObservablePoint":66}],128:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28124,7 +28085,6 @@ var TextureTransform = function () {
     /**
      * texture property
      * @member {PIXI.Texture}
-     * @memberof PIXI.TextureTransform
      */
 
 
@@ -28174,14 +28134,9 @@ var TextureTransform = function () {
         key: 'texture',
         get: function get() {
             return this._texture;
-        }
-
-        /**
-         * sets texture value
-         * @param {PIXI.Texture} value texture to be set
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._texture = value;
             this._lastTextureID = -1;
         }
@@ -28192,7 +28147,7 @@ var TextureTransform = function () {
 
 exports.default = TextureTransform;
 
-},{"../core/math/Matrix":63}],127:[function(require,module,exports){
+},{"../core/math/Matrix":65}],129:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28295,6 +28250,14 @@ var TilingSprite = function (_core$Sprite) {
          * @default 'tilingSprite'
          */
         _this.pluginName = 'tilingSprite';
+
+        /**
+         * Whether or not anchor affects uvs
+         *
+         * @member {boolean}
+         * @default false
+         */
+        _this.uvRespectAnchor = false;
         return _this;
     }
     /**
@@ -28303,7 +28266,6 @@ var TilingSprite = function (_core$Sprite) {
      *
      * @default 0.5
      * @member {number}
-     * @memberof PIXI.TilingSprite
      */
 
 
@@ -28544,7 +28506,6 @@ var TilingSprite = function (_core$Sprite) {
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.extras.TilingSprite#
      */
 
 
@@ -28552,15 +28513,9 @@ var TilingSprite = function (_core$Sprite) {
         key: 'clampMargin',
         get: function get() {
             return this.uvTransform.clampMargin;
-        }
-
-        /**
-         * setter for clampMargin
-         *
-         * @param {number} value assigned value
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.uvTransform.clampMargin = value;
             this.uvTransform.update(true);
         }
@@ -28569,22 +28524,15 @@ var TilingSprite = function (_core$Sprite) {
          * The scaling of the image that is being tiled
          *
          * @member {PIXI.ObservablePoint}
-         * @memberof PIXI.DisplayObject#
          */
 
     }, {
         key: 'tileScale',
         get: function get() {
             return this.tileTransform.scale;
-        }
-
-        /**
-         * Copies the point to the scale of the tiled image.
-         *
-         * @param {PIXI.Point|PIXI.ObservablePoint} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.tileTransform.scale.copy(value);
         }
 
@@ -28592,37 +28540,24 @@ var TilingSprite = function (_core$Sprite) {
          * The offset of the image that is being tiled
          *
          * @member {PIXI.ObservablePoint}
-         * @memberof PIXI.TilingSprite#
          */
 
     }, {
         key: 'tilePosition',
         get: function get() {
             return this.tileTransform.position;
-        }
-
-        /**
-         * Copies the point to the position of the tiled image.
-         *
-         * @param {PIXI.Point|PIXI.ObservablePoint} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.tileTransform.position.copy(value);
         }
     }, {
         key: 'width',
         get: function get() {
             return this._width;
-        }
-
-        /**
-         * Sets the width.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._width = value;
         }
 
@@ -28630,22 +28565,15 @@ var TilingSprite = function (_core$Sprite) {
          * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
          *
          * @member {number}
-         * @memberof PIXI.extras.TilingSprite#
          */
 
     }, {
         key: 'height',
         get: function get() {
             return this._height;
-        }
-
-        /**
-         * Sets the width.
-         *
-         * @param {number} value - The value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._height = value;
         }
     }]);
@@ -28655,7 +28583,7 @@ var TilingSprite = function (_core$Sprite) {
 
 exports.default = TilingSprite;
 
-},{"../core":61,"../core/sprites/canvas/CanvasTinter":100,"./TextureTransform":126}],128:[function(require,module,exports){
+},{"../core":63,"../core/sprites/canvas/CanvasTinter":102,"./TextureTransform":128}],130:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -28929,7 +28857,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // need to set //
     var m = _tempMatrix;
 
-    this.transform.worldTransform.copy(m);
+    this.transform.localTransform.copy(m);
     m.invert();
 
     m.tx -= bounds.x;
@@ -29007,7 +28935,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy()
     this.destroy();
 };
 
-},{"../core":61}],129:[function(require,module,exports){
+},{"../core":63}],131:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -29041,7 +28969,7 @@ core.Container.prototype.getChildByName = function getChildByName(name) {
     return null;
 };
 
-},{"../core":61}],130:[function(require,module,exports){
+},{"../core":63}],132:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -29074,7 +29002,7 @@ core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition() {
     return point;
 };
 
-},{"../core":61}],131:[function(require,module,exports){
+},{"../core":63}],133:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29135,7 +29063,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // imported for side effect of extending the prototype only, contains no exports
 
-},{"./AnimatedSprite":124,"./BitmapText":125,"./TextureTransform":126,"./TilingSprite":127,"./cacheAsBitmap":128,"./getChildByName":129,"./getGlobalPosition":130,"./webgl/TilingSpriteRenderer":132}],132:[function(require,module,exports){
+},{"./AnimatedSprite":126,"./BitmapText":127,"./TextureTransform":128,"./TilingSprite":129,"./cacheAsBitmap":130,"./getChildByName":131,"./getGlobalPosition":132,"./webgl/TilingSpriteRenderer":134}],134:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29161,6 +29089,10 @@ var tempArray = new Float32Array(4);
 
 /**
  * WebGL renderer plugin for tiling sprites
+ *
+ * @class
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
  */
 
 var TilingSpriteRenderer = function (_core$ObjectRenderer) {
@@ -29220,13 +29152,15 @@ var TilingSpriteRenderer = function (_core$ObjectRenderer) {
         vertices[2] = vertices[4] = ts._width * (1.0 - ts.anchor.x);
         vertices[5] = vertices[7] = ts._height * (1.0 - ts.anchor.y);
 
-        vertices = quad.uvs;
+        if (ts.uvRespectAnchor) {
+            vertices = quad.uvs;
 
-        vertices[0] = vertices[6] = -ts.anchor.x;
-        vertices[1] = vertices[3] = -ts.anchor.y;
+            vertices[0] = vertices[6] = -ts.anchor.x;
+            vertices[1] = vertices[3] = -ts.anchor.y;
 
-        vertices[2] = vertices[4] = 1.0 - ts.anchor.x;
-        vertices[5] = vertices[7] = 1.0 - ts.anchor.y;
+            vertices[2] = vertices[4] = 1.0 - ts.anchor.x;
+            vertices[5] = vertices[7] = 1.0 - ts.anchor.y;
+        }
 
         quad.upload();
 
@@ -29297,7 +29231,7 @@ exports.default = TilingSpriteRenderer;
 
 core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-},{"../../core":61,"../../core/const":42,"path":22}],133:[function(require,module,exports){
+},{"../../core":63,"../../core/const":44,"path":22}],135:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29335,155 +29269,127 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @memberof PIXI.filters
  */
 var BlurFilter = function (_core$Filter) {
-  _inherits(BlurFilter, _core$Filter);
-
-  /**
-   * @param {number} strength - The strength of the blur filter.
-   * @param {number} quality - The quality of the blur filter.
-   * @param {number} resolution - The resolution of the blur filter.
-   * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
-   */
-  function BlurFilter(strength, quality, resolution, kernelSize) {
-    _classCallCheck(this, BlurFilter);
-
-    var _this = _possibleConstructorReturn(this, _core$Filter.call(this));
-
-    _this.blurXFilter = new _BlurXFilter2.default(strength, quality, resolution, kernelSize);
-    _this.blurYFilter = new _BlurYFilter2.default(strength, quality, resolution, kernelSize);
-    _this.resolution = 1;
-
-    _this.padding = 0;
-    _this.resolution = resolution || 1;
-    _this.quality = quality || 4;
-    _this.blur = strength || 8;
-    return _this;
-  }
-
-  /**
-   * Applies the filter.
-   *
-   * @param {PIXI.FilterManager} filterManager - The manager.
-   * @param {PIXI.RenderTarget} input - The input target.
-   * @param {PIXI.RenderTarget} output - The output target.
-   */
-
-
-  BlurFilter.prototype.apply = function apply(filterManager, input, output) {
-    var renderTarget = filterManager.getRenderTarget(true);
-
-    this.blurXFilter.apply(filterManager, input, renderTarget, true);
-    this.blurYFilter.apply(filterManager, renderTarget, output, false);
-
-    filterManager.returnRenderTarget(renderTarget);
-  };
-
-  /**
-   * Sets the strength of both the blurX and blurY properties simultaneously
-   *
-   * @member {number}
-   * @memberOf PIXI.filters.BlurFilter#
-   * @default 2
-   */
-
-
-  _createClass(BlurFilter, [{
-    key: 'blur',
-    get: function get() {
-      return this.blurXFilter.blur;
-    }
+    _inherits(BlurFilter, _core$Filter);
 
     /**
-     * Sets the strength of the blur.
-     *
-     * @param {number} value - The value to set.
+     * @param {number} strength - The strength of the blur filter.
+     * @param {number} quality - The quality of the blur filter.
+     * @param {number} resolution - The resolution of the blur filter.
+     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    ,
-    set: function set(value) {
-      this.blurXFilter.blur = this.blurYFilter.blur = value;
-      this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+    function BlurFilter(strength, quality, resolution, kernelSize) {
+        _classCallCheck(this, BlurFilter);
+
+        var _this = _possibleConstructorReturn(this, _core$Filter.call(this));
+
+        _this.blurXFilter = new _BlurXFilter2.default(strength, quality, resolution, kernelSize);
+        _this.blurYFilter = new _BlurYFilter2.default(strength, quality, resolution, kernelSize);
+        _this.resolution = 1;
+
+        _this.padding = 0;
+        _this.resolution = resolution || 1;
+        _this.quality = quality || 4;
+        _this.blur = strength || 8;
+        return _this;
     }
 
     /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     * Applies the filter.
+     *
+     * @param {PIXI.FilterManager} filterManager - The manager.
+     * @param {PIXI.RenderTarget} input - The input target.
+     * @param {PIXI.RenderTarget} output - The output target.
+     */
+
+
+    BlurFilter.prototype.apply = function apply(filterManager, input, output) {
+        var renderTarget = filterManager.getRenderTarget(true);
+
+        this.blurXFilter.apply(filterManager, input, renderTarget, true);
+        this.blurYFilter.apply(filterManager, renderTarget, output, false);
+
+        filterManager.returnRenderTarget(renderTarget);
+    };
+
+    /**
+     * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
-     * @default 1
-     */
-
-  }, {
-    key: 'quality',
-    get: function get() {
-      return this.blurXFilter.quality;
-    }
-
-    /**
-     * Sets the quality of the blur.
-     *
-     * @param {number} value - The value to set.
-     */
-    ,
-    set: function set(value) {
-      this.blurXFilter.quality = this.blurYFilter.quality = value;
-    }
-
-    /**
-     * Sets the strength of the blurX property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
      * @default 2
      */
 
-  }, {
-    key: 'blurX',
-    get: function get() {
-      return this.blurXFilter.blur;
-    }
 
-    /**
-     * Sets the strength of the blurX.
-     *
-     * @param {number} value - The value to set.
-     */
-    ,
-    set: function set(value) {
-      this.blurXFilter.blur = value;
-      this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
-    }
+    _createClass(BlurFilter, [{
+        key: 'blur',
+        get: function get() {
+            return this.blurXFilter.blur;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this.blurXFilter.blur = this.blurYFilter.blur = value;
+            this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        }
 
-    /**
-     * Sets the strength of the blurY property
-     *
-     * @member {number}
-     * @memberOf PIXI.filters.BlurFilter#
-     * @default 2
-     */
+        /**
+         * Sets the number of passes for blur. More passes means higher quaility bluring.
+         *
+         * @member {number}
+         * @default 1
+         */
 
-  }, {
-    key: 'blurY',
-    get: function get() {
-      return this.blurYFilter.blur;
-    }
+    }, {
+        key: 'quality',
+        get: function get() {
+            return this.blurXFilter.quality;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this.blurXFilter.quality = this.blurYFilter.quality = value;
+        }
 
-    /**
-     * Sets the strength of the blurY.
-     *
-     * @param {number} value - The value to set.
-     */
-    ,
-    set: function set(value) {
-      this.blurYFilter.blur = value;
-      this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
-    }
-  }]);
+        /**
+         * Sets the strength of the blurX property
+         *
+         * @member {number}
+         * @default 2
+         */
 
-  return BlurFilter;
+    }, {
+        key: 'blurX',
+        get: function get() {
+            return this.blurXFilter.blur;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this.blurXFilter.blur = value;
+            this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        }
+
+        /**
+         * Sets the strength of the blurY property
+         *
+         * @member {number}
+         * @default 2
+         */
+
+    }, {
+        key: 'blurY',
+        get: function get() {
+            return this.blurYFilter.blur;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this.blurYFilter.blur = value;
+            this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
+        }
+    }]);
+
+    return BlurFilter;
 }(core.Filter);
 
 exports.default = BlurFilter;
 
-},{"../../core":61,"./BlurXFilter":134,"./BlurYFilter":135}],134:[function(require,module,exports){
+},{"../../core":63,"./BlurXFilter":136,"./BlurYFilter":137}],136:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29609,7 +29515,6 @@ var BlurXFilter = function (_core$Filter) {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurXFilter#
      * @default 16
      */
 
@@ -29618,15 +29523,9 @@ var BlurXFilter = function (_core$Filter) {
         key: 'blur',
         get: function get() {
             return this.strength;
-        }
-
-        /**
-         * Sets the strength of the blur.
-         *
-         * @param {number} value - The value to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.padding = Math.abs(value) * 2;
             this.strength = value;
         }
@@ -29636,7 +29535,6 @@ var BlurXFilter = function (_core$Filter) {
         * quaility bluring but the lower the performance.
         *
         * @member {number}
-        * @memberof PIXI.filters.BlurXFilter#
         * @default 4
         */
 
@@ -29644,15 +29542,9 @@ var BlurXFilter = function (_core$Filter) {
         key: 'quality',
         get: function get() {
             return this._quality;
-        }
-
-        /**
-         * Sets the quality of the blur.
-         *
-         * @param {number} value - The value to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._quality = value;
             this.passes = value;
         }
@@ -29663,7 +29555,7 @@ var BlurXFilter = function (_core$Filter) {
 
 exports.default = BlurXFilter;
 
-},{"../../core":61,"./generateBlurFragSource":136,"./generateBlurVertSource":137,"./getMaxBlurKernelSize":138}],135:[function(require,module,exports){
+},{"../../core":63,"./generateBlurFragSource":138,"./generateBlurVertSource":139,"./getMaxBlurKernelSize":140}],137:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29788,7 +29680,6 @@ var BlurYFilter = function (_core$Filter) {
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof PIXI.filters.BlurYFilter#
      * @default 2
      */
 
@@ -29797,15 +29688,9 @@ var BlurYFilter = function (_core$Filter) {
         key: 'blur',
         get: function get() {
             return this.strength;
-        }
-
-        /**
-         * Sets the strength of the blur.
-         *
-         * @param {number} value - The value to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.padding = Math.abs(value) * 2;
             this.strength = value;
         }
@@ -29815,7 +29700,6 @@ var BlurYFilter = function (_core$Filter) {
          * quaility bluring but the lower the performance.
          *
          * @member {number}
-         * @memberof PIXI.filters.BlurXFilter#
          * @default 4
          */
 
@@ -29823,15 +29707,9 @@ var BlurYFilter = function (_core$Filter) {
         key: 'quality',
         get: function get() {
             return this._quality;
-        }
-
-        /**
-         * Sets the quality of the blur.
-         *
-         * @param {number} value - The value to set.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._quality = value;
             this.passes = value;
         }
@@ -29842,7 +29720,7 @@ var BlurYFilter = function (_core$Filter) {
 
 exports.default = BlurYFilter;
 
-},{"../../core":61,"./generateBlurFragSource":136,"./generateBlurVertSource":137,"./getMaxBlurKernelSize":138}],136:[function(require,module,exports){
+},{"../../core":63,"./generateBlurFragSource":138,"./generateBlurVertSource":139,"./getMaxBlurKernelSize":140}],138:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29889,7 +29767,7 @@ function generateFragBlurSource(kernelSize) {
     return fragSource;
 }
 
-},{}],137:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29933,7 +29811,7 @@ function generateVertBlurSource(kernelSize, x) {
     return vertSource;
 }
 
-},{}],138:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -29949,7 +29827,7 @@ function getMaxKernelSize(gl) {
     return kernelSize;
 }
 
-},{}],139:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30453,7 +30331,6 @@ var ColorMatrixFilter = function (_core$Filter) {
      * The matrix of the color matrix filter
      *
      * @member {number[]}
-     * @memberof PIXI.filters.ColorMatrixFilter#
      * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
      */
 
@@ -30462,15 +30339,9 @@ var ColorMatrixFilter = function (_core$Filter) {
         key: 'matrix',
         get: function get() {
             return this.uniforms.m;
-        }
-
-        /**
-         * Sets the matrix directly.
-         *
-         * @param {number[]} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.uniforms.m = value;
         }
     }]);
@@ -30484,7 +30355,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 exports.default = ColorMatrixFilter;
 ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
-},{"../../core":61,"path":22}],140:[function(require,module,exports){
+},{"../../core":63,"path":22}],142:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30575,7 +30446,6 @@ var DisplacementFilter = function (_core$Filter) {
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
      * @member {PIXI.Texture}
-     * @memberof PIXI.filters.DisplacementFilter#
      */
 
 
@@ -30583,15 +30453,9 @@ var DisplacementFilter = function (_core$Filter) {
         key: 'map',
         get: function get() {
             return this.uniforms.mapSampler;
-        }
-
-        /**
-         * Sets the texture to use for the displacement.
-         *
-         * @param {PIXI.Texture} value - The texture to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this.uniforms.mapSampler = value;
         }
     }]);
@@ -30601,7 +30465,7 @@ var DisplacementFilter = function (_core$Filter) {
 
 exports.default = DisplacementFilter;
 
-},{"../../core":61,"path":22}],141:[function(require,module,exports){
+},{"../../core":63,"path":22}],143:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30655,7 +30519,7 @@ var FXAAFilter = function (_core$Filter) {
 
 exports.default = FXAAFilter;
 
-},{"../../core":61,"path":22}],142:[function(require,module,exports){
+},{"../../core":63,"path":22}],144:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30734,7 +30598,7 @@ Object.defineProperty(exports, 'VoidFilter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./blur/BlurFilter":133,"./blur/BlurXFilter":134,"./blur/BlurYFilter":135,"./colormatrix/ColorMatrixFilter":139,"./displacement/DisplacementFilter":140,"./fxaa/FXAAFilter":141,"./noise/NoiseFilter":143,"./void/VoidFilter":144}],143:[function(require,module,exports){
+},{"./blur/BlurFilter":135,"./blur/BlurXFilter":136,"./blur/BlurYFilter":137,"./colormatrix/ColorMatrixFilter":141,"./displacement/DisplacementFilter":142,"./fxaa/FXAAFilter":143,"./noise/NoiseFilter":145,"./void/VoidFilter":146}],145:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30768,56 +30632,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @memberof PIXI.filters
  */
 var NoiseFilter = function (_core$Filter) {
-  _inherits(NoiseFilter, _core$Filter);
+    _inherits(NoiseFilter, _core$Filter);
 
-  /**
-   *
-   */
-  function NoiseFilter() {
-    _classCallCheck(this, NoiseFilter);
+    /**
+     *
+     */
+    function NoiseFilter() {
+        _classCallCheck(this, NoiseFilter);
 
-    var _this = _possibleConstructorReturn(this, _core$Filter.call(this,
-    // vertex shader
-    'attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}',
-    // fragment shader
-    'precision highp float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform float noise;\nuniform sampler2D uSampler;\n\nfloat rand(vec2 co)\n{\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    float diff = (rand(gl_FragCoord.xy) - 0.5) * noise;\n\n    color.r += diff;\n    color.g += diff;\n    color.b += diff;\n\n    gl_FragColor = color;\n}\n'));
+        var _this = _possibleConstructorReturn(this, _core$Filter.call(this,
+        // vertex shader
+        'attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}',
+        // fragment shader
+        'precision highp float;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform float noise;\nuniform sampler2D uSampler;\n\nfloat rand(vec2 co)\n{\n    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 color = texture2D(uSampler, vTextureCoord);\n\n    float diff = (rand(gl_FragCoord.xy) - 0.5) * noise;\n\n    color.r += diff;\n    color.g += diff;\n    color.b += diff;\n\n    gl_FragColor = color;\n}\n'));
 
-    _this.noise = 0.5;
-    return _this;
-  }
-
-  /**
-   * The amount of noise to apply.
-   *
-   * @member {number}
-   * @memberof PIXI.filters.NoiseFilter#
-   * @default 0.5
-   */
-
-
-  _createClass(NoiseFilter, [{
-    key: 'noise',
-    get: function get() {
-      return this.uniforms.noise;
+        _this.noise = 0.5;
+        return _this;
     }
 
     /**
-     * Sets the amount of noise to apply.
+     * The amount of noise to apply.
      *
-     * @param {number} value - The value to set to.
+     * @member {number}
+     * @default 0.5
      */
-    ,
-    set: function set(value) {
-      this.uniforms.noise = value;
-    }
-  }]);
 
-  return NoiseFilter;
+
+    _createClass(NoiseFilter, [{
+        key: 'noise',
+        get: function get() {
+            return this.uniforms.noise;
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
+            this.uniforms.noise = value;
+        }
+    }]);
+
+    return NoiseFilter;
 }(core.Filter);
 
 exports.default = NoiseFilter;
 
-},{"../../core":61,"path":22}],144:[function(require,module,exports){
+},{"../../core":63,"path":22}],146:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30867,7 +30724,7 @@ var VoidFilter = function (_core$Filter) {
 
 exports.default = VoidFilter;
 
-},{"../../core":61,"path":22}],145:[function(require,module,exports){
+},{"../../core":63,"path":22}],147:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30938,7 +30795,7 @@ var InteractionData = function () {
 
 exports.default = InteractionData;
 
-},{"../core":61}],146:[function(require,module,exports){
+},{"../core":63}],148:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -31023,7 +30880,7 @@ var InteractionEvent = function () {
 
 exports.default = InteractionEvent;
 
-},{}],147:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31069,7 +30926,8 @@ Object.assign(core.DisplayObject.prototype, _interactiveTarget2.default);
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
  * This manager also supports multitouch.
- * By default, an instance of this class is automatically created, and can be found at renderer.plugins.interaction
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.interaction
  *
  * @class
  * @extends EventEmitter
@@ -31170,8 +31028,7 @@ var InteractionManager = function (_EventEmitter) {
          * It is currently set to false as this is how pixi used to work. This will be set to true in
          * future versions of pixi.
          *
-         * @member {boolean} moveWhenInside
-         * @memberof PIXI.interaction.InteractionManager#
+         * @member {boolean}
          * @default false
          */
         _this.moveWhenInside = false;
@@ -32619,7 +32476,7 @@ exports.default = InteractionManager;
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":61,"./InteractionData":145,"./InteractionEvent":146,"./interactiveTarget":149,"eventemitter3":3,"ismobilejs":4}],148:[function(require,module,exports){
+},{"../core":63,"./InteractionData":147,"./InteractionEvent":148,"./interactiveTarget":151,"eventemitter3":3,"ismobilejs":4}],150:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32653,7 +32510,7 @@ Object.defineProperty(exports, 'interactiveTarget', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./InteractionData":145,"./InteractionManager":147,"./interactiveTarget":149}],149:[function(require,module,exports){
+},{"./InteractionData":147,"./InteractionManager":149,"./interactiveTarget":151}],151:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32763,7 +32620,7 @@ exports.default = {
   _touchDown: false
 };
 
-},{}],150:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32891,7 +32748,7 @@ function parse(resource, texture) {
     _extras.BitmapText.fonts[data.font] = data;
 }
 
-},{"../core":61,"../extras":131,"path":22,"resource-loader":34}],151:[function(require,module,exports){
+},{"../core":63,"../extras":133,"path":22,"resource-loader":34}],153:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32949,7 +32806,7 @@ Object.defineProperty(exports, 'Resource', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./bitmapFontParser":150,"./loader":152,"./spritesheetParser":153,"./textureParser":154,"resource-loader":34}],152:[function(require,module,exports){
+},{"./bitmapFontParser":152,"./loader":154,"./spritesheetParser":155,"./textureParser":156,"resource-loader":34}],154:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33083,7 +32940,7 @@ var Resource = _resourceLoader2.default.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":150,"./spritesheetParser":153,"./textureParser":154,"eventemitter3":3,"resource-loader":34,"resource-loader/lib/middlewares/parsing/blob":35}],153:[function(require,module,exports){
+},{"./bitmapFontParser":152,"./spritesheetParser":155,"./textureParser":156,"eventemitter3":3,"resource-loader":34,"resource-loader/lib/middlewares/parsing/blob":35}],155:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33219,7 +33076,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var BATCH_SIZE = 1000;
 
-},{"../core":61,"path":22,"resource-loader":34}],154:[function(require,module,exports){
+},{"../core":63,"path":22,"resource-loader":34}],156:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33256,7 +33113,7 @@ var _resourceLoader = require('resource-loader');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-},{"../core":61,"resource-loader":34}],155:[function(require,module,exports){
+},{"../core":63,"resource-loader":34}],157:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33383,7 +33240,6 @@ var Mesh = function (_core$Container) {
      * tint effect.
      *
      * @member {number}
-     * @memberof PIXI.mesh.Mesh#
      */
     _this.tintRgb = new Float32Array([1, 1, 1]);
 
@@ -33498,7 +33354,6 @@ var Mesh = function (_core$Container) {
    * The texture that the mesh uses.
    *
    * @member {PIXI.Texture}
-   * @memberof PIXI.mesh.Mesh#
    */
 
 
@@ -33506,15 +33361,9 @@ var Mesh = function (_core$Container) {
     key: 'texture',
     get: function get() {
       return this._texture;
-    }
-
-    /**
-     * Sets the texture the mesh uses.
-     *
-     * @param {Texture} value - The value to set.
-     */
-    ,
-    set: function set(value) {
+    },
+    set: function set(value) // eslint-disable-line require-jsdoc
+    {
       if (this._texture === value) {
         return;
       }
@@ -33535,7 +33384,6 @@ var Mesh = function (_core$Container) {
      * The tint applied to the mesh. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
-     * @memberof PIXI.mesh.Mesh#
      * @default 0xFFFFFF
      */
 
@@ -33543,15 +33391,9 @@ var Mesh = function (_core$Container) {
     key: 'tint',
     get: function get() {
       return core.utils.rgb2hex(this.tintRgb);
-    }
-
-    /**
-     * Sets the tint the mesh uses.
-     *
-     * @param {number} value - The value to set.
-     */
-    ,
-    set: function set(value) {
+    },
+    set: function set(value) // eslint-disable-line require-jsdoc
+    {
       this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
     }
   }]);
@@ -33576,7 +33418,7 @@ Mesh.DRAW_MODES = {
   TRIANGLES: 1
 };
 
-},{"../core":61}],156:[function(require,module,exports){
+},{"../core":63}],158:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33682,6 +33524,8 @@ var NineSlicePlane = function (_Plane) {
          * The width of the left column (a)
          *
          * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         * @override
          */
         _this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
 
@@ -33689,6 +33533,8 @@ var NineSlicePlane = function (_Plane) {
          * The width of the right column (b)
          *
          * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         * @override
          */
         _this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
 
@@ -33696,6 +33542,8 @@ var NineSlicePlane = function (_Plane) {
          * The height of the top row (c)
          *
          * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         * @override
          */
         _this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
 
@@ -33703,6 +33551,8 @@ var NineSlicePlane = function (_Plane) {
          * The height of the bottom row (d)
          *
          * @member {number}
+         * @memberof PIXI.NineSlicePlane#
+         * @override
          */
         _this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
         return _this;
@@ -33827,7 +33677,6 @@ var NineSlicePlane = function (_Plane) {
      * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
      *
      * @member {number}
-     * @memberof PIXI.NineSlicePlane#
      */
 
 
@@ -33835,15 +33684,9 @@ var NineSlicePlane = function (_Plane) {
         key: 'width',
         get: function get() {
             return this._width;
-        }
-
-        /**
-         * Sets the width.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._width = value;
             this.updateVerticalVertices();
         }
@@ -33852,22 +33695,15 @@ var NineSlicePlane = function (_Plane) {
          * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
          *
          * @member {number}
-         * @memberof PIXI.NineSlicePlane#
          */
 
     }, {
         key: 'height',
         get: function get() {
             return this._height;
-        }
-
-        /**
-         * Sets the height.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._height = value;
             this.updateHorizontalVertices();
         }
@@ -33882,15 +33718,9 @@ var NineSlicePlane = function (_Plane) {
         key: 'leftWidth',
         get: function get() {
             return this._leftWidth;
-        }
-
-        /**
-         * Sets the width of the left column.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._leftWidth = value;
 
             var uvs = this.uvs;
@@ -33912,15 +33742,9 @@ var NineSlicePlane = function (_Plane) {
         key: 'rightWidth',
         get: function get() {
             return this._rightWidth;
-        }
-
-        /**
-         * Sets the width of the right column.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._rightWidth = value;
 
             var uvs = this.uvs;
@@ -33942,15 +33766,9 @@ var NineSlicePlane = function (_Plane) {
         key: 'topHeight',
         get: function get() {
             return this._topHeight;
-        }
-
-        /**
-         * Sets the height of the top row.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._topHeight = value;
 
             var uvs = this.uvs;
@@ -33972,15 +33790,9 @@ var NineSlicePlane = function (_Plane) {
         key: 'bottomHeight',
         get: function get() {
             return this._bottomHeight;
-        }
-
-        /**
-         * Sets the height of the bottom row.
-         *
-         * @param {number} value - the value to set to.
-         */
-        ,
-        set: function set(value) {
+        },
+        set: function set(value) // eslint-disable-line require-jsdoc
+        {
             this._bottomHeight = value;
 
             var uvs = this.uvs;
@@ -33998,7 +33810,7 @@ var NineSlicePlane = function (_Plane) {
 
 exports.default = NineSlicePlane;
 
-},{"./Plane":157}],157:[function(require,module,exports){
+},{"./Plane":159}],159:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34141,7 +33953,7 @@ var Plane = function (_Mesh) {
 
 exports.default = Plane;
 
-},{"./Mesh":155}],158:[function(require,module,exports){
+},{"./Mesh":157}],160:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34258,12 +34070,12 @@ var Rope = function (_Mesh) {
 
         var textureUvs = this._texture._uvs;
         var offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        var factor = new core.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
+        var factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
 
         uvs[0] = 0 + offset.x;
         uvs[1] = 0 + offset.y;
         uvs[2] = 0 + offset.x;
-        uvs[3] = Number(factor.y) + offset.y;
+        uvs[3] = factor.y + offset.y;
 
         colors[0] = 1;
         colors[1] = 1;
@@ -34282,7 +34094,7 @@ var Rope = function (_Mesh) {
             uvs[index + 1] = 0 + offset.y;
 
             uvs[index + 2] = amount * factor.x + offset.x;
-            uvs[index + 3] = Number(factor.y) + offset.y;
+            uvs[index + 3] = factor.y + offset.y;
 
             index = i * 2;
             colors[index] = 1;
@@ -34382,7 +34194,7 @@ var Rope = function (_Mesh) {
 
 exports.default = Rope;
 
-},{"../core":61,"./Mesh":155}],159:[function(require,module,exports){
+},{"../core":63,"./Mesh":157}],161:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34646,7 +34458,7 @@ exports.default = MeshSpriteRenderer;
 
 core.CanvasRenderer.registerPlugin('mesh', MeshSpriteRenderer);
 
-},{"../../core":61,"../Mesh":155}],160:[function(require,module,exports){
+},{"../../core":63,"../Mesh":157}],162:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34707,7 +34519,7 @@ Object.defineProperty(exports, 'Rope', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./Mesh":155,"./NineSlicePlane":156,"./Plane":157,"./Rope":158,"./canvas/CanvasMeshRenderer":159,"./webgl/MeshRenderer":161}],161:[function(require,module,exports){
+},{"./Mesh":157,"./NineSlicePlane":158,"./Plane":159,"./Rope":160,"./canvas/CanvasMeshRenderer":161,"./webgl/MeshRenderer":163}],163:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34738,6 +34550,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * WebGL renderer plugin for tiling sprites
+ *
+ * @class
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
  */
 var MeshRenderer = function (_core$ObjectRenderer) {
     _inherits(MeshRenderer, _core$ObjectRenderer);
@@ -34807,6 +34623,8 @@ var MeshRenderer = function (_core$ObjectRenderer) {
             mesh._glDatas[renderer.CONTEXT_UID] = glData;
         }
 
+        renderer.bindVao(glData.vao);
+
         if (mesh.dirty !== glData.dirty) {
             glData.dirty = mesh.dirty;
             glData.uvBuffer.upload(mesh.uvs);
@@ -34831,7 +34649,6 @@ var MeshRenderer = function (_core$ObjectRenderer) {
 
         var drawMode = mesh.drawMode === _Mesh2.default.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
-        renderer.bindVao(glData.vao);
         glData.vao.draw(drawMode, mesh.indices.length, 0);
     };
 
@@ -34843,7 +34660,7 @@ exports.default = MeshRenderer;
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
-},{"../../core":61,"../Mesh":155,"path":22,"pixi-gl-core":12}],162:[function(require,module,exports){
+},{"../../core":63,"../Mesh":157,"path":22,"pixi-gl-core":12}],164:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35154,6 +34971,10 @@ var ParticleContainer = function (_core$Container) {
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
      *  destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
 
 
@@ -35175,7 +34996,7 @@ var ParticleContainer = function (_core$Container) {
 
 exports.default = ParticleContainer;
 
-},{"../core":61}],163:[function(require,module,exports){
+},{"../core":63}],165:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35200,7 +35021,7 @@ Object.defineProperty(exports, 'ParticleRenderer', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./ParticleContainer":162,"./webgl/ParticleRenderer":165}],164:[function(require,module,exports){
+},{"./ParticleContainer":164,"./webgl/ParticleRenderer":167}],166:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35440,7 +35261,7 @@ var ParticleBuffer = function () {
 
 exports.default = ParticleBuffer;
 
-},{"../../core/utils/createIndicesForQuads":115,"pixi-gl-core":12}],165:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":117,"pixi-gl-core":12}],167:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35884,7 +35705,7 @@ exports.default = ParticleRenderer;
 
 core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
-},{"../../core":61,"./ParticleBuffer":164,"./ParticleShader":166}],166:[function(require,module,exports){
+},{"../../core":63,"./ParticleBuffer":166,"./ParticleShader":168}],168:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35927,7 +35748,7 @@ var ParticleShader = function (_Shader) {
 
 exports.default = ParticleShader;
 
-},{"../../core/Shader":41}],167:[function(require,module,exports){
+},{"../../core/Shader":42}],169:[function(require,module,exports){
 "use strict";
 
 // References:
@@ -35945,7 +35766,7 @@ if (!Math.sign) {
     };
 }
 
-},{}],168:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -35960,7 +35781,7 @@ if (!Object.assign) {
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 
-},{"object-assign":5}],169:[function(require,module,exports){
+},{"object-assign":5}],171:[function(require,module,exports){
 'use strict';
 
 require('./Object.assign');
@@ -35985,7 +35806,7 @@ if (!window.Uint16Array) {
     window.Uint16Array = Array;
 }
 
-},{"./Math.sign":167,"./Object.assign":168,"./requestAnimationFrame":170}],170:[function(require,module,exports){
+},{"./Math.sign":169,"./Object.assign":170,"./requestAnimationFrame":172}],172:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -36065,7 +35886,7 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],171:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36450,7 +36271,7 @@ function findTextStyle(item, queue) {
     return false;
 }
 
-},{"../core":61,"./limiters/CountLimiter":174}],172:[function(require,module,exports){
+},{"../core":63,"./limiters/CountLimiter":176}],174:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36480,6 +36301,8 @@ var CANVAS_START_SIZE = 16;
  * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
  * textures to an offline canvas.
  * This draw call will force the texture to be moved onto the GPU.
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.prepare
  *
  * @class
  * @memberof PIXI
@@ -36596,7 +36419,7 @@ function findBaseTextures(item, queue) {
 
 core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
 
-},{"../../core":61,"../BasePrepare":171}],173:[function(require,module,exports){
+},{"../../core":63,"../BasePrepare":173}],175:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36648,7 +36471,7 @@ Object.defineProperty(exports, 'TimeLimiter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(require,module,exports){
+},{"./BasePrepare":173,"./canvas/CanvasPrepare":174,"./limiters/CountLimiter":176,"./limiters/TimeLimiter":177,"./webgl/WebGLPrepare":178}],176:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -36706,7 +36529,7 @@ var CountLimiter = function () {
 
 exports.default = CountLimiter;
 
-},{}],175:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -36764,7 +36587,7 @@ var TimeLimiter = function () {
 
 exports.default = TimeLimiter;
 
-},{}],176:[function(require,module,exports){
+},{}],178:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36789,6 +36612,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * The prepare manager provides functionality to upload content to the GPU.
+ *
+ * An instance of this class is automatically created by default, and can be found at renderer.plugins.prepare
  *
  * @class
  * @memberof PIXI
@@ -36911,12 +36736,24 @@ function findGraphics(item, queue) {
 
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
 
-},{"../../core":61,"../BasePrepare":171}],177:[function(require,module,exports){
+},{"../../core":63,"../BasePrepare":173}],179:[function(require,module,exports){
 (function (global){
 'use strict';
 
 exports.__esModule = true;
 exports.loader = exports.prepare = exports.particles = exports.mesh = exports.loaders = exports.interaction = exports.filters = exports.extras = exports.extract = exports.accessibility = undefined;
+
+var _polyfill = require('./polyfill');
+
+Object.keys(_polyfill).forEach(function (key) {
+    if (key === "default" || key === "__esModule") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _polyfill[key];
+        }
+    });
+});
 
 var _deprecation = require('./deprecation');
 
@@ -36941,8 +36778,6 @@ Object.keys(_core).forEach(function (key) {
         }
     });
 });
-
-require('./polyfill');
 
 var _accessibility = require('./accessibility');
 
@@ -36982,7 +36817,7 @@ var prepare = _interopRequireWildcard(_prepare);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// import polyfills
+// import polyfills. Done as an export to make sure polyfills are imported first
 exports.accessibility = accessibility;
 exports.extract = extract;
 exports.extras = extras;
@@ -37017,7 +36852,7 @@ global.PIXI = exports; // eslint-disable-line
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)
+},{"./accessibility":40,"./core":63,"./deprecation":122,"./extract":124,"./extras":133,"./filters":144,"./interaction":150,"./loaders":153,"./mesh":162,"./particles":165,"./polyfill":171,"./prepare":175}]},{},[179])(179)
 });
 
 

@@ -280,7 +280,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // need to set //
     const m = _tempMatrix;
 
-    this.transform.worldTransform.copy(m);
+    this.transform.localTransform.copy(m);
     m.invert();
 
     m.tx -= bounds.x;

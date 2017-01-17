@@ -51,18 +51,13 @@ export default class TextureTransform {
     /**
      * texture property
      * @member {PIXI.Texture}
-     * @memberof PIXI.TextureTransform
      */
     get texture()
     {
         return this._texture;
     }
 
-    /**
-     * sets texture value
-     * @param {PIXI.Texture} value texture to be set
-     */
-    set texture(value)
+    set texture(value) // eslint-disable-line require-jsdoc
     {
         this._texture = value;
         this._lastTextureID = -1;

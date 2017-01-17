@@ -72,19 +72,13 @@ export default class CanvasRenderTarget
      * The width of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof PIXI.CanvasRenderTarget#
      */
     get width()
     {
         return this.canvas.width;
     }
 
-    /**
-     * Sets the width.
-     *
-     * @param {number} val - The value to set.
-     */
-    set width(val)
+    set width(val) // eslint-disable-line require-jsdoc
     {
         this.canvas.width = val;
     }
@@ -93,19 +87,13 @@ export default class CanvasRenderTarget
      * The height of the canvas buffer in pixels.
      *
      * @member {number}
-     * @memberof PIXI.CanvasRenderTarget#
      */
     get height()
     {
         return this.canvas.height;
     }
 
-    /**
-     * Sets the height.
-     *
-     * @param {number} val - The value to set.
-     */
-    set height(val)
+    set height(val) // eslint-disable-line require-jsdoc
     {
         this.canvas.height = val;
     }

@@ -337,7 +337,7 @@ export default class Ticker
      * {@link PIXI.ticker.Ticker#speed}, which is specific
      * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
-     * @memberof PIXI.ticker.Ticker#
+     * @member {number}
      * @readonly
      */
     get FPS()
@@ -353,7 +353,7 @@ export default class Ticker
      * When setting this property it is clamped to a value between
      * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
      *
-     * @memberof PIXI.ticker.Ticker#
+     * @member {number}
      * @default 10
      */
     get minFPS()
@@ -361,12 +361,7 @@ export default class Ticker
         return 1000 / this._maxElapsedMS;
     }
 
-    /**
-     * Sets the min fps.
-     *
-     * @param {number} fps - value to set.
-     */
-    set minFPS(fps)
+    set minFPS(fps) // eslint-disable-line require-jsdoc
     {
         // Clamp: 0 to TARGET_FPMS
         const minFPMS = Math.min(Math.max(0, fps) / 1000, settings.TARGET_FPMS);
