@@ -96,7 +96,7 @@ describe('PIXI.utils', function ()
 
     describe('getUrlFileExtension', function ()
     {
-        it('should exist', () =>
+        it('should exist', function ()
         {
             expect(PIXI.utils.getUrlFileExtension)
                 .to.be.a('function');
