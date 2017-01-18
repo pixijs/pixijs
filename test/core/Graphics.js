@@ -127,6 +127,16 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.containsPoint(point)).to.be.false;
         });
+
+        it('should return false when no fill', function ()
+        {
+            const point = new PIXI.Point(1, 1);
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.false;
+        });
     });
 
     describe('arc', function ()
