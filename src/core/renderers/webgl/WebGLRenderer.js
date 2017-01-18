@@ -440,9 +440,10 @@ export default class WebGLRenderer extends SystemRenderer
      * Changes the current shader to the one given in parameter
      *
      * @param {PIXI.Shader} shader - the new shader
+     * @param {boolean} [autoProject=true] - Whether automatically set the projection matrix
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindShader(shader)
+    bindShader(shader, autoProject)
     {
         // TODO cache
         if (this._activeShader !== shader)
@@ -450,8 +451,11 @@ export default class WebGLRenderer extends SystemRenderer
             this._activeShader = shader;
             shader.bind();
 
-            // automatically set the projection matrix
-            shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+            if (autoProject !== false)
+            {
+                // automatically set the projection matrix
+                shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+            }
         }
 
         return this;
