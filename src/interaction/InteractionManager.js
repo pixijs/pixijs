@@ -788,19 +788,19 @@ export default class InteractionManager extends EventEmitter
             interactiveParent = false;
         }
 
-        // it has a mask! Then lets hit test that before continuing..
-        if (hitTest && displayObject._mask)
+        // it has a filterArea! Same as mask but easier, its a rectangle
+        if (hitTest && displayObject.filterArea)
         {
-            if (!displayObject._mask.containsPoint(point))
+            if (!displayObject.filterArea.contains(point.x, point.y))
             {
                 hitTest = false;
             }
         }
 
-        // it has a filterArea! Same as mask but easier, its a rectangle
-        if (hitTest && displayObject.filterArea)
+        // it has a mask! Then lets hit test that before continuing if no hitArea or filterArea is present
+        if (hitTest && displayObject._mask && !displayObject.hitArea && !displayObject.filterArea)
         {
-            if (!displayObject.filterArea.contains(point.x, point.y))
+            if (!displayObject._mask.containsPoint(point))
             {
                 hitTest = false;
             }
