@@ -303,6 +303,7 @@ export default class InteractionManager extends EventEmitter
          * object.
          *
          * @event mousedown
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -311,6 +312,7 @@ export default class InteractionManager extends EventEmitter
          * on the display object.
          *
          * @event rightdown
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -319,6 +321,7 @@ export default class InteractionManager extends EventEmitter
          * object.
          *
          * @event mouseup
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -327,6 +330,7 @@ export default class InteractionManager extends EventEmitter
          * over the display object.
          *
          * @event rightup
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -335,6 +339,7 @@ export default class InteractionManager extends EventEmitter
          * the display object.
          *
          * @event click
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -343,6 +348,7 @@ export default class InteractionManager extends EventEmitter
          * and released on the display object.
          *
          * @event rightclick
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -352,6 +358,7 @@ export default class InteractionManager extends EventEmitter
          * [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
          *
          * @event mouseupoutside
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -361,6 +368,7 @@ export default class InteractionManager extends EventEmitter
          * [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
          *
          * @event rightupoutside
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -368,6 +376,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device (usually a mouse) is moved while over the display object
          *
          * @event mousemove
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -375,6 +384,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device (usually a mouse) is moved onto the display object
          *
          * @event mouseover
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -382,6 +392,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device (usually a mouse) is moved off the display object
          *
          * @event mouseout
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -389,6 +400,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device button is pressed on the display object.
          *
          * @event pointerdown
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -396,6 +408,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device button is released over the display object.
          *
          * @event pointerup
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -403,6 +416,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device button is pressed and released on the display object.
          *
          * @event pointertap
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -411,6 +425,7 @@ export default class InteractionManager extends EventEmitter
          * registered a [pointerdown]{@link PIXI.interaction.InteractionManager#event:pointerdown}.
          *
          * @event pointerupoutside
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -418,6 +433,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device is moved while over the display object
          *
          * @event pointermove
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -425,6 +441,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device is moved onto the display object
          *
          * @event pointerover
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -432,6 +449,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device is moved off the display object
          *
          * @event pointerout
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -439,6 +457,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a touch point is placed on the display object.
          *
          * @event touchstart
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -446,6 +465,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a touch point is removed from the display object.
          *
          * @event touchend
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -453,6 +473,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a touch point is placed and removed from the display object.
          *
          * @event tap
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -461,6 +482,7 @@ export default class InteractionManager extends EventEmitter
          * registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
          *
          * @event touchendoutside
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
 
@@ -468,6 +490,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when a touch point is moved along the display object.
          *
          * @event touchmove
+         * @type {PIXI.interaction.InteractionData}
          * @memberof PIXI.interaction.InteractionManager#
          */
     }
