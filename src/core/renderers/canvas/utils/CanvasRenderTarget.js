@@ -1,5 +1,4 @@
 import settings from '../../../settings';
-const { RESOLUTION } = settings;
 
 /**
  * Creates a Canvas element of the given size.
@@ -30,7 +29,7 @@ export default class CanvasRenderTarget
          */
         this.context = this.canvas.getContext('2d');
 
-        this.resolution = resolution || RESOLUTION;
+        this.resolution = resolution || settings.RESOLUTION;
 
         this.resize(width, height);
     }
