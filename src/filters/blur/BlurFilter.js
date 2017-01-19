@@ -24,10 +24,9 @@ export default class BlurFilter extends core.Filter
 
         this.blurXFilter = new BlurXFilter(strength, quality, resolution, kernelSize);
         this.blurYFilter = new BlurYFilter(strength, quality, resolution, kernelSize);
-        this.resolution = 1;
 
         this.padding = 0;
-        this.resolution = resolution || 1;
+        this.resolution = resolution || core.settings.RESOLUTION;
         this.quality = quality || 4;
         this.blur = strength || 8;
     }

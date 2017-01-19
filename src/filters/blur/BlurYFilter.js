@@ -31,7 +31,7 @@ export default class BlurYFilter extends core.Filter
             fragSrc
         );
 
-        this.resolution = resolution || 1;
+        this.resolution = resolution || core.settings.RESOLUTION;
 
         this._quality = 0;
 
