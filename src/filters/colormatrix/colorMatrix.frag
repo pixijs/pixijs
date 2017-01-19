@@ -5,11 +5,11 @@ uniform float m[20];
 void main(void)
 {
     vec4 c = texture2D(uSampler, vTextureCoord);
-    vec4 result = c;
     // Un-premultiply alpha before applying the color matrix. See issue #3539.
-    if (result.a > 0.0) {
-      result.rgb /= result.a;
+    if (c.a > 0.0) {
+      c.rgb /= c.a;
     }
+    vec4 result;
     result.r = (m[0] * c.r);
         result.r += (m[1] * c.g);
         result.r += (m[2] * c.b);
