@@ -256,7 +256,7 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback when mask doesn\'t use beginFill', function ()
+        it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
         {
             const stage = new PIXI.Container();
             const pointer = new MockPointer(stage);
@@ -274,7 +274,7 @@ describe('PIXI.Graphics', function ()
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).to.have.not.been.called;
         });
 
         it('should trigger interaction callback when mask doesn\'t use beginFill and hitArea is defined', function ()
