@@ -309,7 +309,7 @@ describe('PIXI.Graphics', function ()
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
-            graphics.filtertArea = new PIXI.Rectangle(0, 0, 50, 50);
+            graphics.filterArea = new PIXI.Rectangle(0, 0, 50, 50);
             graphics.drawRect(0, 0, 50, 50);
             graphics.on('click', spy);
             stage.addChild(graphics);
