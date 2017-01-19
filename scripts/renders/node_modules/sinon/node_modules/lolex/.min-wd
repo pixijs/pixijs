@@ -1,0 +1,13 @@
+{
+  "sauceLabs": true,
+  "browsers": [{
+    "name": "chrome"
+  }, {
+    "name": "internet explorer",
+    "version": "9",
+    "url": "http://maxantoni.de/doctype.html"
+  }, {
+    "name": "internet explorer",
+    "version": "10"
+  }]
+}

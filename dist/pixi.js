@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.3.3
- * Compiled Tue, 17 Jan 2017 20:35:33 UTC
+ * pixi.js - v4.3.4
+ * Compiled Thu, 19 Jan 2017 20:41:00 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -4895,7 +4895,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // some constants
 var MAX_PROGRESS = 100;
-var rgxExtractUrlHash = /(#[\w\-]+)?$/;
+var rgxExtractUrlHash = /(#[\w-]+)?$/;
 
 /**
  * Manages the state and loading of multiple resources to load.
@@ -4975,6 +4975,13 @@ var Loader = function () {
          * @member {function[]}
          */
         this._afterMiddleware = [];
+
+        /**
+         * The tracks the resources we are currently completing parsing for.
+         *
+         * @member {Resource[]}
+         */
+        this._resourcesParsing = [];
 
         /**
          * The `_loadResource` function bound with this object context.
@@ -5212,17 +5219,25 @@ var Loader = function () {
             this.resources[name].onAfterMiddleware.once(cb);
         }
 
-        // if loading make sure to adjust progress chunks for that parent and its children
+        // if actively loading, make sure to adjust progress chunks for that parent and its children
         if (this.loading) {
             var parent = options.parentResource;
-            var fullChunk = parent.progressChunk * (parent.children.length + 1); // +1 for parent
-            var eachChunk = fullChunk / (parent.children.length + 2); // +2 for parent & new child
+            var incompleteChildren = [];
+
+            for (var _i = 0; _i < parent.children.length; ++_i) {
+                if (!parent.children[_i].isComplete) {
+                    incompleteChildren.push(parent.children[_i]);
+                }
+            }
+
+            var fullChunk = parent.progressChunk * (incompleteChildren.length + 1); // +1 for parent
+            var eachChunk = fullChunk / (incompleteChildren.length + 2); // +2 for parent & new child
 
             parent.children.push(this.resources[name]);
             parent.progressChunk = eachChunk;
 
-            for (var _i = 0; _i < parent.children.length; ++_i) {
-                parent.children[_i].progressChunk = eachChunk;
+            for (var _i2 = 0; _i2 < incompleteChildren.length; ++_i2) {
+                incompleteChildren[_i2].progressChunk = eachChunk;
             }
         }
 
@@ -5434,6 +5449,10 @@ var Loader = function () {
 
         resource._onLoadBinding = null;
 
+        // remove this resource from the async queue, and add it to our list of resources that are being parsed
+        resource._dequeue();
+        this._resourcesParsing.push(resource);
+
         // run middleware, this *must* happen before dequeue so sub-assets get added properly
         async.eachSeries(this._afterMiddleware, function (fn, next) {
             fn.call(_this3, resource, next);
@@ -5449,11 +5468,10 @@ var Loader = function () {
                 _this3.onLoad.dispatch(_this3, resource);
             }
 
-            // remove this resource from the async queue
-            resource._dequeue();
+            _this3._resourcesParsing.splice(_this3._resourcesParsing.indexOf(resource), 1);
 
             // do completion check
-            if (_this3._queue.idle()) {
+            if (_this3._queue.idle() && _this3._resourcesParsing.length === 0) {
                 _this3.progress = MAX_PROGRESS;
                 _this3._onComplete();
             }
@@ -8030,7 +8048,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.3.3';
+var VERSION = exports.VERSION = '4.3.4';
 
 /**
  * Two Pi.

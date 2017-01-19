@@ -1,0 +1,65 @@
+{
+  "name": "lolex",
+  "description": "Fake JavaScript timers",
+  "version": "1.3.2",
+  "homepage": "http://github.com/sinonjs/lolex",
+  "author": {
+    "name": "Christian Johansen"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sinonjs/lolex.git"
+  },
+  "bugs": {
+    "url": "http://github.com/sinonjs/lolex/issues"
+  },
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "lint": "$(npm bin)/jslint src/**/*.js",
+    "test-node": "mocha -R dot",
+    "test-headless": "mochify",
+    "test-cloud": "mochify --wd",
+    "test": "npm run lint && npm run test-node && npm run test-headless && npm run test-cloud",
+    "bundle": "browserify -s lolex -o lolex.js src/lolex.js"
+  },
+  "devDependencies": {
+    "browserify": ">=5.9 <6",
+    "jslint": "^0.6.6",
+    "mocha": ">=1.21 <2",
+    "mochify": ">=1.0 <2",
+    "referee": "~1.0",
+    "sinon": "~1.10"
+  },
+  "main": "./src/lolex.js",
+  "gitHead": "9457345f0bcb0c98d085fae5ea18c7efd950a703",
+  "_id": "lolex@1.3.2",
+  "_shasum": "7c3da62ffcb30f0f5a80a2566ca24e45d8a01f31",
+  "_from": "lolex@1.3.2",
+  "_npmVersion": "2.14.1",
+  "_nodeVersion": "0.10.40",
+  "_npmUser": {
+    "name": "mrgnrdrck",
+    "email": "morgan@roderick.dk"
+  },
+  "maintainers": [
+    {
+      "name": "cjohansen",
+      "email": "christian@cjohansen.no"
+    },
+    {
+      "name": "mrgnrdrck",
+      "email": "morgan@roderick.dk"
+    },
+    {
+      "name": "mantoni",
+      "email": "mail@maxantoni.de"
+    }
+  ],
+  "dist": {
+    "shasum": "7c3da62ffcb30f0f5a80a2566ca24e45d8a01f31",
+    "tarball": "https://registry.npmjs.org/lolex/-/lolex-1.3.2.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/lolex/-/lolex-1.3.2.tgz",
+  "readme": "ERROR: No README data found!"
+}

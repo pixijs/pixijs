@@ -1,0 +1,587 @@
+
+v1.17.7 / 2016-12-31
+==================
+
+  * Fix #1026: stub watch method on object
+  * Fix invalid test for "does not walk the same property twice"
+  * Fix spying/stubbing on *etter methods
+  * restoring *etters does not invoke the getter #1124
+
+v1.17.6 / 2016-09-19
+==================
+
+  * Throw when sandbox.restore is given arguments (Fixes #1149) (#1151)
+  * Fix a regression introduced in #692 (#1098)
+
+v1.17.5 / 2016-07-26
+==================
+
+  * Add prepublish steps to avoid including extra files
+  * use xhr.progress (length of body/response) for progress event
+  * capture response length from setResponseBody
+  * updated current tests to account for api changes
+  * added xhr.error() method to simulate network errors
+  * stopped treating non-200 responses as errors
+  * Port XHR and deepEqual test cases from master
+  * Fix deepEqual reliance on prototype hasOwnProperty() in v0.17
+
+v1.17.4 / 2016-05-02
+====================
+
+  * Release version 1.17.4
+  * Improve Blob support detection logics (#1039)
+  * Re-did #861 for v1.17 branch
+  * Caught exceptions from async tests are thrown by simon.test.
+  * Add tests for #947
+
+1.17.4 / 2016-05-02
+==================
+
+  * Improve Blob support detection logics (#1039)
+  * Re-did #861 for v1.17 branch
+  * Caught exceptions from async tests are thrown by simon.test.
+  * Add tests for #947
+
+1.17.3 / 2016-01-27
+==================
+
+  * Fix toString() calls
+  * Ensure sinon can run in a  WebWorker
+  * Changed the priority of which global is chosen first.
+  * Fixed #785 by checking the global variables are set
+
+1.17.2 / 2015-10-21
+==================
+
+  * Fix #867: Walk properties only once
+
+1.17.1 / 2015-09-26
+==================
+
+  * Fix #851: Do not attempt to re-stub constructors
+  * Fix #847: Ensure walk invokes accessors directly on target
+  * Run tests in node 4.1.x also
+
+1.17.0 / 2015-09-22
+==================
+
+  * Fix #821 where Sinon.JS would leak a setImmdiate into global scope
+  * Removed sinon-timers from the build. refs #811
+  * Added flag that, when set to true, makes sinon.logError throw errors synchronously.
+  * Fix #777: Support non-enumerable props when stubbing objects
+  * Made the sinon.test() function pass on errors to the callback
+  * Expand conversion from ArrayBuffer to binary string
+  * Add support for ArrayBuffer, blob responseTypes
+
+1.16.1 / 2015-08-20
+===================
+* Bump Lolex to stop throwing an error when faking Date but not setTimeout
+
+1.16.0 / 2015-08-19
+===================
+* Capture the stack on each spy call
+* fakeServer.create accepts configuration settings
+* Update Lolex to 1.3.0
+* Fire onreadystatechange with event argument
+* Returns supersedes previous throws
+* Bunch of bug fixes
+
+1.15.0 / 2015-05-30
+==================
+* Fixed bug where assertions don't handle functions that have a property named proxy
+* update license attribute
+* Add test coverage report
+* responseHeaders on abort are empty object
+* Fix pre-existing style error
+* Update documentation to cover testing built version
+* Update CONTRIBUTING.md with section about "Making a pull request"
+* Improve RELEASE.md to reduce effort when cutting a new release
+* Deprecate mock
+* Release.md
+* Make `npm docs sinon` work.
+* Run unit tests against packaged version in CI environment
+* Remove unused Gruntfile
+* Use Vanilla Buster.JS
+* Use `files` in package.json
+* Fix code style
+* Don't stub getter properties
+* Event listeners for `progress`, `load` and `readystatechange` in the `readyStateChange` function in  `FakeXMLHttpRequest` are dispatched in a different order in comparison to a browser. Reorder the events dispatched to reflect general browser behaviour.
+* Update linting instructions in CONTRIBUTING.md
+* Lint all files with new linter
+* Update JSCS to 1.11.3 and make npm lint task verify all files
+* Cleanup .restore()
+
+== 1.14.1 / 2015-03-16
+* Fallback for .restore() native code functions on Chrome & PhantomJS (なつき)
+* Restore support for sinon in IE<9 (Harry Wolff)
+
+== 1.14.0 / 2015-03-13
+* Stub & spy getters & setters (Simon Zack)
+* Fix #702 async sinon.test using mocha interface (Mohayonao)
+* Add respondImmediately to fake servers (Jonathan Freeman)
+
+== 1.13.0 / 2015-03-04
+* fix @depends-require mismatches (fixes AMD issues) (Ben Hockey)
+* Fix spy.calledWith(undefined) to return false if it was called without args
+* yieldsRight (Alexander Schmidt)
+* stubs retain function arity (Charlie Rudolph)
+* (AMD) use explicit define in built version
+* spy().reset() returns this (Ali Shakiba)
+* Add lengthComputable and download progress (Tamas Szebeni)
+* Don't setContent-type when sending FormData (AJ Ortega)
+* sinon.assert with spyCall (Alex Urbano)
+* fakeXHR requests in Node. (Jmeas)
+* Enhancement: run builds on docker (till@php.net)
+* Use FakeXDomainRequest when XHR does not support CORS. Fixes #584 (Eric Wendelin)
+* More lenient check for ActiveXObject
+* aligned sandbox.useFakeXMLHttpRequest API to documentation (Phred)
+* Fix #643. Returns supersedes previous throws (Adam Hull)
+* Safely overwrite properties in IE - no more IE files!
+* Add check for setInterval/clearInterval (kdpecker)
+* Add safety check for document.createElement (kdpecker)
+* Fix #633. Use a try/catch when deleting a property in IE8. (Garrick Cheung)
+
+== 1.12.1 / 2014-11-16
+* Fixed lolex issue on node
+
+== 1.12.0 / 2014-11-16
+* Fake timers are now extracted as lolex: http://github.com/sinonjs/lolex
+* Improved setImmediate fake
+* Proper AMD solution
+
+== 1.11.1 / 2014-10-27
+
+* Expose match on returned sandbox (Duncan Beevers)
+* Fix issue #586 (Antonio D'Ettole)
+* Declare log_error dependency (Kurt Ruppel)
+
+== 1.11.0 / 2014-10-26
+
+* Proper AMD support
+* Don't call sinon.expectation.pass if there aren't any expectations (Jeffrey Falgout)
+* Throw error when reset-ing while calling fake
+* Added xhr.response property (Gyandeep Singh)
+* Fixed premature sandbox destruction (Andrew Gurinovich)
+* Add sandbox reset method (vitalets)
+* A bunch of bug fixes (git log)
+* Various source organizational improvements (Morgan Roderick and others)
+
+== 1.10.3 / 2014-07-11
+
+* Fix loading in Web Workers (Victor Costan)
+* Allow null as argument to clearTimeout and clearInterval (Lars Thorup)
+
+== 1.10.2 / 2014-06-02
+
+* Fix `returnValue` and `exception` regression on spy calls (Maximilian Antoni)
+
+== 1.10.1 / 2014-05-30
+
+* Improved mocha compatibility for async tests (Ming Liu)
+* Make the fakeServer log function overloadable (Brian M Hunt)
+
+== 1.10.0 / 2014-05-19
+
+* Ensure that spy createCallProperties is set before function invocation (James Barwell)
+* XDomainRequest support (Søren Enemærke, Jonathan Sokolowski)
+* Correct AMD behavior (Tim Branyen)
+* Allow explicit naming of spies and stubs (Glen Mailer)
+* deepEqual test for unequal objects in calledWithExactly (Bryan Donovan)
+* Fix clearTimeout() for Node.js (Xiao Ma)
+* fix fakeServer.respond() in IE8 (John Bernardo)
+* Fix #448 (AMD require.amd)
+* Fix wrapMethod error handling (Nikita Litvin)
+
+== 1.9.1 / 2014-04-03
+
+* Fix an issue passing `NaN` to `calledWith` (Blake Israel)
+* Explicate dependency on util package (Kris Kowal)
+* Fake timers return an object with `ref` and `unref` properties on Node (Ben Fleis)
+
+== 1.9.0 / 2014-03-05
+
+* Add sinon.assert.match (Robin Pedersen)
+* Added ProgressEvent and CustomEvent. Fixes bug with progress events on IE. (Geries Handal)
+* prevent setRequestHeaders from being called twice (Phred)
+* Fix onload call, 'this' should be equal to XHR object (Niklas Andreasson)
+* Remove sandbox injected values on restore (Marcus Hüsgen)
+* Coerce matcher.or/and arguments into matchers (Glen Mailer)
+* Don't use buster.format any more
+* Fix comparison for regexp deepEqual (Matt Kern)
+
+== 1.8.2 / 2014-02-11
+
+* Fixes an edge case with calledWithNew and spied native functions, and other
+  functions that lack a .prototype
+* Add feature detection for the new ProgressEvent support
+
+== 1.8.1 / 2014-02-02
+
+* Screwed up NPM release of 1.8.0, unable to replace it
+
+== 1.8.0 / 2014-02-02
+
+* Add clearImmediate mocking support to the timers API (Tim Perry)
+* Mirror custom Date properties when faking time
+* Improved Weinre support
+* Update call properties even if exceptions are thrown (Tim Perry)
+* Update call properties even if exceptions are thrown (Tim Perry)
+* Reverse matching order for fake server (Gordon L. Hempton)
+* Fix restoring globals on another frame fails on Firefox (Burak Yiğit Kaya)
+* Handle stubbing falsey properties (Tim Perry)
+* Set returnValues correctly when the spied function is called as a constructor (Tim Perry)
+* When creating a sandbox, do not overwrite existing properties when inject
+  properties into an object (Sergio Cinos)
+* Added withCredentials property to fake xhr (Geries)
+* Refine behavior withArgs error message (Tim Fischbach)
+* Auto-respond to successive requests made with a single XHR object (Jan Suchý)
+* Add the ability for mock to accept sinon.match matchers as expected arguments (Zcicala)
+* Adding support for XMLHttpRequest.upload to FakeXMLHttpRequest (Benjamin Coe)
+* Allow onCall to be combined with returns* and throwsException in stub behavior
+  sequences (Tim Fischbach)
+* Fixed deepEqual to detect properties on array objects
+* Fixed problem with chained timers with delay=0 (Ian Lewis)
+* Use formatio in place of buster-format (Devin Weaver)
+
+== 1.7.3 / 2013-06-20
+
+* Removed use of array forEach, breaks in older browsers (Martin Hansen)
+* sinon.deepEqual(new Date(0), new Date()) returns true (G.Serebryanskyi)
+
+== 1.7.2 / 2013-05-08
+
+* Sinon 1.7 has split calls out to a separate file. This caused some problems,
+  so 1.7.2 ships with spyCall as part of spy.js like it used to be.
+
+== 1.7.1 / 2013-05-07
+
+* Fake XMLHttpRequest updated to call onerror and onsuccess callbacks, fixing
+  jQuery 2.0 problems (Roman Potashow)
+* Implement XMLHttpRequest progress event api (Marten Lienen)
+* Added sinon.restore() (Jonny Reeves)
+* Fix bug where throwing a string was handled incorrectly by Sinon (Brandon Heyer)
+* Web workers support (Victor Costan)
+
+== 1.7.0
+
+* Failed release, see 1.7.1
+
+== 1.6.0 / 2013-02-18
+* Add methods to spyCall interface: callArgOn, callArgOnWith, yieldOn,
+  yieldToOn (William Sears)
+* sinon.createStubInstance creates a fully stubbed instance from a constructor
+  (Shawn Krisman)
+* resetBehavior resets fakes created by withArgs (Martin Sander)
+* The fake server now logs to sinon.log, if set (Luis Cardoso)
+* Cleaner npm package that also includes pkg/sinon.js and
+  pkg/sinon-ie.js for cases where npm is used to install Sinon for
+  browser usage (Domenic Denicola)
+* Improved spy formatter %C output (Farid Neshat)
+* clock.tick returns clock.now (Michael Jackson)
+* Fixed issue #248 with callOrder assertion
+  Did not fail if the last given spy was never called (Maximilian Antoni)
+* Fixed issue with setResponseHeader for synchronous requests (goligo)
+* Remove msSetImmediate; it only existed in IE10 previews (Domenic Denicola)
+* Fix #231: not always picking up the latest calls to callsArgWith, etc.
+  (Domenic Denicola)
+* Fix failing anonymous mock expectations
+
+== 1.5.2 / 2012-11-28
+* Revert stub.reset changes that caused existing tests to fail.
+
+== 1.5.1 / 2012-11-27
+* Ensure window.Image can be stubbed. (Adrian Phinney)
+* Fix spy() in IE 8 (Scott Andrews)
+* Fix sinon base in IE 8 (Scott Andrews)
+* Format arguments ouput when mock excpetation is not met (kbackowski)
+* Calling spy.reset directly from stub.reset (Thomas Meyer)
+
+== 1.5.0 / 2012-10-19
+* Don't force "use strict" on Sinon consumers
+* Don't assume objects have hasOwnProperties. Fixes problem with e.g.
+  stubbing properties on process.env
+* Preserve function length for spy (Maximilian Antoni)
+* Add 'invokeCallback' alias for 'yield' on calls (Maximilian Antoni)
+* Added matcher support for calledOn (Maximilian Antoni)
+* Retain original expectation messages, for failed mocks under sinon.test
+  (Giorgos Giannoutsos)
+* Allow yields* and callsArg* to create sequences of calls. (Domenic Denicola)
+* sinon.js can catch itself in endless loop while filling stub prototype
+  with asynch methods (Jan Kopriva)
+
+== 1.4.2 / 2012-07-11
+* sinon.match for arrays (Maximilian Antoni)
+
+== 1.4.1 / 2012-07-11
+* Strengthen a Node.JS inference to avoid quirky behavior with Mocha
+  (which provides a shim process object)
+
+== 1.4.0 / 2012-07-09
+* Argument matchers (Maximillian Antoni)
+  sinon.match.{any, same, typeOf, instanceOf, has, hasOwn, defined, truthy,
+  falsy} as well as typeOf shortcuts for boolean, number, string, object,
+  function, array, regexp and date. The result of a call can be used with
+  spy.calledWith.
+* spy.returned now works with matchers and compares objects deeply.
+* Matcher assertions: calledWithMatch, alwaysCalledWithMatch and
+  neverCalledWithMatch
+* calledWithNew and alwaysCalledWithNew for assert (Maximilian Antoni)
+* Easier stubbed fluent interfaces: stub.returnsThis() (Glen Mailer)
+* allow yields() and family to be used along with returns()/throws() and
+  family (Glen Mailer)
+* Async versions `callsArg*` and `yields*` for stubs (TEHEK)
+* Format args when doing `spy.printf("%*")` (Domenic Denicola)
+* Add notCalled property to spies
+* Fix: spy.reset did not reset fakes created by spy.withArgs (Maximilian Antoni)
+* Properly restore stubs when stubbing entire objects through the sandbox
+  (Konrad Holowinski)
+* Restore global methods properly - delete properties that where not own
+  properties (Keith Cirkel)
+* setTimeout and setInterval pass arguments (Rodion Vynnychenko)
+* Timer callbacks that contain a clock.tick no longer fails (Wesley Waser)
+* spy(undefined, "property") now throws
+* Prevent multiple restore for fake timers (Kevin Decker)
+* Fix toString format under Node (Kevin Decker)
+* Mock expectations emit success and failure events (Kevin Decker)
+* Development improvement: Use Buster.JS to test Sinon
+* Fix bug where expect.atLeast failed when minimum calls where received
+* Make fake server safe to load on node.js
+* Add support for no args on .withArgs and .withExactArgs (Tek Nynja)
+* Avoid hasOwnProperty for host objects
+
+== 1.3.2 / 2012-03-11
+* Stronger Node inference in sandbox
+* Fixed issue with sinon.useFakeTimers() and Rhino.js 1.7R3
+* Formatting brush-up
+* FIX Internet Explorer misreporting the type of Function objects
+  originating in an external window as "object" instead of "function".
+* New methods stub.callsArgOn, stub.callsArgOnWith,
+  stub.yieldsOn, stub.yieldsToOn
+* Implemented
+* Fixing `clearTimeout` to not throw when called for nonexistant IDs.
+* Spys that are created using 'withArgs' now get initialized with previous
+  calls to the original spy.
+* Minor bug fixes and docs cleanup.
+
+== 1.3.1 / 2012-01-04
+* Fix bug in core sinon: isNode was used for both a variable and a function,
+  causing load errors and lots of bugs. Should have never left the door.
+
+== 1.3.0 / 2012-01-01
+* Support using bare functions as fake server response handlers (< 1.3.0
+  required URL and/or method matcher too)
+* Log some internal errors to sinon.log (defaults to noop). Set sinon.log
+  to your logging utility of choice for better feedback when.
+* White-list fake XHRs: Allows some fake requests and some that fall through to
+  the backend server (Tim Ruffles)
+* Decide Date.now support at fake-time. Makes it possible to load something that
+  polyfills Date.now after Sinon loaded and still have Date.now on fake Dates.
+* Mirror properties on replaced function properties
+* New methods: spy.yield(), spy.yieldTo(), spy.callArg() and spy.callArgWith()
+  can be used to invoke callbacks passed to spies (while avoiding the mock-like
+  upfront yields() and friends). invokeCallback is available as an alias for
+  yield for people working with strict mode. (Maximilian Antoni)
+* New properties: spy.firstCall, spy.secondCall, spy.thirdCall and spy.lastCall.
+  (Maximilian Antoni)
+* New method: stub.returnsArg(), causes stub to return one of its arguments.
+  (Gavin Huang)
+* Stubs now work for inherited methods. This was previously prohibited to avoid
+  stubbing not-yet-implemented methods. (Felix Geisendörfer)
+* server.respond() can now accept the same arguments as server.respondWith() for
+  quick-and-dirty respondWith+respond. (Gavin Huang)
+* Format objects with buster-format in the default bundle. Default to
+  util.inspect on node unless buster-format is available (not a hard dependency,
+  more like a 'preference').
+
+* Bug fix: Make sure XHRs can complete even if onreadystatechange handler fails
+* Bug fix: Mirror entire Date.prototype, including toUTCString when faking
+* Bug fix: Default this object to global in exposed asserts
+* Bug fix: sinon.test: use try/finally instead of catch and throw - preserves
+  stack traces (Kevin Turner)
+* Bug fix: Fake `setTimeout` now returns ids greater than 0. (Domenic Denicola)
+* Bug fix: NPM install warning (Felix Geisendörfer)
+* Bug fix: Fake timers no longer swallows exceptions (Felix Geisendörfer)
+* Bug fix: Properly expose all needed asserts for node
+* Bug fix: wrapMethod on window property (i.e. when stubbing/spying on global
+  functions)
+* Bug fix: Quote "yield" (Ben Hockey)
+* Bug fix: callOrder works correctly when spies have been called multiple times
+
+== 1.2.0 / 2011-09-27
+* Bug fix: abort() switches state to DONE when OPENED and sent. Fix by
+  Tristan Koch.
+* Bug fix: Mootools uses MSXML2.XMLHTTP as objectId, which Sinon matched with
+  different casing. Fix by Olmo Maldonado.
+* Bug fix: When wrapping a non-owned property, restore now removes the wrapper
+  instead of replacing it. Fix by Will Butler.
+* Bug fix: Make it possibly to stub Array.prototype.push by not using that
+  method directly inside Sinon.
+* Bug fix: Don't assume that req.requestBody is a string in the fake server.
+* Added spy.printf(format) to print a nicely formatted message with details
+  about a spy.
+* Garbage collection: removing fakes from collections when restoring the
+  original methods. Fix by Tristan Koch.
+* Add spy.calledWithNew to check if a function was used as a constructor
+* Add spy.notCalledWith(), spy.neverCalledWith() and
+  sinon.assert.neverCalledWith. By Max Antoni
+* Publicly expose sinon.expectation.fail to allow tools to integrate with mock
+  expectations.
+* Fake XMLHttpRequests now support a minimal portion of the events API, making
+  them work seamlessly with e.g. SproutCode (which uses
+  xhr.addEventListener("readystatechange"). Partially by Sven Fuchs.
+
+== 1.1.1 / 2011-05-17
+* Fix broken mock verification in CommonJS when not including the full Sinon
+  package.
+
+== 1.1.0 / 2011-05-04
+* The fake server now has a autoRespond method which allows it to respond to
+  requests on the fly (asynchronously), making it a good fit for mockup
+  development
+* Stubs and spies now has a withArgs method. Using it allows you to create
+  several spies/stubs for the same method, filtered by received arguments
+* Stubs now has yields and yieldsTo methods for fuzzily invoking callbacks.
+  They work like callsArgAt only by inferring what callback to invoke, and
+  yieldsTo can invoke callbacks in object "options" arguments.
+* Allow sandboxes/collections to stub any property so long as the object
+  has the property as an own property
+* Significantly improve error reporting from failed mock expecations. Now prints
+  all met and unmet expectations with expected and received arguments
+* Allow mock expectations to be consumed in any order
+* Add pretty printing of all calls when assertions fail
+* Fix bug: Stub exception message ended up as "undefined" (string) if not
+  specified
+* Pass capture groups in URLs to fakeServer function handlers
+* Pass through return value from test function in testCase
+* typeof require is not enough to assume node, also use typeof module
+* Don't use Object.create in sinon.create. In the off chance that someone stubs
+  it, sinon will fail mysteriously (Thanks to Espen Dalløkken)
+* Catch exceptions when parsing DOM elements "on a hunch"
+  When responding to XHRs, Sinon acts like most browsers and try to parse the
+  response into responseXML if Content-Type indicates XML or HTML. However, it
+  also does this if the type is not set. Obviously, this may misfire and
+  should be caught.
+* Fix fakeServer.respond() to not drop requests when they are queued during the
+  processing of an existing queue. (Sven Fuchs)
+* Clean up module loading in CommonJS environments (Node.js still the only
+  tested such environment). No longer (temporarily) modifies require.paths,
+  always loads all modules.
+
+== 1.0.2 / 2011-02-22
+* Fix JSON bug in package.json
+* Sandbox no longer tries to use a fake server if config says so, but
+  server is not loaded
+
+== 1.0.1 / 2010-12-20
+* Make sure sinon.sandbox is exposed in node.js (fix by Gord Tanner)
+
+== 1.0.0 / 2010-12-08
+* Switched indentation from 2 to 4 spaces :)
+* Node.js compatibility improvements
+* Remove magic booleans from sinon.assert.expose, replace with option object
+* Put QUnit adapter in it's own repository
+* Update build script to build standalone timers and server files
+* Breaking change: thisObj -> thisValue
+  Change brings consistency to the code-base, always use thisValue
+* Add sinon.assert.pass callback for successful assertions
+* Extract sandbox configuration from sinon.test
+
+  Refactored sinon.test to not do all the heavy lifting in creating sandbox
+  objects from sinon.config. Now sinon.sandbox.create accepts an optional
+  configuration that can be retrieved through sinon.getConfig({ ... }) - or, to
+  match previous behavior, through sinon.getConfig(sinon.config);
+
+  The default configuration now lives in sinon.defaultConfig rather than the
+  previous sinon.test.
+
+  This change enables external tools, such as test framework adapters, to easily
+  create configurable sandboxes without going through sinon.test
+* Rewrite sinon.clock.tick to fix bug and make implementation clearer
+* Test config load correct files
+* Make timers and XHR truly standalone by splitting the IE work-around in two files
+* Don't fail when comparing DOM elements in sinon.deepEqual (used in calledWith(...))
+* Should mirror properties on Date when faking it
+* Added and updated configuration for both JsLint and JavaScript lint
+* [August Lilleaas] The build script can optionally build a file without the
+  version name in it, by passing 'plain', i.e. './build plain'.
+
+  Useful when using the build script to build and use sinon programatically, so
+  one can 'cp path/to/sinon/pkg/sinon.js my/scripts/'
+* [August Lilleaas] Checking and warning if we got a load error and rubygems
+  isn't present.
+* [August Lilleaas] Updating build script to be runnable from any
+  directory. Current working directory doesn't have to be repo root.
+
+== 0.8.0 / 2010-10-30
+* sinon.wrapMethod no longer accepts faking already faked methods
+* sinon-qunit 'plugin'
+* sinon.test / sinon.config can now expose the sandbox object
+
+== 0.7.2 / 2010-10-25
+* Add sinon.sandbox.create back in
+* Fix bug where clock.tick would fire timeouts in intervals when
+  setInterval was also called
+
+== 0.7.1 / 2010-10-16
+* The fake server will now match paths against full URLs, meaning that
+  server.respondWith("/", "OK"); will match requests for
+  "http://currentHost/".
+* Improved toString method for spies and stubs which leads to more
+  precise error messages from sinon.assert.*
+
+== 0.7.0 / 2010-09-19
+* sinon.useFakeTimers now fakes the Date constructor by default
+* sinon.testCase now fakes XHR and timers by default
+* sinon.config controls the behavior of sinon.testCase
+* Fixed bug in clock.tick - now fires timers in correct order
+* Added the ability to tick a clock string for longer ticks.
+  Passing a number causes the clock to tick the specified amount of
+  milliseconds, passing a string like "12:32" ticks 12 minutes and 32
+  seconds.
+* calledBefore and calledAfter for individual calls
+* New assertions
+  sinon.assert.notCalled
+  sinon.assert.calledOnce
+  sinon.assert.calledTwice
+  sinon.assert.calledThrice
+* sinon.test now throws if passed anything other than a function
+* sinon.testCase now throws if passed anything other than an object
+* sinon.{spy,stub}(obj, method) now throws if the property is not an
+  existing function - helps avoid perpetuating typo bugs
+* Vastly improved error messages from assertions
+* Spies/stubs/expectations can have their names resolved in many cases
+* Removed feature where sinon.testCase allowed for nested test cases
+  (does not belong in Sinon.JS)
+* Organizational change: src/ becomes lib/ Helps npm compatibility
+* Thanks to Cory Flanigan for help on npm compatibility
+
+== 0.6.2 / 2010-08-12
+* Fixed another bug in sinon.fakeServerWithClock where consecutive
+  respond() calls did not trigger timeouts.
+
+== 0.6.1 / 2010-08-12
+* Fixed a bug in sinon.fakeServerWithClock where the clock was ticked
+  before the server had responded to all requests, resulting in
+  objects not having been responded to by the time the timeout ran.
+
+== 0.6.0 / 2010-08-10
+* FakeXMLHttpRequest
+* sinon.useFakeXMLHttpRequest
+* sinon.fakeServer
+* sinon.fakeServerWithClock
+* Improved fake timers implementation, made them work properly in IE 6-8
+* Improved sinon.sandbox
+  * Added useFakeServer
+  * Added inject method
+* Improved sinon.test method
+  * Made configuration aware
+  * Now uses sinon.sandbox in place of sinon.collection
+* Changed default configuration for sinon.test, breaking compatibility
+  with 0.5.0 - can be changed through sinon.config
+
+== 0.5.0 / 2010-06-09
+* Initial release
+* Spies, stubs, mocks
+* Assertions
+* collections, test, testCase
+* Fake timers (half-baked)
