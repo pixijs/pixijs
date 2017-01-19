@@ -4,7 +4,8 @@ import canUseNewCanvasBlendModes from '../../renderers/canvas/utils/canUseNewCan
 /**
  * Utility methods for Sprite/Texture tinting.
  *
- * @namespace PIXI.CanvasTinter
+ * @class
+ * @memberof PIXI
  */
 const CanvasTinter = {
     /**

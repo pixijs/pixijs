@@ -1,6 +1,6 @@
 'use strict';
 
-require('../../bin/pixi');
+require('../../dist/pixi');
 PIXI.utils.skipHello();
 
 const fs = require('fs');

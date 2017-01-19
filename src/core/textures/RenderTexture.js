@@ -7,8 +7,7 @@ import Texture from './Texture';
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
  *
- * A RenderTexture takes a snapshot of any Display Object given to its render method. The position
- * and rotation of the given Display Objects is ignored. For example:
+ * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
  *
  * ```js
  * let renderer = PIXI.autoDetectRenderer(1024, 1024, { view: canvas, ratio: 1 });
@@ -23,15 +22,16 @@ import Texture from './Texture';
  * renderer.render(sprite, renderTexture);
  * ```
  *
- * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
- * position a Container should be used:
+ * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * you can clear the transform
  *
  * ```js
- * let doc = new PIXI.Container();
  *
- * doc.addChild(sprite);
+ * sprite.setTransform()
  *
- * renderer.render(doc, renderTexture);  // Renders to center of renderTexture
+ * let renderTexture = new PIXI.RenderTexture.create(100, 100);
+ *
+ * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
  * ```
  *
  * @class
