@@ -1,10 +1,10 @@
 'use strict';
 
-describe('BaseTexture', () =>
+describe('BaseTexture', function ()
 {
-    describe('updateImageType', () =>
+    describe('updateImageType', function ()
     {
-        it('should allow no extension', () =>
+        it('should allow no extension', function ()
         {
             const baseTexture = new PIXI.BaseTexture();
 

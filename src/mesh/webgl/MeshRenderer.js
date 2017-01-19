@@ -6,6 +6,10 @@ import { join } from 'path';
 
 /**
  * WebGL renderer plugin for tiling sprites
+ *
+ * @class
+ * @memberof PIXI
+ * @extends PIXI.ObjectRenderer
  */
 export default class MeshRenderer extends core.ObjectRenderer {
 
@@ -77,6 +81,8 @@ export default class MeshRenderer extends core.ObjectRenderer {
             mesh._glDatas[renderer.CONTEXT_UID] = glData;
         }
 
+        renderer.bindVao(glData.vao);
+
         if (mesh.dirty !== glData.dirty)
         {
             glData.dirty = mesh.dirty;
@@ -103,7 +109,6 @@ export default class MeshRenderer extends core.ObjectRenderer {
 
         const drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
-        renderer.bindVao(glData.vao);
         glData.vao.draw(drawMode, mesh.indices.length, 0);
     }
 }

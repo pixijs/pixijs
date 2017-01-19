@@ -57,7 +57,7 @@ export default class TextStyle
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fills styles are
      *  supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
-     * @param {string} [style.fontFamily='Arial'] - The font family
+     * @param {string|string[]} [style.fontFamily='Arial'] - The font family
      * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
      *  equivalents are '26px','20pt','160%' or '1.6em')
      * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
@@ -435,22 +435,43 @@ export default class TextStyle
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
-function getColor(color)
+function getSingleColor(color)
 {
     if (typeof color === 'number')
     {
         return hex2string(color);
     }
-    else if (Array.isArray(color))
+    else if ( typeof color === 'string' )
     {
-        for (let i = 0; i < color.length; ++i)
+        if ( color.indexOf('0x') === 0 )
         {
-            if (typeof color[i] === 'number')
-            {
-                color[i] = hex2string(color[i]);
-            }
+            color = color.replace('0x', '#');
         }
     }
 
     return color;
+}
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ * This version can also convert array of colors
+ *
+ * @param {number|number[]} color
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (!Array.isArray(color))
+    {
+        return getSingleColor(color);
+    }
+    else
+    {
+        for (let i = 0; i < color.length; ++i)
+        {
+            color[i] = getSingleColor(color[i]);
+        }
+
+        return color;
+    }
 }
