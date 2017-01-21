@@ -525,21 +525,33 @@ export default class Text extends Sprite
         const width = this.canvas.width / this.resolution;
         const height = this.canvas.height / this.resolution;
 
+        // make a copy of the style settings, so we can manipulate them later
+        const fill = style.fill.slice();
+        const fillGradientStops = style.fillGradientStops.slice();
+
+        // wanting to evenly distribute the fills. So an array of 4 colours should give fills of 0.25, 0.5 and 0.75
+        if (!fillGradientStops.length)
+        {
+            const lengthPlus1 = fill.length + 1;
+
+            for (let i = 1; i < lengthPlus1; ++i)
+            {
+                fillGradientStops.push(i / lengthPlus1);
+            }
+        }
+
+        // stop the bleeding of the last gradient on the line above to the top gradient of the this line
+        // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
+        fill.unshift(style.fill[0]);
+        fillGradientStops.unshift(0);
+
+        fill.push(style.fill[style.fill.length - 1]);
+        fillGradientStops.push(1);
+
         if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
         {
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
             gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
-
-            // stop the bleeding of the last gradient on the line above to the top gradient of the this line
-            // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
-            const fill = style.fill.slice();
-            const fillGradientStops = style.fillGradientStops.slice();
-
-            fill.unshift(style.fill[0]);
-            fillGradientStops.unshift(0);
-
-            fill.push(style.fill[style.fill.length - 1]);
-            fillGradientStops.push(1);
 
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
@@ -570,20 +582,20 @@ export default class Text extends Sprite
 
             // can just evenly space out the gradients in this case, as multiple lines makes no difference
             // to an even left to right gradient
-            totalIterations = style.fill.length + 1;
+            totalIterations = fill.length + 1;
             currentIteration = 1;
 
-            for (let i = 0; i < style.fill.length; i++)
+            for (let i = 0; i < fill.length; i++)
             {
-                if (style.fillGradientStops[i])
+                if (fillGradientStops[i])
                 {
-                    stop = style.fillGradientStops[i];
+                    stop = fillGradientStops[i];
                 }
                 else
                 {
                     stop = currentIteration / totalIterations;
                 }
-                gradient.addColorStop(stop, style.fill[i]);
+                gradient.addColorStop(stop, fill[i]);
                 currentIteration++;
             }
         }
