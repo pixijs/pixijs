@@ -58,8 +58,8 @@ export default class TextStyle
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fill is an array of colours
      *  to create a gradient, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
-     * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient,
-     *  this array can set the stop points for the color, rather than the default behaviour of evenly spacing them
+     * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient, this array can set
+     * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
      * @param {string|string[]} [style.fontFamily='Arial'] - The font family
      * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
      *  equivalents are '26px','20pt','160%' or '1.6em')
