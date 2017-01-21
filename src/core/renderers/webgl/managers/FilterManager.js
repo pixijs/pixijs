@@ -292,7 +292,8 @@ export default class FilterManager extends WebGLManager
         if (shader.uniforms.data.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
-            const filterArea = shader.uniforms.filterArea;
+
+            const filterArea = uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
             filterArea[1] = currentState.renderTarget.size.height;
@@ -308,7 +309,7 @@ export default class FilterManager extends WebGLManager
         {
             currentState = this.filterData.stack[this.filterData.index];
 
-            const filterClamp = shader.uniforms.filterClamp;
+            const filterClamp = uniforms.filterClamp;
 
             filterClamp[0] = 0;
             filterClamp[1] = 0;
