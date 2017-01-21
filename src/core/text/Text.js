@@ -530,24 +530,35 @@ export default class Text extends Sprite
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
             gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
 
+            // stop the bleeding of the last gradient on the line above to the top gradient of the this line
+            // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
+            const fill = style.fill.slice();
+            const fillGradientStops = style.fillGradientStops.slice();
+
+            fill.unshift(style.fill[0]);
+            fillGradientStops.unshift(0);
+
+            fill.push(style.fill[style.fill.length - 1]);
+            fillGradientStops.push(1);
+
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
-            totalIterations = (style.fill.length + 1) * lines.length;
+            totalIterations = (fill.length + 1) * lines.length;
             currentIteration = 0;
             for (let i = 0; i < lines.length; i++)
             {
                 currentIteration += 1;
-                for (let j = 0; j < style.fill.length; j++)
+                for (let j = 0; j < fill.length; j++)
                 {
-                    if (style.fillGradientStops[j])
+                    if (fillGradientStops[j])
                     {
-                        stop = (i / lines.length) + (style.fillGradientStops[j] / lines.length);
+                        stop = (fillGradientStops[j] / lines.length) + (i / lines.length);
                     }
                     else
                     {
                         stop = currentIteration / totalIterations;
                     }
-                    gradient.addColorStop(stop, style.fill[j]);
+                    gradient.addColorStop(stop, fill[j]);
                     currentIteration++;
                 }
             }
