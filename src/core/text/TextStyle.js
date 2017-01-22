@@ -14,6 +14,7 @@ const defaultStyle = {
     dropShadowDistance: 5,
     fill: 'black',
     fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
+    fillGradientStops: [],
     fontFamily: 'Arial',
     fontSize: 26,
     fontStyle: 'normal',
@@ -27,6 +28,7 @@ const defaultStyle = {
     stroke: 'black',
     strokeThickness: 0,
     textBaseline: 'alphabetic',
+    trim: false,
     wordWrap: false,
     wordWrapWidth: 100,
 };
@@ -55,9 +57,11 @@ export default class TextStyle
      *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
      *  eg ['#000000','#FFFFFF']
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
-     * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fills styles are
-     *  supplied, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT} for possible values
-     * @param {string} [style.fontFamily='Arial'] - The font family
+     * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fill is an array of colours
+     *  to create a gradient, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
+     * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient, this array can set
+     * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
+     * @param {string|string[]} [style.fontFamily='Arial'] - The font family
      * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
      *  equivalents are '26px','20pt','160%' or '1.6em')
      * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
@@ -76,6 +80,7 @@ export default class TextStyle
      *  e.g 'blue', '#FCFF00'
      * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
      *  Default is 0 (no stroke)
+     * @param {boolean} [style.trim=false] - Trim transparent borders
      * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
@@ -97,7 +102,7 @@ export default class TextStyle
     {
         const clonedProperties = {};
 
-        for (const key in this._defaults)
+        for (const key in defaultStyle)
         {
             clonedProperties[key] = this[key];
         }
@@ -110,7 +115,7 @@ export default class TextStyle
      */
     reset()
     {
-        Object.assign(this, this._defaults);
+        Object.assign(this, defaultStyle);
     }
 
     get align()
@@ -228,6 +233,19 @@ export default class TextStyle
         if (this._fillGradientType !== fillGradientType)
         {
             this._fillGradientType = fillGradientType;
+            this.styleID++;
+        }
+    }
+
+    get fillGradientStops()
+    {
+        return this._fillGradientStops;
+    }
+    set fillGradientStops(fillGradientStops)
+    {
+        if (!areArraysEqual(this._fillGradientStops,fillGradientStops))
+        {
+            this._fillGradientStops = fillGradientStops;
             this.styleID++;
         }
     }
@@ -402,6 +420,19 @@ export default class TextStyle
         }
     }
 
+    get trim()
+    {
+        return this._trim;
+    }
+    set trim(trim)
+    {
+        if (this._trim !== trim)
+        {
+            this._trim = trim;
+            this.styleID++;
+        }
+    }
+
     get wordWrap()
     {
         return this._wordWrap;
@@ -435,22 +466,74 @@ export default class TextStyle
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
-function getColor(color)
+function getSingleColor(color)
 {
     if (typeof color === 'number')
     {
         return hex2string(color);
     }
-    else if (Array.isArray(color))
+    else if ( typeof color === 'string' )
     {
-        for (let i = 0; i < color.length; ++i)
+        if ( color.indexOf('0x') === 0 )
         {
-            if (typeof color[i] === 'number')
-            {
-                color[i] = hex2string(color[i]);
-            }
+            color = color.replace('0x', '#');
         }
     }
 
     return color;
+}
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ * This version can also convert array of colors
+ *
+ * @param {number|number[]} color
+ * @return {string} The color as a string.
+ */
+function getColor(color)
+{
+    if (!Array.isArray(color))
+    {
+        return getSingleColor(color);
+    }
+    else
+    {
+        for (let i = 0; i < color.length; ++i)
+        {
+            color[i] = getSingleColor(color[i]);
+        }
+
+        return color;
+    }
+}
+
+/**
+ * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
+ * This version can also convert array of colors
+ *
+ * @param {Array} array1 First array to compared
+ * @param {Array} array1 Second array to compare
+ * @return {boolean} Do the arrays contain the same values in the same order
+ */
+function areArraysEqual(array1, array2)
+{
+    if (!Array.isArray(array1) || !Array.isArray(array2))
+    {
+        return false;
+    }
+
+    if (array1.length !== array2.length)
+    {
+        return false;
+    }
+
+    for (let i = 0; i < array1.length; ++i)
+    {
+        if (array1[i] !== array2[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

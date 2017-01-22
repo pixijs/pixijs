@@ -1,4 +1,6 @@
 import ResourceLoader from 'resource-loader';
+import { blobMiddlewareFactory } from 'resource-loader/lib/middlewares/parsing/blob';
+import EventEmitter from 'eventemitter3';
 import textureParser from './textureParser';
 import spritesheetParser from './spritesheetParser';
 import bitmapFontParser from './bitmapFontParser';
@@ -12,7 +14,9 @@ import bitmapFontParser from './bitmapFontParser';
  * //or
  * let loader = new PIXI.loaders.Loader(); // you can also create your own if you want
  *
- * loader.add('bunny',"data/bunny.png");
+ * loader.add('bunny', 'data/bunny.png');
+ * loader.add('spaceship', 'assets/spritesheet.json');
+ * loader.add('scoreFont', 'assets/score.fnt');
  *
  * loader.once('complete',onAssetsLoaded);
  *
@@ -34,11 +38,19 @@ export default class Loader extends ResourceLoader
     constructor(baseUrl, concurrency)
     {
         super(baseUrl, concurrency);
+        EventEmitter.call(this);
 
         for (let i = 0; i < Loader._pixiMiddleware.length; ++i)
         {
             this.use(Loader._pixiMiddleware[i]());
         }
+
+        // Compat layer, translate the new v2 signals into old v1 events.
+        this.onStart.add((l) => this.emit('start', l));
+        this.onProgress.add((l, r) => this.emit('progress', l, r));
+        this.onError.add((e, l, r) => this.emit('error', e, l, r));
+        this.onLoad.add((l, r) => this.emit('load', l, r));
+        this.onComplete.add((l, r) => this.emit('complete', l, r));
     }
 
     /**
@@ -53,9 +65,15 @@ export default class Loader extends ResourceLoader
     }
 }
 
+// Copy EE3 prototype (mixin)
+for (const k in EventEmitter.prototype)
+{
+    Loader.prototype[k] = EventEmitter.prototype[k];
+}
+
 Loader._pixiMiddleware = [
     // parse any blob into more usable objects (e.g. Image)
-    ResourceLoader.middleware.parsing.blob,
+    blobMiddlewareFactory,
     // parse any Image objects into textures
     textureParser,
     // parse any spritesheet data into multiple textures

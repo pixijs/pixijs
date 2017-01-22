@@ -10,7 +10,7 @@ import { SHAPES } from '../../const';
  * now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasGraphicsRenderer.java
+ * https://github.com/libgdx/libgdx/blob/1.0.0/gdx/src/com/badlogic/gdx/graphics/glutils/ShapeRenderer.java
  */
 
 /**

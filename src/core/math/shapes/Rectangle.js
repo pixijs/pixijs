@@ -56,7 +56,6 @@ export default class Rectangle
      * returns the left edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle#
      */
     get left()
     {
@@ -67,7 +66,6 @@ export default class Rectangle
      * returns the right edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get right()
     {
@@ -78,7 +76,6 @@ export default class Rectangle
      * returns the top edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get top()
     {
@@ -89,7 +86,6 @@ export default class Rectangle
      * returns the bottom edge of the rectangle
      *
      * @member {number}
-     * @memberof PIXI.Rectangle
      */
     get bottom()
     {
@@ -226,19 +222,14 @@ export default class Rectangle
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
-     * @param {PIXI.Rectangle} rect - The rectangle to include.
+     * @param {PIXI.Rectangle} rectangle - The rectangle to include.
      */
-    enlarge(rect)
+    enlarge(rectangle)
     {
-        if (rect === Rectangle.EMPTY)
-        {
-            return;
-        }
-
-        const x1 = Math.min(this.x, rect.x);
-        const x2 = Math.max(this.x + this.width, rect.x + rect.width);
-        const y1 = Math.min(this.y, rect.y);
-        const y2 = Math.max(this.y + this.height, rect.y + rect.height);
+        const x1 = Math.min(this.x, rectangle.x);
+        const x2 = Math.max(this.x + this.width, rectangle.x + rectangle.width);
+        const y1 = Math.min(this.y, rectangle.y);
+        const y2 = Math.max(this.y + this.height, rectangle.y + rectangle.height);
 
         this.x = x1;
         this.width = x2 - x1;

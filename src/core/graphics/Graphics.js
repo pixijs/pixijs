@@ -491,9 +491,10 @@ export default class Graphics extends Container
         const startX = cx + (Math.cos(startAngle) * radius);
         const startY = cy + (Math.sin(startAngle) * radius);
 
-        const points = this.currentPath.shape.points;
+        // If the currentPath exists, take its points. Otherwise call `moveTo` to start a path.
+        let points = this.currentPath ? this.currentPath.shape.points : null;
 
-        if (this.currentPath)
+        if (points)
         {
             if (points[points.length - 2] !== startX || points[points.length - 1] !== startY)
             {
@@ -503,6 +504,7 @@ export default class Graphics extends Container
         else
         {
             this.moveTo(startX, startY);
+            points = this.currentPath.shape.points;
         }
 
         const theta = sweep / (segs * 2);
@@ -691,10 +693,14 @@ export default class Graphics extends Container
             this.lineWidth = 0;
             this.filling = false;
 
+            this.boundsDirty = -1;
             this.dirty++;
             this.clearDirty++;
             this.graphicsData.length = 0;
         }
+
+        this.currentPath = null;
+        this._spriteRect = null;
 
         return this;
     }
@@ -830,7 +836,6 @@ export default class Graphics extends Container
             this.boundsDirty = this.dirty;
             this.updateLocalBounds();
 
-            this.dirty++;
             this.cachedSpriteDirty = true;
         }
 
@@ -1060,10 +1065,15 @@ export default class Graphics extends Container
             canvasRenderer = new CanvasRenderer();
         }
 
-        tempMatrix.tx = -bounds.x;
-        tempMatrix.ty = -bounds.y;
+        this.transform.updateLocalTransform();
+        this.transform.localTransform.copy(tempMatrix);
 
-        canvasRenderer.render(this, canvasBuffer, false, tempMatrix);
+        tempMatrix.invert();
+
+        tempMatrix.tx -= bounds.x;
+        tempMatrix.ty -= bounds.y;
+
+        canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
 
         const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
 
@@ -1116,6 +1126,10 @@ export default class Graphics extends Container
      *  options have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have
      *  their destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
     destroy(options)
     {

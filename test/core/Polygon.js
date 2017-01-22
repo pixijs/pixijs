@@ -1,17 +1,17 @@
 'use strict';
 
-describe('PIXI.Polygon', () =>
+describe('PIXI.Polygon', function ()
 {
-    describe('constructor', () =>
+    describe('constructor', function ()
     {
-        it('should accept a spread of values', () =>
+        it('should accept a spread of values', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 0, 10);
 
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept a spread of points', () =>
+        it('should accept a spread of points', function ()
         {
             const polygon = new PIXI.Polygon(
                 new PIXI.Point(0, 0),
@@ -22,14 +22,14 @@ describe('PIXI.Polygon', () =>
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept an array of values', () =>
+        it('should accept an array of values', function ()
         {
             const polygon = new PIXI.Polygon([0, 0, 10, 0, 0, 10]);
 
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept an array of points', () =>
+        it('should accept an array of points', function ()
         {
             const polygon = new PIXI.Polygon([
                 new PIXI.Point(0, 0),
@@ -41,9 +41,9 @@ describe('PIXI.Polygon', () =>
         });
     });
 
-    describe('clone', () =>
+    describe('clone', function ()
     {
-        it('should create a copy', () =>
+        it('should create a copy', function ()
         {
             const polygon1 = new PIXI.Polygon(0, 0, 10, 0, 0, 10);
             const polygon2 = polygon1.clone();
@@ -63,9 +63,9 @@ describe('PIXI.Polygon', () =>
         });
     });
 
-    describe('close', () =>
+    describe('close', function ()
     {
-        it('should close the polygon if open', () =>
+        it('should close the polygon if open', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 0, 10);
 
@@ -78,7 +78,7 @@ describe('PIXI.Polygon', () =>
             expect(polygon.points[7]).to.be.equals(0);
         });
 
-        it('should do nothing if already closed', () =>
+        it('should do nothing if already closed', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 0, 10, 0, 0);
 
@@ -90,9 +90,9 @@ describe('PIXI.Polygon', () =>
         });
     });
 
-    describe('contains', () =>
+    describe('contains', function ()
     {
-        it('should include points inside', () =>
+        it('should include points inside', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 
@@ -102,7 +102,7 @@ describe('PIXI.Polygon', () =>
             expect(polygon.contains(9, 9)).to.be.true;
         });
 
-        it('should exclude bounds', () =>
+        it('should exclude bounds', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 
@@ -112,7 +112,7 @@ describe('PIXI.Polygon', () =>
             expect(polygon.contains(10, 10)).to.be.false;
         });
 
-        it('should exclude points outside', () =>
+        it('should exclude points outside', function ()
         {
             const polygon = new PIXI.Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 

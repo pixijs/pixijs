@@ -121,6 +121,8 @@ export default class CanvasRenderer extends SystemRenderer
 
         this.emit('prerender');
 
+        const rootResolution = this.resolution;
+
         if (renderTexture)
         {
             renderTexture = renderTexture.baseTexture || renderTexture;
@@ -160,6 +162,9 @@ export default class CanvasRenderer extends SystemRenderer
             if (transform)
             {
                 transform.copy(tempWt);
+
+                // lets not forget to flag the parent transform as dirty...
+                this._tempDisplayObjectParent.transform._worldID = -1;
             }
             else
             {
@@ -167,6 +172,7 @@ export default class CanvasRenderer extends SystemRenderer
             }
 
             displayObject.parent = this._tempDisplayObjectParent;
+
             displayObject.updateTransform();
             displayObject.parent = cacheParent;
             // displayObject.hitArea = //TODO add a temp hit area
@@ -207,7 +213,31 @@ export default class CanvasRenderer extends SystemRenderer
         displayObject.renderCanvas(this);
         this.context = tempContext;
 
+        this.resolution = rootResolution;
+
         this.emit('postrender');
+    }
+
+    /**
+     * Clear the canvas of renderer.
+     *
+     * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
+     */
+    clear(clearColor)
+    {
+        const context = this.context;
+
+        clearColor = clearColor || this._backgroundColorString;
+
+        if (!this.transparent && clearColor)
+        {
+            context.fillStyle = clearColor;
+            context.fillRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            context.clearRect(0, 0, this.width, this.height);
+        }
     }
 
     /**

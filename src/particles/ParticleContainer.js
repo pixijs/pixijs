@@ -237,7 +237,7 @@ export default class ParticleContainer extends core.Container
                 continue;
             }
 
-            const frame = child.texture.frame;
+            const frame = child._texture.frame;
 
             context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -305,10 +305,10 @@ export default class ParticleContainer extends core.Container
                 finalHeight = frame.height;
             }
 
-            const resolution = child.texture.baseTexture.resolution;
+            const resolution = child._texture.baseTexture.resolution;
 
             context.drawImage(
-                child.texture.baseTexture.source,
+                child._texture.baseTexture.source,
                 frame.x * resolution,
                 frame.y * resolution,
                 frame.width * resolution,
@@ -328,6 +328,10 @@ export default class ParticleContainer extends core.Container
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
      *  destroy method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the texture of the child sprite
+     * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+     *  Should it destroy the base texture of the child sprite
      */
     destroy(options)
     {
