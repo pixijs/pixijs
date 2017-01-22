@@ -57,7 +57,7 @@ export default class Text extends Sprite
 
         /**
          * The canvas 2d context that everything is drawn with
-         * @member {HTMLCanvasElement}
+         * @member {CanvasRenderingContext2D}
          */
         this.context = this.canvas.getContext('2d');
 
