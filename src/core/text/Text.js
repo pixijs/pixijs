@@ -497,6 +497,7 @@ export default class Text extends Sprite
     getLocalBounds(rect)
     {
         this.updateText(true);
+
         return super.getLocalBounds.call(this, rect);
     }
 
