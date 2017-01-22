@@ -190,10 +190,11 @@ export default class Text extends Sprite
 
         if (style.dropShadow)
         {
+            this.context.shadowBlur = style.dropShadowBlur;
+
             if (style.dropShadowBlur > 0)
             {
                 this.context.shadowColor = style.dropShadowColor;
-                this.context.shadowBlur = style.dropShadowBlur;
             }
             else
             {
@@ -240,6 +241,9 @@ export default class Text extends Sprite
 
         // set canvas text styles
         this.context.fillStyle = this._generateFillStyle(style, lines);
+
+        // remove blur if set for the drop shadow
+        this.context.shadowBlur = 0;
 
         // draw lines line by line
         for (let i = 0; i < lines.length; i++)
