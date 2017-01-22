@@ -5,7 +5,8 @@
  * @class
  * @memberof PIXI
  */
-export default class TimeLimiter {
+export default class TimeLimiter
+{
     /**
      * @param {number} maxMilliseconds - The maximum milliseconds that can be spent preparing items each frame.
      */

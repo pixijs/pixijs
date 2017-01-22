@@ -5,7 +5,8 @@
  *
  * @class
  */
-class MockPointer {
+class MockPointer
+{
     /**
      * @param {PIXI.Container} stage - The root of the scene tree
      * @param {number} [width=100] - Width of the renderer
