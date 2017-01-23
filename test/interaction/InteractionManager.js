@@ -639,7 +639,6 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                /* TODO: Fix #3596
                 it('should callback parent and behind child when clicking overlap', function ()
                 {
                     const stage = new PIXI.Container();
@@ -657,7 +656,6 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.frontChildCallback).to.not.have.been.called;
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
-                */
 
                 it('should callback parent and behind child when clicking behind child', function ()
                 {
