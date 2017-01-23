@@ -1,5 +1,6 @@
 import Shader from '../../../shader/Shader';
 import { BLEND_MODES } from '../../../const';
+import settings from '../../../settings';
 
 // let math = require('../../../math');
 /**
@@ -35,7 +36,7 @@ class Filter extends Shader
          *
          * @member {number}
          */
-        this.resolution = 1;
+        this.resolution = settings.RESOLUTION;
 
         /**
          * If enabled is true the filter is applied, if false it will not.

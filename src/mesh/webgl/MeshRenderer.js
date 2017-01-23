@@ -10,7 +10,8 @@ const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class MeshRenderer extends core.ObjectRenderer {
+export default class MeshRenderer extends core.ObjectRenderer
+{
 
     /**
      * constructor for renderer
