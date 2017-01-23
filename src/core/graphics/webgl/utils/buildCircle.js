@@ -33,7 +33,7 @@ export default function buildCircle(graphicsData, webGLData)
         height = circleData.height;
     }
 
-    if(width === 0 || height === 0)
+    if (width === 0 || height === 0)
     {
         return;
     }
