@@ -179,10 +179,6 @@ export default class Container extends DisplayObject
         removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
 
-        // ensure a transform will be recalculated..
-        this.transform._parentID = -1;
-        this._boundsID++;
-
         this.onChildrenChange(index);
     }
 
