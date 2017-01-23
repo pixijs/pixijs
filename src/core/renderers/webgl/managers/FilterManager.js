@@ -289,7 +289,7 @@ export default class FilterManager extends WebGLManager
         let textureCount = 1;
         let currentState;
 
-        if (shader.uniforms.data.filterArea)
+        if (uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
 
@@ -305,7 +305,7 @@ export default class FilterManager extends WebGLManager
 
         // use this to clamp displaced texture coords so they belong to filterArea
         // see displacementFilter fragment shader for an example
-        if (shader.uniforms.data.filterClamp)
+        if (uniforms.filterClamp)
         {
             currentState = this.filterData.stack[this.filterData.index];
 
