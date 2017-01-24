@@ -376,6 +376,23 @@ export default class WebGLRenderer extends SystemRenderer
     }
 
     /**
+     * Erases the render texture and fills the drawing area with a colour
+     *
+     * @param {PIXI.RenderTexture} renderTexture - The render texture to clear
+     * @param {number} [clearColor] - The colour
+     */
+    clearRenderTexture(renderTexture, clearColor)
+    {
+        const baseTexture = renderTexture.baseTexture;
+        const renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
+
+        if (renderTarget)
+        {
+            renderTarget.clear(clearColor);
+        }
+    }
+
+    /**
      * Binds a render texture for rendering
      *
      * @param {PIXI.RenderTexture} renderTexture - The render texture to render
