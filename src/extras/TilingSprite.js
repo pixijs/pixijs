@@ -231,13 +231,15 @@ export default class TilingSprite extends core.Sprite
         const anchorX = this.anchor.x * -this._width;
         const anchorY = this.anchor.y * -this._height;
 
-        if (this.uvRespectAnchor) {
+        if (this.uvRespectAnchor)
+        {
             context.translate(modX, modY);
 
             context.fillRect(-modX + anchorX, -modY + anchorY,
                 this._width / this.tileScale.x * baseTextureResolution,
                 this._height / this.tileScale.y * baseTextureResolution);
-        } else {
+        } else
+        {
             context.translate(modX + anchorX, modY + anchorY);
 
             context.fillRect(-modX, -modY,
