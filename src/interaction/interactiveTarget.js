@@ -9,7 +9,7 @@
  *      function MyObject() {}
  *
  *      Object.assign(
- *          MyObject.prototype,
+ *          core.DisplayObject.prototype,
  *          PIXI.interaction.interactiveTarget
  *      );
  */
@@ -54,52 +54,16 @@ export default {
      */
     defaultCursor: 'pointer',
 
-    // some internal checks..
     /**
-     * Internal check to detect if the mouse cursor is hovered over the displayObject
+     * Internal set of all active pointers, by identifier
      *
-     * @inner {boolean}
+     * @returns {Map<number, InteractionTrackingData>} Map of all tracked pointers, by identifier
      * @private
      */
-    _over: false,
+    getTrackedPointers: function getTrackedPointers()
+    {
+        if (this._trackedPointers === undefined) this._trackedPointers = {};
 
-    /**
-     * Internal check to detect if the left mouse button is pressed on the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _isLeftDown: false,
-
-    /**
-     * Internal check to detect if the right mouse button is pressed on the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _isRightDown: false,
-
-    /**
-     * Internal check to detect if the pointer cursor is hovered over the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _pointerOver: false,
-
-    /**
-     * Internal check to detect if the pointer is down on the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _pointerDown: false,
-
-    /**
-     * Internal check to detect if a user has touched the displayObject
-     *
-     * @inner {boolean}
-     * @private
-     */
-    _touchDown: false,
+        return this._trackedPointers;
+    },
 };
