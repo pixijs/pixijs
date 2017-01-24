@@ -238,7 +238,8 @@ export default class TilingSprite extends core.Sprite
             context.fillRect(-modX + anchorX, -modY + anchorY,
                 this._width / this.tileScale.x * baseTextureResolution,
                 this._height / this.tileScale.y * baseTextureResolution);
-        } else
+        }
+        else
         {
             context.translate(modX + anchorX, modY + anchorY);
 
