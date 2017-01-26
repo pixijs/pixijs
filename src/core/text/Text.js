@@ -744,7 +744,7 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text || ' ');
+        text = String(text === '' || text === null || text === undefined ? ' ' : text);
 
         if (this._text === text)
         {
