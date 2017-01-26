@@ -30,8 +30,8 @@ export default class WebGLRenderer extends SystemRenderer
 {
     /**
      *
-     * @param {number} [width=0] - the width of the canvas view
-     * @param {number} [height=0] - the height of the canvas view
+     * @param {number} [screenWidth=800] - the width of the screen
+     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
@@ -50,9 +50,9 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
      */
-    constructor(width, height, options = {})
+    constructor(screenWidth, screenHeight, options = {})
     {
-        super('WebGL', width, height, options);
+        super('WebGL', screenWidth, screenHeight, options);
 
         /**
          * The type of this renderer as a standardised const
@@ -229,7 +229,7 @@ export default class WebGLRenderer extends SystemRenderer
         this.emit('context', gl);
 
         // setup the width/height properties and gl viewport
-        this.resize(this.width, this.height);
+        this.resize(this.screen.width, this.screen.height);
     }
 
     /**
@@ -323,16 +323,16 @@ export default class WebGLRenderer extends SystemRenderer
     /**
      * Resizes the webGL view to the specified width and height.
      *
-     * @param {number} width - the new width of the webGL view
-     * @param {number} height - the new height of the webGL view
+     * @param {number} screenWidth - the new width of the screen
+     * @param {number} screenHeight - the new height of the screen
      */
-    resize(width, height)
+    resize(screenWidth, screenHeight)
     {
       //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
-        SystemRenderer.prototype.resize.call(this, width, height);
+        SystemRenderer.prototype.resize.call(this, screenWidth, screenHeight);
 
-        this.rootRenderTarget.resize(width, height);
+        this.rootRenderTarget.resize(screenWidth, screenHeight);
 
         if (this._activeRenderTarget === this.rootRenderTarget)
         {
