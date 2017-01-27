@@ -13,7 +13,8 @@ const tempArray = new Float32Array(4);
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class TilingSpriteRenderer extends core.ObjectRenderer {
+export default class TilingSpriteRenderer extends core.ObjectRenderer
+{
 
     /**
      * constructor for renderer
