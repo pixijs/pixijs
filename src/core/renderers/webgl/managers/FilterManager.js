@@ -484,7 +484,7 @@ export default class FilterManager extends WebGLManager
      */
     destroy()
     {
-        this.shaderCache = [];
+        this.shaderCache = {};
         this.emptyPool();
     }
 
