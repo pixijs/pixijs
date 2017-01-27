@@ -360,3 +360,11 @@ export const TextureCache = {};
  * @private
  */
 export const BaseTextureCache = {};
+
+/**
+ * @todo Describe property usage
+ *
+ * @memberof PIXI.utils
+ * @private
+ */
+export const ProgramCache = {};

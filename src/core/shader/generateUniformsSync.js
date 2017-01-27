@@ -17,6 +17,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
     cacheValue[0] = value[0];
     cacheValue[1] = value[1];
     cacheValue[2] = value[2];
+
     gl.uniform3f(location, value[0], value[1], value[2])
 }`,
     vec4:     'gl.uniform4f(location, value[0], value[1], value[2], value[3])',

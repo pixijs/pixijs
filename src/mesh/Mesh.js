@@ -4,7 +4,7 @@ import * as core from '../core';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-let meshShader;
+let meshProgram;
 
 /**
  * Base mesh class
@@ -25,10 +25,10 @@ export default class Mesh extends RawMesh
     {
         const geometry = new Geometry();
 
-        if (!meshShader)
+        if (!meshProgram)
         {
-            meshShader = new core.Shader(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
-                                         readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+            meshProgram = new core.Program(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
+                                          readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
         }
 
         geometry.addAttribute('aVertexPosition', vertices)
@@ -44,8 +44,9 @@ export default class Mesh extends RawMesh
         };
 
 
-        super(geometry, meshShader, uniforms, null, drawMode);
+        super(geometry, new core.Shader(meshProgram,uniforms), null, drawMode);
 
+        this.uniforms = uniforms;
         this.texture = texture;
 
         this._tint = 0xFFFFFF;

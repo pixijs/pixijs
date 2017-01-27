@@ -54,7 +54,7 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         // set unifomrs..
-        this.renderer.shaderManager.setUniforms(mesh.uniforms);
+        this.renderer.shaderManager.setUniforms(mesh.shader.uniforms);
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);
@@ -63,6 +63,11 @@ export default class MeshRenderer extends core.ObjectRenderer
         this.bindGeometry(mesh.geometry, glShader);
 
         // then render it
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
+    }
+
+    draw(mesh)
+    {
         mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
     }
 

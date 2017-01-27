@@ -30,7 +30,7 @@ export default class RawMesh extends core.Container
      * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry, shader, uniforms, state, drawMode = core.DRAW_MODES.TRIANGLES)
+    constructor(geometry, shader, state, drawMode = core.DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -60,23 +60,10 @@ export default class RawMesh extends core.Container
          */
         this.drawMode = drawMode;
 
-        uniforms = uniforms || {};
-
-        // make sure to add required feilds
-        // if the user misses any uniforms we can add the default valujes from the shader
-        for (const i in shader.uniforms)
-        {
-            if (uniforms[i] === undefined)
-            {
-                uniforms[i] = shader.uniforms[i];
-            }
-        }
-
         /**
          * The way uniforms that will be used by the mesh's shader.
          * @member {Object}
          */
-        this.uniforms = uniforms;
 
         /**
          * A map of renderer IDs to webgl render data

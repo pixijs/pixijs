@@ -41,6 +41,9 @@ Object.defineProperties(DisplayObject.prototype, {
      * provide a performance benefit for complex static displayObjects.
      * To remove simply set this property to 'false'
      *
+     * IMPORTANT GOTCHA - make sure that all your textures are preloaded BEFORE calling setting this property
+     * as it will take a snapshot of what is currently there. If the textures have not loaded then they will not appear.
+     *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
      */

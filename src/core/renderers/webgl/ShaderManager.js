@@ -40,7 +40,8 @@ export default class ShaderManager
      */
     bindShader(shader, dontSync)
     {
-        const glShader = shader.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
+        const program = shader.program;
+        const glShader = program.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
         // if (this.shader !== shader)
@@ -64,7 +65,7 @@ export default class ShaderManager
      */
     setUniforms(uniforms)
     {
-        const shader = this.shader;
+        const shader = this.shader.program;
         const glShader = shader.glShaders[this.renderer.CONTEXT_UID];
 
         shader.syncUniforms(glShader.uniformData, uniforms, this.renderer);
@@ -90,16 +91,17 @@ export default class ShaderManager
      */
     generateShader(shader)
     {
+        const program = shader.program;
         const attribMap = {};
 
-        for (const i in shader.attributeData)
+        for (const i in program.attributeData)
         {
-            attribMap[i] = shader.attributeData[i].location;
+            attribMap[i] = program.attributeData[i].location;
         }
 
-        const glShader = new GLShader(this.gl, shader.vertexSrc, shader.fragmentSrc, PRECISION.DEFAULT, attribMap);
+        const glShader = new GLShader(this.gl, program.vertexSrc, program.fragmentSrc, PRECISION.DEFAULT, attribMap);
 
-        shader.glShaders[this.renderer.CONTEXT_UID] = glShader;
+        program.glShaders[this.renderer.CONTEXT_UID] = glShader;
 
         return glShader;
     }
