@@ -25,8 +25,6 @@ export default class RawMesh extends core.Container
     /**
      * @param {PIXI.mesh.Geometry} geometry  the geometry the mesh will use
      * @param {PIXI.Shader} shader  the shader the mesh will use
-     * @param {Object} uniforms the uniform values that this mesh will specifically use
-     * (will automatically be generated of not supplied)
      * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */

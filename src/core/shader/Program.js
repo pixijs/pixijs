@@ -23,14 +23,14 @@ class Program
          *
          * @member {string}
          */
-        this.vertexSrc = vertexSrc || Shader.defaultVertexSrc;
+        this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
 
         /**
          * The fragment shader.
          *
          * @member {string}
          */
-        this.fragmentSrc = fragmentSrc || Shader.defaultFragmentSrc;
+        this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
         // pull out the vertex and shader uniforms if they are not specified..
         // currently this does not extract structs only default types

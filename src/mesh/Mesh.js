@@ -28,7 +28,7 @@ export default class Mesh extends RawMesh
         if (!meshProgram)
         {
             meshProgram = new core.Program(readFileSync(join(__dirname, './webgl/mesh.vert'), 'utf8'),
-                                          readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
+                                           readFileSync(join(__dirname, './webgl/mesh.frag'), 'utf8'));
         }
 
         geometry.addAttribute('aVertexPosition', vertices)
@@ -43,8 +43,7 @@ export default class Mesh extends RawMesh
             tint: new Float32Array([1, 1, 1]),
         };
 
-
-        super(geometry, new core.Shader(meshProgram,uniforms), null, drawMode);
+        super(geometry, new core.Shader(meshProgram, uniforms), null, drawMode);
 
         this.uniforms = uniforms;
         this.texture = texture;

@@ -66,6 +66,10 @@ export default class MeshRenderer extends core.ObjectRenderer
         mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
     }
 
+    /**
+     * draws mesh
+     * @param {PIXI.mesh.RawMesh} mesh mesh instance
+     */
     draw(mesh)
     {
         mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
@@ -111,7 +115,6 @@ export default class MeshRenderer extends core.ObjectRenderer
      */
     initGeometryVao(geometry, glShader)
     {
-
         const gl = this.gl;
 
         this.renderer.bindVao(null);
@@ -134,7 +137,8 @@ export default class MeshRenderer extends core.ObjectRenderer
                 }
                 else
                 {
-                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW );
+                    /* eslint-disable max-len */
+                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
                 }
             }
         }

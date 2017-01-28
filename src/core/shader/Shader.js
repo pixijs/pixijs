@@ -1,10 +1,5 @@
-import extractUniformsFromSrc from './extractUniformsFromSrc';
-import extractAttributesFromSrc from './extractAttributesFromSrc';
-import generateUniformsSync from './generateUniformsSync';
 import Program from './Program';
 import { ProgramCache } from '../utils';
-
-let UID = 0;
 
 // let math = require('../../../math');
 /**
@@ -15,8 +10,7 @@ let UID = 0;
 class Shader
 {
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {PIXI.Program} [program] - The program the shader will use.
      * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
      */
     constructor(program, uniforms)
@@ -33,28 +27,33 @@ class Shader
 
             if (!uniform)
             {
-
                 this.uniforms[i] = program.uniformData[i].value;
             }
-            else
+            else if (uniform instanceof Array)
             {
-                if(uniform instanceof Array)
-                {
-                    this.uniforms[i] = new Float32Array(uniform)
-                }
+                this.uniforms[i] = new Float32Array(uniform);
             }
         }
     }
 
+    /**
+     * A short hand function to create a shader based of a vertex and fragment shader
+     *
+     * @param {string} [vertexSrc] - The source of the vertex shader.
+     * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     *
+     * @returns {PIXI.Shader} an shiney new pixi shader.
+     */
     static from(vertexSrc, fragmentSrc, uniforms)
     {
         const key = vertexSrc + fragmentSrc;
 
         let program = ProgramCache[key];
 
-        if(!program)
+        if (!program)
         {
-            ProgramCache[key] = program = new Program(vertexSrc,fragmentSrc);
+            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc);
         }
 
         return new Shader(program, uniforms);
