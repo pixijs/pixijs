@@ -38,21 +38,37 @@ export default {
     hitArea: null,
 
     /**
-     * If enabled, the mouse cursor will change when hovered over the displayObject if it is interactive
+     * If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive
+     * Setting this changes the 'cursor' property to `'pointer'`.
      *
-     * @inner {boolean}
+     * @member {boolean}
+     * @memberof PIXI.interaction.interactiveTarget#
      */
-    buttonMode: false,
+    get buttonMode()
+    {
+        return this.cursor === 'pointer';
+    },
+    set buttonMode(value)
+    {
+        if (value)
+        {
+            this.cursor = 'pointer';
+        }
+        else if (this.cursor === 'pointer')
+        {
+            this.cursor = null;
+        }
+    },
 
     /**
-     * If buttonMode is enabled, this defines what CSS cursor property is used when the mouse cursor
-     * is hovered over the displayObject
+     * This defines what cursor mode is used when the mouse cursor
+     * is hovered over the displayObject.
      *
      * @see https://developer.mozilla.org/en/docs/Web/CSS/cursor
      *
      * @inner {string}
      */
-    defaultCursor: 'pointer',
+    cursor: null,
 
     /**
      * Internal set of all active pointers, by identifier
@@ -60,7 +76,7 @@ export default {
      * @returns {Map<number, InteractionTrackingData>} Map of all tracked pointers, by identifier
      * @private
      */
-    getTrackedPointers: function getTrackedPointers()
+    get trackedPointers()
     {
         if (this._trackedPointers === undefined) this._trackedPointers = {};
 
