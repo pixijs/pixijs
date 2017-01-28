@@ -83,7 +83,7 @@ export default class InteractionTrackingData
      */
     get over()
     {
-        return (this._flags | this.constructor.FLAGS.OVER) !== 0;
+        return (this._flags & this.constructor.FLAGS.OVER) !== 0;
     }
 
     /**
@@ -104,7 +104,7 @@ export default class InteractionTrackingData
      */
     get rightDown()
     {
-        return (this._flags | this.constructor.FLAGS.RIGHT_DOWN) !== 0;
+        return (this._flags & this.constructor.FLAGS.RIGHT_DOWN) !== 0;
     }
 
     /**
@@ -125,7 +125,7 @@ export default class InteractionTrackingData
      */
     get leftDown()
     {
-        return (this._flags | this.constructor.FLAGS.LEFT_DOWN) !== 0;
+        return (this._flags & this.constructor.FLAGS.LEFT_DOWN) !== 0;
     }
 
     /**
