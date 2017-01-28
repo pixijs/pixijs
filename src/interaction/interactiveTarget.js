@@ -73,7 +73,8 @@ export default {
     /**
      * Internal set of all active pointers, by identifier
      *
-     * @returns {Map<number, InteractionTrackingData>} Map of all tracked pointers, by identifier
+     * @member {Map<number, InteractionTrackingData>}
+     * @memberof PIXI.interaction.interactiveTarget#
      * @private
      */
     get trackedPointers()
@@ -82,4 +83,11 @@ export default {
 
         return this._trackedPointers;
     },
+
+    /**
+     * Map of all tracked pointers, by identifier. Use trackedPointers to access.
+     *
+     * @private {Map<number, InteractionTrackingData>}
+     */
+    _trackedPointers: undefined,
 };

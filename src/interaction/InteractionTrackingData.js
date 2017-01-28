@@ -65,6 +65,17 @@ export default class InteractionTrackingData
     }
 
     /**
+     * Is the tracked event inactive (not over or down)?
+     *
+     * @member {number}
+     * @memberof PIXI.interaction.InteractionTrackingData#
+     */
+    get none()
+    {
+        return this._flags === this.constructor.FLAGS.NONE;
+    }
+
+    /**
      * Is the tracked event over the DisplayObject?
      *
      * @member {boolean}

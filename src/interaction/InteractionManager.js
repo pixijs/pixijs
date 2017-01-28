@@ -644,7 +644,7 @@ export default class InteractionManager extends EventEmitter
             }
         }
 
-        if (this.currentCursorStyle !== this.cursor)
+        if (this.currentCursorMode !== this.cursor)
         {
             this.setCursorMode(this.cursor);
         }
@@ -660,7 +660,7 @@ export default class InteractionManager extends EventEmitter
     setCursorMode(mode)
     {
         mode = mode || 'default';
-        this.currentCursorStyle = mode;
+        this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
 
         // only do things if there is a cursor style for it
@@ -946,7 +946,10 @@ export default class InteractionManager extends EventEmitter
 
         if (hit)
         {
-            displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+            if (!displayObject.trackedPointers[id])
+            {
+                displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+            }
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
             if (e.type === 'touchstart' || e.pointerType === 'touch')
@@ -1080,26 +1083,6 @@ export default class InteractionManager extends EventEmitter
 
         const isMouse = (e.type.indexOf('mouse') === 0 || e.pointerType === 'mouse');
 
-        // Pointers and Touches
-        if (hit)
-        {
-            this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
-            if (isTouch) this.dispatchEvent(displayObject, 'touchend', interactionEvent);
-
-            if (displayObject.trackedPointers[id] !== undefined)
-            {
-                delete displayObject.trackedPointers[id];
-                this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
-                if (isTouch) this.dispatchEvent(displayObject, 'tap', interactionEvent);
-            }
-        }
-        else if (displayObject.trackedPointers[id] !== undefined)
-        {
-            delete displayObject.trackedPointers[id];
-            this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
-            if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
-        }
-
         // Mouse only
         if (isMouse)
         {
@@ -1124,6 +1107,47 @@ export default class InteractionManager extends EventEmitter
             {
                 this.dispatchEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', interactionEvent);
             }
+            // update the down state of the tracking data
+            if (trackingData)
+            {
+                if (isRightButton)
+                {
+                    trackingData.rightDown = hit;
+                }
+                else
+                {
+                    trackingData.leftDown = hit;
+                }
+            }
+        }
+
+        // Pointers and Touches, and Mouse
+        if (hit)
+        {
+            this.dispatchEvent(displayObject, 'pointerup', interactionEvent);
+            if (isTouch) this.dispatchEvent(displayObject, 'touchend', interactionEvent);
+
+            if (trackingData)
+            {
+                this.dispatchEvent(displayObject, 'pointertap', interactionEvent);
+                if (isTouch)
+                {
+                    this.dispatchEvent(displayObject, 'tap', interactionEvent);
+                    // touches are no longer over (if they ever were) when we get the touchend
+                    // so we should ensure that we don't keep pretending that they are
+                    trackingData.over = false;
+                }
+            }
+        }
+        else if (trackingData)
+        {
+            this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
+            if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
+        }
+        // Only remove the tracking data if there is no over/down state still associated with it
+        if (trackingData && trackingData.none)
+        {
+            delete displayObject.trackedPointers[id];
         }
     }
 
@@ -1171,7 +1195,7 @@ export default class InteractionManager extends EventEmitter
 
         if (events[0].pointerType === 'mouse')
         {
-            if (this.currentCursorStyle !== this.cursor)
+            if (this.currentCursorMode !== this.cursor)
             {
                 this.setCursorMode(this.cursor);
             }
@@ -1196,7 +1220,7 @@ export default class InteractionManager extends EventEmitter
 
         const isMouse = (e.type === 'mousemove' || e.pointerType === 'mouse');
 
-        if (e.type !== 'touchmove')
+        if (isMouse)
         {
             this.processPointerOverOut(interactionEvent, displayObject, hit);
         }
@@ -1259,7 +1283,13 @@ export default class InteractionManager extends EventEmitter
 
         const isMouse = (e.type === 'mouseover' || e.type === 'mouseout' || e.pointerType === 'mouse');
 
-        const trackingData = displayObject.trackedPointers[id];
+        let trackingData = displayObject.trackedPointers[id];
+
+        // if we just moused over the display object, then we need to track that state
+        if (hit && !trackingData)
+        {
+            trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+        }
 
         if (trackingData === undefined) return;
 
@@ -1287,6 +1317,11 @@ export default class InteractionManager extends EventEmitter
             if (isMouse)
             {
                 this.dispatchEvent(displayObject, 'mouseout', interactionEvent);
+            }
+            // if there is no mouse down information for the pointer, then it is safe to delete
+            if (trackingData.none)
+            {
+                delete displayObject.trackedPointers[id];
             }
         }
     }
