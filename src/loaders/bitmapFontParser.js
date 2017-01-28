@@ -9,9 +9,13 @@ export function parse(resource, texture)
     const info = resource.data.getElementsByTagName('info')[0];
     const common = resource.data.getElementsByTagName('common')[0];
 
+    // get chars sprites based on texture resolution
+    var texture_resolution = 1;
+    if (PIXI.settings.BITMAP_FONT_TEXTURE_RESOLUTION) texture_resolution = texture.baseTexture.resolution || 1;
+
     data.font = info.getAttribute('face');
     data.size = parseInt(info.getAttribute('size'), 10);
-    data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
+    data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / texture_resolution;
     data.chars = {};
 
     // parse letters
@@ -22,16 +26,15 @@ export function parse(resource, texture)
         const charCode = parseInt(letters[i].getAttribute('id'), 10);
 
         const textureRect = new Rectangle(
-            parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
-            parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
-            parseInt(letters[i].getAttribute('width'), 10),
-            parseInt(letters[i].getAttribute('height'), 10)
-        );
+            parseInt(letters[i].getAttribute('x'), 10) / texture_resolution + texture.frame.x / texture_resolution,
+            parseInt(letters[i].getAttribute('y'), 10) / texture_resolution + texture.frame.y / texture_resolution,
+            parseInt(letters[i].getAttribute('width'), 10) / texture_resolution,
+            parseInt(letters[i].getAttribute('height'), 10) / texture_resolution);
 
         data.chars[charCode] = {
-            xOffset: parseInt(letters[i].getAttribute('xoffset'), 10),
-            yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
-            xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
+            xOffset: parseInt(letters[i].getAttribute('xoffset'), 10) / texture_resolution,
+            yOffset: parseInt(letters[i].getAttribute('yoffset'), 10) / texture_resolution,
+            xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10) / texture_resolution,
             kerning: {},
             texture: new Texture(texture.baseTexture, textureRect),
 
@@ -43,9 +46,9 @@ export function parse(resource, texture)
 
     for (let i = 0; i < kernings.length; i++)
     {
-        const first = parseInt(kernings[i].getAttribute('first'), 10);
-        const second = parseInt(kernings[i].getAttribute('second'), 10);
-        const amount = parseInt(kernings[i].getAttribute('amount'), 10);
+        const first = parseInt(kernings[i].getAttribute('first'), 10) / texture_resolution;
+        const second = parseInt(kernings[i].getAttribute('second'), 10) / texture_resolution;
+        const amount = parseInt(kernings[i].getAttribute('amount'), 10) / texture_resolution;
 
         if (data.chars[second])
         {
