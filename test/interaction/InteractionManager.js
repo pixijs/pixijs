@@ -461,4 +461,77 @@ describe('PIXI.interaction.InteractionManager', function ()
             });
         });
     });
+
+    describe('recursive hitTesting', function ()
+    {
+        function getScene()
+        {
+            const stage = new PIXI.Container();
+            const behindChild = new PIXI.Graphics();
+            const middleChild = new PIXI.Graphics();
+            const frontChild = new PIXI.Graphics();
+
+            behindChild.beginFill(0xFF);
+            behindChild.drawRect(0, 0, 50, 50);
+
+            middleChild.beginFill(0xFF00);
+            middleChild.drawRect(0, 0, 50, 50);
+
+            frontChild.beginFill(0xFF0000);
+            frontChild.drawRect(0, 0, 50, 50);
+
+            stage.addChild(behindChild, middleChild, frontChild);
+
+            return {
+                behindChild,
+                middleChild,
+                frontChild,
+                stage,
+            };
+        }
+
+        describe('when frontChild is interactive', function ()
+        {
+            it('should stop hitTesting after first hit', function ()
+            {
+                const scene = getScene();
+                const pointer = new MockPointer(scene.stage);
+                const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
+                const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
+                const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
+
+                scene.frontChild.interactive = true;
+                scene.middleChild.interactive = true;
+                scene.behindChild.interactive = true;
+
+                pointer.mousedown(25, 25);
+
+                expect(frontHitTest).to.have.been.calledOnce;
+                expect(middleHitTest).to.not.have.been.called;
+                expect(behindHitTest).to.not.have.been.called;
+            });
+        });
+
+        describe('when frontChild is not interactive', function ()
+        {
+            it('should stop hitTesting after first hit', function ()
+            {
+                const scene = getScene('mousedown');
+                const pointer = new MockPointer(scene.stage);
+                const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
+                const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
+                const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
+
+                scene.frontChild.interactive = false;
+                scene.middleChild.interactive = true;
+                scene.behindChild.interactive = true;
+
+                pointer.mousedown(25, 25);
+
+                expect(frontHitTest).to.not.have.been.called;
+                expect(middleHitTest).to.have.been.calledOnce;
+                expect(behindHitTest).to.not.have.been.called;
+            });
+        });
+    });
 });
