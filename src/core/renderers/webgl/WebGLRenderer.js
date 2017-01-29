@@ -232,6 +232,9 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.emit('context', gl);
 
+        // set the latest testing context..
+        glCore._testingContext = gl;
+
         // setup the width/height properties and gl viewport
         this.resize(this.width, this.height);
     }
