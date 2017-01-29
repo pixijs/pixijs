@@ -79,7 +79,7 @@ export default class ShaderManager
      */
     getGLShader()
     {
-        return this.shader.glShaders[this.renderer.CONTEXT_UID];
+        return this.shader.program.glShaders[this.renderer.CONTEXT_UID];
     }
 
     /**

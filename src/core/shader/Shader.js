@@ -1,5 +1,4 @@
 import Program from './Program';
-import { ProgramCache } from '../utils';
 
 // let math = require('../../../math');
 /**
@@ -47,18 +46,10 @@ class Shader
      */
     static from(vertexSrc, fragmentSrc, uniforms)
     {
-        const key = vertexSrc + fragmentSrc;
-
-        let program = ProgramCache[key];
-
-        if (!program)
-        {
-            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc);
-        }
+        const program = Program.from(vertexSrc, fragmentSrc);
 
         return new Shader(program, uniforms);
     }
-
 }
 
 export default Shader;

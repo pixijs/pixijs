@@ -1,6 +1,7 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
 import generateUniformsSync from './generateUniformsSync';
 import glCore from 'pixi-gl-core';
+import { ProgramCache } from '../utils';
 
 let UID = 0;
 
@@ -227,6 +228,30 @@ class Program
         }
 
         return Program.testingContext;
+    }
+
+    /**
+     * A short hand function to create a program based of a vertex and fragment shader
+     * this method will also check to see if there is a cached program.
+     *
+     * @param {string} [vertexSrc] - The source of the vertex shader.
+     * @param {string} [fragmentSrc] - The source of the fragment shader.
+     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     *
+     * @returns {PIXI.Shader} an shiney new pixi shader.
+     */
+    static from(vertexSrc, fragmentSrc)
+    {
+        const key = vertexSrc + fragmentSrc;
+
+        let program = ProgramCache[key];
+
+        if (!program)
+        {
+            ProgramCache[key] = program = new Program(vertexSrc, fragmentSrc);
+        }
+
+        return program;
     }
 }
 

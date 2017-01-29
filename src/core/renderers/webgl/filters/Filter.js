@@ -1,4 +1,5 @@
 import Shader from '../../../shader/Shader';
+import Program from '../../../shader/Program';
 import { BLEND_MODES } from '../../../const';
 import settings from '../../../settings';
 
@@ -17,7 +18,9 @@ class Filter extends Shader
      */
     constructor(vertexSrc, fragmentSrc, uniforms)
     {
-        super(vertexSrc, fragmentSrc, uniforms);
+        const program = Program.from(vertexSrc, fragmentSrc);
+
+        super(program, uniforms);
 
         this.blendMode = BLEND_MODES.NORMAL;
 
