@@ -761,6 +761,8 @@ export default class InteractionManager extends EventEmitter
             }
         }
 
+        let tempHitTest = hitTest;
+
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow pixi to completely ignore and bypass checking the displayObjects children.
@@ -794,13 +796,15 @@ export default class InteractionManager extends EventEmitter
                     // through all objects, but we don't need to perform any hit tests.
 
                     // {
-                    hitTest = false;
+                    tempHitTest = false;
                     // }
 
                     // we can break now as we have hit an object.
                 }
             }
         }
+
+        hitTest = tempHitTest;
 
         // no point running this if the item is not interactive or does not have an interactive parent.
         if (interactive)
