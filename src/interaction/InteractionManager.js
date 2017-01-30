@@ -876,7 +876,7 @@ export default class InteractionManager extends EventEmitter
 
         // Guaranteed that there will be at least one event in events, and all events must have the same pointer type
 
-        if (this.autoPreventDefault && (events[0].pointerType === 'touch' || events[0].pointerType === 'mouse'))
+        if (this.autoPreventDefault && events[0].isNormalized)
         {
             originalEvent.preventDefault();
         }
@@ -1449,10 +1449,14 @@ export default class InteractionManager extends EventEmitter
                 if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
                 if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
 
+                // mark the touch as normalized, just so that we know we did it
+                touch.isNormalized = true;
+
                 normalizedEvents.push(touch);
             }
         }
-        else if (event instanceof MouseEvent)
+        // apparently PointerEvent subclasses MouseEvent, so yay
+        else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent)))
         {
             if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
             if (typeof event.width === 'undefined') event.width = 1;
@@ -1463,6 +1467,9 @@ export default class InteractionManager extends EventEmitter
             if (typeof event.pointerId === 'undefined') event.pointerId = MOUSE_POINTER_ID;
             if (typeof event.pressure === 'undefined') event.pressure = 0.5;
             if (typeof event.rotation === 'undefined') event.rotation = 0;
+
+            // mark the mouse event as normalized, just so that we know we did it
+            event.isNormalized = true;
 
             normalizedEvents.push(event);
         }
