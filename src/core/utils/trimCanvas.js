@@ -10,9 +10,15 @@
 export default function trimCanvas(canvas)
 {
     // https://gist.github.com/remy/784508
+
+    let width = canvas.width;
+    let height = canvas.height;
+
     const context = canvas.getContext('2d');
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-    const l = pixels.data.length;
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    const len = pixels.length;
+
     const bound = {
         top: null,
         left: null,
@@ -23,12 +29,12 @@ export default function trimCanvas(canvas)
     let x;
     let y;
 
-    for (i = 0; i < l; i += 4)
+    for (i = 0; i < len; i += 4)
     {
-        if (pixels.data[i + 3] !== 0)
+        if (pixels[i + 3] !== 0)
         {
-            x = (i / 4) % canvas.width;
-            y = ~~((i / 4) / canvas.width);
+            x = (i / 4) % width;
+            y = ~~((i / 4) / width);
 
             if (bound.top === null)
             {
@@ -64,8 +70,9 @@ export default function trimCanvas(canvas)
         }
     }
 
-    const height = bound.bottom - bound.top + 1;
-    const width = bound.right - bound.left;
+    width = bound.right - bound.left;
+    height = bound.bottom - bound.top + 1;
+
     const data = context.getImageData(bound.left, bound.top, width, height);
 
     return {

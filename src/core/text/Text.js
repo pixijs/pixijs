@@ -489,6 +489,19 @@ export default class Text extends Sprite
     }
 
     /**
+     * Gets the local bounds of the text object.
+     *
+     * @param {Rectangle} rect - The output rectangle.
+     * @return {Rectangle} The bounds.
+     */
+    getLocalBounds(rect)
+    {
+        this.updateText(true);
+
+        return super.getLocalBounds.call(this, rect);
+    }
+
+    /**
      * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
      */
     _calculateBounds()
@@ -731,7 +744,7 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text || ' ');
+        text = String(text === '' || text === null || text === undefined ? ' ' : text);
 
         if (this._text === text)
         {

@@ -248,12 +248,11 @@ export default class FilterManager extends WebGLManager
 
         let currentState;
 
-        // this syncs the pixi filters  uniforms with glsl uniforms
-
-        if (shader.uniforms.data.filterArea)
+        if (uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
-            const filterArea = shader.uniforms.filterArea;
+
+            const filterArea = uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
             filterArea[1] = currentState.renderTarget.size.height;
@@ -265,11 +264,11 @@ export default class FilterManager extends WebGLManager
 
         // use this to clamp displaced texture coords so they belong to filterArea
         // see displacementFilter fragment shader for an example
-        if (shader.uniforms.data.filterClamp)
+        if (uniforms.filterClamp)
         {
             currentState = this.filterData.stack[this.filterData.index];
 
-            const filterClamp = shader.uniforms.filterClamp;
+            const filterClamp = uniforms.filterClamp;
 
             filterClamp[0] = 0;
             filterClamp[1] = 0;
@@ -390,7 +389,7 @@ export default class FilterManager extends WebGLManager
      */
     destroy()
     {
-        this.shaderCache = [];
+        this.shaderCache = {};
         this.emptyPool();
     }
 
