@@ -98,6 +98,7 @@ export default class SystemRenderer extends EventEmitter
          * @default 1
          */
         this.resolution = options.resolution || settings.RESOLUTION;
+        this.desiredResolution = this.resolution;
 
         /**
          * Whether the render view is transparent
@@ -199,16 +200,16 @@ export default class SystemRenderer extends EventEmitter
      */
     resize(width, height)
     {
-        this.width = width * this.resolution;
-        this.height = height * this.resolution;
+        this.width = width * this.desiredResolution;
+        this.height = height * this.desiredResolution;
 
         this.view.width = this.width;
         this.view.height = this.height;
 
         if (this.autoResize)
         {
-            this.view.style.width = `${this.width / this.resolution}px`;
-            this.view.style.height = `${this.height / this.resolution}px`;
+            this.view.style.width = `${this.width / this.desiredResolution}px`;
+            this.view.style.height = `${this.height / this.desiredResolution}px`;
         }
     }
 
