@@ -24,4 +24,3 @@ require('./Circle');
 require('./Graphics');
 require('./SpriteRenderer');
 require('./Ellipse');
-require('./WebGLRenderer');
