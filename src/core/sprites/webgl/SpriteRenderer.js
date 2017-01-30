@@ -109,7 +109,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // step 2: check the maximum number of if statements the shader can have too..
         this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
 
-        const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
+        const shader = this.shader = this.createShader(gl);
 
         // create a couple of buffers
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
@@ -144,6 +144,17 @@ export default class SpriteRenderer extends ObjectRenderer
         this.currentBlendMode = 99999;
 
         this.boundTextures = new Array(this.MAX_TEXTURES);
+    }
+
+    /**
+     * Create the shader of the renderer.
+     *
+     * @param {WebGLRenderingContext} gl - The current WebGL drawing context
+     * @return {PIXI.Shader} Returns the shader.
+     */
+    createShader(gl)
+    {
+        return generateMultiTextureShader(gl, this.MAX_TEXTURES);
     }
 
     /**
