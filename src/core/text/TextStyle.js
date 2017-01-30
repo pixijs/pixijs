@@ -511,8 +511,8 @@ function getColor(color)
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  *
- * @param {Array} array1 First array to compared
- * @param {Array} array1 Second array to compare
+ * @param {Array} array1 First array to compare
+ * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
  */
 function areArraysEqual(array1, array2)
