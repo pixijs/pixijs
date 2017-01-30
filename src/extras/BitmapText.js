@@ -480,19 +480,20 @@ export default class BitmapText extends core.Container
 
         for (let i = 0; i < letters.length; i++)
         {
-            const charCode = parseInt(letters[i].getAttribute('id'), 10);
+            const letter = letters[i];
+            const charCode = parseInt(letter.getAttribute('id'), 10);
 
             const textureRect = new core.Rectangle(
-                parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
-                parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
-                parseInt(letters[i].getAttribute('width'), 10),
-                parseInt(letters[i].getAttribute('height'), 10)
+                parseInt(letter.getAttribute('x'), 10) + texture.frame.x,
+                parseInt(letter.getAttribute('y'), 10) + texture.frame.y,
+                parseInt(letter.getAttribute('width'), 10),
+                parseInt(letter.getAttribute('height'), 10)
             );
 
             data.chars[charCode] = {
-                xOffset: parseInt(letters[i].getAttribute('xoffset'), 10),
-                yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
-                xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
+                xOffset: parseInt(letter.getAttribute('xoffset'), 10),
+                yOffset: parseInt(letter.getAttribute('yoffset'), 10),
+                xAdvance: parseInt(letter.getAttribute('xadvance'), 10),
                 kerning: {},
                 texture: new core.Texture(texture.baseTexture, textureRect),
 
@@ -504,9 +505,10 @@ export default class BitmapText extends core.Container
 
         for (let i = 0; i < kernings.length; i++)
         {
-            const first = parseInt(kernings[i].getAttribute('first'), 10);
-            const second = parseInt(kernings[i].getAttribute('second'), 10);
-            const amount = parseInt(kernings[i].getAttribute('amount'), 10);
+            const kerning = kernings[i];
+            const first = parseInt(kerning.getAttribute('first'), 10);
+            const second = parseInt(kerning.getAttribute('second'), 10);
+            const amount = parseInt(kerning.getAttribute('amount'), 10);
 
             if (data.chars[second])
             {

@@ -418,7 +418,8 @@ export default class Texture extends EventEmitter
      * @static
      * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
      * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
-     * @param {String} name - Optional human readible name for the texture cache.
+     * @param {String} [name] - Human readible name for the texture cache. If no name is
+     *        specified, only `imageUrl` will be used as the cache ID.
      * @return {PIXI.Texture} Output texture
      */
     static fromLoader(source, imageUrl, name)
@@ -427,6 +428,12 @@ export default class Texture extends EventEmitter
         const texture = new Texture(baseTexture);
 
         baseTexture.imageUrl = imageUrl;
+
+        // No name, use imageUrl instead
+        if (!name)
+        {
+            name = imageUrl;
+        }
 
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
         BaseTextureCache[name] = baseTexture;
