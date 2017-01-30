@@ -4,7 +4,6 @@ import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
 import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
-import MobileDevice from 'ismobilejs';
 
 // Mix interactiveTarget into core.DisplayObject.prototype, after deprecation has been handled
 core.utils.mixins.delayMixin(
@@ -155,26 +154,6 @@ export default class InteractionManager extends EventEmitter
          * @member {boolean}
          */
         this.supportsPointerEvents = !!window.PointerEvent;
-
-        /**
-         * Are touch events being 'normalized' and converted into pointer events if pointer events are not supported
-         * For example, on a touch screen mobile device, a touchstart would also be emitted as a pointerdown
-         *
-         * @private
-         * @readonly
-         * @member {boolean}
-         */
-        this.normalizeTouchEvents = !this.supportsPointerEvents && this.supportsTouchEvents;
-
-        /**
-         * Are mouse events being 'normalized' and converted into pointer events if pointer events are not supported
-         * For example, on a desktop pc, a mousedown would also be emitted as a pointerdown
-         *
-         * @private
-         * @readonly
-         * @member {boolean}
-         */
-        this.normalizeMouseEvents = !this.supportsPointerEvents && !MobileDevice.any;
 
         // this will make it so that you don't have to call bind all the time
 
