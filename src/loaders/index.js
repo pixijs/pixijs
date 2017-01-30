@@ -7,7 +7,7 @@ export { default as spritesheetParser, parse as parseSpritesheetData } from './s
 export { default as textureParser } from './textureParser';
 
 /**
- * Reference to **resource-loader**'s Resource class. 
+ * Reference to **resource-loader**'s Resource class.
  * See https://github.com/englercj/resource-loader
  * @class Resource
  * @memberof PIXI.loaders
