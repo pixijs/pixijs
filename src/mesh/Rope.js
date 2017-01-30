@@ -41,10 +41,9 @@ export default class Rope extends Mesh
      */
     refresh()
     {
-
         const points = this.points;
 
-        if(!points)return;
+        if (!points) return;
 
         const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
         const uvBuffer = this.geometry.getAttribute('aTextureCoord');

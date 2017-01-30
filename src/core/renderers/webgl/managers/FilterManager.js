@@ -247,6 +247,7 @@ export default class FilterManager extends WebGLManager
       //  renderer._bindGLShader(shader);
 
         let currentState;
+        const uniforms = filter.uniforms;
 
         if (uniforms.filterArea)
         {

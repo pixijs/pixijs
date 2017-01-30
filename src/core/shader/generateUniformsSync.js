@@ -63,7 +63,7 @@ export default function generateUniformsSync(uniformData)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
-    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount++}, true);
+    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount++}, false);
 
     if(uniformData.${i}.value !== location)
     {

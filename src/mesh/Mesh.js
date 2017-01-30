@@ -45,6 +45,9 @@ export default class Mesh extends RawMesh
 
         super(geometry, new core.Shader(meshProgram, uniforms), null, drawMode);
 
+        this.uvs = geometry.getAttribute('aTextureCoord').data;
+        this.vertices = geometry.getAttribute('aVertexPosition').data;
+
         this.uniforms = uniforms;
         this.texture = texture;
 
