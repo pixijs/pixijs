@@ -33,6 +33,11 @@ export default function buildCircle(graphicsData, webGLData)
         height = circleData.height;
     }
 
+    if (width === 0 || height === 0)
+    {
+        return;
+    }
+
     const totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
         || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
 

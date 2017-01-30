@@ -5,7 +5,8 @@
  * @class
  * @memberof PIXI
  */
-export default class CountLimiter {
+export default class CountLimiter
+{
     /**
      * @param {number} maxItemsPerFrame - The maximum number of items that can be prepared each frame.
      */
