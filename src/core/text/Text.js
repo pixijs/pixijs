@@ -191,6 +191,7 @@ export default class Text extends Sprite
         if (style.dropShadow)
         {
             this.context.shadowBlur = style.dropShadowBlur;
+            this.context.globalAlpha = style.dropShadowAlpha;
 
             if (style.dropShadowBlur > 0)
             {
@@ -239,11 +240,12 @@ export default class Text extends Sprite
             }
         }
 
+        // reset the shadow blur and alpha that was set by the drop shadow, for the regular text
+        this.context.shadowBlur = 0;
+        this.context.globalAlpha = 1;
+
         // set canvas text styles
         this.context.fillStyle = this._generateFillStyle(style, lines);
-
-        // remove blur if set for the drop shadow
-        this.context.shadowBlur = 0;
 
         // draw lines line by line
         for (let i = 0; i < lines.length; i++)
