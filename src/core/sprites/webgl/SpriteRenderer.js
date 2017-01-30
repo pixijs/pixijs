@@ -132,12 +132,11 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addIndex(this.indexBuffer)
                 .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(vertexBuffer, attrs.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4);
+                .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
             if (attrs.aTextureId)
             {
-                vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+                vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
             }
 
             this.vaos[i] = vao;
@@ -388,12 +387,11 @@ export default class SpriteRenderer extends ObjectRenderer
                     .addIndex(this.indexBuffer)
                     .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(vertexBuffer, attrs.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                    .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4);
+                    .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
                 if (attrs.aTextureId)
                 {
-                    vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+                    vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
                 }
 
                 this.vaos[this.vertexCount] = vao;
