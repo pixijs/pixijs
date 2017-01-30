@@ -50,10 +50,19 @@ export default class WebGLRenderer extends SystemRenderer
      *  enable this if you need to call toDataUrl on the webgl context.
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
+     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
+     * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      */
     constructor(width, height, options = {})
     {
         super('WebGL', width, height, options);
+
+        this.legacy = !!options.legacy;
+
+        if (this.legacy)
+        {
+            glCore.VertexArrayObject.FORCE_NATIVE = true;
+        }
 
         /**
          * The type of this renderer as a standardised const
