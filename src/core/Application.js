@@ -33,6 +33,9 @@ export default class Application
      *      need to call toDataUrl on the webgl context
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
      * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
+     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
+     * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
+
      */
     constructor(width, height, options, noWebGL)
     {
