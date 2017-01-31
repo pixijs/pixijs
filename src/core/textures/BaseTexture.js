@@ -232,7 +232,7 @@ export default class BaseTexture extends EventEmitter
             this.realWidth = this.source.naturalWidth || this.source.videoWidth || this.source.width;
             this.realHeight = this.source.naturalHeight || this.source.videoHeight || this.source.height;
 
-            _updateDimensions();
+            this._updateDimensions();
         }
 
         this.emit('update', this);
@@ -240,16 +240,14 @@ export default class BaseTexture extends EventEmitter
 
     /**
      * Update dimensions from real values
-     * 
-     * @private
      */
-    _updateDimensions() {
+    _updateDimensions()
+    {
         this.width = this.realWidth / this.resolution;
         this.height = this.realHeight / this.resolution;
 
         this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
     }
-
 
     /**
      * Load a source.
@@ -535,7 +533,7 @@ export default class BaseTexture extends EventEmitter
         this.realWidth = Math.round(svgWidth * this.sourceScale);
         this.realHeight = Math.round(svgHeight * this.sourceScale);
 
-        _updateDimensions();
+        this._updateDimensions();
 
         // Create a canvas element
         const canvas = document.createElement('canvas');
