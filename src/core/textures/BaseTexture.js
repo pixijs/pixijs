@@ -77,7 +77,7 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode || settings.SCALE_MODE;
+        this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
 
         /**
          * Set to true once the base texture has successfully loaded.
