@@ -309,28 +309,6 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback when mask doesn\'t use beginFill but filterArea is defined', function ()
-        {
-            const stage = new PIXI.Container();
-            const pointer = new MockPointer(stage);
-            const graphics = new PIXI.Graphics();
-            const mask = new PIXI.Graphics();
-            const spy = sinon.spy();
-
-            graphics.interactive = true;
-            graphics.beginFill(0xFF0000);
-            graphics.filterArea = new PIXI.Rectangle(0, 0, 50, 50);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.on('click', spy);
-            stage.addChild(graphics);
-            mask.drawRect(0, 0, 50, 50);
-            graphics.mask = mask;
-
-            pointer.click(10, 10);
-
-            expect(spy).to.have.been.calledOnce;
-        });
-
         it('should trigger interaction callback when mask is a sprite', function ()
         {
             const stage = new PIXI.Container();
