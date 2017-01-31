@@ -516,7 +516,7 @@ describe('PIXI.interaction.InteractionManager', function ()
         {
             it('should stop hitTesting after first hit', function ()
             {
-                const scene = getScene('mousedown');
+                const scene = getScene();
                 const pointer = new MockPointer(scene.stage);
                 const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
                 const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
