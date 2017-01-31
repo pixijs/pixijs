@@ -74,9 +74,9 @@ describe('PIXI.Container', function ()
         it('should flag transform for recalculation', function ()
         {
             const container = new PIXI.Container();
-            
+
             container.getBounds();
-            
+
             const parentID = container.transform._parentID;
             const boundsID = container._boundsID;
 
