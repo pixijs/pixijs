@@ -112,4 +112,42 @@ describe('PIXI.Text', function ()
             expect(text.width).to.equal(300);
         });
     });
+
+    describe('text', function ()
+    {
+        it('should convert numbers into strings', function ()
+        {
+            const text = new PIXI.Text(2);
+
+            expect(text.text).to.equal('2');
+        });
+
+        it('should not change 0 to \'\'', function ()
+        {
+            const text = new PIXI.Text(0);
+
+            expect(text.text).to.equal('0');
+        });
+
+        it('should prevent setting null', function ()
+        {
+            const text = new PIXI.Text(null);
+
+            expect(text.text).to.equal(' ');
+        });
+
+        it('should prevent setting undefined', function ()
+        {
+            const text = new PIXI.Text();
+
+            expect(text.text).to.equal(' ');
+        });
+
+        it('should prevent setting \'\'', function ()
+        {
+            const text = new PIXI.Text('');
+
+            expect(text.text).to.equal(' ');
+        });
+    });
 });

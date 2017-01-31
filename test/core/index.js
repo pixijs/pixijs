@@ -23,4 +23,5 @@ require('./RoundedRectangle');
 require('./Circle');
 require('./Graphics');
 require('./SpriteRenderer');
+require('./WebGLRenderer');
 require('./Ellipse');
