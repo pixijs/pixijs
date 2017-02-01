@@ -98,6 +98,26 @@ export default class Application
     }
 
     /**
+     * Convenience for the renderer's width.
+     * @member {Number}
+     * @readonly
+     */
+    get width()
+    {
+        return this.renderer.width;
+    }
+
+    /**
+     * Convenience for the renderer's height.
+     * @member {Number}
+     * @readonly
+     */
+    get height()
+    {
+        return this.renderer.height;
+    }
+
+    /**
      * Destroy and don't use after this.
      * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
      */
