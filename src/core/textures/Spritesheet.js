@@ -252,18 +252,23 @@ export default class Spritesheet
 
     /**
      * Destroy Spritesheet and don't use after this.
+     *
+     * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
      */
-    destroy()
+    destroy(destroyBase = false)
     {
         for (const i in this.textures)
         {
             this.textures[i].destroy();
-            delete this.textures[i];
         }
         this._frames = null;
         this._frameKeys = null;
         this.data = null;
         this.textures = null;
+        if (destroyBase)
+        {
+            this.baseTexture.destroy();
+        }
         this.baseTexture = null;
     }
 }

@@ -18,7 +18,7 @@ describe('PIXI.Spritesheet', function ()
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
                 expect(textures[id].width).to.equal(spritesheet.data.frames[id].frame.w / spritesheet.resolution);
                 expect(textures[id].height).to.equal(spritesheet.data.frames[id].frame.h / spritesheet.resolution);
-                spritesheet.destroy();
+                spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
                 expect(spritesheet.baseTexture).to.be.null;
                 done();
@@ -45,7 +45,7 @@ describe('PIXI.Spritesheet', function ()
         expect(spritesheet.baseTexture).to.equal(baseTexture);
         expect(spritesheet.resolution).to.equal(1);
 
-        spritesheet.destroy();
+        spritesheet.destroy(true);
     });
 
     it('should create instance with scale resolution', function (done)
