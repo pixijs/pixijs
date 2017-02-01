@@ -98,6 +98,16 @@ export default class Application
     }
 
     /**
+     * Reference to the renderer's screen rectangle. Its safe to use as filterArea or hitArea for whole screen
+     * @member {PIXI.Rectangle}
+     * @readonly
+     */
+    get screen()
+    {
+        return this.renderer.screen;
+    }
+
+    /**
      * Destroy and don't use after this.
      * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
      */
