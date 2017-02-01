@@ -1,4 +1,5 @@
-import * as core from '../';
+import { Rectangle, Texture } from '../';
+import { getResolutionOfUrl, TextureCache } from '../utils';
 
 /**
  * Utility class for maintaining reference to a collection
@@ -98,7 +99,7 @@ export default class Spritesheet
         const scale = this.data.meta.scale;
 
         // Use a defaultValue of `null` to check if a url-based resolution is set
-        let resolution = core.utils.getResolutionOfUrl(resolutionFilename, null);
+        let resolution = getResolutionOfUrl(resolutionFilename, null);
 
         // No resolution found via URL
         if (resolution === null)
@@ -160,7 +161,7 @@ export default class Spritesheet
             {
                 let frame = null;
                 let trim = null;
-                const orig = new core.Rectangle(
+                const orig = new Rectangle(
                     0,
                     0,
                     this._frames[i].sourceSize.w / this.resolution,
@@ -169,7 +170,7 @@ export default class Spritesheet
 
                 if (this._frames[i].rotated)
                 {
-                    frame = new core.Rectangle(
+                    frame = new Rectangle(
                         rect.x / this.resolution,
                         rect.y / this.resolution,
                         rect.h / this.resolution,
@@ -178,7 +179,7 @@ export default class Spritesheet
                 }
                 else
                 {
-                    frame = new core.Rectangle(
+                    frame = new Rectangle(
                         rect.x / this.resolution,
                         rect.y / this.resolution,
                         rect.w / this.resolution,
@@ -189,7 +190,7 @@ export default class Spritesheet
                 //  Check to see if the sprite is trimmed
                 if (this._frames[i].trimmed)
                 {
-                    trim = new core.Rectangle(
+                    trim = new Rectangle(
                         this._frames[i].spriteSourceSize.x / this.resolution,
                         this._frames[i].spriteSourceSize.y / this.resolution,
                         rect.w / this.resolution,
@@ -197,7 +198,7 @@ export default class Spritesheet
                     );
                 }
 
-                this.textures[i] = new core.Texture(
+                this.textures[i] = new Texture(
                     this.baseTexture,
                     frame,
                     orig,
@@ -206,7 +207,7 @@ export default class Spritesheet
                 );
 
                 // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                core.utils.TextureCache[i] = this.textures[i];
+                TextureCache[i] = this.textures[i];
             }
 
             frameIndex++;
@@ -256,8 +257,12 @@ export default class Spritesheet
     {
         for (const i in this.textures)
         {
+            this.textures[i].destroy();
             delete this.textures[i];
         }
+        this._frames = null;
+        this._frameKeys = null;
+        this.data = null;
         this.textures = null;
         this.baseTexture = null;
     }
