@@ -4,6 +4,101 @@ const MockPointer = require('./MockPointer');
 
 describe('PIXI.interaction.InteractionManager', function ()
 {
+    describe('event basics', function ()
+    {
+        it('should call mousedown handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mousedown', eventSpy);
+
+            pointer.mousedown(10, 10);
+
+            expect(eventSpy).to.have.been.calledOnce;
+        });
+
+        it('should call mouseup handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseup', eventSpy);
+
+            pointer.click(10, 10);
+
+            expect(eventSpy).to.have.been.called;
+        });
+
+        it('should call mouseupoutside handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseupoutside', eventSpy);
+
+            pointer.mousedown(10, 10);
+            pointer.mouseup(60, 60);
+
+            expect(eventSpy).to.have.been.called;
+        });
+
+        it('should call mouseover handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseover', eventSpy);
+
+            pointer.mousemove(10, 10);
+
+            expect(eventSpy).to.have.been.called;
+        });
+
+        it('should call mouseout handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseout', eventSpy);
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(60, 60);
+
+            expect(eventSpy).to.have.been.called;
+        });
+    });
+
     describe('onClick', function ()
     {
         it('should call handler when inside', function ()
@@ -459,6 +554,150 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
             });
+        });
+    });
+
+    describe('cursor changes', function ()
+    {
+        it('cursor should be the cursor of interactive item', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = 'help';
+
+            pointer.mousemove(10, 10);
+
+            expect(pointer.renderer.view.style.cursor).to.equal('help');
+        });
+
+        it('should return cursor to default on mouseout', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = 'help';
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(60, 60);
+
+            expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
+        });
+
+        it('should still be the over cursor after a click', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = 'help';
+
+            pointer.mousemove(10, 10);
+            pointer.click(10, 10);
+
+            expect(pointer.renderer.view.style.cursor).to.equal('help');
+        });
+
+        it('should return cursor to default when mouse leaves renderer', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = 'help';
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(-10, 60);
+
+            expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
+        });
+
+        it('cursor callback should be called', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const overSpy = sinon.spy();
+            const defaultSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = overSpy;
+            pointer.interaction.cursorStyles.default = defaultSpy;
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(60, 60);
+
+            expect(overSpy).to.have.been.called;
+            expect(defaultSpy).to.have.been.called;
+        });
+
+        it('cursor style object should be fully applied', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'help';
+            pointer.interaction.cursorStyles.help = {
+                cursor: 'none',
+                display: 'none',
+            };
+
+            pointer.mousemove(10, 10);
+
+            expect(pointer.renderer.view.style.cursor).to.equal('none');
+            expect(pointer.renderer.view.style.display).to.equal('none');
+        });
+
+        it('should not change cursor style if no cursor style provided', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'pointer';
+            pointer.interaction.cursorStyles.pointer = null;
+            pointer.interaction.cursorStyles.default = null;
+
+            pointer.mousemove(10, 10);
+            expect(pointer.renderer.view.style.cursor).to.equal('');
+
+            pointer.mousemove(60, 60);
+            expect(pointer.renderer.view.style.cursor).to.equal('');
         });
     });
 
