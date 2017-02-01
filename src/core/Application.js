@@ -46,7 +46,7 @@ export default class Application
         this.renderer = autoDetectRenderer(width, height, options, noWebGL);
 
         /**
-         * The root display container that's renderered.
+         * The root display container that's rendered.
          * @member {PIXI.Container}
          */
         this.stage = new Container();
