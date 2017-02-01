@@ -74,11 +74,11 @@ export default class Container extends DisplayObject
 
             child.parent = this;
 
+            this.children.push(child);
+
             // ensure a transform will be recalculated..
             this.transform._parentID = -1;
             this._boundsID++;
-
-            this.children.push(child);
 
             // TODO - lets either do all callbacks or all events.. not both!
             this.onChildrenChange(this.children.length - 1);
@@ -110,6 +110,10 @@ export default class Container extends DisplayObject
         child.parent = this;
 
         this.children.splice(index, 0, child);
+
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
+        this._boundsID++;
 
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
@@ -174,6 +178,7 @@ export default class Container extends DisplayObject
 
         removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
+
         this.onChildrenChange(index);
     }
 
@@ -247,6 +252,10 @@ export default class Container extends DisplayObject
         child.parent = null;
         removeItems(this.children, index, 1);
 
+        // ensure a transform will be recalculated..
+        this.transform._parentID = -1;
+        this._boundsID++;
+
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
         child.emit('removed', this);
@@ -276,6 +285,13 @@ export default class Container extends DisplayObject
             {
                 removed[i].parent = null;
             }
+
+            // ensure a transform will be recalculated..
+            if (this.transform)
+            {
+                this.transform._parentID = -1;
+            }
+            this._boundsID++;
 
             this.onChildrenChange(beginIndex);
 

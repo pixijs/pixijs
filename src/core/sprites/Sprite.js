@@ -346,8 +346,8 @@ export default class Sprite extends Container
     /**
      * Gets the local bounds of the sprite object.
      *
-     * @param {Rectangle} rect - The output rectangle.
-     * @return {Rectangle} The bounds.
+     * @param {PIXI.Rectangle} rect - The output rectangle.
+     * @return {PIXI.Rectangle} The bounds.
      */
     getLocalBounds(rect)
     {
@@ -440,7 +440,7 @@ export default class Sprite extends Container
      *
      * @static
      * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
-     * @return {PIXI.Texture} The newly created texture
+     * @return {PIXI.Sprite} The newly created texture
      */
     static from(source)
     {

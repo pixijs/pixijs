@@ -8,6 +8,7 @@ const defaultStyle = {
     align: 'left',
     breakWords: false,
     dropShadow: false,
+    dropShadowAlpha: 1,
     dropShadowAngle: Math.PI / 6,
     dropShadowBlur: 0,
     dropShadowColor: '#000000',
@@ -49,6 +50,7 @@ export default class TextStyle
      * @param {boolean} [style.breakWords=false] - Indicates if lines can be wrapped within words, it
      *  needs wordWrap to be set to true
      * @param {boolean} [style.dropShadow=false] - Set a drop shadow for the text
+     * @param {number} [style.dropShadowAlpha=1] - Set alpha for the drop shadow
      * @param {number} [style.dropShadowAngle=Math.PI/6] - Set a angle of the drop shadow
      * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
      * @param {string} [style.dropShadowColor='#000000'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
@@ -153,6 +155,19 @@ export default class TextStyle
         if (this._dropShadow !== dropShadow)
         {
             this._dropShadow = dropShadow;
+            this.styleID++;
+        }
+    }
+
+    get dropShadowAlpha()
+    {
+        return this._dropShadowAlpha;
+    }
+    set dropShadowAlpha(dropShadowAlpha)
+    {
+        if (this._dropShadowAlpha !== dropShadowAlpha)
+        {
+            this._dropShadowAlpha = dropShadowAlpha;
             this.styleID++;
         }
     }
@@ -511,8 +526,8 @@ function getColor(color)
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  *
- * @param {Array} array1 First array to compared
- * @param {Array} array1 Second array to compare
+ * @param {Array} array1 First array to compare
+ * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
  */
 function areArraysEqual(array1, array2)
