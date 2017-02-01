@@ -7,6 +7,7 @@ require('./Container');
 require('./DisplayObject');
 require('./getLocalBounds');
 require('./Sprite');
+require('./Spritesheet');
 require('./TilingSprite');
 require('./TextStyle');
 require('./Text');
