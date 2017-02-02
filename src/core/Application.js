@@ -1,6 +1,6 @@
 import { autoDetectRenderer } from './autoDetectRenderer';
 import Container from './display/Container';
-import Ticker from './ticker/Ticker';
+import { shared, Ticker } from './ticker';
 
 /**
  * Convenience class to create a new PIXI application.
@@ -35,9 +35,9 @@ export default class Application
      * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
      * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
      * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
-
+     * @param {boolean} [useSharedTicker=true] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
      */
-    constructor(width, height, options, noWebGL)
+    constructor(width, height, options, noWebGL, useSharedTicker = true)
     {
         /**
          * WebGL renderer if available, otherwise CanvasRenderer
@@ -52,15 +52,38 @@ export default class Application
         this.stage = new Container();
 
         /**
+         * Internal reference to the ticker
+         * @member {PIXI.ticker.Ticker}
+         * @private
+         */
+        this._ticker = null;
+
+        /**
          * Ticker for doing render updates.
          * @member {PIXI.ticker.Ticker}
+         * @default PIXI.ticker.shared
          */
-        this.ticker = new Ticker();
-
-        this.ticker.add(this.render, this);
+        this.ticker = useSharedTicker ? shared : new Ticker();
 
         // Start the rendering
         this.start();
+    }
+
+    set ticker(ticker) // eslint-disable-line require-jsdoc
+    {
+        if (this._ticker)
+        {
+            this._ticker.remove(this.render, this);
+        }
+        this._ticker = ticker;
+        if (ticker)
+        {
+            ticker.add(this.render, this);
+        }
+    }
+    get ticker() // eslint-disable-line require-jsdoc
+    {
+        return this._ticker;
     }
 
     /**
@@ -76,7 +99,7 @@ export default class Application
      */
     stop()
     {
-        this.ticker.stop();
+        this._ticker.stop();
     }
 
     /**
@@ -84,7 +107,7 @@ export default class Application
      */
     start()
     {
-        this.ticker.start();
+        this._ticker.start();
     }
 
     /**
@@ -114,7 +137,6 @@ export default class Application
     destroy(removeView)
     {
         this.stop();
-        this.ticker.remove(this.render, this);
         this.ticker = null;
 
         this.stage.destroy();
