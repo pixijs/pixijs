@@ -35,9 +35,9 @@ export default class Application
      * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
      * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
      * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
-     * @param {boolean} [useSharedTicker=true] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
+     * @param {boolean} [useSharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
      */
-    constructor(width, height, options, noWebGL, useSharedTicker = true)
+    constructor(width, height, options, noWebGL, useSharedTicker = false)
     {
         /**
          * WebGL renderer if available, otherwise CanvasRenderer
