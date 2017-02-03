@@ -196,4 +196,13 @@ describe('getLocalBounds', function ()
         expect(bounds.width).to.equal(100);
         expect(bounds.height).to.equal(100);
     });
+
+    it('should register correct local-bounds with a Text', function ()
+    {
+        const text = new PIXI.Text('hello');
+        const bounds = text.getLocalBounds();
+
+        expect(bounds.width).to.not.equal(0);
+        expect(bounds.height).to.not.equal(0);
+    });
 });

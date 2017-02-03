@@ -54,8 +54,8 @@ export default class RenderTexture extends Texture
             /* eslint-disable prefer-rest-params, no-console */
             const width = arguments[1];
             const height = arguments[2];
-            const scaleMode = arguments[3] || 0;
-            const resolution = arguments[4] || 1;
+            const scaleMode = arguments[3];
+            const resolution = arguments[4];
 
             // we have an old render texture..
             console.warn(`Please use RenderTexture.create(${width}, ${height}) instead of the ctor directly.`);

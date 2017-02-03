@@ -70,6 +70,21 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
         });
+
+        it('should flag transform for recalculation', function ()
+        {
+            const container = new PIXI.Container();
+
+            container.getBounds();
+
+            const parentID = container.transform._parentID;
+            const boundsID = container._boundsID;
+
+            container.addChild(new PIXI.Container());
+
+            expect(parentID).to.not.be.equals(container.transform._parentID);
+            expect(boundsID).to.not.be.equals(container._boundsID);
+        });
     });
 
     describe('removeChildAt', function ()
@@ -94,6 +109,22 @@ describe('PIXI.Container', function ()
             container.removeChildAt(0);
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
+        });
+
+        it('should flag transform for recalculation', function ()
+        {
+            const container = new PIXI.Container();
+
+            container.addChild(new PIXI.Container());
+            container.getBounds();
+
+            const parentID = container.transform._parentID;
+            const boundsID = container._boundsID;
+
+            container.removeChildAt(0);
+
+            expect(parentID).to.not.be.equals(container.transform._parentID);
+            expect(boundsID).to.not.be.equals(container._boundsID);
         });
     });
 
@@ -157,6 +188,18 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
         });
+
+        it('should flag transform for recalculation', function ()
+        {
+            const container = new PIXI.Container();
+            const parentID = container.transform._parentID;
+            const boundsID = container._boundsID;
+
+            container.addChildAt(new PIXI.Container(), 0);
+
+            expect(parentID).to.not.be.equals(container.transform._parentID);
+            expect(boundsID).to.not.be.equals(container._boundsID);
+        });
     });
 
     describe('removeChild', function ()
@@ -201,6 +244,23 @@ describe('PIXI.Container', function ()
 
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
+        });
+
+        it('should flag transform for recalculation', function ()
+        {
+            const container = new PIXI.Container();
+            const child = new PIXI.Container();
+
+            container.addChild(child);
+            container.getBounds();
+
+            const parentID = container.transform._parentID;
+            const boundsID = container._boundsID;
+
+            container.removeChild(child);
+
+            expect(parentID).to.not.be.equals(container.transform._parentID);
+            expect(boundsID).to.not.be.equals(container._boundsID);
         });
     });
 
@@ -474,6 +534,22 @@ describe('PIXI.Container', function ()
                 .to.throw('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1, 1))
                 .to.throw('removeChildren: numeric values are outside the acceptable range.');
+        });
+
+        it('should flag transform for recalculation', function ()
+        {
+            const container = new PIXI.Container();
+
+            container.addChild(new PIXI.Container());
+            container.getBounds();
+
+            const parentID = container.transform._parentID;
+            const boundsID = container._boundsID;
+
+            container.removeChildren();
+
+            expect(parentID).to.not.be.equals(container.transform._parentID);
+            expect(boundsID).to.not.be.equals(container._boundsID);
         });
     });
 

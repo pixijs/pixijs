@@ -11,7 +11,8 @@ import { join } from 'path';
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class MeshRenderer extends core.ObjectRenderer {
+export default class MeshRenderer extends core.ObjectRenderer
+{
 
     /**
      * constructor for renderer
