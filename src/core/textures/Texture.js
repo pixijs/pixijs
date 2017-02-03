@@ -156,6 +156,13 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * Name used to store the texture in PIXI.utils.TextureCache. Primarily used for automatic
+         * cleanup.
+         * @type {string}
+         */
+        this.name = null;
     }
 
     /**
@@ -188,6 +195,7 @@ export default class Texture extends EventEmitter
         }
 
         this.baseTexture.on('update', this.onBaseTextureUpdated, this);
+        this.baseTexture.on('destroy', this.destroy, this);
         this.emit('update', this);
     }
 
@@ -208,6 +216,16 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Callback for dispose event from the base texture.
+     *
+     * @private
+     */
+    onBaseTextureDisposed()
+    {
+        this.destroy();
+    }
+
+    /**
      * Destroys this texture
      *
      * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
@@ -216,15 +234,9 @@ export default class Texture extends EventEmitter
     {
         if (this.baseTexture)
         {
+            this.baseTexture.off('dispose', this.onBaseTextureDisposed, this);
             if (destroyBase)
             {
-                // delete the texture if it exists in the texture cache..
-                // this only needs to be removed if the base texture is actually destroyed too..
-                if (TextureCache[this.baseTexture.imageUrl])
-                {
-                    delete TextureCache[this.baseTexture.imageUrl];
-                }
-
                 this.baseTexture.destroy();
             }
 
@@ -239,10 +251,17 @@ export default class Texture extends EventEmitter
         this.trim = null;
         this.orig = null;
 
-        this.valid = false;
+        if (this.name)
+        {
+            // remove this texture from the global texture cache
+            if (TextureCache[this.name] === this)
+            {
+                delete TextureCache[this.name];
+            }
+            this.name = null;
+        }
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        this.valid = false;
     }
 
     /**
@@ -434,7 +453,9 @@ export default class Texture extends EventEmitter
         {
             name = imageUrl;
         }
+        texture.name = name;
 
+        //TODO: Figure out how to handle both name and imageUrl for both texture and base texture
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
@@ -458,6 +479,12 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        // for cleanup purposes, we should really always set the name to id, but we don't want to
+        // interfere with what a user might be doing
+        if (!texture.name)
+        {
+            texture.name = id;
+        }
         TextureCache[id] = texture;
     }
 

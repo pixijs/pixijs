@@ -579,8 +579,15 @@ export default class BaseTexture extends EventEmitter
     {
         if (this.imageUrl)
         {
-            delete BaseTextureCache[this.imageUrl];
-            delete TextureCache[this.imageUrl];
+            // remove this texture from the global texture cache
+            if (BaseTextureCache[this.imageUrl] === this)
+            {
+                delete BaseTextureCache[this.imageUrl];
+            }
+            if (TextureCache[this.imageUrl] && TextureCache[this.imageUrl].baseTexture === this)
+            {
+                delete TextureCache[this.imageUrl];
+            }
 
             this.imageUrl = null;
 
