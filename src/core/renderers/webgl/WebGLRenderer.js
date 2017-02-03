@@ -380,6 +380,7 @@ export default class WebGLRenderer extends SystemRenderer
      *
      * @param {PIXI.RenderTexture} renderTexture - The render texture to clear
      * @param {number} [clearColor] - The colour
+     * @return {PIXI.WebGLRenderer} Returns itself.
      */
     clearRenderTexture(renderTexture, clearColor)
     {
@@ -390,6 +391,8 @@ export default class WebGLRenderer extends SystemRenderer
         {
             renderTarget.clear(clearColor);
         }
+
+        return this;
     }
 
     /**
