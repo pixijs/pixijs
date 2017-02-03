@@ -33,6 +33,9 @@ export default class Application
      *      need to call toDataUrl on the webgl context
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
      * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
+     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
+     * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
+
      */
     constructor(width, height, options, noWebGL)
     {
@@ -43,7 +46,7 @@ export default class Application
         this.renderer = autoDetectRenderer(width, height, options, noWebGL);
 
         /**
-         * The root display container that's renderered.
+         * The root display container that's rendered.
          * @member {PIXI.Container}
          */
         this.stage = new Container();
@@ -54,13 +57,18 @@ export default class Application
          */
         this.ticker = new Ticker();
 
-        this.ticker.add(() =>
-        {
-            this.renderer.render(this.stage);
-        });
+        this.ticker.add(this.render, this);
 
         // Start the rendering
         this.start();
+    }
+
+    /**
+     * Render the current stage.
+     */
+    render()
+    {
+        this.renderer.render(this.stage);
     }
 
     /**
@@ -87,5 +95,32 @@ export default class Application
     get view()
     {
         return this.renderer.view;
+    }
+
+    /**
+     * Reference to the renderer's screen rectangle. Its safe to use as filterArea or hitArea for whole screen
+     * @member {PIXI.Rectangle}
+     * @readonly
+     */
+    get screen()
+    {
+        return this.renderer.screen;
+    }
+
+    /**
+     * Destroy and don't use after this.
+     * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
+     */
+    destroy(removeView)
+    {
+        this.stop();
+        this.ticker.remove(this.render, this);
+        this.ticker = null;
+
+        this.stage.destroy();
+        this.stage = null;
+
+        this.renderer.destroy(removeView);
+        this.renderer = null;
     }
 }

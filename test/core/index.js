@@ -1,11 +1,13 @@
 'use strict';
 
+require('./Application');
 require('./TransformStatic');
 require('./Bounds');
 require('./Container');
 require('./DisplayObject');
 require('./getLocalBounds');
 require('./Sprite');
+require('./Spritesheet');
 require('./TilingSprite');
 require('./TextStyle');
 require('./Text');
@@ -22,4 +24,6 @@ require('./RoundedRectangle');
 require('./Circle');
 require('./Graphics');
 require('./SpriteRenderer');
+require('./WebGLRenderer');
 require('./Ellipse');
+require('./Texture');

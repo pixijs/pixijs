@@ -103,11 +103,18 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        // step 1: first check max textures the GPU can handle.
-        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
+        if (this.renderer.legacy)
+        {
+            this.MAX_TEXTURES = 1;
+        }
+        else
+        {
+            // step 1: first check max textures the GPU can handle.
+            this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
 
-        // step 2: check the maximum number of if statements the shader can have too..
-        this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+            // step 2: check the maximum number of if statements the shader can have too..
+            this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+        }
 
         this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
@@ -128,13 +135,19 @@ export default class SpriteRenderer extends ObjectRenderer
             /* eslint-enable max-len */
 
             // build the vao object that will render..
-            this.vaos[i] = this.renderer.createVao()
+            const vao = this.renderer.createVao()
                 .addIndex(this.indexBuffer)
                 .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                 .addAttribute(vertexBuffer, attrs.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4)
-                .addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+                .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4);
+
+            if (attrs.aTextureId)
+            {
+                vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+            }
+
+            this.vaos[i] = vao;
         }
 
         this.vao = this.vaos[0];
@@ -382,13 +395,19 @@ export default class SpriteRenderer extends ObjectRenderer
                 /* eslint-enable max-len */
 
                 // build the vao object that will render..
-                this.vaos[this.vertexCount] = this.renderer.createVao()
+                const vao = this.renderer.createVao()
                     .addIndex(this.indexBuffer)
                     .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                     .addAttribute(vertexBuffer, attrs.aColor, gl.FLOAT, false, this.vertByteSize, 3 * 4)
-                    .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4)
-                    .addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+                    .addAttribute(vertexBuffer, attrs.aAlpha, gl.FLOAT, false, this.vertByteSize, 6 * 4);
+
+                if (attrs.aTextureId)
+                {
+                    vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 7 * 4);
+                }
+
+                this.vaos[this.vertexCount] = vao;
             }
 
             this.renderer.bindVao(this.vaos[this.vertexCount]);

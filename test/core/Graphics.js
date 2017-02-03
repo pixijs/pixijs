@@ -1,10 +1,12 @@
 'use strict';
 
-describe('PIXI.Graphics', () =>
+const MockPointer = require('../interaction/MockPointer');
+
+describe('PIXI.Graphics', function ()
 {
-    describe('constructor', () =>
+    describe('constructor', function ()
     {
-        it('should set defaults', () =>
+        it('should set defaults', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -16,9 +18,9 @@ describe('PIXI.Graphics', () =>
         });
     });
 
-    describe('lineTo', () =>
+    describe('lineTo', function ()
     {
-        it('should return correct bounds - north', () =>
+        it('should return correct bounds - north', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -31,7 +33,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.height).to.be.equals(10);
         });
 
-        it('should return correct bounds - south', () =>
+        it('should return correct bounds - south', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -44,7 +46,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.height).to.be.equals(10);
         });
 
-        it('should return correct bounds - east', () =>
+        it('should return correct bounds - east', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -56,7 +58,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.width).to.be.equals(10);
         });
 
-        it('should return correct bounds - west', () =>
+        it('should return correct bounds - west', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -69,7 +71,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.width).to.be.equals(10);
         });
 
-        it('should return correct bounds when stacked with circle', () =>
+        it('should return correct bounds when stacked with circle', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -88,7 +90,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.height).to.be.equals(100);
         });
 
-        it('should return correct bounds when square', () =>
+        it('should return correct bounds when square', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -104,9 +106,9 @@ describe('PIXI.Graphics', () =>
         });
     });
 
-    describe('containsPoint', () =>
+    describe('containsPoint', function ()
     {
-        it('should return true when point inside', () =>
+        it('should return true when point inside', function ()
         {
             const point = new PIXI.Point(1, 1);
             const graphics = new PIXI.Graphics();
@@ -117,7 +119,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.containsPoint(point)).to.be.true;
         });
 
-        it('should return false when point outside', () =>
+        it('should return false when point outside', function ()
         {
             const point = new PIXI.Point(20, 20);
             const graphics = new PIXI.Graphics();
@@ -127,11 +129,21 @@ describe('PIXI.Graphics', () =>
 
             expect(graphics.containsPoint(point)).to.be.false;
         });
+
+        it('should return false when no fill', function ()
+        {
+            const point = new PIXI.Point(1, 1);
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.false;
+        });
     });
 
-    describe('arc', () =>
+    describe('arc', function ()
     {
-        it('should draw an arc', () =>
+        it('should draw an arc', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -142,7 +154,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.currentPath).to.be.not.null;
         });
 
-        it('should not throw with other shapes', () =>
+        it('should not throw with other shapes', function ()
         {
             // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
             const graphics = new PIXI.Graphics();
@@ -169,7 +181,7 @@ describe('PIXI.Graphics', () =>
             expect(() => graphics.arc(300, 100, 20, 0, Math.PI)).to.not.throw();
         });
 
-        it('should do nothing when startAngle and endAngle are equal', () =>
+        it('should do nothing when startAngle and endAngle are equal', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -180,7 +192,7 @@ describe('PIXI.Graphics', () =>
             expect(graphics.currentPath).to.be.null;
         });
 
-        it('should do nothing if sweep equals zero', () =>
+        it('should do nothing if sweep equals zero', function ()
         {
             const graphics = new PIXI.Graphics();
 
@@ -192,9 +204,9 @@ describe('PIXI.Graphics', () =>
         });
     });
 
-    describe('_calculateBounds', () =>
+    describe('_calculateBounds', function ()
     {
-        it('should only call updateLocalBounds once', () =>
+        it('should only call updateLocalBounds once', function ()
         {
             const graphics = new PIXI.Graphics();
             const spy = sinon.spy(graphics, 'updateLocalBounds');
@@ -204,6 +216,116 @@ describe('PIXI.Graphics', () =>
             expect(spy).to.have.been.calledOnce;
 
             graphics._calculateBounds();
+
+            expect(spy).to.have.been.calledOnce;
+        });
+    });
+
+    describe('mask', function ()
+    {
+        it('should trigger interaction callback when no mask present', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.beginFill();
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+        it('should trigger interaction callback when mask uses beginFill', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.beginFill();
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.not.been.called;
+        });
+
+        it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.hitArea = new PIXI.Rectangle(0, 0, 50, 50);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should trigger interaction callback when mask is a sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = new PIXI.Sprite(mask.generateCanvasTexture());
+
+            pointer.click(10, 10);
 
             expect(spy).to.have.been.calledOnce;
         });

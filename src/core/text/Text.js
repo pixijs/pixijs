@@ -6,6 +6,7 @@ import { sign } from '../utils';
 import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
 import TextStyle from './TextStyle';
+import trimCanvas from '../utils/trimCanvas';
 
 const defaultDestroyOptions = {
     texture: true,
@@ -57,7 +58,7 @@ export default class Text extends Sprite
 
         /**
          * The canvas 2d context that everything is drawn with
-         * @member {HTMLCanvasElement}
+         * @member {CanvasRenderingContext2D}
          */
         this.context = this.canvas.getContext('2d');
 
@@ -189,10 +190,12 @@ export default class Text extends Sprite
 
         if (style.dropShadow)
         {
+            this.context.shadowBlur = style.dropShadowBlur;
+            this.context.globalAlpha = style.dropShadowAlpha;
+
             if (style.dropShadowBlur > 0)
             {
                 this.context.shadowColor = style.dropShadowColor;
-                this.context.shadowBlur = style.dropShadowBlur;
             }
             else
             {
@@ -236,6 +239,10 @@ export default class Text extends Sprite
                 }
             }
         }
+
+        // reset the shadow blur and alpha that was set by the drop shadow, for the regular text
+        this.context.shadowBlur = 0;
+        this.context.globalAlpha = 1;
 
         // set canvas text styles
         this.context.fillStyle = this._generateFillStyle(style, lines);
@@ -326,6 +333,15 @@ export default class Text extends Sprite
      */
     updateTexture()
     {
+        if (this._style.trim)
+        {
+            const trimmed = trimCanvas(this.canvas);
+
+            this.canvas.width = trimmed.width;
+            this.canvas.height = trimmed.height;
+            this.context.putImageData(trimmed.data, 0, 0);
+        }
+
         const texture = this._texture;
         const style = this._style;
 
@@ -475,6 +491,19 @@ export default class Text extends Sprite
     }
 
     /**
+     * Gets the local bounds of the text object.
+     *
+     * @param {Rectangle} rect - The output rectangle.
+     * @return {Rectangle} The bounds.
+     */
+    getLocalBounds(rect)
+    {
+        this.updateText(true);
+
+        return super.getLocalBounds.call(this, rect);
+    }
+
+    /**
      * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
      */
     _calculateBounds()
@@ -525,6 +554,29 @@ export default class Text extends Sprite
         const width = this.canvas.width / this.resolution;
         const height = this.canvas.height / this.resolution;
 
+        // make a copy of the style settings, so we can manipulate them later
+        const fill = style.fill.slice();
+        const fillGradientStops = style.fillGradientStops.slice();
+
+        // wanting to evenly distribute the fills. So an array of 4 colours should give fills of 0.25, 0.5 and 0.75
+        if (!fillGradientStops.length)
+        {
+            const lengthPlus1 = fill.length + 1;
+
+            for (let i = 1; i < lengthPlus1; ++i)
+            {
+                fillGradientStops.push(i / lengthPlus1);
+            }
+        }
+
+        // stop the bleeding of the last gradient on the line above to the top gradient of the this line
+        // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
+        fill.unshift(style.fill[0]);
+        fillGradientStops.unshift(0);
+
+        fill.push(style.fill[style.fill.length - 1]);
+        fillGradientStops.push(1);
+
         if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
         {
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
@@ -532,15 +584,22 @@ export default class Text extends Sprite
 
             // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
             // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
-            totalIterations = (style.fill.length + 1) * lines.length;
+            totalIterations = (fill.length + 1) * lines.length;
             currentIteration = 0;
             for (let i = 0; i < lines.length; i++)
             {
                 currentIteration += 1;
-                for (let j = 0; j < style.fill.length; j++)
+                for (let j = 0; j < fill.length; j++)
                 {
-                    stop = (currentIteration / totalIterations);
-                    gradient.addColorStop(stop, style.fill[j]);
+                    if (fillGradientStops[j])
+                    {
+                        stop = (fillGradientStops[j] / lines.length) + (i / lines.length);
+                    }
+                    else
+                    {
+                        stop = currentIteration / totalIterations;
+                    }
+                    gradient.addColorStop(stop, fill[j]);
                     currentIteration++;
                 }
             }
@@ -552,13 +611,20 @@ export default class Text extends Sprite
 
             // can just evenly space out the gradients in this case, as multiple lines makes no difference
             // to an even left to right gradient
-            totalIterations = style.fill.length + 1;
+            totalIterations = fill.length + 1;
             currentIteration = 1;
 
-            for (let i = 0; i < style.fill.length; i++)
+            for (let i = 0; i < fill.length; i++)
             {
-                stop = currentIteration / totalIterations;
-                gradient.addColorStop(stop, style.fill[i]);
+                if (fillGradientStops[i])
+                {
+                    stop = fillGradientStops[i];
+                }
+                else
+                {
+                    stop = currentIteration / totalIterations;
+                }
+                gradient.addColorStop(stop, fill[i]);
                 currentIteration++;
             }
         }
@@ -569,7 +635,7 @@ export default class Text extends Sprite
     /**
      * Destroys this text object.
      * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
-     * the majorety of the time the texture will not be shared with any other Sprites.
+     * the majority of the time the texture will not be shared with any other Sprites.
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value
@@ -680,7 +746,7 @@ export default class Text extends Sprite
 
     set text(text) // eslint-disable-line require-jsdoc
     {
-        text = String(text || ' ');
+        text = String(text === '' || text === null || text === undefined ? ' ' : text);
 
         if (this._text === text)
         {

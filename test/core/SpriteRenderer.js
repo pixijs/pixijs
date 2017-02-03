@@ -1,8 +1,8 @@
 'use strict';
 
-describe('SpriteRenderer', () =>
+describe('SpriteRenderer', function ()
 {
-    it('can be destroyed', () =>
+    it('can be destroyed', function ()
     {
         const destroyable = { destroy: sinon.stub() };
         const webgl = {
@@ -20,7 +20,7 @@ describe('SpriteRenderer', () =>
         expect(() => renderer.destroy()).to.not.throw();
     });
 
-    it('can be destroyed immediately', () =>
+    it('can be destroyed immediately', function ()
     {
         const webgl = {
             on: sinon.stub(),
