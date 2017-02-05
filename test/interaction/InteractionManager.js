@@ -99,6 +99,66 @@ describe('PIXI.interaction.InteractionManager', function ()
         });
     });
 
+    describe('addEvents', function ()
+    {
+        before(function ()
+        {
+            PIXI.interaction.InteractionManager.prototype.setTargetElement = sinon.stub();
+        });
+
+        it('should attach pointer events to document', function ()
+        {
+            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const spy = sinon.spy(window.document, 'addEventListener');
+
+            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.supportsPointerEvents = true;
+
+            manager.addEvents();
+
+            expect(spy).to.have.been.calledOnce;
+            expect(spy).to.have.been.calledWith('pointermove');
+
+            window.document.addEventListener.restore();
+            manager.removeEvents();
+        });
+
+        it('should attach pointer events to window', function ()
+        {
+            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const spy = sinon.spy(window, 'addEventListener');
+
+            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.supportsPointerEvents = true;
+
+            manager.addEvents();
+
+            expect(spy).to.have.been.calledTwice;
+            expect(spy).to.have.been.calledWith('pointercancel');
+            expect(spy).to.have.been.calledWith('pointerup');
+
+            window.addEventListener.restore();
+            manager.removeEvents();
+        });
+
+        it('should attach pointer events to element', function ()
+        {
+            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+
+            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.supportsPointerEvents = true;
+
+            manager.addEvents();
+
+            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledThrice;
+            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerdown');
+            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerout');
+            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerover');
+
+            manager.removeEvents();
+        });
+    });
+
     describe('onClick', function ()
     {
         it('should call handler when inside', function ()
