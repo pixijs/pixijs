@@ -101,9 +101,16 @@ describe('PIXI.interaction.InteractionManager', function ()
 
     describe('addEvents', function ()
     {
+        let stub;
+
         before(function ()
         {
-            PIXI.interaction.InteractionManager.prototype.setTargetElement = sinon.stub();
+            stub = sinon.stub(PIXI.interaction.InteractionManager.prototype, 'setTargetElement');
+        });
+
+        after(function ()
+        {
+            stub.restore();
         });
 
         it('should attach pointer events to document', function ()
