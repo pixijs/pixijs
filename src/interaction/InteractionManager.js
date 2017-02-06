@@ -1297,6 +1297,12 @@ export default class InteractionManager extends EventEmitter
 
         if (trackingData === undefined) return;
 
+        if (hit)
+        {
+            // eslint-disable-next-line
+            console.log('processPointerOverOut & hit a thing - mouseOverRenderer:', this.mouseOverRenderer);
+        }
+
         if (hit && this.mouseOverRenderer)
         {
             if (!trackingData.over)
