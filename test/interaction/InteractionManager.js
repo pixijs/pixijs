@@ -126,7 +126,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
             expect(spy).to.have.been.calledWith('pointermove');
 
-            window.document.addEventListener.restore();
+            spy.restore();
             manager.removeEvents();
         });
 
@@ -144,7 +144,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(spy).to.have.been.calledWith('pointercancel');
             expect(spy).to.have.been.calledWith('pointerup');
 
-            window.addEventListener.restore();
+            spy.restore();
             manager.removeEvents();
         });
 
