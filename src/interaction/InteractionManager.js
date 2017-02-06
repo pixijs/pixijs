@@ -1300,7 +1300,7 @@ export default class InteractionManager extends EventEmitter
         if (hit)
         {
             // eslint-disable-next-line
-            console.log('processPointerOverOut & hit a thing - mouseOverRenderer:', this.mouseOverRenderer);
+            console.log('processPointerOverOut & hit a thing - mouseOverRenderer:', this.mouseOverRenderer, 'displayObject.cursor: ', displayObject.cursor);
         }
 
         if (hit && this.mouseOverRenderer)
