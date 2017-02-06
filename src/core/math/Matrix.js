@@ -15,43 +15,43 @@ export default class Matrix
     /**
      *
      */
-    constructor()
+    constructor(a = 1, b = 0, c = 0, d = 1, tx = 0, ty = 0)
     {
         /**
          * @member {number}
          * @default 1
          */
-        this.a = 1;
+        this.a = a;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.b = 0;
+        this.b = b;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.c = 0;
+        this.c = c;
 
         /**
          * @member {number}
          * @default 1
          */
-        this.d = 1;
+        this.d = d;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.tx = 0;
+        this.tx = tx;
 
         /**
          * @member {number}
          * @default 0
          */
-        this.ty = 0;
+        this.ty = ty;
 
         this.array = null;
     }
