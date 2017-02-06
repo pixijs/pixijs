@@ -661,6 +661,8 @@ export default class InteractionManager extends EventEmitter
      */
     setCursorMode(mode)
     {
+        // eslint-disable-next-line
+        console.log('setCursorMode - new mode: ', mode);
         mode = mode || 'default';
         this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
