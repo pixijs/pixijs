@@ -54,15 +54,17 @@ describe('PIXI.Spritesheet', function ()
         const image = new Image();
 
         image.src = path.join(this.resources, data.meta.image);
+        image.onload = () =>
+        {
+            const baseTexture = new PIXI.BaseTexture(image, null, 1);
+            const spritesheet = new PIXI.Spritesheet(baseTexture, data);
 
-        const baseTexture = new PIXI.BaseTexture(image, null, 1);
-        const spritesheet = new PIXI.Spritesheet(baseTexture, data);
+            expect(data).to.be.an.object;
+            expect(data.meta.image).to.equal('building1.png');
+            expect(spritesheet.resolution).to.equal(0.5);
 
-        expect(data).to.be.an.object;
-        expect(data.meta.image).to.equal('building1.png');
-        expect(spritesheet.resolution).to.equal(0.5);
-
-        this.validate(spritesheet, done);
+            this.validate(spritesheet, done);
+        };
     });
 
     it('should create instance with filename resolution', function (done)
@@ -72,14 +74,16 @@ describe('PIXI.Spritesheet', function ()
         const image = new Image();
 
         image.src = path.join(this.resources, data.meta.image);
+        image.onload = () =>
+        {
+            const baseTexture = new PIXI.BaseTexture(image, null, 1);
+            const spritesheet = new PIXI.Spritesheet(baseTexture, data, uri);
 
-        const baseTexture = new PIXI.BaseTexture(image, null, 1);
-        const spritesheet = new PIXI.Spritesheet(baseTexture, data, uri);
+            expect(data).to.be.an.object;
+            expect(data.meta.image).to.equal('building1@2x.png');
+            expect(spritesheet.resolution).to.equal(2);
 
-        expect(data).to.be.an.object;
-        expect(data.meta.image).to.equal('building1@2x.png');
-        expect(spritesheet.resolution).to.equal(2);
-
-        this.validate(spritesheet, done);
+            this.validate(spritesheet, done);
+        };
     });
 });
