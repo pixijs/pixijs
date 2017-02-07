@@ -99,7 +99,7 @@ describe('PIXI.interaction.InteractionManager', function ()
         });
     });
 
-    describe('addEvents', function ()
+    describe('add/remove events', function ()
     {
         let stub;
 
@@ -113,126 +113,169 @@ describe('PIXI.interaction.InteractionManager', function ()
             stub.restore();
         });
 
-        it('should attach pointer events to document', function ()
+        it('should add and remove pointer events to document', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
-            const spy = sinon.spy(window.document, 'addEventListener');
+            const addSpy = sinon.spy(window.document, 'addEventListener');
+            const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = true;
 
             manager.addEvents();
 
-            expect(spy).to.have.been.calledOnce;
-            expect(spy).to.have.been.calledWith('pointermove');
+            expect(addSpy).to.have.been.calledOnce;
+            expect(addSpy).to.have.been.calledWith('pointermove');
 
-            spy.restore();
             manager.removeEvents();
+
+            expect(removeSpy).to.have.been.calledOnce;
+            expect(removeSpy).to.have.been.calledWith('pointermove');
+
+            addSpy.restore();
+            removeSpy.restore();
         });
 
-        it('should attach pointer events to window', function ()
+        it('should add and remove pointer events to window', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
-            const spy = sinon.spy(window, 'addEventListener');
+            const addSpy = sinon.spy(window, 'addEventListener');
+            const removeSpy = sinon.spy(window, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = true;
 
             manager.addEvents();
 
-            expect(spy).to.have.been.calledTwice;
-            expect(spy).to.have.been.calledWith('pointercancel');
-            expect(spy).to.have.been.calledWith('pointerup');
+            expect(addSpy).to.have.been.calledTwice;
+            expect(addSpy).to.have.been.calledWith('pointercancel');
+            expect(addSpy).to.have.been.calledWith('pointerup');
 
-            spy.restore();
             manager.removeEvents();
+
+            expect(removeSpy).to.have.been.calledTwice;
+            expect(removeSpy).to.have.been.calledWith('pointercancel');
+            expect(removeSpy).to.have.been.calledWith('pointerup');
+
+            addSpy.restore();
+            removeSpy.restore();
         });
 
-        it('should attach pointer events to element', function ()
+        it('should add and remove pointer events to element', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.interactionDOMElement = element;
             manager.supportsPointerEvents = true;
 
             manager.addEvents();
 
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledThrice;
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerdown');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerout');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('pointerover');
+            expect(element.addEventListener).to.have.been.calledThrice;
+            expect(element.addEventListener).to.have.been.calledWith('pointerdown');
+            expect(element.addEventListener).to.have.been.calledWith('pointerout');
+            expect(element.addEventListener).to.have.been.calledWith('pointerover');
 
             manager.removeEvents();
+
+            expect(element.removeEventListener).to.have.been.calledThrice;
+            expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
+            expect(element.removeEventListener).to.have.been.calledWith('pointerout');
+            expect(element.removeEventListener).to.have.been.calledWith('pointerover');
         });
 
-        it('should attach mouse events to document', function ()
+        it('should add and remove mouse events to document', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
-            const spy = sinon.spy(window.document, 'addEventListener');
+            const addSpy = sinon.spy(window.document, 'addEventListener');
+            const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = false;
 
             manager.addEvents();
 
-            expect(spy).to.have.been.calledOnce;
-            expect(spy).to.have.been.calledWith('mousemove');
+            expect(addSpy).to.have.been.calledOnce;
+            expect(addSpy).to.have.been.calledWith('mousemove');
 
-            spy.restore();
             manager.removeEvents();
+
+            expect(removeSpy).to.have.been.calledOnce;
+            expect(removeSpy).to.have.been.calledWith('mousemove');
+
+            addSpy.restore();
+            removeSpy.restore();
         });
 
-        it('should attach mouse events to window', function ()
+        it('should add and remove mouse events to window', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
-            const spy = sinon.spy(window, 'addEventListener');
+            const addSpy = sinon.spy(window, 'addEventListener');
+            const removeSpy = sinon.spy(window, 'removeEventListener');
 
             manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
             manager.supportsPointerEvents = false;
 
             manager.addEvents();
 
-            expect(spy).to.have.been.calledOnce;
-            expect(spy).to.have.been.calledWith('mouseup');
+            expect(addSpy).to.have.been.calledOnce;
+            expect(addSpy).to.have.been.calledWith('mouseup');
 
-            spy.restore();
             manager.removeEvents();
+
+            expect(removeSpy).to.have.been.calledOnce;
+            expect(removeSpy).to.have.been.calledWith('mouseup');
+
+            addSpy.restore();
+            removeSpy.restore();
         });
 
-        it('should attach mouse events to element', function ()
+        it('should add and remove mouse events to element', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.interactionDOMElement = element;
             manager.supportsPointerEvents = false;
             manager.supportsTouchEvents = false;
 
             manager.addEvents();
 
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledThrice;
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('mousedown');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('mouseout');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('mouseover');
+            expect(element.addEventListener).to.have.been.calledThrice;
+            expect(element.addEventListener).to.have.been.calledWith('mousedown');
+            expect(element.addEventListener).to.have.been.calledWith('mouseout');
+            expect(element.addEventListener).to.have.been.calledWith('mouseover');
 
             manager.removeEvents();
+
+            expect(element.removeEventListener).to.have.been.calledThrice;
+            expect(element.removeEventListener).to.have.been.calledWith('mousedown');
+            expect(element.removeEventListener).to.have.been.calledWith('mouseout');
+            expect(element.removeEventListener).to.have.been.calledWith('mouseover');
         });
 
-        it('should attach touch events to element', function ()
+        it('should add and remove touch events to element', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            manager.interactionDOMElement = element;
             manager.supportsPointerEvents = false;
             manager.supportsTouchEvents = true;
 
             manager.addEvents();
 
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('touchstart');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('touchcancel');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('touchend');
-            expect(manager.interactionDOMElement.addEventListener).to.have.been.calledWith('touchmove');
+            expect(element.addEventListener).to.have.been.calledWith('touchstart');
+            expect(element.addEventListener).to.have.been.calledWith('touchcancel');
+            expect(element.addEventListener).to.have.been.calledWith('touchend');
+            expect(element.addEventListener).to.have.been.calledWith('touchmove');
 
             manager.removeEvents();
+
+            expect(element.removeEventListener).to.have.been.calledWith('touchstart');
+            expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
+            expect(element.removeEventListener).to.have.been.calledWith('touchend');
+            expect(element.removeEventListener).to.have.been.calledWith('touchmove');
         });
     });
 
