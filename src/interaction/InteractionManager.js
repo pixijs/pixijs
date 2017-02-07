@@ -651,10 +651,7 @@ export default class InteractionManager extends EventEmitter
             }
         }
 
-        if (this.currentCursorMode !== this.cursor)
-        {
-            this.setCursorMode(this.cursor);
-        }
+        this.setCursorMode(this.cursor);
 
         // TODO
     }
@@ -667,6 +664,11 @@ export default class InteractionManager extends EventEmitter
     setCursorMode(mode)
     {
         mode = mode || 'default';
+        // if the mode didn't actually change, bail early
+        if (this.currentCursorMode === mode)
+        {
+            return;
+        }
         this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
 
@@ -1192,10 +1194,7 @@ export default class InteractionManager extends EventEmitter
 
         if (events[0].pointerType === 'mouse')
         {
-            if (this.currentCursorMode !== this.cursor)
-            {
-                this.setCursorMode(this.cursor);
-            }
+            this.setCursorMode(this.cursor);
 
             // TODO BUG for parents interactive object (border order issue)
         }
