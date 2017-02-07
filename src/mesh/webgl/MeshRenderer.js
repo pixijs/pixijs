@@ -124,6 +124,7 @@ export default class MeshRenderer extends core.ObjectRenderer
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
 
+        console.log(geometry.attributes)
         // first update - and create the buffers!
         for (let i = 0; i < buffers.length; i++)
         {
@@ -165,11 +166,29 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         for (const j in attributes)
         {
-            if (tempStride[attributes[j].buffer] === glShader.attributes[j].size * byteSizeMap[attributes[j].type])
+            let attribute = attributes[j];
+            let glAttribute = glShader.attributes[j];
+
+            if(attribute.stride === undefined)
             {
-                tempStride[attributes[j].buffer] = 0;
+                if (tempStride[attribute.buffer] === glAttribute.size * byteSizeMap[attribute.type])
+                {
+                    attribute.stride = 0;
+                }
+                else
+                {
+                    attribute.stride = tempStride[attribute.buffer];
+                }
+            }
+
+            if(attribute.start === undefined)
+            {
+                attribute.start = tempStart[attribute.buffer];
+
+                tempStart[attribute.buffer] += glAttribute.size * byteSizeMap[attribute.type];
             }
         }
+
 
         // next update the attributes buffer..
         for (const j in attributes)
@@ -185,14 +204,13 @@ export default class MeshRenderer extends core.ObjectRenderer
                             glShader.attributes[j],
                             attribute.type || 5126, // (5126 = FLOAT)
                             attribute.normalized,
-                            tempStride[attribute.buffer],
-                            tempStart[attribute.buffer]);
-
-            tempStart[attribute.buffer] += glShader.attributes[j].size * byteSizeMap[attribute.type];
+                            attribute.stride,
+                            attribute.start);
         }
 
         geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
 
+        console.log(vao);
         return vao;
     }
 }

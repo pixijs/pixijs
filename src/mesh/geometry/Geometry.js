@@ -4,6 +4,7 @@ import interleaveTypedArrays from '../../core/utils/interleaveTypedArrays';
 import getBufferType from '../../core/utils/getBufferType';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
+let UID = 0;
 
 /* eslint-disable object-shorthand */
 const map = {
@@ -56,6 +57,8 @@ export default class Geometry
          * @type {Array<VertexArrayObject>}
          */
         this.glVertexArrayObjects = [];
+
+        this.id = UID++;
     }
 
     /**
@@ -74,6 +77,11 @@ export default class Geometry
     */
     addAttribute(id, buffer, size, normalised = false, type, stride, start)
     {
+        if(!buffer)
+        {
+            buffer = new Float32Array(2);
+        }
+
         // check if this is a buffer!
         if (!buffer.data)
         {
