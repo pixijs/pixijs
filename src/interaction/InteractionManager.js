@@ -1301,7 +1301,9 @@ export default class InteractionManager extends EventEmitter
                 }
             }
 
-            if (isMouse)
+            // only change the cursor if it has not already been changed (by something deeper in the
+            // display tree)
+            if (isMouse && this.cursor === null)
             {
                 this.cursor = displayObject.cursor;
             }
