@@ -661,6 +661,8 @@ export default class InteractionManager extends EventEmitter
      */
     setCursorMode(mode)
     {
+        // eslint-disable-next-line
+        console.log('setCursorMode - new mode: ', mode);
         mode = mode || 'default';
         // if the mode didn't actually change, bail early
         if (this.currentCursorMode === mode)
@@ -884,6 +886,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerDown(originalEvent)
     {
+        // eslint-disable-next-line
+        console.log('onPointerDown - event type: ', originalEvent.type);
         const events = this.normalizeToPointerData(originalEvent);
 
         /**
@@ -1021,6 +1025,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerCancel(event)
     {
+        // eslint-disable-next-line
+        console.log('onPointerCancel - event type: ', event.type);
         this.onPointerComplete(event, true, this.processPointerCancel);
     }
 
@@ -1057,6 +1063,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerUp(event)
     {
+        // eslint-disable-next-line
+        console.log('onPointerUp - event type: ', event.type);
         this.onPointerComplete(event, false, this.processPointerUp);
     }
 
@@ -1156,6 +1164,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerMove(originalEvent)
     {
+        // eslint-disable-next-line
+        console.log('onPointerMove - event type: ', originalEvent.type);
         const events = this.normalizeToPointerData(originalEvent);
 
         if (events[0].pointerType === 'mouse')
@@ -1235,6 +1245,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerOut(originalEvent)
     {
+        // eslint-disable-next-line
+        console.log('onPointerOut - event type: ', originalEvent.type);
         const events = this.normalizeToPointerData(originalEvent);
 
         // Only mouse and pointer can call onPointerOut, so events will always be length 1
@@ -1287,6 +1299,12 @@ export default class InteractionManager extends EventEmitter
 
         if (trackingData === undefined) return;
 
+        if (hit)
+        {
+            // eslint-disable-next-line
+            console.log('processPointerOverOut & hit a thing - mouseOverRenderer:', this.mouseOverRenderer, 'displayObject.cursor: ', displayObject.cursor);
+        }
+
         if (hit && this.mouseOverRenderer)
         {
             if (!trackingData.over)
@@ -1330,6 +1348,8 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerOver(originalEvent)
     {
+        // eslint-disable-next-line
+        console.log('onPointerOver - event type: ', originalEvent.type);
         const events = this.normalizeToPointerData(originalEvent);
 
         // Only mouse and pointer can call onPointerOver, so events will always be length 1
