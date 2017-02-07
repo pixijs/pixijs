@@ -566,19 +566,21 @@ export default class InteractionManager extends EventEmitter
             window.removeEventListener('pointercancel', this.onPointerCancel, true);
             window.removeEventListener('pointerup', this.onPointerUp, true);
         }
-
-        window.document.removeEventListener('mousemove', this.onPointerMove, true);
-        this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
-        this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
-        this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
-        window.removeEventListener('mouseup', this.onPointerUp, true);
-
-        if (this.supportsTouchEvents)
+        else
         {
-            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
-            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+            window.document.removeEventListener('mousemove', this.onPointerMove, true);
+            this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
+            this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
+            this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
+            window.removeEventListener('mouseup', this.onPointerUp, true);
+
+            if (this.supportsTouchEvents)
+            {
+                this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
+                this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+                this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
+                this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+            }
         }
 
         this.interactionDOMElement = null;
