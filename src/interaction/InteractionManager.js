@@ -1430,7 +1430,7 @@ export default class InteractionManager extends EventEmitter
         // This is the way InteractionManager processed touch events before the refactoring, so I've kept
         // it here. But it doesn't make that much sense to me, since mapPositionToPoint already factors
         // in this.resolution, so this just divides by this.resolution twice for touch events...
-        if (navigator.isCocoonJS && interactionEvent.pointerType === 'touch')
+        if (navigator.isCocoonJS && pointerEvent.pointerType === 'touch')
         {
             interactionData.global.x = interactionData.global.x / this.resolution;
             interactionData.global.y = interactionData.global.y / this.resolution;
