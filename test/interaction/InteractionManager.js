@@ -657,6 +657,26 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(defaultSpy).to.have.been.called;
         });
 
+        it('cursor callback should only be called if the cursor actually changed', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const defaultSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = null;
+            pointer.interaction.cursorStyles.default = defaultSpy;
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(20, 20);
+
+            expect(defaultSpy).to.have.been.calledOnce;
+        });
+
         it('cursor style object should be fully applied', function ()
         {
             const stage = new PIXI.Container();
