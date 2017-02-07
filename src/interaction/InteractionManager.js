@@ -507,6 +507,9 @@ export default class InteractionManager extends EventEmitter
         {
             window.document.addEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+            // pointerout is fired in addition to pointerup (for touch events) and pointercancel
+            // we already handle those, so for the purposes of what we do in onPointerOut, we only
+            // care about the pointerleave event
             this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
             window.addEventListener('pointercancel', this.onPointerCancel, true);
