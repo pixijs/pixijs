@@ -194,4 +194,14 @@ export default {
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
+    /**
+     * Local bounds calculation mode
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {PIXI.LOCAL_BOUNDS_MODE}
+     * @default PIXI.LOCAL_BOUNDS_MODE.FAST_IF_EASY
+     */
+    LOCAL_BOUNDS_MODE: 1,
+
 };
