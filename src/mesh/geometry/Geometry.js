@@ -77,9 +77,9 @@ export default class Geometry
     */
     addAttribute(id, buffer, size, normalised = false, type, stride, start)
     {
-        if(!buffer)
+        if (!buffer)
         {
-            buffer = new Float32Array(2);
+            throw new Error('You must pass a buffer when creating an attribute');
         }
 
         // check if this is a buffer!

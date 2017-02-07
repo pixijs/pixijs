@@ -124,7 +124,6 @@ export default class MeshRenderer extends core.ObjectRenderer
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
 
-        console.log(geometry.attributes)
         // first update - and create the buffers!
         for (let i = 0; i < buffers.length; i++)
         {
@@ -166,10 +165,10 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         for (const j in attributes)
         {
-            let attribute = attributes[j];
-            let glAttribute = glShader.attributes[j];
+            const attribute = attributes[j];
+            const glAttribute = glShader.attributes[j];
 
-            if(attribute.stride === undefined)
+            if (attribute.stride === undefined)
             {
                 if (tempStride[attribute.buffer] === glAttribute.size * byteSizeMap[attribute.type])
                 {
@@ -181,14 +180,13 @@ export default class MeshRenderer extends core.ObjectRenderer
                 }
             }
 
-            if(attribute.start === undefined)
+            if (attribute.start === undefined)
             {
                 attribute.start = tempStart[attribute.buffer];
 
                 tempStart[attribute.buffer] += glAttribute.size * byteSizeMap[attribute.type];
             }
         }
-
 
         // next update the attributes buffer..
         for (const j in attributes)
@@ -210,7 +208,6 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
 
-        console.log(vao);
         return vao;
     }
 }
