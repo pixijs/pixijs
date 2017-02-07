@@ -95,7 +95,7 @@ export function hex2string(hex)
  */
 export function rgb2hex(rgb)
 {
-    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255));
+    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
 }
 
 /**
