@@ -39,6 +39,26 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
     sampler2D: 'uniform1i(location, value)',
 };
 
+const GLSL_TO_ARRAY_SETTERS = {
+
+    float:    `gl.uniform1fv(location, value)`,
+
+    vec2:     `gl.uniform2fv(location, value)`,
+    vec3:     `gl.uniform3fv(location, value)`,
+    vec4:     'gl.uniform4fv(location, value)',
+
+    int:      'gl.uniform1iv(location, value)',
+    ivec2:    'gl.uniform2iv(location, value)',
+    ivec3:    'gl.uniform3iv(location, value)',
+    ivec4:    'gl.uniform4iv(location, value)',
+
+    bool:     'gl.uniform1iv(location, value)',
+    bvec2:    'gl.uniform2iv(location, value)',
+    bvec3:    'gl.uniform3iv(location, value)',
+    bvec4:    'gl.uniform4iv(location, value)',
+
+    sampler2D: 'uniform1i(location, value)',
+};
 export default function generateUniformsSync(uniformData)
 {
     let textureCount = 1;
@@ -49,9 +69,10 @@ export default function generateUniformsSync(uniformData)
     for (const i in uniformData)
     {
         const data = uniformData[i];
+        // console.log(i, data.size);
 
         // TODO && uniformData[i].value !== 0 <-- do we still need this?
-        if (data.type === 'float')
+        if (data.type === 'float' && data.size === 1)
         {
             func += `\nif(uniformValues.${i} !== uniformData.${i}.value)
 {
@@ -59,7 +80,7 @@ export default function generateUniformsSync(uniformData)
     gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
 }\n`;
         }
-        else if (data.type === 'sampler2D')
+        else if (data.type === 'sampler2D' && data.size === 1)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
@@ -80,12 +101,12 @@ else
     uniformValues.${i}.bind();
 }`;
         }
-        else if (data.type === 'mat3')
+        else if (data.type === 'mat3' && data.size === 1)
         {
             func += `\nvalue = uniformValues.${i};
 gl.uniformMatrix3fv(uniformData.${i}.location, false, (value.a === undefined) ? value : value.toArray(true));\n`;
         }
-        else if (data.type === 'vec2')
+        else if (data.type === 'vec2' && data.size === 1)
         {
             // TODO - do we need both here?
             // maybe we can get away with only using points?
@@ -113,7 +134,9 @@ else
         }
         else
         {
-            const template = GLSL_TO_SINGLE_SETTERS_CACHED[data.type].replace('location', `uniformData.${i}.location`);
+            const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
+
+            const template =  templateType[data.type].replace('location', `uniformData.${i}.location`);
 
             func += `\ncacheValue = uniformData.${i}.value;
 value = uniformValues.${i};
@@ -121,8 +144,8 @@ ${template};\n`;
         }
     }
 
-    // console.log(' --------------- ')
-    // console.log(func);
+    //console.log(' --------------- ')
+    //console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
 }
