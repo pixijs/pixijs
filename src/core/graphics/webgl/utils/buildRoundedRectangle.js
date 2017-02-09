@@ -76,6 +76,21 @@ export default function buildRoundedRectangle(graphicsData, webGLData)
     }
 }
 
+/** 
+ * Calculate a single point for a quadratic bezier curve.
+ * Utility function used by quadraticBezierCurve.
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
+ */
+function getPt(n1, n2, perc)
+{
+    const diff = n2 - n1;
+
+    return n1 + (diff * perc);
+}
+
 /**
  * Calculate the points for a quadratic bezier curve. (helper function..)
  * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
@@ -104,13 +119,6 @@ function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY, out = [])
     let yb = 0;
     let x = 0;
     let y = 0;
-
-    function getPt(n1, n2, perc)
-    {
-        const diff = n2 - n1;
-
-        return n1 + (diff * perc);
-    }
 
     for (let i = 0, j = 0; i <= n; ++i)
     {
