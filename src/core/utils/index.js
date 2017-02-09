@@ -2,6 +2,7 @@ import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
+import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 
 let nextUid = 0;
@@ -33,6 +34,7 @@ export {
      * @type {mixin}
      */
     pluginTarget,
+    mixins,
 };
 
 /**
@@ -93,7 +95,7 @@ export function hex2string(hex)
  */
 export function rgb2hex(rgb)
 {
-    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255));
+    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
 }
 
 /**

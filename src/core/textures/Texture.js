@@ -3,7 +3,7 @@ import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache } from '../utils';
+import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -413,6 +413,43 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Create a texture from a source and add to the cache.
+     *
+     * @static
+     * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
+     * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
+     * @param {String} [name] - Human readible name for the texture cache. If no name is
+     *        specified, only `imageUrl` will be used as the cache ID.
+     * @return {PIXI.Texture} Output texture
+     */
+    static fromLoader(source, imageUrl, name)
+    {
+        const baseTexture = new BaseTexture(source, null, getResolutionOfUrl(imageUrl));
+        const texture = new Texture(baseTexture);
+
+        baseTexture.imageUrl = imageUrl;
+
+        // No name, use imageUrl instead
+        if (!name)
+        {
+            name = imageUrl;
+        }
+
+        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+        BaseTextureCache[name] = baseTexture;
+        TextureCache[name] = texture;
+
+        // also add references by url if they are different.
+        if (name !== imageUrl)
+        {
+            BaseTextureCache[imageUrl] = baseTexture;
+            TextureCache[imageUrl] = texture;
+        }
+
+        return texture;
+    }
+
+    /**
      * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
@@ -459,7 +496,9 @@ export default class Texture extends EventEmitter
 
         if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
         {
-            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions ${this}`);
+            throw new Error('Texture Error: frame does not fit inside the base Texture dimensions: '
+                + `X: ${frame.x} + ${frame.width} > ${this.baseTexture.width} `
+                + `Y: ${frame.y} + ${frame.height} > ${this.baseTexture.height}`);
         }
 
         // this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
