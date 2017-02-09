@@ -288,13 +288,12 @@ export default class Container extends DisplayObject
             for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].parent = null;
+                if (removed[i].transform)
+                {
+                    removed[i].transform._parentID = -1;
+                }
             }
 
-            // ensure a transform will be recalculated..
-            if (this.transform)
-            {
-                this.transform._parentID = -1;
-            }
             this._boundsID++;
 
             this.onChildrenChange(beginIndex);

@@ -22,6 +22,10 @@ function testRemoveChild(fn)
     {
         container.removeChildAt(container.children.indexOf(obj));
     });
+    fn(function (container, obj)
+    {
+        container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj)+1);
+    });
 }
 
 describe('PIXI.Container', function ()
@@ -579,22 +583,6 @@ describe('PIXI.Container', function ()
                 .to.throw('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1, 1))
                 .to.throw('removeChildren: numeric values are outside the acceptable range.');
-        });
-
-        it('should flag transform for recalculation', function ()
-        {
-            const container = new PIXI.Container();
-
-            container.addChild(new PIXI.Container());
-            container.getBounds();
-
-            const parentID = container.transform._parentID;
-            const boundsID = container._boundsID;
-
-            container.removeChildren();
-
-            expect(parentID).to.not.be.equals(container.transform._parentID);
-            expect(boundsID).to.not.be.equals(container._boundsID);
         });
     });
 
