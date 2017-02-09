@@ -109,7 +109,7 @@ describe('PIXI.Container', function ()
             mockAddChild(container, child);
 
             expect(boundsID).to.not.be.equals(container._boundsID);
-            // expect(childParentID).to.not.be.equals(child.transform._parentID);
+            expect(childParentID).to.not.be.equals(child.transform._parentID);
         }));
 
         it('should recalculate added child correctly', testAddChild(function (mockAddChild)
@@ -283,7 +283,7 @@ describe('PIXI.Container', function ()
 
             mockRemoveChild(container, child);
 
-            // expect(childParentID).to.not.be.equals(child.transform._parentID);
+            expect(childParentID).to.not.be.equals(child.transform._parentID);
             expect(boundsID).to.not.be.equals(container._boundsID);
         }));
 
