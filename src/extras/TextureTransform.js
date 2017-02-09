@@ -8,7 +8,8 @@ const tempMat = new Matrix();
  * @class
  * @memberof PIXI.extras
  */
-export default class TextureTransform {
+export default class TextureTransform
+{
     /**
      *
      * @param {PIXI.Texture} texture observed texture
