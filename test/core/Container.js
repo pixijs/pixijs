@@ -24,7 +24,7 @@ function testRemoveChild(fn)
     });
     fn(function (container, obj)
     {
-        container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj)+1);
+        container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj) + 1);
     });
 }
 
