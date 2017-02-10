@@ -173,14 +173,14 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(element.addEventListener).to.have.been.calledThrice;
             expect(element.addEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.addEventListener).to.have.been.calledWith('pointerout');
+            expect(element.addEventListener).to.have.been.calledWith('pointerleave');
             expect(element.addEventListener).to.have.been.calledWith('pointerover');
 
             manager.removeEvents();
 
             expect(element.removeEventListener).to.have.been.calledThrice;
             expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.removeEventListener).to.have.been.calledWith('pointerout');
+            expect(element.removeEventListener).to.have.been.calledWith('pointerleave');
             expect(element.removeEventListener).to.have.been.calledWith('pointerover');
         });
 
@@ -898,59 +898,6 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             pointer.mousemove(60, 60);
             expect(pointer.renderer.view.style.cursor).to.equal('');
-        });
-
-        it('cursor should be the cursor of deepest item hit', function ()
-        {
-            const stage = new PIXI.Container();
-            const graphics = new PIXI.Graphics();
-            const pointer = new MockPointer(stage);
-            const container = new PIXI.Container();
-
-            stage.addChild(container);
-            container.interactive = true;
-            container.hitArea = new PIXI.Rectangle(0, 0, 300, 300);
-            container.cursor = 'pointer';
-
-            container.addChild(graphics);
-            graphics.beginFill(0xFFFFFF);
-            graphics.drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            graphics.cursor = 'help';
-            pointer.interaction.cursorStyles.help = 'help';
-
-            pointer.mousemove(10, 10);
-
-            expect(pointer.renderer.view.style.cursor).to.equal('help');
-        });
-
-        it('cursor should be middle item if deepest did not specify cursor', function ()
-        {
-            const stage = new PIXI.Container();
-            const inner = new PIXI.Graphics();
-            const pointer = new MockPointer(stage);
-            const outer = new PIXI.Container();
-            const middle = new PIXI.Container();
-
-            stage.addChild(outer);
-            outer.interactive = true;
-            outer.hitArea = new PIXI.Rectangle(0, 0, 300, 300);
-            outer.cursor = 'pointer';
-
-            outer.addChild(middle);
-            middle.interactive = true;
-            middle.hitArea = new PIXI.Rectangle(0, 0, 300, 300);
-            middle.cursor = 'help';
-
-            middle.addChild(inner);
-            inner.beginFill(0xFFFFFF);
-            inner.drawRect(0, 0, 50, 50);
-            inner.interactive = true;
-            pointer.interaction.cursorStyles.help = 'help';
-
-            pointer.mousemove(10, 10);
-
-            expect(pointer.renderer.view.style.cursor).to.equal('help');
         });
     });
 
