@@ -76,13 +76,18 @@ export default function buildRoundedRectangle(graphicsData, webGLData)
     }
 }
 
-/** 
+/**
  * Calculate a single point for a quadratic bezier curve.
  * Utility function used by quadraticBezierCurve.
  * Ignored from docs since it is not directly exposed.
  *
  * @ignore
  * @private
+ * @param {number} n1 - first number
+ * @param {number} n2 - second number
+ * @param {number} perc - percentage
+ * @return {number} the result
+ *
  */
 function getPt(n1, n2, perc)
 {
