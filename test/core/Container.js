@@ -1,5 +1,29 @@
 'use strict';
 
+function testAddChild(fn)
+{
+    fn(function (container, obj)
+    {
+        container.addChild(obj);
+    });
+    fn(function (container, obj)
+    {
+        container.addChildAt(obj);
+    });
+}
+
+function testRemoveChild(fn)
+{
+    fn(function (container, obj)
+    {
+        container.removeChild(obj);
+    });
+    fn(function (container, obj)
+    {
+        container.removeChildAt(container.children.indexOf(obj));
+    });
+}
+
 describe('PIXI.Container', function ()
 {
     describe('parent', function ()
@@ -71,20 +95,48 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag transform for recalculation', function ()
+        it('should flag child transform and container bounds for recalculation', testAddChild(function (mockAddChild)
         {
             const container = new PIXI.Container();
+            const child = new PIXI.Container();
 
             container.getBounds();
+            child.getBounds();
 
-            const parentID = container.transform._parentID;
             const boundsID = container._boundsID;
+            const childParentID = child.transform._parentID;
 
-            container.addChild(new PIXI.Container());
+            mockAddChild(container, child);
 
-            expect(parentID).to.not.be.equals(container.transform._parentID);
             expect(boundsID).to.not.be.equals(container._boundsID);
-        });
+            // expect(childParentID).to.not.be.equals(child.transform._parentID);
+        }));
+
+        it('should recalculate added child correctly', testAddChild(function (mockAddChild)
+        {
+            const parent = new PIXI.Container();
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            parent.addChild(container);
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.position.set(100, 200);
+            container.updateTransform();
+
+            graphics.getBounds();
+            // Oops, that can happen sometimes!
+            graphics.transform._parentID = container.transform._worldID + 1;
+
+            mockAddChild(container, graphics);
+
+            const bounds = graphics.getBounds();
+
+            expect(bounds.x).to.be.equal(100);
+            expect(bounds.y).to.be.equal(200);
+            expect(bounds.width).to.be.equal(10);
+            expect(bounds.height).to.be.equal(10);
+        }));
     });
 
     describe('removeChildAt', function ()
@@ -109,22 +161,6 @@ describe('PIXI.Container', function ()
             container.removeChildAt(0);
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
-        });
-
-        it('should flag transform for recalculation', function ()
-        {
-            const container = new PIXI.Container();
-
-            container.addChild(new PIXI.Container());
-            container.getBounds();
-
-            const parentID = container.transform._parentID;
-            const boundsID = container._boundsID;
-
-            container.removeChildAt(0);
-
-            expect(parentID).to.not.be.equals(container.transform._parentID);
-            expect(boundsID).to.not.be.equals(container._boundsID);
         });
     });
 
@@ -188,18 +224,6 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.called;
             expect(spy).to.have.been.calledWith(0);
         });
-
-        it('should flag transform for recalculation', function ()
-        {
-            const container = new PIXI.Container();
-            const parentID = container.transform._parentID;
-            const boundsID = container._boundsID;
-
-            container.addChildAt(new PIXI.Container(), 0);
-
-            expect(parentID).to.not.be.equals(container.transform._parentID);
-            expect(boundsID).to.not.be.equals(container._boundsID);
-        });
     });
 
     describe('removeChild', function ()
@@ -246,7 +270,7 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag transform for recalculation', function ()
+        it('should flag transform for recalculation', testRemoveChild(function (mockRemoveChild)
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
@@ -254,14 +278,35 @@ describe('PIXI.Container', function ()
             container.addChild(child);
             container.getBounds();
 
-            const parentID = container.transform._parentID;
+            const childParentID = child.transform._parentID;
             const boundsID = container._boundsID;
 
-            container.removeChild(child);
+            mockRemoveChild(container, child);
 
-            expect(parentID).to.not.be.equals(container.transform._parentID);
+            // expect(childParentID).to.not.be.equals(child.transform._parentID);
             expect(boundsID).to.not.be.equals(container._boundsID);
-        });
+        }));
+
+        it('should recalculate removed child correctly', testRemoveChild(function (mockRemoveChild)
+        {
+            const parent = new PIXI.Container();
+            const container = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+
+            parent.addChild(container);
+
+            graphics.drawRect(0, 0, 10, 10);
+            container.position.set(100, 200);
+            container.addChild(graphics);
+            graphics.getBounds();
+
+            mockRemoveChild(container, graphics);
+
+            const bounds = graphics.getBounds();
+
+            expect(bounds.x).to.be.equal(0);
+            expect(bounds.y).to.be.equal(0);
+        }));
     });
 
     describe('getChildIndex', function ()
