@@ -217,6 +217,14 @@ export default class BaseTexture extends EventEmitter
          * @event error
          * @memberof PIXI.BaseTexture#
          */
+
+        /**
+         * Fired when destroy() is called.
+         *
+         * @protected
+         * @event destroy
+         * @memberof PIXI.BaseTexture#
+         */
     }
 
     /**
