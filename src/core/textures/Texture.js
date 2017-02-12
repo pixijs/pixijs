@@ -140,6 +140,7 @@ export default class Texture extends EventEmitter
         {
             baseTexture.once('loaded', this.onBaseTextureLoaded, this);
         }
+        baseTexture.on('destroy', this.destroy, this);
 
         /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
@@ -195,7 +196,6 @@ export default class Texture extends EventEmitter
         }
 
         this.baseTexture.on('update', this.onBaseTextureUpdated, this);
-        this.baseTexture.on('destroy', this.destroy, this);
         this.emit('update', this);
     }
 
@@ -216,16 +216,6 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * Callback for dispose event from the base texture.
-     *
-     * @private
-     */
-    onBaseTextureDisposed()
-    {
-        this.destroy();
-    }
-
-    /**
      * Destroys this texture
      *
      * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
@@ -234,8 +224,16 @@ export default class Texture extends EventEmitter
     {
         if (this.baseTexture)
         {
-            this.baseTexture.off('dispose', this.onBaseTextureDisposed, this);
-            if (destroyBase)
+            // remove BaseTexture stored under the texture name if destroyBase is true or
+            // is our base texture (in which case this is the event callback for 'destroy')
+            if ((destroyBase === true || destroyBase === this.baseTexture)
+                && this.name && BaseTextureCache[this.name] === this.baseTexture)
+            {
+                delete BaseTextureCache[this.name];
+            }
+
+            this.baseTexture.off('destroy', this.destroy, this);
+            if (destroyBase === true)
             {
                 this.baseTexture.destroy();
             }
@@ -455,12 +453,15 @@ export default class Texture extends EventEmitter
         }
         texture.name = name;
 
-        //TODO: Figure out how to handle both name and imageUrl for both texture and base texture
-        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+        // for cleanup, this Texture instance will be responsible for removing from the texture
+        // caches both the Texture and BaseTexture under the name key
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
 
         // also add references by url if they are different.
+        // Texture doesn't keep track of imageUrl, but the BaseTexture does, so it will remove
+        // this texture and itself from the texture cache for the imageUrl key
         if (name !== imageUrl)
         {
             BaseTextureCache[imageUrl] = baseTexture;
