@@ -319,6 +319,8 @@ export default class Texture extends EventEmitter
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
             TextureCache[imageUrl] = texture;
+            // set up listener to clean the cache when the base texture is destroyed
+            texture.listenForDestroy();
         }
 
         return texture;
