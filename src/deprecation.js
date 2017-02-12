@@ -695,7 +695,7 @@ core.Text.prototype.determineFontProperties = function determineFontProperties(f
     warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
         + 'e.g : Text.calculateFontProperties(fontStyle);');
 
-    return Text.calculateFontProperties(fontStyle);
+    return core.Text.calculateFontProperties(fontStyle);
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
