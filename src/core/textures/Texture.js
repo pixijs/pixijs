@@ -140,7 +140,6 @@ export default class Texture extends EventEmitter
         {
             baseTexture.once('loaded', this.onBaseTextureLoaded, this);
         }
-        baseTexture.on('destroy', this.destroy, this);
 
         /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
@@ -164,6 +163,18 @@ export default class Texture extends EventEmitter
          * @type {string}
          */
         this.name = null;
+    }
+
+    /**
+     * Attaches a "destroy" listener to the base texture, so that it is destroyed and removed from
+     * global texture caches when the base texture is destroyed.
+     */
+    listenForDestroy()
+    {
+        if (this.baseTexture)
+        {
+            this.baseTexture.once('destroy', this.destroy, this);
+        }
     }
 
     /**
@@ -468,6 +479,9 @@ export default class Texture extends EventEmitter
             TextureCache[imageUrl] = texture;
         }
 
+        // set up listener to clean the cache when the base texture is destroyed
+        texture.listenForDestroy();
+
         return texture;
     }
 
@@ -487,6 +501,8 @@ export default class Texture extends EventEmitter
             texture.name = id;
         }
         TextureCache[id] = texture;
+        // set up listener to clean the cache when the base texture is destroyed
+        texture.listenForDestroy();
     }
 
     /**

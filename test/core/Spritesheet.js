@@ -18,9 +18,11 @@ describe('PIXI.Spritesheet', function ()
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
                 expect(textures[id].width).to.equal(spritesheet.data.frames[id].frame.w / spritesheet.resolution);
                 expect(textures[id].height).to.equal(spritesheet.data.frames[id].frame.h / spritesheet.resolution);
+                expect(PIXI.utils.TextureCache[id]).to.be.an.instanceof(PIXI.Texture);
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
                 expect(spritesheet.baseTexture).to.be.null;
+                expect(PIXI.utils.TextureCache[id]).to.not.exist;
                 done();
             });
         };
