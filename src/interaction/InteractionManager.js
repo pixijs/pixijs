@@ -507,7 +507,10 @@ export default class InteractionManager extends EventEmitter
         {
             window.document.addEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
-            this.interactionDOMElement.addEventListener('pointerout', this.onPointerOut, true);
+            // pointerout is fired in addition to pointerup (for touch events) and pointercancel
+            // we already handle those, so for the purposes of what we do in onPointerOut, we only
+            // care about the pointerleave event
+            this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
             window.addEventListener('pointercancel', this.onPointerCancel, true);
             window.addEventListener('pointerup', this.onPointerUp, true);
@@ -561,7 +564,7 @@ export default class InteractionManager extends EventEmitter
         {
             window.document.removeEventListener('pointermove', this.onPointerMove, true);
             this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
-            this.interactionDOMElement.removeEventListener('pointerout', this.onPointerOut, true);
+            this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
             this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
             window.removeEventListener('pointercancel', this.onPointerCancel, true);
             window.removeEventListener('pointerup', this.onPointerUp, true);
@@ -648,10 +651,7 @@ export default class InteractionManager extends EventEmitter
             }
         }
 
-        if (this.currentCursorMode !== this.cursor)
-        {
-            this.setCursorMode(this.cursor);
-        }
+        this.setCursorMode(this.cursor);
 
         // TODO
     }
@@ -664,6 +664,11 @@ export default class InteractionManager extends EventEmitter
     setCursorMode(mode)
     {
         mode = mode || 'default';
+        // if the mode didn't actually change, bail early
+        if (this.currentCursorMode === mode)
+        {
+            return;
+        }
         this.currentCursorMode = mode;
         const style = this.cursorStyles[mode];
 
@@ -1189,10 +1194,7 @@ export default class InteractionManager extends EventEmitter
 
         if (events[0].pointerType === 'mouse')
         {
-            if (this.currentCursorMode !== this.cursor)
-            {
-                this.setCursorMode(this.cursor);
-            }
+            this.setCursorMode(this.cursor);
 
             // TODO BUG for parents interactive object (border order issue)
         }
@@ -1299,7 +1301,9 @@ export default class InteractionManager extends EventEmitter
                 }
             }
 
-            if (isMouse)
+            // only change the cursor if it has not already been changed (by something deeper in the
+            // display tree)
+            if (isMouse && this.cursor === null)
             {
                 this.cursor = displayObject.cursor;
             }
@@ -1412,7 +1416,7 @@ export default class InteractionManager extends EventEmitter
         // This is the way InteractionManager processed touch events before the refactoring, so I've kept
         // it here. But it doesn't make that much sense to me, since mapPositionToPoint already factors
         // in this.resolution, so this just divides by this.resolution twice for touch events...
-        if (navigator.isCocoonJS && event.pointerType === 'touch')
+        if (navigator.isCocoonJS && pointerEvent.pointerType === 'touch')
         {
             interactionData.global.x = interactionData.global.x / this.resolution;
             interactionData.global.y = interactionData.global.y / this.resolution;
