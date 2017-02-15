@@ -96,10 +96,10 @@ export default {
     _pointerDown: false,
 
     /**
-     * Internal check to detect if a user has touched the displayObject
+     * Internal check to detect the number of active touches on the displayObject
      *
-     * @inner {boolean}
+     * @inner {number}
      * @private
      */
-    _touchDown: false,
+    _touchCount: 0,
 };
