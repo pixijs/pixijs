@@ -1,9 +1,6 @@
 'use strict';
 
-function isWebGLSupported(fn)
-{
-    return PIXI.utils.isWebGLSupported() ? fn : undefined;
-}
+const isWebGLSupported = require('../isWebGLSupported');
 
 describe('PIXI.WebGLRenderer', function ()
 {
