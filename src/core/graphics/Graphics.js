@@ -765,24 +765,17 @@ export default class Graphics extends Container
 
         if (!this._spriteRect)
         {
-            if (!Graphics._SPRITE_TEXTURE)
-            {
-                Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
+            const canvas = document.createElement('canvas');
 
-                const canvas = document.createElement('canvas');
+            canvas.width = 10;
+            canvas.height = 10;
 
-                canvas.width = 10;
-                canvas.height = 10;
+            const context = canvas.getContext('2d');
 
-                const context = canvas.getContext('2d');
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, 10, 10);
 
-                context.fillStyle = 'white';
-                context.fillRect(0, 0, 10, 10);
-
-                Graphics._SPRITE_TEXTURE = Texture.fromCanvas(canvas);
-            }
-
-            this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
+            this._spriteRect = new Sprite(Texture.fromCanvas(canvas));
         }
         if (this.tint === 0xffffff)
         {
@@ -806,8 +799,8 @@ export default class Graphics extends Container
         this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
         this._spriteRect.blendMode = this.blendMode;
 
-        Graphics._SPRITE_TEXTURE._frame.width = rect.width;
-        Graphics._SPRITE_TEXTURE._frame.height = rect.height;
+        this._spriteRect.texture._frame.width = rect.width;
+        this._spriteRect.texture._frame.height = rect.height;
 
         this._spriteRect.transform.worldTransform = this.transform.worldTransform;
 
@@ -1173,5 +1166,3 @@ export default class Graphics extends Container
     }
 
 }
-
-Graphics._SPRITE_TEXTURE = null;
