@@ -451,6 +451,9 @@ export default class WebGLRenderer extends SystemRenderer
             this._activeShader = shader;
             shader.bind();
 
+            // `autoProject` normally would be a default parameter set to true
+            // but because of how Babel transpiles default parameters
+            // it hinders the performance of this method.
             if (autoProject !== false)
             {
                 // automatically set the projection matrix
