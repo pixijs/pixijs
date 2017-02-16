@@ -1,11 +1,7 @@
 'use strict';
 
 const MockPointer = require('../interaction/MockPointer');
-
-function isWebGLSupported(fn)
-{
-    return PIXI.utils.isWebGLSupported() ? fn : undefined;
-}
+const isWebGLSupported = require('../isWebGLSupported');
 
 describe('PIXI.Graphics', function ()
 {
