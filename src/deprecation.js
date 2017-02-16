@@ -5,6 +5,7 @@ import * as extras from './extras';
 import * as filters from './filters';
 import * as prepare from './prepare';
 import * as loaders from './loaders';
+import * as interaction from './interaction';
 
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
@@ -694,7 +695,7 @@ core.Text.prototype.determineFontProperties = function determineFontProperties(f
     warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
         + 'e.g : Text.calculateFontProperties(fontStyle);');
 
-    return Text.calculateFontProperties(fontStyle);
+    return core.Text.calculateFontProperties(fontStyle);
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
@@ -1001,5 +1002,71 @@ Object.defineProperties(loaders.Loader.prototype, {
 
             return this.use;
         },
+    },
+});
+
+/**
+ * @name PIXI.interaction.interactiveTarget#defaultCursor
+ * @static
+ * @type {number}
+ * @see PIXI.interaction.interactiveTarget#cursor
+ * @deprecated since 4.3.0
+ */
+Object.defineProperty(interaction.interactiveTarget, 'defaultCursor', {
+    set(value)
+    {
+        warn('Property defaultCursor has been replaced with \'cursor\'. ');
+        this.cursor = value;
+    },
+    get()
+    {
+        warn('Property defaultCursor has been replaced with \'cursor\'. ');
+
+        return this.cursor;
+    },
+    enumerable: true,
+});
+
+/**
+ * @name PIXI.interaction.InteractionManager#defaultCursorStyle
+ * @static
+ * @type {string}
+ * @see PIXI.interaction.InteractionManager#cursorStyles
+ * @deprecated since 4.3.0
+ */
+Object.defineProperty(interaction.InteractionManager, 'defaultCursorStyle', {
+    set(value)
+    {
+        warn('Property defaultCursorStyle has been replaced with \'cursorStyles.default\'. ');
+        this.cursorStyles.default = value;
+    },
+    get()
+    {
+        warn('Property defaultCursorStyle has been replaced with \'cursorStyles.default\'. ');
+
+        return this.cursorStyles.default;
+    },
+});
+
+/**
+ * @name PIXI.interaction.InteractionManager#currentCursorStyle
+ * @static
+ * @type {string}
+ * @see PIXI.interaction.InteractionManager#cursorStyles
+ * @deprecated since 4.3.0
+ */
+Object.defineProperty(interaction.InteractionManager, 'currentCursorStyle', {
+    set(value)
+    {
+        warn('Property currentCursorStyle has been removed.'
+        + 'See the currentCursorMode property, which works differently.');
+        this.currentCursorMode = value;
+    },
+    get()
+    {
+        warn('Property currentCursorStyle has been removed.'
+        + 'See the currentCursorMode property, which works differently.');
+
+        return this.currentCursorMode;
     },
 });

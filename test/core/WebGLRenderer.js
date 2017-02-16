@@ -1,13 +1,10 @@
 'use strict';
 
-function isWebGLSupported(fn)
-{
-    return PIXI.utils.isWebGLSupported() ? fn : function () {}; // eslint-disable-line no-empty-function
-}
+const isWebGLSupported = require('../isWebGLSupported');
 
-describe('PIXI.WebGLRenderer', isWebGLSupported(function ()
+describe('PIXI.WebGLRenderer', function ()
 {
-    it('setting option legacy should disable VAOs and set minimum SPRITE_MAX_TEXTURES to 1', function ()
+    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', isWebGLSupported(function ()
     {
         const renderer = new PIXI.WebGLRenderer(1, 1, { legacy: true });
 
@@ -15,5 +12,5 @@ describe('PIXI.WebGLRenderer', isWebGLSupported(function ()
         expect(renderer.plugins.sprite.MAX_TEXTURES).to.equal(1);
 
         renderer.destroy();
-    });
-}));
+    }));
+});

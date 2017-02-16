@@ -73,11 +73,12 @@ export default class Container extends DisplayObject
             }
 
             child.parent = this;
+            // ensure child transform will be recalculated
+            child.transform._parentID = -1;
 
             this.children.push(child);
 
-            // ensure a transform will be recalculated..
-            this.transform._parentID = -1;
+            // ensure bounds will be recalculated
             this._boundsID++;
 
             // TODO - lets either do all callbacks or all events.. not both!
@@ -108,11 +109,12 @@ export default class Container extends DisplayObject
         }
 
         child.parent = this;
+        // ensure child transform will be recalculated
+        child.transform._parentID = -1;
 
         this.children.splice(index, 0, child);
 
-        // ensure a transform will be recalculated..
-        this.transform._parentID = -1;
+        // ensure bounds will be recalculated
         this._boundsID++;
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -225,10 +227,11 @@ export default class Container extends DisplayObject
             if (index === -1) return null;
 
             child.parent = null;
+            // ensure child transform will be recalculated
+            child.transform._parentID = -1;
             removeItems(this.children, index, 1);
 
-            // ensure a transform will be recalculated..
-            this.transform._parentID = -1;
+            // ensure bounds will be recalculated
             this._boundsID++;
 
             // TODO - lets either do all callbacks or all events.. not both!
@@ -249,11 +252,12 @@ export default class Container extends DisplayObject
     {
         const child = this.getChildAt(index);
 
+        // ensure child transform will be recalculated..
         child.parent = null;
+        child.transform._parentID = -1;
         removeItems(this.children, index, 1);
 
-        // ensure a transform will be recalculated..
-        this.transform._parentID = -1;
+        // ensure bounds will be recalculated
         this._boundsID++;
 
         // TODO - lets either do all callbacks or all events.. not both!
@@ -284,13 +288,12 @@ export default class Container extends DisplayObject
             for (let i = 0; i < removed.length; ++i)
             {
                 removed[i].parent = null;
+                if (removed[i].transform)
+                {
+                    removed[i].transform._parentID = -1;
+                }
             }
 
-            // ensure a transform will be recalculated..
-            if (this.transform)
-            {
-                this.transform._parentID = -1;
-            }
             this._boundsID++;
 
             this.onChildrenChange(beginIndex);

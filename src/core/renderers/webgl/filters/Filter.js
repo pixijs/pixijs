@@ -11,7 +11,7 @@ const SOURCE_KEY_MAP = {};
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-class Filter
+export default class Filter
 {
     /**
      * @param {string} [vertexSrc] - The source of the vertex shader.
@@ -36,8 +36,6 @@ class Filter
 
         this.blendMode = BLEND_MODES.NORMAL;
 
-        // pull out the vertex and shader uniforms if they are not specified..
-        // currently this does not extract structs only default types
         this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
 
         /**
@@ -171,5 +169,3 @@ class Filter
         ].join('\n');
     }
 }
-
-export default Filter;

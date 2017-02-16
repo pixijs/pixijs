@@ -28,8 +28,9 @@ export default class Graphics extends Container
 {
     /**
      *
+     * @param {boolean} [nativeLines=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      */
-    constructor()
+    constructor(nativeLines = false)
     {
         super();
 
@@ -48,6 +49,13 @@ export default class Graphics extends Container
          * @default 0
          */
         this.lineWidth = 0;
+
+        /**
+         * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+         *
+         * @member {boolean}
+         */
+        this.nativeLines = nativeLines;
 
         /**
          * The color of any lines drawn.
@@ -796,6 +804,7 @@ export default class Graphics extends Container
         }
         this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
         this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
+        this._spriteRect.blendMode = this.blendMode;
 
         Graphics._SPRITE_TEXTURE._frame.width = rect.width;
         Graphics._SPRITE_TEXTURE._frame.height = rect.height;
@@ -1031,6 +1040,7 @@ export default class Graphics extends Container
             this.fillColor,
             this.fillAlpha,
             this.filling,
+            this.nativeLines,
             shape
         );
 
