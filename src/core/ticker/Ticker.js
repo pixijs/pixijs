@@ -67,11 +67,12 @@ export default class Ticker
          * is based, this value is neither capped nor scaled.
          * If the platform supports DOMHighResTimeStamp,
          * this value will have a precision of 1 µs.
+         * Defaults to target frame time
          *
          * @member {number}
-         * @default 1 / TARGET_FPMS
+         * @default 16.66
          */
-        this.elapsedMS = 1 / settings.TARGET_FPMS; // default to target frame time
+        this.elapsedMS = 1 / settings.TARGET_FPMS;
 
         /**
          * The last time {@link PIXI.ticker.Ticker#update} was invoked.
