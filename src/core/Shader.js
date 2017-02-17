@@ -32,14 +32,20 @@ function checkPrecision(src)
  */
 export default class Shader extends GLShader
 {
+    /* eslint-disable max-len */
+
     /**
      *
-     * @param {WebGLRenderingContext} gl - The current WebGL rendering context
+     * @param {WebGLRenderingContext} gl - The current WebGL rendering context.
      * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
      * @param {string|string[]} fragmentSrc - The fragment shader source as an array of strings.
+     * @param {string} precision - The float precision of the shader. Options are 'lowp', 'mediump' or 'highp'.
+     * @param {object} attributeLocations - A key value pair showing which location eact attribute should sit, e.g. {position:0, uvs:1}.
      */
-    constructor(gl, vertexSrc, fragmentSrc)
+    constructor(gl, vertexSrc, fragmentSrc, precision, attributeLocations)
     {
-        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+        super(gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc), precision, attributeLocations);
     }
+
+    /* eslint-enable max-len */
 }
