@@ -54,7 +54,7 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         // set unifomrs..
-        this.renderer.shaderManager.setUniforms(mesh.shader.uniforms);
+        this.renderer.shaderManager.syncUniformGroup(mesh.shader.uniforms);
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);

@@ -1,5 +1,8 @@
 import { GLShader } from 'pixi-gl-core';
 import { PRECISION } from '../../const';
+import generateUniformsSync from '../../shader/generateUniformsSync2';
+
+let UID = 0;
 
 /**
  * Helper class to create a webGL Texture
@@ -29,6 +32,8 @@ export default class ShaderManager
         this.gl = renderer.gl;
 
         this.shader = null;
+
+        this.id = UID++;
     }
 
     /**
@@ -71,6 +76,38 @@ export default class ShaderManager
         shader.syncUniforms(glShader.uniformData, uniforms, this.renderer);
     }
 
+    setUniformsGroups(uniformGroups)
+    {
+
+        const glShader = this.getGLShader();
+
+        const group = uniformGroups[0];
+        const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSynGroups(group);
+
+        syncFunc(glShader.uniformD1ata, group.uniforms, this.renderer);
+
+    }
+
+    syncUniformGroup(group)
+    {
+        const glShader = this.getGLShader();
+
+        if(!group.static || group.dirtyId !== glShader.uniformGroups[group.id])
+        {
+            glShader.uniformGroups[group.id] = group.dirtyId;
+            const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSynGroups(group);
+
+            syncFunc(glShader.uniformData, group.uniforms, this.renderer);
+        }
+
+    }
+
+    createSynGroups(group)
+    {
+        group.syncUniforms[this.shader.program.id] = generateUniformsSync(group, this.shader.program.uniformData);
+
+        return group.syncUniforms[this.shader.program.id];
+    }
     /**
      * Returns the underlying GLShade rof the currently bound shader.
      * This can be handy for when you to have a little more control over the setting of your uniforms.
