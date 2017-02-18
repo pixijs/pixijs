@@ -535,7 +535,7 @@ const defaults = [
     { parent: 'GC_MODES', target: 'GC_MODE' },
     { parent: 'WRAP_MODES', target: 'WRAP_MODE' },
     { parent: 'SCALE_MODES', target: 'SCALE_MODE' },
-    { parent: 'PRECISION', target: 'PRECISION' },
+    { parent: 'PRECISION', target: 'PRECISION_FRAGMENT' },
 ];
 
 for (let i = 0; i < defaults.length; i++)
@@ -558,6 +558,32 @@ for (let i = 0; i < defaults.length; i++)
         },
     });
 }
+
+Object.defineProperties(core.settings, {
+
+    /**
+     * @static
+     * @name PRECISION
+     * @memberof PIXI.settings
+     * @see PIXI.PRECISION
+     * @deprecated since version 4.4.0
+     */
+    PRECISION: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.settings.PRECISION has been deprecated, please use PIXI.settings.PRECISION_FRAGMENT');
+
+            return core.settings.PRECISION_FRAGMENT;
+        },
+        set(value)
+        {
+            warn('PIXI.settings.PRECISION has been deprecated, please use PIXI.settings.PRECISION_FRAGMENT');
+
+            core.settings.PRECISION_FRAGMENT = value;
+        },
+    },
+});
 
 Object.defineProperties(extras, {
 
