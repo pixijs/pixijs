@@ -27,3 +27,4 @@ require('./SpriteRenderer');
 require('./WebGLRenderer');
 require('./Ellipse');
 require('./Texture');
+require('./filters');

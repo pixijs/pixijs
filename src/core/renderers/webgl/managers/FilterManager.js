@@ -291,6 +291,9 @@ export default class FilterManager extends WebGLManager
         let textureCount = 1;
         let currentState;
 
+        // filterArea and filterClamp that are handled by FilterManager directly
+        // they must not appear in uniformData
+
         if (shader.uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
