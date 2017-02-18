@@ -75,7 +75,6 @@ export default class SpriteRenderer extends ObjectRenderer
         this.shader = null;
 
         this.currentIndex = 0;
-        TICK = 0;
         this.groups = [];
 
         for (let k = 0; k < this.size; k++)
