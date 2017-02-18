@@ -1,5 +1,5 @@
 import { Point, ObservablePoint, Rectangle } from '../math';
-import { sign, TextureCache } from '../utils';
+import { sign, TextureCache, hex2rgb, rgb2hex } from '../utils';
 import { BLEND_MODES } from '../const';
 import Texture from '../textures/Texture';
 import Container from '../display/Container';
@@ -70,9 +70,16 @@ export default class Sprite extends Container
          * @member {number}
          * @default 0xFFFFFF
          */
-        this._tint = null;
-        this._tintRGB = null;
-        this.tint = 0xFFFFFF;
+        this._tint = 0xFFFFFF;
+
+        /**
+         * The tint applied to the sprite. This is a [r, g, b] value. A value of [1,1,1] will remove any tint effect.
+         *
+         * @private
+         * @member {number}
+         * @default [1,1,1]
+         */
+        this._tintRgb = new Float32Array([1, 1, 1]);
 
         /**
          * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -552,7 +559,27 @@ export default class Sprite extends Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintRgb = hex2rgb(value);
+    }
+
+    /**
+     * The immutable rgb value of tint applied to the sprite.
+     * This is a float array of a size of three.
+     * A value of [1,1,1] will remove any tint effect.
+     *
+     * @member {Float32Array}
+     * @memberof PIXI.Sprite#
+     * @default [1.0,1.0,1.0]
+     */
+    get tintRgb()
+    {
+        return this._tintRgb;
+    }
+
+    set tintRgb(value) // eslint-disable-line require-jsdoc
+    {
+        this._tintRgb = value;
+        this._tint = rgb2hex(this._tintRgb);
     }
 
     /**
