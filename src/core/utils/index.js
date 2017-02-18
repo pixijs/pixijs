@@ -114,13 +114,14 @@ export function getResolutionOfUrl(url, defaultValue)
     {
         const lastIndex = url.lastIndexOf('@');
 
-        url = lastIndex === -1 ? url : url.substring(lastIndex);
-
-        const resolution = settings.RETINA_PREFIX.exec(url);
-
-        if (resolution)
+        if (lastIndex !== -1)
         {
-            return parseFloat(resolution[1]);
+            const resolution = settings.RETINA_PREFIX.exec(url.substring(lastIndex));
+
+            if (resolution)
+            {
+                return parseFloat(resolution[1]);
+            }
         }
     }
 
