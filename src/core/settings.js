@@ -81,7 +81,7 @@ export default {
      * @example `@2x`
      * @default /@(.+)x/
      */
-    RETINA_PREFIX: /@(.+)x/,
+    RETINA_PREFIX: /@([0-9\.]+)x/,
 
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
