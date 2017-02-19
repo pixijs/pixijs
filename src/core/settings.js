@@ -77,11 +77,11 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {RegExp|string}
+     * @type {RegExp}
      * @example `@2x`
      * @default /@(.+)x/
      */
-    RETINA_PREFIX: /@(.+)x/,
+    RETINA_PREFIX: /@([0-9\.]+)x/,
 
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
