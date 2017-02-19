@@ -1,7 +1,7 @@
 'use strict';
 
 const MockPointer = require('../interaction/MockPointer');
-const isWebGLSupported = require('../isWebGLSupported');
+const withGL = require('../withGL');
 
 describe('PIXI.Graphics', function ()
 {
@@ -331,35 +331,43 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should calculate tint, alpha and blendMode of fastRect correctly', isWebGLSupported(function ()
+        it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
         {
             const renderer = new PIXI.WebGLRenderer(200, 200, {});
-            const graphics = new PIXI.Graphics();
 
-            graphics.beginFill(0x102030, 0.6);
-            graphics.drawRect(2, 3, 100, 100);
-            graphics.endFill();
-            graphics.tint = 0x101010;
-            graphics.blendMode = 2;
-            graphics.alpha = 0.3;
+            try
+            {
+                const graphics = new PIXI.Graphics();
 
-            renderer.render(graphics);
+                graphics.beginFill(0x102030, 0.6);
+                graphics.drawRect(2, 3, 100, 100);
+                graphics.endFill();
+                graphics.tint = 0x101010;
+                graphics.blendMode = 2;
+                graphics.alpha = 0.3;
 
-            expect(graphics.isFastRect()).to.be.true;
+                renderer.render(graphics);
 
-            const sprite = graphics._spriteRect;
+                expect(graphics.isFastRect()).to.be.true;
 
-            expect(sprite).to.not.be.equals(null);
-            expect(sprite.worldAlpha).to.equals(0.18);
-            expect(sprite.blendMode).to.equals(2);
-            expect(sprite.tint).to.equals(0x010203);
+                const sprite = graphics._spriteRect;
 
-            const bounds = sprite.getBounds();
+                expect(sprite).to.not.be.equals(null);
+                expect(sprite.worldAlpha).to.equals(0.18);
+                expect(sprite.blendMode).to.equals(2);
+                expect(sprite.tint).to.equals(0x010203);
 
-            expect(bounds.x).to.equals(2);
-            expect(bounds.y).to.equals(3);
-            expect(bounds.width).to.equals(100);
-            expect(bounds.height).to.equals(100);
+                const bounds = sprite.getBounds();
+
+                expect(bounds.x).to.equals(2);
+                expect(bounds.y).to.equals(3);
+                expect(bounds.width).to.equals(100);
+                expect(bounds.height).to.equals(100);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
         }));
     });
 });
