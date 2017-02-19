@@ -331,12 +331,11 @@ describe('PIXI.Graphics', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(
-            function ()
-            {
-                return new PIXI.WebGLRenderer(200, 200, {});
-            },
-            function (renderer)
+        it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
+        {
+            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+
+            try
             {
                 const graphics = new PIXI.Graphics();
 
@@ -364,6 +363,11 @@ describe('PIXI.Graphics', function ()
                 expect(bounds.y).to.equals(3);
                 expect(bounds.width).to.equals(100);
                 expect(bounds.height).to.equals(100);
-            }));
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
     });
 });
