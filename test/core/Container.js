@@ -286,6 +286,7 @@ describe('PIXI.Container', function ()
             container.position.set(100, 200);
 
             container.addChild(graphics);
+            graphics.getBounds();
             container.removeChild(graphics);
 
             container.addChild(graphics);
