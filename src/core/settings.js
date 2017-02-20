@@ -79,7 +79,7 @@ export default {
      * @memberof PIXI.settings
      * @type {RegExp}
      * @example `@2x`
-     * @default /@(.+)x/
+     * @default /@([0-9\.]+)x/
      */
     RETINA_PREFIX: /@([0-9\.]+)x/,
 
