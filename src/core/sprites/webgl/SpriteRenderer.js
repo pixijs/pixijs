@@ -30,7 +30,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         /**
          * Number of values sent in the vertex buffer.
-         * positionX, positionY, colorR, colorG, colorB = 5
+         * aVertexPosition(2), aTextureCoord(1), aColor(1), aTextureId(1) = 5
          *
          * @member {number}
          */
