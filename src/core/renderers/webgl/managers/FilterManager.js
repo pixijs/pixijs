@@ -184,7 +184,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, true, currentState);
+            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
