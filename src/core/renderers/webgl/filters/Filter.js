@@ -96,7 +96,7 @@ export default class Filter
      * @param {PIXI.RenderTarget} input - The input render target.
      * @param {PIXI.RenderTarget} output - The target to output to.
      * @param {boolean} clear - Should the output be cleared before rendering to it
-     * @param {object} [currentState] - filter.currentState.
+     * @param {object} [currentState] - It's filter.currentState.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
