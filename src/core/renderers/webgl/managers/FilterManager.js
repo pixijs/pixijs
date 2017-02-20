@@ -312,7 +312,7 @@ export default class FilterManager extends WebGLManager
         // see displacementFilter fragment shader for an example
         if (shader.uniforms.filterClamp)
         {
-            currentState = this.filterData.stack[this.filterData.index];
+            currentState = currentState || this.filterData.stack[this.filterData.index];
 
             const filterClamp = shader.uniforms.filterClamp;
 
