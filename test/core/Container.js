@@ -1,33 +1,5 @@
 'use strict';
 
-function testAddChild(fn)
-{
-    fn(function (container, obj)
-    {
-        container.addChild(obj);
-    });
-    fn(function (container, obj)
-    {
-        container.addChildAt(obj);
-    });
-}
-
-function testRemoveChild(fn)
-{
-    fn(function (container, obj)
-    {
-        container.removeChild(obj);
-    });
-    fn(function (container, obj)
-    {
-        container.removeChildAt(container.children.indexOf(obj));
-    });
-    fn(function (container, obj)
-    {
-        container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj) + 1);
-    });
-}
-
 describe('PIXI.Container', function ()
 {
     describe('parent', function ()
@@ -99,7 +71,7 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag child transform and container bounds for recalculation', testAddChild(function (mockAddChild)
+        it('should flag child transform and container bounds for recalculation', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
@@ -110,13 +82,14 @@ describe('PIXI.Container', function ()
             const boundsID = container._boundsID;
             const childParentID = child.transform._parentID;
 
-            mockAddChild(container, child);
+            container.addChild(child);
+            container.addChildAt(child);
 
             expect(boundsID).to.not.be.equals(container._boundsID);
             expect(childParentID).to.not.be.equals(child.transform._parentID);
-        }));
+        });
 
-        it('should recalculate added child correctly', testAddChild(function (mockAddChild)
+        it('should recalculate added child correctly', function ()
         {
             const parent = new PIXI.Container();
             const container = new PIXI.Container();
@@ -132,7 +105,8 @@ describe('PIXI.Container', function ()
             // Oops, that can happen sometimes!
             graphics.transform._parentID = container.transform._worldID + 1;
 
-            mockAddChild(container, graphics);
+            container.addChild(graphics);
+            container.addChildAt(graphics);
 
             const bounds = graphics.getBounds();
 
@@ -140,7 +114,7 @@ describe('PIXI.Container', function ()
             expect(bounds.y).to.be.equal(200);
             expect(bounds.width).to.be.equal(10);
             expect(bounds.height).to.be.equal(10);
-        }));
+        });
     });
 
     describe('removeChildAt', function ()
@@ -274,7 +248,7 @@ describe('PIXI.Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag transform for recalculation', testRemoveChild(function (mockRemoveChild)
+        it('should flag transform for recalculation', function ()
         {
             const container = new PIXI.Container();
             const child = new PIXI.Container();
@@ -285,13 +259,22 @@ describe('PIXI.Container', function ()
             const childParentID = child.transform._parentID;
             const boundsID = container._boundsID;
 
-            mockRemoveChild(container, child);
+            container.removeChild(child);
+
+            container.addChild(child);
+            container.removeChildAt(container.children.indexOf(child));
+
+            container.addChild(child);
+            container.removeChildren(
+                container.children.indexOf(child),
+                container.children.indexOf(child) + 1
+            );
 
             expect(childParentID).to.not.be.equals(child.transform._parentID);
             expect(boundsID).to.not.be.equals(container._boundsID);
-        }));
+        });
 
-        it('should recalculate removed child correctly', testRemoveChild(function (mockRemoveChild)
+        it('should recalculate removed child correctly', function ()
         {
             const parent = new PIXI.Container();
             const container = new PIXI.Container();
@@ -301,16 +284,25 @@ describe('PIXI.Container', function ()
 
             graphics.drawRect(0, 0, 10, 10);
             container.position.set(100, 200);
+
             container.addChild(graphics);
             graphics.getBounds();
+            container.removeChild(graphics);
 
-            mockRemoveChild(container, graphics);
+            container.addChild(graphics);
+            container.removeChildAt(container.children.indexOf(graphics));
+
+            container.addChild(graphics);
+            container.removeChildren(
+                container.children.indexOf(graphics),
+                container.children.indexOf(graphics) + 1
+            );
 
             const bounds = graphics.getBounds();
 
             expect(bounds.x).to.be.equal(0);
             expect(bounds.y).to.be.equal(0);
-        }));
+        });
     });
 
     describe('getChildIndex', function ()
