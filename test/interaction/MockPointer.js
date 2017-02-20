@@ -46,6 +46,45 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      */
+    mousemove(x, y)
+    {
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: x,
+            clientY: y,
+            preventDefault: sinon.stub(),
+        });
+
+        this.setPosition(x, y);
+        this.render();
+        // mouseOverRenderer state should be correct, so mouse position to view rect
+        const rect = new PIXI.Rectangle(0, 0, this.renderer.width, this.renderer.height);
+
+        if (rect.contains(x, y))
+        {
+            if (!this.interaction.mouseOverRenderer)
+            {
+                this.interaction.onPointerOver(new MouseEvent('mouseover', {
+                    clientX: x,
+                    clientY: y,
+                    preventDefault: sinon.stub(),
+                }));
+            }
+            this.interaction.onPointerMove(mouseEvent);
+        }
+        else
+        {
+            this.interaction.onPointerOut(new MouseEvent('mouseout', {
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            }));
+        }
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     */
     click(x, y)
     {
         this.mousedown(x, y);

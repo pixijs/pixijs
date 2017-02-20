@@ -77,11 +77,11 @@ export default {
      *
      * @static
      * @memberof PIXI.settings
-     * @type {RegExp|string}
+     * @type {RegExp}
      * @example `@2x`
-     * @default /@(.+)x/
+     * @default /@([0-9\.]+)x/
      */
-    RETINA_PREFIX: /@(.+)x/,
+    RETINA_PREFIX: /@([0-9\.]+)x/,
 
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
@@ -175,14 +175,24 @@ export default {
     SCALE_MODE: 0,
 
     /**
-     * Default specify float precision in shaders.
+     * Default specify float precision in vertex shader.
+     *
+     * @static
+     * @memberof PIXI.settings
+     * @type {PIXI.PRECISION}
+     * @default PIXI.PRECISION.HIGH
+     */
+    PRECISION_VERTEX: 'highp',
+
+    /**
+     * Default specify float precision in fragment shader.
      *
      * @static
      * @memberof PIXI.settings
      * @type {PIXI.PRECISION}
      * @default PIXI.PRECISION.MEDIUM
      */
-    PRECISION: 'mediump',
+    PRECISION_FRAGMENT: 'mediump',
 
     /**
      * Can we upload the same buffer in a single frame?
