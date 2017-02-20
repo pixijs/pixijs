@@ -112,7 +112,7 @@ describe('PIXI.Matrix', function ()
         const m1 = new PIXI.Matrix();
         const m2 = new PIXI.Matrix();
 
-        m2.set(2, 3, 4, 5, 100, 100);
+        m2.set(2, 3, 4, 5, 100, 200);
         m1.prepend(m2);
 
         expect(m1.a).to.equal(m2.a);
@@ -145,14 +145,14 @@ describe('PIXI.Matrix', function ()
     {
         const matrix = new PIXI.Matrix();
 
-        matrix.set(2, 2, 2, 2, 100, 100);
+        matrix.set(2, 3, 4, 5, 100, 200);
 
         expect(matrix.a).to.equal(2);
-        expect(matrix.b).to.equal(2);
-        expect(matrix.c).to.equal(2);
-        expect(matrix.d).to.equal(2);
+        expect(matrix.b).to.equal(3);
+        expect(matrix.c).to.equal(4);
+        expect(matrix.d).to.equal(5);
         expect(matrix.tx).to.equal(100);
-        expect(matrix.ty).to.equal(100);
+        expect(matrix.ty).to.equal(200);
 
         matrix.identity();
 
