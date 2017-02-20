@@ -266,7 +266,7 @@ describe('PIXI.Container', function ()
 
             container.addChild(child);
             container.removeChildren(
-                container.children.indexOf(child), 
+                container.children.indexOf(child),
                 container.children.indexOf(child) + 1
             );
 
@@ -286,7 +286,6 @@ describe('PIXI.Container', function ()
             container.position.set(100, 200);
 
             container.addChild(graphics);
-            graphics.getBounds();
             container.removeChild(graphics);
 
             container.addChild(graphics);
@@ -294,7 +293,7 @@ describe('PIXI.Container', function ()
 
             container.addChild(graphics);
             container.removeChildren(
-                container.children.indexOf(graphics), 
+                container.children.indexOf(graphics),
                 container.children.indexOf(graphics) + 1
             );
 
