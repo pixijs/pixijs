@@ -455,6 +455,73 @@ export default class BitmapText extends core.Container
 
         return this._textHeight;
     }
+
+    /**
+     * Register a bitmap font with data and a texture.
+     *
+     * @static
+     * @param {XMLDocument} xml - The XML document data.
+     * @param {PIXI.Texture} texture - Texture with all symbols.
+     * @return {Object} Result font object with font, size, lineHeight and char fields.
+     */
+    static registerFont(xml, texture)
+    {
+        const data = {};
+        const info = xml.getElementsByTagName('info')[0];
+        const common = xml.getElementsByTagName('common')[0];
+
+        data.font = info.getAttribute('face');
+        data.size = parseInt(info.getAttribute('size'), 10);
+        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
+        data.chars = {};
+
+        // parse letters
+        const letters = xml.getElementsByTagName('char');
+
+        for (let i = 0; i < letters.length; i++)
+        {
+            const letter = letters[i];
+            const charCode = parseInt(letter.getAttribute('id'), 10);
+
+            const textureRect = new core.Rectangle(
+                parseInt(letter.getAttribute('x'), 10) + texture.frame.x,
+                parseInt(letter.getAttribute('y'), 10) + texture.frame.y,
+                parseInt(letter.getAttribute('width'), 10),
+                parseInt(letter.getAttribute('height'), 10)
+            );
+
+            data.chars[charCode] = {
+                xOffset: parseInt(letter.getAttribute('xoffset'), 10),
+                yOffset: parseInt(letter.getAttribute('yoffset'), 10),
+                xAdvance: parseInt(letter.getAttribute('xadvance'), 10),
+                kerning: {},
+                texture: new core.Texture(texture.baseTexture, textureRect),
+
+            };
+        }
+
+        // parse kernings
+        const kernings = xml.getElementsByTagName('kerning');
+
+        for (let i = 0; i < kernings.length; i++)
+        {
+            const kerning = kernings[i];
+            const first = parseInt(kerning.getAttribute('first'), 10);
+            const second = parseInt(kerning.getAttribute('second'), 10);
+            const amount = parseInt(kerning.getAttribute('amount'), 10);
+
+            if (data.chars[second])
+            {
+                data.chars[second].kerning[first] = amount;
+            }
+        }
+
+        // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
+        // but it's very likely to change
+        BitmapText.fonts[data.font] = data;
+
+        return data;
+    }
 }
 
 BitmapText.fonts = {};

@@ -61,7 +61,7 @@ export default class TextureManager
      * Updates and/or Creates a WebGL texture for the renderer's context.
      *
      * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to update
-     * @param {Number} location - the location the texture will be bound to.
+     * @param {number} location - the location the texture will be bound to.
      * @return {GLTexture} The gl texture.
      */
     updateTexture(texture, location)

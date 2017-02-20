@@ -82,18 +82,20 @@ export default class WebGLState
     push()
     {
         // next state..
-        let state = this.stack[++this.stackIndex];
+        let state = this.stack[this.stackIndex];
 
         if (!state)
         {
             state = this.stack[this.stackIndex] = new Uint8Array(16);
         }
 
+        ++this.stackIndex;
+
         // copy state..
         // set active state so we can force overrides of gl state
         for (let i = 0; i < this.activeState.length; i++)
         {
-            this.activeState[i] = state[i];
+            state[i] = this.activeState[i];
         }
     }
 
