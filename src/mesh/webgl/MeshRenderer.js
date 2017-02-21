@@ -61,9 +61,8 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         // bind the geometry...
         this.bindGeometry(mesh.geometry, glShader);
-
         // then render it
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.instanceCount);
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 
     /**
@@ -72,7 +71,7 @@ export default class MeshRenderer extends core.ObjectRenderer
      */
     draw(mesh)
     {
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.instanceCount);
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 
     /**
