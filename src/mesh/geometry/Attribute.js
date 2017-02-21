@@ -18,7 +18,7 @@ class Attribute
      * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
      * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
      */
-    constructor(buffer, size, normalised = false, type = 5126, stride, start)
+    constructor(buffer, size, normalised = false, type = 5126, stride, start, instance)
     {
         this.buffer = buffer;
         this.size = size;
@@ -26,6 +26,7 @@ class Attribute
         this.type = type;
         this.stride = stride;
         this.start = start;
+        this.instance = instance;
     }
 
     /**

@@ -25,8 +25,6 @@ class UniformGroup
         this.id = UID++;
 
         this.static = !!_static;
-
-        console.log(this.static + "<<<<<<<")
     }
 
     update()
