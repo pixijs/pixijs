@@ -17,10 +17,11 @@ import settings from '../../settings';
  */
 export default class CanvasRenderer extends SystemRenderer
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {number} [screenWidth=800] - the width of the screen
-     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
@@ -34,9 +35,9 @@ export default class CanvasRenderer extends SystemRenderer
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
-    constructor(screenWidth, screenHeight, options = {})
+    constructor(options, arg2, arg3)
     {
-        super('Canvas', screenWidth, screenHeight, options);
+        super('Canvas', options, arg2, arg3);
 
         this.type = RENDERER_TYPE.CANVAS;
 
@@ -96,7 +97,7 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = null;
         this.renderingToScreen = false;
 
-        this.resize(screenWidth, screenHeight);
+        this.resize(this.options.width, this.options.height);
     }
 
     /**
