@@ -45,6 +45,7 @@ export { default as RenderTarget } from './renderers/webgl/utils/RenderTarget';
 export { default as Quad } from './renderers/webgl/utils/Quad';
 export { default as Shader } from './shader/Shader';
 export { default as Program } from './shader/Program';
+export { default as UniformGroup } from './shader/UniformGroup';
 export { default as SpriteMaskFilter } from './renderers/webgl/filters/spriteMask/SpriteMaskFilter';
 export { default as Filter } from './renderers/webgl/filters/Filter';
 export { default as Application } from './Application';

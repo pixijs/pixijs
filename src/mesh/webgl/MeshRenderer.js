@@ -54,16 +54,15 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         // set unifomrs..
-        this.renderer.shaderManager.setUniforms(mesh.shader.uniforms);
+        this.renderer.shaderManager.syncUniformGroup(mesh.shader.uniformGroup);
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);
 
         // bind the geometry...
         this.bindGeometry(mesh.geometry, glShader);
-
         // then render it
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 
     /**
@@ -72,7 +71,7 @@ export default class MeshRenderer extends core.ObjectRenderer
      */
     draw(mesh)
     {
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start);
+        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 
     /**
@@ -203,7 +202,8 @@ export default class MeshRenderer extends core.ObjectRenderer
                             attribute.type || 5126, // (5126 = FLOAT)
                             attribute.normalized,
                             attribute.stride,
-                            attribute.start);
+                            attribute.start,
+                            attribute.instance);
         }
 
         geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;

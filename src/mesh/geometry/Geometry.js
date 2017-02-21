@@ -75,7 +75,7 @@ export default class Geometry
     *
     * @return {PIXI.mesh.Geometry} returns self, useful for chaining.
     */
-    addAttribute(id, buffer, size, normalised = false, type, stride, start)
+    addAttribute(id, buffer, size, normalised = false, type, stride, start, instance = false)
     {
         if (!buffer)
         {
@@ -114,7 +114,7 @@ export default class Geometry
             bufferIndex = this.buffers.length - 1;
         }
 
-        this.attributes[id] = new Attribute(bufferIndex, size, normalised, type, stride, start);
+        this.attributes[id] = new Attribute(bufferIndex, size, normalised, type, stride, start, instance);
 
         return this;
     }
@@ -269,7 +269,8 @@ export default class Geometry
                 attrib.normalized,
                 attrib.type,
                 attrib.stride,
-                attrib.start
+                attrib.start,
+                attrib.instance
             );
         }
 
