@@ -73,7 +73,6 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
-    "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "^3.4.2",
