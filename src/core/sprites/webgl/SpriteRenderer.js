@@ -75,7 +75,6 @@ export default class SpriteRenderer extends ObjectRenderer
         this.shader = null;
 
         this.currentIndex = 0;
-        TICK = 0;
         this.groups = [];
 
         for (let k = 0; k < this.size; k++)
@@ -103,11 +102,18 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        // step 1: first check max textures the GPU can handle.
-        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
+        if (this.renderer.legacy)
+        {
+            this.MAX_TEXTURES = 1;
+        }
+        else
+        {
+            // step 1: first check max textures the GPU can handle.
+            this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
 
-        // step 2: check the maximum number of if statements the shader can have too..
-        this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+            // step 2: check the maximum number of if statements the shader can have too..
+            this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+        }
 
         this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
