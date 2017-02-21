@@ -53,6 +53,10 @@ describe('PIXI.Circle', function ()
         expect(circ1.contains(10, 16)).to.be.false;
         expect(circ1.contains(11, 15)).to.be.false;
         expect(circ1.contains(0, 0)).to.be.false;
+
+        const circ2 = new PIXI.Circle(10, 10, 0);
+
+        expect(circ2.contains(10, 10)).to.be.false;
     });
 
     it('should return framing rectangle', function ()
