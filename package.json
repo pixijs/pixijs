@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.3.5",
+  "version": "4.4.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -61,7 +61,7 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
-    "resource-loader": "^2.0.4"
+    "resource-loader": "^2.0.6"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -70,9 +70,9 @@
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
     "del": "^2.2.0",
-    "electron-prebuilt": "^1.3.2",
+    "electron": "^1.4.15",
     "eslint": "^3.5.0",
-    "floss": "^1.2.0",
+    "floss": "^2.0.1",
     "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",

@@ -1,5 +1,8 @@
 'use strict';
 
+const MockPointer = require('../interaction/MockPointer');
+const withGL = require('../withGL');
+
 describe('PIXI.Graphics', function ()
 {
     describe('constructor', function ()
@@ -127,6 +130,16 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.containsPoint(point)).to.be.false;
         });
+
+        it('should return false when no fill', function ()
+        {
+            const point = new PIXI.Point(1, 1);
+            const graphics = new PIXI.Graphics();
+
+            graphics.drawRect(0, 0, 10, 10);
+
+            expect(graphics.containsPoint(point)).to.be.false;
+        });
     });
 
     describe('arc', function ()
@@ -207,5 +220,154 @@ describe('PIXI.Graphics', function ()
 
             expect(spy).to.have.been.calledOnce;
         });
+    });
+
+    describe('mask', function ()
+    {
+        it('should trigger interaction callback when no mask present', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.beginFill();
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+        it('should trigger interaction callback when mask uses beginFill', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.beginFill();
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.not.been.called;
+        });
+
+        it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.hitArea = new PIXI.Rectangle(0, 0, 50, 50);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = mask;
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should trigger interaction callback when mask is a sprite', function ()
+        {
+            const stage = new PIXI.Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new PIXI.Graphics();
+            const mask = new PIXI.Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('click', spy);
+            stage.addChild(graphics);
+            mask.drawRect(0, 0, 50, 50);
+            graphics.mask = new PIXI.Sprite(mask.generateCanvasTexture());
+
+            pointer.click(10, 10);
+
+            expect(spy).to.have.been.calledOnce;
+        });
+
+        it('should calculate tint, alpha and blendMode of fastRect correctly', withGL(function ()
+        {
+            const renderer = new PIXI.WebGLRenderer(200, 200, {});
+
+            try
+            {
+                const graphics = new PIXI.Graphics();
+
+                graphics.beginFill(0x102030, 0.6);
+                graphics.drawRect(2, 3, 100, 100);
+                graphics.endFill();
+                graphics.tint = 0x101010;
+                graphics.blendMode = 2;
+                graphics.alpha = 0.3;
+
+                renderer.render(graphics);
+
+                expect(graphics.isFastRect()).to.be.true;
+
+                const sprite = graphics._spriteRect;
+
+                expect(sprite).to.not.be.equals(null);
+                expect(sprite.worldAlpha).to.equals(0.18);
+                expect(sprite.blendMode).to.equals(2);
+                expect(sprite.tint).to.equals(0x010203);
+
+                const bounds = sprite.getBounds();
+
+                expect(bounds.x).to.equals(2);
+                expect(bounds.y).to.equals(3);
+                expect(bounds.width).to.equals(100);
+                expect(bounds.height).to.equals(100);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }));
     });
 });

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/extract/index.js"],"names":["default"],"mappings":";;;;;;;;;iDAASA,O;;;;;;;;;kDACAA,O","file":"index.js","sourcesContent":["export { default as webgl } from './webgl/WebGLExtract';\nexport { default as canvas } from './canvas/CanvasExtract';\n"]}

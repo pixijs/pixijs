@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/particles/index.js"],"names":["default"],"mappings":";;;;;;;;;sDAGSA,O;;;;;;;;;qDACAA,O","file":"index.js","sourcesContent":["/**\n * @namespace PIXI.particles\n */\nexport { default as ParticleContainer } from './ParticleContainer';\nexport { default as ParticleRenderer } from './webgl/ParticleRenderer';\n"]}

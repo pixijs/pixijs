@@ -30,7 +30,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         /**
          * Number of values sent in the vertex buffer.
-         * positionX, positionY, colorR, colorG, colorB = 5
+         * aVertexPosition(2), aTextureCoord(1), aColor(1), aTextureId(1) = 5
          *
          * @member {number}
          */
@@ -75,7 +75,6 @@ export default class SpriteRenderer extends ObjectRenderer
         this.shader = null;
 
         this.currentIndex = 0;
-        TICK = 0;
         this.groups = [];
 
         for (let k = 0; k < this.size; k++)
@@ -103,11 +102,18 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        // step 1: first check max textures the GPU can handle.
-        this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
+        if (this.renderer.legacy)
+        {
+            this.MAX_TEXTURES = 1;
+        }
+        else
+        {
+            // step 1: first check max textures the GPU can handle.
+            this.MAX_TEXTURES = Math.min(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS), settings.SPRITE_MAX_TEXTURES);
 
-        // step 2: check the maximum number of if statements the shader can have too..
-        this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+            // step 2: check the maximum number of if statements the shader can have too..
+            this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
+        }
 
         const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
@@ -130,8 +136,12 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addIndex(this.indexBuffer)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+
+            if (shader.attributes.aTextureId)
+            {
+                this.vaos[i].addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+            }
 
             /* eslint-enable max-len */
         }
@@ -378,8 +388,12 @@ export default class SpriteRenderer extends ObjectRenderer
                     .addIndex(this.indexBuffer)
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+
+                if (this.shader.attributes.aTextureId)
+                {
+                    this.vaos[this.vertexCount].addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                }
 
                 /* eslint-enable max-len */
             }
