@@ -36,7 +36,7 @@ export default class InteractionTrackingData
 
     /**
      * @readonly
-     * @type {number} Unique pointer id of the event
+     * @return {number} Unique pointer id of the event
      */
     get pointerId()
     {

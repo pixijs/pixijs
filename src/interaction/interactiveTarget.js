@@ -87,7 +87,8 @@ export default {
     /**
      * Map of all tracked pointers, by identifier. Use trackedPointers to access.
      *
-     * @private {Map<number, InteractionTrackingData>}
+     * @private
+     * @type {Map<number, InteractionTrackingData>}
      */
     _trackedPointers: undefined,
 };
