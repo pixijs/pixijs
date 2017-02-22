@@ -109,7 +109,7 @@ export default class DisplayObject extends EventEmitter
         /**
          * The original, cached mask of the object
          *
-         * @member {PIXI.Rectangle}
+         * @member {PIXI.Graphics|PIXI.Sprite}
          * @private
          */
         this._mask = null;

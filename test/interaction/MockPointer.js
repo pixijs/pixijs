@@ -46,6 +46,45 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      */
+    mousemove(x, y)
+    {
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: x,
+            clientY: y,
+            preventDefault: sinon.stub(),
+        });
+
+        this.setPosition(x, y);
+        this.render();
+        // mouseOverRenderer state should be correct, so mouse position to view rect
+        const rect = new PIXI.Rectangle(0, 0, this.renderer.width, this.renderer.height);
+
+        if (rect.contains(x, y))
+        {
+            if (!this.interaction.mouseOverRenderer)
+            {
+                this.interaction.onPointerOver(new MouseEvent('mouseover', {
+                    clientX: x,
+                    clientY: y,
+                    preventDefault: sinon.stub(),
+                }));
+            }
+            this.interaction.onPointerMove(mouseEvent);
+        }
+        else
+        {
+            this.interaction.onPointerOut(new MouseEvent('mouseout', {
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            }));
+        }
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     */
     click(x, y)
     {
         this.mousedown(x, y);
@@ -58,9 +97,15 @@ class MockPointer
      */
     mousedown(x, y)
     {
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: x,
+            clientY: y,
+            preventDefault: sinon.stub(),
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onMouseDown({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
+        this.interaction.onPointerDown(mouseEvent);
     }
 
     /**
@@ -69,9 +114,15 @@ class MockPointer
      */
     mouseup(x, y)
     {
+        const mouseEvent = new MouseEvent('mouseup', {
+            clientX: x,
+            clientY: y,
+            preventDefault: sinon.stub(),
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onMouseUp({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
+        this.interaction.onPointerUp(mouseEvent);
     }
 
     /**
@@ -90,12 +141,16 @@ class MockPointer
      */
     touchstart(x, y)
     {
+        const touchEvent = new TouchEvent('touchstart', {
+            preventDefault: sinon.stub(),
+            changedTouches: [
+                new Touch({ identifier: 0, target: this.renderer.view }),
+            ],
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onTouchStart({
-            preventDefault: sinon.stub(),
-            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
-        });
+        this.interaction.onPointerDown(touchEvent);
     }
 
     /**
@@ -104,12 +159,16 @@ class MockPointer
      */
     touchend(x, y)
     {
+        const touchEvent = new TouchEvent('touchend', {
+            preventDefault: sinon.stub(),
+            changedTouches: [
+                new Touch({ identifier: 0, target: this.renderer.view }),
+            ],
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onTouchEnd({
-            preventDefault: sinon.stub(),
-            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
-        });
+        this.interaction.onPointerUp(touchEvent);
     }
 }
 

@@ -77,7 +77,7 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode || settings.SCALE_MODE;
+        this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
 
         /**
          * Set to true once the base texture has successfully loaded.
@@ -232,13 +232,21 @@ export default class BaseTexture extends EventEmitter
             this.realWidth = this.source.naturalWidth || this.source.videoWidth || this.source.width;
             this.realHeight = this.source.naturalHeight || this.source.videoHeight || this.source.height;
 
-            this.width = this.realWidth / this.resolution;
-            this.height = this.realHeight / this.resolution;
-
-            this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+            this._updateDimensions();
         }
 
         this.emit('update', this);
+    }
+
+    /**
+     * Update dimensions from real values
+     */
+    _updateDimensions()
+    {
+        this.width = this.realWidth / this.resolution;
+        this.height = this.realHeight / this.resolution;
+
+        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
     }
 
     /**
@@ -525,11 +533,7 @@ export default class BaseTexture extends EventEmitter
         this.realWidth = Math.round(svgWidth * this.sourceScale);
         this.realHeight = Math.round(svgHeight * this.sourceScale);
 
-        this.width = this.realWidth / this.resolution;
-        this.height = this.realHeight / this.resolution;
-
-        // Check pow2 after scale
-        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this._updateDimensions();
 
         // Create a canvas element
         const canvas = document.createElement('canvas');
@@ -689,5 +693,53 @@ export default class BaseTexture extends EventEmitter
         }
 
         return baseTexture;
+    }
+
+    /**
+     * Helper function that creates a base texture based on the source you provide.
+     * The source can be - image url, image element, canvas element.
+     *
+     * @static
+     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
+     * @return {PIXI.BaseTexture} The new base texture.
+     */
+    static from(source, scaleMode, sourceScale)
+    {
+        if (typeof source === 'string')
+        {
+            return BaseTexture.fromImage(source, undefined, scaleMode, sourceScale);
+        }
+        else if (source instanceof HTMLImageElement)
+        {
+            const imageUrl = source.src;
+            let baseTexture = BaseTextureCache[imageUrl];
+
+            if (!baseTexture)
+            {
+                baseTexture = new BaseTexture(source, scaleMode);
+                baseTexture.imageUrl = imageUrl;
+
+                if (sourceScale)
+                {
+                    baseTexture.sourceScale = sourceScale;
+                }
+
+                // if there is an @2x at the end of the url we are going to assume its a highres image
+                baseTexture.resolution = getResolutionOfUrl(imageUrl);
+
+                BaseTextureCache[imageUrl] = baseTexture;
+            }
+
+            return baseTexture;
+        }
+        else if (source instanceof HTMLCanvasElement)
+        {
+            return BaseTexture.fromCanvas(source, scaleMode);
+        }
+
+        // lets assume its a base texture!
+        return source;
     }
 }

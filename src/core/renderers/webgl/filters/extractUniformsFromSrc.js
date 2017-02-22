@@ -12,7 +12,7 @@ export default function extractUniformsFromSrc(vertexSrc, fragmentSrc, mask)
 
 function extractUniformsFromString(string)
 {
-    const maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea)$');
+    const maskRegex = new RegExp('^(projectionMatrix|uSampler|filterArea|filterClamp)$');
 
     const uniforms = {};
     let nameSplit;

@@ -154,7 +154,7 @@ export default class FilterManager extends WebGLManager
 
         if (filters.length === 1)
         {
-            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false, currentState);
             this.freePotRenderTarget(currentState.renderTarget);
         }
         else
@@ -176,7 +176,7 @@ export default class FilterManager extends WebGLManager
 
             for (i = 0; i < filters.length - 1; ++i)
             {
-                filters[i].apply(this, flip, flop, true);
+                filters[i].apply(this, flip, flop, true, currentState);
 
                 const t = flip;
 
@@ -184,7 +184,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, true);
+            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
@@ -291,9 +291,13 @@ export default class FilterManager extends WebGLManager
         let textureCount = 1;
         let currentState;
 
-        if (shader.uniforms.data.filterArea)
+        // filterArea and filterClamp that are handled by FilterManager directly
+        // they must not appear in uniformData
+
+        if (shader.uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
+
             const filterArea = shader.uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
@@ -306,9 +310,9 @@ export default class FilterManager extends WebGLManager
 
         // use this to clamp displaced texture coords so they belong to filterArea
         // see displacementFilter fragment shader for an example
-        if (shader.uniforms.data.filterClamp)
+        if (shader.uniforms.filterClamp)
         {
-            currentState = this.filterData.stack[this.filterData.index];
+            currentState = currentState || this.filterData.stack[this.filterData.index];
 
             const filterClamp = shader.uniforms.filterClamp;
 
@@ -485,7 +489,7 @@ export default class FilterManager extends WebGLManager
      */
     destroy()
     {
-        this.shaderCache = [];
+        this.shaderCache = {};
         this.emptyPool();
     }
 

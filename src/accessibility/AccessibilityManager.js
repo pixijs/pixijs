@@ -3,7 +3,7 @@ import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
 
 // add some extra variables to the container..
-Object.assign(
+core.utils.mixins.delayMixin(
     core.DisplayObject.prototype,
     accessibleTarget
 );

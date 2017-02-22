@@ -11,7 +11,29 @@ import { hex2rgb } from '../../../utils';
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
-export default function buildLine(graphicsData, webGLData)
+export default function (graphicsData, webGLData)
+{
+    if (graphicsData.nativeLines)
+    {
+        buildNativeLine(graphicsData, webGLData);
+    }
+    else
+    {
+        buildLine(graphicsData, webGLData);
+    }
+}
+
+/**
+ * Builds a line to draw using the poligon method.
+ *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
+ */
+function buildLine(graphicsData, webGLData)
 {
     // TODO OPTIMISE!
     let points = graphicsData.points;
@@ -223,4 +245,47 @@ export default function buildLine(graphicsData, webGLData)
     }
 
     indices.push(indexStart - 1);
+}
+
+/**
+ * Builds a line to draw using the gl.drawArrays(gl.LINES) method
+ *
+ * Ignored from docs since it is not directly exposed.
+ *
+ * @ignore
+ * @private
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
+ */
+function buildNativeLine(graphicsData, webGLData)
+{
+    let i = 0;
+    const points = graphicsData.points;
+
+    if (points.length === 0) return;
+
+    const verts = webGLData.points;
+    const length = points.length / 2;
+
+    // sort color
+    const color = hex2rgb(graphicsData.lineColor);
+    const alpha = graphicsData.lineAlpha;
+    const r = color[0] * alpha;
+    const g = color[1] * alpha;
+    const b = color[2] * alpha;
+
+    for (i = 1; i < length; i++)
+    {
+        const p1x = points[(i - 1) * 2];
+        const p1y = points[((i - 1) * 2) + 1];
+
+        const p2x = points[i * 2];
+        const p2y = points[(i * 2) + 1];
+
+        verts.push(p1x, p1y);
+        verts.push(r, g, b, alpha);
+
+        verts.push(p2x, p2y);
+        verts.push(r, g, b, alpha);
+    }
 }
