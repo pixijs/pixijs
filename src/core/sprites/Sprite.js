@@ -147,12 +147,12 @@ export default class Sprite extends Container
         // so if _width is 0 then width was not set..
         if (this._width)
         {
-            this.scale.x = sign(this.scale.x) * this._width / this.texture.orig.width;
+            this.scale.x = sign(this.scale.x) * this._width / this._texture.orig.width;
         }
 
         if (this._height)
         {
-            this.scale.y = sign(this.scale.y) * this._height / this.texture.orig.height;
+            this.scale.y = sign(this.scale.y) * this._height / this._texture.orig.height;
         }
     }
 
