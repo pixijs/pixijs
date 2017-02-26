@@ -52,8 +52,8 @@ export default class NineSlicePlane extends Plane
         uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
         uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
 
-        this._origWidth = texture.width;
-        this._origHeight = texture.height;
+        this._origWidth = texture.orig.width;
+        this._origHeight = texture.orig.height;
         this._uvw = 1 / this._origWidth;
         this._uvh = 1 / this._origHeight;
 
