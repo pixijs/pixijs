@@ -40,11 +40,11 @@
     "lib": "babel src --out-dir lib -s",
     "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
-    "publish:patch": "npm version patch --no-git-tag-version && npm publish",
-    "publish:minor": "npm version minor --no-git-tag-version && npm publish",
-    "publish:major": "npm version major --no-git-tag-version && npm publish",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish",
     "postversion": "npm run clean && npm run build && npm run lib && npm test",
-    "postpublish": "node scripts/release.js"
+    "postpublish": "git push && git push --tags"
   },
   "files": [
     "dist/",
@@ -73,7 +73,6 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
-    "gh-pages": "^0.11.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "^3.4.2",
