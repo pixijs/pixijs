@@ -156,6 +156,15 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * The id under which this Texture has been added to the texture cache. This is
+         * automatically set in certain cases, but may not always be accurate, particularly if
+         * the texture is in the cache under multiple ids.
+         *
+         * @member {string}
+         */
+        this.textureCacheId = null;
     }
 
     /**
@@ -238,11 +247,17 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
+        this.textureCacheId = null;
 
         this.valid = false;
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        for (const prop in TextureCache)
+        {
+            if (TextureCache[prop] === this)
+            {
+                delete TextureCache[prop];
+            }
+        }
     }
 
     /**
@@ -439,6 +454,7 @@ export default class Texture extends EventEmitter
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
+        texture.textureCacheId = name;
 
         // also add references by url if they are different.
         if (name !== imageUrl)
@@ -459,6 +475,10 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        if (!texture.textureCacheId)
+        {
+            texture.textureCacheId = id;
+        }
         TextureCache[id] = texture;
     }
 
