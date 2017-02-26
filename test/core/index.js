@@ -17,6 +17,7 @@ require('./getGlobalPosition');
 require('./util');
 require('./Plane');
 require('./Point');
+require('./Polygon');
 require('./ObservablePoint');
 require('./Matrix');
 require('./Rectangle');
