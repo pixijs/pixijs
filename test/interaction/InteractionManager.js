@@ -326,6 +326,24 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(clickSpy).to.not.have.been.called;
         });
+
+        it('should not call handler when mousedown not received', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const clickSpy = sinon.spy();
+            const pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('click', clickSpy);
+
+            pointer.mouseup(10, 10);
+
+            expect(clickSpy).to.not.have.been.called;
+        });
     });
 
     describe('onTap', function ()
