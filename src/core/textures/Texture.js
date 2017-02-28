@@ -425,7 +425,7 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        const baseTexture = new BaseTexture(source, null, getResolutionOfUrl(imageUrl));
+        const baseTexture = new BaseTexture(source, undefined, getResolutionOfUrl(imageUrl));
         const texture = new Texture(baseTexture);
 
         baseTexture.imageUrl = imageUrl;
