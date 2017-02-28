@@ -1098,7 +1098,7 @@ export default class InteractionManager extends EventEmitter
 
             const test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
 
-            const isDown = trackingData !== undefined && (trackingData.flags | test);
+            const isDown = trackingData !== undefined && (trackingData.flags & test);
 
             if (hit)
             {
