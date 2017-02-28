@@ -424,7 +424,7 @@ export default class Texture extends EventEmitter
      * @return {PIXI.Texture} Output texture
      */
     static fromLoader(source, imageUrl, name)
-        {
+    {
         const baseTexture = new BaseTexture(source, undefined, getResolutionOfUrl(imageUrl));
         const texture = new Texture(baseTexture);
 
