@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.4.0
- * Compiled Wed, 22 Feb 2017 17:36:45 UTC
+ * pixi.js - v4.4.1
+ * Compiled Tue, 28 Feb 2017 12:31:18 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -5016,8 +5016,6 @@ var Loader = function () {
          * [`encodeURIComponent`](https://mdn.io/encodeURIComponent) before assigning this property.
          *
          * @example
-         *
-         * ```js
          * const loader = new Loader();
          *
          * loader.defaultQueryString = 'user=me&password=secret';
@@ -5029,7 +5027,6 @@ var Loader = function () {
          *
          * // This will request 'image.png?v=1&user=me&password=secret'
          * loader.add('iamge.png?v=1').load();
-         * ```
          */
         this.defaultQueryString = '';
 
@@ -5583,6 +5580,8 @@ var tempAnchor = null;
 var STATUS_NONE = 0;
 var STATUS_OK = 200;
 var STATUS_EMPTY = 204;
+var STATUS_IE_BUG_EMPTY = 1223;
+var STATUS_TYPE_OK = 2;
 
 // noop
 function _noop() {} /* empty */
@@ -6294,19 +6293,36 @@ var Resource = function () {
 
     Resource.prototype._xhrOnLoad = function _xhrOnLoad() {
         var xhr = this.xhr;
-        var status = typeof xhr.status === 'undefined' ? xhr.status : STATUS_OK; // XDR has no `.status`, assume 200.
+        var text = '';
+        var status = typeof xhr.status === 'undefined' ? STATUS_OK : xhr.status; // XDR has no `.status`, assume 200.
 
-        // status can be 0 when using the `file://` protocol so we also check if a response is set
-        if (status === STATUS_OK || status === STATUS_EMPTY || status === STATUS_NONE && xhr.responseText.length > 0) {
+        // responseText is accessible only if responseType is '' or 'text' and on older browsers
+        if (xhr.responseType === '' || xhr.responseType === 'text' || typeof xhr.responseType === 'undefined') {
+            text = xhr.responseText;
+        }
+
+        // status can be 0 when using the `file://` protocol so we also check if a response is set.
+        // If it has a response, we assume 200; otherwise a 0 status code with no contents is an aborted request.
+        if (status === STATUS_NONE && text.length > 0) {
+            status = STATUS_OK;
+        }
+        // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
+        else if (status === STATUS_IE_BUG_EMPTY) {
+                status = STATUS_EMPTY;
+            }
+
+        var statusType = status / 100 | 0;
+
+        if (statusType === STATUS_TYPE_OK) {
             // if text, just return it
             if (this.xhrType === Resource.XHR_RESPONSE_TYPE.TEXT) {
-                this.data = xhr.responseText;
+                this.data = text;
                 this.type = Resource.TYPE.TEXT;
             }
             // if json, parse into json object
             else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON) {
                     try {
-                        this.data = JSON.parse(xhr.responseText);
+                        this.data = JSON.parse(text);
                         this.type = Resource.TYPE.JSON;
                     } catch (e) {
                         this.abort('Error trying to parse loaded json: ' + e);
@@ -6320,11 +6336,11 @@ var Resource = function () {
                             if (window.DOMParser) {
                                 var domparser = new DOMParser();
 
-                                this.data = domparser.parseFromString(xhr.responseText, 'text/xml');
+                                this.data = domparser.parseFromString(text, 'text/xml');
                             } else {
                                 var div = document.createElement('div');
 
-                                div.innerHTML = xhr.responseText;
+                                div.innerHTML = text;
 
                                 this.data = div;
                             }
@@ -6338,7 +6354,7 @@ var Resource = function () {
                     }
                     // other types just return the response
                     else {
-                            this.data = xhr.response || xhr.responseText;
+                            this.data = xhr.response || text;
                         }
         } else {
             this.abort('[' + xhr.status + '] ' + xhr.statusText + ': ' + xhr.responseURL);
@@ -6702,7 +6718,7 @@ function _noop() {} /* empty */
 /**
  * Iterates an array in series.
  *
- * @param {*[]} array - Array to iterate.
+ * @param {Array.<*>} array - Array to iterate.
  * @param {function} iterator - Function to call for each element.
  * @param {function} callback - Function to call when done, or on error.
  */
@@ -8160,7 +8176,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.4.0';
+var VERSION = exports.VERSION = '4.4.1';
 
 /**
  * Two Pi.
@@ -25033,7 +25049,7 @@ var Texture = function (_EventEmitter) {
 
 
     Texture.fromLoader = function fromLoader(source, imageUrl, name) {
-        var baseTexture = new _BaseTexture2.default(source, null, (0, _utils.getResolutionOfUrl)(imageUrl));
+        var baseTexture = new _BaseTexture2.default(source, undefined, (0, _utils.getResolutionOfUrl)(imageUrl));
         var texture = new Texture(baseTexture);
 
         baseTexture.imageUrl = imageUrl;
@@ -32962,7 +32978,7 @@ var InteractionManager = function (_EventEmitter) {
         for (var i = 0; i < eventLen; i++) {
             var event = events[i];
 
-            var interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            var interactionData = this.getInteractionDataForPointerId(event);
 
             var interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -33036,7 +33052,7 @@ var InteractionManager = function (_EventEmitter) {
         for (var i = 0; i < eventLen; i++) {
             var event = events[i];
 
-            var interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            var interactionData = this.getInteractionDataForPointerId(event);
 
             var interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -33134,7 +33150,7 @@ var InteractionManager = function (_EventEmitter) {
 
             var test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
 
-            var isDown = trackingData !== undefined && trackingData.flags | test;
+            var isDown = trackingData !== undefined && trackingData.flags & test;
 
             if (hit) {
                 this.dispatchEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', interactionEvent);
@@ -33201,7 +33217,7 @@ var InteractionManager = function (_EventEmitter) {
         for (var i = 0; i < eventLen; i++) {
             var event = events[i];
 
-            var interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            var interactionData = this.getInteractionDataForPointerId(event);
 
             var interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -33269,7 +33285,7 @@ var InteractionManager = function (_EventEmitter) {
             this.setCursorMode(null);
         }
 
-        var interactionData = this.getInteractionDataForPointerId(event.pointerId);
+        var interactionData = this.getInteractionDataForPointerId(event);
 
         var interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -33350,7 +33366,7 @@ var InteractionManager = function (_EventEmitter) {
         // Only mouse and pointer can call onPointerOver, so events will always be length 1
         var event = events[0];
 
-        var interactionData = this.getInteractionDataForPointerId(event.pointerId);
+        var interactionData = this.getInteractionDataForPointerId(event);
 
         var interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -33370,13 +33386,15 @@ var InteractionManager = function (_EventEmitter) {
      * Get InteractionData for a given pointerId. Store that data as well
      *
      * @private
-     * @param {number} pointerId - Identifier from a pointer event
+     * @param {PointerEvent} event - Normalized pointer event, output from normalizeToPointerData
      * @return {InteractionData} - Interaction data for the given pointer identifier
      */
 
 
-    InteractionManager.prototype.getInteractionDataForPointerId = function getInteractionDataForPointerId(pointerId) {
-        if (pointerId === MOUSE_POINTER_ID) {
+    InteractionManager.prototype.getInteractionDataForPointerId = function getInteractionDataForPointerId(event) {
+        var pointerId = event.pointerId;
+
+        if (pointerId === MOUSE_POINTER_ID || event.pointerType === 'mouse') {
             return this.mouse;
         } else if (this.activeInteractionData[pointerId]) {
             return this.activeInteractionData[pointerId];

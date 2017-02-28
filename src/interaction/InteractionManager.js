@@ -914,7 +914,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -998,7 +998,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1098,7 +1098,7 @@ export default class InteractionManager extends EventEmitter
 
             const test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
 
-            const isDown = trackingData !== undefined && (trackingData.flags | test);
+            const isDown = trackingData !== undefined && (trackingData.flags & test);
 
             if (hit)
             {
@@ -1180,7 +1180,7 @@ export default class InteractionManager extends EventEmitter
         {
             const event = events[i];
 
-            const interactionData = this.getInteractionDataForPointerId(event.pointerId);
+            const interactionData = this.getInteractionDataForPointerId(event);
 
             const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1255,7 +1255,7 @@ export default class InteractionManager extends EventEmitter
             this.setCursorMode(null);
         }
 
-        const interactionData = this.getInteractionDataForPointerId(event.pointerId);
+        const interactionData = this.getInteractionDataForPointerId(event);
 
         const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1344,7 +1344,7 @@ export default class InteractionManager extends EventEmitter
         // Only mouse and pointer can call onPointerOver, so events will always be length 1
         const event = events[0];
 
-        const interactionData = this.getInteractionDataForPointerId(event.pointerId);
+        const interactionData = this.getInteractionDataForPointerId(event);
 
         const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
 
@@ -1366,12 +1366,14 @@ export default class InteractionManager extends EventEmitter
      * Get InteractionData for a given pointerId. Store that data as well
      *
      * @private
-     * @param {number} pointerId - Identifier from a pointer event
+     * @param {PointerEvent} event - Normalized pointer event, output from normalizeToPointerData
      * @return {InteractionData} - Interaction data for the given pointer identifier
      */
-    getInteractionDataForPointerId(pointerId)
+    getInteractionDataForPointerId(event)
     {
-        if (pointerId === MOUSE_POINTER_ID)
+        const pointerId = event.pointerId;
+
+        if (pointerId === MOUSE_POINTER_ID || event.pointerType === 'mouse')
         {
             return this.mouse;
         }

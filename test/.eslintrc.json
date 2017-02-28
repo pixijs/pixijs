@@ -12,7 +12,8 @@
         "sinon": false,
         "expect": false,
         "assert": false,
-        "PIXI": false
+        "PIXI": false,
+        "PointerEvent": true
     },
     "rules": {
         "func-names": 0,
