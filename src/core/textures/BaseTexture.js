@@ -203,6 +203,14 @@ export default class BaseTexture extends EventEmitter
         }
 
         /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @readonly
+         */
+        this.isDestroyed = false;
+
+        /**
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected
@@ -598,6 +606,8 @@ export default class BaseTexture extends EventEmitter
         this.source = null;
 
         this.dispose();
+
+        this.isDestroyed = true;
     }
 
     /**
