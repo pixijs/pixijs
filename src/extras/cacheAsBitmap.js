@@ -359,8 +359,8 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  *
  * @private
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy()
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options)
 {
     this.cacheAsBitmap = false;
-    this.destroy();
+    this.destroy(options);
 };
