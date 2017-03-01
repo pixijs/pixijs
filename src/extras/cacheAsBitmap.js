@@ -357,6 +357,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
 /**
  * Destroys the cached object.
  *
+ * @private
  * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
  *  have been set to that value. 
  *  Used when destroying containers, see the Container.destroy method.
