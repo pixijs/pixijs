@@ -37,6 +37,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
     mat4:     'gl.uniformMatrix4fv(location, false, value)',
 
     sampler2D: 'uniform1i(location, value)',
+    samplerCube: 'uniform1i(location, value)',
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
@@ -58,11 +59,12 @@ const GLSL_TO_ARRAY_SETTERS = {
     bvec4:    'gl.uniform4iv(location, value)',
 
     sampler2D: 'uniform1i(location, value)',
+    samplerCube: 'uniform1i(location, value)',
 };
 
 export default function generateUniformsSync2(group, uniformData)
 {
-    let textureCount = 1;
+    let textureCount = 0;
     let func = `var value = null;
     var cacheValue = null
     var gl = renderer.gl`;
@@ -72,7 +74,7 @@ export default function generateUniformsSync2(group, uniformData)
     {
         const data = uniformData[i];
         //group.uniforms[i];
-        // console.log(i, data);
+         console.log(i, data);
         if(!data)
         {
             if(group.uniforms[i].group)
@@ -94,11 +96,11 @@ export default function generateUniformsSync2(group, uniformData)
     gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
 }\n`;
         }
-        else if (data.type === 'sampler2D' && data.size === 1)
+        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube') && data.size === 1)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
-    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount++}, false);
+    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount}, false);
 
     if(uniformData.${i}.value !== location)
     {
@@ -106,14 +108,23 @@ export default function generateUniformsSync2(group, uniformData)
         gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
     }
 }
+else if(uniformValues.${i}._new)
+{
+    uniformData.${i}.value = ${textureCount};
+    renderer.newTextureManager.bindTexture(uniformValues.${i}, ${textureCount})
+
+    gl.uniform1i(uniformData.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
+
+}
 else
 {
     uniformData.${i}.value = ${textureCount};
     renderer.boundTextures[${textureCount}] = renderer.emptyTextures[${textureCount}];
-    gl.activeTexture(gl.TEXTURE0 + ${textureCount++});
+    gl.activeTexture(gl.TEXTURE0 + ${textureCount});
 
     uniformValues.${i}.bind();
 }`;
+            textureCount++;
         }
         else if (data.type === 'mat3' && data.size === 1)
         {

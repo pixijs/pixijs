@@ -2,6 +2,8 @@ import SystemRenderer from '../SystemRenderer';
 import MaskManager from './managers/MaskManager';
 import StencilManager from './managers/StencilManager';
 import FilterManager from './managers/FilterManager';
+import FramebufferManager from './managers/FramebufferManager';
+import NewTextureManager from './managers/NewTextureManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
@@ -114,6 +116,9 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.ObjectRenderer}
          */
         this.emptyRenderer = new ObjectRenderer(this);
+
+        this.framebufferManager = new FramebufferManager(this);
+        this.newTextureManager = new NewTextureManager(this);
 
         /**
          * The currently active ObjectRenderer.
@@ -559,7 +564,16 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         const gl = this.gl;
-        const glTexture = texture._glTextures[this.CONTEXT_UID];
+        let glTexture = texture._glTextures[this.CONTEXT_UID];
+
+        if(texture._newTexture)
+        {
+            this.newTextureManager.bindTexture(texture._newTexture, location);
+            glTexture = texture._newTexture.glTextures[this.CONTEXT_UID];
+            console.log("!!!")
+
+            return;
+        }
 
         if (!glTexture)
         {

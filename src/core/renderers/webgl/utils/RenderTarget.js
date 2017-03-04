@@ -228,7 +228,7 @@ export default class RenderTarget
         // TODO add a check as them may be the same!
         if (this.destinationFrame !== this.sourceFrame)
         {
-            gl.enable(gl.SCISSOR_TEST);
+//            gl.enable(gl.SCISSOR_TEST);
             gl.scissor(
                 this.destinationFrame.x | 0,
                 this.destinationFrame.y | 0,
@@ -238,7 +238,7 @@ export default class RenderTarget
         }
         else
         {
-            gl.disable(gl.SCISSOR_TEST);
+  //          gl.disable(gl.SCISSOR_TEST);
         }
 
         // TODO - does not need to be updated all the time??

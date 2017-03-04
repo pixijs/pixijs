@@ -193,8 +193,14 @@ export default class BaseTexture extends EventEmitter
          */
         this._glTextures = {};
 
+        // 0 = color : 1 = depth : 2 = cube;
+
+        this.type = 0;
+
+
         this._enabled = 0;
         this._virtalBoundId = -1;
+
 
         // if no source passed don't try to load
         if (source)
@@ -217,6 +223,10 @@ export default class BaseTexture extends EventEmitter
          * @event error
          * @memberof PIXI.BaseTexture#
          */
+
+
+         // temp hacky API
+        this._newTexture = null;
     }
 
     /**
