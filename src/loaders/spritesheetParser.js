@@ -1,5 +1,5 @@
 import { Resource } from 'resource-loader';
-import path from 'path';
+import url from 'url';
 import { Spritesheet } from '../core';
 
 export default function ()
@@ -56,5 +56,5 @@ export function getResourcePath(resource, baseUrl)
         return resource.data.meta.image;
     }
 
-    return `${path.dirname(resource.url.replace(baseUrl, ''))}/${resource.data.meta.image}`;
+    return url.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
 }

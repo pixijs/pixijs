@@ -101,6 +101,9 @@ export default {
      * @property {boolean} clearBeforeRender=true
      * @property {boolean} preserveDrawingBuffer=false
      * @property {boolean} roundPixels=false
+     * @property {number} width=800
+     * @property {number} height=600
+     * @property {boolean} legacy=false
      */
     RENDER_OPTIONS: {
         view: null,
@@ -112,6 +115,9 @@ export default {
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
         roundPixels: false,
+        width: 800,
+        height: 600,
+        legacy: false,
     },
 
     /**
