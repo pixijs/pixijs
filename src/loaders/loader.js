@@ -90,6 +90,17 @@ export default class Loader extends ResourceLoader
     {
         Loader._pixiMiddleware.push(fn);
     }
+
+    /**
+     * Prepends a default middleware to the pixi loader.
+     *
+     * @static
+     * @param {Function} fn - The middleware to prepend.
+     */
+    static prependPixiMiddleware(fn)
+    {
+        Loader._pixiMiddlware.unshift(fn);
+    }
 }
 
 // Copy EE3 prototype (mixin)
