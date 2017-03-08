@@ -1118,11 +1118,11 @@ export default class InteractionManager extends EventEmitter
             {
                 if (isRightButton)
                 {
-                    trackingData.rightDown = hit;
+                    trackingData.rightDown = false;
                 }
                 else
                 {
-                    trackingData.leftDown = hit;
+                    trackingData.leftDown = false;
                 }
             }
         }
