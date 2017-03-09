@@ -37,6 +37,7 @@ export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
 export { default as VideoBaseTexture } from './textures/VideoBaseTexture';
 export { default as TextureUvs } from './textures/TextureUvs';
+export { default as TextureTransform } from './textures/TextureTransform';
 export { default as CanvasRenderTarget } from './renderers/canvas/utils/CanvasRenderTarget';
 export { default as Shader } from './Shader';
 export { default as WebGLManager } from './renderers/webgl/managers/WebGLManager';
