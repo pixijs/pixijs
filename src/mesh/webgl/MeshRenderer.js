@@ -104,6 +104,7 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         renderer.state.setBlendMode(mesh.blendMode);
 
+        glData.shader.uniforms.uTransform = mesh.uvTransform.mapCoord.toArray(true);
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
         glData.shader.uniforms.alpha = mesh.worldAlpha;
         glData.shader.uniforms.tint = mesh.tintRgb;

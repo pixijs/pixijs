@@ -1,4 +1,5 @@
 import * as core from '../core';
+import { default as TextureTransform } from '../extras/TextureTransform';
 
 const tempPoint = new core.Point();
 const tempPolygon = new core.Polygon();
@@ -125,6 +126,13 @@ export default class Mesh extends core.Container
         this._glDatas = {};
 
         /**
+         * transform that is applied to UV to get the texture coords
+         *
+         * @member {PIXI.extras.TextureTransform}
+         */
+        this.uvTransform = texture.transform || new TextureTransform(texture);
+
+        /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
          *
@@ -142,6 +150,7 @@ export default class Mesh extends core.Container
      */
     _renderWebGL(renderer)
     {
+        this.uvTransform.update();
         renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
@@ -154,6 +163,7 @@ export default class Mesh extends core.Container
      */
     _renderCanvas(renderer)
     {
+        this.uvTransform.update();
         renderer.plugins[this.pluginName].render(this);
     }
 
@@ -164,7 +174,10 @@ export default class Mesh extends core.Container
      */
     _onTextureUpdate()
     {
-        /* empty */
+        if (this.uvTransform)
+        {
+            this.uvTransform.texture = this._texture;
+        }
     }
 
     /**
