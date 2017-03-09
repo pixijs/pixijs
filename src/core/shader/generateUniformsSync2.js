@@ -110,11 +110,12 @@ export default function generateUniformsSync2(group, uniformData)
 }
 else if(uniformValues.${i}._new)
 {
-    uniformData.${i}.value = ${textureCount};
     renderer.newTextureManager.bindTexture(uniformValues.${i}, ${textureCount})
-
-    gl.uniform1i(uniformData.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
-
+    if(uniformData.${i}.value !== ${textureCount})
+    {
+        uniformData.${i}.value = ${textureCount};
+        gl.uniform1i(uniformData.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
+    }
 }
 else
 {

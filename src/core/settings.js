@@ -162,7 +162,7 @@ export default {
      * @type {PIXI.WRAP_MODES}
      * @default PIXI.WRAP_MODES.CLAMP
      */
-    WRAP_MODE: 0,
+    WRAP_MODE: 33071,
 
     /**
      * The scale modes that are supported by pixi.

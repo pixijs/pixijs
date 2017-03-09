@@ -34,6 +34,7 @@ export default class FrameBuffer
     	return this;
     }
 
+
     addDepthTexture()
     {
     	this.depthTexture[0] = new Texture(this.width, this.height, 'depth');// || new Texture();

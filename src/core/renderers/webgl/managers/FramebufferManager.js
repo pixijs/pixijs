@@ -48,7 +48,16 @@ export default class FramebufferManager extends WebGLManager
                 this.updateFramebuffer(framebuffer);
             }
 
-            this.renderer.newTextureManager.unbindTexture(framebuffer.colorTextures[0].glTextures[this.CONTEXT_UID]._bound)
+             if(framebuffer.colorTextures[0].texturePart)
+             {
+
+                this.renderer.newTextureManager.unbindTexture(framebuffer.colorTextures[0].texture)
+             }
+             else
+             {
+
+                this.renderer.newTextureManager.unbindTexture(framebuffer.colorTextures[0])
+             }
         }
         else
         {
@@ -96,15 +105,30 @@ export default class FramebufferManager extends WebGLManager
 
         for (var i = 0; i < count; i++)
         {
-            const texture = framebuffer.colorTextures[i];
+            let texture = framebuffer.colorTextures[i];
 
-            this.renderer.newTextureManager.bindTexture(texture, 0);
+            if(texture.texturePart)
+            {
+                this.renderer.newTextureManager.bindTexture(texture.texture, 0);
 
-            const glTexture = texture.glTextures[this.CONTEXT_UID];
+                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                                        gl.COLOR_ATTACHMENT0 + i,
+                                        gl.TEXTURE_CUBE_MAP_NEGATIVE_X + texture.side,
+                                        texture.texture.glTextures[this.CONTEXT_UID].texture,
+                                        0);
+            }
+            else
+            {
+                this.renderer.newTextureManager.bindTexture(texture, 0);
+
+                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                                        gl.COLOR_ATTACHMENT0 + i,
+                                        gl.TEXTURE_2D,
+                                        texture.glTextures[this.CONTEXT_UID].texture,
+                                        0);
+            }
 
             activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
-
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, glTexture.texture, 0);
         }
 
         if(this.drawBufferExtension && activeTextures.length > 1)

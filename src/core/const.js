@@ -179,9 +179,9 @@ export const SCALE_MODES = {
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
 export const WRAP_MODES = {
-    CLAMP:          0,
-    REPEAT:         1,
-    MIRRORED_REPEAT: 2,
+    CLAMP:           33071,
+    REPEAT:          10497,
+    MIRRORED_REPEAT: 33648,
 };
 
 /**
