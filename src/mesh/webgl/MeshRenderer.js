@@ -106,13 +106,16 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         renderer.state.setBlendMode(mesh.blendMode);
 
-        if (mesh.uploadUvTransform)
+        if (glData.shader.uniforms.uTransform)
         {
-            glData.shader.uniforms.uTransform = mesh._uvTransform.mapCoord.toArray(true);
-        }
-        else
-        {
-            glData.shader.uniforms.uTransform = matrixIdentity.toArray(true);
+            if (mesh.uploadUvTransform)
+            {
+                glData.shader.uniforms.uTransform = mesh._uvTransform.mapCoord.toArray(true);
+            }
+            else
+            {
+                glData.shader.uniforms.uTransform = matrixIdentity.toArray(true);
+            }
         }
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
         glData.shader.uniforms.alpha = mesh.worldAlpha;
