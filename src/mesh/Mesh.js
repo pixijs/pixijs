@@ -135,7 +135,6 @@ export default class Mesh extends core.Container
          * whether or not upload uvTransform to shader
          * if its false, then uvs should be pre-multiplied
          * if you change it for generated mesh, please call 'refresh(true)'
-         *
          * @member {boolean}
          * @default false
          */
@@ -144,7 +143,6 @@ export default class Mesh extends core.Container
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
-         *
          * @member {string}
          * @default 'mesh'
          */
