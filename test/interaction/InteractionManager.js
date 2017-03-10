@@ -342,7 +342,12 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             pointer.mouseup(10, 10);
 
-            expect(clickSpy).to.not.have.been.called;
+            expect(clickSpy, 'click should not happen on first mouseup').to.not.have.been.called;
+
+            // test again, just because it was a bug that was reported
+            pointer.mouseup(20, 20);
+
+            expect(clickSpy, 'click should not happen on second mouseup').to.not.have.been.called;
         });
     });
 
