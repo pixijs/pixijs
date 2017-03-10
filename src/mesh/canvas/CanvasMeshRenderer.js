@@ -145,7 +145,7 @@ export default class MeshSpriteRenderer
         if (mesh.uploadUvTransform)
         {
             const ut = mesh._uvTransform.mapCoord;
-            
+
             u0 = ((uvs[index0] * ut.a) + (uvs[index0 + 1] * ut.c) + ut.tx) * base.width;
             u1 = ((uvs[index1] * ut.a) + (uvs[index1 + 1] * ut.c) + ut.tx) * base.width;
             u2 = ((uvs[index2] * ut.a) + (uvs[index2 + 1] * ut.c) + ut.tx) * base.width;
