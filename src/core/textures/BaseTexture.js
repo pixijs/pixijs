@@ -217,6 +217,14 @@ export default class BaseTexture extends EventEmitter
          * @event error
          * @memberof PIXI.BaseTexture#
          */
+
+        /**
+         * Fired when destroy() is called.
+         *
+         * @protected
+         * @event destroy
+         * @memberof PIXI.BaseTexture#
+         */
     }
 
     /**
@@ -579,8 +587,15 @@ export default class BaseTexture extends EventEmitter
     {
         if (this.imageUrl)
         {
-            delete BaseTextureCache[this.imageUrl];
-            delete TextureCache[this.imageUrl];
+            // remove this texture from the global texture cache
+            if (BaseTextureCache[this.imageUrl] === this)
+            {
+                delete BaseTextureCache[this.imageUrl];
+            }
+            if (TextureCache[this.imageUrl] && TextureCache[this.imageUrl].baseTexture === this)
+            {
+                delete TextureCache[this.imageUrl];
+            }
 
             this.imageUrl = null;
 
@@ -590,6 +605,7 @@ export default class BaseTexture extends EventEmitter
             }
         }
         // An svg source has both `imageUrl` and `__pixiId`, so no `else if` here
+        // this does cleanup for SVG and canvas
         if (this.source && this.source._pixiId)
         {
             delete BaseTextureCache[this.source._pixiId];
@@ -598,6 +614,9 @@ export default class BaseTexture extends EventEmitter
         this.source = null;
 
         this.dispose();
+
+        // tell any Textures that reference this that it is time to go
+        this.emit('destroy', this);
     }
 
     /**

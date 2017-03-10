@@ -207,7 +207,10 @@ export default class Spritesheet
                 );
 
                 // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+                this.textures[i].name = i;
                 TextureCache[i] = this.textures[i];
+                // add listener to clean the cache when the base texture is destroyed
+                this.textures[i].listenForDestroy();
             }
 
             frameIndex++;

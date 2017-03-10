@@ -156,6 +156,25 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * Name used to store the texture in PIXI.utils.TextureCache. Primarily used for automatic
+         * cleanup.
+         * @type {string}
+         */
+        this.name = null;
+    }
+
+    /**
+     * Attaches a "destroy" listener to the base texture, so that it is destroyed and removed from
+     * global texture caches when the base texture is destroyed.
+     */
+    listenForDestroy()
+    {
+        if (this.baseTexture)
+        {
+            this.baseTexture.once('destroy', this.destroy, this);
+        }
     }
 
     /**
@@ -216,15 +235,17 @@ export default class Texture extends EventEmitter
     {
         if (this.baseTexture)
         {
-            if (destroyBase)
+            // remove BaseTexture stored under the texture name if destroyBase is true or
+            // is our base texture (in which case this is the event callback for 'destroy')
+            if ((destroyBase === true || destroyBase === this.baseTexture)
+                && this.name && BaseTextureCache[this.name] === this.baseTexture)
             {
-                // delete the texture if it exists in the texture cache..
-                // this only needs to be removed if the base texture is actually destroyed too..
-                if (TextureCache[this.baseTexture.imageUrl])
-                {
-                    delete TextureCache[this.baseTexture.imageUrl];
-                }
+                delete BaseTextureCache[this.name];
+            }
 
+            this.baseTexture.off('destroy', this.destroy, this);
+            if (destroyBase === true)
+            {
                 this.baseTexture.destroy();
             }
 
@@ -239,10 +260,17 @@ export default class Texture extends EventEmitter
         this.trim = null;
         this.orig = null;
 
-        this.valid = false;
+        if (this.name)
+        {
+            // remove this texture from the global texture cache
+            if (TextureCache[this.name] === this)
+            {
+                delete TextureCache[this.name];
+            }
+            this.name = null;
+        }
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        this.valid = false;
     }
 
     /**
@@ -291,6 +319,8 @@ export default class Texture extends EventEmitter
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
             TextureCache[imageUrl] = texture;
+            // set up listener to clean the cache when the base texture is destroyed
+            texture.listenForDestroy();
         }
 
         return texture;
@@ -435,17 +465,25 @@ export default class Texture extends EventEmitter
         {
             name = imageUrl;
         }
+        texture.name = name;
 
-        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+        // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
+        // for cleanup, this Texture instance will be responsible for removing from the texture
+        // caches both the Texture and BaseTexture under the name key
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
 
         // also add references by url if they are different.
+        // Texture doesn't keep track of imageUrl, but the BaseTexture does, so it will remove
+        // this texture and itself from the texture cache for the imageUrl key
         if (name !== imageUrl)
         {
             BaseTextureCache[imageUrl] = baseTexture;
             TextureCache[imageUrl] = texture;
         }
+
+        // set up listener to clean the cache when the base texture is destroyed
+        texture.listenForDestroy();
 
         return texture;
     }
@@ -459,7 +497,15 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        // for cleanup purposes, we should really always set the name to id, but we don't want to
+        // interfere with what a user might be doing
+        if (!texture.name)
+        {
+            texture.name = id;
+        }
         TextureCache[id] = texture;
+        // set up listener to clean the cache when the base texture is destroyed
+        texture.listenForDestroy();
     }
 
     /**
