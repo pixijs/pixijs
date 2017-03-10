@@ -110,7 +110,7 @@ export default function generateUniformsSync2(group, uniformData)
 }
 else if(uniformValues.${i}._new)
 {
-    renderer.newTextureManager.bindTexture(uniformValues.${i}, ${textureCount})
+    renderer.texture.bind(uniformValues.${i}, ${textureCount})
     if(uniformData.${i}.value !== ${textureCount})
     {
         uniformData.${i}.value = ${textureCount};

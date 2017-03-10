@@ -1,14 +1,12 @@
 import TextureStyle from './TextureStyle';
 import ImageResource from './resources/ImageResource';
+import settings from '../../settings';
+
 
 export default class Texture
 {
     constructor(width, height, format)
     {
-
-    	this.style = new TextureStyle();
-
-
 		/**
 		 * The width of texture
 		 *
@@ -22,12 +20,44 @@ export default class Texture
 		 */
 		this.height = height || -1;
 
+    	/**
+		 * If mipmapping was used for this texture, enable and disable with enableMipmap()
+		 *
+		 * @member {Boolean}
+		 */
+        this.mipmap = false;//settings.MIPMAP_TEXTURES;
+
+		/**
+		 * Set to true to enable pre-multiplied alpha
+		 *
+		 * @member {Boolean}
+		 */
+		this.premultiplyAlpha = false;
+
+		/**
+		 * [wrapMode description]
+		 * @type {[type]}
+		 */
+		this.wrapMode = settings.WRAP_MODE;
+
+		/**
+         * The scale mode to apply when scaling this texture
+         *
+         * @member {number}
+         * @default PIXI.settings.SCALE_MODE
+         * @see PIXI.SCALE_MODES
+         */
+		this.scaleMode = settings.SCALE_MODE;
+
 		/**
 		 * The pixel format of the texture. defaults to gl.RGBA
 		 *
 		 * @member {Number}
 		 */
-		this.format = format;//format || gl.RGBA;
+		this.format = format || 6408//gl.RGBA;
+		this.type = 5121;
+
+		this.target = 3553; // gl.TEXTURE_2D
 
 		this.data = null;
 
@@ -37,7 +67,7 @@ export default class Texture
 
 		this.resource = null;
 
-		this.type = 3553;// gl.TEXTURE_2D
+
 
 		this.dirtyId = 0;
 

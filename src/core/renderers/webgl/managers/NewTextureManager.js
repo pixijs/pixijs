@@ -55,7 +55,7 @@ export default class TextureManager extends WebGLManager
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
 
-    bindTexture(texture, location)
+    bind(texture, location)
     {
         const gl = this.gl;
 
@@ -67,7 +67,7 @@ export default class TextureManager extends WebGLManager
         {
             const glTexture = texture.glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
-            gl.bindTexture(texture.type, glTexture.texture);
+            gl.bindTexture(texture.target, glTexture.texture);
 
             if(glTexture.dirtyId !== texture.dirtyId)
             {
@@ -79,12 +79,12 @@ export default class TextureManager extends WebGLManager
         }
         else
         {
-            gl.bindTexture(texture.type, this.emptyTextures[texture.type].texture);
+            gl.bindTexture(texture.target, this.emptyTextures[texture.target].texture);
             this.boundTextures[location] = null;
         }
     }
 
-    unbindTexture(texture)
+    unbind(texture)
     {
         const gl = this.gl;
 
@@ -120,9 +120,9 @@ export default class TextureManager extends WebGLManager
 
         // TODO there are only 3 textures as far as im aware?
         // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
-        if(texture.type === gl.TEXTURE_CUBE_MAP)
+        if(texture.target === gl.TEXTURE_CUBE_MAP)
         {
-
+            console.log( gl.UNSIGNED_BYTE)
             for (var i = 0; i < texture.sides.length; i++)
             {
                 // TODO - we should only upload what changed..
@@ -131,11 +131,24 @@ export default class TextureManager extends WebGLManager
 
                 if(texturePart.resource)
                 {
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side, 0, glTexture.format, glTexture.format, glTexture.type, texturePart.resource.source);
+                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
+                                  0,
+                                  texture.format,
+                                  texture.format,
+                                  texture.type,
+                                  texturePart.resource.source);
                 }
                 else
                 {
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side, 0, gl.RGBA,  texture.width, texture.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
+                                  0,
+                                  texture.format,
+                                  texture.width,
+                                  texture.height,
+                                  0,
+                                  texture.format,
+                                  texture.type,
+                                  null);
                 }
             }
         }
@@ -158,20 +171,19 @@ export default class TextureManager extends WebGLManager
     setStyle(texture)
     {
         const gl = this.gl;
-        const style = texture.style;
 
-        gl.texParameteri(texture.type, gl.TEXTURE_WRAP_S, style.wrapMode);
-        gl.texParameteri(texture.type, gl.TEXTURE_WRAP_T, style.wrapMode);
+        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_S, texture.wrapMode);
+        gl.texParameteri(texture.target, gl.TEXTURE_WRAP_T, texture.wrapMode);
 
         if(texture.mipmap)
         {
-            gl.texParameteri(texture.type, gl.TEXTURE_MIN_FILTER, style.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
+            gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
         }
         else
         {
-            gl.texParameteri(texture.type, gl.TEXTURE_MIN_FILTER, style.scaleMode ? gl.LINEAR : gl.NEAREST);
+            gl.texParameteri(texture.target, gl.TEXTURE_MIN_FILTER, texture.scaleMode ? gl.LINEAR : gl.NEAREST);
         }
 
-        gl.texParameteri(texture.type, gl.TEXTURE_MAG_FILTER, style.scaleMode ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(texture.target, gl.TEXTURE_MAG_FILTER, texture.scaleMode ? gl.LINEAR : gl.NEAREST);
     }
 }

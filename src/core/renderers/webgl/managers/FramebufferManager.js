@@ -29,7 +29,7 @@ export default class FramebufferManager extends WebGLManager
         this.drawBufferExtension = this.gl.getExtension('WEBGL_draw_buffers');
     }
 
-    bindFramebuffer(framebuffer)
+    bind(framebuffer)
     {
         const gl = this.gl;
 
@@ -51,12 +51,12 @@ export default class FramebufferManager extends WebGLManager
              if(framebuffer.colorTextures[0].texturePart)
              {
 
-                this.renderer.newTextureManager.unbindTexture(framebuffer.colorTextures[0].texture)
+                this.renderer.texture.unbind(framebuffer.colorTextures[0].texture)
              }
              else
              {
 
-                this.renderer.newTextureManager.unbindTexture(framebuffer.colorTextures[0])
+                this.renderer.texture.unbind(framebuffer.colorTextures[0])
              }
         }
         else
@@ -65,7 +65,7 @@ export default class FramebufferManager extends WebGLManager
         }
     }
 
-    clearFramebuffer(r, g, b, a)
+    clear(r, g, b, a)
     {
         var gl = this.gl;
 

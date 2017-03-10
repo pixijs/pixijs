@@ -7,8 +7,7 @@ export default class CubeTexture extends Texture
     {
     	super(width, height, format);
 
-    	this.isCube = true;
-    	this.type = 34067; // gl.TEXTURE_CUBE_MAP
+    	this.target = 34067; // gl.TEXTURE_CUBE_MAP
 
     	this.resources = [];
 

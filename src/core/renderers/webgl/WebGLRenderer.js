@@ -117,8 +117,8 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this.emptyRenderer = new ObjectRenderer(this);
 
-        this.framebufferManager = new FramebufferManager(this);
-        this.newTextureManager = new NewTextureManager(this);
+        this.framebuffer  = new FramebufferManager(this);
+        this.texture = new NewTextureManager(this);
 
         /**
          * The currently active ObjectRenderer.
