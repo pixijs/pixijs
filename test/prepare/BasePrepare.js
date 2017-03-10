@@ -144,7 +144,7 @@ describe('PIXI.prepare.BasePrepare', function ()
 
         expect(prep.queue).to.have.lengthOf(1);
 
-        item.isDestroyed = true;
+        item._destroyed = true;
         prep.prepareItems();
 
         expect(prep.queue).to.be.empty;

@@ -118,9 +118,10 @@ export default class DisplayObject extends EventEmitter
          * If the object has been destroyed via destroy(). If true, it should not be used.
          *
          * @member {boolean}
+         * @private
          * @readonly
          */
-        this.isDestroyed = false;
+        this._destroyed = false;
     }
 
     /**
@@ -412,7 +413,7 @@ export default class DisplayObject extends EventEmitter
         this.interactive = false;
         this.interactiveChildren = false;
 
-        this.isDestroyed = true;
+        this._destroyed = true;
     }
 
     /**
