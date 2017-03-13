@@ -1,5 +1,4 @@
 import WebGLManager from './WebGLManager';
-import { GLFramebuffer, GLTexture } from 'pixi-gl-core';
 
 /**
  * @class
@@ -29,6 +28,8 @@ export default class FramebufferManager extends WebGLManager
         this.drawBufferExtension = this.gl.getExtension('WEBGL_draw_buffers');
     }
 
+    // public API
+
     bind(framebuffer)
     {
         const gl = this.gl;
@@ -36,6 +37,7 @@ export default class FramebufferManager extends WebGLManager
         if(framebuffer)
         {
             // TODO cacheing layer!
+
             const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID] || this.initFramebuffer(framebuffer);
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.framebuffer);
             // makesure all textures are unbound..
@@ -45,23 +47,43 @@ export default class FramebufferManager extends WebGLManager
             {
                 fbo.dirtyId = framebuffer.dirtyId;
 
-                this.updateFramebuffer(framebuffer);
+                if(fbo.dirtyFormat !== framebuffer.dirtyFormat)
+                {
+                    fbo.dirtyFormat = framebuffer.dirtyFormat;
+                    this.updateFramebuffer(framebuffer);
+                }
+                else if(fbo.dirtySize !== framebuffer.dirtySize)
+                {
+                    fbo.dirtySize = framebuffer.dirtySize;
+                    this.resizeFramebuffer(framebuffer)
+                }
             }
 
-             if(framebuffer.colorTextures[0].texturePart)
-             {
+            for (var i = 0; i < framebuffer.colorTextures.length; i++)
+            {
+                if(framebuffer.colorTextures[i].texturePart)
+                {
+                    this.renderer.texture.unbind(framebuffer.colorTextures[i].texture)
+                }
+                else
+                {
+                    this.renderer.texture.unbind(framebuffer.colorTextures[i])
+                }
+            }
 
-                this.renderer.texture.unbind(framebuffer.colorTextures[0].texture)
-             }
-             else
-             {
+            if(framebuffer.depthTexture)
+            {
+                this.renderer.texture.unbind(framebuffer.depthTexture);
+            }
 
-                this.renderer.texture.unbind(framebuffer.colorTextures[0])
-             }
+            gl.viewport(0,0,framebuffer.width, framebuffer.height);
+
         }
         else
         {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+            gl.viewport(0,0,this.renderer.width, this.renderer.height);
         }
     }
 
@@ -74,15 +96,36 @@ export default class FramebufferManager extends WebGLManager
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
+    // private functions...
+
     initFramebuffer(framebuffer)
     {
-        var fbo = GLFramebuffer.createRGBA(this.gl, framebuffer.width, framebuffer.height);
+        const gl = this.gl;
+
+        // TODO - make this a class?
+        var fbo = {
+            framebuffer:gl.createFramebuffer(),
+            stencil:null,
+            dirtyId:0,
+            dirtyFormat:0,
+            dirtySize:0,
+        }
 
         framebuffer.glFrameBuffers[this.CONTEXT_UID] = fbo;
 
-        console.log('framebuffer created!', fbo)
-
         return fbo;
+    }
+
+    resizeFramebuffer(framebuffer)
+    {
+        const gl = this.gl;
+        const fbo = framebuffer.glFrameBuffers[this.CONTEXT_UID];
+
+        if(framebuffer.stencil || framebuffer.depth)
+        {
+            gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencil);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+        }
     }
 
     updateFramebuffer(framebuffer)
@@ -109,7 +152,7 @@ export default class FramebufferManager extends WebGLManager
 
             if(texture.texturePart)
             {
-                this.renderer.newTextureManager.bindTexture(texture.texture, 0);
+                this.renderer.texture.bind(texture.texture, 0);
 
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
                                         gl.COLOR_ATTACHMENT0 + i,
@@ -119,7 +162,7 @@ export default class FramebufferManager extends WebGLManager
             }
             else
             {
-                this.renderer.newTextureManager.bindTexture(texture, 0);
+                this.renderer.texture.bind(texture, 0);
 
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
                                         gl.COLOR_ATTACHMENT0 + i,
@@ -136,9 +179,34 @@ export default class FramebufferManager extends WebGLManager
             this.drawBufferExtension.drawBuffersWEBGL(activeTextures);
         }
 
+        if(framebuffer.depthTexture)
+        {
+            var depthTextureExt = gl.getExtension("WEBKIT_WEBGL_depth_texture");
+
+            if(depthTextureExt)
+            {
+                let depthTexture = framebuffer.depthTexture;
+
+                this.renderer.texture.bind(depthTexture, 0);
+
+                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                                        gl.DEPTH_ATTACHMENT,
+                                        gl.TEXTURE_2D,
+                                        depthTexture.glTextures[this.CONTEXT_UID].texture,
+                                        0);
+            }
+        }
+
         if(framebuffer.stencil || framebuffer.depth)
         {
-            fbo.enableStencil();
+            fbo.stencil = gl.createRenderbuffer();
+
+            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
+
+            // TODO.. this is depth AND stencil?
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  framebuffer.width  , framebuffer.height );
+            //fbo.enableStencil();
         }
     }
 

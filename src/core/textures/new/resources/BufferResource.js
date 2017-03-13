@@ -5,8 +5,9 @@ export default class BufferResource
     {
     	this.source = source;
     	this.loaded = false; // TODO rename to ready?
-        this.width = 1;
-        this.height = 1;
+        this.width = -1;
+        this.height = -1;
+        this.uploadable = false;
 
         this.load = new Promise((resolve, reject) => {
 
@@ -19,6 +20,4 @@ export default class BufferResource
     {
         return new BufferResource(array);
     }
-
-
 }

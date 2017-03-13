@@ -155,8 +155,8 @@ export const TYPES = {
  * @property {number} NEAREST Pixelating scaling
  */
 export const SCALE_MODES = {
-    LINEAR:     0,
-    NEAREST:    1,
+    LINEAR:     1,
+    NEAREST:    0,
 };
 
 /**

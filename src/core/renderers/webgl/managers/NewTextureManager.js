@@ -26,6 +26,7 @@ export default class TextureManager extends WebGLManager
             null
         ];
 
+        this.currentLocation = -1;
     }
 
     /**
@@ -61,7 +62,11 @@ export default class TextureManager extends WebGLManager
 
         location = location || 0;
 
-        gl.activeTexture(gl.TEXTURE0 + location);
+        if(this.currentLocation !== location)
+        {
+            this.currentLocation = location;
+            gl.activeTexture(gl.TEXTURE0 + location);
+        }
 
         if(texture && texture.valid)
         {
@@ -92,8 +97,13 @@ export default class TextureManager extends WebGLManager
 
             if(this.boundTextures[i] === texture)
             {
-                gl.activeTexture(gl.TEXTURE0 + i);
-                gl.bindTexture(gl.TEXTURE_2D, this.emptyGLTexture.texture);
+                if(this.currentLocation !== i)
+                {
+                    gl.activeTexture(gl.TEXTURE0 + i);
+                    this.currentLocation = i;
+                }
+
+                gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[texture.target].texture);
                 this.boundTextures[i] = null;
             }
         }
@@ -103,8 +113,8 @@ export default class TextureManager extends WebGLManager
     {
         const gl = this.gl;
 
-        var glTexture = new GLTexture(this.gl);
-
+        var glTexture = new GLTexture(this.gl, -1, -1, texture.format, texture.type);
+        glTexture.premultiplyAlpha = texture.premultiplyAlpha;
         // guarentee an update..
         glTexture.dirtyId = -1;
 
@@ -117,12 +127,13 @@ export default class TextureManager extends WebGLManager
     {
         const glTexture = texture.glTextures[this.CONTEXT_UID];
         const gl = this.gl;
+        //console.log(gl);
 
         // TODO there are only 3 textures as far as im aware?
         // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
         if(texture.target === gl.TEXTURE_CUBE_MAP)
         {
-            console.log( gl.UNSIGNED_BYTE)
+           // console.log( gl.UNSIGNED_BYTE)
             for (var i = 0; i < texture.sides.length; i++)
             {
                 // TODO - we should only upload what changed..
@@ -131,12 +142,28 @@ export default class TextureManager extends WebGLManager
 
                 if(texturePart.resource)
                 {
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
+                    if(texturePart.resource.uploadable)
+                    {
+
+                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
+                                      0,
+                                      texture.format,
+                                      texture.format,
+                                      texture.type,
+                                      texturePart.resource.source);
+                    }
+                    else
+                    {
+                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + texturePart.side,
                                   0,
                                   texture.format,
+                                  texture.width,
+                                  texture.height,
+                                  0,
                                   texture.format,
                                   texture.type,
                                   texturePart.resource.source);
+                    }
                 }
                 else
                 {
@@ -156,7 +183,15 @@ export default class TextureManager extends WebGLManager
         {
             if(texture.resource)
             {
-                glTexture.upload(texture.resource.source);
+                if(texture.resource.uploadable)
+                {
+                    glTexture.upload(texture.resource.source);
+
+                }
+                else
+                {
+                    glTexture.uploadData(texture.resource.source, texture.width, texture.height);
+                }
             }
             else
             {

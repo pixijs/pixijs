@@ -1,11 +1,11 @@
-import TextureStyle from './TextureStyle';
 import ImageResource from './resources/ImageResource';
+import BufferResource from './resources/BufferResource';
 import settings from '../../settings';
 
 
 export default class Texture
 {
-    constructor(width, height, format)
+    constructor(width, height, format, type)
     {
 		/**
 		 * The width of texture
@@ -32,7 +32,7 @@ export default class Texture
 		 *
 		 * @member {Boolean}
 		 */
-		this.premultiplyAlpha = false;
+		this.premultiplyAlpha = true;
 
 		/**
 		 * [wrapMode description]
@@ -55,11 +55,9 @@ export default class Texture
 		 * @member {Number}
 		 */
 		this.format = format || 6408//gl.RGBA;
-		this.type = 5121;
+		this.type = type || 5121; //UNSIGNED_BYTE
 
 		this.target = 3553; // gl.TEXTURE_2D
-
-		this.data = null;
 
 		this.glTextures = {};
 
@@ -84,8 +82,11 @@ export default class Texture
 
     		if(this.resource === resource)
     		{
-    			this.width = resource.width;
-    			this.height = resource.height;
+    			if(resource.width !== -1 && resource.hight !== -1)
+    			{
+    				this.width = resource.width;
+    				this.height = resource.height;
+    			}
 
     			this.validate();
 
@@ -97,6 +98,14 @@ export default class Texture
     		}
 
     	})
+    }
+
+    resize(width, height)
+    {
+    	this.width = width;
+    	this.height = height;
+
+    	this.dirtyId++;
     }
 
     validate()
@@ -121,4 +130,27 @@ export default class Texture
 
     	return texture;
     }
+
+    static fromFloat32Array(width, height, float32Array)
+    {
+    	var texture = new Texture(width, height, 6408, 5126);
+
+    	float32Array = float32Array || new Float32Array(width*height*4);
+
+    	texture.setResource(new BufferResource(float32Array));
+
+    	return texture;
+    }
+
+    static fromUint8Array(width, height, uint8Array)
+    {
+    	var texture = new Texture(width, height, 6408, 5121);
+
+    	uint8Array = uint8Array || new Uint8Array(width*height*4);
+
+    	texture.setResource(new BufferResource(uint8Array));
+
+    	return texture;
+    }
+
 }

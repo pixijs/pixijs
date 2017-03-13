@@ -5,8 +5,10 @@ export default class ImageResource
     {
     	this.source = source;
     	this.loaded = false; // TODO rename to ready?
-        this.width = 1;
-        this.height = 1;
+        this.width = -1;
+        this.height = -1;
+
+        this.uploadable = true;
 
         this.load = new Promise((resolve, reject) => {
 
