@@ -18,6 +18,18 @@ core.settings.UPLOADS_PER_FRAME = 4;
  * basic queuing functionality and is extended by {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
+ * @example
+ * // Create a sprite
+ * const sprite = new PIXI.Sprite.fromImage('something.png');
+ *
+ * // Load object into GPU
+ * app.renderer.plugins.prepare.upload(sprite, () => {
+ *
+ *     //Texture(s) has been uploaded to GPU
+ *     app.stage.addChild(sprite);
+ *
+ * })
+ *
  * @abstract
  * @class
  * @memberof PIXI.prepare
@@ -223,7 +235,7 @@ export default class BasePrepare
     /**
      * Adds hooks for finding items.
      *
-     * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
+     * @param {Function} addHook - Function call that takes two parameters: `item:*, queue:Array`
      *          function must return `true` if it was able to add item to the queue.
      * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
      */
@@ -240,7 +252,7 @@ export default class BasePrepare
     /**
      * Adds hooks for uploading items.
      *
-     * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+     * @param {Function} uploadHook - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
      *          function must return `true` if it was able to handle upload of item.
      * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
      */
@@ -384,6 +396,7 @@ function findTexture(item, queue)
 
     return false;
 }
+
 /**
  * Built-in hook to draw PIXI.Text to its texture.
  *
