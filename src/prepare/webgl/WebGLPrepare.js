@@ -22,30 +22,30 @@ export default class WebGLPrepare extends BasePrepare
         this.uploadHookHelper = this.renderer;
 
         // Add textures and graphics to upload
-        this.register(BasePrepare.findBaseTextures, uploadBaseTextures)
-            .register(WebGLPrepare.findGraphics, uploadGraphics);
+        this.registerFindHook(findGraphics);
+        this.registerUploadHook(uploadBaseTextures);
+        this.registerUploadHook(uploadGraphics);
     }
+}
 
-    /**
-     * Built-in hook to find graphics.
-     *
-     * @static
-     * @param {PIXI.DisplayObject} item - Display object to check
-     * @param {Array<*>} queue - Collection of items to upload
-     * @return {boolean} if a PIXI.Graphics object was found.
-     */
-    static findGraphics(item, queue)
+/**
+ * Built-in hook to find graphics.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Graphics object was found.
+ */
+function findGraphics(item, queue)
+{
+    if (item instanceof core.Graphics)
     {
-        if (item instanceof core.Graphics)
-        {
-            queue.push(item);
+        queue.push(item);
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
+    return false;
 }
 
 /**

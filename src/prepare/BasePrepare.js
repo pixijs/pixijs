@@ -101,8 +101,16 @@ export default class BasePrepare
             this.prepareItems();
         };
 
-        this.register(BasePrepare.findText, drawText);
-        this.register(BasePrepare.findTextStyle, calculateTextStyle);
+        // hooks to find the correct texture
+        this.registerFindHook(findText);
+        this.registerFindHook(findTextStyle);
+        this.registerFindHook(findBaseTexturesFromAnimatedSprites);
+        this.registerFindHook(findBaseTexture);
+        this.registerFindHook(findTexture);
+
+        // upload hooks
+        this.registerUploadHook(drawText);
+        this.registerUploadHook(calculateTextStyle);
     }
 
     /**
@@ -214,21 +222,31 @@ export default class BasePrepare
     }
 
     /**
-     * Adds hooks for finding and uploading items.
+     * Adds hooks for finding items.
      *
      * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
               function must return `true` if it was able to add item to the queue.
-     * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
-     *        function must return `true` if it was able to handle upload of item.
      * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
      */
-    register(addHook, uploadHook)
+    registerFindHook(addHook)
     {
         if (addHook)
         {
             this.addHooks.push(addHook);
         }
 
+        return this;
+    }
+
+    /**
+     * Adds hooks for uploading items.
+     *
+     * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+     *        function must return `true` if it was able to handle upload of item.
+     * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
+     */
+    registerUploadHook(uploadHook)
+    {
         if (uploadHook)
         {
             this.uploadHooks.push(uploadHook);
@@ -288,115 +306,143 @@ export default class BasePrepare
         this.uploadHookHelper = null;
     }
 
-    /**
-     * Built-in hook to find textures from Sprites.
-     *
-     * @static
-     * @param {PIXI.DisplayObject} item - Display object to check
-     * @param {Array<*>} queue - Collection of items to upload
-     * @return {boolean} if a PIXI.Texture object was found.
-     */
-    static findBaseTextures(item, queue)
+}
+
+/**
+ * Built-in hook to find textures from Sprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findBaseTexturesFromAnimatedSprites(item, queue)
+{
+    // Objects with mutliple textures
+    if (item instanceof extras.AnimatedSprite)
     {
-        // Objects with mutliple textures
-        if (item instanceof extras.AnimatedSprite)
+        for (let i = 0; i < item.textures.length; i++)
         {
-            for (let i = 0; i < item.textures.length; i++)
+            const baseTexture = item.textures[i].baseTexture;
+
+            if (queue.indexOf(baseTexture) === -1)
             {
-                const baseTexture = item.textures[i].baseTexture;
-
-                if (queue.indexOf(baseTexture) === -1)
-                {
-                    queue.push(baseTexture);
-                }
+                queue.push(baseTexture);
             }
-
-            return true;
-        }
-        // Objects with textures, like Sprites/Text
-        else if (item instanceof core.BaseTexture)
-        {
-            if (queue.indexOf(item) === -1)
-            {
-                queue.push(item);
-            }
-
-            return true;
-        }
-        else if (item._texture && item._texture instanceof core.Texture)
-        {
-            const texture = item._texture.baseTexture;
-
-            if (queue.indexOf(texture) === -1)
-            {
-                queue.push(texture);
-            }
-
-            return true;
         }
 
-        return false;
+        return true;
     }
 
-    /**
-     * Built-in hook to find Text objects.
-     *
-     * @static
-     * @param {PIXI.DisplayObject} item - Display object to check
-     * @param {Array<*>} queue - Collection of items to upload
-     * @return {boolean} if a PIXI.Text object was found.
-     */
-    static findText(item, queue)
+    return false;
+}
+
+/**
+ * Built-in hook to find BaseTextures from Sprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findBaseTexture(item, queue)
+{
+    // Objects with textures, like Sprites/Text
+    if (item instanceof core.BaseTexture)
     {
-        if (item instanceof core.Text)
+        if (queue.indexOf(item) === -1)
         {
-            // push the text style to prepare it - this can be really expensive
-            if (queue.indexOf(item.style) === -1)
-            {
-                queue.push(item.style);
-            }
-            // also push the text object so that we can render it (to canvas/texture) if needed
-            if (queue.indexOf(item) === -1)
-            {
-                queue.push(item);
-            }
-            // also push the Text's texture for upload to GPU
-            const texture = item._texture.baseTexture;
-
-            if (queue.indexOf(texture) === -1)
-            {
-                queue.push(texture);
-            }
-
-            return true;
+            queue.push(item);
         }
 
-        return false;
+        return true;
     }
 
-    /**
-     * Built-in hook to find TextStyle objects.
-     *
-     * @static
-     * @param {PIXI.TextStyle} item - Display object to check
-     * @param {Array<*>} queue - Collection of items to upload
-     * @return {boolean} if a PIXI.TextStyle object was found.
-     */
-    static findTextStyle(item, queue)
-    {
-        if (item instanceof core.TextStyle)
-        {
-            if (queue.indexOf(item) === -1)
-            {
-                queue.push(item);
-            }
+    return false;
+}
 
-            return true;
+/**
+ * Built-in hook to find textures from objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findTexture(item, queue)
+{
+    if (item._texture && item._texture instanceof core.Texture)
+    {
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
         }
 
-        return false;
+        return true;
     }
 
+    return false;
+}
+
+/**
+ * Built-in hook to find Text objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Text object was found.
+ */
+function findText(item, queue)
+{
+    if (item instanceof core.Text)
+    {
+        // push the text style to prepare it - this can be really expensive
+        if (queue.indexOf(item.style) === -1)
+        {
+            queue.push(item.style);
+        }
+        // also push the text object so that we can render it (to canvas/texture) if needed
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+        // also push the Text's texture for upload to GPU
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find TextStyle objects.
+ *
+ * @private
+ * @param {PIXI.TextStyle} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.TextStyle object was found.
+ */
+function findTextStyle(item, queue)
+{
+    if (item instanceof core.TextStyle)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /**
