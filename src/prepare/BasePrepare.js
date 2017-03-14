@@ -1,4 +1,5 @@
 import * as core from '../core';
+import * as extras from '../extras';
 import CountLimiter from './limiters/CountLimiter';
 const SharedTicker = core.ticker.shared;
 
@@ -100,8 +101,8 @@ export default class BasePrepare
             this.prepareItems();
         };
 
-        this.register(findText, drawText);
-        this.register(findTextStyle, calculateTextStyle);
+        this.register(BasePrepare.findText, drawText);
+        this.register(BasePrepare.findTextStyle, calculateTextStyle);
     }
 
     /**
@@ -287,6 +288,128 @@ export default class BasePrepare
         this.uploadHookHelper = null;
     }
 
+    /**
+     * Built-in hook to find textures from Sprites.
+     *
+     * @private
+     * @param {PIXI.DisplayObject} item - Display object to check
+     * @param {Array<*>} queue - Collection of items to upload
+     * @return {boolean} if a PIXI.Texture object was found.
+     */
+    static findBaseTextures(item, queue)
+    {
+        // Objects with textures, like Sprites/Text
+        if (item instanceof core.BaseTexture)
+        {
+            if (queue.indexOf(item) === -1)
+            {
+                queue.push(item);
+            }
+
+            return true;
+        }
+        else if (item._texture && item._texture instanceof core.Texture)
+        {
+            const texture = item._texture.baseTexture;
+
+            if (queue.indexOf(texture) === -1)
+            {
+                queue.push(texture);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Built-in hook to find mutliple BaseTextures in AnimatedSprite objects.
+     *
+     * @private
+     * @param {PIXI.DisplayObject} item - Display object to check
+     * @param {Array<*>} queue - Collection of items to upload
+     * @return {boolean} if a PIXI.AnimatedSprite object was found.
+     */
+    static findAnimatedSpriteBaseTextures(item, queue)
+    {
+        if (item instanceof extras.AnimatedSprite)
+        {
+            for (let i = 0; i < item.textures.length; i++)
+            {
+                const baseTexture = item.textures[i].baseTexture;
+
+                if (queue.indexOf(baseTexture) === -1)
+                {
+                    queue.push(baseTexture);
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Built-in hook to find Text objects.
+     *
+     * @private
+     * @param {PIXI.DisplayObject} item - Display object to check
+     * @param {Array<*>} queue - Collection of items to upload
+     * @return {boolean} if a PIXI.Text object was found.
+     */
+    static findText(item, queue)
+    {
+        if (item instanceof core.Text)
+        {
+            // push the text style to prepare it - this can be really expensive
+            if (queue.indexOf(item.style) === -1)
+            {
+                queue.push(item.style);
+            }
+            // also push the text object so that we can render it (to canvas/texture) if needed
+            if (queue.indexOf(item) === -1)
+            {
+                queue.push(item);
+            }
+            // also push the Text's texture for upload to GPU
+            const texture = item._texture.baseTexture;
+
+            if (queue.indexOf(texture) === -1)
+            {
+                queue.push(texture);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Built-in hook to find TextStyle objects.
+     *
+     * @private
+     * @param {PIXI.TextStyle} item - Display object to check
+     * @param {Array<*>} queue - Collection of items to upload
+     * @return {boolean} if a PIXI.TextStyle object was found.
+     */
+    static findTextStyle(item, queue)
+    {
+        if (item instanceof core.TextStyle)
+        {
+            if (queue.indexOf(item) === -1)
+            {
+                queue.push(item);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
 }
 
 /**
@@ -327,65 +450,6 @@ function calculateTextStyle(helper, item)
         if (!core.Text.fontPropertiesCache[font])
         {
             core.Text.calculateFontProperties(font);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find Text objects.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Text object was found.
- */
-function findText(item, queue)
-{
-    if (item instanceof core.Text)
-    {
-        // push the text style to prepare it - this can be really expensive
-        if (queue.indexOf(item.style) === -1)
-        {
-            queue.push(item.style);
-        }
-        // also push the text object so that we can render it (to canvas/texture) if needed
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
-        }
-        // also push the Text's texture for upload to GPU
-        const texture = item._texture.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find TextStyle objects.
- *
- * @private
- * @param {PIXI.TextStyle} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.TextStyle object was found.
- */
-function findTextStyle(item, queue)
-{
-    if (item instanceof core.TextStyle)
-    {
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
         }
 
         return true;
