@@ -113,6 +113,15 @@ export default class DisplayObject extends EventEmitter
          * @private
          */
         this._mask = null;
+
+        /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @private
+         * @readonly
+         */
+        this._destroyed = false;
     }
 
     /**
@@ -403,6 +412,8 @@ export default class DisplayObject extends EventEmitter
 
         this.interactive = false;
         this.interactiveChildren = false;
+
+        this._destroyed = true;
     }
 
     /**

@@ -35,7 +35,7 @@ export default class DisplacementFilter extends core.Filter
         this.maskSprite = sprite;
         this.maskMatrix = maskMatrix;
 
-        this.uniforms.mapSampler = sprite.texture;
+        this.uniforms.mapSampler = sprite._texture;
         this.uniforms.filterMatrix = maskMatrix;
         this.uniforms.scale = { x: 1, y: 1 };
 

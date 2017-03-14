@@ -16,4 +16,20 @@ describe('PIXI.Texture', function ()
         expect(PIXI.utils.TextureCache[URL]).to.equal(texture);
         expect(PIXI.utils.BaseTextureCache[URL]).to.equal(texture.baseTexture);
     });
+
+    it('should remove Texture from cache on destroy', function ()
+    {
+        const NAME = 'foo';
+        const NAME2 = 'bar';
+        const texture = new PIXI.Texture(new PIXI.BaseTexture());
+
+        PIXI.Texture.addTextureToCache(texture, NAME);
+        PIXI.Texture.addTextureToCache(texture, NAME2);
+        expect(texture.textureCacheId).to.equal(NAME);
+        expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
+        expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
+        texture.destroy();
+        expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
+        expect(PIXI.utils.TextureCache[NAME2]).to.equal(undefined);
+    });
 });

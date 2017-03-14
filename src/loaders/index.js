@@ -3,7 +3,7 @@
  */
 export { default as Loader } from './loader';
 export { default as bitmapFontParser, parse as parseBitmapFontData } from './bitmapFontParser';
-export { default as spritesheetParser } from './spritesheetParser';
+export { default as spritesheetParser, getResourcePath } from './spritesheetParser';
 export { default as textureParser } from './textureParser';
 
 /**

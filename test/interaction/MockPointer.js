@@ -11,13 +11,41 @@ class MockPointer
      * @param {PIXI.Container} stage - The root of the scene tree
      * @param {number} [width=100] - Width of the renderer
      * @param {number} [height=100] - Height of the renderer
+     * @param {boolean} [ensurePointerEvents=false] - If we should make sure that PointerEvents are 'supported'
      */
-    constructor(stage, width, height)
+    constructor(stage, width, height, ensurePointerEvents)
     {
+        // fake PointerEvent existing
+        if (ensurePointerEvents && !window.PointerEvent)
+        {
+            window.PointerEvent = class PointerEvent extends MouseEvent
+            {
+                //eslint-disable-next-line
+                constructor(type, opts)
+                {
+                    super(type, opts);
+                    this.pointerType = opts.pointerType;
+                }
+            };
+            this.createdPointerEvent = true;
+        }
+
         this.stage = stage;
         this.renderer = new PIXI.CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
+    }
+
+    /**
+     * Cleans up after tests
+     */
+    cleanup()
+    {
+        if (this.createdPointerEvent)
+        {
+            delete window.PointerEvent;
+        }
+        this.renderer.destroy();
     }
 
     /**
@@ -45,14 +73,29 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mousemove(x, y)
+    mousemove(x, y, asPointer)
     {
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
+        let mouseEvent;
+
+        if (asPointer)
+        {
+            mouseEvent = new PointerEvent('pointermove', {
+                pointerType: 'mouse',
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            });
+        }
+        else
+        {
+            mouseEvent = new MouseEvent('mousemove', {
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            });
+        }
 
         this.setPosition(x, y);
         this.render();
