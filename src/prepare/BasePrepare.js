@@ -1,5 +1,4 @@
 import * as core from '../core';
-import * as extras from '../extras';
 import CountLimiter from './limiters/CountLimiter';
 const SharedTicker = core.ticker.shared;
 
@@ -104,7 +103,7 @@ export default class BasePrepare
         // hooks to find the correct texture
         this.registerFindHook(findText);
         this.registerFindHook(findTextStyle);
-        this.registerFindHook(findBaseTexturesFromAnimatedSprites);
+        this.registerFindHook(findMultipleBaseTextures);
         this.registerFindHook(findBaseTexture);
         this.registerFindHook(findTexture);
 
@@ -309,21 +308,21 @@ export default class BasePrepare
 }
 
 /**
- * Built-in hook to find textures from Sprites.
+ * Built-in hook to find multiple textures from objects like AnimatedSprites.
  *
  * @private
  * @param {PIXI.DisplayObject} item - Display object to check
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Texture object was found.
  */
-function findBaseTexturesFromAnimatedSprites(item, queue)
+function findMultipleBaseTextures(item, queue)
 {
     // Objects with mutliple textures
-    if (item instanceof extras.AnimatedSprite)
+    if (item && item._textures && item._textures.length)
     {
-        for (let i = 0; i < item.textures.length; i++)
+        for (let i = 0; i < item._textures.length; i++)
         {
-            const baseTexture = item.textures[i].baseTexture;
+            const baseTexture = item._textures[i].baseTexture;
 
             if (queue.indexOf(baseTexture) === -1)
             {
