@@ -30,7 +30,7 @@ export default class WebGLPrepare extends BasePrepare
     /**
      * Built-in hook to find graphics.
      *
-     * @private
+     * @static
      * @param {PIXI.DisplayObject} item - Display object to check
      * @param {Array<*>} queue - Collection of items to upload
      * @return {boolean} if a PIXI.Graphics object was found.

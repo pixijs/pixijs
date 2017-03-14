@@ -291,7 +291,7 @@ export default class BasePrepare
     /**
      * Built-in hook to find textures from Sprites.
      *
-     * @private
+     * @static
      * @param {PIXI.DisplayObject} item - Display object to check
      * @param {Array<*>} queue - Collection of items to upload
      * @return {boolean} if a PIXI.Texture object was found.
@@ -326,7 +326,7 @@ export default class BasePrepare
     /**
      * Built-in hook to find mutliple BaseTextures in AnimatedSprite objects.
      *
-     * @private
+     * @static
      * @param {PIXI.DisplayObject} item - Display object to check
      * @param {Array<*>} queue - Collection of items to upload
      * @return {boolean} if a PIXI.AnimatedSprite object was found.
@@ -354,7 +354,7 @@ export default class BasePrepare
     /**
      * Built-in hook to find Text objects.
      *
-     * @private
+     * @static
      * @param {PIXI.DisplayObject} item - Display object to check
      * @param {Array<*>} queue - Collection of items to upload
      * @return {boolean} if a PIXI.Text object was found.
@@ -390,7 +390,7 @@ export default class BasePrepare
     /**
      * Built-in hook to find TextStyle objects.
      *
-     * @private
+     * @static
      * @param {PIXI.TextStyle} item - Display object to check
      * @param {Array<*>} queue - Collection of items to upload
      * @return {boolean} if a PIXI.TextStyle object was found.
