@@ -58,6 +58,7 @@ export default class TextureManager extends WebGLManager
 
     bind(texture, location)
     {
+
         const gl = this.gl;
 
         location = location || 0;
@@ -70,7 +71,7 @@ export default class TextureManager extends WebGLManager
 
         if(texture && texture.valid)
         {
-            const glTexture = texture.glTextures[this.CONTEXT_UID] || this.initTexture(texture);
+            const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
 
             gl.bindTexture(texture.target, glTexture.texture);
 
@@ -118,14 +119,14 @@ export default class TextureManager extends WebGLManager
         // guarentee an update..
         glTexture.dirtyId = -1;
 
-        texture.glTextures[this.CONTEXT_UID] = glTexture;
+        texture._glTextures[this.CONTEXT_UID] = glTexture;
 
         return glTexture;
     }
 
     updateTexture(texture)
     {
-        const glTexture = texture.glTextures[this.CONTEXT_UID];
+        const glTexture = texture._glTextures[this.CONTEXT_UID];
         const gl = this.gl;
         //console.log(gl);
 

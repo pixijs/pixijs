@@ -1,3 +1,4 @@
+import determineCrossOrigin from '../../utils/determineCrossOrigin';
 
 export default class ImageResource
 {
@@ -21,6 +22,7 @@ export default class ImageResource
                 this.width = source.width;
                 this.height = source.height;
                 resolve(this);
+
             }
 
             if(source.complete && source.src)
@@ -35,9 +37,15 @@ export default class ImageResource
         })
     }
 
-    static from(url)
+    static from(url, crossorigin)
     {
         var image = new Image();
+
+        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        {
+            image.crossOrigin = determineCrossOrigin(url);
+        }
+
         image.src = url;
         return new ImageResource(image);
     }

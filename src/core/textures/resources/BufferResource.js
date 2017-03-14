@@ -4,7 +4,7 @@ export default class BufferResource
     constructor(source)
     {
     	this.source = source;
-    	this.loaded = false; // TODO rename to ready?
+    	this.loaded = true; // TODO rename to ready?
         this.width = -1;
         this.height = -1;
         this.uploadable = false;

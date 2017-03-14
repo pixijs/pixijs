@@ -115,6 +115,8 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
+        this.MAX_TEXTURES = 1;
+
         const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         // create a couple of buffers
@@ -428,7 +430,7 @@ export default class SpriteRenderer extends ObjectRenderer
                 // lets do a quick check..
                 if (rendererBoundTextures[group.ids[j]] !== currentTexture)
                 {
-                    this.renderer.bindTexture(currentTexture, group.ids[j], true);
+                    this.renderer.texture.bind(currentTexture, group.ids[j], true);
                 }
 
                 // reset the virtualId..

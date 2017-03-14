@@ -1,5 +1,5 @@
-import Texture from './Texture';
-import ImageResource from './resources/ImageResource';
+import Texture from '../BaseTexture';
+import ImageResource from '../resources/ImageResource';
 
 export default class CubeTexture extends Texture
 {

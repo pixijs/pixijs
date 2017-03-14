@@ -125,7 +125,7 @@ export default class Texture extends EventEmitter
             throw new Error('attempt to use diamond-shaped UVs. If you are sure, set rotation manually');
         }
 
-        if (baseTexture.hasLoaded)
+        if (baseTexture.valid)
         {
             if (this.noFrame)
             {
@@ -199,6 +199,7 @@ export default class Texture extends EventEmitter
      */
     onBaseTextureUpdated(baseTexture)
     {
+
         this._updateID++;
 
         this._frame.width = baseTexture.width;
@@ -291,6 +292,20 @@ export default class Texture extends EventEmitter
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
             TextureCache[imageUrl] = texture;
+        }
+
+        return texture;
+    }
+
+
+    static fromSVG(svgUrl, crossorigin, scaleMode, sourceScale)
+    {
+        let texture = TextureCache[svgUrl];
+
+        if (!texture)
+        {
+            texture = new Texture(BaseTexture.fromSVG(svgUrl, crossorigin, scaleMode, sourceScale));
+            TextureCache[svgUrl] = texture;
         }
 
         return texture;
@@ -503,7 +518,7 @@ export default class Texture extends EventEmitter
         }
 
         // this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
-        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
+        this.valid = frame && frame.width && frame.height && this.baseTexture.valid;
 
         if (!this.trim && !this.rotate)
         {

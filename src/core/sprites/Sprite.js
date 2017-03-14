@@ -234,6 +234,9 @@ export default class Sprite extends Container
         // xy
         vertexData[6] = (a * w1) + (c * h0) + tx;
         vertexData[7] = (d * h0) + (b * w1) + ty;
+
+     //   console.log(orig.width)
+   //     console.log(vertexData, this.texture.baseTexture)
     }
 
     /**
@@ -481,6 +484,11 @@ export default class Sprite extends Container
     static fromImage(imageId, crossorigin, scaleMode)
     {
         return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
+    }
+
+    static fromSVG(svgId, crossorigin, scaleMode)
+    {
+        return new Sprite(Texture.fromSVG(svgId, crossorigin, scaleMode));
     }
 
     /**
