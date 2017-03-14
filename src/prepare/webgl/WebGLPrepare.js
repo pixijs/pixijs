@@ -22,8 +22,7 @@ export default class WebGLPrepare extends BasePrepare
         this.uploadHookHelper = this.renderer;
 
         // Add textures and graphics to upload
-        this.register(BasePrepare.findAnimatedSpriteBaseTextures, uploadBaseTextures)
-            .register(BasePrepare.findBaseTextures, uploadBaseTextures)
+        this.register(BasePrepare.findBaseTextures, uploadBaseTextures)
             .register(WebGLPrepare.findGraphics, uploadGraphics);
     }
 

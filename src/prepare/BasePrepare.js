@@ -298,8 +298,23 @@ export default class BasePrepare
      */
     static findBaseTextures(item, queue)
     {
+        // Objects with mutliple textures
+        if (item instanceof extras.AnimatedSprite)
+        {
+            for (let i = 0; i < item.textures.length; i++)
+            {
+                const baseTexture = item.textures[i].baseTexture;
+
+                if (queue.indexOf(baseTexture) === -1)
+                {
+                    queue.push(baseTexture);
+                }
+            }
+
+            return true;
+        }
         // Objects with textures, like Sprites/Text
-        if (item instanceof core.BaseTexture)
+        else if (item instanceof core.BaseTexture)
         {
             if (queue.indexOf(item) === -1)
             {
@@ -315,34 +330,6 @@ export default class BasePrepare
             if (queue.indexOf(texture) === -1)
             {
                 queue.push(texture);
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Built-in hook to find mutliple BaseTextures in AnimatedSprite objects.
-     *
-     * @static
-     * @param {PIXI.DisplayObject} item - Display object to check
-     * @param {Array<*>} queue - Collection of items to upload
-     * @return {boolean} if a PIXI.AnimatedSprite object was found.
-     */
-    static findAnimatedSpriteBaseTextures(item, queue)
-    {
-        if (item instanceof extras.AnimatedSprite)
-        {
-            for (let i = 0; i < item.textures.length; i++)
-            {
-                const baseTexture = item.textures[i].baseTexture;
-
-                if (queue.indexOf(baseTexture) === -1)
-                {
-                    queue.push(baseTexture);
-                }
             }
 
             return true;

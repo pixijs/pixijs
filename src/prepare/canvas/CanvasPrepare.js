@@ -43,8 +43,7 @@ export default class CanvasPrepare extends BasePrepare
         this.ctx = this.canvas.getContext('2d');
 
         // Add textures to upload
-        this.register(BasePrepare.findAnimatedSpriteBaseTextures, uploadBaseTextures)
-            .register(BasePrepare.findBaseTextures, uploadBaseTextures);
+        this.register(BasePrepare.findBaseTextures, uploadBaseTextures);
     }
 
     /**
