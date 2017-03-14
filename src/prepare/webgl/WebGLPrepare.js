@@ -27,27 +27,6 @@ export default class WebGLPrepare extends BasePrepare
         this.registerUploadHook(uploadGraphics);
     }
 }
-
-/**
- * Built-in hook to find graphics.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Graphics object was found.
- */
-function findGraphics(item, queue)
-{
-    if (item instanceof core.Graphics)
-    {
-        queue.push(item);
-
-        return true;
-    }
-
-    return false;
-}
-
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
  *
@@ -92,6 +71,26 @@ function uploadGraphics(renderer, item)
         {
             renderer.plugins.graphics.updateGraphics(item);
         }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find graphics.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Graphics object was found.
+ */
+function findGraphics(item, queue)
+{
+    if (item instanceof core.Graphics)
+    {
+        queue.push(item);
 
         return true;
     }

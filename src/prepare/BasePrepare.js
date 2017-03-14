@@ -385,6 +385,51 @@ function findTexture(item, queue)
 
     return false;
 }
+/**
+ * Built-in hook to draw PIXI.Text to its texture.
+ *
+ * @private
+ * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+function drawText(helper, item)
+{
+    if (item instanceof core.Text)
+    {
+        // updating text will return early if it is not dirty
+        item.updateText(true);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to calculate a text style for a PIXI.Text object.
+ *
+ * @private
+ * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
+ * @param {PIXI.DisplayObject} item - Item to check
+ * @return {boolean} If item was uploaded.
+ */
+function calculateTextStyle(helper, item)
+{
+    if (item instanceof core.TextStyle)
+    {
+        const font = core.Text.getFontStyle(item);
+
+        if (!core.Text.fontPropertiesCache[font])
+        {
+            core.Text.calculateFontProperties(font);
+        }
+
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Built-in hook to find Text objects.
@@ -437,52 +482,6 @@ function findTextStyle(item, queue)
         if (queue.indexOf(item) === -1)
         {
             queue.push(item);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to draw PIXI.Text to its texture.
- *
- * @private
- * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
- */
-function drawText(helper, item)
-{
-    if (item instanceof core.Text)
-    {
-        // updating text will return early if it is not dirty
-        item.updateText(true);
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to calculate a text style for a PIXI.Text object.
- *
- * @private
- * @param {PIXI.WebGLRenderer|PIXI.CanvasPrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
- */
-function calculateTextStyle(helper, item)
-{
-    if (item instanceof core.TextStyle)
-    {
-        const font = core.Text.getFontStyle(item);
-
-        if (!core.Text.fontPropertiesCache[font])
-        {
-            core.Text.calculateFontProperties(font);
         }
 
         return true;
