@@ -1,5 +1,6 @@
 import BaseTexture from './BaseTexture';
 import VideoBaseTexture from './VideoBaseTexture';
+import ImageResource from './resources/ImageResource';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../math';
@@ -440,10 +441,13 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        const baseTexture = new BaseTexture(source, null, getResolutionOfUrl(imageUrl));
-        const texture = new Texture(baseTexture);
+        const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
 
-        baseTexture.imageUrl = imageUrl;
+        const baseTexture = new BaseTexture();//image, scaleMode);
+        baseTexture.resolution = getResolutionOfUrl(imageUrl);
+        baseTexture.setResource(resource);
+
+        const texture = new Texture(baseTexture);
 
         // No name, use imageUrl instead
         if (!name)
