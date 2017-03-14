@@ -172,13 +172,16 @@ export default class BasePrepare
             const item = this.queue[0];
             let uploaded = false;
 
-            for (let i = 0, len = this.uploadHooks.length; i < len; i++)
+            if (item && !item._destroyed)
             {
-                if (this.uploadHooks[i](this.uploadHookHelper, item))
+                for (let i = 0, len = this.uploadHooks.length; i < len; i++)
                 {
-                    this.queue.shift();
-                    uploaded = true;
-                    break;
+                    if (this.uploadHooks[i](this.uploadHookHelper, item))
+                    {
+                        this.queue.shift();
+                        uploaded = true;
+                        break;
+                    }
                 }
             }
 

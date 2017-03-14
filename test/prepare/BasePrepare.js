@@ -121,6 +121,40 @@ describe('PIXI.prepare.BasePrepare', function ()
         prep.destroy();
     });
 
+    it('should remove destroyed items from queue', function ()
+    {
+        const prep = new PIXI.prepare.BasePrepare();
+
+        const addHook = sinon.spy(function (item, queue)
+        {
+            queue.push(item);
+
+            return true;
+        });
+        const uploadHook = sinon.spy(function ()
+        {
+            return false;
+        });
+        const complete = sinon.spy(function () { /* empty */ });
+
+        prep.register(addHook, uploadHook);
+        const item = {};
+
+        prep.upload(item, complete);
+
+        expect(prep.queue).to.have.lengthOf(1);
+
+        item._destroyed = true;
+        prep.prepareItems();
+
+        expect(prep.queue).to.be.empty;
+        expect(addHook.calledOnce).to.be.true;
+        expect(uploadHook.called).to.be.false;
+        expect(complete.calledOnce).to.be.true;
+
+        prep.destroy();
+    });
+
     it('should attach to SharedTicker', function (done)
     {
         const prep = new PIXI.prepare.BasePrepare();
