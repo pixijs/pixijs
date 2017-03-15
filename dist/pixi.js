@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.4.1
- * Compiled Tue, 28 Feb 2017 12:31:18 UTC
+ * pixi.js - v4.4.2
+ * Compiled Wed, 15 Mar 2017 21:04:02 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -8176,7 +8176,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.4.1';
+var VERSION = exports.VERSION = '4.4.2';
 
 /**
  * Two Pi.
@@ -9589,6 +9589,15 @@ var DisplayObject = function (_EventEmitter) {
          * @private
          */
         _this._mask = null;
+
+        /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @private
+         * @readonly
+         */
+        _this._destroyed = false;
         return _this;
     }
 
@@ -9872,6 +9881,8 @@ var DisplayObject = function (_EventEmitter) {
 
         this.interactive = false;
         this.interactiveChildren = false;
+
+        this._destroyed = true;
     };
 
     /**
@@ -23684,6 +23695,15 @@ var BaseTexture = function (_EventEmitter) {
         }
 
         /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @private
+         * @readonly
+         */
+        _this._destroyed = false;
+
+        /**
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected
@@ -24053,6 +24073,8 @@ var BaseTexture = function (_EventEmitter) {
         this.source = null;
 
         this.dispose();
+
+        this._destroyed = true;
     };
 
     /**
@@ -30117,10 +30139,13 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  * Destroys the cached object.
  *
  * @private
+ * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+ *  have been set to that value.
+ *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy() {
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options) {
     this.cacheAsBitmap = false;
-    this.destroy();
+    this.destroy(options);
 };
 
 },{"../core":64}],135:[function(require,module,exports){
@@ -33164,9 +33189,9 @@ var InteractionManager = function (_EventEmitter) {
             // update the down state of the tracking data
             if (trackingData) {
                 if (isRightButton) {
-                    trackingData.rightDown = hit;
+                    trackingData.rightDown = false;
                 } else {
-                    trackingData.leftDown = hit;
+                    trackingData.leftDown = false;
                 }
             }
         }
@@ -37216,11 +37241,13 @@ var BasePrepare = function () {
             var item = this.queue[0];
             var uploaded = false;
 
-            for (var i = 0, len = this.uploadHooks.length; i < len; i++) {
-                if (this.uploadHooks[i](this.uploadHookHelper, item)) {
-                    this.queue.shift();
-                    uploaded = true;
-                    break;
+            if (item && !item._destroyed) {
+                for (var i = 0, len = this.uploadHooks.length; i < len; i++) {
+                    if (this.uploadHooks[i](this.uploadHookHelper, item)) {
+                        this.queue.shift();
+                        uploaded = true;
+                        break;
+                    }
                 }
             }
 
