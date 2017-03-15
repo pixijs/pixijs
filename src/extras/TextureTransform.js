@@ -1,4 +1,4 @@
-import { default as Matrix } from '../math/Matrix';
+import { default as Matrix } from '../core/math/Matrix';
 
 const tempMat = new Matrix();
 
@@ -6,7 +6,7 @@ const tempMat = new Matrix();
  * class controls uv transform and frame clamp for texture
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.extras
  */
 export default class TextureTransform
 {
