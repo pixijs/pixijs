@@ -131,7 +131,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         tempMat.invert();
         if (isSimple)
         {
-            tempMat.append(uv.mapCoord);
+            tempMat.prepend(uv.mapCoord);
         }
         else
         {
