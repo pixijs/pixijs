@@ -31,6 +31,7 @@ export default function mapWebGLBlendModesToPixi(gl, array = [])
     array[BLEND_MODES.SATURATION] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
     array[BLEND_MODES.COLOR] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
     array[BLEND_MODES.LUMINOSITY] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    array[BLEND_MODES.NONE] = [0, 0];
 
     return array;
 }

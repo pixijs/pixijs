@@ -1,5 +1,6 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
+import { GLShader } from 'pixi-gl-core';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -39,12 +40,14 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        this.shader = new core.Shader(gl,
+        this.shader = new GLShader(gl,
             readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'));
-        this.simpleShader = new core.Shader(gl,
+            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
+            core.PRECISION.DEFAULT);
+        this.simpleShader = new GLShader(gl,
             readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'));
+            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
+            core.PRECISION.DEFAULT);
 
         this.renderer.bindVao(null);
         this.quad = new core.Quad(gl, this.renderer.state.attribState);
@@ -108,7 +111,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
 
         const shader = isSimple ? this.simpleShader : this.shader;
 
-        renderer.bindShader(shader);
+        renderer._bindGLShader(shader);
 
         const w = tex.width;
         const h = tex.height;

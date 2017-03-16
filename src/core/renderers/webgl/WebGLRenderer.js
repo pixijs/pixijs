@@ -5,9 +5,10 @@ import FilterManager from './managers/FilterManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import StateManager from './managers/StateManager';
+import ShaderManager from './ShaderManager';
 import BaseTexture from '../../textures/BaseTexture';
 import TextureGarbageCollector from './TextureGarbageCollector';
-import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
 import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
@@ -145,7 +146,8 @@ export default class WebGLRenderer extends SystemRenderer
          *
          * @member {PIXI.WebGLState}
          */
-        this.state = new WebGLState(this.gl);
+//        this.state = new WebGLState(this.gl);
+        this.state = new StateManager(this.gl);
 
         this.renderingToScreen = true;
 
@@ -211,6 +213,8 @@ export default class WebGLRenderer extends SystemRenderer
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
 
+        this.shaderManager = new ShaderManager(this);
+
         this.state.resetToDefault();
 
         this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
@@ -237,6 +241,9 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         this.emit('context', gl);
+
+        // set the latest testing context..
+        glCore._testingContext = gl;
 
         // setup the width/height properties and gl viewport
         this.resize(this.screen.width, this.screen.height);
@@ -300,6 +307,8 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.textureGC.update();
 
+        this.gl.flush();
+
         this.emit('postrender');
     }
 
@@ -317,6 +326,8 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.currentRenderer.stop();
         this.currentRenderer = objectRenderer;
+        this.state.setState(objectRenderer.state);
+
         this.currentRenderer.start();
     }
 
@@ -470,10 +481,24 @@ export default class WebGLRenderer extends SystemRenderer
      * Changes the current shader to the one given in parameter
      *
      * @param {PIXI.Shader} shader - the new shader
+     * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
+     * @return {PIXI.WebGLRenderer} Returns itself.
+     */
+    bindShader(shader, dontSync)
+    {
+        this.shaderManager.bindShader(shader, dontSync);
+
+        return this;
+    }
+
+    /**
+     * Changes the current GLShader to the one given in parameter
+     *
+     * @param {PIXI.glCore.Shader} shader - the new glShader
      * @param {boolean} [autoProject=true] - Whether automatically set the projection matrix
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindShader(shader, autoProject)
+    _bindGLShader(shader, autoProject)
     {
         // TODO cache
         if (this._activeShader !== shader)
@@ -544,7 +569,11 @@ export default class WebGLRenderer extends SystemRenderer
         }
         else
         {
-            // bind the current texture
+            if (this.boundTextures[location] === texture)
+            {
+                return location;
+            }
+
             this.boundTextures[location] = texture;
             gl.activeTexture(gl.TEXTURE0 + location);
             gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);

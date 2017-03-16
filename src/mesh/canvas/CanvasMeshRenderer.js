@@ -1,5 +1,4 @@
 import * as core from '../../core';
-import { default as Mesh } from '../Mesh';
 
 /**
  * Renderer dedicated to meshes.
@@ -56,7 +55,7 @@ export default class MeshSpriteRenderer
 
         renderer.setBlendMode(mesh.blendMode);
 
-        if (mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
+        if (mesh.drawMode !== core.DRAW_MODES.TRIANGLES)
         {
             this._renderTriangleMesh(mesh);
         }
@@ -70,12 +69,12 @@ export default class MeshSpriteRenderer
      * Draws the object in Triangle Mesh mode
      *
      * @private
-     * @param {PIXI.mesh.Mesh} mesh - the Mesh to render
+     * @param {PIXI.mesh.RawMesh} mesh - the Mesh to render
      */
     _renderTriangleMesh(mesh)
     {
         // draw triangles!!
-        const length = mesh.vertices.length / 2;
+        const length = mesh.geometry.buffers[0].data.length;
 
         for (let i = 0; i < length - 2; i++)
         {
@@ -90,12 +89,12 @@ export default class MeshSpriteRenderer
      * Draws the object in triangle mode using canvas
      *
      * @private
-     * @param {PIXI.mesh.Mesh} mesh - the current mesh
+     * @param {PIXI.mesh.RawMesh} mesh - the current mesh
      */
     _renderTriangles(mesh)
     {
         // draw triangles!!
-        const indices = mesh.indices;
+        const indices = mesh.geometry.getIndex().data;
         const length = indices.length;
 
         for (let i = 0; i < length; i += 3)
@@ -113,7 +112,7 @@ export default class MeshSpriteRenderer
      * Draws one of the triangles that from the Mesh
      *
      * @private
-     * @param {PIXI.mesh.Mesh} mesh - the current mesh
+     * @param {PIXI.mesh.RawMesh} mesh - the current mesh
      * @param {number} index0 - the index of the first vertex
      * @param {number} index1 - the index of the second vertex
      * @param {number} index2 - the index of the third vertex
@@ -121,8 +120,8 @@ export default class MeshSpriteRenderer
     _renderDrawTriangle(mesh, index0, index1, index2)
     {
         const context = this.renderer.context;
-        const uvs = mesh.uvs;
-        const vertices = mesh.vertices;
+        const vertices = mesh.geometry.buffers[0].data;
+        const uvs = mesh.geometry.buffers[1].data;
         const texture = mesh._texture;
 
         if (!texture.valid)
@@ -229,12 +228,12 @@ export default class MeshSpriteRenderer
      * Renders a flat Mesh
      *
      * @private
-     * @param {PIXI.mesh.Mesh} mesh - The Mesh to render
+     * @param {PIXI.mesh.RawMesh} mesh - The Mesh to render
      */
     renderMeshFlat(mesh)
     {
         const context = this.renderer.context;
-        const vertices = mesh.vertices;
+        const vertices = mesh.geometry.getAttribute('aVertexPosition').data;
         const length = vertices.length / 2;
 
         // this.count++;

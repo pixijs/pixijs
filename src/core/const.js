@@ -104,6 +104,7 @@ export const BLEND_MODES = {
     SATURATION:     14,
     COLOR:          15,
     LUMINOSITY:     16,
+    NONE:           17,
 };
 
 /**
@@ -131,6 +132,12 @@ export const DRAW_MODES = {
     TRIANGLES:      4,
     TRIANGLE_STRIP: 5,
     TRIANGLE_FAN:   6,
+};
+
+export const TYPES = {
+    FLOAT:          5126,
+    UNSIGNED_SHORT: 5123,
+    UNSIGNED_BYTE:  5121,
 };
 
 /**

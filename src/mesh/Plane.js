@@ -21,24 +21,18 @@ export default class Plane extends Mesh
      * @param {PIXI.Texture} texture - The texture to use on the Plane.
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
+     * @param {object} opts - an options object - add meshWidth and meshHeight
      */
-    constructor(texture, verticesX, verticesY)
+    constructor(texture, verticesX, verticesY, opts = {})
     {
-        super(texture);
+        super(texture, new Float32Array(1), new Float32Array(1), new Uint16Array(1), 4);
 
-        /**
-         * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._ready = true;
+        this.segmentsX = this.verticesX = verticesX || 10;
+        this.segmentsY = this.verticesY = verticesY || 10;
 
-        this.verticesX = verticesX || 10;
-        this.verticesY = verticesY || 10;
+        this.meshWidth = opts.meshWidth || texture.width;
+        this.meshHeight = opts.meshHeight || texture.height;
 
-        this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
         this.refresh();
     }
 
@@ -50,7 +44,6 @@ export default class Plane extends Mesh
     {
         const total = this.verticesX * this.verticesY;
         const verts = [];
-        const colors = [];
         const uvs = [];
         const indices = [];
         const texture = this.texture;
@@ -58,8 +51,8 @@ export default class Plane extends Mesh
         const segmentsX = this.verticesX - 1;
         const segmentsY = this.verticesY - 1;
 
-        const sizeX = texture.width / segmentsX;
-        const sizeY = texture.height / segmentsY;
+        const sizeX = this.meshWidth / segmentsX;
+        const sizeY =  this.meshHeight / segmentsY;
 
         for (let i = 0; i < total; i++)
         {
@@ -83,8 +76,6 @@ export default class Plane extends Mesh
             }
         }
 
-        //  cons
-
         const totalSub = segmentsX * segmentsY;
 
         for (let i = 0; i < totalSub; i++)
@@ -101,29 +92,31 @@ export default class Plane extends Mesh
             indices.push(value2, value4, value3);
         }
 
-        // console.log(indices)
+        this.shader.uniforms.alpha = 1;
+        this.shader.uniforms.uSampler2 = this.texture;
+
         this.vertices = new Float32Array(verts);
         this.uvs = new Float32Array(uvs);
-        this.colors = new Float32Array(colors);
         this.indices = new Uint16Array(indices);
 
-        this.indexDirty = true;
+        this.geometry.buffers[0].data = this.vertices;
+        this.geometry.buffers[1].data = this.uvs;
+        this.geometry.indexBuffer.data = this.indices;
+
+        // ensure that the changes are uploaded
+        this.geometry.buffers[0].update();
+        this.geometry.buffers[1].update();
+        this.geometry.indexBuffer.update();
     }
 
     /**
-     * Clear texture UVs when new texture is set
+     * Updates the object transform for rendering
      *
      * @private
      */
-    _onTextureUpdate()
+    updateTransform()
     {
-        Mesh.prototype._onTextureUpdate.call(this);
-
-        // wait for the Plane ctor to finish before calling refresh
-        if (this._ready)
-        {
-            this.refresh();
-        }
+        this.geometry.buffers[0].update();
+        this.containerUpdateTransform();
     }
-
 }

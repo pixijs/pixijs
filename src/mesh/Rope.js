@@ -24,74 +24,49 @@ export default class Rope extends Mesh
      */
     constructor(texture, points)
     {
-        super(texture);
+        super(texture, new Float32Array(points.length * 4),
+                       new Float32Array(points.length * 4),
+                       new Uint16Array(points.length * 2),
+                       5);
 
         /*
          * @member {PIXI.Point[]} An array of points that determine the rope
          */
         this.points = points;
-
-        /*
-         * @member {Float32Array} An array of vertices used to construct this rope.
-         */
-        this.vertices = new Float32Array(points.length * 4);
-
-        /*
-         * @member {Float32Array} The WebGL Uvs of the rope.
-         */
-        this.uvs = new Float32Array(points.length * 4);
-
-        /*
-         * @member {Float32Array} An array containing the color components
-         */
-        this.colors = new Float32Array(points.length * 2);
-
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
-         */
-        this.indices = new Uint16Array(points.length * 2);
-
-        /**
-         * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._ready = true;
-
         this.refresh();
     }
 
     /**
      * Refreshes
-     *
      */
     refresh()
     {
         const points = this.points;
 
+        if (!points) return;
+
+        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
+        const uvBuffer = this.geometry.getAttribute('aTextureCoord');
+        const indexBuffer = this.geometry.getIndex();
+
         // if too little points, or texture hasn't got UVs set yet just move on.
-        if (points.length < 1 || !this._texture._uvs)
+        if (points.length < 1 || !this.texture._uvs)
         {
             return;
         }
 
         // if the number of points has changed we will need to recreate the arraybuffers
-        if (this.vertices.length / 4 !== points.length)
+        if (vertexBuffer.data.length / 4 !== points.length)
         {
-            this.vertices = new Float32Array(points.length * 4);
-            this.uvs = new Float32Array(points.length * 4);
-            this.colors = new Float32Array(points.length * 2);
-            this.indices = new Uint16Array(points.length * 2);
+            vertexBuffer.data = new Float32Array(points.length * 4);
+            uvBuffer.data = new Float32Array(points.length * 4);
+            indexBuffer.data = new Uint16Array(points.length * 2);
         }
 
-        const uvs = this.uvs;
+        const uvs = uvBuffer.data;
+        const indices = indexBuffer.data;
 
-        const indices = this.indices;
-        const colors = this.colors;
-
-        const textureUvs = this._texture._uvs;
+        const textureUvs = this.texture._uvs;
         const offset = new core.Point(textureUvs.x0, textureUvs.y0);
         const factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
 
@@ -99,9 +74,6 @@ export default class Rope extends Mesh
         uvs[1] = 0 + offset.y;
         uvs[2] = 0 + offset.x;
         uvs[3] = factor.y + offset.y;
-
-        colors[0] = 1;
-        colors[1] = 1;
 
         indices[0] = 0;
         indices[1] = 1;
@@ -121,33 +93,14 @@ export default class Rope extends Mesh
             uvs[index + 3] = factor.y + offset.y;
 
             index = i * 2;
-            colors[index] = 1;
-            colors[index + 1] = 1;
-
-            index = i * 2;
             indices[index] = index;
             indices[index + 1] = index + 1;
         }
 
         // ensure that the changes are uploaded
-        this.dirty++;
-        this.indexDirty++;
-    }
-
-    /**
-     * Clear texture UVs when new texture is set
-     *
-     * @private
-     */
-    _onTextureUpdate()
-    {
-        super._onTextureUpdate();
-
-        // wait for the Rope ctor to finish before calling refresh
-        if (this._ready)
-        {
-            this.refresh();
-        }
+        vertexBuffer.update();
+        uvBuffer.update();
+        indexBuffer.update();
     }
 
     /**
@@ -171,7 +124,9 @@ export default class Rope extends Mesh
 
         // this.count -= 0.2;
 
-        const vertices = this.vertices;
+        const vertexBuffer = this.geometry.getAttribute('aVertexPosition');
+        const vertices = vertexBuffer.data;
+
         const total = points.length;
 
         for (let i = 0; i < total; i++)
@@ -197,9 +152,8 @@ export default class Rope extends Mesh
             {
                 ratio = 1;
             }
-
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this._texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+            const num = this.texture.height / 2; // (20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
 
             perpX /= perpLength;
             perpY /= perpLength;
@@ -215,7 +169,21 @@ export default class Rope extends Mesh
             lastPoint = point;
         }
 
+        // mark the buffer as requiring an upload..
+        vertexBuffer.update();
+
+        this.uniforms.alpha = this.worldAlpha;
+
         this.containerUpdateTransform();
     }
 
+    /**
+     * When the texture is updated, this event will fire to update the scale and frame
+     *
+     * @private
+     */
+    _onTextureUpdate()
+    {
+        this.refresh();
+    }
 }

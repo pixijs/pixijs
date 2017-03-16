@@ -1,11 +1,12 @@
-import Shader from '../../core/Shader';
+import { GLShader } from 'pixi-gl-core';
+import { PRECISION } from '../../core/const';
 
 /**
  * @class
  * @extends PIXI.Shader
  * @memberof PIXI
  */
-export default class ParticleShader extends Shader
+export default class ParticleShader extends GLShader
 {
     /**
      * @param {PIXI.Shader} gl - The webgl shader manager this shader works for.
@@ -55,7 +56,8 @@ export default class ParticleShader extends Shader
                 '  if (color.a == 0.0) discard;',
                 '  gl_FragColor = color;',
                 '}',
-            ].join('\n')
+            ].join('\n'),
+            PRECISION.DEFAULT
         );
     }
 }

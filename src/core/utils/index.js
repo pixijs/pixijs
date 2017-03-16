@@ -364,6 +364,14 @@ export const TextureCache = {};
 export const BaseTextureCache = {};
 
 /**
+ * @todo Describe property usage
+ *
+ * @memberof PIXI.utils
+ * @private
+ */
+export const ProgramCache = {};
+
+/**
  * Destroys all texture in the cache
  *
  * @memberof PIXI.utils

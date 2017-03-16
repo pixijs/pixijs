@@ -128,7 +128,6 @@ export default class SpriteRenderer extends ObjectRenderer
         for (let i = 0; i < this.vaoMax; i++)
         {
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
-
             /* eslint-disable max-len */
 
             // build the vao object that will render..
@@ -451,7 +450,7 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-        this.renderer.bindShader(this.shader);
+        this.renderer._bindGLShader(this.shader);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)
         {

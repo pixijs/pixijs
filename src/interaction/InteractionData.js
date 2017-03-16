@@ -21,9 +21,9 @@ export default class InteractionData
         this.global = new core.Point();
 
         /**
-         * The target DisplayObject that was interacted with
+         * The target Sprite that was interacted with
          *
-         * @member {PIXI.DisplayObject}
+         * @member {PIXI.Sprite}
          */
         this.target = null;
 
@@ -33,13 +33,6 @@ export default class InteractionData
          * @member {Event}
          */
         this.originalEvent = null;
-
-        /**
-         * Unique identifier for this interaction
-         *
-         * @member {number}
-         */
-        this.identifier = null;
     }
 
     /**

@@ -58,7 +58,7 @@ export default class InteractionEvent
     }
 
     /**
-     * Resets the event.
+     * Prevents event from reaching any objects other than the current object.
      *
      * @private
      */

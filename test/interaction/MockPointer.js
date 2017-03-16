@@ -140,15 +140,9 @@ class MockPointer
      */
     mousedown(x, y)
     {
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
-
         this.setPosition(x, y);
         this.render();
-        this.interaction.onPointerDown(mouseEvent);
+        this.interaction.onMouseDown({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
     }
 
     /**
@@ -157,15 +151,9 @@ class MockPointer
      */
     mouseup(x, y)
     {
-        const mouseEvent = new MouseEvent('mouseup', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
-
         this.setPosition(x, y);
         this.render();
-        this.interaction.onPointerUp(mouseEvent);
+        this.interaction.onMouseUp({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
     }
 
     /**
@@ -184,16 +172,12 @@ class MockPointer
      */
     touchstart(x, y)
     {
-        const touchEvent = new TouchEvent('touchstart', {
-            preventDefault: sinon.stub(),
-            changedTouches: [
-                new Touch({ identifier: 0, target: this.renderer.view }),
-            ],
-        });
-
         this.setPosition(x, y);
         this.render();
-        this.interaction.onPointerDown(touchEvent);
+        this.interaction.onTouchStart({
+            preventDefault: sinon.stub(),
+            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
+        });
     }
 
     /**
@@ -202,16 +186,12 @@ class MockPointer
      */
     touchend(x, y)
     {
-        const touchEvent = new TouchEvent('touchend', {
-            preventDefault: sinon.stub(),
-            changedTouches: [
-                new Touch({ identifier: 0, target: this.renderer.view }),
-            ],
-        });
-
         this.setPosition(x, y);
         this.render();
-        this.interaction.onPointerUp(touchEvent);
+        this.interaction.onTouchEnd({
+            preventDefault: sinon.stub(),
+            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
+        });
     }
 }
 
