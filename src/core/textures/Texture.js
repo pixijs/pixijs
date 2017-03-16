@@ -3,7 +3,8 @@ import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
+import { TextureCache, getResolutionOfUrl } from '../utils';
+import settings from '../settings';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -231,7 +232,7 @@ export default class Texture extends EventEmitter
                 // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
-                    delete TextureCache[this.baseTexture.imageUrl];
+                    this.removeTextureFromCache(this.baseTexture.imageUrl);
                 }
 
                 this.baseTexture.destroy();
@@ -305,7 +306,7 @@ export default class Texture extends EventEmitter
         if (!texture)
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
-            TextureCache[imageUrl] = texture;
+            Texture.addTextureToCache(texture, imageUrl);
         }
 
         return texture;
@@ -337,11 +338,12 @@ export default class Texture extends EventEmitter
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {string} [origin] - A string origin of who created the base texture
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromCanvas(canvas, scaleMode)
+    static fromCanvas(canvas, scaleMode, origin)
     {
-        return new Texture(BaseTexture.fromCanvas(canvas, scaleMode));
+        return new Texture(BaseTexture.fromCanvas(canvas, scaleMode, origin));
     }
 
     /**
@@ -413,7 +415,7 @@ export default class Texture extends EventEmitter
         }
         else if (source instanceof HTMLCanvasElement)
         {
-            return Texture.fromCanvas(source);
+            return Texture.fromCanvas(source, settings.SCALE_MODE, 'HTMLCanvasElement');
         }
         else if (source instanceof HTMLVideoElement)
         {
@@ -452,15 +454,14 @@ export default class Texture extends EventEmitter
         }
 
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-        BaseTextureCache[name] = baseTexture;
-        TextureCache[name] = texture;
-        texture.textureCacheId = name;
+        BaseTexture.addBaseTextureToCache(texture, name);
+        Texture.addTextureToCache(texture, name);
 
         // also add references by url if they are different.
         if (name !== imageUrl)
         {
-            BaseTextureCache[imageUrl] = baseTexture;
-            TextureCache[imageUrl] = texture;
+            BaseTexture.addBaseTextureToCache(texture, imageUrl);
+            Texture.addTextureToCache(texture, imageUrl);
         }
 
         return texture;
@@ -475,11 +476,15 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
-        if (!texture.textureCacheId)
+        if (id)
         {
-            texture.textureCacheId = id;
+            if (!texture.textureCacheId)
+            {
+                texture.textureCacheId = id;
+            }
+
+            TextureCache[id] = texture;
         }
-        TextureCache[id] = texture;
     }
 
     /**
@@ -487,16 +492,22 @@ export default class Texture extends EventEmitter
      *
      * @static
      * @param {string} id - The id of the texture to be removed
-     * @return {PIXI.Texture} The texture that was removed
+     * @return {PIXI.Texture|null} The texture that was removed
      */
     static removeTextureFromCache(id)
     {
         const texture = TextureCache[id];
 
-        delete TextureCache[id];
-        delete BaseTextureCache[id];
+        if (texture)
+        {
+            texture.textureCacheId = null;
 
-        return texture;
+            delete TextureCache[id];
+
+            return texture;
+        }
+
+        return null;
     }
 
     /**

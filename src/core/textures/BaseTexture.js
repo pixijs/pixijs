@@ -561,7 +561,7 @@ export default class BaseTexture extends EventEmitter
         this.source = canvas;
 
         // Add also the canvas in cache (destroy clears by `imageUrl` and `source._pixiId`)
-        BaseTextureCache[canvas._pixiId] = this;
+        BaseTexture.addBaseTextureToCache(this, canvas._pixiId);
 
         this.isLoading = false;
         this._sourceLoaded();
@@ -675,7 +675,7 @@ export default class BaseTexture extends EventEmitter
 
             image.src = imageUrl; // Setting this triggers load
 
-            BaseTextureCache[imageUrl] = baseTexture;
+            BaseTexture.addBaseTextureToCache(baseTexture, imageUrl);
         }
 
         return baseTexture;
@@ -687,13 +687,16 @@ export default class BaseTexture extends EventEmitter
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {string} [origin] - A string origin of who created the base texture
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static fromCanvas(canvas, scaleMode)
+    static fromCanvas(canvas, scaleMode, origin)
     {
+        const name = origin ? `${origin}_` : 'canvas_';
+
         if (!canvas._pixiId)
         {
-            canvas._pixiId = `canvas_${uid()}`;
+            canvas._pixiId = `${name}${uid()}`;
         }
 
         let baseTexture = BaseTextureCache[canvas._pixiId];
@@ -701,7 +704,7 @@ export default class BaseTexture extends EventEmitter
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(canvas, scaleMode);
-            BaseTextureCache[canvas._pixiId] = baseTexture;
+            BaseTexture.addBaseTextureToCache(baseTexture, canvas._pixiId);
         }
 
         return baseTexture;
@@ -741,7 +744,7 @@ export default class BaseTexture extends EventEmitter
                 // if there is an @2x at the end of the url we are going to assume its a highres image
                 baseTexture.resolution = getResolutionOfUrl(imageUrl);
 
-                BaseTextureCache[imageUrl] = baseTexture;
+                BaseTexture.addBaseTextureToCache(baseTexture, imageUrl);
             }
 
             return baseTexture;
@@ -753,5 +756,48 @@ export default class BaseTexture extends EventEmitter
 
         // lets assume its a base texture!
         return source;
+    }
+
+    /**
+     * Adds a texture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
+     *
+     * @static
+     * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
+     * @param {string} id - The id that the base texture will be stored against.
+     */
+    static addBaseTextureToCache(baseTexture, id)
+    {
+        if (id)
+        {
+            if (!baseTexture.baseTextureCacheId)
+            {
+                baseTexture.baseTextureCacheId = id;
+            }
+
+            BaseTextureCache[id] = baseTexture;
+        }
+    }
+
+    /**
+     * Remove a texture from the global TextureCache.
+     *
+     * @static
+     * @param {string} id - The id of the base texture to be removed
+     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed
+     */
+    static removeBaseTextureFromCache(id)
+    {
+        const baseTexture = TextureCache[id];
+
+        if (baseTexture)
+        {
+            baseTexture.baseTextureCacheId = null;
+
+            delete BaseTextureCache[id];
+
+            return baseTexture;
+        }
+
+        return null;
     }
 }
