@@ -329,23 +329,27 @@ export default class BasePrepare
  */
 function findMultipleBaseTextures(item, queue)
 {
+    let result = false;
+
     // Objects with mutliple textures
     if (item && item._textures && item._textures.length)
     {
         for (let i = 0; i < item._textures.length; i++)
         {
-            const baseTexture = item._textures[i].baseTexture;
-
-            if (queue.indexOf(baseTexture) === -1)
+            if (item._textures[i] instanceof core.Texture)
             {
-                queue.push(baseTexture);
+                const baseTexture = item._textures[i].baseTexture;
+
+                if (queue.indexOf(baseTexture) === -1)
+                {
+                    queue.push(baseTexture);
+                    result = true;
+                }
             }
         }
-
-        return true;
     }
 
-    return false;
+    return result;
 }
 
 /**
