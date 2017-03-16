@@ -918,6 +918,35 @@ Object.defineProperty(core.utils, '_saidHello', {
 });
 
 /**
+ * @method
+ * @name PIXI.prepare.BasePrepare#register
+ * @see PIXI.prepare.BasePrepare#registerFindHook
+ * @deprecated since version 4.4.2
+ * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
+ *        function must return `true` if it was able to add item to the queue.
+ * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+ *        function must return `true` if it was able to handle upload of item.
+ * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+ */
+prepare.BasePrepare.prototype.register = function register(addHook, uploadHook)
+{
+    warn('renderer.plugins.prepare.register is now deprecated, '
+        + 'please use renderer.plugins.prepare.registerFindHook & renderer.plugins.prepare.registerUploadHook');
+
+    if (addHook)
+    {
+        this.registerFindHook(addHook);
+    }
+
+    if (uploadHook)
+    {
+        this.registerUploadHook(uploadHook);
+    }
+
+    return this;
+};
+
+/**
  * The number of graphics or textures to upload to the GPU.
  *
  * @name PIXI.prepare.canvas.UPLOADS_PER_FRAME
