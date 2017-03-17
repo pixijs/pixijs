@@ -135,12 +135,8 @@ export default class MeshSpriteRenderer
         const textureWidth = base.width;
         const textureHeight = base.height;
 
-        let u0 = uvs[index0] * base.width;
-        let u1 = uvs[index1] * base.width;
-        let u2 = uvs[index2] * base.width;
-        let v0 = uvs[index0 + 1] * base.height;
-        let v1 = uvs[index1 + 1] * base.height;
-        let v2 = uvs[index2 + 1] * base.height;
+        // eslint-disable-next-line one-var, one-var-declaration-per-line
+        let u0, u1, u2, v0, v1, v2;
 
         if (mesh.uploadUvTransform)
         {
@@ -152,6 +148,15 @@ export default class MeshSpriteRenderer
             v0 = ((uvs[index0] * ut.b) + (uvs[index0 + 1] * ut.d) + ut.ty) * base.height;
             v1 = ((uvs[index1] * ut.b) + (uvs[index1 + 1] * ut.d) + ut.ty) * base.height;
             v2 = ((uvs[index2] * ut.b) + (uvs[index2 + 1] * ut.d) + ut.ty) * base.height;
+        }
+        else
+        {
+            u0 = uvs[index0] * base.width;
+            u1 = uvs[index1] * base.width;
+            u2 = uvs[index2] * base.width;
+            v0 = uvs[index0 + 1] * base.height;
+            v1 = uvs[index1 + 1] * base.height;
+            v2 = uvs[index2 + 1] * base.height;
         }
 
         let x0 = vertices[index0];
