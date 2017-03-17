@@ -135,8 +135,12 @@ export default class MeshSpriteRenderer
         const textureWidth = base.width;
         const textureHeight = base.height;
 
-        // eslint-disable-next-line one-var, one-var-declaration-per-line
-        let u0, u1, u2, v0, v1, v2;
+        let u0;
+        let u1;
+        let u2;
+        let v0;
+        let v1;
+        let v2;
 
         if (mesh.uploadUvTransform)
         {
