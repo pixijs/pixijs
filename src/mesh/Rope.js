@@ -41,11 +41,6 @@ export default class Rope extends Mesh
         this.uvs = new Float32Array(points.length * 4);
 
         /*
-         * @member {Float32Array} An array containing the color components
-         */
-        this.colors = new Float32Array(points.length * 2);
-
-        /*
          * @member {Uint16Array} An array containing the indices of the vertices
          */
         this.indices = new Uint16Array(points.length * 2);
@@ -61,10 +56,10 @@ export default class Rope extends Mesh
     }
 
     /**
-     * Refreshes
+     * Refreshes both uvs and indices
      *
      */
-    _refresh()
+    _refreshUvs()
     {
         const points = this.points;
 
@@ -79,22 +74,17 @@ export default class Rope extends Mesh
         {
             this.vertices = new Float32Array(points.length * 4);
             this.uvs = new Float32Array(points.length * 4);
-            this.colors = new Float32Array(points.length * 2);
             this.indices = new Uint16Array(points.length * 2);
         }
 
         const uvs = this.uvs;
 
         const indices = this.indices;
-        const colors = this.colors;
 
         uvs[0] = 0;
         uvs[1] = 0;
         uvs[2] = 0;
         uvs[3] = 1;
-
-        colors[0] = 1;
-        colors[1] = 1;
 
         indices[0] = 0;
         indices[1] = 1;
@@ -112,10 +102,6 @@ export default class Rope extends Mesh
 
             uvs[index + 2] = amount;
             uvs[index + 3] = 1;
-
-            index = i * 2;
-            colors[index] = 1;
-            colors[index + 1] = 1;
 
             index = i * 2;
             indices[index] = index;

@@ -151,6 +151,17 @@ export default class Mesh extends core.Container
     }
 
     /**
+     * Updates the object transform for rendering
+     *
+     * @private
+     */
+    updateTransform()
+    {
+        this.refresh();
+        this.containerUpdateTransform();
+    }
+
+    /**
      * Renders the object using the WebGL renderer
      *
      * @private
@@ -158,7 +169,6 @@ export default class Mesh extends core.Container
      */
     _renderWebGL(renderer)
     {
-        this.refresh();
         renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
@@ -171,7 +181,6 @@ export default class Mesh extends core.Container
      */
     _renderCanvas(renderer)
     {
-        this.refresh();
         renderer.plugins[this.pluginName].render(this);
     }
 
@@ -209,7 +218,7 @@ export default class Mesh extends core.Container
     {
         if (this._uvTransform.update(forceUpdate))
         {
-            this._refresh();
+            this._refreshUvs();
         }
     }
 
@@ -217,7 +226,7 @@ export default class Mesh extends core.Container
      * re-calculates mesh coords
      * @protected
      */
-    _refresh()
+    _refreshUvs()
     {
         /* empty */
     }
