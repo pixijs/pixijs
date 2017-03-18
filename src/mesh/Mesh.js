@@ -130,7 +130,7 @@ export default class Mesh extends core.Container
          * @member {PIXI.extras.TextureTransform}
          * @private
          */
-        this._uvTransform = new TextureTransform(texture);
+        this._uvTransform = new TextureTransform(texture, 0);
 
         /**
          * whether or not upload uvTransform to shader
