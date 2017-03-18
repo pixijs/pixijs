@@ -1,5 +1,6 @@
 import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache } from '../utils';
+import settings from '../settings';
 import * as ticker from '../ticker';
 
 /**
@@ -67,7 +68,6 @@ export default class VideoBaseTexture extends BaseTexture
          */
         this.autoPlay = true;
 
-        this.update = this.update.bind(this);
         this._onCanPlay = this._onCanPlay.bind(this);
 
         source.addEventListener('play', this._onPlayStart.bind(this));
@@ -84,6 +84,17 @@ export default class VideoBaseTexture extends BaseTexture
         {
             this._onCanPlay();
         }
+    }
+
+    /**
+     * Handle tick update
+     *
+     * @private
+     * @param {number} deltaTime - Time since last tick.
+     */
+    onUpdate()
+    {
+        this.update();
     }
 
     /**
@@ -125,7 +136,7 @@ export default class VideoBaseTexture extends BaseTexture
 
         if (!this._isAutoUpdating && this.autoUpdate)
         {
-            ticker.shared.add(this.update, this);
+            ticker.shared.add(this, settings.UPDATE_PRIORITY.high);
             this._isAutoUpdating = true;
         }
     }
@@ -139,7 +150,7 @@ export default class VideoBaseTexture extends BaseTexture
     {
         if (this._isAutoUpdating)
         {
-            ticker.shared.remove(this.update, this);
+            ticker.shared.remove(this);
             this._isAutoUpdating = false;
         }
     }
@@ -187,7 +198,7 @@ export default class VideoBaseTexture extends BaseTexture
     {
         if (this._isAutoUpdating)
         {
-            ticker.shared.remove(this.update, this);
+            ticker.shared.remove(this);
         }
 
         if (this.source && this.source._pixiId)
@@ -281,12 +292,12 @@ export default class VideoBaseTexture extends BaseTexture
 
             if (!this._autoUpdate && this._isAutoUpdating)
             {
-                ticker.shared.remove(this.update, this);
+                ticker.shared.remove(this);
                 this._isAutoUpdating = false;
             }
             else if (this._autoUpdate && !this._isAutoUpdating)
             {
-                ticker.shared.add(this.update, this);
+                ticker.shared.add(this, settings.UPDATE_PRIORITY.texture);
                 this._isAutoUpdating = true;
             }
         }

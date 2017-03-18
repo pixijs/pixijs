@@ -137,7 +137,7 @@ export default class AnimatedSprite extends core.Sprite
         this.playing = true;
         if (this._autoUpdate)
         {
-            core.ticker.shared.add(this.update, this);
+            core.ticker.shared.add(this, core.settings.UPDATE_PRIORITY.high);
         }
     }
 
@@ -185,7 +185,7 @@ export default class AnimatedSprite extends core.Sprite
      * @private
      * @param {number} deltaTime - Time since last tick.
      */
-    update(deltaTime)
+    onUpdate(deltaTime)
     {
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;

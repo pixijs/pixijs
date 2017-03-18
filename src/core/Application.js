@@ -97,12 +97,23 @@ export default class Application
         this._ticker = ticker;
         if (ticker)
         {
-            ticker.add(this.render, this);
+            ticker.add(this, settings.UPDATE_PRIORITY.low);
         }
     }
     get ticker() // eslint-disable-line require-jsdoc
     {
         return this._ticker;
+    }
+
+    /**
+     * Handle tick update
+     *
+     * @private
+     * @param {number} deltaTime - Time since last tick.
+     */
+    onUpdate()
+    {
+        this.renderer.render(this.stage);
     }
 
     /**
@@ -156,6 +167,7 @@ export default class Application
     destroy(removeView)
     {
         this.stop();
+        this.ticker.remove(this);
         this.ticker = null;
 
         this.stage.destroy();

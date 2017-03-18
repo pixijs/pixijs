@@ -1,15 +1,11 @@
 import settings from '../settings';
-import EventEmitter from 'eventemitter3';
-
-// Internal event used by composed emitter
-const TICK = 'tick';
+import MiniRunner from 'mini-runner';
 
 /**
- * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around an EventEmitter object to add listeners
- * meant for execution on the next requested animation frame.
- * Animation frames are requested only when necessary,
- * e.g. When the ticker is started and the emitter has listeners.
+ * A Ticker class that runs an update loop that other objects listen to. When a listener is added,
+ * it may specify a priority. Priorities specify the order in which listeners are called in the loop.
+ * Listeners are meant to execute on the next requested animation frame. Animation frames are requested
+ * by the ticker, but only when necessary, e.g. When the ticker is started and has listeners.
  *
  * @class
  * @memberof PIXI.ticker
@@ -22,10 +18,10 @@ export default class Ticker
     constructor()
     {
         /**
-         * Internal emitter used to fire 'tick' event
+         * Internal instance of MiniRunner
          * @private
          */
-        this._emitter = new EventEmitter();
+        this._onUpdate = new MiniRunner('onUpdate');
 
         /**
          * Internal current frame request ID
@@ -131,7 +127,7 @@ export default class Ticker
                 // Invoke listeners now
                 this.update(time);
                 // Listener side effects may have modified ticker state.
-                if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
+                if (this.started && this._requestId === null && !this._onUpdate.empty)
                 {
                     this._requestId = requestAnimationFrame(this._tick);
                 }
@@ -141,14 +137,14 @@ export default class Ticker
 
     /**
      * Conditionally requests a new animation frame.
-     * If a frame has not already been requested, and if the internal
-     * emitter has listeners, a new frame is requested.
+     * If a frame has not already been requested, and if the
+     * ticker has listeners, a new frame is requested.
      *
      * @private
      */
     _requestIfNeeded()
     {
-        if (this._requestId === null && this._emitter.listeners(TICK, true))
+        if (this._requestId === null && !this._onUpdate.empty)
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
@@ -173,10 +169,10 @@ export default class Ticker
     /**
      * Conditionally requests a new animation frame.
      * If the ticker has been started it checks if a frame has not already
-     * been requested, and if the internal emitter has listeners. If these
-     * conditions are met, a new frame is requested. If the ticker has not
-     * been started, but autoStart is `true`, then the ticker starts now,
-     * and continues with the previous conditions to request a new frame.
+     * been requested, and if the ticker has listeners. If these conditions are met,
+     * a new frame is requested. If the ticker has not been started, but autoStart
+     * is `true`, then the ticker starts now, and continues with the previous
+     * conditions to request a new frame.
      *
      * @private
      */
@@ -193,17 +189,16 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Add a listener to the ticker to get `onUpdate(deltaTime)` callbacks.
+     * A new animation frame may be requested at this point if needed.
      *
-     * @param {Function} fn - The listener function to be added for updates
-     * @param {Function} [context] - The listener context
+     * @param {Function} listener - The listener object to be added for updates
+     * @param {number} [priority=settings.UPDATE_PRIORITY.default] - The listener priority
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    add(fn, context)
+    add(listener, priority = settings.UPDATE_PRIORITY.default)
     {
-        this._emitter.on(TICK, fn, context);
+        this._onUpdate.add(listener, priority);
 
         this._startIfPossible();
 
@@ -211,37 +206,17 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Removes a listener from the ticker.
+     * If there are no more listeners, then it may cancel the animation frame if needed.
      *
-     * @param {Function} fn - The listener function to be added for one update
-     * @param {Function} [context] - The listener context
+     * @param {Function} listener - The listener object to be removed
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    addOnce(fn, context)
+    remove(listener)
     {
-        this._emitter.once(TICK, fn, context);
+        this._onUpdate.remove(listener);
 
-        this._startIfPossible();
-
-        return this;
-    }
-
-    /**
-     * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
-     * It checks if the emitter has listeners for 'tick' event.
-     * If it does, then it cancels the animation frame.
-     *
-     * @param {Function} [fn] - The listener function to be removed
-     * @param {Function} [context] - The listener context to be removed
-     * @returns {PIXI.ticker.Ticker} This instance of a ticker
-     */
-    remove(fn, context)
-    {
-        this._emitter.off(TICK, fn, context);
-
-        if (!this._emitter.listeners(TICK, true))
+        if (this._onUpdate.empty)
         {
             this._cancelIfNeeded();
         }
@@ -320,8 +295,8 @@ export default class Ticker
 
             this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
 
-            // Invoke listeners added to internal emitter
-            this._emitter.emit(TICK, this.deltaTime);
+            // Invoke listeners.
+            this._onUpdate.dispatch(this.deltaTime);
         }
         else
         {

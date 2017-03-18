@@ -11,10 +11,12 @@ describe('PIXI.Application', function ()
         expect(app.ticker).to.be.instanceof(PIXI.ticker.Ticker);
         expect(app.renderer).to.be.ok;
 
-        app.ticker.addOnce(() =>
-        {
-            app.destroy();
-            done();
+        app.ticker.add({
+            onUpdate: () =>
+            {
+                app.destroy();
+                done();
+            },
         });
     });
 });
