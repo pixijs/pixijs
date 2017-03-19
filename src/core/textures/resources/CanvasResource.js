@@ -1,10 +1,11 @@
-import determineCrossOrigin from '../../utils/determineCrossOrigin';
+import TextureResource from './TextureResource';
 
-export default class CanvasResource
+export default class CanvasResource extends TextureResource
 {
     constructor(source)
     {
-    	this.source = source;
+        super(source);
+
     	this.loaded = true; // TODO rename to ready?
         this.width = source.width;
         this.height = source.height;
@@ -21,6 +22,4 @@ export default class CanvasResource
     {
         return new CanvasResource(canvas);
     }
-
-
 }

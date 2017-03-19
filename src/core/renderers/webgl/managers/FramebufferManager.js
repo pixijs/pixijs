@@ -157,7 +157,7 @@ export default class FramebufferManager extends WebGLManager
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
                                         gl.COLOR_ATTACHMENT0 + i,
                                         gl.TEXTURE_CUBE_MAP_NEGATIVE_X + texture.side,
-                                        texture.texture.glTextures[this.CONTEXT_UID].texture,
+                                        texture.texture._glTextures[this.CONTEXT_UID].texture,
                                         0);
             }
             else
@@ -167,7 +167,7 @@ export default class FramebufferManager extends WebGLManager
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
                                         gl.COLOR_ATTACHMENT0 + i,
                                         gl.TEXTURE_2D,
-                                        texture.glTextures[this.CONTEXT_UID].texture,
+                                        texture._glTextures[this.CONTEXT_UID].texture,
                                         0);
             }
 
@@ -192,7 +192,7 @@ export default class FramebufferManager extends WebGLManager
                 gl.framebufferTexture2D(gl.FRAMEBUFFER,
                                         gl.DEPTH_ATTACHMENT,
                                         gl.TEXTURE_2D,
-                                        depthTexture.glTextures[this.CONTEXT_UID].texture,
+                                        depthTexture._glTextures[this.CONTEXT_UID].texture,
                                         0);
             }
         }

@@ -1,4 +1,3 @@
-import determineCrossOrigin from '../../utils/determineCrossOrigin';
 import {
     decomposeDataUri, getSvgSize, uid
 } from '../../utils';
@@ -7,11 +6,7 @@ export default class SVGResource
 {
     constructor(svgSource, scale)
     {
-
-    	this.source = null;//source;
-    	this.loaded = false; // TODO rename to ready?
-        this.width = -1;
-        this.height = -1;
+        super();
 
         this.svgSource = svgSource;
         this.scale = 1 || scale;

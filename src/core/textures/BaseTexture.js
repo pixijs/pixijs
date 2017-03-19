@@ -3,10 +3,12 @@ import {
     getResolutionOfUrl, BaseTextureCache, TextureCache,
 } from '../utils';
 
+import {FORMATS, TARGETS, TYPES, SCALE_MODES} from '../const';
 import ImageResource from './resources/ImageResource';
 import BufferResource from './resources/BufferResource';
 import CanvasResource from './resources/CanvasResource';
 import SVGResource from './resources/SVGResource';
+import createResource from './resources/createResource';
 
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
@@ -14,11 +16,9 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-    constructor(width, height, format, type, resolution)
+    constructor(resource, scaleMode, resolution, width, height, format, type, mipmap)
     {
-
         super();
-
 
         this.uid = uid();
 
@@ -81,29 +81,34 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = settings.SCALE_MODE;
+        this.scaleMode = scaleMode || settings.SCALE_MODE;
 
         /**
          * The pixel format of the texture. defaults to gl.RGBA
          *
          * @member {Number}
          */
-        this.format = format || 6408//gl.RGBA;
-        this.type = type || 5121; //UNSIGNED_BYTE
+        this.format = format || FORMATS.RGBA;
+        this.type = type || TYPES.UNSIGNED_BYTE; //UNSIGNED_BYTE
 
-        this.target = 3553; // gl.TEXTURE_2D
+        this.target = TARGETS.TEXTURE_2D; // gl.TEXTURE_2D
 
         this._glTextures = {};
 
         this._new = true;
 
-        this.resource = null;
-
-
-
         this.dirtyId = 0;
 
         this.valid = false;
+
+        this.resource = null;
+
+        if(resource)
+        {
+            // lets convert this to a resource..
+            resource = createResource(resource);
+            this.setResource(resource);
+        }
 
         this.validate();
     }
@@ -135,6 +140,11 @@ export default class BaseTexture extends EventEmitter
             }
 
         })
+    }
+
+    update()
+    {
+        this.dirtyId++;
     }
 
     resize(width, height)
@@ -209,7 +219,7 @@ export default class BaseTexture extends EventEmitter
         {
 
             const resource = CanvasResource.from(canvas);// document.createElement('img');
-
+            console.log()
             baseTexture = new BaseTexture();
             baseTexture.scaleMode = scaleMode ||  baseTexture.scaleMode;
             baseTexture.setResource(resource);
@@ -245,6 +255,7 @@ export default class BaseTexture extends EventEmitter
 
         return baseTexture;
     }
+
     get realWidth()
     {
         return this.width * this.resolution;
@@ -274,6 +285,15 @@ export default class BaseTexture extends EventEmitter
         texture.setResource(new ImageResource(image));
 
         return texture;
+    }
+
+    static getResource(source)
+    {
+        if (typeof source === 'string')
+        {
+            // //
+
+        }
     }
 
     /**
@@ -326,23 +346,29 @@ export default class BaseTexture extends EventEmitter
 
     static fromFloat32Array(width, height, float32Array)
     {
-        var texture = new Texture(width, height, 6408, 5126);
-
         float32Array = float32Array || new Float32Array(width*height*4);
 
-        texture.setResource(new BufferResource(float32Array));
-
+        var texture = new BaseTexture(new BufferResource(float32Array),
+                                  SCALE_MODES.NEAREST,
+                                  1,
+                                  width,
+                                  height,
+                                  FORMATS.RGBA,
+                                  TYPES.FLOAT);
         return texture;
     }
 
     static fromUint8Array(width, height, uint8Array)
     {
-        var texture = new Texture(width, height, 6408, 5121);
-
         uint8Array = uint8Array || new Uint8Array(width*height*4);
 
-        texture.setResource(new BufferResource(uint8Array));
-
+        var texture = new BaseTexture(new BufferResource(uint8Array),
+                                  SCALE_MODES.NEAREST,
+                                  1,
+                                  width,
+                                  height,
+                                  FORMATS.RGBA,
+                                  TYPES.UNSIGNED_BYTE);
         return texture;
     }
 

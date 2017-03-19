@@ -151,8 +151,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         color[3] = ts.worldAlpha;
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
-
-        shader.uniforms.uSampler = renderer.bindTexture(tex);
+        shader.uniforms.uSampler = renderer.texture.bind(tex.baseTexture, 0);
 
         renderer.setBlendMode(ts.blendMode);
 

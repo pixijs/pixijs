@@ -1,8 +1,10 @@
 import BaseTexture from './BaseTexture';
 import VideoBaseTexture from './VideoBaseTexture';
 import ImageResource from './resources/ImageResource';
+import CanvasResource from './resources/CanvasResource';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
+import settings from '../settings';
 import { Rectangle } from '../math';
 import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
 
@@ -443,10 +445,11 @@ export default class Texture extends EventEmitter
     {
         const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
 
-        const baseTexture = new BaseTexture();//image, scaleMode);
-        baseTexture.resolution = getResolutionOfUrl(imageUrl);
-        baseTexture.setResource(resource);
+        const baseTexture = new BaseTexture(resource,
+                                            settings.SCALE_MODE,
+                                            getResolutionOfUrl(imageUrl));
 
+        console.log(baseTexture)
         const texture = new Texture(baseTexture);
 
         // No name, use imageUrl instead
@@ -591,7 +594,7 @@ function createWhiteTexture()
     context.fillStyle = 'white';
     context.fillRect(0, 0, 10, 10);
 
-    return new Texture(new BaseTexture(canvas));
+    return new Texture(new BaseTexture(new CanvasResource(canvas)));
 }
 
 function removeAllHandlers(tex)

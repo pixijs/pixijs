@@ -1,5 +1,5 @@
-import Texture from './Texture'
-
+import Texture from './BaseTexture'
+import {FORMATS, TYPES} from './../const';
 
 export default class FrameBuffer
 {
@@ -29,7 +29,7 @@ export default class FrameBuffer
     addColorTexture(index, texture)
     {
         // TODO add some validation to the texture - same width / height etc?
-    	this.colorTextures[index || 0] = texture || new Texture(this.width, this.height);// || new Texture();
+    	this.colorTextures[index || 0] = texture || new Texture(null, 0, 1, this.width, this.height);// || new Texture();
 
         this.dirtyId++;
     	this.dirtyFormat++;
@@ -40,8 +40,7 @@ export default class FrameBuffer
 
     addDepthTexture(texture)
     {
-    	this.depthTexture = texture || new Texture(this.width, this.height, 6402, 5123)//UNSIGNED_SHORT;
-
+    	this.depthTexture = texture || new Texture(null, 0, 1, this.width, this.height, FORMATS.DEPTH_COMPONENT, TYPES.UNSIGNED_SHORT);//UNSIGNED_SHORT;
 
         this.dirtyId++;
         this.dirtyFormat++;

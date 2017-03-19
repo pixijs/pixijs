@@ -1,13 +1,10 @@
+import TextureResource from './TextureResource';
 
-export default class BufferResource
+export default class BufferResource extends TextureResource
 {
     constructor(source)
     {
-    	this.source = source;
-    	this.loaded = true; // TODO rename to ready?
-        this.width = -1;
-        this.height = -1;
-        this.uploadable = false;
+    	super(source);
 
         this.load = new Promise((resolve, reject) => {
 

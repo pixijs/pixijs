@@ -570,9 +570,8 @@ export default class WebGLRenderer extends SystemRenderer
         {
             this.newTextureManager.bindTexture(texture._newTexture, location);
             glTexture = texture._newTexture.glTextures[this.CONTEXT_UID];
-            console.log("!!!")
 
-            return;
+            return location;
         }
 
         if (!glTexture)

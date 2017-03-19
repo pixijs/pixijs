@@ -1,15 +1,11 @@
 import determineCrossOrigin from '../../utils/determineCrossOrigin';
+import TextureResource from './TextureResource';
 
-export default class ImageResource
+export default class ImageResource extends TextureResource
 {
     constructor(source)
     {
-    	this.source = source;
-    	this.loaded = false; // TODO rename to ready?
-        this.width = -1;
-        this.height = -1;
-
-        this.uploadable = true;
+        super();
 
         this.load = new Promise((resolve, reject) => {
 

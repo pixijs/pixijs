@@ -50,17 +50,8 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(width = 100, height = 100, scaleMode, resolution)
     {
-        super(null, scaleMode);
+        super(null, scaleMode, resolution, width, height);
 
-        this.resolution = resolution || settings.RESOLUTION;
-
-        this.width = width;
-        this.height = height;
-
-        this.realWidth = this.width * this.resolution;
-        this.realHeight = this.height * this.resolution;
-
-        this.scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
         this.hasLoaded = true;
 
         /**
@@ -104,9 +95,6 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.width = width;
         this.height = height;
-
-        this.realWidth = this.width * this.resolution;
-        this.realHeight = this.height * this.resolution;
 
         if (!this.valid)
         {
