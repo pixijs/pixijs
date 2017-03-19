@@ -31,6 +31,11 @@ export default class Mesh extends core.Container
          */
         this._texture = texture;
 
+        if (!texture.baseTexture.hasLoaded)
+        {
+            texture.once('update', this._onTextureUpdate, this);
+        }
+
         /**
          * The Uvs of the Mesh
          *
