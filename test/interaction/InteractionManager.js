@@ -392,29 +392,50 @@ describe('PIXI.interaction.InteractionManager', function ()
 
     describe('overlapping children', function ()
     {
-        function getScene(callbackEventName)
+        function getScene(callbackEventName, splitParents)
         {
             const behindChild = new PIXI.Graphics();
             const frontChild = new PIXI.Graphics();
             const parent = new PIXI.Container();
-            const behindChildCallback = sinon.spy();
-            const frontChildCallback = sinon.spy();
-            const parentCallback = sinon.spy();
+            const behindChildCallback = sinon.spy(function behindSpy() { /* no op*/ });
+            const frontChildCallback = sinon.spy(function frontSpy() { /* no op*/ });
+            const parentCallback = sinon.spy(function parentSpy() { /* no op*/ });
+            let behindParent;
+            let frontParent;
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
             behindChild.on(callbackEventName, behindChildCallback);
+            behindChild.name = 'behind';
 
             frontChild.beginFill(0x00FF);
             frontChild.drawRect(0, 0, 50, 50);
             frontChild.on(callbackEventName, frontChildCallback);
+            frontChild.name = 'front';
 
-            parent.addChild(behindChild, frontChild);
+            if (splitParents)
+            {
+                behindParent = new PIXI.Container();
+                behindParent.name = 'behindParent';
+                frontParent = new PIXI.Container();
+                frontParent.name = 'frontParent';
+                parent.addChild(behindParent, frontParent);
+                behindParent.addChild(behindChild);
+                frontParent.addChild(frontChild);
+
+                parent.name = 'parent';
+            }
+            else
+            {
+                parent.addChild(behindChild, frontChild);
+            }
             parent.on(callbackEventName, parentCallback);
 
             return {
                 behindChild,
                 frontChild,
+                behindParent,
+                frontParent,
                 parent,
                 behindChildCallback,
                 frontChildCallback,
@@ -477,6 +498,44 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                     expect(scene.frontChildCallback).to.not.have.been.called;
                     expect(scene.behindChildCallback).to.have.been.calledOnce;
+                    expect(scene.parentCallback).to.not.have.been.called;
+                });
+
+                it('should callback front child of different non-interactive parents when clicking overlap', function ()
+                {
+                    const stage = new PIXI.Container();
+                    const pointer = this.pointer = new MockPointer(stage);
+                    const scene = getScene('click', true);
+
+                    scene.behindChild.interactive = true;
+                    scene.behindChild.x = 25;
+                    scene.frontChild.interactive = true;
+
+                    stage.addChild(scene.parent);
+                    pointer.click(40, 10);
+
+                    expect(scene.behindChildCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).to.have.been.calledOnce;
+                    expect(scene.parentCallback).to.not.have.been.called;
+                });
+
+                it('should callback front child of different interactive parents when clicking overlap', function ()
+                {
+                    const stage = new PIXI.Container();
+                    const pointer = this.pointer = new MockPointer(stage);
+                    const scene = getScene('click', true);
+
+                    scene.behindChild.interactive = true;
+                    scene.behindChild.x = 25;
+                    scene.frontChild.interactive = true;
+                    scene.behindParent.interactive = true;
+                    scene.frontParent.interactive = true;
+
+                    stage.addChild(scene.parent);
+                    pointer.click(40, 10);
+
+                    expect(scene.behindChildCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
             });
@@ -648,6 +707,46 @@ describe('PIXI.interaction.InteractionManager', function ()
 
                     expect(scene.frontChildCallback).to.not.have.been.called;
                     expect(scene.behindChildCallback).to.have.been.calledOnce;
+                    expect(scene.parentCallback).to.have.been.calledOnce;
+                });
+
+                it('should callback front child of different non-interactive parents when clicking overlap', function ()
+                {
+                    const stage = new PIXI.Container();
+                    const pointer = this.pointer = new MockPointer(stage);
+                    const scene = getScene('click', true);
+
+                    scene.behindChild.interactive = true;
+                    scene.behindChild.x = 25;
+                    scene.frontChild.interactive = true;
+                    scene.parent.interactive = true;
+
+                    stage.addChild(scene.parent);
+                    pointer.click(40, 10);
+
+                    expect(scene.behindChildCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).to.have.been.calledOnce;
+                    expect(scene.parentCallback).to.have.been.calledOnce;
+                });
+
+                it('should callback front child of different interactive parents when clicking overlap', function ()
+                {
+                    const stage = new PIXI.Container();
+                    const pointer = this.pointer = new MockPointer(stage);
+                    const scene = getScene('click', true);
+
+                    scene.behindChild.interactive = true;
+                    scene.behindChild.x = 25;
+                    scene.frontChild.interactive = true;
+                    scene.parent.interactive = true;
+                    scene.behindParent.interactive = true;
+                    scene.frontParent.interactive = true;
+
+                    stage.addChild(scene.parent);
+                    pointer.click(40, 10);
+
+                    expect(scene.behindChildCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
             });

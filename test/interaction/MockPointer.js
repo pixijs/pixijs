@@ -35,6 +35,7 @@ class MockPointer
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
         this.interaction.supportsTouchEvents = true;
+        PIXI.ticker.shared.remove(this.interaction.update, this.interaction);
     }
 
     /**
