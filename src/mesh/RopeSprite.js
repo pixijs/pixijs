@@ -4,10 +4,12 @@ import * as core from '../core';
 /**
  * The rope sprite allows you to hack a rope that behaves like a sprite
  *
- * let rope = new PIXI.mesh.Rope(PIXI.Texture.fromImage("snake.png"), 3, 0, vertical ? 2 : 0);
+ * let rope = new PIXI.mesh.Rope(PIXI.Texture.fromImage("snake.png"), 5, 2, vertical ? 2 : 0);
  * rope.anchor.set(0.5, 0.5);
  * rope.clearPoints(); // set them according to anchor
- * rope.points[1].y = 15; //middle Y goes down
+ * rope.points[1].y = 15; // middle Y goes down
+ * rope.pointShift[2] = 15; // shift is better
+ * rope.pointScale[3] = 1.2; // scale a bit
  *
  *  ```
  *
@@ -36,7 +38,12 @@ export default class RopeSprite extends Plane
         /*
          * @member {number[]} Extra shift of normals in pixels
          */
-        this.shift = [];
+        this.pointShift = [];
+
+        /*
+         * @member {number[]} Extra scale of normals in pixels
+         */
+        this.pointScale = [];
 
         this._checkPointsLen();
 
@@ -92,7 +99,7 @@ export default class RopeSprite extends Plane
             points.push(new core.Point(0, 0));
         }
 
-        const shift = this.shift;
+        const shift = this.pointShift;
 
         if (shift.length > len)
         {
@@ -102,6 +109,18 @@ export default class RopeSprite extends Plane
         while (shift.length < len)
         {
             shift.push(0);
+        }
+
+        const scale = this.pointScale;
+
+        if (scale.length > len)
+        {
+            scale.length = len;
+        }
+
+        while (scale.length < len)
+        {
+            scale.push(1.0);
         }
     }
 
@@ -163,12 +182,18 @@ export default class RopeSprite extends Plane
      */
     resetShift()
     {
-        const shift = this.shift;
+        const shift = this.pointShift;
+        const scale = this.pointScale;
         const len = shift.length;
 
         for (let i = 0; i < len; i++)
         {
             shift[i] = 0.0;
+        }
+
+        for (let i = 0; i < len; i++)
+        {
+            scale[i] = 1.0;
         }
     }
 
@@ -192,7 +217,8 @@ export default class RopeSprite extends Plane
     _refreshVertices()
     {
         const points = this.points;
-        const shift = this.shift;
+        const shift = this.pointShift;
+        const scale = this.pointScale;
 
         let lastPoint = points[0];
         let nextPoint;
@@ -239,8 +265,8 @@ export default class RopeSprite extends Plane
             {
                 const ind = (i + (j * verticesX)) * 2;
 
-                vertices[ind] = point.x + (normalX * (shift[i] + normalOffset + (normalFactor * j)));
-                vertices[ind + 1] = point.y + (normalY * (shift[i] + normalOffset + (normalFactor * j)));
+                vertices[ind] = point.x + (normalX * (shift[i] + (scale[i] * (normalOffset + (normalFactor * j)))));
+                vertices[ind + 1] = point.y + (normalY * (shift[i] + (scale[i] * (normalOffset + (normalFactor * j)))));
             }
 
             lastPoint = point;
