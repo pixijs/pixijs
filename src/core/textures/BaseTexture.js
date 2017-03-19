@@ -203,6 +203,15 @@ export default class BaseTexture extends EventEmitter
         }
 
         /**
+         * If the object has been destroyed via destroy(). If true, it should not be used.
+         *
+         * @member {boolean}
+         * @private
+         * @readonly
+         */
+        this._destroyed = false;
+
+        /**
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected
@@ -579,7 +588,6 @@ export default class BaseTexture extends EventEmitter
     {
         if (this.imageUrl)
         {
-            delete BaseTextureCache[this.imageUrl];
             delete TextureCache[this.imageUrl];
 
             this.imageUrl = null;
@@ -589,15 +597,19 @@ export default class BaseTexture extends EventEmitter
                 this.source.src = '';
             }
         }
-        // An svg source has both `imageUrl` and `__pixiId`, so no `else if` here
-        if (this.source && this.source._pixiId)
-        {
-            delete BaseTextureCache[this.source._pixiId];
-        }
 
         this.source = null;
 
         this.dispose();
+
+        for (const prop in BaseTextureCache)
+        {
+            if (BaseTextureCache[prop] === this)
+            {
+                delete BaseTextureCache[prop];
+            }
+        }
+        this._destroyed = true;
     }
 
     /**

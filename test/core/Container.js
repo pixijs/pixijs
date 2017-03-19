@@ -2,30 +2,36 @@
 
 function testAddChild(fn)
 {
-    fn(function (container, obj)
+    return function ()
     {
-        container.addChild(obj);
-    });
-    fn(function (container, obj)
-    {
-        container.addChildAt(obj);
-    });
+        fn(function (container, obj)
+        {
+            container.addChild(obj);
+        });
+        fn(function (container, obj)
+        {
+            container.addChildAt(obj);
+        });
+    };
 }
 
 function testRemoveChild(fn)
 {
-    fn(function (container, obj)
+    return function ()
     {
-        container.removeChild(obj);
-    });
-    fn(function (container, obj)
-    {
-        container.removeChildAt(container.children.indexOf(obj));
-    });
-    fn(function (container, obj)
-    {
-        container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj) + 1);
-    });
+        fn(function (container, obj)
+        {
+            container.removeChild(obj);
+        });
+        fn(function (container, obj)
+        {
+            container.removeChildAt(container.children.indexOf(obj));
+        });
+        fn(function (container, obj)
+        {
+            container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj) + 1);
+        });
+    };
 }
 
 describe('PIXI.Container', function ()

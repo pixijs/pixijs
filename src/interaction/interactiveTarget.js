@@ -17,7 +17,8 @@ export default {
     /**
      * Determines if the displayObject be clicked/touched
      *
-     * @inner {boolean}
+     * @member {boolean}
+     * @memberof PIXI.interaction.interactiveTarget#
      */
     interactive: false,
 
@@ -25,7 +26,8 @@ export default {
      * Determines if the children to the displayObject can be clicked/touched
      * Setting this to false allows pixi to bypass a recursive hitTest function
      *
-     * @inner {boolean}
+     * @member {boolean}
+     * @memberof PIXI.interaction.interactiveTarget#
      */
     interactiveChildren: true,
 
@@ -33,7 +35,8 @@ export default {
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      *
-     * @inner {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
+     * @memberof PIXI.interaction.interactiveTarget#
      */
     hitArea: null,
 
@@ -66,7 +69,8 @@ export default {
      *
      * @see https://developer.mozilla.org/en/docs/Web/CSS/cursor
      *
-     * @inner {string}
+     * @member {string}
+     * @memberof PIXI.interaction.interactiveTarget#
      */
     cursor: null,
 
@@ -87,7 +91,8 @@ export default {
     /**
      * Map of all tracked pointers, by identifier. Use trackedPointers to access.
      *
-     * @private {Map<number, InteractionTrackingData>}
+     * @private
+     * @type {Map<number, InteractionTrackingData>}
      */
     _trackedPointers: undefined,
 };

@@ -535,7 +535,7 @@ const defaults = [
     { parent: 'GC_MODES', target: 'GC_MODE' },
     { parent: 'WRAP_MODES', target: 'WRAP_MODE' },
     { parent: 'SCALE_MODES', target: 'SCALE_MODE' },
-    { parent: 'PRECISION', target: 'PRECISION' },
+    { parent: 'PRECISION', target: 'PRECISION_FRAGMENT' },
 ];
 
 for (let i = 0; i < defaults.length; i++)
@@ -558,6 +558,32 @@ for (let i = 0; i < defaults.length; i++)
         },
     });
 }
+
+Object.defineProperties(core.settings, {
+
+    /**
+     * @static
+     * @name PRECISION
+     * @memberof PIXI.settings
+     * @see PIXI.PRECISION
+     * @deprecated since version 4.4.0
+     */
+    PRECISION: {
+        enumerable: true,
+        get()
+        {
+            warn('PIXI.settings.PRECISION has been deprecated, please use PIXI.settings.PRECISION_FRAGMENT');
+
+            return core.settings.PRECISION_FRAGMENT;
+        },
+        set(value)
+        {
+            warn('PIXI.settings.PRECISION has been deprecated, please use PIXI.settings.PRECISION_FRAGMENT');
+
+            core.settings.PRECISION_FRAGMENT = value;
+        },
+    },
+});
 
 Object.defineProperties(extras, {
 
@@ -890,6 +916,35 @@ Object.defineProperty(core.utils, '_saidHello', {
         return saidHello;
     },
 });
+
+/**
+ * @method
+ * @name PIXI.prepare.BasePrepare#register
+ * @see PIXI.prepare.BasePrepare#registerFindHook
+ * @deprecated since version 4.4.2
+ * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
+ *        function must return `true` if it was able to add item to the queue.
+ * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+ *        function must return `true` if it was able to handle upload of item.
+ * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+ */
+prepare.BasePrepare.prototype.register = function register(addHook, uploadHook)
+{
+    warn('renderer.plugins.prepare.register is now deprecated, '
+        + 'please use renderer.plugins.prepare.registerFindHook & renderer.plugins.prepare.registerUploadHook');
+
+    if (addHook)
+    {
+        this.registerFindHook(addHook);
+    }
+
+    if (uploadHook)
+    {
+        this.registerUploadHook(uploadHook);
+    }
+
+    return this;
+};
 
 /**
  * The number of graphics or textures to upload to the GPU.

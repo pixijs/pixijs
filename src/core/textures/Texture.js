@@ -156,6 +156,15 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * The id under which this Texture has been added to the texture cache. This is
+         * automatically set in certain cases, but may not always be accurate, particularly if
+         * the texture is in the cache under multiple ids.
+         *
+         * @member {string}
+         */
+        this.textureCacheId = null;
     }
 
     /**
@@ -238,11 +247,17 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
+        this.textureCacheId = null;
 
         this.valid = false;
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        for (const prop in TextureCache)
+        {
+            if (TextureCache[prop] === this)
+            {
+                delete TextureCache[prop];
+            }
+        }
     }
 
     /**
@@ -425,7 +440,7 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        const baseTexture = new BaseTexture(source, null, getResolutionOfUrl(imageUrl));
+        const baseTexture = new BaseTexture(source, undefined, getResolutionOfUrl(imageUrl));
         const texture = new Texture(baseTexture);
 
         baseTexture.imageUrl = imageUrl;
@@ -439,6 +454,7 @@ export default class Texture extends EventEmitter
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
+        texture.textureCacheId = name;
 
         // also add references by url if they are different.
         if (name !== imageUrl)
@@ -459,6 +475,10 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        if (!texture.textureCacheId)
+        {
+            texture.textureCacheId = id;
+        }
         TextureCache[id] = texture;
     }
 
@@ -560,6 +580,29 @@ export default class Texture extends EventEmitter
     }
 }
 
+function createWhiteTexture()
+{
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 10;
+    canvas.height = 10;
+
+    const context = canvas.getContext('2d');
+
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, 10, 10);
+
+    return new Texture(new BaseTexture(canvas));
+}
+
+function removeAllHandlers(tex)
+{
+    tex.destroy = function _emptyDestroy() { /* empty */ };
+    tex.on = function _emptyOn() { /* empty */ };
+    tex.once = function _emptyOnce() { /* empty */ };
+    tex.emit = function _emptyEmit() { /* empty */ };
+}
+
 /**
  * An empty texture, used often to not have to create multiple empty textures.
  * Can not be destroyed.
@@ -568,7 +611,14 @@ export default class Texture extends EventEmitter
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function _emptyDestroy() { /* empty */ };
-Texture.EMPTY.on = function _emptyOn() { /* empty */ };
-Texture.EMPTY.once = function _emptyOnce() { /* empty */ };
-Texture.EMPTY.emit = function _emptyEmit() { /* empty */ };
+removeAllHandlers(Texture.EMPTY);
+
+/**
+ * A white texture of 10x10 size, used for graphics and other things
+ * Can not be destroyed.
+ *
+ * @static
+ * @constant
+ */
+Texture.WHITE = createWhiteTexture();
+removeAllHandlers(Texture.WHITE);

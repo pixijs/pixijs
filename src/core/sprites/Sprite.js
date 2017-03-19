@@ -147,12 +147,12 @@ export default class Sprite extends Container
         // so if _width is 0 then width was not set..
         if (this._width)
         {
-            this.scale.x = sign(this.scale.x) * this._width / this.texture.orig.width;
+            this.scale.x = sign(this.scale.x) * this._width / this._texture.orig.width;
         }
 
         if (this._height)
         {
-            this.scale.y = sign(this.scale.y) * this._height / this.texture.orig.height;
+            this.scale.y = sign(this.scale.y) * this._height / this._texture.orig.height;
         }
     }
 
@@ -212,11 +212,11 @@ export default class Sprite extends Container
         }
         else
         {
-            w0 = orig.width * (1 - anchor._x);
-            w1 = orig.width * -anchor._x;
+            w1 = -anchor._x * orig.width;
+            w0 = w1 + orig.width;
 
-            h0 = orig.height * (1 - anchor._y);
-            h1 = orig.height * -anchor._y;
+            h1 = -anchor._y * orig.height;
+            h0 = h1 + orig.height;
         }
 
         // xy
@@ -269,11 +269,11 @@ export default class Sprite extends Container
         const tx = wt.tx;
         const ty = wt.ty;
 
-        const w0 = (orig.width) * (1 - anchor._x);
-        const w1 = (orig.width) * -anchor._x;
+        const w1 = -anchor._x * orig.width;
+        const w0 = w1 + orig.width;
 
-        const h0 = orig.height * (1 - anchor._y);
-        const h1 = orig.height * -anchor._y;
+        const h1 = -anchor._y * orig.height;
+        const h0 = h1 + orig.height;
 
         // xy
         vertexData[0] = (a * w1) + (c * h1) + tx;
@@ -440,7 +440,7 @@ export default class Sprite extends Container
      *
      * @static
      * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
-     * @return {PIXI.Sprite} The newly created texture
+     * @return {PIXI.Sprite} The newly created sprite
      */
     static from(source)
     {
@@ -538,8 +538,8 @@ export default class Sprite extends Container
     }
 
     /**
-     * The tint applied to the sprite. This is a hex value. A value of
-     * 0xFFFFFF will remove any tint effect.
+     * The tint applied to the sprite. This is a hex value.
+     * A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
      * @default 0xFFFFFF

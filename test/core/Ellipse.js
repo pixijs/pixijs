@@ -56,6 +56,10 @@ describe('PIXI.Ellipse', function ()
         expect(ellipse1.contains(10, 16)).to.be.false;
         expect(ellipse1.contains(11, 15)).to.be.false;
         expect(ellipse1.contains(0, 0)).to.be.false;
+
+        const ellipse2 = new PIXI.Ellipse(10, 10, 0, 0);
+
+        expect(ellipse2.contains(10, 10)).to.be.false;
     });
 
     it('should return framing rectangle', function ()
