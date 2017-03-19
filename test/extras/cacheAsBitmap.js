@@ -1,9 +1,6 @@
 'use strict';
 
-function isWebGLSupported(fn)
-{
-    return PIXI.utils.isWebGLSupported() ? fn : undefined;
-}
+const withGL = require('../withGL')
 
 describe('PIXI.extras.cacheAsBitmap', function ()
 {
@@ -43,7 +40,7 @@ describe('PIXI.extras.cacheAsBitmap', function ()
             expect(stage.width).to.be.equal(20);
         });
 
-        it('on webgl without cacheAsBitmap', isWebGLSupported(function ()
+        it('on webgl without cacheAsBitmap', withGL(function ()
         {
             const renderer = new PIXI.WebGLRenderer(150, 150);
             const stage = getScene(renderer, false);
@@ -51,7 +48,7 @@ describe('PIXI.extras.cacheAsBitmap', function ()
             expect(stage.width).to.be.equal(20);
         }));
 
-        it('on webgl with cacheAsBitmap', isWebGLSupported(function ()
+        it('on webgl with cacheAsBitmap', withGL(function ()
         {
             const renderer = new PIXI.WebGLRenderer(150, 150);
             const stage = getScene(renderer, true);
