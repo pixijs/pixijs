@@ -8,6 +8,7 @@ import ImageResource from './resources/ImageResource';
 import BufferResource from './resources/BufferResource';
 import CanvasResource from './resources/CanvasResource';
 import SVGResource from './resources/SVGResource';
+import VideoResource from './resources/VideoResource';
 import createResource from './resources/createResource';
 
 import settings from '../settings';
@@ -115,6 +116,8 @@ export default class BaseTexture extends EventEmitter
 
     setResource(resource)
     {
+        // TODO currently a resource can only be set once..
+
         this.resource = resource;
 
         this.resource.load.then((resource) => {
@@ -140,6 +143,14 @@ export default class BaseTexture extends EventEmitter
             }
 
         })
+
+        this.resource.resourceUpdated.add(this); //calls resourceUpaded
+    }
+
+    resourceUpdated()
+    {
+        // the resource was updated..
+        this.dirtyId++;
     }
 
     update()
@@ -167,95 +178,6 @@ export default class BaseTexture extends EventEmitter
         this.valid = valid;
     }
 
-    /**
-     * Helper function that creates a base texture from the given image url.
-     * If the image is not in the base texture cache it will be created and loaded.
-     *
-     * @static
-     * @param {string} imageUrl - The image url of the texture
-     * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.BaseTexture} The new base texture.
-     */
-    static fromImage(imageUrl, crossorigin, scaleMode)
-    {
-        let baseTexture = BaseTextureCache[imageUrl];
-
-        if (!baseTexture)
-        {
-            // new Image() breaks tex loading in some versions of Chrome.
-            // See https://code.google.com/p/chromium/issues/detail?id=238071
-            const resource = ImageResource.from(imageUrl, crossorigin);// document.createElement('img');
-
-            baseTexture = new BaseTexture();//image, scaleMode);
-            baseTexture.scaleMode = scaleMode ||  baseTexture.scaleMode;
-            baseTexture.resolution = getResolutionOfUrl(imageUrl);
-            baseTexture.setResource(resource);
-            BaseTextureCache[imageUrl] = baseTexture;
-        }
-
-        return baseTexture;
-    }
-
-    /**
-     * Helper function that creates a base texture from the given canvas element.
-     *
-     * @static
-     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
-     * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.BaseTexture} The new base texture.
-     */
-    static fromCanvas(canvas, scaleMode)
-    {
-
-        if (!canvas._pixiId)
-        {
-            canvas._pixiId = `canvas_${uid()}`;
-        }
-
-        let baseTexture = BaseTextureCache[canvas._pixiId];
-
-        if (!baseTexture)
-        {
-
-            const resource = CanvasResource.from(canvas);// document.createElement('img');
-            console.log()
-            baseTexture = new BaseTexture();
-            baseTexture.scaleMode = scaleMode ||  baseTexture.scaleMode;
-            baseTexture.setResource(resource);
-
-            BaseTextureCache[canvas._pixiId] = baseTexture;
-        }
-
-        return baseTexture;
-    }
-
-    /**
-     * Helper function that creates a base texture from the given canvas element.
-     *
-     * @static
-     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
-     * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.BaseTexture} The new base texture.
-     */
-    static fromSVG(url, scale, scaleMode)
-    {
-        let baseTexture = BaseTextureCache[url];
-
-        if (!baseTexture)
-        {
-            const resource = SVGResource.from(url);// document.createElement('img');
-
-            baseTexture = new BaseTexture();
-            baseTexture.scaleMode = scaleMode ||  baseTexture.scaleMode;
-            baseTexture.setResource(resource);
-
-            BaseTextureCache[url] = baseTexture;
-        }
-
-        return baseTexture;
-    }
-
     get realWidth()
     {
         return this.width * this.resolution;
@@ -276,72 +198,34 @@ export default class BaseTexture extends EventEmitter
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static fromNEW(url)
-    {
-        var texture = new Texture();
-
-        var image = new Image();
-        image.src = url;
-        texture.setResource(new ImageResource(image));
-
-        return texture;
-    }
-
-    static getResource(source)
-    {
-        if (typeof source === 'string')
-        {
-            // //
-
-        }
-    }
-
-    /**
-     * Helper function that creates a base texture based on the source you provide.
-     * The source can be - image url, image element, canvas element.
-     *
-     * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
-     * @return {PIXI.BaseTexture} The new base texture.
-     */
     static from(source, scaleMode, sourceScale)
     {
+        var cacheId = null;
+
         if (typeof source === 'string')
         {
-            return BaseTexture.fromImage(source, undefined, scaleMode, sourceScale);
+            cacheId = source;
         }
-        else if (source instanceof HTMLImageElement)
+        else
         {
-            const imageUrl = source.src;
-            let baseTexture = BaseTextureCache[imageUrl];
-
-            if (!baseTexture)
+            if(!source._pixiId)
             {
-                baseTexture = new BaseTexture(source, scaleMode);
-                baseTexture.imageUrl = imageUrl;
-
-                if (sourceScale)
-                {
-                    baseTexture.sourceScale = sourceScale;
-                }
-
-                // if there is an @2x at the end of the url we are going to assume its a highres image
-                baseTexture.resolution = getResolutionOfUrl(imageUrl);
-
-                BaseTextureCache[imageUrl] = baseTexture;
+                source._pixiId = `pixiid_${uid()}`;
             }
 
-            return baseTexture;
+            cacheId = source._pixiId;
         }
-        else if (source instanceof HTMLCanvasElement)
+
+        let baseTexture = BaseTextureCache[cacheId];
+
+        if (!baseTexture)
         {
-            return BaseTexture.fromCanvas(source, scaleMode);
+            baseTexture = new BaseTexture(source);
+            BaseTextureCache[cacheId] = baseTexture;
         }
 
         // lets assume its a base texture!
-        return source;
+        return baseTexture;
     }
 
     static fromFloat32Array(width, height, float32Array)
@@ -373,3 +257,7 @@ export default class BaseTexture extends EventEmitter
     }
 
 }
+
+BaseTexture.fromImage = BaseTexture.from;
+BaseTexture.fromSVG = BaseTexture.from;
+BaseTexture.fromCanvas = BaseTexture.from;

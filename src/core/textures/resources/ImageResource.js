@@ -5,7 +5,7 @@ export default class ImageResource extends TextureResource
 {
     constructor(source)
     {
-        super();
+        super(source);
 
         this.load = new Promise((resolve, reject) => {
 

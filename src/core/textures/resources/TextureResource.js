@@ -13,7 +13,7 @@ export default class TextureResource
 
         this.uploadable = true;
 
-        this.updated = new Runner('resourceUpdated');
+        this.resourceUpdated = new Runner('resourceUpdated');
 
         // create a prommise..
         this.load = null;

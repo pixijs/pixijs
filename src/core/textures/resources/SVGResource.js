@@ -1,8 +1,10 @@
 import {
     decomposeDataUri, getSvgSize, uid
 } from '../../utils';
+import TextureResource from './TextureResource';
 
-export default class SVGResource
+
+export default class SVGResource extends TextureResource
 {
     constructor(svgSource, scale)
     {
