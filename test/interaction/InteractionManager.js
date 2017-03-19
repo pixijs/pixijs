@@ -1024,4 +1024,26 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(pointer.interaction.mouse.global.y).to.equal(10);
         });
     });
+
+    describe('data cleanup', function ()
+    {
+        it('touchleave after touchout should not orphan data', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+
+            pointer.touchstart(10, 10, 42);
+            expect(pointer.interaction.activeInteractionData[42]).to.exist;
+            pointer.touchend(10, 10, 42);
+            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
+            pointer.touchleave(10, 10, 42);
+            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
+        });
+    });
 });

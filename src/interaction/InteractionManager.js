@@ -1268,6 +1268,12 @@ export default class InteractionManager extends EventEmitter
         {
             this.emit('mouseout', interactionEvent);
         }
+        else
+        {
+            // we can get touchleave events after touchend, so we want to make sure we don't
+            // introduce memory leaks
+            this.releaseInteractionDataForPointerId(interactionData.identifier);
+        }
     }
 
     /**
