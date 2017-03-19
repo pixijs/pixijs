@@ -20,15 +20,18 @@ export default class Plane extends Mesh
 {
     /**
      * @param {PIXI.Texture} texture - The texture to use on the Plane.
-     * @param {number} verticesX - The number of vertices in the x-axis
-     * @param {number} verticesY - The number of vertices in the y-axis
+     * @param {number} [verticesX=2] - The number of vertices in the x-axis
+     * @param {number} [verticesY=2] - The number of vertices in the y-axis
+     * @param {number} [direction=0] - Direction of the mesh. See {@link PIXI.GroupD8} for explanation
      */
-    constructor(texture, verticesX, verticesY)
+    constructor(texture, verticesX, verticesY, direction)
     {
         super(texture);
 
         this._verticesX = verticesX || 2;
         this._verticesY = verticesY || 2;
+
+        this._direction = (direction || 0) & (~1);
 
         this._lastWidth = texture.orig.width;
         this._lastHeight = texture.orig.height;
@@ -69,9 +72,10 @@ export default class Plane extends Mesh
          * @member {PIXI.ObservablePoint}
          * @private
          */
-        this._anchor = new core.ObservablePoint(this.invalidateVertices, this);
+        this._anchor = new core.ObservablePoint(this._onAnchorUpdate, this);
 
         this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
+
         this.refresh();
     }
 
@@ -116,7 +120,32 @@ export default class Plane extends Mesh
     }
 
     /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
+     * Direction of the mesh, see {@link PIXI.GroupD8} for explanation
+     *
+     * @param {number} [direction=0] - Direction of the mesh.
+     */
+    get direction()
+    {
+        return this._direction;
+    }
+
+    set direction(value) // eslint-disable-line require-jsdoc
+    {
+        if (value % 2 !== 0)
+        {
+            throw new Error('plane does not support diamond shape yet');
+        }
+
+        if (this._direction === value)
+        {
+            return;
+        }
+        this._direction = value;
+        this._verticesID++;
+    }
+
+    /**
+     * The width of the Plane, settings this wont modify the scale, but vertices will be cleared
      *
      * @member {number}
      */
@@ -136,7 +165,7 @@ export default class Plane extends Mesh
     }
 
     /**
-     * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
+     * The height of the Plane, settings this wont modify the scale, but vertices will be cleared
      *
      * @member {number}
      */
@@ -174,6 +203,16 @@ export default class Plane extends Mesh
     }
 
     /**
+     * updates vertices after anchor changes
+     *
+     * @private
+     */
+    _onAnchorUpdate()
+    {
+        this._verticesID++;
+    }
+
+    /**
      * Call when you updated some parameters manually
      */
     invalidateVertices()
@@ -199,14 +238,13 @@ export default class Plane extends Mesh
     }
 
     /**
-     * Refreshes uvs for generated meshes (rope, plane)
-     * sometimes refreshes vertices too
+     * Refreshes the plane mesh
      *
      * @param {boolean} [forceUpdate=false] if true, everything will be updated in any case
      */
     refresh(forceUpdate)
     {
-        if (!this._texture.valid)
+        if (this._texture.noFrame)
         {
             return;
         }
@@ -253,10 +291,10 @@ export default class Plane extends Mesh
         this._verticesID++;
         this._uvsID++;
 
-        const total = this.verticesX * this.verticesY;
+        const total = this._verticesX * this._verticesY;
 
-        const segmentsX = this.verticesX - 1;
-        const segmentsY = this.verticesY - 1;
+        const segmentsX = this._verticesX - 1;
+        const segmentsY = this._verticesY - 1;
 
         const indices = [];
         const totalSub = segmentsX * segmentsY;
@@ -266,10 +304,10 @@ export default class Plane extends Mesh
             const xpos = i % segmentsX;
             const ypos = (i / segmentsX) | 0;
 
-            const value = (ypos * this.verticesX) + xpos;
-            const value2 = (ypos * this.verticesX) + xpos + 1;
-            const value3 = ((ypos + 1) * this.verticesX) + xpos;
-            const value4 = ((ypos + 1) * this.verticesX) + xpos + 1;
+            const value = (ypos * this._verticesX) + xpos;
+            const value2 = (ypos * this._verticesX) + xpos + 1;
+            const value3 = ((ypos + 1) * this._verticesX) + xpos;
+            const value4 = ((ypos + 1) * this._verticesX) + xpos + 1;
 
             indices.push(value, value2, value3);
             indices.push(value2, value4, value3);
@@ -279,34 +317,6 @@ export default class Plane extends Mesh
         this.vertices = new Float32Array(total * 2);
 
         this.indexDirty++;
-    }
-
-    /**
-     * Refreshes plane UV coordinates
-     *
-     */
-    _refreshUvs()
-    {
-        this._uvsID = this._lastUvsID;
-
-        const total = this.verticesX * this.verticesY;
-        const uvs = this.uvs;
-
-        const segmentsX = this.verticesX - 1;
-        const segmentsY = this.verticesY - 1;
-
-        for (let i = 0; i < total; i++)
-        {
-            const x = (i % this.verticesX);
-            const y = ((i / this.verticesX) | 0);
-
-            uvs[i * 2] = x / segmentsX;
-            uvs[(i * 2) + 1] = y / segmentsY;
-        }
-
-        this.dirty++;
-
-        this.multiplyUvs();
     }
 
     /**
@@ -332,6 +342,44 @@ export default class Plane extends Mesh
     }
 
     /**
+     * Refreshes plane UV coordinates
+     *
+     */
+    _refreshUvs()
+    {
+        this._uvsID = this._lastUvsID;
+
+        const total = this._verticesX * this._verticesY;
+        const uvs = this.uvs;
+
+        const direction = this._direction;
+
+        const ux = core.GroupD8.uX(direction);
+        const uy = core.GroupD8.uY(direction);
+        const vx = core.GroupD8.vX(direction);
+        const vy = core.GroupD8.vY(direction);
+
+        const factorU = 1.0 / (this._verticesX - 1);
+        const factorV = 1.0 / (this._verticesY - 1);
+
+        for (let i = 0; i < total; i++)
+        {
+            let x = (i % this._verticesX);
+            let y = ((i / this._verticesX) | 0);
+
+            x = (x * factorU) - 0.5;
+            y = (y * factorV) - 0.5;
+
+            uvs[i * 2] = (ux * x) + (vx * y) + 0.5;
+            uvs[(i * 2) + 1] = (uy * x) + (vy * y) + 0.5;
+        }
+
+        this.dirty++;
+
+        this.multiplyUvs();
+    }
+
+    /**
      * Refreshes vertices of Plane mesh
      * by default, makes them uniformly distributed
      *
@@ -339,24 +387,47 @@ export default class Plane extends Mesh
      */
     _refreshVertices()
     {
-        const total = this.verticesX * this.verticesY;
+        const total = this._verticesX * this._verticesY;
         const vertices = this.vertices;
 
-        const segmentsX = this.verticesX - 1;
-        const segmentsY = this.verticesY - 1;
+        const width = this.width;
+        const height = this.height;
+        const direction = this._direction;
 
-        const sizeX = this.width / segmentsX;
-        const sizeY = this.height / segmentsY;
-        const offsetX = -this.width * this.anchor.x;
-        const offsetY = -this.height * this.anchor.y;
+        let ux = core.GroupD8.uX(direction);
+        let uy = core.GroupD8.uY(direction);
+        let vx = core.GroupD8.vX(direction);
+        let vy = core.GroupD8.vY(direction);
+
+        const offsetX = (0.5 * (1 - (ux + vx))) - this._anchor._x;
+        const offsetY = (0.5 * (1 - (uy + vy))) - this._anchor._y;
+        const factorU = 1.0 / (this._verticesX - 1);
+        const factorV = 1.0 / (this._verticesY - 1);
+
+        ux *= factorU;
+        uy *= factorU;
+        vx *= factorV;
+        vy *= factorV;
 
         for (let i = 0; i < total; i++)
         {
-            const x = (i % this.verticesX);
-            const y = ((i / this.verticesX) | 0);
+            const x = (i % this._verticesX);
+            const y = ((i / this._verticesX) | 0);
 
-            vertices[i * 2] = (x * sizeX) + offsetX;
-            vertices[(i * 2) + 1] = (y * sizeY) + offsetY;
+            vertices[i * 2] = ((ux * x) + (vx * y) + offsetX) * width;
+            vertices[(i * 2) + 1] = ((uy * x) + (vy * y) + offsetY) * height;
+        }
+    }
+
+    /**
+     * resets everything to defaults
+     */
+    reset()
+    {
+        if (!this.texture.noFrame)
+        {
+            this._refreshUvs();
+            this.refreshVertices(true);
         }
     }
 }
