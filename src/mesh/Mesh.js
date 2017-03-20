@@ -79,7 +79,7 @@ export default class Mesh extends core.Container
         this.indexDirty = 0;
 
         /**
-         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
+         * The blend mode to be applied to the mesh. Set to `PIXI.BLEND_MODES.NORMAL` to remove
          * any blend mode.
          *
          * @member {number}
