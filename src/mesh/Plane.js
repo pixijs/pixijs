@@ -36,6 +36,9 @@ export default class Plane extends Mesh
         this._lastWidth = texture.orig.width;
         this._lastHeight = texture.orig.height;
 
+        this._width = 0;
+        this._height = 0;
+
         /**
          *  Version counter for verticesX/verticesY change
          *
