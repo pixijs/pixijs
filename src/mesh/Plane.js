@@ -210,6 +210,7 @@ export default class Plane extends Mesh
     _onAnchorUpdate()
     {
         this._verticesID++;
+        this.refresh();
     }
 
     /**
