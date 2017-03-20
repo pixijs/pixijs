@@ -46,12 +46,6 @@ export default class NineSlicePlane extends Plane
     {
         super(texture, 4, 4);
 
-        this._lastWidth = null;
-        this._lastHeight = null;
-
-        this._width = texture.orig.width;
-        this._height = texture.orig.height;
-
         /**
          * The width of the left column (a)
          *
@@ -250,26 +244,6 @@ export default class NineSlicePlane extends Plane
     }
 
     /**
-     * Renders the object using the WebGL renderer
-     *
-     * @private
-     * @param {PIXI.WebGLRenderer} renderer - a reference to the WebGL renderer
-     */
-    _renderWebGL(renderer)
-    {
-        // no texture - no drawImage
-        if (!this._texture.valid)
-        {
-            return;
-        }
-
-        this.refresh();
-
-        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
-        renderer.plugins[this.pluginName].render(this);
-    }
-
-    /**
      * Renders the object using the Canvas renderer
      *
      * @private
@@ -282,8 +256,6 @@ export default class NineSlicePlane extends Plane
         {
             return;
         }
-
-        this.refresh();
 
         // advanced rendering - allow texture rotates
         if (this._texture.rotate)
