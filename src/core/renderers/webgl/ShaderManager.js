@@ -51,9 +51,11 @@ export default class ShaderManager
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
         // if (this.shader !== shader)
         // {
-        this.shader = shader;
-        this.renderer._bindGLShader(glShader);
-        // }
+        if (this.shader !== shader)
+        {
+            this.shader = shader;
+            glShader.bind();
+        }
 
         if (!dontSync)
         {
@@ -84,7 +86,7 @@ export default class ShaderManager
         const group = uniformGroups[0];
         const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSynGroups(group);
 
-        syncFunc(glShader.uniformD1ata, group.uniforms, this.renderer);
+        syncFunc(glShader.uniformData, group.uniforms, this.renderer);
 
     }
 
@@ -116,7 +118,14 @@ export default class ShaderManager
      */
     getGLShader()
     {
-        return this.shader.program.glShaders[this.renderer.CONTEXT_UID];
+        if(this.shader)
+        {
+            return this.shader.program.glShaders[this.renderer.CONTEXT_UID];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**

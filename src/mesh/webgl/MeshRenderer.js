@@ -44,7 +44,7 @@ export default class MeshRenderer extends core.ObjectRenderer
     render(mesh)
     {
         // bind the shader..
-        const glShader = this.renderer.shaderManager.bindShader(mesh.shader, true);
+        const glShader = this.renderer.shader.bind(mesh.shader, true);
 
         // set the shader props..
         if (glShader.uniformData.translationMatrix)

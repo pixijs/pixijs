@@ -115,11 +115,19 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-        this.MAX_TEXTURES = 1;
-
+        glCore._testingContext = gl;
         const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
-        // create a couple of buffers
+        const sampleValues = new Int32Array(this.MAX_TEXTURES);
+
+        for (let i = 0; i < this.MAX_TEXTURES; i++)
+        {
+            sampleValues[i] = i;
+        }
+
+        shader.uniformGroup.add('default', {uSamplers:sampleValues}, true);//this.renderer.globalUniforms;
+        shader.uniforms.globals = this.renderer.globalUniforms;
+
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
@@ -132,16 +140,17 @@ export default class SpriteRenderer extends ObjectRenderer
             this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
             /* eslint-disable max-len */
 
+            var attributeData = shader.program.attributeData;
             // build the vao object that will render..
             this.vaos[i] = this.renderer.createVao()
                 .addIndex(this.indexBuffer)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(this.vertexBuffers[i], shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+                .addAttribute(this.vertexBuffers[i], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                .addAttribute(this.vertexBuffers[i], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                .addAttribute(this.vertexBuffers[i], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
-            if (shader.attributes.aTextureId)
+            if (attributeData.aTextureId)
             {
-                this.vaos[i].addAttribute(this.vertexBuffers[i], shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                this.vaos[i].addAttribute(this.vertexBuffers[i], attributeData.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
             }
 
             /* eslint-enable max-len */
@@ -384,12 +393,14 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 /* eslint-disable max-len */
 
+                var attributeData = shader.program.attributeData;
+
                 // build the vao object that will render..
                 this.vaos[this.vertexCount] = this.renderer.createVao()
                     .addIndex(this.indexBuffer)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
+                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
                 if (this.shader.attributes.aTextureId)
                 {
@@ -452,7 +463,9 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-        this.renderer._bindGLShader(this.shader);
+       // this.renderer._bindGLShader(this.shader);
+        this.renderer.shader.bindShader(this.shader, true);
+        this.renderer.shader.syncUniformGroup(this.shader.uniformGroup);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)
         {

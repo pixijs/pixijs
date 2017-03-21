@@ -36,8 +36,8 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
     mat3:     'gl.uniformMatrix3fv(location, false, value)',
     mat4:     'gl.uniformMatrix4fv(location, false, value)',
 
-    sampler2D: 'uniform1i(location, value)',
-    samplerCube: 'uniform1i(location, value)',
+    sampler2D: 'gl.uniform1i(location, value)',
+    samplerCube: 'gl.uniform1i(location, value)',
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
@@ -58,8 +58,8 @@ const GLSL_TO_ARRAY_SETTERS = {
     bvec3:    'gl.uniform3iv(location, value)',
     bvec4:    'gl.uniform4iv(location, value)',
 
-    sampler2D: 'uniform1i(location, value)',
-    samplerCube: 'uniform1i(location, value)',
+    sampler2D: 'gl.uniform1iv(location, value)',
+    samplerCube: 'gl.uniform1iv(location, value)',
 };
 
 export default function generateUniformsSync2(group, uniformData)
@@ -80,7 +80,7 @@ export default function generateUniformsSync2(group, uniformData)
             if(group.uniforms[i].group)
             {
                 func += `
-                    renderer.shaderManager.syncUniformGroup(uniformValues.${i});
+                    renderer.shader.syncUniformGroup(uniformValues.${i});
                 `
             }
 
@@ -100,16 +100,26 @@ export default function generateUniformsSync2(group, uniformData)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
+
+    renderer.texture.bind(uniformValues.${i}, ${textureCount})
+    if(uniformData.${i}.value !== ${textureCount})
+    {
+        uniformData.${i}.value = ${textureCount};
+        gl.uniform1i(uniformData.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
+    }
+
+    /*
     var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount}, false);
 
     if(uniformData.${i}.value !== location)
     {
         uniformData.${i}.value = location;
         gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
-    }
+    }*/
 }
 else if(uniformValues.${i}._new)
 {
+
     renderer.texture.bind(uniformValues.${i}, ${textureCount})
     if(uniformData.${i}.value !== ${textureCount})
     {
@@ -119,6 +129,7 @@ else if(uniformValues.${i}._new)
 }
 else
 {
+    console.log("binding..")
     uniformData.${i}.value = ${textureCount};
     renderer.boundTextures[${textureCount}] = renderer.emptyTextures[${textureCount}];
     gl.activeTexture(gl.TEXTURE0 + ${textureCount});

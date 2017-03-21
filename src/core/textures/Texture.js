@@ -6,7 +6,7 @@ import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import settings from '../settings';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
+import { TextureCache, BaseTextureCache, getResolutionOfUrl, uid } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -470,6 +470,7 @@ export default class Texture extends EventEmitter
 Texture.fromImage = Texture.from;
 Texture.fromSVG = Texture.from;
 Texture.fromCanvas = Texture.from;
+Texture.fromVideo = Texture.from;
 Texture.fromFrame = Texture.from;
 
 function createWhiteTexture()

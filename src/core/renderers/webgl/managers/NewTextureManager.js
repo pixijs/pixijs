@@ -61,6 +61,8 @@ export default class TextureManager extends WebGLManager
 
         const gl = this.gl;
 
+        texture = texture.baseTexture || texture;
+
         location = location || 0;
 
         if(this.currentLocation !== location)

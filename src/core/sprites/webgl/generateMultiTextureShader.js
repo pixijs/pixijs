@@ -1,4 +1,5 @@
 import { GLShader } from 'pixi-gl-core';
+import Shader from '../../shader/Shader';
 import { PRECISION } from '../../const';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -25,7 +26,8 @@ export default function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    const shader = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
+    const shaderold = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
+    const shader = Shader.from(vertexSrc, fragmentSrc);//, PRECISION.DEFAULT);
 
     const sampleValues = [];
 
@@ -34,8 +36,9 @@ export default function generateMultiTextureShader(gl, maxTextures)
         sampleValues[i] = i;
     }
 
-    shader.bind();
-    shader.uniforms.uSamplers = sampleValues;
+   // shader.bind();
+   // shader.uniforms.uSamplers = new Int32Array(sampleValues);
+   // shader.uniformGroup.static = true;
 
     return shader;
 }

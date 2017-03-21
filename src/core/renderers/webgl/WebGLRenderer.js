@@ -3,10 +3,12 @@ import MaskManager from './managers/MaskManager';
 import StencilManager from './managers/StencilManager';
 import FilterManager from './managers/FilterManager';
 import FramebufferManager from './managers/FramebufferManager';
+import RenderTextureManager from './managers/RenderTextureManager';
 import NewTextureManager from './managers/NewTextureManager';
 import RenderTarget from './utils/RenderTarget';
 import ObjectRenderer from './utils/ObjectRenderer';
 import TextureManager from './TextureManager';
+import ProjectionManager from './managers/ProjectionManager';
 import StateManager from './managers/StateManager';
 import ShaderManager from './ShaderManager';
 import BaseTexture from '../../textures/BaseTexture';
@@ -16,6 +18,9 @@ import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
 import glCore from 'pixi-gl-core';
 import { RENDERER_TYPE } from '../../const';
+import UniformGroup from '../../shader/UniformGroup';
+import { Rectangle, Matrix } from '../../math';
+
 
 let CONTEXT_UID = 0;
 
@@ -119,6 +124,12 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.framebuffer  = new FramebufferManager(this);
         this.texture = new NewTextureManager(this);
+        this.renderTexture = new RenderTextureManager(this);
+        this.projection = new ProjectionManager(this);
+
+        this.globalUniforms = new UniformGroup({
+            projectionMatrix:new Matrix()
+        }, true)
 
         /**
          * The currently active ObjectRenderer.
@@ -152,6 +163,8 @@ export default class WebGLRenderer extends SystemRenderer
          */
 //        this.state = new WebGLState(this.gl);
         this.state = new StateManager(this.gl);
+        this.state.setBlendMode(0);
+
 
         this.renderingToScreen = true;
 
@@ -190,7 +203,8 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._nextTextureLocation = 0;
 
-        this.setBlendMode(0);
+
+
     }
 
     /**
@@ -217,14 +231,9 @@ export default class WebGLRenderer extends SystemRenderer
         this.textureManager = new TextureManager(this);
         this.textureGC = new TextureGarbageCollector(this);
 
-        this.shaderManager = new ShaderManager(this);
+        this.shader = new ShaderManager(this);
 
         this.state.resetToDefault();
-
-        this.rootRenderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
-        this.rootRenderTarget.clearColor = this._backgroundColorRgba;
-
-        this.bindRenderTarget(this.rootRenderTarget);
 
         // now lets fill up the textures with empty ones!
         const emptyGLTexture = new glCore.GLTexture.fromData(gl, null, 1, 1);
@@ -293,13 +302,13 @@ export default class WebGLRenderer extends SystemRenderer
            // displayObject.hitArea = //TODO add a temp hit area
         }
 
-        this.bindRenderTexture(renderTexture, transform);
+        this.renderTexture.bind(renderTexture);
 
         this.currentRenderer.start();
 
         if (clear !== undefined ? clear : this.clearBeforeRender)
         {
-            this._activeRenderTarget.clear();
+            this.renderTexture.clear();
         }
 
         displayObject.renderWebGL(this);
@@ -357,37 +366,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         SystemRenderer.prototype.resize.call(this, screenWidth, screenHeight);
 
-        this.rootRenderTarget.resize(screenWidth, screenHeight);
-
-        if (this._activeRenderTarget === this.rootRenderTarget)
-        {
-            this.rootRenderTarget.activate();
-
-            if (this._activeShader)
-            {
-                this._activeShader.uniforms.projectionMatrix = this.rootRenderTarget.projectionMatrix.toArray(true);
-            }
-        }
-    }
-
-    /**
-     * Resizes the webGL view to the specified width and height.
-     *
-     * @param {number} blendMode - the desired blend mode
-     */
-    setBlendMode(blendMode)
-    {
-        this.state.setBlendMode(blendMode);
-    }
-
-    /**
-     * Erases the active render target and fills the drawing area with a colour
-     *
-     * @param {number} [clearColor] - The colour
-     */
-    clear(clearColor)
-    {
-        this._activeRenderTarget.clear(clearColor);
+        this.renderTexture.resize(screenWidth, screenHeight);
     }
 
     /**
@@ -398,129 +377,6 @@ export default class WebGLRenderer extends SystemRenderer
     setTransform(matrix)
     {
         this._activeRenderTarget.transform = matrix;
-    }
-
-    /**
-     * Erases the render texture and fills the drawing area with a colour
-     *
-     * @param {PIXI.RenderTexture} renderTexture - The render texture to clear
-     * @param {number} [clearColor] - The colour
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    clearRenderTexture(renderTexture, clearColor)
-    {
-        const baseTexture = renderTexture.baseTexture;
-        const renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
-
-        if (renderTarget)
-        {
-            renderTarget.clear(clearColor);
-        }
-
-        return this;
-    }
-
-    /**
-     * Binds a render texture for rendering
-     *
-     * @param {PIXI.RenderTexture} renderTexture - The render texture to render
-     * @param {PIXI.Transform} transform - The transform to be applied to the render texture
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    bindRenderTexture(renderTexture, transform)
-    {
-        let renderTarget;
-
-        if (renderTexture)
-        {
-            const baseTexture = renderTexture.baseTexture;
-
-            if (!baseTexture._glRenderTargets[this.CONTEXT_UID])
-            {
-                // bind the current texture
-                this.textureManager.updateTexture(baseTexture, 0);
-            }
-
-            this.unbindTexture(baseTexture);
-
-            renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
-            renderTarget.setFrame(renderTexture.frame);
-        }
-        else
-        {
-            renderTarget = this.rootRenderTarget;
-        }
-
-        renderTarget.transform = transform;
-        this.bindRenderTarget(renderTarget);
-
-        return this;
-    }
-
-    /**
-     * Changes the current render target to the one given in parameter
-     *
-     * @param {PIXI.RenderTarget} renderTarget - the new render target
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    bindRenderTarget(renderTarget)
-    {
-        if (renderTarget !== this._activeRenderTarget)
-        {
-            this._activeRenderTarget = renderTarget;
-            renderTarget.activate();
-
-            if (this._activeShader)
-            {
-                this._activeShader.uniforms.projectionMatrix = renderTarget.projectionMatrix.toArray(true);
-            }
-
-            this.stencilManager.setMaskStack(renderTarget.stencilMaskStack);
-        }
-
-        return this;
-    }
-
-    /**
-     * Changes the current shader to the one given in parameter
-     *
-     * @param {PIXI.Shader} shader - the new shader
-     * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    bindShader(shader, dontSync)
-    {
-        this.shaderManager.bindShader(shader, dontSync);
-
-        return this;
-    }
-
-    /**
-     * Changes the current GLShader to the one given in parameter
-     *
-     * @param {PIXI.glCore.Shader} shader - the new glShader
-     * @param {boolean} [autoProject=true] - Whether automatically set the projection matrix
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    _bindGLShader(shader, autoProject)
-    {
-        // TODO cache
-        if (this._activeShader !== shader)
-        {
-            this._activeShader = shader;
-            shader.bind();
-
-            // `autoProject` normally would be a default parameter set to true
-            // but because of how Babel transpiles default parameters
-            // it hinders the performance of this method.
-            if (autoProject !== false)
-            {
-                // automatically set the projection matrix
-                shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
-            }
-        }
-
-        return this;
     }
 
     /**

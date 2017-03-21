@@ -36,8 +36,8 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
     mat3:     'gl.uniformMatrix3fv(location, false, value)',
     mat4:     'gl.uniformMatrix4fv(location, false, value)',
 
-    sampler2D: 'uniform1i(location, value)',
-    samplerCube: 'uniform1i(location, value)'
+    sampler2D: 'gl.uniform1i(location, value)',
+    samplerCube: 'gl.uniform1i(location, value)'
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
@@ -58,8 +58,8 @@ const GLSL_TO_ARRAY_SETTERS = {
     bvec3:    'gl.uniform3iv(location, value)',
     bvec4:    'gl.uniform4iv(location, value)',
 
-    sampler2D: 'uniform1i(location, value)',
-    samplerCube: 'uniform1i(location, value)'
+    sampler2D: 'gl.uniform1iv(location, value)',
+    samplerCube: 'gl.uniform1iv(location, value)'
 };
 export default function generateUniformsSync(uniformData)
 {
@@ -147,7 +147,7 @@ ${template};\n`;
     }
 
     //console.log(' --------------- ')
-    //console.log(func);
+    console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
 }

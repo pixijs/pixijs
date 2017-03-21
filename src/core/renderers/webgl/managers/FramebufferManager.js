@@ -76,14 +76,14 @@ export default class FramebufferManager extends WebGLManager
                 this.renderer.texture.unbind(framebuffer.depthTexture);
             }
 
-            gl.viewport(0,0,framebuffer.width, framebuffer.height);
+//            gl.viewport(0,0,framebuffer.width, framebuffer.height);
 
         }
         else
         {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-            gl.viewport(0,0,this.renderer.width, this.renderer.height);
+  //          gl.viewport(0,0,this.renderer.width, this.renderer.height);
         }
     }
 

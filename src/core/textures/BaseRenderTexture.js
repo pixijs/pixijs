@@ -1,4 +1,5 @@
 import BaseTexture from './BaseTexture';
+import FrameBuffer from './FrameBuffer';
 import settings from '../settings';
 
 /**
@@ -60,7 +61,7 @@ export default class BaseRenderTexture extends BaseTexture
          * @private
          * @member {object<number, WebGLTexture>}
          */
-        this._glRenderTargets = {};
+//        this._glRenderTargets = {};
 
         /**
          * A reference to the canvas render target (we only need one as this can be shared across renderers)
@@ -70,12 +71,10 @@ export default class BaseRenderTexture extends BaseTexture
          */
         this._canvasRenderTarget = null;
 
-        /**
-         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-         *
-         * @member {boolean}
-         */
-        this.valid = false;
+        this.clearColor = [0,0,0,0];
+
+        this.frameBuffer = new FrameBuffer(width, height)
+        .addColorTexture(0, this);
     }
 
     /**
@@ -86,22 +85,8 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
-        if (width === this.width && height === this.height)
-        {
-            return;
-        }
-
-        this.valid = (width > 0 && height > 0);
-
-        this.width = width;
-        this.height = height;
-
-        if (!this.valid)
-        {
-            return;
-        }
-
-        this.emit('update', this);
+        super.resize(width, height);
+        this.frameBuffer.resize(width, height);
     }
 
     /**

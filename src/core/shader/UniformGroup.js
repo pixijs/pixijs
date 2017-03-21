@@ -32,6 +32,11 @@ class UniformGroup
         this.dirtyId++;
     }
 
+    add(name, uniforms, _static)
+    {
+        this.uniforms[name] = new UniformGroup(uniforms, _static);
+    }
+
     static from(uniforms, _static)
     {
         return new UniformGroup(uniforms, _static);

@@ -38,7 +38,7 @@ class Program
         // this is where we store shader references..
         this.glShaders = {};
 
-        this.syncUniforms = generateUniformsSync(this.uniformData);
+        this.syncUniforms = null;//generateUniformsSync(this.uniformData);
 
         this.id = UID++;
     }
@@ -53,7 +53,8 @@ class Program
      */
     extractData(vertexSrc, fragmentSrc)
     {
-        const gl = glCore._testingContext || Program.getTestingContext;
+        console.log(glCore._testingContext)
+        const gl = glCore._testingContext || Program.getTestingContext();
 
         if (!gl)
         {
@@ -71,7 +72,7 @@ class Program
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
 
-            gl.deleteProgram(program);
+            //gl.deleteProgram(program);
         }
     }
 
@@ -135,6 +136,7 @@ class Program
         const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
         // TODO expose this as a prop?
+       // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
         const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
         for (let i = 0; i < totalUniforms; i++)
@@ -143,7 +145,7 @@ class Program
             const name = uniformData.name.replace(/\[.*?\]/, '');
             const type = glCore.shader.mapType(gl, uniformData.type);
 
-            if (!name.match(maskRegex))
+           // if (!name.match(maskRegex))
             {
                 /*eslint-disable */
                 uniforms[name] = {

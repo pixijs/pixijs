@@ -44,7 +44,7 @@ class Shader
 
             if (!uniform) // bad as we need check wher ethe uniforms are..
             {
-                //this.uniforms.uniforms[i] = program.uniformData[i].value;
+                //this.uniformGroup.uniforms[i] = program.uniformData[i].value;
             }
             else if (uniform instanceof Array)
             {

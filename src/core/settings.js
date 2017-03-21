@@ -172,7 +172,7 @@ export default {
      * @type {PIXI.SCALE_MODES}
      * @default PIXI.SCALE_MODES.LINEAR
      */
-    SCALE_MODE: 0,
+    SCALE_MODE: 1,
 
     /**
      * Default specify float precision in vertex shader.
