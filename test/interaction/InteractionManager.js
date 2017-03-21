@@ -402,6 +402,8 @@ describe('PIXI.interaction.InteractionManager', function ()
             const parentCallback = sinon.spy(function parentSpy() { /* no op*/ });
             let behindParent;
             let frontParent;
+            let behindParentCallback;
+            let frontParentCallback;
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
@@ -419,6 +421,11 @@ describe('PIXI.interaction.InteractionManager', function ()
                 behindParent.name = 'behindParent';
                 frontParent = new PIXI.Container();
                 frontParent.name = 'frontParent';
+                behindParentCallback = sinon.spy(function behindParentSpy() { /* no op*/ });
+                frontParentCallback = sinon.spy(function frontParentSpy() { /* no op*/ });
+                behindParent.on(callbackEventName, behindParentCallback);
+                frontParent.on(callbackEventName, frontParentCallback);
+
                 parent.addChild(behindParent, frontParent);
                 behindParent.addChild(behindChild);
                 frontParent.addChild(frontChild);
@@ -439,6 +446,8 @@ describe('PIXI.interaction.InteractionManager', function ()
                 parent,
                 behindChildCallback,
                 frontChildCallback,
+                behindParentCallback,
+                frontParentCallback,
                 parentCallback,
             };
         }
@@ -517,6 +526,8 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.behindChildCallback).to.not.have.been.called;
                     expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindParentCallback).to.not.have.been.called;
+                    expect(scene.frontParentCallback).to.not.have.been.called;
                 });
 
                 it('should callback front child of different interactive parents when clicking overlap', function ()
@@ -537,6 +548,8 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.behindChildCallback).to.not.have.been.called;
                     expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindParentCallback).to.not.have.been.called;
+                    expect(scene.frontParentCallback).to.have.been.calledOnce;
                 });
             });
 
@@ -727,6 +740,8 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.behindChildCallback).to.not.have.been.called;
                     expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindParentCallback).to.not.have.been.called;
+                    expect(scene.frontParentCallback).to.not.have.been.called;
                 });
 
                 it('should callback front child of different interactive parents when clicking overlap', function ()
@@ -748,6 +763,8 @@ describe('PIXI.interaction.InteractionManager', function ()
                     expect(scene.behindChildCallback).to.not.have.been.called;
                     expect(scene.frontChildCallback).to.have.been.calledOnce;
                     expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindParentCallback).to.not.have.been.called;
+                    expect(scene.frontParentCallback).to.have.been.calledOnce;
                 });
             });
 
