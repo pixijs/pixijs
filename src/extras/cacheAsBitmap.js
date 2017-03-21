@@ -227,7 +227,6 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
-
     if (!this.parent)
     {
         this.parent = renderer._tempDisplayObjectParent;
