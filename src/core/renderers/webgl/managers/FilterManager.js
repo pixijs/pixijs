@@ -154,7 +154,7 @@ export default class FilterManager extends WebGLManager
 
         if (filters.length === 1)
         {
-            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false);
+            filters[0].apply(this, currentState.renderTarget, lastState.renderTarget, false, currentState);
             this.freePotRenderTarget(currentState.renderTarget);
         }
         else
@@ -176,7 +176,7 @@ export default class FilterManager extends WebGLManager
 
             for (i = 0; i < filters.length - 1; ++i)
             {
-                filters[i].apply(this, flip, flop, true);
+                filters[i].apply(this, flip, flop, true, currentState);
 
                 const t = flip;
 
@@ -184,7 +184,7 @@ export default class FilterManager extends WebGLManager
                 flop = t;
             }
 
-            filters[i].apply(this, flip, lastState.renderTarget, false);
+            filters[i].apply(this, flip, lastState.renderTarget, false, currentState);
 
             this.freePotRenderTarget(flip);
             this.freePotRenderTarget(flop);
@@ -257,20 +257,22 @@ export default class FilterManager extends WebGLManager
 
         renderer.bindShader(shader);
 
+        // free unit 0 for us, doesn't matter what was there
+        // don't try to restore it, because syncUniforms can upload it to another slot
+        // and it'll be a problem
+        const tex = this.renderer.emptyTextures[0];
+
+        this.renderer.boundTextures[0] = tex;
         // this syncs the pixi filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
-
-        // temporary bypass cache..
-        const tex = this.renderer.boundTextures[0];
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
 
         this.quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
 
-        // restore cache.
         gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
     }
 
@@ -289,11 +291,14 @@ export default class FilterManager extends WebGLManager
         let textureCount = 1;
         let currentState;
 
-        if (uniforms.filterArea)
+        // filterArea and filterClamp that are handled by FilterManager directly
+        // they must not appear in uniformData
+
+        if (shader.uniforms.filterArea)
         {
             currentState = this.filterData.stack[this.filterData.index];
 
-            const filterArea = uniforms.filterArea;
+            const filterArea = shader.uniforms.filterArea;
 
             filterArea[0] = currentState.renderTarget.size.width;
             filterArea[1] = currentState.renderTarget.size.height;
@@ -305,11 +310,11 @@ export default class FilterManager extends WebGLManager
 
         // use this to clamp displaced texture coords so they belong to filterArea
         // see displacementFilter fragment shader for an example
-        if (uniforms.filterClamp)
+        if (shader.uniforms.filterClamp)
         {
-            currentState = this.filterData.stack[this.filterData.index];
+            currentState = currentState || this.filterData.stack[this.filterData.index];
 
-            const filterClamp = uniforms.filterClamp;
+            const filterClamp = shader.uniforms.filterClamp;
 
             filterClamp[0] = 0;
             filterClamp[1] = 0;
@@ -484,7 +489,7 @@ export default class FilterManager extends WebGLManager
      */
     destroy()
     {
-        this.shaderCache = [];
+        this.shaderCache = {};
         this.emptyPool();
     }
 

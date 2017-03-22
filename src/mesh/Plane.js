@@ -43,17 +43,17 @@ export default class Plane extends Mesh
     }
 
     /**
-     * Refreshes
+     * Refreshes plane coordinates
      *
      */
-    refresh()
+    _refresh()
     {
+        const texture = this._texture;
         const total = this.verticesX * this.verticesY;
         const verts = [];
         const colors = [];
         const uvs = [];
         const indices = [];
-        const texture = this.texture;
 
         const segmentsX = this.verticesX - 1;
         const segmentsY = this.verticesY - 1;
@@ -63,24 +63,12 @@ export default class Plane extends Mesh
 
         for (let i = 0; i < total; i++)
         {
-            if (texture._uvs)
-            {
-                const x = (i % this.verticesX);
-                const y = ((i / this.verticesX) | 0);
+            const x = (i % this.verticesX);
+            const y = ((i / this.verticesX) | 0);
 
-                verts.push((x * sizeX),
-                           (y * sizeY));
+            verts.push(x * sizeX, y * sizeY);
 
-                // this works for rectangular textures.
-                uvs.push(
-                    texture._uvs.x0 + ((texture._uvs.x1 - texture._uvs.x0) * (x / (this.verticesX - 1))),
-                    texture._uvs.y0 + ((texture._uvs.y3 - texture._uvs.y0) * (y / (this.verticesY - 1)))
-                );
-            }
-            else
-            {
-                uvs.push(0);
-            }
+            uvs.push(x / segmentsX, y / segmentsY);
         }
 
         //  cons
@@ -106,8 +94,9 @@ export default class Plane extends Mesh
         this.uvs = new Float32Array(uvs);
         this.colors = new Float32Array(colors);
         this.indices = new Uint16Array(indices);
-
         this.indexDirty = true;
+
+        this.multiplyUvs();
     }
 
     /**

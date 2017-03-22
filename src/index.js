@@ -16,6 +16,10 @@ import * as mesh from './mesh';
 import * as particles from './particles';
 import * as prepare from './prepare';
 
+// handle mixins now, after all code has been added, including deprecation
+import { utils } from './core';
+utils.mixins.performMixins();
+
 export {
     accessibility,
     extract,

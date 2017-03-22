@@ -3,7 +3,7 @@ import VideoBaseTexture from './VideoBaseTexture';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache } from '../utils';
+import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -156,6 +156,15 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * The id under which this Texture has been added to the texture cache. This is
+         * automatically set in certain cases, but may not always be accurate, particularly if
+         * the texture is in the cache under multiple ids.
+         *
+         * @member {string}
+         */
+        this.textureCacheId = null;
     }
 
     /**
@@ -238,11 +247,17 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
+        this.textureCacheId = null;
 
         this.valid = false;
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        for (const prop in TextureCache)
+        {
+            if (TextureCache[prop] === this)
+            {
+                delete TextureCache[prop];
+            }
+        }
     }
 
     /**
@@ -365,7 +380,8 @@ export default class Texture extends EventEmitter
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture}
+     *        source - Source to create texture from
      * @return {PIXI.Texture} The newly created texture
      */
     static from(source)
@@ -393,7 +409,7 @@ export default class Texture extends EventEmitter
         }
         else if (source instanceof HTMLImageElement)
         {
-            return new Texture(new BaseTexture(source));
+            return new Texture(BaseTexture.from(source));
         }
         else if (source instanceof HTMLCanvasElement)
         {
@@ -413,6 +429,44 @@ export default class Texture extends EventEmitter
     }
 
     /**
+     * Create a texture from a source and add to the cache.
+     *
+     * @static
+     * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
+     * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
+     * @param {String} [name] - Human readible name for the texture cache. If no name is
+     *        specified, only `imageUrl` will be used as the cache ID.
+     * @return {PIXI.Texture} Output texture
+     */
+    static fromLoader(source, imageUrl, name)
+    {
+        const baseTexture = new BaseTexture(source, undefined, getResolutionOfUrl(imageUrl));
+        const texture = new Texture(baseTexture);
+
+        baseTexture.imageUrl = imageUrl;
+
+        // No name, use imageUrl instead
+        if (!name)
+        {
+            name = imageUrl;
+        }
+
+        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+        BaseTextureCache[name] = baseTexture;
+        TextureCache[name] = texture;
+        texture.textureCacheId = name;
+
+        // also add references by url if they are different.
+        if (name !== imageUrl)
+        {
+            BaseTextureCache[imageUrl] = baseTexture;
+            TextureCache[imageUrl] = texture;
+        }
+
+        return texture;
+    }
+
+    /**
      * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
@@ -421,6 +475,10 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        if (!texture.textureCacheId)
+        {
+            texture.textureCacheId = id;
+        }
         TextureCache[id] = texture;
     }
 
@@ -459,7 +517,9 @@ export default class Texture extends EventEmitter
 
         if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
         {
-            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions ${this}`);
+            throw new Error('Texture Error: frame does not fit inside the base Texture dimensions: '
+                + `X: ${frame.x} + ${frame.width} > ${this.baseTexture.width} `
+                + `Y: ${frame.y} + ${frame.height} > ${this.baseTexture.height}`);
         }
 
         // this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
@@ -520,6 +580,29 @@ export default class Texture extends EventEmitter
     }
 }
 
+function createWhiteTexture()
+{
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 10;
+    canvas.height = 10;
+
+    const context = canvas.getContext('2d');
+
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, 10, 10);
+
+    return new Texture(new BaseTexture(canvas));
+}
+
+function removeAllHandlers(tex)
+{
+    tex.destroy = function _emptyDestroy() { /* empty */ };
+    tex.on = function _emptyOn() { /* empty */ };
+    tex.once = function _emptyOnce() { /* empty */ };
+    tex.emit = function _emptyEmit() { /* empty */ };
+}
+
 /**
  * An empty texture, used often to not have to create multiple empty textures.
  * Can not be destroyed.
@@ -528,7 +611,14 @@ export default class Texture extends EventEmitter
  * @constant
  */
 Texture.EMPTY = new Texture(new BaseTexture());
-Texture.EMPTY.destroy = function _emptyDestroy() { /* empty */ };
-Texture.EMPTY.on = function _emptyOn() { /* empty */ };
-Texture.EMPTY.once = function _emptyOnce() { /* empty */ };
-Texture.EMPTY.emit = function _emptyEmit() { /* empty */ };
+removeAllHandlers(Texture.EMPTY);
+
+/**
+ * A white texture of 10x10 size, used for graphics and other things
+ * Can not be destroyed.
+ *
+ * @static
+ * @constant
+ */
+Texture.WHITE = createWhiteTexture();
+removeAllHandlers(Texture.WHITE);

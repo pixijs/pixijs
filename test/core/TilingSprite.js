@@ -24,4 +24,25 @@ describe('PIXI.TilingSprite', function ()
             expect(bounds.height).to.equal(600);
         });
     });
+
+    it('checks if tilingSprite contains a point', function ()
+    {
+        const texture = new PIXI.Texture(new PIXI.BaseTexture());
+        const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
+
+        expect(tilingSprite.containsPoint(new PIXI.Point(1, 1))).to.equal(true);
+        expect(tilingSprite.containsPoint(new PIXI.Point(300, 400))).to.equal(false);
+    });
+
+    it('gets and sets height and width correctly', function ()
+    {
+        const texture = new PIXI.Texture(new PIXI.BaseTexture());
+        const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
+
+        tilingSprite.width = 400;
+        tilingSprite.height = 600;
+
+        expect(tilingSprite.width).to.equal(400);
+        expect(tilingSprite.height).to.equal(600);
+    });
 });

@@ -135,12 +135,33 @@ export default class MeshSpriteRenderer
         const textureWidth = base.width;
         const textureHeight = base.height;
 
-        const u0 = uvs[index0] * base.width;
-        const u1 = uvs[index1] * base.width;
-        const u2 = uvs[index2] * base.width;
-        const v0 = uvs[index0 + 1] * base.height;
-        const v1 = uvs[index1 + 1] * base.height;
-        const v2 = uvs[index2 + 1] * base.height;
+        let u0;
+        let u1;
+        let u2;
+        let v0;
+        let v1;
+        let v2;
+
+        if (mesh.uploadUvTransform)
+        {
+            const ut = mesh._uvTransform.mapCoord;
+
+            u0 = ((uvs[index0] * ut.a) + (uvs[index0 + 1] * ut.c) + ut.tx) * base.width;
+            u1 = ((uvs[index1] * ut.a) + (uvs[index1 + 1] * ut.c) + ut.tx) * base.width;
+            u2 = ((uvs[index2] * ut.a) + (uvs[index2 + 1] * ut.c) + ut.tx) * base.width;
+            v0 = ((uvs[index0] * ut.b) + (uvs[index0 + 1] * ut.d) + ut.ty) * base.height;
+            v1 = ((uvs[index1] * ut.b) + (uvs[index1 + 1] * ut.d) + ut.ty) * base.height;
+            v2 = ((uvs[index2] * ut.b) + (uvs[index2 + 1] * ut.d) + ut.ty) * base.height;
+        }
+        else
+        {
+            u0 = uvs[index0] * base.width;
+            u1 = uvs[index1] * base.width;
+            u2 = uvs[index2] * base.width;
+            v0 = uvs[index0 + 1] * base.height;
+            v1 = uvs[index1 + 1] * base.height;
+            v2 = uvs[index2 + 1] * base.height;
+        }
 
         let x0 = vertices[index0];
         let x1 = vertices[index1];

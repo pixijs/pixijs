@@ -65,8 +65,36 @@ export default class TextureTransform
     }
 
     /**
+     * Multiplies uvs array to transform
+     * @param {Float32Array} uvs mesh uvs
+     * @param {Float32Array} [out=uvs] output
+     * @returns {Float32Array} output
+     */
+    multiplyUvs(uvs, out)
+    {
+        if (out === undefined)
+        {
+            out = uvs;
+        }
+
+        const mat = this.mapCoord;
+
+        for (let i = 0; i < uvs.length; i += 2)
+        {
+            const x = uvs[i];
+            const y = uvs[i + 1];
+
+            out[i] = (x * mat.a) + (y * mat.c) + mat.tx;
+            out[i + 1] = (x * mat.b) + (y * mat.d) + mat.ty;
+        }
+
+        return out;
+    }
+
+    /**
      * updates matrices if texture was changed
      * @param {boolean} forceUpdate if true, matrices will be updated any case
+     * @returns {boolean} whether or not it was updated
      */
     update(forceUpdate)
     {
@@ -74,13 +102,13 @@ export default class TextureTransform
 
         if (!tex || !tex.valid)
         {
-            return;
+            return false;
         }
 
         if (!forceUpdate
             && this._lastTextureID === tex._updateID)
         {
-            return;
+            return false;
         }
 
         this._lastTextureID = tex._updateID;
@@ -110,5 +138,7 @@ export default class TextureTransform
         frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
         this.uClampOffset[0] = offset / texBase.realWidth;
         this.uClampOffset[1] = offset / texBase.realHeight;
+
+        return true;
     }
 }

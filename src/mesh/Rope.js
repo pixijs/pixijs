@@ -1,5 +1,4 @@
 import Mesh from './Mesh';
-import * as core from '../core';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -52,13 +51,11 @@ export default class Rope extends Mesh
         this.indices = new Uint16Array(points.length * 2);
 
         /**
-         * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
-         * call _onTextureUpdated which could call refresh too early.
-         *
+         * refreshes vertices on every updateTransform
          * @member {boolean}
-         * @private
+         * @default true
          */
-        this._ready = true;
+        this.autoUpdate = true;
 
         this.refresh();
     }
@@ -67,7 +64,7 @@ export default class Rope extends Mesh
      * Refreshes
      *
      */
-    refresh()
+    _refresh()
     {
         const points = this.points;
 
@@ -91,14 +88,10 @@ export default class Rope extends Mesh
         const indices = this.indices;
         const colors = this.colors;
 
-        const textureUvs = this._texture._uvs;
-        const offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
-
-        uvs[0] = 0 + offset.x;
-        uvs[1] = 0 + offset.y;
-        uvs[2] = 0 + offset.x;
-        uvs[3] = factor.y + offset.y;
+        uvs[0] = 0;
+        uvs[1] = 0;
+        uvs[2] = 0;
+        uvs[3] = 1;
 
         colors[0] = 1;
         colors[1] = 1;
@@ -114,11 +107,11 @@ export default class Rope extends Mesh
             let index = i * 4;
             const amount = i / (total - 1);
 
-            uvs[index] = (amount * factor.x) + offset.x;
-            uvs[index + 1] = 0 + offset.y;
+            uvs[index] = amount;
+            uvs[index + 1] = 0;
 
-            uvs[index + 2] = (amount * factor.x) + offset.x;
-            uvs[index + 3] = factor.y + offset.y;
+            uvs[index + 2] = amount;
+            uvs[index + 3] = 1;
 
             index = i * 2;
             colors[index] = 1;
@@ -132,30 +125,15 @@ export default class Rope extends Mesh
         // ensure that the changes are uploaded
         this.dirty++;
         this.indexDirty++;
+
+        this.multiplyUvs();
+        this.refreshVertices();
     }
 
     /**
-     * Clear texture UVs when new texture is set
-     *
-     * @private
+     * refreshes vertices of Rope mesh
      */
-    _onTextureUpdate()
-    {
-        super._onTextureUpdate();
-
-        // wait for the Rope ctor to finish before calling refresh
-        if (this._ready)
-        {
-            this.refresh();
-        }
-    }
-
-    /**
-     * Updates the object transform for rendering
-     *
-     * @private
-     */
-    updateTransform()
+    refreshVertices()
     {
         const points = this.points;
 
@@ -214,7 +192,19 @@ export default class Rope extends Mesh
 
             lastPoint = point;
         }
+    }
 
+    /**
+     * Updates the object transform for rendering
+     *
+     * @private
+     */
+    updateTransform()
+    {
+        if (this.autoUpdate)
+        {
+            this.refreshVertices();
+        }
         this.containerUpdateTransform();
     }
 

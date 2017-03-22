@@ -41,6 +41,9 @@ Object.defineProperties(DisplayObject.prototype, {
      * provide a performance benefit for complex static displayObjects.
      * To remove simply set this property to 'false'
      *
+     * IMPORTANT GOTCHA - make sure that all your textures are preloaded BEFORE setting this property to true
+     * as it will take a snapshot of what is currently there. If the textures have not loaded then they will not appear.
+     *
      * @member {boolean}
      * @memberof PIXI.DisplayObject#
      */
@@ -224,7 +227,16 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
-    this.updateTransform();
+    if (!this.parent)
+    {
+        this.parent = renderer._tempDisplayObjectParent;
+        this.updateTransform();
+        this.parent = null;
+    }
+    else
+    {
+        this.updateTransform();
+    }
 
     // map the hit test..
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
@@ -311,7 +323,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     cachedSprite._bounds = this._bounds;
     cachedSprite.alpha = cacheAlpha;
 
-    this.updateTransform();
+    if (!this.parent)
+    {
+        this.parent = renderer._tempDisplayObjectParent;
+        this.updateTransform();
+        this.parent = null;
+    }
+    else
+    {
+        this.updateTransform();
+    }
+
     this.updateTransform = this.displayObjectUpdateTransform;
 
     this._cacheData.sprite = cachedSprite;
@@ -355,9 +377,12 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  * Destroys the cached object.
  *
  * @private
+ * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+ *  have been set to that value.
+ *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy()
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options)
 {
     this.cacheAsBitmap = false;
-    this.destroy();
+    this.destroy(options);
 };

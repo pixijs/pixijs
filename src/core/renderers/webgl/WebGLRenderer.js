@@ -28,11 +28,12 @@ let CONTEXT_UID = 0;
  */
 export default class WebGLRenderer extends SystemRenderer
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
      *
-     * @param {number} [width=0] - the width of the canvas view
-     * @param {number} [height=0] - the height of the canvas view
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
@@ -49,10 +50,19 @@ export default class WebGLRenderer extends SystemRenderer
      *  enable this if you need to call toDataUrl on the webgl context.
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
+     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
+     * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      */
-    constructor(width, height, options = {})
+    constructor(options, arg2, arg3)
     {
-        super('WebGL', width, height, options);
+        super('WebGL', options, arg2, arg3);
+
+        this.legacy = this.options.legacy;
+
+        if (this.legacy)
+        {
+            glCore.VertexArrayObject.FORCE_NATIVE = true;
+        }
 
         /**
          * The type of this renderer as a standardised const
@@ -76,10 +86,10 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this._contextOptions = {
             alpha: this.transparent,
-            antialias: options.antialias,
+            antialias: this.options.antialias,
             premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
             stencil: true,
-            preserveDrawingBuffer: options.preserveDrawingBuffer,
+            preserveDrawingBuffer: this.options.preserveDrawingBuffer,
         };
 
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
@@ -120,13 +130,13 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {WebGLRenderingContext}
          */
         // initialize the context so it is ready for the managers.
-        if (options.context)
+        if (this.options.context)
         {
             // checks to see if a context is valid..
-            validateContext(options.context);
+            validateContext(this.options.context);
         }
 
-        this.gl = options.context || glCore.createContext(this.view, this._contextOptions);
+        this.gl = this.options.context || glCore.createContext(this.view, this._contextOptions);
 
         this.CONTEXT_UID = CONTEXT_UID++;
 
@@ -229,7 +239,7 @@ export default class WebGLRenderer extends SystemRenderer
         this.emit('context', gl);
 
         // setup the width/height properties and gl viewport
-        this.resize(this.width, this.height);
+        this.resize(this.screen.width, this.screen.height);
     }
 
     /**
@@ -323,16 +333,16 @@ export default class WebGLRenderer extends SystemRenderer
     /**
      * Resizes the webGL view to the specified width and height.
      *
-     * @param {number} width - the new width of the webGL view
-     * @param {number} height - the new height of the webGL view
+     * @param {number} screenWidth - the new width of the screen
+     * @param {number} screenHeight - the new height of the screen
      */
-    resize(width, height)
+    resize(screenWidth, screenHeight)
     {
       //  if(width * this.resolution === this.width && height * this.resolution === this.height)return;
 
-        SystemRenderer.prototype.resize.call(this, width, height);
+        SystemRenderer.prototype.resize.call(this, screenWidth, screenHeight);
 
-        this.rootRenderTarget.resize(width, height);
+        this.rootRenderTarget.resize(screenWidth, screenHeight);
 
         if (this._activeRenderTarget === this.rootRenderTarget)
         {
@@ -373,6 +383,26 @@ export default class WebGLRenderer extends SystemRenderer
     setTransform(matrix)
     {
         this._activeRenderTarget.transform = matrix;
+    }
+
+    /**
+     * Erases the render texture and fills the drawing area with a colour
+     *
+     * @param {PIXI.RenderTexture} renderTexture - The render texture to clear
+     * @param {number} [clearColor] - The colour
+     * @return {PIXI.WebGLRenderer} Returns itself.
+     */
+    clearRenderTexture(renderTexture, clearColor)
+    {
+        const baseTexture = renderTexture.baseTexture;
+        const renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
+
+        if (renderTarget)
+        {
+            renderTarget.clear(clearColor);
+        }
+
+        return this;
     }
 
     /**
@@ -440,9 +470,10 @@ export default class WebGLRenderer extends SystemRenderer
      * Changes the current shader to the one given in parameter
      *
      * @param {PIXI.Shader} shader - the new shader
+     * @param {boolean} [autoProject=true] - Whether automatically set the projection matrix
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
-    bindShader(shader)
+    bindShader(shader, autoProject)
     {
         // TODO cache
         if (this._activeShader !== shader)
@@ -450,8 +481,14 @@ export default class WebGLRenderer extends SystemRenderer
             this._activeShader = shader;
             shader.bind();
 
-            // automatically set the projection matrix
-            shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+            // `autoProject` normally would be a default parameter set to true
+            // but because of how Babel transpiles default parameters
+            // it hinders the performance of this method.
+            if (autoProject !== false)
+            {
+                // automatically set the projection matrix
+                shader.uniforms.projectionMatrix = this._activeRenderTarget.projectionMatrix.toArray(true);
+            }
         }
 
         return this;
