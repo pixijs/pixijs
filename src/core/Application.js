@@ -97,7 +97,7 @@ export default class Application
         this._ticker = ticker;
         if (ticker)
         {
-            ticker.add(this.render, this);
+            ticker.add(this.render, this, Ticker.PRIORITY_LOW);
         }
     }
     get ticker() // eslint-disable-line require-jsdoc

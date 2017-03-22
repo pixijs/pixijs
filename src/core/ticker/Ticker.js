@@ -1,5 +1,6 @@
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
+import TickerListener from './TickerListener';
 
 // Internal event used by composed emitter
 const TICK = 'tick';
@@ -26,6 +27,12 @@ export default class Ticker
          * @private
          */
         this._emitter = new EventEmitter();
+
+        /**
+         * The collection of internal events for sorting by priorty
+         * @private
+         */
+        this._listeners = [];
 
         /**
          * Internal current frame request ID
@@ -131,7 +138,7 @@ export default class Ticker
                 // Invoke listeners now
                 this.update(time);
                 // Listener side effects may have modified ticker state.
-                if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
+                if (this.started && this._requestId === null && this._listeners.length)
                 {
                     this._requestId = requestAnimationFrame(this._tick);
                 }
@@ -148,7 +155,7 @@ export default class Ticker
      */
     _requestIfNeeded()
     {
-        if (this._requestId === null && this._emitter.listeners(TICK, true))
+        if (this._requestId === null && this._listeners.length)
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
@@ -199,15 +206,12 @@ export default class Ticker
      *
      * @param {Function} fn - The listener function to be added for updates
      * @param {Function} [context] - The listener context
+     * @param {number} [priority=10] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    add(fn, context)
+    add(fn, context, priority = Ticker.PRIORITY_DEFAULT)
     {
-        this._emitter.on(TICK, fn, context);
-
-        this._startIfPossible();
-
-        return this;
+        return this._add(fn, context, priority, false);
     }
 
     /**
@@ -217,15 +221,83 @@ export default class Ticker
      *
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context] - The listener context
+     * @param {number} [priority=10] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    addOnce(fn, context)
+    addOnce(fn, context, priority = Ticker.PRIORITY_DEFAULT)
     {
-        this._emitter.once(TICK, fn, context);
+        return this._add(fn, context, priority, true);
+    }
+
+    /**
+     * Internally adds the event handler so that it can be sorted by priority.
+     * Priority allows certain handler (user, AnimatedSprite, Interaction) to be run
+     * before the rendering.
+     *
+     * @private
+     * @param {Function} fn - The listener function to be added for one update
+     * @param {Function} context - The listener context
+     * @param {number} priority - The priority for emitting
+     * @param {boolean} once - If it should only be added once
+     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     */
+    _add(fn, context, priority, once)
+    {
+        const listeners = this._listeners;
+        const emitter = this._emitter;
+
+        listeners.push(new TickerListener(fn, context, priority, once));
+
+        // Sort by prority from highest to lowest
+        listeners.sort((listener1, listener2) => listener2.priority - listener1.priority);
+
+        // Re-add the listeners in the priority order
+        for (let i = 0; i < listeners.length; i++)
+        {
+            const listener = listeners[i];
+            const { fn, context, once } = listener;
+
+            // Remove first
+            emitter.off(TICK, fn, context);
+
+            if (once)
+            {
+                emitter.once(TICK, fn, context);
+            }
+            else
+            {
+                emitter.on(TICK, fn, context);
+            }
+        }
 
         this._startIfPossible();
 
         return this;
+    }
+
+    /**
+     * Remove all once listeners after the `tick` event.
+     * @private
+     */
+    _removeOnce()
+    {
+        const listeners = this._listeners;
+
+        for (let i = listeners.length - 1; i >= 0; i--)
+        {
+            const listener = listeners[i];
+
+            if (listener.once)
+            {
+                listener.destroy();
+                listeners.splice(i, 1);
+            }
+        }
+
+        if (!listeners.length)
+        {
+            this._cancelIfNeeded();
+        }
     }
 
     /**
@@ -239,9 +311,21 @@ export default class Ticker
      */
     remove(fn, context)
     {
-        this._emitter.off(TICK, fn, context);
+        const listeners = this._listeners;
 
-        if (!this._emitter.listeners(TICK, true))
+        for (let i = listeners.length - 1; i >= 0; i--)
+        {
+            const listener = this._listeners[i];
+
+            if (listener.compare(fn, context))
+            {
+                listener.destroy();
+                listeners.splice(i, 1);
+                this._emitter.off(TICK, fn, context);
+            }
+        }
+
+        if (!listeners.length)
         {
             this._cancelIfNeeded();
         }
@@ -322,6 +406,9 @@ export default class Ticker
 
             // Invoke listeners added to internal emitter
             this._emitter.emit(TICK, this.deltaTime);
+
+            // Cleanup all internal once listeners
+            this._removeOnce();
         }
         else
         {
@@ -370,3 +457,42 @@ export default class Ticker
         this._maxElapsedMS = 1 / minFPMS;
     }
 }
+
+/**
+ * Lowest priority, useful for rendering.
+ * @static
+ * @constant
+ * @memberof PIXI.ticker.Ticker
+ * @type {number}
+ * @private
+ */
+Ticker.PRIORITY_LOW = 1;
+
+/**
+ * Medium priority, useful for post-interaction.
+ * @static
+ * @constant
+ * @memberof PIXI.ticker.Ticker
+ * @type {number}
+ * @private
+ */
+Ticker.PRIORITY_MEDIUM = 2;
+
+/**
+ * Highest priority, useful for interaction.
+ * @static
+ * @constant
+ * @memberof PIXI.ticker.Ticker
+ * @type {number}
+ * @private
+ */
+Ticker.PRIORITY_HIGH = 3;
+
+/**
+ * Default priority for adding ticker handlers.
+ * @static
+ * @constant
+ * @memberof PIXI.ticker.Ticker
+ * @type {number}
+ */
+Ticker.PRIORITY_DEFAULT = 10;
