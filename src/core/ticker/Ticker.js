@@ -257,7 +257,14 @@ export default class Ticker
             const listener = listeners[i];
             const { fn, context, once } = listener;
 
-            fn.call(context, deltaTime);
+            if (context)
+            {
+                fn.call(context, deltaTime);
+            }
+            else
+            {
+                fn(deltaTime);
+            }
 
             // clean up once listeners
             if (once)
