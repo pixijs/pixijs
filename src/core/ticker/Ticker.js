@@ -1,13 +1,9 @@
 import settings from '../settings';
-import EventEmitter from 'eventemitter3';
 import TickerListener from './TickerListener';
-
-// Internal event used by composed emitter
-const TICK = 'tick';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around an EventEmitter object to add listeners
+ * This class is composed around listeners
  * meant for execution on the next requested animation frame.
  * Animation frames are requested only when necessary,
  * e.g. When the ticker is started and the emitter has listeners.
@@ -22,12 +18,6 @@ export default class Ticker
      */
     constructor()
     {
-        /**
-         * Internal emitter used to fire 'tick' event
-         * @private
-         */
-        this._emitter = new EventEmitter();
-
         /**
          * The collection of internal events for sorting by priorty
          * @private
@@ -200,9 +190,8 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Register a handler for tick events. Calls continuously unless
+     * it is removed or the ticker is stopped.
      *
      * @param {Function} fn - The listener function to be added for updates
      * @param {Function} [context] - The listener context
@@ -215,9 +204,7 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Add a handler for the tick event which is only execute once.
      *
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context] - The listener context
@@ -244,31 +231,11 @@ export default class Ticker
     _add(fn, context, priority, once)
     {
         const listeners = this._listeners;
-        const emitter = this._emitter;
 
         listeners.push(new TickerListener(fn, context, priority, once));
 
         // Sort by prority from highest to lowest
         listeners.sort((listener1, listener2) => listener2.priority - listener1.priority);
-
-        // Re-add the listeners in the priority order
-        for (let i = 0; i < listeners.length; i++)
-        {
-            const listener = listeners[i];
-            const { fn, context, once } = listener;
-
-            // Remove first
-            emitter.off(TICK, fn, context);
-
-            if (once)
-            {
-                emitter.once(TICK, fn, context);
-            }
-            else
-            {
-                emitter.on(TICK, fn, context);
-            }
-        }
 
         this._startIfPossible();
 
@@ -276,21 +243,29 @@ export default class Ticker
     }
 
     /**
-     * Remove all once listeners after the `tick` event.
+     * Emit the tick even to all the handlers.
+     *
      * @private
+     * @param {number} deltaTime - change in time milliseconds
      */
-    _removeOnce()
+    _emit(deltaTime)
     {
         const listeners = this._listeners;
 
-        for (let i = listeners.length - 1; i >= 0; i--)
+        for (let i = 0, len = listeners.length; i < len; i++)
         {
             const listener = listeners[i];
+            const { fn, context, once } = listener;
 
-            if (listener.once)
+            fn.call(context, deltaTime);
+
+            // clean up once listeners
+            if (once)
             {
                 listener.destroy();
                 listeners.splice(i, 1);
+                len--; // decrement to not skip over next
+                i--;
             }
         }
 
@@ -301,11 +276,10 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
-     * It checks if the emitter has listeners for 'tick' event.
-     * If it does, then it cancels the animation frame.
+     * Removes any handlers matching the function and context parameters.
+     * If no handlers are left after removing, then it cancels the animation frame.
      *
-     * @param {Function} [fn] - The listener function to be removed
+     * @param {Function} fn - The listener function to be removed
      * @param {Function} [context] - The listener context to be removed
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
@@ -321,7 +295,6 @@ export default class Ticker
             {
                 listener.destroy();
                 listeners.splice(i, 1);
-                this._emitter.off(TICK, fn, context);
             }
         }
 
@@ -405,10 +378,7 @@ export default class Ticker
             this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
 
             // Invoke listeners added to internal emitter
-            this._emitter.emit(TICK, this.deltaTime);
-
-            // Cleanup all internal once listeners
-            this._removeOnce();
+            this._emit(this.deltaTime);
         }
         else
         {
