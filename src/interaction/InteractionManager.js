@@ -245,7 +245,7 @@ export default class InteractionManager extends EventEmitter
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is pressed on the display
+         * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
          * object.
          *
          * @event mousedown
@@ -263,7 +263,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is released over the display
+         * Fired when a pointer device button (usually a mouse left-button) is released over the display
          * object.
          *
          * @event mouseup
@@ -281,7 +281,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is pressed and released on
+         * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
          * the display object.
          *
          * @event click
@@ -299,7 +299,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is released outside the
+         * Fired when a pointer device button (usually a mouse left-button) is released outside the
          * display object that initially registered a
          * [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
          *
