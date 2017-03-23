@@ -1,14 +1,14 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import ObjectRenderer from '../utils/ObjectRenderer';
 import { Rectangle, Matrix } from '../../../math';
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
 
-export default class BatchManager extends WebGLManager
+export default class BatchSystem extends WebGLSystem
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.

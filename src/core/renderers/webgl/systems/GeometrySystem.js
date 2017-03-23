@@ -1,4 +1,4 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { Rectangle, Matrix } from '../../../math';
 import glCore from 'pixi-gl-core';
 
@@ -7,14 +7,14 @@ const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
 
-export default class GeometryManager extends WebGLManager
+export default class GeometrySystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

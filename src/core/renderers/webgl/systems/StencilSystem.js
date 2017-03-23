@@ -1,14 +1,14 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
-export default class StencilManager extends WebGLManager
+export default class StencilSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -17,7 +17,7 @@ export default class StencilManager extends WebGLManager
     }
 
     /**
-     * Changes the mask stack that is used by this manager.
+     * Changes the mask stack that is used by this System.
      *
      * @param {PIXI.Graphics[]} stencilMaskStack - The mask stack
      */
@@ -106,7 +106,7 @@ export default class StencilManager extends WebGLManager
      */
     destroy()
     {
-        WebGLManager.prototype.destroy.call(this);
+        super.destroy(this);
 
         this.stencilMaskStack.stencilStack = null;
     }

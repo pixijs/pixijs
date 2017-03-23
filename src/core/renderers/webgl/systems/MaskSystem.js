@@ -1,15 +1,15 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import AlphaMaskFilter from '../filters/spriteMask/SpriteMaskFilter';
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
-export default class MaskManager extends WebGLManager
+export default class MaskSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -113,7 +113,7 @@ export default class MaskManager extends WebGLManager
         // TODO - may cause issues!
         target.filterArea = maskData.getBounds(true);
 
-        this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
+        this.renderer.filterSystem.pushFilter(target, alphaMaskFilter);
 
         this.alphaMaskIndex++;
     }
@@ -124,7 +124,7 @@ export default class MaskManager extends WebGLManager
      */
     popSpriteMask()
     {
-        this.renderer.filterManager.popFilter();
+        this.renderer.filterSystem.popFilter();
         this.alphaMaskIndex--;
     }
 

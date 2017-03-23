@@ -1,5 +1,5 @@
 import mapWebGLBlendModesToPixi from '../utils/mapWebGLBlendModesToPixi';
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import WebGLState from '../State';
 
 const BLEND = 0;
@@ -14,7 +14,7 @@ const WINDING = 4;
  * @memberof PIXI
  * @class
  */
-export default class StateManager extends WebGLManager
+export default class StateSystem extends WebGLSystem
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
@@ -131,7 +131,7 @@ export default class StateManager extends WebGLManager
      */
     setBlend(value)
     {
-        this.updateCheck(StateManager.checkBlendMode, value);
+        this.updateCheck(StateSystem.checkBlendMode, value);
 
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
@@ -277,12 +277,12 @@ export default class StateManager extends WebGLManager
      *
      * @static
      * @private
-     * @param {PIXI.StateManager} manager  the manager to perform the state check on
+     * @param {PIXI.StateSystem} System  the System to perform the state check on
      * @param {PIXI.State} state  the state that the blendMode will pulled from
      */
-    static checkBlendMode(manager, state)
+    static checkBlendMode(system, state)
     {
-        manager.setBlendMode(state.blendMode);
+        system.setBlendMode(state.blendMode);
     }
 
     // TODO - add polygon offset?

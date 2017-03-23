@@ -1,18 +1,18 @@
 import SystemRenderer from '../SystemRenderer';
-import MaskManager from './managers/MaskManager';
-import StencilManager from './managers/StencilManager';
-import FilterManager from './managers/FilterManager';
-import FramebufferManager from './managers/FramebufferManager';
-import RenderTextureManager from './managers/RenderTextureManager';
-import NewTextureManager from './managers/NewTextureManager';
-import TextureManager from './TextureManager';
-import ProjectionManager from './managers/ProjectionManager';
-import StateManager from './managers/StateManager';
-import GeometryManager from './managers/GeometryManager';
-import ShaderManager from './managers/ShaderManager';
-import ContextManager from './managers/ContextManager';
-import BatchManager from './managers/BatchManager';
-import TextureGCManager from './managers/TextureGCManager';
+import MaskSystem from './systems/MaskSystem';
+import StencilSystem from './systems/StencilSystem';
+import FilterSystem from './systems/FilterSystem';
+import FramebufferSystem from './systems/FramebufferSystem';
+import RenderTextureSystem from './systems/RenderTextureSystem';
+import NewTextureSystem from './systems/NewTextureSystem';
+import TextureSystem from './TextureManager';
+import ProjectionSystem from './systems/ProjectionSystem';
+import StateSystem from './systems/StateSystem';
+import GeometrySystem from './systems/GeometrySystem';
+import ShaderSystem from './systems/ShaderSystem';
+import ContextSystem from './systems/ContextSystem';
+import BatchSystem from './systems/BatchSystem';
+import TextureGCSystem from './systems/TextureGCSystem';
 import { pluginTarget } from '../../utils';
 import glCore from 'pixi-gl-core';
 import { RENDERER_TYPE } from '../../const';
@@ -68,7 +68,7 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this.type = RENDERER_TYPE.WEBGL;
 
-         // this will be set by the contextManager (this.context)
+         // this will be set by the contextSystem (this.context)
         this.gl = null;
         this.CONTEXT_UID = 0;
         this.legacy = !!options.legacy;
@@ -102,19 +102,19 @@ export default class WebGLRenderer extends SystemRenderer
             projectionMatrix:new Matrix()
         }, true)
 
-        this.addManager(MaskManager)
-        .addManager(ContextManager)
-        .addManager(StateManager)
-        .addManager(ShaderManager)
-        .addManager(NewTextureManager, 'texture')
-        .addManager(GeometryManager)
-        .addManager(FramebufferManager)
-        .addManager(StencilManager)
-        .addManager(ProjectionManager)
-        .addManager(TextureGCManager)
-        .addManager(FilterManager)
-        .addManager(RenderTextureManager)
-        .addManager(BatchManager)
+        this.addSystem(MaskSystem)
+        .addSystem(ContextSystem)
+        .addSystem(StateSystem)
+        .addSystem(ShaderSystem)
+        .addSystem(NewTextureSystem, 'texture')
+        .addSystem(GeometrySystem)
+        .addSystem(FramebufferSystem)
+        .addSystem(StencilSystem)
+        .addSystem(ProjectionSystem)
+        .addSystem(TextureGCSystem)
+        .addSystem(FilterSystem)
+        .addSystem(RenderTextureSystem)
+        .addSystem(BatchSystem)
 
         this.initPlugins();
 
@@ -140,7 +140,7 @@ export default class WebGLRenderer extends SystemRenderer
         this._initContext();
     }
 
-    addManager(_class, name)
+    addSystem(_class, name)
     {
         if(!name)
         {
@@ -148,13 +148,13 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         //TODO - read name from class.name..
-        if(name.includes('Manager'))
+        if(name.includes('System'))
         {
-            name = name.replace('Manager', '');
+            name = name.replace('System', '');
             name = name.charAt(0).toLowerCase() + name.slice(1);
         }
 
-        const manager = new _class(this);
+        const system = new _class(this);
 
         if(this[name])
         {
@@ -162,11 +162,11 @@ export default class WebGLRenderer extends SystemRenderer
             return;
         }
 
-        this[name] = manager;
+        this[name] = system;
 
         for(var i in this.runners)
         {
-            this.runners[i].add(manager);
+            this.runners[i].add(system);
         }
 
         return this;

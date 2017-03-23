@@ -1,8 +1,8 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
 import { Rectangle } from '../../../math';
-import Shader from '../../../Shader';
+//import Shader from '../../../Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
@@ -29,12 +29,12 @@ class FilterState
 /**
  * @class
  * @memberof PIXI
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  */
-export default class FilterManager extends WebGLManager
+export default class FilterSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -57,7 +57,7 @@ export default class FilterManager extends WebGLManager
     }
 
     /**
-     * Adds a new filter to the manager.
+     * Adds a new filter to the System.
      *
      * @param {PIXI.DisplayObject} target - The target of the filter to render.
      * @param {PIXI.Filter[]} filters - The filters to apply.
@@ -255,9 +255,9 @@ export default class FilterManager extends WebGLManager
         }
 
         // in case the render target is being masked using a scissor rect
-        if (output === renderer.maskManager.scissorRenderTarget)
+        if (output === renderer.maskSystem.scissorRenderTarget)
         {
-            renderer.maskManager.pushScissorMask(null, renderer.maskManager.scissorData);
+            renderer.maskSystem.pushScissorMask(null, renderer.maskSystem.scissorData);
         }
 
         renderer.bindShader(shader);
@@ -296,7 +296,7 @@ export default class FilterManager extends WebGLManager
         let textureCount = 1;
         let currentState;
 
-        // filterArea and filterClamp that are handled by FilterManager directly
+        // filterArea and filterClamp that are handled by FilterSystem directly
         // they must not appear in uniformData
 
         if (shader.uniforms.filterArea)
@@ -489,7 +489,7 @@ export default class FilterManager extends WebGLManager
     }
 
     /**
-     * Destroys this Filter Manager.
+     * Destroys this Filter System.
      *
      */
     destroy()

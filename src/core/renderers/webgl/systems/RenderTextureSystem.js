@@ -1,18 +1,18 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { Rectangle, Matrix } from '../../../math';
 
 const tempRect = new Rectangle();
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
 
-export default class RenderTextureManager extends WebGLManager
+export default class RenderTextureSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

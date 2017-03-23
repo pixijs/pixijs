@@ -1,16 +1,16 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { Rectangle, Matrix } from '../../../math';
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
 
-export default class ProjectionManager extends WebGLManager
+export default class ProjectionSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

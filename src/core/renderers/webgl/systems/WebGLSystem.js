@@ -2,7 +2,7 @@
  * @class
  * @memberof PIXI
  */
-export default class WebGLManager
+export default class WebGLSystem
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.

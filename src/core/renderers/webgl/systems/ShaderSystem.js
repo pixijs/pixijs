@@ -1,4 +1,4 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { GLShader } from 'pixi-gl-core';
 import { PRECISION } from '../../../const';
 import generateUniformsSync from '../../../shader/generateUniformsSync2';
@@ -11,7 +11,7 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export default class ShaderManager extends WebGLManager
+export default class ShaderSystem extends WebGLSystem
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
@@ -155,11 +155,11 @@ export default class ShaderManager extends WebGLManager
     }
 
     /**
-     * Destroys this manager and removes all its textures
+     * Destroys this System and removes all its textures
      */
     destroy()
     {
-        // TODO implement destroy method for ShaderManager
+        // TODO implement destroy method for ShaderSystem
         this.destroyed = true;
     }
 }

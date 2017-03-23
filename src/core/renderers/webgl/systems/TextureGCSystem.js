@@ -1,4 +1,4 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { GC_MODES } from '../../../const';
 import settings from '../../../settings';
 
@@ -9,10 +9,10 @@ import settings from '../../../settings';
  * @class
  * @memberof PIXI
  */
-export default class TextureGCManager  extends WebGLManager
+export default class TextureGCSystem  extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -55,7 +55,7 @@ export default class TextureGCManager  extends WebGLManager
      */
     run()
     {
-        const tm = this.renderer.textureManager;
+        const tm = this.renderer.texture;
         const managedTextures =  tm._managedTextures;
         let wasRemoved = false;
 
@@ -95,7 +95,7 @@ export default class TextureGCManager  extends WebGLManager
      */
     unload(displayObject)
     {
-        const tm = this.renderer.textureManager;
+        const tm = this.renderer.textureSystem;
 
         // only destroy non generated textures
         if (displayObject._texture && displayObject._texture._glRenderTargets)

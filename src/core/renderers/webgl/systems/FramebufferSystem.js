@@ -1,14 +1,14 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
-export default class FramebufferManager extends WebGLManager
+export default class FramebufferSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {

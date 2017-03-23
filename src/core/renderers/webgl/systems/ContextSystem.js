@@ -1,4 +1,4 @@
-import WebGLManager from './WebGLManager';
+import WebGLSystem from './WebGLSystem';
 import { Rectangle, Matrix } from '../../../math';
 import glCore from 'pixi-gl-core';
 import validateContext from '../utils/validateContext';
@@ -7,14 +7,14 @@ let CONTEXT_UID = 0;
 
 /**
  * @class
- * @extends PIXI.WebGLManager
+ * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
 
-export default class ContextManager extends WebGLManager
+export default class ContextSystem extends WebGLSystem
 {
     /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+     * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
      */
     constructor(renderer)
     {
@@ -92,7 +92,7 @@ export default class ContextManager extends WebGLManager
         this.renderer.runners.contextChange.run(gl);
 
         // TODO - tidy up textures?
-        //this.textureManager.removeAll();
+        //this.textureSystem.removeAll();
     }
 
     destroy()
