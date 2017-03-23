@@ -31,10 +31,10 @@ describe('PIXI.ticker.Ticker', function ()
         const listener3 = sinon.spy();
         const listener4 = sinon.spy();
 
-        shared.add(listener1, null, Ticker.PRIORITY_LOW)
-            .add(listener4, null, Ticker.PRIORITY_DEFAULT)
-            .add(listener3, null, Ticker.PRIORITY_HIGH)
-            .add(listener2, null, Ticker.PRIORITY_MEDIUM);
+        shared.add(listener1, null, PIXI.UPDATE_PRIORITY.LOW)
+            .add(listener4, null, PIXI.UPDATE_PRIORITY.INTERACTION)
+            .add(listener3, null, PIXI.UPDATE_PRIORITY.HIGH)
+            .add(listener2, null, PIXI.UPDATE_PRIORITY.NORMAL);
 
         shared.update();
 

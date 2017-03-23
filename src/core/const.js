@@ -309,3 +309,27 @@ export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,
     LINEAR_HORIZONTAL: 1,
 };
+
+
+/**
+ * Listener priorities that are both the actual priorities of
+ * internal listeners added to {@link PIXI.ticker.Ticker}
+ * as well as a guideline to priorities of new listeners.
+ *
+ * @static
+ * @constant
+ * @memberof PIXI
+ * @type {object}
+ * @property {number} INTERACTION=50
+ * @property {number} HIGH=25
+ * @property {number} NORMAL=0
+ * @property {number} LOW=-25
+ * @property {number} UTILITY=-50
+ */
+export const UPDATE_PRIORITY = {
+    INTERACTION: 50,
+    HIGH: 25,
+    NORMAL: 0,
+    LOW: -25,
+    UTILITY: -50,
+};

@@ -1,4 +1,5 @@
 import settings from '../settings';
+import { UPDATE_PRIORITY } from '../const';
 import TickerListener from './TickerListener';
 
 /**
@@ -195,10 +196,10 @@ export default class Ticker
      *
      * @param {Function} fn - The listener function to be added for updates
      * @param {Function} [context] - The listener context
-     * @param {number} [priority=10] - The priority for emitting
+     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    add(fn, context, priority = Ticker.PRIORITY_DEFAULT)
+    add(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
         return this._add(fn, context, priority, false);
     }
@@ -211,7 +212,7 @@ export default class Ticker
      * @param {number} [priority=10] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    addOnce(fn, context, priority = Ticker.PRIORITY_DEFAULT)
+    addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
         return this._add(fn, context, priority, true);
     }
@@ -434,42 +435,3 @@ export default class Ticker
         this._maxElapsedMS = 1 / minFPMS;
     }
 }
-
-/**
- * Lowest priority, useful for rendering.
- * @static
- * @constant
- * @memberof PIXI.ticker.Ticker
- * @type {number}
- * @private
- */
-Ticker.PRIORITY_LOW = 1;
-
-/**
- * Medium priority, useful for post-interaction.
- * @static
- * @constant
- * @memberof PIXI.ticker.Ticker
- * @type {number}
- * @private
- */
-Ticker.PRIORITY_MEDIUM = 2;
-
-/**
- * Highest priority, useful for interaction.
- * @static
- * @constant
- * @memberof PIXI.ticker.Ticker
- * @type {number}
- * @private
- */
-Ticker.PRIORITY_HIGH = 3;
-
-/**
- * Default priority for adding ticker handlers.
- * @static
- * @constant
- * @memberof PIXI.ticker.Ticker
- * @type {number}
- */
-Ticker.PRIORITY_DEFAULT = 10;
