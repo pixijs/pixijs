@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.4.2
- * Compiled Wed, 15 Mar 2017 21:04:02 UTC
+ * pixi.js - v4.4.3
+ * Compiled Thu, 23 Mar 2017 12:28:01 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -1172,7 +1172,7 @@ if ('undefined' !== typeof module) {
 
 },{}],4:[function(require,module,exports){
 /**
- * isMobile.js v0.4.0
+ * isMobile.js v0.4.1
  *
  * A simple library to detect Apple phones and tablets,
  * Android phones and tablets, other mobile devices (like blackberry, mini-opera and windows phone),
@@ -1191,7 +1191,7 @@ if ('undefined' !== typeof module) {
         android_tablet      = /Android/i,
         amazon_phone        = /(?=.*\bAndroid\b)(?=.*\bSD4930UR\b)/i,
         amazon_tablet       = /(?=.*\bAndroid\b)(?=.*\b(?:KFOT|KFTT|KFJWI|KFJWA|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|KFARWI|KFASWI|KFSAWI|KFSAWA)\b)/i,
-        windows_phone       = /IEMobile/i,
+        windows_phone       = /Windows Phone/i,
         windows_tablet      = /(?=.*\bWindows\b)(?=.*\bARM\b)/i, // Match 'Windows' AND 'ARM'
         other_blackberry    = /BlackBerry/i,
         other_blackberry_10 = /BB10/i,
@@ -8176,7 +8176,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.4.2';
+var VERSION = exports.VERSION = '4.4.3';
 
 /**
  * Two Pi.
@@ -32145,6 +32145,12 @@ core.utils.mixins.delayMixin(core.DisplayObject.prototype, _interactiveTarget2.d
 
 var MOUSE_POINTER_ID = 'MOUSE';
 
+// private constants for use in processInteractive - tracks whether we hit anything at all, or an
+// actual interactive child, so that we can keep that state going back up the display tree
+var HIT_NONE = 0;
+var HIT_ANY = 1;
+var HIT_INTERACTIVE = 2;
+
 /**
  * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -32866,7 +32872,7 @@ var InteractionManager = function (_EventEmitter) {
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @param {boolean} [interactive] - Whether the displayObject is interactive
-     * @return {boolean} returns true if the displayObject hit the point
+     * @return {number} returns 1 or 2 if the displayObject hit the point, 0 if not
      */
 
 
@@ -32892,7 +32898,7 @@ var InteractionManager = function (_EventEmitter) {
 
         interactive = displayObject.interactive || interactive;
 
-        var hit = false;
+        var hit = HIT_NONE;
         var interactiveParent = interactive;
 
         // if the displayobject has a hitArea, then it does not need to hitTest children.
@@ -32906,8 +32912,6 @@ var InteractionManager = function (_EventEmitter) {
                 }
             }
 
-        var keepHitTestingAfterChildren = hitTest;
-
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow pixi to completely ignore and bypass checking the displayObjects children.
@@ -32918,14 +32922,14 @@ var InteractionManager = function (_EventEmitter) {
                 var child = children[i];
 
                 // time to get recursive.. if this function will return if something is hit..
-                if (this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent)) {
+                var childHit = this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent);
+
+                if (childHit) {
                     // its a good idea to check if a child has lost its parent.
                     // this means it has been removed whilst looping so its best
                     if (!child.parent) {
                         continue;
                     }
-
-                    hit = true;
 
                     // we no longer need to hit test any more objects in this container as we we
                     // now know the parent has been hit
@@ -32936,30 +32940,32 @@ var InteractionManager = function (_EventEmitter) {
                     // This means we no longer need to hit test anything else. We still need to run
                     // through all objects, but we don't need to perform any hit tests.
 
-                    keepHitTestingAfterChildren = false;
-
-                    if (child.interactive) {
+                    if (childHit === HIT_INTERACTIVE) {
                         hitTest = false;
+                        hit = HIT_INTERACTIVE;
+                    } else if (hit === HIT_NONE) {
+                        hit = HIT_ANY;
                     }
-
-                    // we can break now as we have hit an object.
                 }
             }
         }
-
-        hitTest = keepHitTestingAfterChildren;
 
         // no point running this if the item is not interactive or does not have an interactive parent.
         if (interactive) {
             // if we are hit testing (as in we have no hit any objects yet)
             // We also don't need to worry about hit testing if once of the displayObjects children
-            // has already been hit!
-            if (hitTest && !hit) {
+            // has already been hit - but only if it was interactive, otherwise we need to keep
+            // looking for an interactive child, just in case we hit one
+            if (hitTest && hit !== HIT_INTERACTIVE) {
                 if (displayObject.hitArea) {
                     displayObject.worldTransform.applyInverse(point, this._tempPoint);
-                    hit = displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y);
+                    if (displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y)) {
+                        hit = displayObject.interactive ? HIT_INTERACTIVE : HIT_ANY;
+                    }
                 } else if (displayObject.containsPoint) {
-                    hit = displayObject.containsPoint(point);
+                    if (displayObject.containsPoint(point)) {
+                        hit = displayObject.interactive ? HIT_INTERACTIVE : HIT_ANY;
+                    }
                 }
             }
 
@@ -32968,7 +32974,7 @@ var InteractionManager = function (_EventEmitter) {
                     interactionEvent.target = displayObject;
                 }
 
-                func(interactionEvent, displayObject, hit);
+                func(interactionEvent, displayObject, !!hit);
             }
         }
 
@@ -33321,6 +33327,10 @@ var InteractionManager = function (_EventEmitter) {
         this.emit('pointerout', interactionEvent);
         if (event.pointerType === 'mouse') {
             this.emit('mouseout', interactionEvent);
+        } else {
+            // we can get touchleave events after touchend, so we want to make sure we don't
+            // introduce memory leaks
+            this.releaseInteractionDataForPointerId(interactionData.identifier);
         }
     };
 
