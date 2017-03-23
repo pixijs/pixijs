@@ -1,4 +1,5 @@
 import mapWebGLBlendModesToPixi from '../utils/mapWebGLBlendModesToPixi';
+import WebGLManager from './WebGLManager';
 import WebGLState from '../State';
 
 const BLEND = 0;
@@ -13,35 +14,23 @@ const WINDING = 4;
  * @memberof PIXI
  * @class
  */
-export default class StateManager
+export default class StateManager extends WebGLManager
 {
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
      */
-    constructor(gl)
+    constructor(renderer)
     {
-        /**
-         * The current WebGL rendering context
-         *
-         * @member {WebGLRenderingContext}
-         */
-        this.gl = gl;
+        super(renderer);
 
-        this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+        this.gl = null;
 
-        this.attribState = {
-            tempAttribState: new Array(this.maxAttribs),
-            attribState: new Array(this.maxAttribs),
-        };
-
-        this.blendModes = mapWebGLBlendModesToPixi(gl);
+        this.maxAttribs = null;
 
         // check we have vao..
-        this.nativeVaoExtension = (
-            gl.getExtension('OES_vertex_array_object')
-            || gl.getExtension('MOZ_OES_vertex_array_object')
-            || gl.getExtension('WEBKIT_OES_vertex_array_object')
-        );
+        this.nativeVaoExtension = null;
+
+        this.attribState = null;
 
         this.stateId = 0;
         this.polygonOffset = 0;
@@ -62,7 +51,37 @@ export default class StateManager
         this.defaultState.blend = true;
         this.defaultState.depth = true;
 
+
+    }
+
+    contextChange(gl)
+    {
+        /**
+         * The current WebGL rendering context
+         *
+         * @member {WebGLRenderingContext}
+         */
+        this.gl = gl;
+
+        this.maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+
+        // check we have vao..
+        this.nativeVaoExtension = (
+            gl.getExtension('OES_vertex_array_object')
+            || gl.getExtension('MOZ_OES_vertex_array_object')
+            || gl.getExtension('WEBKIT_OES_vertex_array_object')
+        );
+
+        this.attribState = {
+            tempAttribState: new Array(this.maxAttribs),
+            attribState: new Array(this.maxAttribs),
+        };
+
+        this.blendModes = mapWebGLBlendModesToPixi(gl);
+
         this.setState(this.defaultState);
+
+        this.reset();
     }
 
     /**
@@ -211,7 +230,7 @@ export default class StateManager
     /**
      * Resets all the logic and disables the vaos
      */
-    resetToDefault()
+    reset()
     {
         // unbind any VAO if they exist..
         if (this.nativeVaoExtension)
@@ -223,6 +242,8 @@ export default class StateManager
         this.resetAttributes();
 
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+        this.setBlendMode(0);
 
         // TODO?
         // this.setState(this.defaultState);

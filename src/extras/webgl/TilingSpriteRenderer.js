@@ -26,8 +26,18 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
     {
         super(renderer);
 
-        this.shader = null;
-        this.simpleShader = null;
+        const uniforms = {globals:this.renderer.globalUniforms};
+
+        this.shader = new core.Shader.from(
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
+            uniforms);
+
+        this.simpleShader = new core.Shader.from(
+            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
+            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
+            uniforms);
+
         this.quad = null;
     }
 
@@ -36,10 +46,10 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
      *
      * @private
      */
-    onContextChange()
+    contextChange()
     {
         const gl = this.renderer.gl;
-
+/*
         this.shader = new GLShader(gl,
             readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
             readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
@@ -48,10 +58,9 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
             readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
             readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
             core.PRECISION.DEFAULT);
-
-        this.renderer.bindVao(null);
-        this.quad = new core.Quad(gl, this.renderer.state.attribState);
-        this.quad.initVao(this.shader);
+*/
+        this.renderer.geometry.bindVao(null);
+        this.quad = new core.Quad();
     }
 
     /**
@@ -63,7 +72,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         const renderer = this.renderer;
         const quad = this.quad;
 
-        renderer.bindVao(quad.vao);
 
         let vertices = quad.vertices;
 
@@ -84,7 +92,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
             vertices[5] = vertices[7] = 1.0 - ts.anchor.y;
         }
 
-        quad.upload();
+       // quad.upload();
 
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
@@ -111,7 +119,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
 
         const shader = isSimple ? this.simpleShader : this.shader;
 
-        renderer._bindGLShader(shader);
 
         const w = tex.width;
         const h = tex.height;
@@ -151,11 +158,11 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         color[3] = ts.worldAlpha;
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
-        shader.uniforms.uSampler = renderer.texture.bind(tex.baseTexture, 0);
+        shader.uniforms.uSampler = tex;//renderer.texture.bind(tex.baseTexture, 0);
 
-        renderer.setBlendMode(ts.blendMode);
-
-        quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(quad, renderer.shader.getGLShader());
+        renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
 

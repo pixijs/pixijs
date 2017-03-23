@@ -89,4 +89,16 @@ export default class ProjectionManager extends WebGLManager
             pm.ty = 1 - (sourceFrame.y * pm.d);
         }
     }
+
+
+    /**
+     * Sets the transform of the active render target to the given matrix
+     *
+     * @param {PIXI.Matrix} matrix - The transformation matrix
+     */
+    setTransform(matrix)
+    {
+       // this._activeRenderTarget.transform = matrix;
+    }
+
 }

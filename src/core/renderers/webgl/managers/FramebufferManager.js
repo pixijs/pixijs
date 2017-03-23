@@ -20,7 +20,7 @@ export default class FramebufferManager extends WebGLManager
      *
      * @private
      */
-    onContextChange()
+    contextChange()
     {
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;

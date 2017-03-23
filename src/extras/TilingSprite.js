@@ -157,7 +157,7 @@ export default class TilingSprite extends core.Sprite
         this.tileTransform.updateLocalTransform();
         this.uvTransform.update();
 
-        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
 

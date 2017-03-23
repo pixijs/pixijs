@@ -45,7 +45,7 @@ export default class MaskManager extends WebGLManager
         else if (this.enableScissor
             && !this.scissor
             && this.renderer._activeRenderTarget.root
-            && !this.renderer.stencilManager.stencilMaskStack.length
+            && !this.renderer.stencil.stencilMaskStack.length
             && maskData.isFastRect())
         {
             const matrix = maskData.worldTransform;
@@ -82,7 +82,7 @@ export default class MaskManager extends WebGLManager
         {
             this.popSpriteMask(target, maskData);
         }
-        else if (this.enableScissor && !this.renderer.stencilManager.stencilMaskStack.length)
+        else if (this.enableScissor && !this.renderer.stencil.stencilMaskStack.length)
         {
             this.popScissorMask(target, maskData);
         }
@@ -136,7 +136,7 @@ export default class MaskManager extends WebGLManager
     pushStencilMask(maskData)
     {
         this.renderer.currentRenderer.stop();
-        this.renderer.stencilManager.pushStencil(maskData);
+        this.renderer.stencil.pushStencil(maskData);
     }
 
     /**
@@ -146,7 +146,7 @@ export default class MaskManager extends WebGLManager
     popStencilMask()
     {
         this.renderer.currentRenderer.stop();
-        this.renderer.stencilManager.popStencil();
+        this.renderer.stencil.popStencil();
     }
 
     /**

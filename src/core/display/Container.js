@@ -455,7 +455,7 @@ export default class Container extends DisplayObject
 
         if (mask)
         {
-            renderer.maskManager.pushMask(this, this._mask);
+            renderer.mask.pushMask(this, this._mask);
         }
 
         // add this object to the batch, only rendered if it has a texture.
@@ -471,7 +471,7 @@ export default class Container extends DisplayObject
 
         if (mask)
         {
-            renderer.maskManager.popMask(this, this._mask);
+            renderer.mask.popMask(this, this._mask);
         }
 
         if (filters && this._enabledFilters && this._enabledFilters.length)
@@ -517,7 +517,7 @@ export default class Container extends DisplayObject
 
         if (this._mask)
         {
-            renderer.maskManager.pushMask(this._mask);
+            renderer.mask.pushMask(this._mask);
         }
 
         this._renderCanvas(renderer);
@@ -528,7 +528,7 @@ export default class Container extends DisplayObject
 
         if (this._mask)
         {
-            renderer.maskManager.popMask(renderer);
+            renderer.mask.popMask(renderer);
         }
     }
 

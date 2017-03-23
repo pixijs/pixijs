@@ -1,6 +1,7 @@
+import WebGLManager from './WebGLManager';
 import { GLShader } from 'pixi-gl-core';
-import { PRECISION } from '../../const';
-import generateUniformsSync from '../../shader/generateUniformsSync2';
+import { PRECISION } from '../../../const';
+import generateUniformsSync from '../../../shader/generateUniformsSync2';
 
 let UID = 0;
 
@@ -10,30 +11,31 @@ let UID = 0;
  * @class
  * @memberof PIXI
  */
-export default class ShaderManager
+export default class ShaderManager extends WebGLManager
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
      */
     constructor(renderer)
     {
-        /**
-         * A reference to the current renderer
-         *
-         * @member {PIXI.WebGLRenderer}
-         */
-        this.renderer = renderer;
+
+        super(renderer);
 
         /**
          * The current WebGL rendering context
          *
          * @member {WebGLRenderingContext}
          */
-        this.gl = renderer.gl;
+        this.gl = null;
 
         this.shader = null;
 
         this.id = UID++;
+    }
+
+    contextChange(gl)
+    {
+        this.gl = gl;
     }
 
     /**
@@ -43,7 +45,7 @@ export default class ShaderManager
      * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
      * @returns {PIXI.glCore.GLShader} the glShader that belongs to the shader.
      */
-    bindShader(shader, dontSync)
+    bind(shader, dontSync)
     {
         const program = shader.program;
         const glShader = program.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
@@ -59,7 +61,7 @@ export default class ShaderManager
 
         if (!dontSync)
         {
-            this.setUniforms(shader.uniforms);
+            this.syncUniformGroup(shader.uniformGroup);
         }
 
         return glShader;

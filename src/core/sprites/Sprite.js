@@ -306,7 +306,7 @@ export default class Sprite extends Container
     {
         this.calculateVertices();
 
-        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
 

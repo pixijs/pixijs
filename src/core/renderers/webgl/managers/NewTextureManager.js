@@ -23,6 +23,14 @@ export default class TextureManager extends WebGLManager
             null,
             null,
             null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null
         ];
 
@@ -34,7 +42,7 @@ export default class TextureManager extends WebGLManager
      *
      * @private
      */
-    onContextChange()
+    contextChange()
     {
         const gl = this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
@@ -54,6 +62,10 @@ export default class TextureManager extends WebGLManager
 
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+        for (var i = 0; i < this.boundTextures.length; i++) {
+            this.bind(null, i);
+        }
     }
 
     bind(texture, location)
@@ -61,7 +73,6 @@ export default class TextureManager extends WebGLManager
 
         const gl = this.gl;
 
-        texture = texture.baseTexture || texture;
 
         location = location || 0;
 
@@ -71,23 +82,29 @@ export default class TextureManager extends WebGLManager
             gl.activeTexture(gl.TEXTURE0 + location);
         }
 
-        if(texture && texture.valid)
+        if(texture)
         {
-            const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
+            texture = texture.baseTexture || texture;
 
-            gl.bindTexture(texture.target, glTexture.texture);
-
-            if(glTexture.dirtyId !== texture.dirtyId)
+            if(texture.valid)
             {
-                glTexture.dirtyId = texture.dirtyId;
-                this.updateTexture(texture);
-            }
 
-            this.boundTextures[location] = texture;
+                const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
+
+                gl.bindTexture(texture.target, glTexture.texture);
+
+                if(glTexture.dirtyId !== texture.dirtyId)
+                {
+                    glTexture.dirtyId = texture.dirtyId;
+                    this.updateTexture(texture);
+                }
+
+                this.boundTextures[location] = texture;
+            }
         }
         else
         {
-            gl.bindTexture(texture.target, this.emptyTextures[texture.target].texture);
+            gl.bindTexture(gl.TEXTURE_2D, this.emptyTextures[gl.TEXTURE_2D].texture);
             this.boundTextures[location] = null;
         }
     }

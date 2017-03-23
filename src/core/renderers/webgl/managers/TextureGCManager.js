@@ -1,5 +1,6 @@
-import { GC_MODES } from '../../const';
-import settings from '../../settings';
+import WebGLManager from './WebGLManager';
+import { GC_MODES } from '../../../const';
+import settings from '../../../settings';
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
@@ -8,14 +9,14 @@ import settings from '../../settings';
  * @class
  * @memberof PIXI
  */
-export default class TextureGarbageCollector
+export default class TextureGCManager  extends WebGLManager
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
      */
     constructor(renderer)
     {
-        this.renderer = renderer;
+        super(renderer);
 
         this.count = 0;
         this.checkCount = 0;
@@ -24,11 +25,12 @@ export default class TextureGarbageCollector
         this.mode = settings.GC_MODE;
     }
 
+
     /**
      * Checks to see when the last time a texture was used
      * if the texture has not been used for a specified amount of time it will be removed from the GPU
      */
-    update()
+    postrender()
     {
         this.count++;
 

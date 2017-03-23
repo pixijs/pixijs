@@ -16,14 +16,14 @@ export default class WebGLManager
          */
         this.renderer = renderer;
 
-        this.renderer.on('context', this.onContextChange, this);
+        this.renderer.runners.contextChange.add(this);
     }
 
     /**
      * Generic method called when there is a WebGL context change.
      *
      */
-    onContextChange()
+    contextChange()
     {
         // do some codes init!
     }
@@ -34,8 +34,7 @@ export default class WebGLManager
      */
     destroy()
     {
-        this.renderer.off('context', this.onContextChange, this);
-
+        this.renderer.runners.contextChange.remove(this);
         this.renderer = null;
     }
 }

@@ -40,15 +40,20 @@ export default class FilterManager extends WebGLManager
     {
         super(renderer);
 
-        this.gl = this.renderer.gl;
-        // know about sprites!
-        this.quad = new Quad(this.gl, renderer.state.attribState);
 
         this.shaderCache = {};
         // todo add default!
         this.pool = {};
 
         this.filterData = null;
+    }
+
+    contextChange()
+    {
+        this.gl = this.renderer.gl;
+        // know about sprites!
+        this.quad = new Quad(this.gl, this.renderer.state.attribState);
+
     }
 
     /**

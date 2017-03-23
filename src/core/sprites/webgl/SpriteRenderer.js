@@ -98,7 +98,7 @@ export default class SpriteRenderer extends ObjectRenderer
      *
      * @private
      */
-    onContextChange()
+    contextChange()
     {
         const gl = this.renderer.gl;
 
@@ -133,7 +133,7 @@ export default class SpriteRenderer extends ObjectRenderer
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
 
-        this.renderer.bindVao(null);
+        this.renderer.geometry.bindVao(null);
 
         for (let i = 0; i < this.vaoMax; i++)
         {
@@ -142,7 +142,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
             var attributeData = shader.program.attributeData;
             // build the vao object that will render..
-            this.vaos[i] = this.renderer.createVao()
+            this.vaos[i] = this.renderer.geometry.createVao()
                 .addIndex(this.indexBuffer)
                 .addAttribute(this.vertexBuffers[i], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(this.vertexBuffers[i], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
@@ -410,7 +410,7 @@ export default class SpriteRenderer extends ObjectRenderer
                 /* eslint-enable max-len */
             }
 
-            this.renderer.bindVao(this.vaos[this.vertexCount]);
+            this.renderer.geometry.bindVao(this.vaos[this.vertexCount]);
 
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
 
@@ -464,13 +464,13 @@ export default class SpriteRenderer extends ObjectRenderer
     start()
     {
        // this.renderer._bindGLShader(this.shader);
-        this.renderer.shader.bindShader(this.shader, true);
+        this.renderer.shader.bind(this.shader, true);
         this.renderer.shader.syncUniformGroup(this.shader.uniformGroup);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)
         {
             // bind buffer #0, we don't need others
-            this.renderer.bindVao(this.vaos[this.vertexCount]);
+            this.renderer.geometry.bindVao(this.vaos[this.vertexCount]);
 
             this.vertexBuffers[this.vertexCount].bind();
         }
