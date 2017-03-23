@@ -310,7 +310,6 @@ export const TEXT_GRADIENT = {
     LINEAR_HORIZONTAL: 1,
 };
 
-
 /**
  * Listener priorities that are both the actual priorities of
  * internal listeners added to {@link PIXI.ticker.Ticker}

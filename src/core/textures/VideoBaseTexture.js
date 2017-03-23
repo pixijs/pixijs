@@ -1,6 +1,6 @@
 import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache } from '../utils';
-import { shared, Ticker } from '../ticker';
+import { shared } from '../ticker';
 import { UPDATE_PRIORITY } from '../const';
 
 /**
