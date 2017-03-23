@@ -34,6 +34,8 @@ class MockPointer
         this.renderer = new PIXI.CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
+        this.interaction.supportsTouchEvents = true;
+        PIXI.ticker.shared.remove(this.interaction.update, this.interaction);
     }
 
     /**
@@ -171,23 +173,25 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
      */
-    tap(x, y)
+    tap(x, y, identifier)
     {
-        this.touchstart(x, y);
-        this.touchend(x, y);
+        this.touchstart(x, y, identifier);
+        this.touchend(x, y, identifier);
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
      */
-    touchstart(x, y)
+    touchstart(x, y, identifier)
     {
         const touchEvent = new TouchEvent('touchstart', {
             preventDefault: sinon.stub(),
             changedTouches: [
-                new Touch({ identifier: 0, target: this.renderer.view }),
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
             ],
         });
 
@@ -199,19 +203,39 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
      */
-    touchend(x, y)
+    touchend(x, y, identifier)
     {
         const touchEvent = new TouchEvent('touchend', {
             preventDefault: sinon.stub(),
             changedTouches: [
-                new Touch({ identifier: 0, target: this.renderer.view }),
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
             ],
         });
 
         this.setPosition(x, y);
         this.render();
         this.interaction.onPointerUp(touchEvent);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    touchleave(x, y, identifier)
+    {
+        const touchEvent = new TouchEvent('touchleave', {
+            preventDefault: sinon.stub(),
+            changedTouches: [
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
+            ],
+        });
+
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onPointerOut(touchEvent);
     }
 }
 
