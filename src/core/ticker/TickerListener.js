@@ -80,11 +80,6 @@ export default class TickerListener
      */
     emit(deltaTime)
     {
-        if (this.destroyed)
-        {
-            return;
-        }
-
         if (this.context)
         {
             this.fn.call(this.context, deltaTime);
