@@ -116,7 +116,7 @@ export default class TickerListener
     }
 
     /**
-     * Remove itself the chain of listeners.
+     * Remove itself from the chain of listeners.
      */
     disconnect()
     {
@@ -133,10 +133,6 @@ export default class TickerListener
      */
     destroy()
     {
-        if (this.destroyed)
-        {
-            return;
-        }
         this.destroyed = true;
         this.disconnect();
         this.fn = null;
