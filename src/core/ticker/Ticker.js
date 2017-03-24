@@ -20,10 +20,11 @@ export default class Ticker
     constructor()
     {
         /**
-         * The collection of internal events for sorting by priorty
+         * The first listener. All new listeners added are chained on this.
          * @private
+         * @type {TickerListener}
          */
-        this._listeners = [];
+        this._head = new TickerListener(null, null, Infinity);
 
         /**
          * Internal current frame request ID
@@ -129,7 +130,7 @@ export default class Ticker
                 // Invoke listeners now
                 this.update(time);
                 // Listener side effects may have modified ticker state.
-                if (this.started && this._requestId === null && this._listeners.length)
+                if (this.started && this._requestId === null && this._head.next)
                 {
                     this._requestId = requestAnimationFrame(this._tick);
                 }
@@ -146,7 +147,7 @@ export default class Ticker
      */
     _requestIfNeeded()
     {
-        if (this._requestId === null && this._listeners.length)
+        if (this._requestId === null && this._head.next)
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
@@ -201,7 +202,7 @@ export default class Ticker
      */
     add(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
-        return this._add(fn, context, priority, false);
+        return this._addListener(new TickerListener(fn, context, priority));
     }
 
     /**
@@ -214,7 +215,7 @@ export default class Ticker
      */
     addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
-        return this._add(fn, context, priority, true);
+        return this._addListener(new TickerListener(fn, context, priority, true));
     }
 
     /**
@@ -223,64 +224,44 @@ export default class Ticker
      * before the rendering.
      *
      * @private
-     * @param {Function} fn - The listener function to be added for one update
-     * @param {Function} context - The listener context
-     * @param {number} priority - The priority for emitting
-     * @param {boolean} once - If it should only be added once
+     * @param {TickerListener} listener - Current listener being added.
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    _add(fn, context, priority, once)
+    _addListener(listener)
     {
-        const listeners = this._listeners;
+        // For attaching to head
+        let current = this._head.next;
+        let last = this._head;
 
-        listeners.push(new TickerListener(fn, context, priority, once));
+        // Add the first item
+        if (!current)
+        {
+            listener.connect(last);
+        }
+        else
+        {
+            // Go from highest to lowest priority
+            while (current)
+            {
+                if (listener.priority >= current.priority)
+                {
+                    listener.connect(last);
+                    break;
+                }
+                last = current;
+                current = current.next;
+            }
 
-        // Sort by prority from highest to lowest
-        listeners.sort((listener1, listener2) => listener2.priority - listener1.priority);
+            // Not yet connected
+            if (!listener.previous)
+            {
+                listener.connect(last);
+            }
+        }
 
         this._startIfPossible();
 
         return this;
-    }
-
-    /**
-     * Emit the tick even to all the handlers.
-     *
-     * @private
-     * @param {number} deltaTime - change in time milliseconds
-     */
-    _emit(deltaTime)
-    {
-        const listeners = this._listeners;
-
-        for (let i = 0, len = listeners.length; i < len; i++)
-        {
-            const listener = listeners[i];
-            const { fn, context, once } = listener;
-
-            if (context)
-            {
-                fn.call(context, deltaTime);
-            }
-            else
-            {
-                fn(deltaTime);
-            }
-
-            // clean up once listeners
-            if (once)
-            {
-                listener.destroy();
-                listeners.splice(i, 1);
-                len--; // decrement to not skip over next
-                i--;
-            }
-        }
-
-        if (!listeners.length)
-        {
-            this._cancelIfNeeded();
-        }
     }
 
     /**
@@ -293,20 +274,27 @@ export default class Ticker
      */
     remove(fn, context)
     {
-        const listeners = this._listeners;
+        let listener = this._head.next;
 
-        for (let i = listeners.length - 1; i >= 0; i--)
+        while (listener)
         {
-            const listener = this._listeners[i];
-
-            if (listener.compare(fn, context))
+            // We found a match, lets remove it
+            // no break to delete all possible matches
+            // incase a listener was added 2+ times
+            if (listener.match(fn, context))
             {
-                listener.destroy();
-                listeners.splice(i, 1);
+                const removedListener = listener;
+
+                listener = listener.next;
+                removedListener.destroy();
+            }
+            else
+            {
+                listener = listener.next;
             }
         }
 
-        if (!listeners.length)
+        if (!this._head.next)
         {
             this._cancelIfNeeded();
         }
@@ -386,7 +374,30 @@ export default class Ticker
             this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
 
             // Invoke listeners added to internal emitter
-            this._emit(this.deltaTime);
+            let listener = this._head.next;
+
+            while (listener)
+            {
+                const previous = listener.previous;
+
+                listener.emit(this.deltaTime);
+
+                // Once listener or destroyed itself
+                if (listener.destroyed)
+                {
+                    listener = previous.next;
+                }
+                else
+                {
+                    // Go to the next listener
+                    listener = listener.next;
+                }
+            }
+
+            if (!this._head.next)
+            {
+                this._cancelIfNeeded();
+            }
         }
         else
         {
