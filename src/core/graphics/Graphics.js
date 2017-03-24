@@ -711,7 +711,7 @@ export default class Graphics extends Container
 
         if (this._spriteRect)
         {
-            this._spriteRect.destroy({texture: true});
+            this._spriteRect.destroy({ texture: true });
             this._spriteRect = null;
         }
 
