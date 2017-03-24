@@ -87,6 +87,13 @@ export default class Filter
          * @member {boolean}
          */
         this.enabled = true;
+
+        /**
+         * If enabled, pixi wont fit the filter area into boundaries, it helps for shaders with mapping
+         *
+         * @member {boolean}
+         */
+        this.dontFit = false;
     }
 
     /**
