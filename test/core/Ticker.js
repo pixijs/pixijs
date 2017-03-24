@@ -35,8 +35,6 @@ describe('PIXI.ticker.Ticker', function ()
 
         shared.add(listener);
 
-        expect(shared._head.next).to.not.be.null;
-        expect(shared._head.next.fn).to.equal(listener);
         expect(this.length()).to.equal(length + 1);
 
         shared.remove(listener);
