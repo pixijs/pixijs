@@ -378,20 +378,7 @@ export default class Ticker
 
             while (listener)
             {
-                const previous = listener.previous;
-
-                listener.emit(this.deltaTime);
-
-                // Once listener or destroyed itself
-                if (listener.destroyed)
-                {
-                    listener = previous.next;
-                }
-                else
-                {
-                    // Go to the next listener
-                    listener = listener.next;
-                }
+                listener = listener.emit(this.deltaTime);
             }
 
             if (!this._head.next)

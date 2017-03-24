@@ -77,6 +77,7 @@ export default class TickerListener
     /**
      * Emit by calling the current function.
      * @param {number} deltaTime - time since the last emit.
+     * @return {TickerListener} Next ticker
      */
     emit(deltaTime)
     {
@@ -93,6 +94,8 @@ export default class TickerListener
         {
             this.destroy();
         }
+
+        return this.next;
     }
 
     /**
@@ -129,10 +132,12 @@ export default class TickerListener
     destroy()
     {
         this.destroyed = true;
-        this.disconnect();
         this.fn = null;
         this.context = null;
+        this.disconnect();
+
+        // Useful for destroying while emitting
+        this.next = this.previous;
         this.previous = null;
-        this.next = null;
     }
 }
