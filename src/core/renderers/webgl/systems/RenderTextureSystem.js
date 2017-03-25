@@ -19,6 +19,9 @@ export default class RenderTextureSystem extends WebGLSystem
         super(renderer);
 
         this.clearColor = renderer._backgroundColorRgba;
+
+        // TODO moe this property somewhere else!
+        this.defaultMaskStack = [];
     }
 
     bind(renderTexture)
@@ -32,6 +35,7 @@ export default class RenderTextureSystem extends WebGLSystem
         {
             this.renderer.framebuffer.bind(renderTexture.baseTexture.frameBuffer);
             this.renderer.projection.update(renderTexture.frame, renderTexture.frame, false);
+            this.renderer.stencil.setMaskStack(renderTexture.baseTexture.stencilMaskStack);
         }
         else
         {
@@ -41,6 +45,7 @@ export default class RenderTextureSystem extends WebGLSystem
             tempRect.height = this.renderer.height;
             // TODO store this..
             this.renderer.projection.update(tempRect, tempRect, true);
+            this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 
         const glShader = this.renderer.shader.getGLShader()

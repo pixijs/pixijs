@@ -21,7 +21,7 @@ export default class StencilSystem extends WebGLSystem
      *
      * @param {PIXI.Graphics[]} stencilMaskStack - The mask stack
      */
-    setMaskStack(stencilMaskStack)
+     setMaskStack(stencilMaskStack)
     {
         this.stencilMaskStack = stencilMaskStack;
 
@@ -44,9 +44,9 @@ export default class StencilSystem extends WebGLSystem
      */
     pushStencil(graphics)
     {
-        this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
+        this.renderer.batch.setObjectRenderer(this.renderer.plugins.graphics);
 
-        this.renderer._activeRenderTarget.attachStencilBuffer();
+//        this.renderer._activeRenderTarget.attachStencilBuffer();
 
         const gl = this.renderer.gl;
         const sms = this.stencilMaskStack;
@@ -75,7 +75,7 @@ export default class StencilSystem extends WebGLSystem
      */
     popStencil()
     {
-        this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
+        this.renderer.batch.setObjectRenderer(this.renderer.plugins.graphics);
 
         const gl = this.renderer.gl;
         const sms = this.stencilMaskStack;

@@ -75,6 +75,13 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.frameBuffer = new FrameBuffer(width, height)
         .addColorTexture(0, this);
+
+        /**
+         * The data structure for the stencil masks
+         *
+         * @member {PIXI.Graphics[]}
+         */
+        this.stencilMaskStack = [];
     }
 
     /**

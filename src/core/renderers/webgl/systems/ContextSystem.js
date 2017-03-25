@@ -66,7 +66,7 @@ export default class ContextSystem extends WebGLSystem
 
     initFromOptions(options)
     {
-    	const gl = glCore.createContext(this.renderer.view, this.options);
+    	const gl = glCore.createContext(this.renderer.view, options);
     	this.initFromContext(gl);
     }
 
