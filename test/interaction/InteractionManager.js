@@ -882,6 +882,42 @@ describe('PIXI.interaction.InteractionManager', function ()
                 });
             });
         });
+
+        it('Semi-complicated nesting with overlap, should not call behind callback', function ()
+        {
+            const stage = new PIXI.Container();
+            const frontParent = new PIXI.Container();
+            const frontChild = new PIXI.Graphics();
+            const behindParent = new PIXI.Container();
+            const subParent = new PIXI.Container();
+            const behindChild = new PIXI.Graphics();
+            const behindCallback = sinon.spy(function behindSpy() { /* no op*/ });
+            const frontCallback = sinon.spy(function frontSpy() { /* no op*/ });
+
+            behindChild.beginFill(0xFF);
+            behindChild.drawRect(0, 0, 50, 50);
+            subParent.on('click', behindCallback);
+
+            frontChild.beginFill(0x00FF);
+            frontChild.drawRect(0, 0, 50, 50);
+            frontParent.on('click', frontCallback);
+            const pointer = this.pointer = new MockPointer(stage);
+
+            behindParent.x = 25;
+            subParent.interactive = true;
+            frontParent.interactive = true;
+
+            behindParent.addChild(subParent);
+            subParent.addChild(behindChild);
+            stage.addChild(behindParent);
+            frontParent.addChild(frontChild);
+            stage.addChild(frontParent);
+
+            pointer.click(40, 10);
+
+            expect(behindCallback).to.not.have.been.called;
+            expect(frontCallback).to.have.been.calledOnce;
+        });
     });
 
     describe('cursor changes', function ()
