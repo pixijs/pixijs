@@ -79,6 +79,13 @@ export default class Plane extends Mesh
 
         this.drawMode = Mesh.DRAW_MODES.TRIANGLES;
 
+        /**
+         * reset the points on dimensions change
+         * @member {boolean}
+         * @default true
+         */
+        this.autoResetVertices = true;
+
         this.refresh();
     }
 
@@ -259,7 +266,10 @@ export default class Plane extends Mesh
         {
             this._lastWidth = this.width;
             this._lastHeight = this.height;
-            this._verticesID++;
+            if (this.autoResetVertices)
+            {
+                this._verticesID++;
+            }
         }
 
         if (this._uvTransform.update(forceUpdate))
@@ -318,6 +328,7 @@ export default class Plane extends Mesh
         this.indices = new Uint16Array(indices);
         this.uvs = new Float32Array(total * 2);
         this.vertices = new Float32Array(total * 2);
+        this.calculatedVertices = new Float32Array(total * 2);
 
         this.indexDirty++;
     }
@@ -383,15 +394,12 @@ export default class Plane extends Mesh
     }
 
     /**
-     * Refreshes vertices of Plane mesh
-     * by default, makes them uniformly distributed
-     *
-     * @private
+     * calculates supposed position of vertices
      */
-    _refreshVertices()
+    calcVertices()
     {
         const total = this._verticesX * this._verticesY;
-        const vertices = this.vertices;
+        const vertices = this.calculatedVertices;
 
         const width = this.width;
         const height = this.height;
@@ -419,6 +427,26 @@ export default class Plane extends Mesh
 
             vertices[i * 2] = ((ux * x) + (vx * y) + offsetX) * width;
             vertices[(i * 2) + 1] = ((uy * x) + (vy * y) + offsetY) * height;
+        }
+    }
+
+    /**
+     * Refreshes vertices of Plane mesh
+     * by default, makes them uniformly distributed
+     *
+     * @private
+     */
+    _refreshVertices()
+    {
+        this.calcVertices();
+
+        const vertices = this.vertices;
+        const calculatedVertices = this.calculatedVertices;
+        const len = vertices.length;
+
+        for (let i = 0; i < len; i++)
+        {
+            vertices[i] = calculatedVertices[i];
         }
     }
 
