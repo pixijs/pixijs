@@ -6,7 +6,8 @@ import { default as Point } from '../core/math/Point';
  * @class
  * @memberof PIXI.mesh
  */
-export default class RopePoint extends Point {
+export default class RopePoint extends Point
+{
     /**
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
