@@ -255,7 +255,7 @@ export default class Plane extends Mesh
         this.refreshDimensions(forceUpdate);
 
         if (this._lastWidth !== this.width
-            && this._lastHeight !== this.height)
+            || this._lastHeight !== this.height)
         {
             this._lastWidth = this.width;
             this._lastHeight = this.height;
