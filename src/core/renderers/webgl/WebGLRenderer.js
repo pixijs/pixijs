@@ -111,7 +111,7 @@ export default class WebGLRenderer extends SystemRenderer
         .addSystem(FramebufferSystem)
         .addSystem(StencilSystem)
         .addSystem(ProjectionSystem)
-        .addSystem(TextureGCSystem)
+        //.addSystem(TextureGCSystem)
         .addSystem(FilterSystem)
         .addSystem(RenderTextureSystem)
         .addSystem(BatchSystem)

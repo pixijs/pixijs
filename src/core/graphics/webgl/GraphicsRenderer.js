@@ -2,6 +2,8 @@ import { hex2rgb } from '../../utils';
 import { SHAPES } from '../../const';
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
+import Geometry from '../../geometry/Geometry';
+import Buffer from '../../geometry/Buffer';
 import WebGLGraphicsData from './WebGLGraphicsData';
 import PrimitiveShader from './shaders/PrimitiveShader';
 
@@ -28,8 +30,8 @@ export default class GraphicsRenderer extends ObjectRenderer
 
         this.graphicsDataPool = [];
 
-        this.primitiveShader = null;
-
+        this.primitiveShader = new PrimitiveShader();
+        this.primitiveShader.uniforms.globals = renderer.globalUniforms
         this.gl = renderer.gl;
 
         // easy access!
@@ -46,7 +48,6 @@ export default class GraphicsRenderer extends ObjectRenderer
     {
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
-        this.primitiveShader = new PrimitiveShader(this.gl);
     }
 
     /**
@@ -88,28 +89,26 @@ export default class GraphicsRenderer extends ObjectRenderer
         // This  could be speeded up for sure!
         const shader = this.primitiveShader;
 
-        renderer._bindGLShader(shader);
         renderer.state.setBlendMode(graphics.blendMode);
 
         for (let i = 0, n = webGL.data.length; i < n; i++)
         {
             webGLData = webGL.data[i];
-            const shaderTemp = webGLData.shader;
 
-            renderer._bindGLShader(shaderTemp);
-            shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
-            shaderTemp.uniforms.tint = hex2rgb(graphics.tint);
-            shaderTemp.uniforms.alpha = graphics.worldAlpha;
+            shader.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
+            shader.uniforms.tint = hex2rgb(graphics.tint);
+            shader.uniforms.alpha = graphics.worldAlpha;
 
-            renderer.bindVao(webGLData.vao);
+            renderer.shader.bind(shader);
+            renderer.geometry.bind(webGLData.geometry, renderer.shader.getGLShader());
 
             if (graphics.nativeLines)
             {
-                gl.drawArrays(gl.LINES, 0, webGLData.points.length / 6);
+                renderer.geometry.draw(gl.LINES, webGLData.indices.length/6);
             }
             else
             {
-                webGLData.vao.draw(gl.TRIANGLE_STRIP, webGLData.indices.length);
+                renderer.geometry.draw(gl.TRIANGLE_STRIP, webGLData.indices.length);
             }
         }
     }
@@ -184,7 +183,7 @@ export default class GraphicsRenderer extends ObjectRenderer
             webGL.lastIndex++;
         }
 
-        this.renderer.bindVao(null);
+        //this.renderer.geometry.bindVao(null);
 
         // upload all the dirty data...
         for (let i = 0; i < webGL.data.length; i++)
@@ -211,9 +210,7 @@ export default class GraphicsRenderer extends ObjectRenderer
 
         if (!webGLData || webGLData.points.length > 320000)
         {
-            webGLData = this.graphicsDataPool.pop()
-                || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
-
+            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
             webGLData.reset(type);
             gl.data.push(webGLData);
         }

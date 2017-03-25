@@ -748,7 +748,7 @@ export default class Graphics extends Container
         }
         else
         {
-            renderer.setObjectRenderer(renderer.plugins.graphics);
+            renderer.batch.setObjectRenderer(renderer.plugins.graphics);
             renderer.plugins.graphics.render(this);
         }
     }
