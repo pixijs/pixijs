@@ -41,16 +41,10 @@ export default class Rope extends Plane
          */
         this.calculatedPoints = [];
 
-        /**
-         * reset the points on dimensions change
-         * @member {boolean}
-         * @default true
-         */
-        this.autoResetPoints = true;
         if (verticesX instanceof Array)
         {
             this.points = verticesX;
-            this.autoResetPoints = false;
+            this.autoResetVertices = false;
         }
 
         this._checkPointsLen();
@@ -147,7 +141,7 @@ export default class Rope extends Plane
         {
             this._lastWidth = this.width;
             this._lastHeight = this.height;
-            if (this.autoResetPoints)
+            if (this.autoResetVertices)
             {
                 this.resetPoints();
             }
@@ -234,11 +228,9 @@ export default class Rope extends Plane
     }
 
     /**
-     * Refreshes vertices of rope sprite
-     *
-     * @private
+     * Refreshes vertices of Rope mesh
      */
-    _refreshVertices()
+    calcVertices()
     {
         const points = this.points;
 
@@ -249,7 +241,7 @@ export default class Rope extends Plane
 
         const width = this.width;
         const height = this.height;
-        const vertices = this.vertices;
+        const vertices = this.calculatedVertices;
         const verticesX = this.verticesX;
         const verticesY = this.verticesY;
         const direction = this._direction;
