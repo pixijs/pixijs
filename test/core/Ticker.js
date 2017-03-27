@@ -7,9 +7,16 @@ describe('PIXI.ticker.Ticker', function ()
 {
     before(function ()
     {
-        this.length = () =>
+        this.length = (ticker) =>
         {
-            let listener = shared._head.next;
+            ticker = ticker || shared;
+
+            if (!ticker._head || !ticker._head.next)
+            {
+                return 0;
+            }
+
+            let listener = ticker._head.next;
             let i = 0;
 
             while (listener)
@@ -26,6 +33,34 @@ describe('PIXI.ticker.Ticker', function ()
     {
         expect(Ticker).to.be.a.function;
         expect(shared).to.be.an.instanceof(Ticker);
+    });
+
+    it('should create a new ticker and destroy it', function ()
+    {
+        const ticker = new Ticker();
+
+        ticker.start();
+
+        const listener = sinon.spy();
+
+        expect(this.length(ticker)).to.equal(0);
+
+        ticker.add(listener);
+
+        expect(this.length(ticker)).to.equal(1);
+
+        ticker.destroy();
+
+        expect(ticker._head).to.be.null;
+        expect(ticker.started).to.be.false;
+        expect(this.length(ticker)).to.equal(0);
+    });
+
+    it('should protect destroying shared ticker', function ()
+    {
+        shared.destroy();
+        expect(shared._head).to.not.be.null;
+        expect(shared.started).to.be.true;
     });
 
     it('should add and remove listener', function ()

@@ -156,8 +156,11 @@ export default class Application
      */
     destroy(removeView)
     {
-        this.stop();
+        const oldTicker = this._ticker;
+
         this.ticker = null;
+
+        oldTicker.destroy();
 
         this.stage.destroy();
         this.stage = null;

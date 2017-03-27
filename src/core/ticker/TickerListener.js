@@ -54,10 +54,11 @@ export default class TickerListener
         this.previous = null;
 
         /**
-         * Marked for cleanup.
+         * `true` if this listener has been destroyed already.
          * @member {boolean}
+         * @private
          */
-        this.destroyed = false;
+        this._destroyed = false;
     }
 
     /**
@@ -95,7 +96,16 @@ export default class TickerListener
             this.destroy();
         }
 
-        return this.next;
+        const redirect = this.next;
+
+        // Soft-destroying should remove
+        // the next reference
+        if (this._destroyed)
+        {
+            this.next = null;
+        }
+
+        return redirect;
     }
 
     /**
@@ -114,30 +124,35 @@ export default class TickerListener
     }
 
     /**
-     * Remove itself from the chain of listeners.
+     * Destroy and don't use after this.
+     * @param {boolean} [hard = false] `true` to remove the `next` reference, this
+     *        is considered a hard destroy. Soft destroy maintains the next reference.
+     * @return {TickerListener} The listener to redirect while emitting or removing.
      */
-    disconnect()
+    destroy(hard = false)
     {
-        this.previous.next = this.next;
+        this._destroyed = true;
+        this.fn = null;
+        this.context = null;
+
+        // Disconnect, hook up next and previous
+        if (this.previous)
+        {
+            this.previous.next = this.next;
+        }
 
         if (this.next)
         {
             this.next.previous = this.previous;
         }
-    }
 
-    /**
-     * Destroy and don't use after this.
-     */
-    destroy()
-    {
-        this.destroyed = true;
-        this.fn = null;
-        this.context = null;
-        this.disconnect();
+        // Redirect to the next item
+        const redirect = this.previous;
 
-        // Useful for destroying while emitting
-        this.next = this.previous;
+        // Remove references
+        this.next = hard ? null : redirect;
         this.previous = null;
+
+        return redirect;
     }
 }

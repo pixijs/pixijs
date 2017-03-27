@@ -283,10 +283,7 @@ export default class Ticker
             // incase a listener was added 2+ times
             if (listener.match(fn, context))
             {
-                const removedListener = listener;
-
-                listener = listener.next;
-                removedListener.destroy();
+                listener = listener.destroy();
             }
             else
             {
@@ -326,6 +323,25 @@ export default class Ticker
             this.started = false;
             this._cancelIfNeeded();
         }
+    }
+
+    /**
+     * Destroy the ticker and don't use after this. Calling
+     * this method removes all references to internal events.
+     */
+    destroy()
+    {
+        this.stop();
+
+        let listener = this._head.next;
+
+        while (listener)
+        {
+            listener = listener.destroy(true);
+        }
+
+        this._head.destroy();
+        this._head = null;
     }
 
     /**
