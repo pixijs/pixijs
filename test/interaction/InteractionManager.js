@@ -1198,4 +1198,85 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
         });
     });
+
+    describe('hitTest()', function ()
+    {
+        it('should return hit', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+
+            pointer.render();
+            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10));
+
+            expect(hit).to.equal(graphics);
+        });
+
+        it('should return null if not hit', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+
+            pointer.render();
+            const hit = pointer.interaction.hitTest(new PIXI.Point(60, 60));
+
+            expect(hit).to.be.null;
+        });
+
+        it('should return top thing that was hit', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const behind = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(behind);
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            behind.beginFill(0xFFFFFF);
+            behind.drawRect(0, 0, 50, 50);
+            behind.interactive = true;
+
+            pointer.render();
+            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10));
+
+            expect(hit).to.equal(graphics);
+        });
+
+        it('should return hit when passing in root', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const behind = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(behind);
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            behind.beginFill(0xFFFFFF);
+            behind.drawRect(0, 0, 50, 50);
+            behind.interactive = true;
+
+            pointer.render();
+            const hit = pointer.interaction.hitTest(new PIXI.Point(10, 10), behind);
+
+            expect(hit).to.equal(behind);
+        });
+    });
 });
