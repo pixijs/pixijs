@@ -85,8 +85,17 @@ export default class Filter
          * If enabled is true the filter is applied, if false it will not.
          *
          * @member {boolean}
+         * @default true
          */
         this.enabled = true;
+
+        /**
+         * If enabled, pixi will fit the filter area into boundaries, it helps for shaders with mapping
+         *
+         * @member {boolean}
+         * @default true
+         */
+        this.fitToDestination = true;
     }
 
     /**
