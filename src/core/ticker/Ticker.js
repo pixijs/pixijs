@@ -210,7 +210,7 @@ export default class Ticker
      *
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context] - The listener context
-     * @param {number} [priority=10] - The priority for emitting
+     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
     addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)

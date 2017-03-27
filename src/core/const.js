@@ -311,19 +311,20 @@ export const TEXT_GRADIENT = {
 };
 
 /**
- * Listener priorities that are both the actual priorities of
- * internal listeners added to {@link PIXI.ticker.Ticker}
- * as well as a guideline to priorities of new listeners.
+ * Represents the update priorities used by internal PIXI classes when registered with
+ * the {@link PIXI.ticker.Ticker} object. Higher priority items are updated first and lower
+ * priority items, such as render, should go later.
  *
  * @static
  * @constant
+ * @name UPDATE_PRIORITY
  * @memberof PIXI
  * @type {object}
- * @property {number} INTERACTION=50
- * @property {number} HIGH=25
- * @property {number} NORMAL=0
- * @property {number} LOW=-25
- * @property {number} UTILITY=-50
+ * @property {number} INTERACTION=50 Highest priority, used for {@link PIXI.interaction.InteractionManager}
+ * @property {number} HIGH=25 High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.extras.AnimatedSprite}
+ * @property {number} NORMAL=0 Default priority for ticker events, see {@link PIXI.ticker.Ticker#add}.
+ * @property {number} LOW=-25 Low priority used for {@link PIXI.Application} rendering.
+ * @property {number} UTILITY=-50 Lowest priority used for {@link PIXI.prepare.BasePrepare} utility.
  */
 export const UPDATE_PRIORITY = {
     INTERACTION: 50,
