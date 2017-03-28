@@ -76,6 +76,7 @@
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "^3.4.2",
+    "mini-runner": "https://github.com/drkibitz/mini-runner/archive/dev/priorities.tar.gz",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",

@@ -17,6 +17,29 @@ export default {
     TARGET_FPMS: 0.06,
 
     /**
+     * Listener priorities that are both the actual priorities of
+     * internal listeners added to {@link PIXI.ticker.Ticker}
+     * as well as a guideline to priorities of new listeners.
+     *
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {object}
+     * @property {number} interaction=50
+     * @property {number} high=25
+     * @property {number} default=0
+     * @property {number} low=-25
+     * @property {number} utility=-50
+     */
+    UPDATE_PRIORITY: {
+        interactive: 50,
+        high: 25,
+        default: 0,
+        low: -25,
+        utility: -50,
+    },
+
+    /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
      *

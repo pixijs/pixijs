@@ -158,7 +158,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.addOnce(this.tick, this);
+                SharedTicker.add(this, core.settings.UPDATE_PRIORITY.utility);
             }
         }
         else if (done)
@@ -171,9 +171,11 @@ export default class BasePrepare
      * Handle tick update
      *
      * @private
+     * @param {number} deltaTime - Time since last tick.
      */
-    tick()
+    onUpdate()
     {
+        SharedTicker.remove(this);
         setTimeout(this.delayedTick, 0);
     }
 
@@ -228,7 +230,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            SharedTicker.addOnce(this.tick, this);
+            SharedTicker.add(this, core.settings.UPDATE_PRIORITY.utility);
         }
     }
 
@@ -305,7 +307,7 @@ export default class BasePrepare
     {
         if (this.ticking)
         {
-            SharedTicker.remove(this.tick, this);
+            SharedTicker.remove(this);
         }
         this.ticking = false;
         this.addHooks = null;
