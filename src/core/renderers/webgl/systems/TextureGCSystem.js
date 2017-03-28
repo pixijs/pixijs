@@ -56,7 +56,7 @@ export default class TextureGCSystem  extends WebGLSystem
     run()
     {
         const tm = this.renderer.texture;
-        const managedTextures =  tm._managedTextures;
+        const managedTextures =  tm.managedTextures;
         let wasRemoved = false;
 
         for (let i = 0; i < managedTextures.length; i++)
@@ -64,7 +64,7 @@ export default class TextureGCSystem  extends WebGLSystem
             const texture = managedTextures[i];
 
             // only supports non generated textures at the moment!
-            if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle)
+            if (!texture.frameBuffer && this.count - texture.touched > this.maxIdle)
             {
                 tm.destroyTexture(texture, true);
                 managedTextures[i] = null;

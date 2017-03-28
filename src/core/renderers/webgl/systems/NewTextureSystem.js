@@ -1,5 +1,6 @@
 import WebGLSystem from './WebGLSystem';
 import { GLFramebuffer, GLTexture } from 'pixi-gl-core';
+import { removeItems } from '../../../utils';
 
 /**
  * @class
@@ -14,6 +15,8 @@ export default class TextureSystem extends WebGLSystem
     constructor(renderer)
     {
         super(renderer);
+
+        // TODO set to max textures...
         this.boundTextures = [
             null,
             null,
@@ -35,6 +38,9 @@ export default class TextureSystem extends WebGLSystem
         ];
 
         this.currentLocation = -1;
+
+        this.managedTextures = [];
+
     }
 
     /**
@@ -140,6 +146,9 @@ export default class TextureSystem extends WebGLSystem
 
         texture._glTextures[this.CONTEXT_UID] = glTexture;
 
+        this.managedTextures.push(texture);
+        texture.on('dispose', this.destroyTexture, this);
+
         return glTexture;
     }
 
@@ -147,7 +156,6 @@ export default class TextureSystem extends WebGLSystem
     {
         const glTexture = texture._glTextures[this.CONTEXT_UID];
         const gl = this.gl;
-        //console.log(gl);
 
         // TODO there are only 3 textures as far as im aware?
         // Cube / 2D and later 3d. (the latter is WebGL2, we will get to that soon!)
@@ -221,6 +229,39 @@ export default class TextureSystem extends WebGLSystem
 
         // lets only update what changes..
         this.setStyle(texture);
+    }
+
+    /**
+     * Deletes the texture from WebGL
+     *
+     * @param {PIXI.BaseTexture|PIXI.Texture} texture - the texture to destroy
+     * @param {boolean} [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
+     */
+    destroyTexture(texture, skipRemove)
+    {
+        texture = texture.baseTexture || texture;
+
+        console.log(" >>>>> DISPOSE >>>>> ");
+
+        if (texture._glTextures[this.renderer.CONTEXT_UID])
+        {
+            this.unbind(texture);
+
+            texture._glTextures[this.renderer.CONTEXT_UID].destroy();
+            texture.off('dispose', this.destroyTexture, this);
+
+            delete texture._glTextures[this.renderer.CONTEXT_UID];
+
+            if (!skipRemove)
+            {
+                const i = this.managedTextures.indexOf(texture);
+
+                if (i !== -1)
+                {
+                    removeItems(this.managedTextures, i, 1);
+                }
+            }
+        }
     }
 
     setStyle(texture)

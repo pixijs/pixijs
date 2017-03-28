@@ -111,6 +111,8 @@ export default class BaseTexture extends EventEmitter
             this.setResource(resource);
         }
 
+        this.cacheId = null;
+
         this.validate();
     }
 
@@ -120,7 +122,8 @@ export default class BaseTexture extends EventEmitter
 
         this.resource = resource;
 
-        this.resource.load.then((resource) => {
+        this.resource.load
+        .then((resource) => {
 
             if(this.resource === resource)
             {
@@ -141,6 +144,12 @@ export default class BaseTexture extends EventEmitter
                     this.emit('loaded', this);
                 }
             }
+
+        })
+        .catch((reason)=>{
+
+            // failed to load - maybe resource was destroyed before it loaded.
+            console.warn(reason);
 
         })
 
@@ -189,6 +198,45 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
+     * Destroys this base texture
+     *
+     */
+    destroy()
+    {
+        // remove from the cache..
+
+        if (this.cacheId)
+        {
+            delete BaseTextureCache[this.cacheId];
+            delete TextureCache[this.cacheId];
+
+            this.cacheId = null;
+        }
+
+        // remove and destroy the resource
+
+        if(this.resource)
+        {
+            this.resource.destroy();
+            this.resource = null;
+        }
+
+        // finally let the webGL renderer know..
+        this.dispose()
+    }
+
+    /**
+     * Frees the texture from WebGL memory without destroying this texture object.
+     * This means you can still use the texture later which will upload it to GPU
+     * memory again.
+     *
+     */
+    dispose()
+    {
+        this.emit('dispose', this);
+    }
+
+    /**
      * Helper function that creates a base texture based on the source you provide.
      * The source can be - image url, image element, canvas element.
      *
@@ -221,6 +269,7 @@ export default class BaseTexture extends EventEmitter
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(source);
+            baseTexture.cacheId
             BaseTextureCache[cacheId] = baseTexture;
         }
 

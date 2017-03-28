@@ -30,7 +30,16 @@ export default class ImageResource extends TextureResource
                 this.height = source.height;
                 resolve(this);
             }
+
+            source.onerror = () => {
+                reject('unable to load "' + source.src + '" resource cannot be found')
+            }
         })
+    }
+
+    destroy()
+    {
+        this.source.src = '';
     }
 
     static from(url, crossorigin)
