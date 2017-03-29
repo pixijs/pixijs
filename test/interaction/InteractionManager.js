@@ -1298,4 +1298,34 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(hit).to.equal(behind);
         });
     });
+
+    describe('InteractionData properties', function ()
+    {
+        it('isPrimary should be set for first touch only', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+
+            pointer.touchstart(10, 10, 1);
+            expect(pointer.interaction.activeInteractionData[1]).to.exist;
+            expect(pointer.interaction.activeInteractionData[1].isPrimary,
+                    'first touch should be primary on touch start').to.be.true;
+            pointer.touchstart(13, 9, 2);
+            expect(pointer.interaction.activeInteractionData[2].isPrimary,
+                    'second touch should not be primary').to.be.false;
+            pointer.touchmove(10, 20, 1);
+            expect(pointer.interaction.activeInteractionData[1].isPrimary,
+                    'first touch should still be primary after move').to.be.true;
+            pointer.touchend(10, 10, 1);
+            pointer.touchmove(13, 29, 2);
+            expect(pointer.interaction.activeInteractionData[2].isPrimary,
+                    'second touch should still not be primary after first is done').to.be.false;
+        });
+    });
 });
