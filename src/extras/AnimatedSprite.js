@@ -137,7 +137,7 @@ export default class AnimatedSprite extends core.Sprite
         this.playing = true;
         if (this._autoUpdate)
         {
-            core.ticker.shared.add(this.update, this);
+            core.ticker.shared.add(this.update, this, core.UPDATE_PRIORITY.HIGH);
         }
     }
 

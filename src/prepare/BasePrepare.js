@@ -158,7 +158,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.addOnce(this.tick, this);
+                SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -228,7 +228,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            SharedTicker.addOnce(this.tick, this);
+            SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
         }
     }
 
