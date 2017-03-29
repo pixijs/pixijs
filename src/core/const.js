@@ -309,3 +309,19 @@ export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,
     LINEAR_HORIZONTAL: 1,
 };
+
+/**
+ * Constants that define the type of gradient on text.
+ *
+ * @static
+ * @constant
+ * @name LOCAL_BOUNDS_MODE
+ * @memberof PIXI
+ * @type {object}
+ * @property {number} SLOW Default implementation
+ * @property {number} FAST_FOR_EASY Checks if worldTransform is easy to unapply, uses getBounds() in that case.
+ */
+export const LOCAL_BOUNDS_MODE = {
+    SLOW: 0,
+    FAST_IF_EASY: 1,
+};

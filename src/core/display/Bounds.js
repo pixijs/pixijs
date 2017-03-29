@@ -322,4 +322,45 @@ export default class Bounds
             this.maxY = _maxY > maxY ? _maxY : maxY;
         }
     }
+
+    /**
+     * Add bounds when we can unapply matrix easily
+     *
+     * @param {PIXI.Matrix} matrix - Matrix to unapply
+     * @param {PIXI.Rectangle} rect - temporary object will be used if AABB is not empty
+     * @returns {PIXI.Rectangle} A rectangle of the bounds
+     */
+    unapplyAndGetRect(matrix, rect)
+    {
+        if (this.isEmpty())
+        {
+            return Rectangle.EMPTY;
+        }
+
+        rect = rect || new Rectangle(0, 0, 1, 1);
+
+        if (matrix.a > 0)
+        {
+            rect.x = (this.minX - matrix.tx) / matrix.a;
+            rect.width = (this.maxX - this.minX) / matrix.a;
+        }
+        else
+        {
+            rect.x = (this.maxX - matrix.tx) / matrix.a;
+            rect.width = (this.minX - this.maxX) / matrix.a;
+        }
+
+        if (matrix.d > 0)
+        {
+            rect.y = (this.minY - matrix.ty) / matrix.d;
+            rect.height = (this.maxY - this.minY) / matrix.d;
+        }
+        else
+        {
+            rect.y = (this.maxY - matrix.ty) / matrix.d;
+            rect.height = (this.minY - this.maxY) / matrix.d;
+        }
+
+        return rect;
+    }
 }

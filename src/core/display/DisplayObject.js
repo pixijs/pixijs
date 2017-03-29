@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { TRANSFORM_MODE } from '../const';
+import { TRANSFORM_MODE, LOCAL_BOUNDS_MODE } from '../const';
 import settings from '../settings';
 import TransformStatic from './TransformStatic';
 import Transform from './Transform';
@@ -214,6 +214,43 @@ export default class DisplayObject extends EventEmitter
     }
 
     /**
+     * Returns true if its possible to forget about all those rotations when we calculate local bounds
+     *
+     * @returns {boolean} true - easy, false - hard
+     */
+    hasEasyLocalBounds()
+    {
+        if (!this.worldTransform.isEasyToApply())
+        {
+            return false;
+        }
+
+        if (!this.parent)
+        {
+            this.parent = this._tempDisplayObjectParent;
+            this.updateTransform();
+            this.parent = null;
+        }
+        else
+        {
+            this._recursivePostUpdateTransform();
+            this.updateTransform();
+        }
+
+        if (!this.worldTransform.isEasyToApply())
+        {
+            return false;
+        }
+
+        if (this._boundsID !== this._lastBoundsID)
+        {
+            this.calculateBounds();
+        }
+
+        return true;
+    }
+
+    /**
      * Retrieves the local bounds of the displayObject as a rectangle object
      *
      * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation
@@ -221,12 +258,6 @@ export default class DisplayObject extends EventEmitter
      */
     getLocalBounds(rect)
     {
-        const transformRef = this.transform;
-        const parentRef = this.parent;
-
-        this.parent = null;
-        this.transform = this._tempDisplayObjectParent.transform;
-
         if (!rect)
         {
             if (!this._localBoundsRect)
@@ -236,6 +267,17 @@ export default class DisplayObject extends EventEmitter
 
             rect = this._localBoundsRect;
         }
+
+        if (settings.LOCAL_BOUNDS_MODE === LOCAL_BOUNDS_MODE.FAST_IF_EASY && this.hasEasyLocalBounds())
+        {
+            return this._bounds.unapplyAndGetRect(this.worldTransform, rect);
+        }
+
+        const transformRef = this.transform;
+        const parentRef = this.parent;
+
+        this.parent = null;
+        this.transform = this._tempDisplayObjectParent.transform;
 
         const bounds = this.getBounds(false, rect);
 

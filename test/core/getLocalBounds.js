@@ -1,208 +1,250 @@
 'use strict';
 
+function checkAllModes(fn)
+{
+    PIXI.settings.LOCAL_BOUNDS_MODE = PIXI.LOCAL_BOUNDS_MODE.SLOW;
+    fn();
+
+    PIXI.settings.LOCAL_BOUNDS_MODE = PIXI.LOCAL_BOUNDS_MODE.FAST_IF_EASY;
+    fn();
+}
+
+function checkRotations(fn)
+{
+    let parent = null;
+
+    PIXI.settings.LOCAL_BOUNDS_MODE = PIXI.LOCAL_BOUNDS_MODE.SLOW;
+
+    parent = new PIXI.Container();
+    fn(parent);
+    parent = new PIXI.Container();
+    parent.rotation = Math.PI / 6;
+    fn(parent);
+
+    PIXI.settings.LOCAL_BOUNDS_MODE = PIXI.LOCAL_BOUNDS_MODE.FAST_IF_EASY;
+
+    parent = new PIXI.Container();
+    fn(parent);
+    parent = new PIXI.Container();
+    parent.rotation = Math.PI / 6;
+    fn(parent);
+}
+
 describe('getLocalBounds', function ()
 {
-    it('should register correct local-bounds with a LOADED Sprite', function ()
-    {
-        const parent = new PIXI.Container();
-        const texture = PIXI.RenderTexture.create(10, 10);
+    it('should register correct local-bounds with a LOADED Sprite',
+        checkRotations(function (parent)
+        {
+            const texture = PIXI.RenderTexture.create(10, 10);
 
-        const sprite = new PIXI.Sprite(texture);
+            const sprite = new PIXI.Sprite(texture);
 
-        parent.addChild(sprite);
+            parent.addChild(sprite);
 
-        let bounds = sprite.getLocalBounds();
+            let bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
 
-        sprite.position.x = 20;
-        sprite.position.y = 20;
+            sprite.position.x = 20;
+            sprite.position.y = 20;
 
-        sprite.scale.x = 2;
-        sprite.scale.y = 2;
+            sprite.scale.x = 2;
+            sprite.scale.y = 2;
 
-        bounds = sprite.getLocalBounds();
+            bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
-    });
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
+        }));
 
-    it('should register correct local-bounds with Graphics', function ()
-    {
-        const parent = new PIXI.Container();
+    it('should register correct local-bounds with Graphics',
+        checkRotations(function (parent)
+        {
+            const graphics = new PIXI.Graphics();
 
-        const graphics = new PIXI.Graphics();
+            graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
+            parent.addChild(graphics);
 
-        parent.addChild(graphics);
+            const bounds = graphics.getLocalBounds();
 
-        const bounds = graphics.getLocalBounds();
+            expect(bounds.x).to.equal(-10);
+            expect(bounds.y).to.equal(-10);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
+        }));
 
-        expect(bounds.x).to.equal(-10);
-        expect(bounds.y).to.equal(-10);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
-    });
+    it('should register correct local-bounds with Graphics after clear',
+        checkRotations(function (parent)
+        {
+            const graphics = new PIXI.Graphics();
 
-    it('should register correct local-bounds with Graphics after clear', function ()
-    {
-        const parent = new PIXI.Container();
+            graphics.beginFill(0xFF0000).drawRect(0, 0, 20, 20);
 
-        const graphics = new PIXI.Graphics();
+            parent.addChild(graphics);
 
-        graphics.beginFill(0xFF0000).drawRect(0, 0, 20, 20);
+            let bounds = graphics.getLocalBounds();
 
-        parent.addChild(graphics);
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
 
-        let bounds = graphics.getLocalBounds();
+            graphics.clear();
+            graphics.beginFill(0xFF, 1);
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+            bounds = graphics.getLocalBounds();
 
-        graphics.clear();
-        graphics.beginFill(0xFF, 1);
-        graphics.drawRect(0, 0, 10, 10);
-        graphics.endFill();
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
+        }));
 
-        bounds = graphics.getLocalBounds();
+    it('should register correct local-bounds with Graphics after generateCanvasTexture and clear',
+        checkRotations(function (parent)
+        {
+            const graphics = new PIXI.Graphics();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
-    });
+            graphics.beginFill(0xFF0000).drawRect(0, 0, 20, 20);
 
-    it('should register correct local-bounds with Graphics after generateCanvasTexture and clear', function ()
-    {
-        const parent = new PIXI.Container();
+            parent.addChild(graphics);
 
-        const graphics = new PIXI.Graphics();
+            let bounds = graphics.getLocalBounds();
 
-        graphics.beginFill(0xFF0000).drawRect(0, 0, 20, 20);
+            graphics.generateCanvasTexture();
 
-        parent.addChild(graphics);
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(20);
 
-        let bounds = graphics.getLocalBounds();
+            graphics.clear();
+            graphics.beginFill(0xFF, 1);
+            graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
 
-        graphics.generateCanvasTexture();
+            bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
+        }));
 
-        graphics.clear();
-        graphics.beginFill(0xFF, 1);
-        graphics.drawRect(0, 0, 10, 10);
-        graphics.endFill();
+    it('should register correct local-bounds with an empty Container',
+        checkRotations(function (parent)
+        {
+            const container = new PIXI.Container();
 
-        bounds = graphics.getLocalBounds();
+            parent.addChild(container);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
-    });
+            const bounds = container.getLocalBounds();
 
-    it('should register correct local-bounds with an empty Container', function ()
-    {
-        const parent = new PIXI.Container();
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(0);
+            expect(bounds.height).to.equal(0);
+        }));
 
-        const container = new PIXI.Container();
+    it('should register correct local-bounds with an item that has already had its parent Container transformed',
+        checkRotations(function (parent)
+        {
+            const container = new PIXI.Container();
 
-        parent.addChild(container);
+            const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
-        const bounds = container.getLocalBounds();
+            parent.addChild(container);
+            container.addChild(graphics);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
-    });
+            container.position.x = 100;
+            container.position.y = 100;
 
-    it('should register correct local-bounds with an item that has already had its parent Container transformed', function ()
-    {
-        const parent = new PIXI.Container();
+            const bounds = container.getLocalBounds();
 
-        const container = new PIXI.Container();
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
+        }));
 
-        const graphics = new PIXI.Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
+    it('should register correct local-bounds with a Mesh',
+        checkRotations(function (parent)
+        {
+            const texture = PIXI.RenderTexture.create(10, 10);
 
-        parent.addChild(container);
-        container.addChild(graphics);
+            const plane = new PIXI.mesh.Plane(texture);
 
-        container.position.x = 100;
-        container.position.y = 100;
+            parent.addChild(plane);
 
-        const bounds = container.getLocalBounds();
+            plane.position.x = 20;
+            plane.position.y = 20;
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
-    });
+            const bounds = plane.getLocalBounds();
 
-    it('should register correct local-bounds with a Mesh', function ()
-    {
-        const parent = new PIXI.Container();
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(10);
+            expect(bounds.height).to.equal(10);
+        }));
 
-        const texture = PIXI.RenderTexture.create(10, 10);
+    it('should register correct local-bounds with a cacheAsBitmap item inside after a render',
+        checkRotations(function (parent)
+        {
+            const graphic = new PIXI.Graphics();
 
-        const plane = new PIXI.mesh.Plane(texture);
+            graphic.beginFill(0xffffff);
+            graphic.drawRect(0, 0, 100, 100);
+            graphic.endFill();
+            graphic.cacheAsBitmap = true;
 
-        parent.addChild(plane);
+            parent.addChild(graphic);
 
-        plane.position.x = 20;
-        plane.position.y = 20;
+            const renderer = new PIXI.CanvasRenderer(100, 100);
 
-        const bounds = plane.getLocalBounds();
+            renderer.sayHello = () => { /* empty */ };
+            renderer.render(parent);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
-    });
+            const bounds = parent.getLocalBounds();
 
-    it('should register correct local-bounds with a cachAsBitmap item inside after a render', function ()
-    {
-        const parent = new PIXI.Container();
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(100);
+            expect(bounds.height).to.equal(100);
+        }));
 
-        const graphic = new PIXI.Graphics();
+    it('should register correct local-bounds with a Text',
+        checkAllModes(function ()
+        {
+            const text = new PIXI.Text('hello');
+            const bounds = text.getLocalBounds();
 
-        graphic.beginFill(0xffffff);
-        graphic.drawRect(0, 0, 100, 100);
-        graphic.endFill();
-        graphic.cacheAsBitmap = true;
+            expect(bounds.width).to.not.equal(0);
+            expect(bounds.height).to.not.equal(0);
+        }));
 
-        parent.addChild(graphic);
+    it('should consider using getBounds() if not rotated',
+        function ()
+        {
+            const parent = new PIXI.Container();
 
-        const renderer = new PIXI.CanvasRenderer(100, 100);
+            const texture = PIXI.RenderTexture.create(10, 10);
 
-        renderer.sayHello = () => { /* empty */ };
-        renderer.render(parent);
+            const sprite = new PIXI.Sprite(texture);
 
-        const bounds = parent.getLocalBounds();
+            parent.addChild(sprite);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(100);
-        expect(bounds.height).to.equal(100);
-    });
+            expect(sprite.hasEasyLocalBounds()).to.be.true;
 
-    it('should register correct local-bounds with a Text', function ()
-    {
-        const text = new PIXI.Text('hello');
-        const bounds = text.getLocalBounds();
+            parent.rotation = Math.PI / 4;
 
-        expect(bounds.width).to.not.equal(0);
-        expect(bounds.height).to.not.equal(0);
-    });
+            expect(sprite.hasEasyLocalBounds()).to.be.false;
+        });
 });

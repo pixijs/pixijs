@@ -470,6 +470,18 @@ export default class Matrix
     }
 
     /**
+     * Has only scale and position
+     *
+     * @return {boolean} true if we can forget abot rotations
+     */
+    isEasyToApply()
+    {
+        return (this.b === 0) && (this.c === 0)
+            && Math.abs(this.a) > 1e-5 && Math.abs(this.a) < 1e+5
+            && Math.abs(this.d) > 1e-5 && Math.abs(this.d) < 1e+5;
+    }
+
+    /**
      * A default (identity) matrix
      *
      * @static
