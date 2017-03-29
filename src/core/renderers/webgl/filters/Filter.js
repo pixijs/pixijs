@@ -87,6 +87,14 @@ export default class Filter
          * @member {boolean}
          */
         this.enabled = true;
+
+        /**
+         * If enabled, pixi will fit the filter area into boundaries for better performance.
+         * Switch it off if it does not work for specific shader.
+         *
+         * @member {boolean}
+         */
+        this.autoFit = true;
     }
 
     /**
