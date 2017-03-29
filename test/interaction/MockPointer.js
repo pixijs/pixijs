@@ -30,6 +30,7 @@ class MockPointer
             this.createdPointerEvent = true;
         }
 
+        this.activeTouches = [];
         this.stage = stage;
         this.renderer = new PIXI.CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
@@ -188,11 +189,13 @@ class MockPointer
      */
     touchstart(x, y, identifier)
     {
+        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+
+        this.activeTouches.push(touch);
         const touchEvent = new TouchEvent('touchstart', {
             preventDefault: sinon.stub(),
-            changedTouches: [
-                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
-            ],
+            changedTouches: [touch],
+            touches: this.activeTouches,
         });
 
         this.setPosition(x, y);
@@ -205,13 +208,41 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
      */
+    touchmove(x, y, identifier)
+    {
+        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+        const touchEvent = new TouchEvent('touchmove', {
+            preventDefault: sinon.stub(),
+            changedTouches: [touch],
+            touches: this.activeTouches,
+        });
+
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onPointerMove(touchEvent);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
     touchend(x, y, identifier)
     {
+        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+
+        for (let i = 0; i < this.activeTouches.length; ++i)
+        {
+            if (this.activeTouches[i].identifier === touch.identifier)
+            {
+                this.activeTouches.splice(i, 1);
+                break;
+            }
+        }
         const touchEvent = new TouchEvent('touchend', {
             preventDefault: sinon.stub(),
-            changedTouches: [
-                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
-            ],
+            changedTouches: [touch],
+            touches: this.activeTouches,
         });
 
         this.setPosition(x, y);
@@ -226,11 +257,20 @@ class MockPointer
      */
     touchleave(x, y, identifier)
     {
+        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+
+        for (let i = 0; i < this.activeTouches.length; ++i)
+        {
+            if (this.activeTouches[i].identifier === touch.identifier)
+            {
+                this.activeTouches.splice(i, 1);
+                break;
+            }
+        }
         const touchEvent = new TouchEvent('touchleave', {
             preventDefault: sinon.stub(),
-            changedTouches: [
-                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
-            ],
+            changedTouches: [touch],
+            touches: this.activeTouches,
         });
 
         this.setPosition(x, y);
