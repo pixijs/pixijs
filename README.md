@@ -43,15 +43,7 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 
 ### Setup ###
 
-It's easy to get started with Pixi.js! Simply grab the pre-built versions from here:
-
-Release Branch - Nice and stable Pixi.js
-- Unminified: [http://pixijs.download/release/pixi.js]
-- Minified: [http://pixijs.download/release/pixi.min.js]
-
-Develop Branch - The bleeding edge version of Pixi.js
-- Unminified: [http://pixijs.download/dev/pixi.js]
-- Minified: [http://pixijs.download/dev/pixi.min.js]
+It's easy to get started with Pixi.js! Simply download a [prebuilt build](https://github.com/pixijs/pixi.js/wiki/FAQs#where-can-i-get-a-build)!
 
 Alternatively, Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [npm](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page.
 
@@ -70,10 +62,10 @@ $> npm install pixi.js
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.2.2/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"></script>
 ```
 
-_Note: `4.2.2` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.4.3` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
@@ -130,7 +122,7 @@ before submitting changes.
 // and the root stage PIXI.Container.
 var app = new PIXI.Application();
 
-// The application will create a canvas element for you that you 
+// The application will create a canvas element for you that you
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
@@ -150,7 +142,7 @@ PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
 
     // Add the bunny to the scene we are building.
     app.stage.addChild(bunny);
-    
+
     // Listen for frame updates
     app.ticker.add(function() {
          // each frame we spin the bunny around a bit
