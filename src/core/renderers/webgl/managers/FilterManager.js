@@ -106,8 +106,7 @@ export default class FilterManager extends WebGLManager
 
             // TODO we should fit the rect around the transform..
         }
-        else
-        if (filters[0].autoFit)
+        else if (filters[0].autoFit)
         {
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }
