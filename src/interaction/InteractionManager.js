@@ -13,6 +13,14 @@ core.utils.mixins.delayMixin(
 
 const MOUSE_POINTER_ID = 'MOUSE';
 
+// helpers for hitTest() - only used inside hitTest()
+const hitTestEvent = {
+    target: null,
+    data: {
+        global: null,
+    },
+};
+
 /**
  * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -456,6 +464,32 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
+     * Hit tests a point against the display tree, returning the first interactive object that is hit.
+     *
+     * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
+     * @param {PIXI.Container} [root] - The root display object to start from. If omitted, defaults
+     * to the last rendered root of the associated renderer.
+     * @return {PIXI.DisplayObject} The hit display object, if any.
+     */
+    hitTest(globalPoint, root)
+    {
+        // clear the target for our hit test
+        hitTestEvent.target = null;
+        // assign the global point
+        hitTestEvent.data.global = globalPoint;
+        // ensure safety of the root
+        if (!root)
+        {
+            root = this.renderer._lastObjectRendered;
+        }
+        // run the hit test
+        this.processInteractive(hitTestEvent, root, null, true);
+        // return our found object - it'll be null if we didn't hit anything
+
+        return hitTestEvent.target;
+    }
+
+    /**
      * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
      * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
      * another DOM element to receive those events.
@@ -881,7 +915,10 @@ export default class InteractionManager extends EventEmitter
                     interactionEvent.target = displayObject;
                 }
 
-                func(interactionEvent, displayObject, !!hit);
+                if (func)
+                {
+                    func(interactionEvent, displayObject, !!hit);
+                }
             }
         }
 
