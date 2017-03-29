@@ -231,12 +231,12 @@ export default class Ticker
     {
         // For attaching to head
         let current = this._head.next;
-        let last = this._head;
+        let previous = this._head;
 
         // Add the first item
         if (!current)
         {
-            listener.connect(last);
+            listener.connect(previous);
         }
         else
         {
@@ -245,17 +245,17 @@ export default class Ticker
             {
                 if (listener.priority >= current.priority)
                 {
-                    listener.connect(last);
+                    listener.connect(previous);
                     break;
                 }
-                last = current;
+                previous = current;
                 current = current.next;
             }
 
             // Not yet connected
             if (!listener.previous)
             {
-                listener.connect(last);
+                listener.connect(previous);
             }
         }
 
