@@ -13,12 +13,6 @@ core.utils.mixins.delayMixin(
 
 const MOUSE_POINTER_ID = 'MOUSE';
 
-// private constants for use in processInteractive - tracks whether we hit anything at all, or an
-// actual interactive child, so that we can keep that state going back up the display tree
-const HIT_NONE = 0;
-const HIT_ANY = 1;
-const HIT_INTERACTIVE = 2;
-
 /**
  * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -767,7 +761,7 @@ export default class InteractionManager extends EventEmitter
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
      * @param {boolean} [interactive] - Whether the displayObject is interactive
-     * @return {number} returns 1 or 2 if the displayObject hit the point, 0 if not
+     * @return {boolean} returns true if the displayObject hit the point
      */
     processInteractive(interactionEvent, displayObject, func, hitTest, interactive)
     {
@@ -793,7 +787,7 @@ export default class InteractionManager extends EventEmitter
 
         interactive = displayObject.interactive || interactive;
 
-        let hit = HIT_NONE;
+        let hit = false;
         let interactiveParent = interactive;
 
         // if the displayobject has a hitArea, then it does not need to hitTest children.
@@ -842,14 +836,13 @@ export default class InteractionManager extends EventEmitter
                     // This means we no longer need to hit test anything else. We still need to run
                     // through all objects, but we don't need to perform any hit tests.
 
-                    if (childHit === HIT_INTERACTIVE)
+                    if (childHit)
                     {
-                        hitTest = false;
-                        hit = HIT_INTERACTIVE;
-                    }
-                    else if (hit === HIT_NONE)
-                    {
-                        hit = HIT_ANY;
+                        if (interactionEvent.target)
+                        {
+                            hitTest = false;
+                        }
+                        hit = true;
                     }
                 }
             }
@@ -862,21 +855,21 @@ export default class InteractionManager extends EventEmitter
             // We also don't need to worry about hit testing if once of the displayObjects children
             // has already been hit - but only if it was interactive, otherwise we need to keep
             // looking for an interactive child, just in case we hit one
-            if (hitTest && hit !== HIT_INTERACTIVE)
+            if (hitTest && !interactionEvent.target)
             {
                 if (displayObject.hitArea)
                 {
                     displayObject.worldTransform.applyInverse(point, this._tempPoint);
                     if (displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y))
                     {
-                        hit = displayObject.interactive ? HIT_INTERACTIVE : HIT_ANY;
+                        hit = true;
                     }
                 }
                 else if (displayObject.containsPoint)
                 {
                     if (displayObject.containsPoint(point))
                     {
-                        hit = displayObject.interactive ? HIT_INTERACTIVE : HIT_ANY;
+                        hit = true;
                     }
                 }
             }
