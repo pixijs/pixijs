@@ -468,11 +468,11 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
+     * Adds a Texture to the global TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
      * @param {PIXI.Texture} texture - The Texture to add to the cache.
-     * @param {string} id - The id that the texture will be stored against.
+     * @param {string} id - The id that the Texture will be stored against.
      */
     static addToCache(texture, id)
     {
@@ -483,25 +483,51 @@ export default class Texture extends EventEmitter
                 texture.textureCacheId = id;
             }
 
+            // @if DEBUG
+            /* eslint-disable no-console */
+            if (TextureCache[id])
+            {
+                console.warn(`Texture added to the cache with an id [${id}] that already had an entry`);
+            }
+            /* eslint-enable no-console */
+            // @endif
+
             TextureCache[id] = texture;
         }
     }
 
     /**
-     * Remove a texture from the global TextureCache.
+     * Remove a Texture from the global TextureCache.
      *
      * @static
-     * @param {string} id - The id of the texture to be removed
-     * @return {PIXI.Texture|null} The texture that was removed
+     * @param {string|PIXI.Texture} texture - id of a Texture to be removed, or a Texture instance itself
+     * @return {PIXI.Texture|null} The Texture that was removed
      */
-    static removeFromCache(id)
+    static removeFromCache(texture)
     {
-        const texture = TextureCache[id];
-
-        if (texture)
+        if (typeof texture === 'string')
         {
+            const textureFromCache = TextureCache[texture];
+
+            if (textureFromCache)
+            {
+                textureFromCache.textureCacheId = null;
+                delete TextureCache[texture];
+
+                return textureFromCache;
+            }
+        }
+        else
+        {
+            for (const prop in TextureCache)
+            {
+                if (TextureCache[prop] === texture)
+                {
+                    delete TextureCache[prop];
+                }
+            }
+
             texture.textureCacheId = null;
-            delete TextureCache[id];
 
             return texture;
         }

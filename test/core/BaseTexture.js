@@ -1,11 +1,28 @@
 'use strict';
 
+const URL = 'foo.png';
+const NAME = 'foo';
+const NAME2 = 'bar';
+
+function cleanCache()
+{
+    delete PIXI.utils.BaseTextureCache[URL];
+    delete PIXI.utils.BaseTextureCache[NAME];
+    delete PIXI.utils.BaseTextureCache[NAME2];
+
+    delete PIXI.utils.TextureCache[URL];
+    delete PIXI.utils.TextureCache[NAME];
+    delete PIXI.utils.TextureCache[NAME2];
+}
+
 describe('BaseTexture', function ()
 {
     describe('updateImageType', function ()
     {
         it('should allow no extension', function ()
         {
+            cleanCache();
+
             const baseTexture = new PIXI.BaseTexture();
 
             baseTexture.imageUrl = 'http://some.domain.org/100/100';
@@ -17,6 +34,8 @@ describe('BaseTexture', function ()
 
     it('should remove Canvas BaseTexture from cache on destroy', function ()
     {
+        cleanCache();
+
         const canvas = document.createElement('canvas');
         const texture = PIXI.BaseTexture.fromCanvas(canvas);
         const _pixiId = canvas._pixiId;
@@ -28,8 +47,8 @@ describe('BaseTexture', function ()
 
     it('should remove Image BaseTexture from cache on destroy', function ()
     {
-        const URL = 'foo.png';
-        const NAME = 'bar';
+        cleanCache();
+
         const image = new Image();
 
         const texture = PIXI.Texture.fromLoader(image, URL, NAME);
@@ -37,5 +56,37 @@ describe('BaseTexture', function ()
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         texture.destroy(true);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
+    });
+
+    it('should remove BaseTexture from entire cache using removeFromCache (by BaseTexture instance)', function ()
+    {
+        cleanCache();
+
+        const baseTexture = new PIXI.BaseTexture();
+
+        PIXI.BaseTexture.addToCache(baseTexture, NAME);
+        PIXI.BaseTexture.addToCache(baseTexture, NAME2);
+        expect(baseTexture.textureCacheId).to.equal(NAME);
+        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(baseTexture);
+        expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
+        PIXI.BaseTexture.removeFromCache(baseTexture);
+        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
+        expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(undefined);
+    });
+
+    it('should remove BaseTexture from single cache entry using removeFromCache (by id)', function ()
+    {
+        cleanCache();
+
+        const baseTexture = new PIXI.BaseTexture();
+
+        PIXI.BaseTexture.addToCache(baseTexture, NAME);
+        PIXI.BaseTexture.addToCache(baseTexture, NAME2);
+        expect(baseTexture.textureCacheId).to.equal(NAME);
+        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(baseTexture);
+        expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
+        PIXI.BaseTexture.removeFromCache(NAME);
+        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
+        expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
     });
 });

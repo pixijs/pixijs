@@ -770,11 +770,11 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Adds a texture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
+     * Adds a BaseTexture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
      * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
-     * @param {string} id - The id that the base texture will be stored against.
+     * @param {string} id - The id that the BaseTexture will be stored against.
      */
     static addToCache(baseTexture, id)
     {
@@ -785,25 +785,51 @@ export default class BaseTexture extends EventEmitter
                 baseTexture.textureCacheId = id;
             }
 
+            // @if DEBUG
+            /* eslint-disable no-console */
+            if (BaseTextureCache[id])
+            {
+                console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);
+            }
+            /* eslint-enable no-console */
+            // @endif
+
             BaseTextureCache[id] = baseTexture;
         }
     }
 
     /**
-     * Remove a texture from the global BaseTextureCache.
+     * Remove a BaseTexture from the global BaseTextureCache.
      *
      * @static
-     * @param {string} id - The id of the base texture to be removed
-     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed
+     * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
+     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
      */
-    static removeFromCache(id)
+    static removeFromCache(baseTexture)
     {
-        const baseTexture = BaseTextureCache[id];
-
-        if (baseTexture)
+        if (typeof baseTexture === 'string')
         {
+            const baseTextureFromCache = BaseTextureCache[baseTexture];
+
+            if (baseTextureFromCache)
+            {
+                baseTextureFromCache.textureCacheId = null;
+                delete BaseTextureCache[baseTexture];
+
+                return baseTextureFromCache;
+            }
+        }
+        else
+        {
+            for (const prop in BaseTextureCache)
+            {
+                if (BaseTextureCache[prop] === baseTexture)
+                {
+                    delete BaseTextureCache[prop];
+                }
+            }
+
             baseTexture.textureCacheId = null;
-            delete BaseTextureCache[id];
 
             return baseTexture;
         }

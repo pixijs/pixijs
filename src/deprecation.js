@@ -848,15 +848,15 @@ core.Texture.addTextureToCache = function addTextureToCache(texture, id)
 /**
  * @static
  * @function
- * @name PIXI.Texture.removeFromTextureCache
+ * @name PIXI.Texture.removeTextureFromCache
  * @see PIXI.Texture.removeFromCache
  * @deprecated since 4.5.0
  * @param {string} id - The id of the texture to be removed
  * @return {PIXI.Texture|null} The texture that was removed
  */
-core.Texture.removeFromTextureCache = function removeFromTextureCache(id)
+core.Texture.removeTextureFromCache = function removeTextureFromCache(id)
 {
-    warn('Texture.removeFromTextureCache is deprecated, please use Texture.removeFromCache from now on. '
+    warn('Texture.removeTextureFromCache is deprecated, please use Texture.removeFromCache from now on. '
      + 'Be aware that Texture.removeFromCache does not automatically its BaseTexture from the BaseTextureCache. '
      + 'For that, use BaseTexture.removeFromCache');
 
