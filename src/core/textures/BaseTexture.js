@@ -798,7 +798,7 @@ export default class BaseTexture extends EventEmitter
      */
     static removeFromCache(id)
     {
-        const baseTexture = TextureCache[id];
+        const baseTexture = BaseTextureCache[id];
 
         if (baseTexture)
         {
