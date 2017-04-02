@@ -196,12 +196,6 @@ export default class BaseTexture extends EventEmitter
         this._enabled = 0;
         this._virtalBoundId = -1;
 
-        // if no source passed don't try to load
-        if (source)
-        {
-            this.loadSource(source);
-        }
-
         /**
          * If the object has been destroyed via destroy(). If true, it should not be used.
          *
@@ -210,6 +204,21 @@ export default class BaseTexture extends EventEmitter
          * @readonly
          */
         this._destroyed = false;
+
+        /**
+         * The id under which this BaseTexture has been added to the base texture cache. This is
+         * automatically set in certain cases, but may not always be accurate, particularly if
+         * the base texture is in the cache under multiple ids.
+         *
+         * @member {string}
+         */
+        this.textureCacheId = null;
+
+        // if no source passed don't try to load
+        if (source)
+        {
+            this.loadSource(source);
+        }
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -561,7 +570,7 @@ export default class BaseTexture extends EventEmitter
         this.source = canvas;
 
         // Add also the canvas in cache (destroy clears by `imageUrl` and `source._pixiId`)
-        BaseTexture.addBaseTextureToCache(this, canvas._pixiId);
+        BaseTexture.addToCache(this, canvas._pixiId);
 
         this.isLoading = false;
         this._sourceLoaded();
@@ -602,6 +611,7 @@ export default class BaseTexture extends EventEmitter
 
         this.dispose();
 
+        this.textureCacheId = null;
         for (const prop in BaseTextureCache)
         {
             if (BaseTextureCache[prop] === this)
@@ -609,6 +619,7 @@ export default class BaseTexture extends EventEmitter
                 delete BaseTextureCache[prop];
             }
         }
+
         this._destroyed = true;
     }
 
@@ -675,7 +686,7 @@ export default class BaseTexture extends EventEmitter
 
             image.src = imageUrl; // Setting this triggers load
 
-            BaseTexture.addBaseTextureToCache(baseTexture, imageUrl);
+            BaseTexture.addToCache(baseTexture, imageUrl);
         }
 
         return baseTexture;
@@ -704,7 +715,7 @@ export default class BaseTexture extends EventEmitter
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(canvas, scaleMode);
-            BaseTexture.addBaseTextureToCache(baseTexture, canvas._pixiId);
+            BaseTexture.addToCache(baseTexture, canvas._pixiId);
         }
 
         return baseTexture;
@@ -744,7 +755,7 @@ export default class BaseTexture extends EventEmitter
                 // if there is an @2x at the end of the url we are going to assume its a highres image
                 baseTexture.resolution = getResolutionOfUrl(imageUrl);
 
-                BaseTexture.addBaseTextureToCache(baseTexture, imageUrl);
+                BaseTexture.addToCache(baseTexture, imageUrl);
             }
 
             return baseTexture;
@@ -765,13 +776,13 @@ export default class BaseTexture extends EventEmitter
      * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
      * @param {string} id - The id that the base texture will be stored against.
      */
-    static addBaseTextureToCache(baseTexture, id)
+    static addToCache(baseTexture, id)
     {
         if (id)
         {
-            if (!baseTexture.baseTextureCacheId)
+            if (!baseTexture.textureCacheId)
             {
-                baseTexture.baseTextureCacheId = id;
+                baseTexture.textureCacheId = id;
             }
 
             BaseTextureCache[id] = baseTexture;
@@ -779,19 +790,19 @@ export default class BaseTexture extends EventEmitter
     }
 
     /**
-     * Remove a texture from the global TextureCache.
+     * Remove a texture from the global BaseTextureCache.
      *
      * @static
      * @param {string} id - The id of the base texture to be removed
      * @return {PIXI.BaseTexture|null} The BaseTexture that was removed
      */
-    static removeBaseTextureFromCache(id)
+    static removeFromCache(id)
     {
         const baseTexture = TextureCache[id];
 
         if (baseTexture)
         {
-            baseTexture.baseTextureCacheId = null;
+            baseTexture.textureCacheId = null;
 
             delete BaseTextureCache[id];
 

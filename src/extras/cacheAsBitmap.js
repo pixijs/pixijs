@@ -194,8 +194,8 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this._cacheData.textureCacheId = textureCacheId;
 
-    BaseTexture.addBaseTextureToCache(renderTexture.baseTexture, textureCacheId);
-    Texture.addTextureToCache(renderTexture, textureCacheId);
+    BaseTexture.addToCache(renderTexture.baseTexture, textureCacheId);
+    Texture.addToCache(renderTexture, textureCacheId);
 
     // need to set //
     const m = _tempMatrix;
@@ -305,8 +305,8 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     this._cacheData.textureCacheId = textureCacheId;
 
-    BaseTexture.addBaseTextureToCache(renderTexture.baseTexture, textureCacheId);
-    Texture.addTextureToCache(renderTexture, textureCacheId);
+    BaseTexture.addToCache(renderTexture.baseTexture, textureCacheId);
+    Texture.addToCache(renderTexture, textureCacheId);
 
     // need to set //
     const m = _tempMatrix;
@@ -391,8 +391,8 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
     this._cacheData.sprite._texture.destroy(true);
     this._cacheData.sprite = null;
 
-    BaseTexture.removeBaseTextureFromCache(this._cacheData.textureCacheId);
-    Texture.removeTextureFromCache(this._cacheData.textureCacheId);
+    BaseTexture.removeFromCache(this._cacheData.textureCacheId);
+    Texture.removeFromCache(this._cacheData.textureCacheId);
 
     this._cacheData.textureCacheId = null;
 };

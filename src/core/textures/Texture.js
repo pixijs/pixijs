@@ -232,7 +232,7 @@ export default class Texture extends EventEmitter
                 // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
-                    this.removeTextureFromCache(this.baseTexture.imageUrl);
+                    this.removeFromCache(this.baseTexture.imageUrl);
                 }
 
                 this.baseTexture.destroy();
@@ -248,10 +248,10 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
-        this.textureCacheId = null;
 
         this.valid = false;
 
+        this.textureCacheId = null;
         for (const prop in TextureCache)
         {
             if (TextureCache[prop] === this)
@@ -306,7 +306,7 @@ export default class Texture extends EventEmitter
         if (!texture)
         {
             texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
-            Texture.addTextureToCache(texture, imageUrl);
+            Texture.addToCache(texture, imageUrl);
         }
 
         return texture;
@@ -454,14 +454,14 @@ export default class Texture extends EventEmitter
         }
 
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-        BaseTexture.addBaseTextureToCache(texture, name);
-        Texture.addTextureToCache(texture, name);
+        BaseTexture.addToCache(texture, name);
+        Texture.addToCache(texture, name);
 
         // also add references by url if they are different.
         if (name !== imageUrl)
         {
-            BaseTexture.addBaseTextureToCache(texture, imageUrl);
-            Texture.addTextureToCache(texture, imageUrl);
+            BaseTexture.addToCache(texture, imageUrl);
+            Texture.addToCache(texture, imageUrl);
         }
 
         return texture;
@@ -474,7 +474,7 @@ export default class Texture extends EventEmitter
      * @param {PIXI.Texture} texture - The Texture to add to the cache.
      * @param {string} id - The id that the texture will be stored against.
      */
-    static addTextureToCache(texture, id)
+    static addToCache(texture, id)
     {
         if (id)
         {
@@ -494,7 +494,7 @@ export default class Texture extends EventEmitter
      * @param {string} id - The id of the texture to be removed
      * @return {PIXI.Texture|null} The texture that was removed
      */
-    static removeTextureFromCache(id)
+    static removeFromCache(id)
     {
         const texture = TextureCache[id];
 

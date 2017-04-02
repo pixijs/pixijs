@@ -50,7 +50,7 @@ export default class Text extends Sprite
         super(texture);
 
         // base texture is already automatically added to the cache, now adding the actual texture
-        Texture.addTextureToCache(this._texture, this._texture.baseTexture.baseTextureCacheId);
+        Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheId);
 
         /**
          * The canvas element that everything is drawn to
