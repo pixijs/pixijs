@@ -232,7 +232,7 @@ export default class Texture extends EventEmitter
                 // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
-                    this.removeFromCache(this.baseTexture.imageUrl);
+                    Texture.removeFromCache(this.baseTexture.imageUrl);
                 }
 
                 this.baseTexture.destroy();
@@ -454,13 +454,13 @@ export default class Texture extends EventEmitter
         }
 
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-        BaseTexture.addToCache(texture, name);
+        BaseTexture.addToCache(texture.baseTexture, name);
         Texture.addToCache(texture, name);
 
         // also add references by url if they are different.
         if (name !== imageUrl)
         {
-            BaseTexture.addToCache(texture, imageUrl);
+            BaseTexture.addToCache(texture.baseTexture, imageUrl);
             Texture.addToCache(texture, imageUrl);
         }
 
