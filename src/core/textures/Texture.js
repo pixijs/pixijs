@@ -623,6 +623,7 @@ function removeAllHandlers(tex)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 removeAllHandlers(Texture.EMPTY);
+removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
  * A white texture of 10x10 size, used for graphics and other things
@@ -633,3 +634,4 @@ removeAllHandlers(Texture.EMPTY);
  */
 Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);
+removeAllHandlers(Texture.WHITE.baseTexture);

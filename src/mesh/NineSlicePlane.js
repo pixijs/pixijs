@@ -115,6 +115,8 @@ export default class NineSlicePlane extends Plane
          * @override
          */
         this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+
+        this.refresh(true);
     }
 
     /**

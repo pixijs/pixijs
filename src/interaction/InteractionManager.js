@@ -13,6 +13,14 @@ core.utils.mixins.delayMixin(
 
 const MOUSE_POINTER_ID = 'MOUSE';
 
+// helpers for hitTest() - only used inside hitTest()
+const hitTestEvent = {
+    target: null,
+    data: {
+        global: null,
+    },
+};
+
 /**
  * The interaction manager deals with mouse, touch and pointer events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -245,7 +253,7 @@ export default class InteractionManager extends EventEmitter
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is pressed on the display
+         * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
          * object.
          *
          * @event mousedown
@@ -263,7 +271,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is released over the display
+         * Fired when a pointer device button (usually a mouse left-button) is released over the display
          * object.
          *
          * @event mouseup
@@ -281,7 +289,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is pressed and released on
+         * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
          * the display object.
          *
          * @event click
@@ -299,7 +307,7 @@ export default class InteractionManager extends EventEmitter
          */
 
         /**
-         * Fired when a pointer device button (usually a mouse button) is released outside the
+         * Fired when a pointer device button (usually a mouse left-button) is released outside the
          * display object that initially registered a
          * [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
          *
@@ -456,6 +464,32 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
+     * Hit tests a point against the display tree, returning the first interactive object that is hit.
+     *
+     * @param {PIXI.Point} globalPoint - A point to hit test with, in global space.
+     * @param {PIXI.Container} [root] - The root display object to start from. If omitted, defaults
+     * to the last rendered root of the associated renderer.
+     * @return {PIXI.DisplayObject} The hit display object, if any.
+     */
+    hitTest(globalPoint, root)
+    {
+        // clear the target for our hit test
+        hitTestEvent.target = null;
+        // assign the global point
+        hitTestEvent.data.global = globalPoint;
+        // ensure safety of the root
+        if (!root)
+        {
+            root = this.renderer._lastObjectRendered;
+        }
+        // run the hit test
+        this.processInteractive(hitTestEvent, root, null, true);
+        // return our found object - it'll be null if we didn't hit anything
+
+        return hitTestEvent.target;
+    }
+
+    /**
      * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
      * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
      * another DOM element to receive those events.
@@ -487,7 +521,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        core.ticker.shared.add(this.update, this);
+        core.ticker.shared.add(this.update, this, core.UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -804,8 +838,6 @@ export default class InteractionManager extends EventEmitter
             }
         }
 
-        let keepHitTestingAfterChildren = hitTest;
-
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow pixi to completely ignore and bypass checking the displayObjects children.
@@ -818,7 +850,9 @@ export default class InteractionManager extends EventEmitter
                 const child = children[i];
 
                 // time to get recursive.. if this function will return if something is hit..
-                if (this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent))
+                const childHit = this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent);
+
+                if (childHit)
                 {
                     // its a good idea to check if a child has lost its parent.
                     // this means it has been removed whilst looping so its best
@@ -826,8 +860,6 @@ export default class InteractionManager extends EventEmitter
                     {
                         continue;
                     }
-
-                    hit = true;
 
                     // we no longer need to hit test any more objects in this container as we we
                     // now know the parent has been hit
@@ -838,36 +870,41 @@ export default class InteractionManager extends EventEmitter
                     // This means we no longer need to hit test anything else. We still need to run
                     // through all objects, but we don't need to perform any hit tests.
 
-                    keepHitTestingAfterChildren = false;
-
-                    if (child.interactive)
+                    if (childHit)
                     {
-                        hitTest = false;
+                        if (interactionEvent.target)
+                        {
+                            hitTest = false;
+                        }
+                        hit = true;
                     }
-
-                    // we can break now as we have hit an object.
                 }
             }
         }
-
-        hitTest = keepHitTestingAfterChildren;
 
         // no point running this if the item is not interactive or does not have an interactive parent.
         if (interactive)
         {
             // if we are hit testing (as in we have no hit any objects yet)
             // We also don't need to worry about hit testing if once of the displayObjects children
-            // has already been hit!
-            if (hitTest && !hit)
+            // has already been hit - but only if it was interactive, otherwise we need to keep
+            // looking for an interactive child, just in case we hit one
+            if (hitTest && !interactionEvent.target)
             {
                 if (displayObject.hitArea)
                 {
                     displayObject.worldTransform.applyInverse(point, this._tempPoint);
-                    hit = displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y);
+                    if (displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y))
+                    {
+                        hit = true;
+                    }
                 }
                 else if (displayObject.containsPoint)
                 {
-                    hit = displayObject.containsPoint(point);
+                    if (displayObject.containsPoint(point))
+                    {
+                        hit = true;
+                    }
                 }
             }
 
@@ -878,7 +915,10 @@ export default class InteractionManager extends EventEmitter
                     interactionEvent.target = displayObject;
                 }
 
-                func(interactionEvent, displayObject, hit);
+                if (func)
+                {
+                    func(interactionEvent, displayObject, !!hit);
+                }
             }
         }
 
@@ -1267,6 +1307,12 @@ export default class InteractionManager extends EventEmitter
         if (event.pointerType === 'mouse')
         {
             this.emit('mouseout', interactionEvent);
+        }
+        else
+        {
+            // we can get touchleave events after touchend, so we want to make sure we don't
+            // introduce memory leaks
+            this.releaseInteractionDataForPointerId(interactionData.identifier);
         }
     }
 
