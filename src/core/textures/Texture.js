@@ -501,7 +501,6 @@ export default class Texture extends EventEmitter
         if (texture)
         {
             texture.textureCacheId = null;
-
             delete TextureCache[id];
 
             return texture;

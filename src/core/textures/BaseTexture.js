@@ -803,7 +803,6 @@ export default class BaseTexture extends EventEmitter
         if (baseTexture)
         {
             baseTexture.textureCacheId = null;
-
             delete BaseTextureCache[id];
 
             return baseTexture;
