@@ -299,4 +299,17 @@ describe('PIXI.ticker.Ticker', function ()
 
         expect(this.length()).to.equal(length);
     });
+
+    it('should destroy on listener', function (done)
+    {
+        const ticker = new Ticker();
+        const listener = sinon.spy(() =>
+        {
+            ticker.destroy();
+            done();
+        });
+
+        ticker.add(listener);
+        ticker.start();
+    });
 });
