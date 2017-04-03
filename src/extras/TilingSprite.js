@@ -180,9 +180,9 @@ export default class TilingSprite extends core.Sprite
         const transform = this.worldTransform;
         const resolution = renderer.resolution;
         const baseTexture = texture.baseTexture;
-        const baseTextureResolution = texture.baseTexture.resolution;
-        const modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width;
-        const modY = (this.tilePosition.y / this.tileScale.y) % texture._frame.height;
+        const baseTextureResolution = baseTexture.resolution;
+        const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
+        const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
         // TODO this needs to be refreshed if texture changes..
