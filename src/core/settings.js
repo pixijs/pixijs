@@ -2,6 +2,8 @@ import maxRecommendedTextures from './utils/maxRecommendedTextures';
 import canUploadSameBuffer from './utils/canUploadSameBuffer';
 
 /**
+ * User's customizable globals for overriding the default PIXI settings, such
+ * as a renderer's default resolution, framerate, float percision, etc. 
  * @namespace PIXI.settings
  */
 export default {

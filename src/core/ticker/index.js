@@ -53,6 +53,9 @@ shared.destroy = () =>
 };
 
 /**
+ * This namespaces contains an API for interacting with PIXI's internal global loop.
+ *
+ * This ticker is used for rendering, {@link PIXI.extras.AnimatedSprite AnimatedSprite}, {@link PIXI.interaction.InteractionManager InteractionManager} and many other time-based PIXI systems.
  * @namespace PIXI.ticker
  */
 export { shared, Ticker };
