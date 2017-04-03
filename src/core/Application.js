@@ -2,6 +2,7 @@ import { autoDetectRenderer } from './autoDetectRenderer';
 import Container from './display/Container';
 import { shared, Ticker } from './ticker';
 import settings from './settings';
+import { UPDATE_PRIORITY } from './const';
 
 /**
  * Convenience class to create a new PIXI application.
@@ -97,7 +98,7 @@ export default class Application
         this._ticker = ticker;
         if (ticker)
         {
-            ticker.add(this.render, this);
+            ticker.add(this.render, this, UPDATE_PRIORITY.LOW);
         }
     }
     get ticker() // eslint-disable-line require-jsdoc
@@ -155,8 +156,11 @@ export default class Application
      */
     destroy(removeView)
     {
-        this.stop();
+        const oldTicker = this._ticker;
+
         this.ticker = null;
+
+        oldTicker.destroy();
 
         this.stage.destroy();
         this.stage = null;

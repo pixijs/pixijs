@@ -521,7 +521,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        core.ticker.shared.add(this.update, this);
+        core.ticker.shared.add(this.update, this, core.UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
