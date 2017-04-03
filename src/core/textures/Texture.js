@@ -171,12 +171,12 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * Called when the base texture is loaded
+     * Called when the base texture is updated
      *
      * @private
      * @param {PIXI.BaseTexture} baseTexture - The base texture.
      */
-    onBaseTextureLoaded(baseTexture)
+    onBaseTextureUpdated(baseTexture)
     {
         this._updateID++;
 
@@ -188,25 +188,9 @@ export default class Texture extends EventEmitter
         else
         {
             this.frame = this._frame;
+            // TODO maybe watch out for the no frame option
+            // updating the texture will should update the frame if it was set to no frame..
         }
-
-        this.baseTexture.on('update', this.onBaseTextureUpdated, this);
-        this.emit('update', this);
-    }
-
-    /**
-     * Called when the base texture is updated
-     *
-     * @private
-     * @param {PIXI.BaseTexture} baseTexture - The base texture.
-     */
-    onBaseTextureUpdated(baseTexture)
-    {
-
-        this._updateID++;
-
-        this._frame.width = baseTexture.width;
-        this._frame.height = baseTexture.height;
 
         this.emit('update', this);
     }
@@ -233,7 +217,6 @@ export default class Texture extends EventEmitter
             }
 
             this.baseTexture.off('update', this.onBaseTextureUpdated, this);
-            this.baseTexture.off('loaded', this.onBaseTextureLoaded, this);
 
             this.baseTexture = null;
         }
@@ -308,9 +291,14 @@ export default class Texture extends EventEmitter
         if (!texture)
         {
             texture = new Texture(new BaseTexture(source));
+            texture.baseTexture.cacheId = cacheId;
             TextureCache[cacheId] = texture;
+            BaseTextureCache[cacheId] = texture.baseTexture;
         }
-
+        else
+        {
+            console.log(texture.baseTexture.width)
+        }
         // lets assume its a base texture!
         return texture;
     }
@@ -327,13 +315,15 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
+        console.log('added from loader...')
         const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
 
+        console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource,
                                             settings.SCALE_MODE,
                                             getResolutionOfUrl(imageUrl));
 
-        console.log(baseTexture)
+        console.log('base width ' + baseTexture.width);
         const texture = new Texture(baseTexture);
 
         // No name, use imageUrl instead

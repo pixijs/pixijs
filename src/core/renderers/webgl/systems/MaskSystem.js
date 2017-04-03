@@ -20,7 +20,7 @@ export default class MaskSystem extends WebGLSystem
         this.scissorData = null;
         this.scissorRenderTarget = null;
 
-        this.enableScissor = true;
+        this.enableScissor = false;
 
         this.alphaMaskPool = [];
         this.alphaMaskIndex = 0;
@@ -135,7 +135,7 @@ export default class MaskSystem extends WebGLSystem
      */
     pushStencilMask(maskData)
     {
-        this.renderer.currentRenderer.stop();
+        this.renderer.batch.flush();
         this.renderer.stencil.pushStencil(maskData);
     }
 
@@ -145,7 +145,7 @@ export default class MaskSystem extends WebGLSystem
      */
     popStencilMask()
     {
-        this.renderer.currentRenderer.stop();
+        this.renderer.batch.flush();
         this.renderer.stencil.popStencil();
     }
 

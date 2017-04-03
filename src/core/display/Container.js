@@ -424,7 +424,7 @@ export default class Container extends DisplayObject
      */
     renderAdvancedWebGL(renderer)
     {
-        renderer.flush();
+        renderer.batch.flush();
 
         const filters = this._filters;
         const mask = this._mask;
@@ -467,7 +467,7 @@ export default class Container extends DisplayObject
             this.children[i].renderWebGL(renderer);
         }
 
-        renderer.flush();
+        renderer.batch.flush();
 
         if (mask)
         {

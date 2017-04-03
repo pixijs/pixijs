@@ -6,6 +6,8 @@ export default class BufferResource extends TextureResource
     {
     	super(source);
 
+        this.uploadable = false;
+
         this.load = new Promise((resolve, reject) => {
 
             resolve(this);

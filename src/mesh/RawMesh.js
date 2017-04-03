@@ -92,7 +92,7 @@ export default class RawMesh extends core.Container
      */
     _renderWebGL(renderer)
     {
-        renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
+        renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
 

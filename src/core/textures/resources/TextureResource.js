@@ -18,4 +18,9 @@ export default class TextureResource
         // create a prommise..
         this.load = null;
     }
+
+    destroy()
+    {
+        console.warn(this, ' has no destroy function')
+    }
 }

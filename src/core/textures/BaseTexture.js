@@ -120,32 +120,23 @@ export default class BaseTexture extends EventEmitter
     {
         // TODO currently a resource can only be set once..
 
+        if(this.resource)
+        {
+            this.resource.resourceUpdated.remove(this);
+        }
+
+
         this.resource = resource;
 
-        this.resource.load
-        .then((resource) => {
+        resource.resourceUpdated.add(this); //calls resourceUpaded
 
-            if(this.resource === resource)
-            {
-                if(resource.width !== -1 && resource.hight !== -1)
-                {
-                    this.width = resource.width / this.resolution;
-                    this.height = resource.height / this.resolution;
-                }
+        if(resource.loaded)
+        {
+            this.resourceLoaded(resource)
+        }
 
-                this.validate();
-
-                if(this.valid)
-                {
-                    this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
-
-                    // we have not swapped half way!
-                    this.dirtyId++;
-                    this.emit('loaded', this);
-                }
-            }
-
-        })
+        resource.load
+        .then(this.resourceLoaded.bind(this))
         .catch((reason)=>{
 
             // failed to load - maybe resource was destroyed before it loaded.
@@ -153,7 +144,34 @@ export default class BaseTexture extends EventEmitter
 
         })
 
-        this.resource.resourceUpdated.add(this); //calls resourceUpaded
+    }
+
+    resourceLoaded(resource)
+    {
+        console.log(this)
+        console.log("****** LOADED...")
+        if(resource === resource)
+        {
+            if(resource.width !== -1 && resource.hight !== -1)
+            {
+                this.width = resource.width / this.resolution;
+                this.height = resource.height / this.resolution;
+            }
+
+            console.log(this.width, this.height)
+            this.validate();
+
+            if(this.valid)
+            {
+                this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+
+                // we have not swapped half way!
+                this.dirtyId++;
+
+                this.emit('loaded', this);
+            }
+        }
+
     }
 
     resourceUpdated()
@@ -269,7 +287,7 @@ export default class BaseTexture extends EventEmitter
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(source);
-            baseTexture.cacheId
+            baseTexture.cacheId = cacheId;
             BaseTextureCache[cacheId] = baseTexture;
         }
 

@@ -21,6 +21,7 @@ export default class ImageResource extends TextureResource
 
             }
 
+
             if(source.complete && source.src)
             {
                 this.loaded = true;
@@ -28,12 +29,13 @@ export default class ImageResource extends TextureResource
                 source.onerror = null;
                 this.width = source.width;
                 this.height = source.height;
+                console.log("image")
                 resolve(this);
             }
 
-            source.onerror = () => {
-                reject('unable to load "' + source.src + '" resource cannot be found')
-            }
+        //    source.onerror = () => {
+          //      reject('unable to load "' + source.src + '" resource cannot be found')
+            //}
         })
     }
 

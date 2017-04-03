@@ -241,8 +241,6 @@ export default class TextureSystem extends WebGLSystem
     {
         texture = texture.baseTexture || texture;
 
-        console.log(" >>>>> DISPOSE >>>>> ");
-
         if (texture._glTextures[this.renderer.CONTEXT_UID])
         {
             this.unbind(texture);

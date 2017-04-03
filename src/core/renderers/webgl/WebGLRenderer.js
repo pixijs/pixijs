@@ -100,7 +100,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.globalUniforms = new UniformGroup({
             projectionMatrix:new Matrix()
-        }, true)
+        }, false)
 
         this.addSystem(MaskSystem)
         .addSystem(ContextSystem)

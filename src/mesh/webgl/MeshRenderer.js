@@ -30,7 +30,7 @@ export default class MeshRenderer extends core.ObjectRenderer
      *
      * @private
      */
-    onContextChange()
+    contextChange()
     {
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
@@ -47,14 +47,14 @@ export default class MeshRenderer extends core.ObjectRenderer
         const glShader = this.renderer.shader.bind(mesh.shader, true);
 
         // set the shader props..
-        if (glShader.uniformData.translationMatrix)
-        {
+        //if (glShader.uniformData.translationMatrix)
+        //{
             // the transform!
-            glShader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
-        }
+          //  glShader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
+        //}
 
         // set unifomrs..
-        this.renderer.shaderManager.syncUniformGroup(mesh.shader.uniformGroup);
+        this.renderer.shader.syncUniformGroup(mesh.shader.uniformGroup);
 
         // sync uniforms..
         this.renderer.state.setState(mesh.state);
