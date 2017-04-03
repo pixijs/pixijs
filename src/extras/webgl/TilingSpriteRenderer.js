@@ -38,28 +38,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
             readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
             uniforms);
 
-        this.quad = null;
-    }
-
-    /**
-     * Sets up the renderer context and necessary buffers.
-     *
-     * @private
-     */
-    contextChange()
-    {
-        const gl = this.renderer.gl;
-/*
-        this.shader = new GLShader(gl,
-            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite.frag'), 'utf8'),
-            core.PRECISION.DEFAULT);
-        this.simpleShader = new GLShader(gl,
-            readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
-            readFileSync(join(__dirname, './tilingSprite_simple.frag'), 'utf8'),
-            core.PRECISION.DEFAULT);
-*/
-        this.renderer.geometry.bindVao(null);
         this.quad = new core.Quad();
     }
 
@@ -71,7 +49,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
     {
         const renderer = this.renderer;
         const quad = this.quad;
-
 
         let vertices = quad.vertices;
 

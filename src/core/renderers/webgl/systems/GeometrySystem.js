@@ -59,7 +59,6 @@ export default class GeometrySystem extends WebGLSystem
             {
                 glBuffer._updateID = buffer._updateID;
                 // TODO - partial upload??
-
                 glBuffer.upload(buffer.data, 0);
             }
         }

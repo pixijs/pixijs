@@ -19,7 +19,7 @@ export default class Buffer
          *
          * @type {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data  the array / typedArray
          */
-        this.data = data;
+        this.data = data || new Float32Array(1);
 
         /**
          * A map of renderer IDs to webgl buffer
@@ -27,7 +27,7 @@ export default class Buffer
          * @private
          * @member {object<number, GLBuffer>}
          */
-        this._glBuffers = [];
+        this._glBuffers = {};
 
         this._updateID = 0;
 
@@ -42,8 +42,9 @@ export default class Buffer
     /**
      * flags this buffer as requiring an upload to the GPU
      */
-    update()
+    update(data)
     {
+        this.data = data || this.data;
         this._updateID++;
     }
 

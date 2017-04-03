@@ -53,7 +53,6 @@ class Program
      */
     extractData(vertexSrc, fragmentSrc)
     {
-        console.log(glCore._testingContext)
         const gl = glCore._testingContext || Program.getTestingContext();
 
         if (!gl)

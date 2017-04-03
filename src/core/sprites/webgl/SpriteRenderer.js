@@ -224,7 +224,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         const boundTextures = this.boundTextures;
         const rendererBoundTextures = this.renderer.boundTextures;
-        const touch = this.renderer.textureGC.count;
+        const touch = 0//this.renderer.textureGC.count;
 
         let index = 0;
         let nextTexture;

@@ -1,4 +1,5 @@
-import { GLShader } from 'pixi-gl-core';
+import Shader from '../../../shader/Shader';
+import Program from '../../../shader/Program';
 import { PRECISION } from '../../../const';
 
 /**
@@ -8,16 +9,14 @@ import { PRECISION } from '../../../const';
  * @memberof PIXI
  * @extends PIXI.Shader
  */
-export default class PrimitiveShader extends GLShader
+export default class PrimitiveShader extends Shader
 {
     /**
      * @param {WebGLRenderingContext} gl - The webgl shader manager this shader works for.
      */
-    constructor(gl)
+    constructor()
     {
-        super(gl,
-            // vertex shader
-            [
+        const program = Program.from([
                 'attribute vec2 aVertexPosition;',
                 'attribute vec4 aColor;',
 
@@ -41,8 +40,8 @@ export default class PrimitiveShader extends GLShader
                 'void main(void){',
                 '   gl_FragColor = vColor;',
                 '}',
-            ].join('\n'),
-            PRECISION.DEFAULT
-        );
+            ].join('\n'));
+
+        super(program, {})
     }
 }

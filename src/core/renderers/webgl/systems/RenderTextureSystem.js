@@ -19,35 +19,36 @@ export default class RenderTextureSystem extends WebGLSystem
         super(renderer);
 
         this.clearColor = renderer._backgroundColorRgba;
+
+        // TODO moe this property somewhere else!
+        this.defaultMaskStack = [];
     }
 
     bind(renderTexture)
     {
         // TODO - do we want this??
         if(this.renderTexture === renderTexture)return;
-        this.renderTexture = renderTexture;
 
-        const renderer = this.renderer;
+        this.renderTexture = renderTexture;
 
         if(renderTexture)
         {
-            renderer.framebuffer.bind(renderTexture.baseTexture.frameBuffer);
-            renderer.projection.update(renderTexture.frame, renderTexture.frame, false);
-
-            renderer.stencil.stencilMaskStack = renderTexture.stencilMaskStack;
+            this.renderer.framebuffer.bind(renderTexture.baseTexture.frameBuffer);
+            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, false);
+            this.renderer.stencil.setMaskStack(renderTexture.baseTexture.stencilMaskStack);
         }
         else
         {
-            renderer.framebuffer.bind(null);
+            this.renderer.framebuffer.bind(null);
 
-            tempRect.width = renderer.width;
-            tempRect.height = renderer.height;
+            tempRect.width = this.renderer.width;
+            tempRect.height = this.renderer.height;
             // TODO store this..
-            renderer.projection.update(tempRect, tempRect, true);
-            renderer.stencil.stencilMaskStack = renderer.stencil.defaultStencilStack;
+            this.renderer.projection.update(tempRect, tempRect, true);
+            this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 
-        const glShader = renderer.shader.getGLShader()
+        const glShader = this.renderer.shader.getGLShader()
 
         if (glShader)
         {

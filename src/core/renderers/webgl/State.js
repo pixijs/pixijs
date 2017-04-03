@@ -26,6 +26,7 @@ export default class State
         this.polygonOffset = 0;
 
         this.blend = true;
+        this.depthTest = true;
     }
 
     /**

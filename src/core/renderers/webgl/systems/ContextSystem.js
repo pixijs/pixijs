@@ -1,7 +1,6 @@
 import WebGLSystem from './WebGLSystem';
 import { Rectangle, Matrix } from '../../../math';
 import glCore from 'pixi-gl-core';
-import validateContext from '../utils/validateContext';
 
 let CONTEXT_UID = 0;
 
@@ -59,7 +58,7 @@ export default class ContextSystem extends WebGLSystem
     initFromContext(gl)
     {
     	this.gl = gl;
-    	validateContext(gl);
+    	this.validateContext(gl);
     	this.renderer.gl = gl;
     	this.renderer.CONTEXT_UID = CONTEXT_UID++;
     	this.renderer.runners.contextChange.run(gl);
@@ -67,7 +66,7 @@ export default class ContextSystem extends WebGLSystem
 
     initFromOptions(options)
     {
-    	const gl = glCore.createContext(this.renderer.view, this.options);
+    	const gl = glCore.createContext(this.renderer.view, options);
     	this.initFromContext(gl);
     }
 
@@ -115,5 +114,18 @@ export default class ContextSystem extends WebGLSystem
     postrender()
     {
     	this.gl.flush();
+    }
+
+    validateContext(gl)
+    {
+        const attributes = gl.getContextAttributes();
+
+        // this is going to be fairly simple for now.. but at least we have room to grow!
+        if (!attributes.stencil)
+        {
+            /* eslint-disable no-console */
+            console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
+            /* eslint-enable no-console */
+        }
     }
 }

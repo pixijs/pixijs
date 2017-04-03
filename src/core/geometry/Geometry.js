@@ -56,7 +56,7 @@ export default class Geometry
          * @private
          * @type {Array<VertexArrayObject>}
          */
-        this.glVertexArrayObjects = [];
+        this.glVertexArrayObjects = {};
 
         this.id = UID++;
     }
