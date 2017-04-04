@@ -134,7 +134,7 @@ export default class Text extends Sprite
 
         // word wrap
         // preserve original text
-        const outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
+        const outputText = style.wordWrap ? Text.wordWrap(this._text, style, this.canvas) : this._text;
 
         // split text into lines
         const lines = outputText.split(/(?:\r\n|\r|\n)/);
@@ -277,6 +277,58 @@ export default class Text extends Sprite
     }
 
     /**
+     * Measures the supplied string of text and returns a Rectangle.
+     *
+     * @param text {String} the text to measure.
+     * @param style {PIXI.TextStyle} the text style to use for measuring
+     * @param wordWrap {Boolean} optional override for if word-wrap should be applied to the text.
+     * @param canvas {HTMLCanvasElement} optional specification of the canvas to use for measuring.
+     * @return {PIXI.Rectangle} measured width and height of the text.
+     */
+    static measure(text, style, wordWrap, canvas)
+    {
+        if (!canvas)
+        {
+            this.canvas = this.canvas || document.createElement("canvas");
+            canvas = this.canvas;
+        }
+
+        wordWrap = wordWrap || style.wordWrap;
+        const font = Text.getFontStyle(style);
+        const fontProperties = Text.calculateFontProperties(font);
+        const context = canvas.getContext('2d');
+
+        context.font = font;
+
+        const outputText = wordWrap ? Text.wordWrap(text, style, canvas) : text;
+        const lines = outputText.split(/(?:\r\n|\r|\n)/);
+        const lineWidths = new Array(lines.length);
+        let maxLineWidth = 0;
+        for (let i = 0; i < lines.length; i++)
+        {
+            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+
+            lineWidths[i] = lineWidth;
+            maxLineWidth = Math.max(maxLineWidth, lineWidth);
+        }
+        let width = maxLineWidth + style.strokeThickness;
+        if (style.dropShadow)
+        {
+            width += style.dropShadowDistance;
+        }
+
+        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness) + ((lines.length - 1) * lineHeight);
+
+        if (style.dropShadow)
+        {
+            height += style.dropShadowDistance;
+        }
+
+        return new PIXI.Rectangle(0, 0, width, height);
+    }
+
+    /**
      * Render the text with letter-spacing.
      * @param {string} text - The text to draw
      * @param {number} x - Horizontal position to draw the text
@@ -411,16 +463,23 @@ export default class Text extends Sprite
      * Applies newlines to a string to have it optimally fit into the horizontal
      * bounds set by the Text object's wordWrapWidth property.
      *
-     * @private
      * @param {string} text - String to apply word wrapping to
+     * @param {PIXI.TextStyle} style - the style to use when wrapping
+     * @param canvas {HTMLCanvasElement} optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
-    wordWrap(text)
+    static wordWrap(text, style, canvas)
     {
+        if (!canvas)
+        {
+            this.canvas = this.canvas || document.createElement("canvas");
+            canvas = this.canvas;
+        }
+        const context = canvas.getContext('2d');
+
         // Greedy wrapping algorithm that will wrap words as the line grows longer
         // than its horizontal bounds.
         let result = '';
-        const style = this._style;
         const lines = text.split('\n');
         const wordWrapWidth = style.wordWrapWidth;
 
@@ -431,7 +490,7 @@ export default class Text extends Sprite
 
             for (let j = 0; j < words.length; j++)
             {
-                const wordWidth = this.context.measureText(words[j]).width;
+                const wordWidth = context.measureText(words[j]).width;
 
                 if (style.breakWords && wordWidth > wordWrapWidth)
                 {
@@ -440,7 +499,7 @@ export default class Text extends Sprite
 
                     for (let c = 0; c < characters.length; c++)
                     {
-                        const characterWidth = this.context.measureText(characters[c]).width;
+                        const characterWidth = context.measureText(characters[c]).width;
 
                         if (characterWidth > spaceLeft)
                         {
@@ -461,7 +520,7 @@ export default class Text extends Sprite
                 }
                 else
                 {
-                    const wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+                    const wordWidthWithSpace = wordWidth + context.measureText(' ').width;
 
                     if (j === 0 || wordWidthWithSpace > spaceLeft)
                     {
