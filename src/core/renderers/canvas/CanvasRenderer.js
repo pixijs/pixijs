@@ -304,7 +304,7 @@ export default class CanvasRenderer extends SystemRenderer
  * Collection of installed plugins.
  * @name PIXI.CanvasRenderer#plugins
  * @type {object}
- * @readOnly
+ * @readonly
  * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
  * @property {PIXI.extract.CanvasExtract} extract Extract image data from renderer.
  * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
