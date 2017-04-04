@@ -120,6 +120,46 @@ export default class TextStyle
         Object.assign(this, defaultStyle);
     }
 
+    /**
+     * Measures the supplied string of text and returns a Rectangle.
+     *
+     * @param canvas {HTMLCanvasElement}
+     * @param text {String}
+     * @return {PIXI.Rectangle} measured width and height of the text.
+     */
+    measure(canvas, text)
+    {
+        const font = Text.getFontStyle(this);
+        const fontProperties = Text.calculateFontProperties(font);
+        const context = canvas.getContext('2d');
+
+        const lines = text.split(/(?:\r\n|\r|\n)/);
+        const lineWidths = new Array(lines.length);
+        let maxLineWidth = 0;
+        for (let i = 0; i < lines.length; i++)
+        {
+            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * this.letterSpacing);
+
+            lineWidths[i] = lineWidth;
+            maxLineWidth = Math.max(maxLineWidth, lineWidth);
+        }
+        let width = maxLineWidth + this.strokeThickness;
+        if (this.dropShadow)
+        {
+            width += this.dropShadowDistance;
+        }
+
+        const lineHeight = this.lineHeight || fontProperties.fontSize + this.strokeThickness;
+        let height = Math.max(lineHeight, fontProperties.fontSize + this.strokeThickness) + ((lines.length - 1) * lineHeight);
+
+        if (this.dropShadow)
+        {
+            height += this.dropShadowDistance;
+        }
+
+        return new PIXI.Rectangle(0, 0, width, height);
+    }
+
     get align()
     {
         return this._align;
