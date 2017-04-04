@@ -289,7 +289,7 @@ export default class Text extends Sprite
     {
         if (!canvas)
         {
-            this.canvas = this.canvas || document.createElement("canvas");
+            this.canvas = this.canvas || document.createElement('canvas');
             canvas = this.canvas;
         }
 
@@ -304,6 +304,7 @@ export default class Text extends Sprite
         const lines = outputText.split(/(?:\r\n|\r|\n)/);
         const lineWidths = new Array(lines.length);
         let maxLineWidth = 0;
+
         for (let i = 0; i < lines.length; i++)
         {
             const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
@@ -312,13 +313,15 @@ export default class Text extends Sprite
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
         let width = maxLineWidth + style.strokeThickness;
+
         if (style.dropShadow)
         {
             width += style.dropShadowDistance;
         }
 
         const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness) + ((lines.length - 1) * lineHeight);
+        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
+            + ((lines.length - 1) * lineHeight);
 
         if (style.dropShadow)
         {
@@ -464,15 +467,15 @@ export default class Text extends Sprite
      * bounds set by the Text object's wordWrapWidth property.
      *
      * @param {string} text - String to apply word wrapping to
-     * @param {PIXI.TextStyle} style - the style to use when wrapping
-     * @param canvas {HTMLCanvasElement} optional specification of the canvas to use for measuring.
+     * @param {TextStyle} style - the style to use when wrapping
+     * @param {HTMLCanvasElement} canvas - optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
     static wordWrap(text, style, canvas)
     {
         if (!canvas)
         {
-            this.canvas = this.canvas || document.createElement("canvas");
+            this.canvas = this.canvas || document.createElement('canvas');
             canvas = this.canvas;
         }
         const context = canvas.getContext('2d');
