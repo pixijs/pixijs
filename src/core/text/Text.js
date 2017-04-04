@@ -279,11 +279,11 @@ export default class Text extends Sprite
     /**
      * Measures the supplied string of text and returns a Rectangle.
      *
-     * @param text {String} the text to measure.
-     * @param style {PIXI.TextStyle} the text style to use for measuring
-     * @param wordWrap {Boolean} optional override for if word-wrap should be applied to the text.
-     * @param canvas {HTMLCanvasElement} optional specification of the canvas to use for measuring.
-     * @return {PIXI.Rectangle} measured width and height of the text.
+     * @param {string} text - the text to measure.
+     * @param {TextStyle} style - the text style to use for measuring
+     * @param {boolean} wordWrap - optional override for if word-wrap should be applied to the text.
+     * @param {HTMLCanvasElement} canvas - optional specification of the canvas to use for measuring.
+     * @return {Rectangle} measured width and height of the text.
      */
     static measure(text, style, wordWrap, canvas)
     {
@@ -325,7 +325,7 @@ export default class Text extends Sprite
             height += style.dropShadowDistance;
         }
 
-        return new PIXI.Rectangle(0, 0, width, height);
+        return new Rectangle(0, 0, width, height);
     }
 
     /**
