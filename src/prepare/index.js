@@ -2,7 +2,8 @@
  * The prepare namespace provides renderer-specific plugins for pre-rendering DisplayObjects. These plugins are useful for
  * asynchronously preparing assets, textures, graphics waiting to be displayed.
  *
- * Do not instanciate these plugins directly. They are available from the `plugins` renderer property.
+ * Do not instanciate these plugins directly. It is available from the `renderer.plugins` property.
+ * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.WebGLRenderer#plugins}.
  * @namespace PIXI.prepare
  */
 export { default as webgl } from './webgl/WebGLPrepare';

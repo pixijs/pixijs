@@ -708,7 +708,9 @@ export default class WebGLRenderer extends SystemRenderer
 }
 
 /**
- * Collection of installed plugins.
+ * Collection of installed plugins. These are included by default in PIXI, but can be excluded
+ * by creating a custom build. Consult the README for more information about creating custom
+ * builds and excluding plugins.
  * @name PIXI.WebGLRenderer#plugins
  * @type {object}
  * @readonly
