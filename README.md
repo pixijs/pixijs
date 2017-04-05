@@ -36,7 +36,7 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 - Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
 
 ### Community ###
-- Forums: Check out the [forum] (http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow] (http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
+- Forums: Check out the [forum](http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
 - Inspiration: Check out the [gallery](http://www.pixijs.com/gallery) to see some of the amazing things people have created!
 - Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about Pixi. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
 
