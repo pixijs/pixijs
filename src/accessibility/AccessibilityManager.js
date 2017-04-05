@@ -21,7 +21,7 @@ const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
 /**
- * The Accessibility manager reacreates the ability to tab and and have content read by screen
+ * The Accessibility manager recreates the ability to tab and and have content read by screen
  * readers. This is very important as it can possibly help people with disabilities access pixi
  * content.
  *
