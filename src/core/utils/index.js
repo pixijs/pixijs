@@ -9,6 +9,7 @@ let nextUid = 0;
 let saidHello = false;
 
 /**
+ * Generalized convenience utilities for PIXI.
  * @namespace PIXI.utils
  */
 export {

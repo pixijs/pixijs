@@ -1,4 +1,6 @@
 /**
+ * This namespace contains WebGL-only display filters that can be applied
+ * to DisplayObjects using the {@link PIXI.DisplayObject#filters filters} property.
  * @namespace PIXI.filters
  */
 export { default as FXAAFilter } from './fxaa/FXAAFilter';
