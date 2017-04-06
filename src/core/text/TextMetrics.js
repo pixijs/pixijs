@@ -33,45 +33,6 @@ export default class TextMetrics
     }
 
     /**
-     * Creates a clone of this instance
-     *
-     * @returns {PIXI.TextMetrics} a copy of this instance
-     */
-    clone()
-    {
-        return new TextMetrics(
-            this.text,
-            this.style,
-            this.width,
-            this.height,
-            this.lines,
-            this.lineWidths,
-            this.lineHeight,
-            this.maxLineWidth,
-            this.fontProperties
-        );
-    }
-
-    /**
-     * Returns true if the given instance is equal to this instance
-     *
-     * @param {PIXI.TextMetrics} m - the instance to check
-     * @returns {boolean} Whether the given instance is equal to this instance
-     */
-    equals(m)
-    {
-        return (m.text === this.text)
-               && (m.style === this.style)
-               && (m.width === this.width)
-               && (m.height === this.height)
-               && (m.lines === this.lines)
-               && (m.lineWidths === this.lineWidths)
-               && (m.lineHeight === this.lineHeight)
-               && (m.maxLineWidth === this.maxLineWidth)
-               && (m.fontProperties === this.fontProperties);
-    }
-
-    /**
      * Measures the supplied string of text and returns a Rectangle.
      *
      * @param {string} text - the text to measure.
