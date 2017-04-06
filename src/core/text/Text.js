@@ -1,11 +1,12 @@
 /* eslint max-depth: [2, 8] */
 import Sprite from '../sprites/Sprite';
 import Texture from '../textures/Texture';
-import { Rectangle, MeasuredText } from '../math';
+import { Rectangle } from '../math';
 import { sign } from '../utils';
 import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
 import TextStyle from './TextStyle';
+import TextMetrics from './TextMetrics';
 import trimCanvas from '../utils/trimCanvas';
 
 const defaultDestroyOptions = {
@@ -130,7 +131,7 @@ export default class Text extends Sprite
 
         this._font = Text.getFontStyle(style);
 
-        const measured = Text.measure(this._text, this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measure(this._text, this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
 
@@ -246,71 +247,6 @@ export default class Text extends Sprite
         }
 
         this.updateTexture();
-    }
-
-    /**
-     * Measures the supplied string of text and returns a Rectangle.
-     *
-     * @param {string} text - the text to measure.
-     * @param {PIXI.TextStyle} style - the text style to use for measuring
-     * @param {boolean} [wordWrap] - optional override for if word-wrap should be applied to the text.
-     * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
-     * @return {PIXI.MeasuredText} measured width and height of the text.
-     */
-    static measure(text, style, wordWrap, canvas)
-    {
-        if (!canvas)
-        {
-            Text._canvas = Text._canvas || document.createElement('canvas');
-            canvas = Text._canvas;
-        }
-
-        wordWrap = wordWrap || style.wordWrap;
-        const font = Text.getFontStyle(style);
-        const fontProperties = Text.calculateFontProperties(font);
-        const context = canvas.getContext('2d');
-
-        context.font = font;
-
-        const outputText = wordWrap ? Text.wordWrap(text, style, canvas) : text;
-        const lines = outputText.split(/(?:\r\n|\r|\n)/);
-        const lineWidths = new Array(lines.length);
-        let maxLineWidth = 0;
-
-        for (let i = 0; i < lines.length; i++)
-        {
-            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
-
-            lineWidths[i] = lineWidth;
-            maxLineWidth = Math.max(maxLineWidth, lineWidth);
-        }
-        let width = maxLineWidth + style.strokeThickness;
-
-        if (style.dropShadow)
-        {
-            width += style.dropShadowDistance;
-        }
-
-        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
-            + ((lines.length - 1) * lineHeight);
-
-        if (style.dropShadow)
-        {
-            height += style.dropShadowDistance;
-        }
-
-        return new MeasuredText(
-            text,
-            style,
-            width,
-            height,
-            lines,
-            lineWidths,
-            lineHeight,
-            maxLineWidth,
-            fontProperties
-        );
     }
 
     /**
