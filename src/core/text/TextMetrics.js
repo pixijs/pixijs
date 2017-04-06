@@ -84,8 +84,8 @@ export default class TextMetrics
     {
         if (!canvas)
         {
-            Text._canvas = Text._canvas || document.createElement('canvas');
-            canvas = Text._canvas;
+            TextMetrics._canvas = TextMetrics._canvas || document.createElement('canvas');
+            canvas = TextMetrics._canvas;
         }
 
         wordWrap = wordWrap || style.wordWrap;
@@ -149,8 +149,8 @@ export default class TextMetrics
     {
         if (!canvas)
         {
-            this.canvas = this.canvas || document.createElement('canvas');
-            canvas = this.canvas;
+            TextMetrics._canvas = TextMetrics._canvas || document.createElement('canvas');
+            canvas = TextMetrics._canvas;
         }
         const context = canvas.getContext('2d');
 
