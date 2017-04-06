@@ -130,48 +130,11 @@ export default class Text extends Sprite
 
         this._font = Text.getFontStyle(style);
 
-        this.context.font = this._font;
-
-        // word wrap
-        // preserve original text
-        const outputText = style.wordWrap ? Text.wordWrap(this._text, style, this.canvas) : this._text;
-
-        // split text into lines
-        const lines = outputText.split(/(?:\r\n|\r|\n)/);
-
-        // calculate text width
-        const lineWidths = new Array(lines.length);
-        let maxLineWidth = 0;
-        const fontProperties = Text.calculateFontProperties(this._font);
-
-        for (let i = 0; i < lines.length; i++)
-        {
-            const lineWidth = this.context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
-
-            lineWidths[i] = lineWidth;
-            maxLineWidth = Math.max(maxLineWidth, lineWidth);
-        }
-
-        let width = maxLineWidth + style.strokeThickness;
-
-        if (style.dropShadow)
-        {
-            width += style.dropShadowDistance;
-        }
+        let measured = Text.measure(this._text, this._style, this._style.wordWrap, this.canvas);
+        let width = measured.width;
+        let height = measured.height;
 
         this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
-
-        // calculate text height
-        const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-
-        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
-            + ((lines.length - 1) * lineHeight);
-
-        if (style.dropShadow)
-        {
-            height += style.dropShadowDistance;
-        }
-
         this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
 
         this.context.scale(this.resolution, this.resolution);
@@ -205,24 +168,24 @@ export default class Text extends Sprite
             const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
             const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
-            for (let i = 0; i < lines.length; i++)
+            for (let i = 0; i < measured.lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
+                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + measured.fontProperties.ascent;
 
                 if (style.align === 'right')
                 {
-                    linePositionX += maxLineWidth - lineWidths[i];
+                    linePositionX += measured.maxLineWidth - measured.lineWidths[i];
                 }
                 else if (style.align === 'center')
                 {
-                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                    linePositionX += (measured.maxLineWidth - measured.lineWidths[i]) / 2;
                 }
 
                 if (style.fill)
                 {
                     this.drawLetterSpacing(
-                        lines[i],
+                        measured.lines[i],
                         linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding
                     );
 
@@ -230,7 +193,7 @@ export default class Text extends Sprite
                     {
                         this.context.strokeStyle = style.dropShadowColor;
                         this.drawLetterSpacing(
-                            lines[i],
+                            measured.lines[i],
                             linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
                             true
                         );
@@ -245,31 +208,31 @@ export default class Text extends Sprite
         this.context.globalAlpha = 1;
 
         // set canvas text styles
-        this.context.fillStyle = this._generateFillStyle(style, lines);
+        this.context.fillStyle = this._generateFillStyle(style, measured.lines);
 
         // draw lines line by line
-        for (let i = 0; i < lines.length; i++)
+        for (let i = 0; i < measured.lines.length; i++)
         {
             linePositionX = style.strokeThickness / 2;
-            linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
+            linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + measured.fontProperties.ascent;
 
             if (style.align === 'right')
             {
-                linePositionX += maxLineWidth - lineWidths[i];
+                linePositionX += measured.maxLineWidth - measured.lineWidths[i];
             }
             else if (style.align === 'center')
             {
-                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+                linePositionX += (measured.maxLineWidth - measured.lineWidths[i]) / 2;
             }
 
             if (style.stroke && style.strokeThickness)
             {
-                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
+                this.drawLetterSpacing(measured.lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
             }
 
             if (style.fill)
             {
-                this.drawLetterSpacing(lines[i], linePositionX + style.padding, linePositionY + style.padding);
+                this.drawLetterSpacing(measured.lines[i], linePositionX + style.padding, linePositionY + style.padding);
             }
         }
 
@@ -283,7 +246,7 @@ export default class Text extends Sprite
      * @param {PIXI.TextStyle} style - the text style to use for measuring
      * @param {boolean} [wordWrap] - optional override for if word-wrap should be applied to the text.
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
-     * @return {PIXI.Rectangle} measured width and height of the text.
+     * @return {PIXI.MeasuredText} measured width and height of the text.
      */
     static measure(text, style, wordWrap, canvas)
     {
@@ -328,7 +291,17 @@ export default class Text extends Sprite
             height += style.dropShadowDistance;
         }
 
-        return new Rectangle(0, 0, width, height);
+        return new MeasuredText(
+            text,
+            style,
+            width,
+            height,
+            lines,
+            lineWidths,
+            lineHeight,
+            maxLineWidth,
+            fontProperties
+        );
     }
 
     /**
