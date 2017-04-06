@@ -1,7 +1,7 @@
 /* eslint max-depth: [2, 8] */
 import Sprite from '../sprites/Sprite';
 import Texture from '../textures/Texture';
-import { Rectangle } from '../math';
+import { Rectangle, MeasuredText } from '../math';
 import { sign } from '../utils';
 import { TEXT_GRADIENT } from '../const';
 import settings from '../settings';
@@ -300,7 +300,7 @@ export default class Text extends Sprite
             height += style.dropShadowDistance;
         }
 
-        return new PIXI.MeasuredText(
+        return new MeasuredText(
             text,
             style,
             width,
