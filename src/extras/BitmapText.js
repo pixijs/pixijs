@@ -326,7 +326,7 @@ export default class BitmapText extends core.Container
 
     set tint(value) // eslint-disable-line require-jsdoc
     {
-        this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+        this._font.tint = value;
 
         this.dirty = true;
     }
