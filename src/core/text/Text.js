@@ -130,9 +130,9 @@ export default class Text extends Sprite
 
         this._font = Text.getFontStyle(style);
 
-        let measured = Text.measure(this._text, this._style, this._style.wordWrap, this.canvas);
-        let width = measured.width;
-        let height = measured.height;
+        const measured = Text.measure(this._text, this._style, this._style.wordWrap, this.canvas);
+        const width = measured.width;
+        const height = measured.height;
 
         this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
         this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
@@ -171,7 +171,7 @@ export default class Text extends Sprite
             for (let i = 0; i < measured.lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + measured.fontProperties.ascent;
+                linePositionY = ((style.strokeThickness / 2) + (i * measured.lineHeight)) + measured.fontProperties.ascent;
 
                 if (style.align === 'right')
                 {
@@ -214,7 +214,7 @@ export default class Text extends Sprite
         for (let i = 0; i < measured.lines.length; i++)
         {
             linePositionX = style.strokeThickness / 2;
-            linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + measured.fontProperties.ascent;
+            linePositionY = ((style.strokeThickness / 2) + (i * measured.lineHeight)) + measured.fontProperties.ascent;
 
             if (style.align === 'right')
             {
@@ -227,12 +227,21 @@ export default class Text extends Sprite
 
             if (style.stroke && style.strokeThickness)
             {
-                this.drawLetterSpacing(measured.lines[i], linePositionX + style.padding, linePositionY + style.padding, true);
+                this.drawLetterSpacing(
+                    measured.lines[i],
+                    linePositionX + style.padding,
+                    linePositionY + style.padding,
+                    true
+                );
             }
 
             if (style.fill)
             {
-                this.drawLetterSpacing(measured.lines[i], linePositionX + style.padding, linePositionY + style.padding);
+                this.drawLetterSpacing(
+                    measured.lines[i],
+                    linePositionX + style.padding,
+                    linePositionY + style.padding
+                );
             }
         }
 
