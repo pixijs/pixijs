@@ -57,14 +57,14 @@ export default class MeasuredText
      */
     equals(m)
     {
-        return (m.text === this.text) &&
-               (m.style === this.style) &&
-               (m.width === this.width) &&
-               (m.height === this.height) &&
-               (m.lines === this.lines) &&
-               (m.lineWidths === this.lineWidths) &&
-               (m.lineHeight === this.lineHeight) &&
-               (m.maxLineWidth === this.maxLineWidth) &&
-               (m.fontProperties === this.fontProperties);
+        return (m.text === this.text)
+               && (m.style === this.style)
+               && (m.width === this.width)
+               && (m.height === this.height)
+               && (m.lines === this.lines)
+               && (m.lineWidths === this.lineWidths)
+               && (m.lineHeight === this.lineHeight)
+               && (m.maxLineWidth === this.maxLineWidth)
+               && (m.fontProperties === this.fontProperties);
     }
 }
