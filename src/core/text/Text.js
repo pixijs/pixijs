@@ -300,7 +300,7 @@ export default class Text extends Sprite
             height += style.dropShadowDistance;
         }
 
-        return new MeasuredText(
+        return new PIXI.MeasuredText(
             text,
             style,
             width,
