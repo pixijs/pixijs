@@ -148,8 +148,8 @@ export default class BaseTexture extends EventEmitter
 
     resourceLoaded(resource)
     {
-        console.log(this)
-        console.log("****** LOADED...")
+       // console.log(this)
+       // console.log("****** LOADED...")
         if(resource === resource)
         {
             if(resource.width !== -1 && resource.hight !== -1)
@@ -158,7 +158,7 @@ export default class BaseTexture extends EventEmitter
                 this.height = resource.height / this.resolution;
             }
 
-            console.log(this.width, this.height)
+           // console.log(this.width, this.height)
             this.validate();
 
             if(this.valid)

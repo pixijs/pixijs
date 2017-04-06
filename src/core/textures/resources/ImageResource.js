@@ -29,7 +29,7 @@ export default class ImageResource extends TextureResource
                 source.onerror = null;
                 this.width = source.width;
                 this.height = source.height;
-                console.log("image")
+        //        console.log("image")
                 resolve(this);
             }
 

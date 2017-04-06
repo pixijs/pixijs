@@ -74,7 +74,7 @@ export default function generateUniformsSync2(group, uniformData)
     {
         const data = uniformData[i];
         //group.uniforms[i];
-         console.log(i, data);
+       //  console.log(i, data);
         if(!data)
         {
             if(group.uniforms[i].group)
@@ -129,7 +129,7 @@ else if(uniformValues.${i}._new)
 }
 else
 {
-    console.log("binding..")
+ //   console.log("binding..")
     uniformData.${i}.value = ${textureCount};
     renderer.boundTextures[${textureCount}] = renderer.emptyTextures[${textureCount}];
     gl.activeTexture(gl.TEXTURE0 + ${textureCount});

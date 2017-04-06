@@ -28,27 +28,29 @@ export default class RenderTextureSystem extends WebGLSystem
     {
         // TODO - do we want this??
         if(this.renderTexture === renderTexture)return;
-
         this.renderTexture = renderTexture;
+
+        const renderer = this.renderer;
 
         if(renderTexture)
         {
             this.renderer.framebuffer.bind(renderTexture.baseTexture.frameBuffer);
             this.renderer.projection.update(renderTexture.frame, renderTexture.frame, false);
             this.renderer.stencil.setMaskStack(renderTexture.baseTexture.stencilMaskStack);
+
         }
         else
         {
-            this.renderer.framebuffer.bind(null);
+            renderer.framebuffer.bind(null);
 
-            tempRect.width = this.renderer.width;
-            tempRect.height = this.renderer.height;
+            tempRect.width = renderer.width;
+            tempRect.height = renderer.height;
             // TODO store this..
             this.renderer.projection.update(tempRect, tempRect, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 
-        const glShader = this.renderer.shader.getGLShader()
+        const glShader = renderer.shader.getGLShader()
 
         if (glShader)
         {

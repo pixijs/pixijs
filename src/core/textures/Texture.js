@@ -141,7 +141,7 @@ export default class Texture extends EventEmitter
         }
         else
         {
-            baseTexture.once('loaded', this.onBaseTextureLoaded, this);
+            baseTexture.once('loaded', this.onBaseTextureUpdated, this);
         }
 
         /**
@@ -297,7 +297,7 @@ export default class Texture extends EventEmitter
         }
         else
         {
-            console.log(texture.baseTexture.width)
+          //  console.log(texture.baseTexture.width)
         }
         // lets assume its a base texture!
         return texture;
@@ -315,15 +315,15 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-        console.log('added from loader...')
+       // console.log('added from loader...')
         const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
 
-        console.log('base resource ' + resource.width);
+      //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource,
                                             settings.SCALE_MODE,
                                             getResolutionOfUrl(imageUrl));
 
-        console.log('base width ' + baseTexture.width);
+       /// console.log('base width ' + baseTexture.width);
         const texture = new Texture(baseTexture);
 
         // No name, use imageUrl instead

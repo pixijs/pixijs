@@ -137,7 +137,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         for (let i = 0; i < this.vaoMax; i++)
         {
-            this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+            this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
             /* eslint-disable max-len */
 
             var attributeData = shader.program.attributeData;
@@ -389,7 +389,7 @@ export default class SpriteRenderer extends ObjectRenderer
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
-                this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
+                this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
 
                 /* eslint-disable max-len */
 
