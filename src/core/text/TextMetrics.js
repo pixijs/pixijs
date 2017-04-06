@@ -141,8 +141,8 @@ export default class TextMetrics
      * bounds set by the Text object's wordWrapWidth property.
      *
      * @param {string} text - String to apply word wrapping to
-     * @param {TextStyle} style - the style to use when wrapping
-     * @param {HTMLCanvasElement} canvas - optional specification of the canvas to use for measuring.
+     * @param {PIXI.TextStyle} style - the style to use when wrapping
+     * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
     static wordWrap(text, style, canvas)
