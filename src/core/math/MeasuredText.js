@@ -17,7 +17,8 @@ export default class MeasuredText
      * @param {number} maxLineWidth - the maximum line width for all measured lines
      * @param {Object} fontProperties - the font properties object from Text.calculateFontProperties
      */
-    constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties) {
+    constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
+    {
         this.text = text;
         this.style = style;
         this.width = width;
