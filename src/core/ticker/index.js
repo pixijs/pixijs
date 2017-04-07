@@ -57,6 +57,13 @@ shared.destroy = () =>
  *
  * This ticker is used for rendering, {@link PIXI.extras.AnimatedSprite AnimatedSprite},
  * {@link PIXI.interaction.InteractionManager InteractionManager} and many other time-based PIXI systems.
+ * @example
+ * const ticker = new PIXI.ticker.Ticker();
+ * ticker.stop();
+ * ticker.add((deltaTime) => {
+ *   // do something every frame 
+ * });
+ * ticker.start();
  * @namespace PIXI.ticker
  */
 export { shared, Ticker };
