@@ -134,6 +134,11 @@ export default class Text extends Sprite
         const measured = TextMetrics.measure(this._text, this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
+        const lines = measured.lines;
+        const lineHeight = measured.lineHeight;
+        const lineWidths = measured.lineWidths;
+        const maxLineWidth = measured.maxLineWidth;
+        const fontProperties = measured.fontProperties;
 
         this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
         this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
@@ -169,24 +174,24 @@ export default class Text extends Sprite
             const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
             const yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
-            for (let i = 0; i < measured.lines.length; i++)
+            for (let i = 0; i < lines.length; i++)
             {
                 linePositionX = style.strokeThickness / 2;
-                linePositionY = ((style.strokeThickness / 2) + (i * measured.lineHeight)) + measured.fontProperties.ascent;
+                linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
 
                 if (style.align === 'right')
                 {
-                    linePositionX += measured.maxLineWidth - measured.lineWidths[i];
+                    linePositionX += maxLineWidth - lineWidths[i];
                 }
                 else if (style.align === 'center')
                 {
-                    linePositionX += (measured.maxLineWidth - measured.lineWidths[i]) / 2;
+                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
                 }
 
                 if (style.fill)
                 {
                     this.drawLetterSpacing(
-                        measured.lines[i],
+                        lines[i],
                         linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding
                     );
 
@@ -194,7 +199,7 @@ export default class Text extends Sprite
                     {
                         this.context.strokeStyle = style.dropShadowColor;
                         this.drawLetterSpacing(
-                            measured.lines[i],
+                            lines[i],
                             linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
                             true
                         );
@@ -209,27 +214,27 @@ export default class Text extends Sprite
         this.context.globalAlpha = 1;
 
         // set canvas text styles
-        this.context.fillStyle = this._generateFillStyle(style, measured.lines);
+        this.context.fillStyle = this._generateFillStyle(style, lines);
 
         // draw lines line by line
-        for (let i = 0; i < measured.lines.length; i++)
+        for (let i = 0; i < lines.length; i++)
         {
             linePositionX = style.strokeThickness / 2;
-            linePositionY = ((style.strokeThickness / 2) + (i * measured.lineHeight)) + measured.fontProperties.ascent;
+            linePositionY = ((style.strokeThickness / 2) + (i * lineHeight)) + fontProperties.ascent;
 
             if (style.align === 'right')
             {
-                linePositionX += measured.maxLineWidth - measured.lineWidths[i];
+                linePositionX += maxLineWidth - lineWidths[i];
             }
             else if (style.align === 'center')
             {
-                linePositionX += (measured.maxLineWidth - measured.lineWidths[i]) / 2;
+                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
 
             if (style.stroke && style.strokeThickness)
             {
                 this.drawLetterSpacing(
-                    measured.lines[i],
+                    lines[i],
                     linePositionX + style.padding,
                     linePositionY + style.padding,
                     true
@@ -239,7 +244,7 @@ export default class Text extends Sprite
             if (style.fill)
             {
                 this.drawLetterSpacing(
-                    measured.lines[i],
+                    lines[i],
                     linePositionX + style.padding,
                     linePositionY + style.padding
                 );
