@@ -101,6 +101,7 @@ export default class TextMetrics
      * Applies newlines to a string to have it optimally fit into the horizontal
      * bounds set by the Text object's wordWrapWidth property.
      *
+     * @private
      * @param {string} text - String to apply word wrapping to
      * @param {PIXI.TextStyle} style - the style to use when wrapping
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
