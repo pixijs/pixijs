@@ -61,7 +61,7 @@ shared.destroy = () =>
  * const ticker = new PIXI.ticker.Ticker();
  * ticker.stop();
  * ticker.add((deltaTime) => {
- *   // do something every frame 
+ *   // do something every frame
  * });
  * ticker.start();
  * @namespace PIXI.ticker

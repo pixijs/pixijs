@@ -18,7 +18,7 @@ let saidHello = false;
  *      console.log("Emitter created!");
  *   }
  * }
- * 
+ *
  * // Get info on current device
  * console.log(PIXI.utils.isMobile);
  *

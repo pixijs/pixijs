@@ -10,7 +10,7 @@ import canUploadSameBuffer from './utils/canUploadSameBuffer';
  * PIXI.settings.RESOLUTION = window.devicePixelRatio.
  *
  * // Disable interpolation when scaling, will make texture be pixelated
- * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; 
+ * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
  * @namespace PIXI.settings
  */
 export default {
