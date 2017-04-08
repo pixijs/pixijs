@@ -40,16 +40,18 @@ describe('PIXI.Texture', function ()
 
         PIXI.Texture.addToCache(texture, NAME);
         PIXI.Texture.addToCache(texture, NAME2);
-        expect(texture.textureCacheId).to.equal(NAME);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME2)).to.equal(1);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
         texture.destroy();
-        expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
+        expect(texture.textureCacheIds).to.equal(null);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(undefined);
     });
 
-    it('adding and removing Textures', function ()
+    it('should be added to the texture cache correctly, '
+     + 'and should remove only itself, not effecting the base texture and its cache', function ()
     {
         cleanCache();
 
@@ -57,27 +59,33 @@ describe('PIXI.Texture', function ()
 
         PIXI.BaseTexture.addToCache(texture.baseTexture, NAME);
         PIXI.Texture.addToCache(texture, NAME);
-        expect(texture.baseTexture.textureCacheId).to.equal(NAME);
-        expect(texture.textureCacheId).to.equal(NAME);
+        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         PIXI.Texture.removeFromCache(NAME);
+        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(-1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
     });
 
-    it('adding and removing Textures - Legacy', function ()
+    it('should be added to the texture cache correctly using legacy addTextureToCache, '
+     + 'and should remove also remove the base texture from its cache with removeTextureFromCache', function ()
     {
         cleanCache();
 
         const texture = new PIXI.Texture(new PIXI.BaseTexture());
 
-        PIXI.utils.BaseTextureCache[NAME] = texture.baseTexture;
+        PIXI.BaseTexture.addToCache(texture.baseTexture, NAME);
         PIXI.Texture.addTextureToCache(texture, NAME);
-        expect(texture.textureCacheId).to.equal(NAME);
+        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         PIXI.Texture.removeTextureFromCache(NAME);
+        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(-1);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(-1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
     });
@@ -90,10 +98,13 @@ describe('PIXI.Texture', function ()
 
         PIXI.Texture.addToCache(texture, NAME);
         PIXI.Texture.addToCache(texture, NAME2);
-        expect(texture.textureCacheId).to.equal(NAME);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME2)).to.equal(1);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
         PIXI.Texture.removeFromCache(texture);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(-1);
+        expect(texture.textureCacheIds.indexOf(NAME2)).to.equal(-1);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(undefined);
     });
@@ -106,10 +117,13 @@ describe('PIXI.Texture', function ()
 
         PIXI.Texture.addToCache(texture, NAME);
         PIXI.Texture.addToCache(texture, NAME2);
-        expect(texture.textureCacheId).to.equal(NAME);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.textureCacheIds.indexOf(NAME2)).to.equal(1);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
         PIXI.Texture.removeFromCache(NAME);
+        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(-1);
+        expect(texture.textureCacheIds.indexOf(NAME2)).to.equal(0);
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
     });

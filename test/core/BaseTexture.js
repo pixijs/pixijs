@@ -37,11 +37,13 @@ describe('BaseTexture', function ()
         cleanCache();
 
         const canvas = document.createElement('canvas');
-        const texture = PIXI.BaseTexture.fromCanvas(canvas);
+        const baseTexture = PIXI.BaseTexture.fromCanvas(canvas);
         const _pixiId = canvas._pixiId;
 
-        expect(PIXI.utils.BaseTextureCache[_pixiId]).to.equal(texture);
-        texture.destroy();
+        expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
+        expect(PIXI.utils.BaseTextureCache[_pixiId]).to.equal(baseTexture);
+        baseTexture.destroy();
+        expect(baseTexture.textureCacheIds).to.equal(null);
         expect(PIXI.utils.BaseTextureCache[_pixiId]).to.equal(undefined);
     });
 
@@ -53,9 +55,13 @@ describe('BaseTexture', function ()
 
         const texture = PIXI.Texture.fromLoader(image, URL, NAME);
 
+        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(texture.baseTexture.textureCacheIds.indexOf(URL)).to.equal(1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         texture.destroy(true);
+        expect(texture.baseTexture).to.equal(null);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
+        expect(PIXI.utils.BaseTextureCache[URL]).to.equal(undefined);
     });
 
     it('should remove BaseTexture from entire cache using removeFromCache (by BaseTexture instance)', function ()
@@ -66,10 +72,13 @@ describe('BaseTexture', function ()
 
         PIXI.BaseTexture.addToCache(baseTexture, NAME);
         PIXI.BaseTexture.addToCache(baseTexture, NAME2);
-        expect(baseTexture.textureCacheId).to.equal(NAME);
+        expect(baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(baseTexture.textureCacheIds.indexOf(NAME2)).to.equal(1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(baseTexture);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
         PIXI.BaseTexture.removeFromCache(baseTexture);
+        expect(baseTexture.textureCacheIds.indexOf(NAME)).to.equal(-1);
+        expect(baseTexture.textureCacheIds.indexOf(NAME2)).to.equal(-1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(undefined);
     });
@@ -82,10 +91,13 @@ describe('BaseTexture', function ()
 
         PIXI.BaseTexture.addToCache(baseTexture, NAME);
         PIXI.BaseTexture.addToCache(baseTexture, NAME2);
-        expect(baseTexture.textureCacheId).to.equal(NAME);
+        expect(baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
+        expect(baseTexture.textureCacheIds.indexOf(NAME2)).to.equal(1);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(baseTexture);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
         PIXI.BaseTexture.removeFromCache(NAME);
+        expect(baseTexture.textureCacheIds.indexOf(NAME)).to.equal(-1);
+        expect(baseTexture.textureCacheIds.indexOf(NAME2)).to.equal(0);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
     });

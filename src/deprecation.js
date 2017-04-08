@@ -860,17 +860,9 @@ core.Texture.removeTextureFromCache = function removeTextureFromCache(id)
      + 'Be aware that Texture.removeFromCache does not automatically its BaseTexture from the BaseTextureCache. '
      + 'For that, use BaseTexture.removeFromCache');
 
-    const texture = core.Texture.removeFromCache(id);
+    core.BaseTexture.removeFromCache(id);
 
-    if (texture)
-    {
-        texture.baseTexture.texureCacheId = null;
-        delete core.utils.BaseTextureCache[id];
-
-        return texture;
-    }
-
-    return null;
+    return core.Texture.removeFromCache(id);
 };
 
 Object.defineProperties(filters, {

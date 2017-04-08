@@ -212,7 +212,7 @@ export default class BaseTexture extends EventEmitter
          *
          * @member {string[]}
          */
-        this.textureCacheId = [];
+        this.textureCacheIds = [];
 
         // if no source passed don't try to load
         if (source)
@@ -612,7 +612,7 @@ export default class BaseTexture extends EventEmitter
         this.dispose();
 
         BaseTexture.removeFromCache(this);
-        this.textureCacheId = null;
+        this.textureCacheIds = null;
 
         this._destroyed = true;
     }
@@ -774,9 +774,9 @@ export default class BaseTexture extends EventEmitter
     {
         if (id)
         {
-            if (baseTexture.textureCacheId.indexOf(id) === -1)
+            if (baseTexture.textureCacheIds.indexOf(id) === -1)
             {
-                baseTexture.textureCacheId.push(id);
+                baseTexture.textureCacheIds.push(id);
             }
 
             // @if DEBUG
@@ -807,11 +807,11 @@ export default class BaseTexture extends EventEmitter
 
             if (baseTextureFromCache)
             {
-                const index = baseTextureFromCache.textureCacheId.indexOf(baseTexture);
+                const index = baseTextureFromCache.textureCacheIds.indexOf(baseTexture);
 
                 if (index > -1)
                 {
-                    baseTextureFromCache.textureCacheId.splice(index, 1);
+                    baseTextureFromCache.textureCacheIds.splice(index, 1);
                 }
 
                 delete BaseTextureCache[baseTexture];
@@ -821,12 +821,12 @@ export default class BaseTexture extends EventEmitter
         }
         else
         {
-            for (let i = 0; i < baseTexture.textureCacheId.length; ++i)
+            for (let i = 0; i < baseTexture.textureCacheIds.length; ++i)
             {
-                delete BaseTextureCache[baseTexture.textureCacheId[i]];
+                delete BaseTextureCache[baseTexture.textureCacheIds[i]];
             }
 
-            baseTexture.textureCacheId.length = 0;
+            baseTexture.textureCacheIds.length = 0;
 
             return baseTexture;
         }

@@ -165,7 +165,7 @@ export default class Texture extends EventEmitter
          *
          * @member {string[]}
          */
-        this.textureCacheId = [];
+        this.textureCacheIds = [];
     }
 
     /**
@@ -252,7 +252,7 @@ export default class Texture extends EventEmitter
         this.valid = false;
 
         Texture.removeFromCache(this);
-        this.textureCacheId = null;
+        this.textureCacheIds = null;
     }
 
     /**
@@ -472,9 +472,9 @@ export default class Texture extends EventEmitter
     {
         if (id)
         {
-            if (texture.textureCacheId.indexOf(id) === -1)
+            if (texture.textureCacheIds.indexOf(id) === -1)
             {
-                texture.textureCacheId.push(id);
+                texture.textureCacheIds.push(id);
             }
 
             // @if DEBUG
@@ -505,11 +505,11 @@ export default class Texture extends EventEmitter
 
             if (textureFromCache)
             {
-                const index = textureFromCache.textureCacheId.indexOf(texture);
+                const index = textureFromCache.textureCacheIds.indexOf(texture);
 
                 if (index > -1)
                 {
-                    textureFromCache.textureCacheId.splice(index, 1);
+                    textureFromCache.textureCacheIds.splice(index, 1);
                 }
 
                 delete TextureCache[texture];
@@ -519,12 +519,12 @@ export default class Texture extends EventEmitter
         }
         else
         {
-            for (let i = 0; i < texture.textureCacheId.length; ++i)
+            for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {
-                delete TextureCache[texture.textureCacheId[i]];
+                delete TextureCache[texture.textureCacheIds[i]];
             }
 
-            texture.textureCacheId.length = 0;
+            texture.textureCacheIds.length = 0;
 
             return texture;
         }
