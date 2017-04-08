@@ -159,13 +159,13 @@ export default class Texture extends EventEmitter
         this.transform = null;
 
         /**
-         * The id under which this Texture has been added to the texture cache. This is
-         * automatically set in certain cases, but may not always be accurate, particularly if
-         * the texture is in the cache under multiple ids.
+         * The ids under which this Texture has been added to the texture cache. This is
+         * automatically set as long as Texture.addToCache is used, but may not be set if a
+         * Texture is added directly to the TextureCache array.
          *
-         * @member {string}
+         * @member {string[]}
          */
-        this.textureCacheId = null;
+        this.textureCacheId = [];
     }
 
     /**
@@ -251,14 +251,8 @@ export default class Texture extends EventEmitter
 
         this.valid = false;
 
+        Texture.removeFromCache(this);
         this.textureCacheId = null;
-        for (const prop in TextureCache)
-        {
-            if (TextureCache[prop] === this)
-            {
-                delete TextureCache[prop];
-            }
-        }
     }
 
     /**
@@ -478,9 +472,9 @@ export default class Texture extends EventEmitter
     {
         if (id)
         {
-            if (!texture.textureCacheId)
+            if (texture.textureCacheId.indexOf(id) === -1)
             {
-                texture.textureCacheId = id;
+                texture.textureCacheId.push(id);
             }
 
             // @if DEBUG
@@ -511,7 +505,13 @@ export default class Texture extends EventEmitter
 
             if (textureFromCache)
             {
-                textureFromCache.textureCacheId = null;
+                const index = textureFromCache.textureCacheId.indexOf(texture);
+
+                if (index > -1)
+                {
+                    textureFromCache.textureCacheId.splice(index, 1);
+                }
+
                 delete TextureCache[texture];
 
                 return textureFromCache;
@@ -519,15 +519,12 @@ export default class Texture extends EventEmitter
         }
         else
         {
-            for (const prop in TextureCache)
+            for (let i = 0; i < texture.textureCacheId.length; ++i)
             {
-                if (TextureCache[prop] === texture)
-                {
-                    delete TextureCache[prop];
-                }
+                delete TextureCache[texture.textureCacheId[i]];
             }
 
-            texture.textureCacheId = null;
+            texture.textureCacheId.length = 0;
 
             return texture;
         }
