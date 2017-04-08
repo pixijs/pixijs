@@ -353,7 +353,7 @@ export function removeItems(arr, startIdx, removeCount)
  * @memberof PIXI.utils
  * @private
  */
-export const TextureCache = {};
+export const TextureCache = Object.create(null);
 
 /**
  * @todo Describe property usage
@@ -361,7 +361,7 @@ export const TextureCache = {};
  * @memberof PIXI.utils
  * @private
  */
-export const BaseTextureCache = {};
+export const BaseTextureCache = Object.create(null);
 
 /**
  * Destroys all texture in the cache
