@@ -698,12 +698,12 @@ export default class BaseTexture extends EventEmitter
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {string} [origin] - A string origin of who created the base texture
+     * @param {string} [origin='canvas'] - A string origin of who created the base texture
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static fromCanvas(canvas, scaleMode, origin)
+    static fromCanvas(canvas, scaleMode, origin = 'canvas')
     {
-        const name = origin ? `${origin}_` : 'canvas_';
+        const name = `${origin}_`;
 
         if (!canvas._pixiId)
         {

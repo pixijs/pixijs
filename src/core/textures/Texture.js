@@ -338,10 +338,10 @@ export default class Texture extends EventEmitter
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {string} [origin] - A string origin of who created the base texture
+     * @param {string} [origin='canvas'] - A string origin of who created the base texture
      * @return {PIXI.Texture} The newly created texture
      */
-    static fromCanvas(canvas, scaleMode, origin)
+    static fromCanvas(canvas, scaleMode, origin = 'canvas')
     {
         return new Texture(BaseTexture.fromCanvas(canvas, scaleMode, origin));
     }
