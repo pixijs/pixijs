@@ -1,3 +1,5 @@
+import TextStyle from './TextStyle';
+
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -15,7 +17,7 @@ export default class TextMetrics
      * @param {array} lineWidths - an array of the line widths for each line matched to `lines`
      * @param {number} lineHeight - the measured line height for this style
      * @param {number} maxLineWidth - the maximum line width for all measured lines
-     * @param {Object} fontProperties - the font properties object from TextMetrics.calculateFont
+     * @param {Object} fontProperties - the font properties object from TextMetrics.measureFont
      */
     constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
     {
@@ -39,11 +41,11 @@ export default class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    static measure(text, style, wordWrap, canvas = TextMetrics._canvas)
+    static measureText(text, style, wordWrap, canvas = TextMetrics._canvas)
     {
         wordWrap = wordWrap || style.wordWrap;
-        const font = style.toFontString();
-        const fontProperties = TextMetrics.calculateFont(font);
+        const font = TextMetrics.getFontStyle(style);
+        const fontProperties = TextMetrics.measureFont(font);
         const context = canvas.getContext('2d');
 
         context.font = font;
@@ -183,7 +185,7 @@ export default class TextMetrics
      * @param {string} font - String representing the style of the font
      * @return {PIXI.TextMetrics~FontMetrics} Font properties object
      */
-    static calculateFont(font)
+    static measureFont(font)
     {
         // as this method is used for preparing assets, don't recalculate things if we don't need to
         if (TextMetrics._fonts[font])
@@ -279,10 +281,55 @@ export default class TextMetrics
 
         return properties;
     }
+
+    /**
+     * Generates a font style string to use for TextMetrics.measureFont(). Takes the same parameter
+     * as Text.style.
+     *
+     * @static
+     * @param {object|TextStyle} style - String representing the style of the font
+     * @return {string} Font style string, for passing to TextMetrics.measureFont()
+     */
+    static getFontStyle(style)
+    {
+        style = style || {};
+
+        if (!(style instanceof TextStyle))
+        {
+            style = new TextStyle(style);
+        }
+
+        // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
+        const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
+
+        // Clean-up fontFamily property by quoting each font name
+        // this will support font names with spaces
+        let fontFamilies = style.fontFamily;
+
+        if (!Array.isArray(style.fontFamily))
+        {
+            fontFamilies = style.fontFamily.split(',');
+        }
+
+        for (let i = fontFamilies.length - 1; i >= 0; i--)
+        {
+            // Trim any extra white-space
+            let fontFamily = fontFamilies[i].trim();
+
+            // Check if font already contains strings
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
+            {
+                fontFamily = `"${fontFamily}"`;
+            }
+            fontFamilies[i] = fontFamily;
+        }
+
+        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
+    }
 }
 
 /**
- * Internal return object for {@link PIXI.TextMetrics.calculateFont `TextMetrics.calculateFont`}.
+ * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
  * @class FontMetrics
  * @memberof PIXI.TextMetrics~
  * @property {number} ascent - The ascent distance

@@ -129,9 +129,9 @@ export default class Text extends Sprite
             return;
         }
 
-        this._font = this._style.toFontString();
+        this._font = TextMetrics.getFontStyle(this._style);
 
-        const measured = TextMetrics.measure(this._text, this._style, this._style.wordWrap, this.canvas);
+        const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
         const lines = measured.lines;

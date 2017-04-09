@@ -695,39 +695,19 @@ core.Text.prototype.setText = function setText(text)
 };
 
 /**
- * @method
- * @name PIXI.Text.getFontStyle
- * @see PIXI.TextStyle#toFontString
- * @deprecated since version 4.5.0
- * @param {object|TextStyle} style - String representing the style of the font
- * @return {string} Font style string
- */
-core.Text.getFontStyle = function getFontStyle(style)
-{
-    warn(`Text.getFontStyle is now deprecated, please use the TextStyle method toFontString, e.g : style.toFontString();`);
-
-    style = style || {};
-
-    if (!(style instanceof core.TextStyle))
-    {
-        style = new core.TextStyle(style);
-    }
-
-    return style.toFontString();
-};
-
-/**
  * Calculates the ascent, descent and fontSize of a given fontStyle
  *
- * @static
+ * @name PIXI.Text.calculateFontProperties
+ * @see PIXI.TextMetrics.measureFont
+ * @deprecated since version 4.5.0
  * @param {string} font - String representing the style of the font
  * @return {Object} Font properties object
  */
 core.Text.calculateFontProperties = function calculateFontProperties(font)
 {
-    warn(`Text.calculateFontProperties is now deprecated, please use the TextMetrics.calculateFont`);
+    warn(`Text.calculateFontProperties is now deprecated, please use the TextMetrics.measureFont`);
 
-    return core.TextMetrics.calculateFont(font);
+    return core.TextMetrics.measureFont(font);
 };
 
 Object.defineProperties(core.Text, {
@@ -773,7 +753,7 @@ core.Text.prototype.setStyle = function setStyle(style)
 /**
  * @method
  * @name PIXI.Text#determineFontProperties
- * @see PIXI.Text#calculateFontProperties
+ * @see PIXI.Text#measureFontProperties
  * @deprecated since version 4.2.0
  * @private
  * @param {string} fontStyle - String representing the style of the font
@@ -781,10 +761,24 @@ core.Text.prototype.setStyle = function setStyle(style)
  */
 core.Text.prototype.determineFontProperties = function determineFontProperties(fontStyle)
 {
-    warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
-        + 'e.g : Text.calculateFontProperties(fontStyle);');
+    warn('determineFontProperties is now deprecated, please use TextMetrics.measureFont method');
 
-    return core.Text.calculateFontProperties(fontStyle);
+    return core.TextMetrics.measureFont(fontStyle);
+};
+
+/**
+ * @method
+ * @name PIXI.Text.getFontStyle
+ * @see PIXI.TextMetrics.getFontStyle
+ * @deprecated since version 4.5.0
+ * @param {PIXI.TextStyle} style - The style to use.
+ * @return {string} Font string
+ */
+core.Text.getFontStyle = function getFontStyle(style)
+{
+    warn('getFontStyle is now deprecated, please use TextMetrics.getFontStyle instead');
+
+    return core.TextMetrics.getFontStyle(style);
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
