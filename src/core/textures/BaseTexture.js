@@ -697,11 +697,9 @@ export default class BaseTexture extends EventEmitter
      */
     static fromCanvas(canvas, scaleMode, origin = 'canvas')
     {
-        const name = `${origin}_`;
-
         if (!canvas._pixiId)
         {
-            canvas._pixiId = `${name}${uid()}`;
+            canvas._pixiId = `${origin}_${uid()}`;
         }
 
         let baseTexture = BaseTextureCache[canvas._pixiId];
