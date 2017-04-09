@@ -1,5 +1,3 @@
-import Text from './Text';
-
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -17,7 +15,7 @@ export default class TextMetrics
      * @param {array} lineWidths - an array of the line widths for each line matched to `lines`
      * @param {number} lineHeight - the measured line height for this style
      * @param {number} maxLineWidth - the maximum line width for all measured lines
-     * @param {Object} fontProperties - the font properties object from Text.calculateFontProperties
+     * @param {Object} fontProperties - the font properties object from TextMetrics.calculateFont
      */
     constructor(text, style, width, height, lines, lineWidths, lineHeight, maxLineWidth, fontProperties)
     {
@@ -41,17 +39,11 @@ export default class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {PIXI.TextMetrics} measured width and height of the text.
      */
-    static measure(text, style, wordWrap, canvas)
+    static measure(text, style, wordWrap, canvas = TextMetrics._canvas)
     {
-        if (!canvas)
-        {
-            TextMetrics._canvas = TextMetrics._canvas || document.createElement('canvas');
-            canvas = TextMetrics._canvas;
-        }
-
         wordWrap = wordWrap || style.wordWrap;
-        const font = Text.getFontStyle(style);
-        const fontProperties = Text.calculateFontProperties(font);
+        const font = style.toFontString();
+        const fontProperties = TextMetrics.calculateFont(font);
         const context = canvas.getContext('2d');
 
         context.font = font;
@@ -107,13 +99,8 @@ export default class TextMetrics
      * @param {HTMLCanvasElement} [canvas] - optional specification of the canvas to use for measuring.
      * @return {string} New string with new lines applied where required
      */
-    static wordWrap(text, style, canvas)
+    static wordWrap(text, style, canvas = TextMetrics._canvas)
     {
-        if (!canvas)
-        {
-            TextMetrics._canvas = TextMetrics._canvas || document.createElement('canvas');
-            canvas = TextMetrics._canvas;
-        }
         const context = canvas.getContext('2d');
 
         // Greedy wrapping algorithm that will wrap words as the line grows longer
@@ -188,4 +175,141 @@ export default class TextMetrics
 
         return result;
     }
+
+    /**
+     * Calculates the ascent, descent and fontSize of a given font-style
+     *
+     * @static
+     * @param {string} font - String representing the style of the font
+     * @return {PIXI.TextMetrics~FontMetrics} Font properties object
+     */
+    static calculateFont(font)
+    {
+        // as this method is used for preparing assets, don't recalculate things if we don't need to
+        if (TextMetrics._fonts[font])
+        {
+            return TextMetrics._fonts[font];
+        }
+
+        const properties = {};
+
+        const canvas = TextMetrics._canvas;
+        const context = TextMetrics._context;
+
+        context.font = font;
+
+        const width = Math.ceil(context.measureText('|MÉq').width);
+        let baseline = Math.ceil(context.measureText('M').width);
+        const height = 2 * baseline;
+
+        baseline = baseline * 1.4 | 0;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        context.fillStyle = '#f00';
+        context.fillRect(0, 0, width, height);
+
+        context.font = font;
+
+        context.textBaseline = 'alphabetic';
+        context.fillStyle = '#000';
+        context.fillText('|MÉq', 0, baseline);
+
+        const imagedata = context.getImageData(0, 0, width, height).data;
+        const pixels = imagedata.length;
+        const line = width * 4;
+
+        let i = 0;
+        let idx = 0;
+        let stop = false;
+
+        // ascent. scan from top to bottom until we find a non red pixel
+        for (i = 0; i < baseline; ++i)
+        {
+            for (let j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+            if (!stop)
+            {
+                idx += line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.ascent = baseline - i;
+
+        idx = pixels - line;
+        stop = false;
+
+        // descent. scan from bottom to top until we find a non red pixel
+        for (i = height; i > baseline; --i)
+        {
+            for (let j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+
+            if (!stop)
+            {
+                idx -= line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.descent = i - baseline;
+        properties.fontSize = properties.ascent + properties.descent;
+
+        TextMetrics._fonts[font] = properties;
+
+        return properties;
+    }
 }
+
+/**
+ * Internal return object for {@link PIXI.TextMetrics.calculateFont `TextMetrics.calculateFont`}.
+ * @class FontMetrics
+ * @memberof PIXI.TextMetrics~
+ * @property {number} ascent - The ascent distance
+ * @property {number} descent - The descent distance
+ * @property {number} fontSize - Font size from ascent to descent
+ */
+
+/**
+ * Cached canvas element for measuring text
+ * @memberof PIXI.TextMetrics
+ * @type {HTMLCanvasElement}
+ * @private
+ */
+TextMetrics._canvas = document.createElement('canvas');
+
+/**
+ * Cache for context to use.
+ * @memberof PIXI.TextMetrics
+ * @type {CanvasRenderingContext2D}
+ * @private
+ */
+TextMetrics._context = TextMetrics._canvas.getContext('2d');
+
+/**
+ * Cache of PIXI.TextMetrics~FontMetrics objects.
+ * @memberof PIXI.TextMetrics
+ * @type {Object}
+ * @private
+ */
+TextMetrics._fonts = {};
