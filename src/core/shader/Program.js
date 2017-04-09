@@ -2,6 +2,7 @@ import extractUniformsFromSrc from './extractUniformsFromSrc';
 import generateUniformsSync from './generateUniformsSync';
 import glCore from 'pixi-gl-core';
 import { ProgramCache } from '../utils';
+import getTestContext from '../utils/getTestContext';
 
 let UID = 0;
 
@@ -53,7 +54,7 @@ class Program
      */
     extractData(vertexSrc, fragmentSrc)
     {
-        const gl = glCore._testingContext || Program.getTestingContext();
+        const gl = getTestContext();
 
         if (!gl)
         {
@@ -199,36 +200,6 @@ class Program
             '   gl_FragColor *= texture2D(uSampler, vTextureCoord);',
             '}',
         ].join('\n');
-    }
-
-    /**
-     * returns a little webGL context to use for program inspection.
-     *
-     * @static
-     * @private
-     * @returns {webGL-context} a gl context to test with
-     */
-    static getTestingContext()
-    {
-        try
-        {
-            if (!Program.testingContext)
-            {
-                const canvas = document.createElement('canvas');
-
-                canvas.width = 1;
-                canvas.height = 1;
-
-                Program.testingContext = glCore.createContext(canvas);
-            }
-        }
-
-        catch (e)
-        {
-            // eslint-disable-line no-empty
-        }
-
-        return Program.testingContext;
     }
 
     /**

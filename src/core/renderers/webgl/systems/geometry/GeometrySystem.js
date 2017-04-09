@@ -1,6 +1,8 @@
-import WebGLSystem from './WebGLSystem';
-import { Rectangle, Matrix } from '../../../math';
-import glCore from 'pixi-gl-core';
+import WebGLSystem from '../WebGLSystem';
+import { Rectangle, Matrix } from '../../../../math';
+import VertexArrayObject from './VertexArrayObject';
+import GLBuffer from './GLBuffer';
+import setVertexAttribArrays from './setVertexAttribArrays';
 
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
@@ -38,7 +40,6 @@ export default class GeometrySystem extends WebGLSystem
      * Binds geometry so that is can be drawn. Creating a Vao if required
      * @private
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to bind
-     * @param {PIXI.glCore.glShader} glShader shader that the geometry will be renderered with.
      */
     bind(geometry, glShader)
     {
@@ -68,8 +69,7 @@ export default class GeometrySystem extends WebGLSystem
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
-     * @param {PIXI.glCore.glShader} glShader shader that the geometry will be renderered with.
-     * @return {PIXI.glCore.VertexArrayObject} Returns a fresh vao.
+     * @return {PIXI.VertexArrayObject} Returns a fresh vao.
      */
     initGeometryVao(geometry, glShader)
     {
@@ -91,12 +91,12 @@ export default class GeometrySystem extends WebGLSystem
             {
                 if (buffer.index)
                 {
-                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createIndexBuffer(gl, buffer.data);
+                    buffer._glBuffers[this.CONTEXT_UID] = GLBuffer.createIndexBuffer(gl, buffer.data);
                 }
                 else
                 {
                     /* eslint-disable max-len */
-                    buffer._glBuffers[this.CONTEXT_UID] = glCore.GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+                    buffer._glBuffers[this.CONTEXT_UID] = GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
                 }
             }
         }
@@ -182,7 +182,7 @@ export default class GeometrySystem extends WebGLSystem
      */
     createVao()
     {
-        return new glCore.VertexArrayObject(this.gl, this.renderer.state.attribState);
+        return new VertexArrayObject(this.gl, this.renderer.state.attribState);
     }
 
     /**

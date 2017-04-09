@@ -1,4 +1,3 @@
-import glCore from 'pixi-gl-core';
 import Geometry from '../../geometry/Geometry';
 import Buffer from '../../geometry/Buffer';
 

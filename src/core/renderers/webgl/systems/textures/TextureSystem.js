@@ -1,6 +1,6 @@
-import WebGLSystem from './WebGLSystem';
-import { GLFramebuffer, GLTexture } from 'pixi-gl-core';
-import { removeItems } from '../../../utils';
+import WebGLSystem from '../WebGLSystem';
+import GLTexture from './GLTexture';
+import { removeItems } from '../../../../utils';
 
 /**
  * @class

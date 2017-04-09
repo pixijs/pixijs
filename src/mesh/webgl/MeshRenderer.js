@@ -1,5 +1,4 @@
 import * as core from '../../core';
-import glCore from 'pixi-gl-core';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 

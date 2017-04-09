@@ -1,11 +1,11 @@
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
+import GLBuffer from '../../renderers/webgl/systems/geometry/GLBuffer';
 import createIndicesForQuads from '../../utils/createIndicesForQuads';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
 import settings from '../../settings';
-import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
 let TICK = 0;
@@ -115,7 +115,6 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-        glCore._testingContext = gl;
         const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         const sampleValues = new Int32Array(this.MAX_TEXTURES);
@@ -128,7 +127,7 @@ export default class SpriteRenderer extends ObjectRenderer
         shader.uniformGroup.add('default', {uSamplers:sampleValues}, true);//this.renderer.globalUniforms;
         shader.uniforms.globals = this.renderer.globalUniforms;
 
-        this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+        this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
@@ -137,7 +136,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         for (let i = 0; i < this.vaoMax; i++)
         {
-            this.vertexBuffers[i] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+            this.vertexBuffers[i] = GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
             /* eslint-disable max-len */
 
             var attributeData = shader.program.attributeData;
@@ -389,7 +388,7 @@ export default class SpriteRenderer extends ObjectRenderer
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
-                this.vertexBuffers[this.vertexCount] = glCore.GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+                this.vertexBuffers[this.vertexCount] = GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
 
                 /* eslint-disable max-len */
 

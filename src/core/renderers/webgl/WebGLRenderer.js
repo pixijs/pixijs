@@ -4,17 +4,16 @@ import StencilSystem from './systems/StencilSystem';
 import FilterSystem from './systems/FilterSystem';
 import FramebufferSystem from './systems/FramebufferSystem';
 import RenderTextureSystem from './systems/RenderTextureSystem';
-import NewTextureSystem from './systems/NewTextureSystem';
-import TextureSystem from './TextureManager';
+import TextureSystem from './systems/textures/TextureSystem';
 import ProjectionSystem from './systems/ProjectionSystem';
 import StateSystem from './systems/StateSystem';
-import GeometrySystem from './systems/GeometrySystem';
-import ShaderSystem from './systems/ShaderSystem';
+import GeometrySystem from './systems/geometry/GeometrySystem';
+import ShaderSystem from './systems/shader/ShaderSystem';
 import ContextSystem from './systems/ContextSystem';
 import BatchSystem from './systems/BatchSystem';
-import TextureGCSystem from './systems/TextureGCSystem';
+import TextureGCSystem from './systems/textures/TextureGCSystem';
 import { pluginTarget } from '../../utils';
-import glCore from 'pixi-gl-core';
+import VertexArrayObject from './systems/geometry/VertexArrayObject';
 import { RENDERER_TYPE } from '../../const';
 import UniformGroup from '../../shader/UniformGroup';
 import { Rectangle, Matrix } from '../../math';
@@ -75,7 +74,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         if (this.legacy)
         {
-            glCore.VertexArrayObject.FORCE_NATIVE = true;
+            VertexArrayObject.FORCE_NATIVE = true;
         }
 
         // runners!
@@ -106,7 +105,7 @@ export default class WebGLRenderer extends SystemRenderer
         .addSystem(ContextSystem)
         .addSystem(StateSystem)
         .addSystem(ShaderSystem)
-        .addSystem(NewTextureSystem, 'texture')
+        .addSystem(TextureSystem, 'texture')
         .addSystem(GeometrySystem)
         .addSystem(FramebufferSystem)
         .addSystem(StencilSystem)

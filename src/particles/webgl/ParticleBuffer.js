@@ -1,4 +1,6 @@
-import glCore from 'pixi-gl-core';
+import GLBuffer from '../../core/renderers/webgl/systems/geometry/GLBuffer';
+import VertexArrayObject from '../../core/renderers/webgl/systems/geometry/VertexArrayObject';
+
 import createIndicesForQuads from '../../core/utils/createIndicesForQuads';
 
 /**
@@ -122,7 +124,7 @@ export default class ParticleBuffer
          * @member {Uint16Array}
          */
         this.indices = createIndicesForQuads(this.size);
-        this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+        this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         this.dynamicStride = 0;
 
@@ -136,7 +138,7 @@ export default class ParticleBuffer
         }
 
         this.dynamicData = new Float32Array(this.size * this.dynamicStride * 4);
-        this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
+        this.dynamicBuffer = GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
 
         // static //
         let staticOffset = 0;
@@ -153,9 +155,9 @@ export default class ParticleBuffer
         }
 
         this.staticData = new Float32Array(this.size * this.staticStride * 4);
-        this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
+        this.staticBuffer = GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
 
-        this.vao = new glCore.VertexArrayObject(gl)
+        this.vao = new VertexArrayObject(gl)
         .addIndex(this.indexBuffer);
 
         for (let i = 0; i < this.dynamicProperties.length; ++i)

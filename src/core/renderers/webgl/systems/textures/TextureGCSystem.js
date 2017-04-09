@@ -1,6 +1,6 @@
-import WebGLSystem from './WebGLSystem';
-import { GC_MODES } from '../../../const';
-import settings from '../../../settings';
+import WebGLSystem from '../WebGLSystem';
+import { GC_MODES } from '../../../../const';
+import settings from '../../../../settings';
 
 /**
  * TextureGarbageCollector. This class manages the GPU and ensures that it does not get clogged
