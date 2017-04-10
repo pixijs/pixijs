@@ -644,36 +644,6 @@ export default class InteractionManager extends EventEmitter
          * @event PIXI.DisplayObject#touchmove
          * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
-
-        /**
-         * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-         * events will not be emitted unless `interactive` is set to `true`.
-         *
-         * @name PIXI.DisplayObject#interactive
-         * @type {boolean}
-         * @default false
-         */
-
-        /**
-         * Optional hit-area to define for a DisplayObject. If `interactive` is set to `true`
-         * and this property is set, it will be used for determining bounds in triggering interaction events.
-         *
-         * @example
-         * const sprite = new Sprite(texture);
-         * sprite.interactive = true;
-         * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
-         * @name PIXI.DisplayObject#hitArea
-         * @type {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-         */
-
-        /**
-         * Enable interaction events for children of this Container. Touch, pointer and mouse
-         * events will not be emitted for any of the children unless `interactiveChildren` is set to `true`.
-         *
-         * @name PIXI.Container#interactiveChildren
-         * @type {boolean}
-         * @default false
-         */
     }
 
     /**
