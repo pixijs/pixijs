@@ -1,5 +1,3 @@
-import TextStyle from './TextStyle';
-
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -44,7 +42,7 @@ export default class TextMetrics
     static measureText(text, style, wordWrap, canvas = TextMetrics._canvas)
     {
         wordWrap = wordWrap || style.wordWrap;
-        const font = TextMetrics.getFontStyle(style);
+        const font = style.toFontString();
         const fontProperties = TextMetrics.measureFont(font);
         const context = canvas.getContext('2d');
 
@@ -280,51 +278,6 @@ export default class TextMetrics
         TextMetrics._fonts[font] = properties;
 
         return properties;
-    }
-
-    /**
-     * Generates a font style string to use for TextMetrics.measureFont(). Takes the same parameter
-     * as Text.style.
-     *
-     * @static
-     * @param {object|TextStyle} style - String representing the style of the font
-     * @return {string} Font style string, for passing to TextMetrics.measureFont()
-     */
-    static getFontStyle(style)
-    {
-        style = style || {};
-
-        if (!(style instanceof TextStyle))
-        {
-            style = new TextStyle(style);
-        }
-
-        // build canvas api font setting from individual components. Convert a numeric style.fontSize to px
-        const fontSizeString = (typeof style.fontSize === 'number') ? `${style.fontSize}px` : style.fontSize;
-
-        // Clean-up fontFamily property by quoting each font name
-        // this will support font names with spaces
-        let fontFamilies = style.fontFamily;
-
-        if (!Array.isArray(style.fontFamily))
-        {
-            fontFamilies = style.fontFamily.split(',');
-        }
-
-        for (let i = fontFamilies.length - 1; i >= 0; i--)
-        {
-            // Trim any extra white-space
-            let fontFamily = fontFamilies[i].trim();
-
-            // Check if font already contains strings
-            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
-            {
-                fontFamily = `"${fontFamily}"`;
-            }
-            fontFamilies[i] = fontFamily;
-        }
-
-        return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
     }
 }
 

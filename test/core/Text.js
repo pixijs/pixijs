@@ -1,42 +1,5 @@
 'use strict';
 
-describe('PIXI.TextMetrics', function ()
-{
-    describe('getFontStyle', function ()
-    {
-        it('should be a valid API', function ()
-        {
-            expect(PIXI.TextMetrics.getFontStyle).to.be.a.function;
-        });
-
-        it('should assume pixel fonts', function ()
-        {
-            const style = PIXI.TextMetrics.getFontStyle({ fontSize: 72 });
-
-            expect(style).to.be.a.string;
-            expect(style).to.have.string(' 72px ');
-        });
-
-        it('should handle multiple fonts as array', function ()
-        {
-            const style = PIXI.TextMetrics.getFontStyle({
-                fontFamily: ['Georgia', 'Arial', 'sans-serif'],
-            });
-
-            expect(style).to.have.string('"Georgia","Arial","sans-serif"');
-        });
-
-        it('should handle multiple fonts as string', function ()
-        {
-            const style = PIXI.TextMetrics.getFontStyle({
-                fontFamily: 'Georgia, "Arial", sans-serif',
-            });
-
-            expect(style).to.have.string('"Georgia","Arial","sans-serif"');
-        });
-    });
-});
-
 describe('PIXI.Text', function ()
 {
     describe('destroy', function ()

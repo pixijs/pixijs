@@ -776,9 +776,16 @@ core.Text.prototype.determineFontProperties = function determineFontProperties(f
  */
 core.Text.getFontStyle = function getFontStyle(style)
 {
-    warn('getFontStyle is now deprecated, please use TextMetrics.getFontStyle instead');
+    warn('getFontStyle is now deprecated, please use TextStyle.toFontString() instead');
 
-    return core.TextMetrics.getFontStyle(style);
+    style = style || {};
+
+    if (!(style instanceof core.TextStyle))
+    {
+        style = new core.TextStyle(style);
+    }
+
+    return style.toFontString();
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
