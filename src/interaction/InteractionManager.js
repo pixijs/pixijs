@@ -357,6 +357,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when the operating system cancels a pointer event
          *
          * @event PIXI.interaction.InteractionManager#pointercancel
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
@@ -413,6 +414,7 @@ export default class InteractionManager extends EventEmitter
          * Fired when the operating system cancels a touch
          *
          * @event PIXI.interaction.InteractionManager#touchcancel
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
@@ -550,6 +552,7 @@ export default class InteractionManager extends EventEmitter
          * DisplayObject's `interactive` property must be set to `true` to fire event.
          *
          * @event PIXI.DisplayObject#pointercancel
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
@@ -614,6 +617,7 @@ export default class InteractionManager extends EventEmitter
          * DisplayObject's `interactive` property must be set to `true` to fire event.
          *
          * @event PIXI.DisplayObject#touchcancel
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
