@@ -108,6 +108,7 @@ export default class TextMetrics
         let result = '';
         const lines = text.split('\n');
         const wordWrapWidth = style.wordWrapWidth;
+        const characterCache = {};
 
         for (let i = 0; i < lines.length; i++)
         {
@@ -125,11 +126,18 @@ export default class TextMetrics
 
                     for (let c = 0; c < characters.length; c++)
                     {
-                        const characterWidth = context.measureText(characters[c]).width;
+                        const character = characters[c];
+                        let characterWidth = characterCache[character];
+
+                        if (characterWidth === undefined)
+                        {
+                            characterWidth = context.measureText(character).width;
+                            characterCache[character] = characterWidth;
+                        }
 
                         if (characterWidth > spaceLeft)
                         {
-                            result += `\n${characters[c]}`;
+                            result += `\n${character}`;
                             spaceLeft = wordWrapWidth - characterWidth;
                         }
                         else
@@ -139,7 +147,7 @@ export default class TextMetrics
                                 result += ' ';
                             }
 
-                            result += characters[c];
+                            result += character;
                             spaceLeft -= characterWidth;
                         }
                     }
