@@ -20,7 +20,7 @@ export default {
      * @type {boolean}
      * @default false
      */
-        
+
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
@@ -57,7 +57,7 @@ export default {
      * @name PIXI.DisplayObject#hitArea
      * @type {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
      */
-     
+
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
