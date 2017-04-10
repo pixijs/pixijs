@@ -98,6 +98,18 @@ export default class CanvasRenderer extends SystemRenderer
         this.renderingToScreen = false;
 
         this.resize(this.options.width, this.options.height);
+
+        /**
+         * Fired after rendering finishes.
+         *
+         * @event PIXI.CanvasRenderer#postrender
+         */
+
+        /**
+         * Fired before rendering starts.
+         *
+         * @event PIXI.CanvasRenderer#prerender
+         */
     }
 
     /**
