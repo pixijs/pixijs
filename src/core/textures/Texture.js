@@ -145,9 +145,9 @@ export default class Texture extends EventEmitter
         /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
          *
-         * @event update
-         * @memberof PIXI.Texture#
+         * @event PIXI.Texture#update
          * @protected
+         * @param {PIXI.Texture} texture - Instance of texture being updated.
          */
 
         this._updateID = 0;

@@ -1,4 +1,5 @@
 /**
+ * Additional PIXI DisplayObjects for animation, tiling and bitmap text.
  * @namespace PIXI.extras
  */
 export { default as AnimatedSprite } from './AnimatedSprite';

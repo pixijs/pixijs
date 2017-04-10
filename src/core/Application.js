@@ -39,6 +39,7 @@ export default class Application
      * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
      * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
+     * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.loaders.shared, `false` to create new Loader.
      */
     constructor(options, arg2, arg3, arg4, arg5)
     {
@@ -53,10 +54,15 @@ export default class Application
             }, arg3);
         }
 
-        // Set the default options
-        options = Object.assign({
+        /**
+         * The default options, so we mixin functionality later.
+         * @member {object}
+         * @protected
+         */
+        this._options = options = Object.assign({
             sharedTicker: false,
             forceCanvas: false,
+            sharedLoader: false,
         }, options);
 
         /**
@@ -167,5 +173,7 @@ export default class Application
 
         this.renderer.destroy(removeView);
         this.renderer = null;
+
+        this._options = null;
     }
 }
