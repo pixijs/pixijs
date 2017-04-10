@@ -147,6 +147,7 @@ export default class Texture extends EventEmitter
          * @event update
          * @memberof PIXI.Texture#
          * @protected
+         * @param {PIXI.Texture} texture - Instance of texture being updated.
          */
 
         this._updateID = 0;

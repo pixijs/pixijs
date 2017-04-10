@@ -122,6 +122,22 @@ export default class DisplayObject extends EventEmitter
          * @readonly
          */
         this._destroyed = false;
+
+        /**
+         * Fired when this DisplayObject is added to a Container.
+         *
+         * @event added
+         * @memberof PIXI.DisplayObject#
+         * @param {PIXI.Container} container - The container added to.
+         */
+
+        /**
+         * Fired when this DisplayObject is removed from a Container.
+         *
+         * @event removed
+         * @memberof PIXI.DisplayObject#
+         * @param {PIXI.Container} container - The container removed from.
+         */
     }
 
     /**

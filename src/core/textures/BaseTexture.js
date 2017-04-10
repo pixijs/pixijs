@@ -217,6 +217,7 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event loaded
          * @memberof PIXI.BaseTexture#
+         * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
          */
 
         /**
@@ -225,13 +226,32 @@ export default class BaseTexture extends EventEmitter
          * @protected
          * @event error
          * @memberof PIXI.BaseTexture#
+         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         */
+
+        /**
+         * Fired when BaseTexture is updated.
+         *
+         * @protected
+         * @event update
+         * @memberof PIXI.BaseTexture#
+         * @param {PIXI.BaseTexture} baseTexture - Instance of texture being updated.
+         */
+
+        /**
+         * Fired when BaseTexture is destroyed.
+         *
+         * @protected
+         * @event dispose
+         * @memberof PIXI.BaseTexture#
+         * @param {PIXI.BaseTexture} baseTexture - Instance of texture being destroyed.
          */
     }
 
     /**
      * Updates the texture on all the webgl renderers, this also assumes the src has changed.
      *
-     * @fires update
+     * @fires PIXI.BaseTexture#update
      */
     update()
     {
@@ -524,7 +544,7 @@ export default class BaseTexture extends EventEmitter
      *
      * @param  {string} svgString SVG source as string
      *
-     * @fires loaded
+     * @fires PIXI.BaseTexture#loaded
      */
     _loadSvgSourceUsingString(svgString)
     {
@@ -617,6 +637,7 @@ export default class BaseTexture extends EventEmitter
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
      *
+     * @fires PIXI.BaseTexture#dispose
      */
     dispose()
     {

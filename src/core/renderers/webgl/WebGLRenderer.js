@@ -185,6 +185,28 @@ export default class WebGLRenderer extends SystemRenderer
         this._nextTextureLocation = 0;
 
         this.setBlendMode(0);
+
+        /**
+         * Fired after rendering finishes.
+         *
+         * @event postrender
+         * @memberof PIXI.WebGLRenderer#
+         */
+
+        /**
+         * Fired before rendering starts.
+         *
+         * @event prerender
+         * @memberof PIXI.WebGLRenderer#
+         */
+
+        /**
+         * Fired when the WebGL context is set.
+         *
+         * @event context
+         * @memberof PIXI.WebGLRenderer#
+         * @param {WebGLRenderingContext} gl - WebGL context.
+         */
     }
 
     /**
