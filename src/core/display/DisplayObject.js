@@ -13,7 +13,6 @@ import { Rectangle } from '../math';
  *
  * @class
  * @extends EventEmitter
- * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 export default class DisplayObject extends EventEmitter
