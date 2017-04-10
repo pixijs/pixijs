@@ -23,7 +23,7 @@ export { Resource } from 'resource-loader';
  * A premade instance of the loader that can be used to load resources.
  * @name shared
  * @memberof PIXI.loaders
- * @property {PIXI.loaders.Loader}
+ * @type {PIXI.loaders.Loader}
  */
 const shared = new Loader();
 

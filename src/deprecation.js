@@ -527,23 +527,6 @@ Object.defineProperties(core, {
             return core.settings.RENDER_OPTIONS;
         },
     },
-
-    /**
-     * @static
-     * @constant
-     * @name PIXI.loader
-     * @see PIXI.loaders.shared
-     * @deprecated since version 4.5.0
-     */
-    loader: {
-        enumerable: true,
-        get()
-        {
-            warn('PIXI.loader is deprecated, please used PIXI.loaders.shared');
-
-            return loaders.shared || null;
-        },
-    },
 });
 
 // Move the default properties to settings
