@@ -189,22 +189,19 @@ export default class WebGLRenderer extends SystemRenderer
         /**
          * Fired after rendering finishes.
          *
-         * @event postrender
-         * @memberof PIXI.WebGLRenderer#
+         * @event PIXI.WebGLRenderer#postrender
          */
 
         /**
          * Fired before rendering starts.
          *
-         * @event prerender
-         * @memberof PIXI.WebGLRenderer#
+         * @event PIXI.WebGLRenderer#prerender
          */
 
         /**
          * Fired when the WebGL context is set.
          *
-         * @event context
-         * @memberof PIXI.WebGLRenderer#
+         * @event PIXI.WebGLRenderer#context
          * @param {WebGLRenderingContext} gl - WebGL context.
          */
     }

@@ -215,8 +215,7 @@ export default class BaseTexture extends EventEmitter
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected
-         * @event loaded
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
          */
 
@@ -224,8 +223,7 @@ export default class BaseTexture extends EventEmitter
          * Fired when a not-immediately-available source fails to load.
          *
          * @protected
-         * @event error
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
          */
 
@@ -233,8 +231,7 @@ export default class BaseTexture extends EventEmitter
          * Fired when BaseTexture is updated.
          *
          * @protected
-         * @event update
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#update
          * @param {PIXI.BaseTexture} baseTexture - Instance of texture being updated.
          */
 
@@ -242,8 +239,7 @@ export default class BaseTexture extends EventEmitter
          * Fired when BaseTexture is destroyed.
          *
          * @protected
-         * @event dispose
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#dispose
          * @param {PIXI.BaseTexture} baseTexture - Instance of texture being destroyed.
          */
     }

@@ -102,15 +102,13 @@ export default class CanvasRenderer extends SystemRenderer
         /**
          * Fired after rendering finishes.
          *
-         * @event postrender
-         * @memberof PIXI.CanvasRenderer#
+         * @event PIXI.CanvasRenderer#postrender
          */
 
         /**
          * Fired before rendering starts.
          *
-         * @event prerender
-         * @memberof PIXI.CanvasRenderer#
+         * @event PIXI.CanvasRenderer#prerender
          */
     }
 

@@ -256,54 +256,48 @@ export default class InteractionManager extends EventEmitter
          * Fired when a pointer device button (usually a mouse left-button) is pressed on the display
          * object.
          *
-         * @event mousedown
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mousedown
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
          * on the display object.
          *
-         * @event rightdown
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#rightdown
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is released over the display
          * object.
          *
-         * @event mouseup
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mouseup
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device secondary button (usually a mouse right-button) is released
          * over the display object.
          *
-         * @event rightup
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#rightup
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
          * the display object.
          *
-         * @event click
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#click
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
          * and released on the display object.
          *
-         * @event rightclick
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#rightclick
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
@@ -311,9 +305,8 @@ export default class InteractionManager extends EventEmitter
          * display object that initially registered a
          * [mousedown]{@link PIXI.interaction.InteractionManager#event:mousedown}.
          *
-         * @event mouseupoutside
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mouseupoutside
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
@@ -321,145 +314,127 @@ export default class InteractionManager extends EventEmitter
          * outside the display object that initially registered a
          * [rightdown]{@link PIXI.interaction.InteractionManager#event:rightdown}.
          *
-         * @event rightupoutside
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#rightupoutside
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device (usually a mouse) is moved while over the display object
          *
-         * @event mousemove
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mousemove
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device (usually a mouse) is moved onto the display object
          *
-         * @event mouseover
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mouseover
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device (usually a mouse) is moved off the display object
          *
-         * @event mouseout
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#mouseout
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device button is pressed on the display object.
          *
-         * @event pointerdown
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointerdown
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device button is released over the display object.
          *
-         * @event pointerup
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointerup
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when the operating system cancels a pointer event
          *
-         * @event pointercancel
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointercancel
          */
 
         /**
          * Fired when a pointer device button is pressed and released on the display object.
          *
-         * @event pointertap
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointertap
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device button is released outside the display object that initially
          * registered a [pointerdown]{@link PIXI.interaction.InteractionManager#event:pointerdown}.
          *
-         * @event pointerupoutside
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointerupoutside
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device is moved while over the display object
          *
-         * @event pointermove
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointermove
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device is moved onto the display object
          *
-         * @event pointerover
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointerover
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a pointer device is moved off the display object
          *
-         * @event pointerout
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#pointerout
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a touch point is placed on the display object.
          *
-         * @event touchstart
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#touchstart
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a touch point is removed from the display object.
          *
-         * @event touchend
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#touchend
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when the operating system cancels a touch
          *
-         * @event touchcancel
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#touchcancel
          */
 
         /**
          * Fired when a touch point is placed and removed from the display object.
          *
-         * @event tap
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#tap
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a touch point is removed outside of the display object that initially
          * registered a [touchstart]{@link PIXI.interaction.InteractionManager#event:touchstart}.
          *
-         * @event touchendoutside
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#PIXI.interaction.InteractionManager#touchendoutside
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
 
         /**
          * Fired when a touch point is moved along the display object.
          *
-         * @event touchmove
-         * @type {PIXI.interaction.InteractionData}
-         * @memberof PIXI.interaction.InteractionManager#
+         * @event PIXI.interaction.InteractionManager#touchmove
+         * @param {PIXI.interaction.InteractionData} event - Interaction data
          */
     }
 
