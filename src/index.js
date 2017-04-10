@@ -20,6 +20,14 @@ import * as prepare from './prepare';
 import { utils } from './core';
 utils.mixins.performMixins();
 
+/**
+ * Alias for {@link PIXI.loaders.shared}.
+ * @name loader
+ * @memberof PIXI
+ * @type {PIXI.loader.Loader}
+ */
+const loader = loaders.shared || null;
+
 export {
     accessibility,
     extract,
@@ -30,18 +38,8 @@ export {
     mesh,
     particles,
     prepare,
+    loader,
 };
-
-/**
- * A premade instance of the loader that can be used to load resources.
- *
- * @name loader
- * @memberof PIXI
- * @property {PIXI.loaders.Loader}
- */
-const loader = loaders && loaders.Loader ? new loaders.Loader() : null; // check is there in case user excludes loader lib
-
-export { loader };
 
 // Always export pixi globally.
 global.PIXI = exports; // eslint-disable-line
