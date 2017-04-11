@@ -298,13 +298,17 @@ export default class TextMetrics
  * @property {number} fontSize - Font size from ascent to descent
  */
 
+const canvas = document.createElement('canvas');
+
+canvas.width = canvas.height = 10;
+
 /**
  * Cached canvas element for measuring text
  * @memberof PIXI.TextMetrics
  * @type {HTMLCanvasElement}
  * @private
  */
-TextMetrics._canvas = document.createElement('canvas');
+TextMetrics._canvas = canvas;
 
 /**
  * Cache for context to use.
@@ -312,7 +316,7 @@ TextMetrics._canvas = document.createElement('canvas');
  * @type {CanvasRenderingContext2D}
  * @private
  */
-TextMetrics._context = TextMetrics._canvas.getContext('2d');
+TextMetrics._context = canvas.getContext('2d');
 
 /**
  * Cache of PIXI.TextMetrics~FontMetrics objects.
