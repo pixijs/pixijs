@@ -830,6 +830,41 @@ core.Texture.prototype.setFrame = function setFrame(frame)
     warn('setFrame is now deprecated, please use the frame property, e.g: myTexture.frame = frame;');
 };
 
+/**
+ * @static
+ * @function
+ * @name PIXI.Texture.addTextureToCache
+ * @see PIXI.Texture.addToCache
+ * @deprecated since 4.5.0
+ * @param {PIXI.Texture} texture - The Texture to add to the cache.
+ * @param {string} id - The id that the texture will be stored against.
+ */
+core.Texture.addTextureToCache = function addTextureToCache(texture, id)
+{
+    core.Texture.addToCache(texture, id);
+    warn('Texture.addTextureToCache is deprecated, please use Texture.addToCache from now on.');
+};
+
+/**
+ * @static
+ * @function
+ * @name PIXI.Texture.removeTextureFromCache
+ * @see PIXI.Texture.removeFromCache
+ * @deprecated since 4.5.0
+ * @param {string} id - The id of the texture to be removed
+ * @return {PIXI.Texture|null} The texture that was removed
+ */
+core.Texture.removeTextureFromCache = function removeTextureFromCache(id)
+{
+    warn('Texture.removeTextureFromCache is deprecated, please use Texture.removeFromCache from now on. '
+     + 'Be aware that Texture.removeFromCache does not automatically its BaseTexture from the BaseTextureCache. '
+     + 'For that, use BaseTexture.removeFromCache');
+
+    core.BaseTexture.removeFromCache(id);
+
+    return core.Texture.removeFromCache(id);
+};
+
 Object.defineProperties(filters, {
 
     /**
