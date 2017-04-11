@@ -10,7 +10,6 @@ import Bounds from '../display/Bounds';
 import bezierCurveTo from './utils/bezierCurveTo';
 import CanvasRenderer from '../renderers/canvas/CanvasRenderer';
 
-let canvasRenderer;
 const tempMatrix = new Matrix();
 const tempPoint = new Point();
 const tempColor1 = new Float32Array(4);
@@ -1056,10 +1055,7 @@ export default class Graphics extends Container
 
         const canvasBuffer = RenderTexture.create(bounds.width, bounds.height, scaleMode, resolution);
 
-        if (!canvasRenderer)
-        {
-            canvasRenderer = new CanvasRenderer();
-        }
+        const canvasRenderer = new CanvasRenderer(bounds.width, bounds.height);
 
         this.transform.updateLocalTransform();
         this.transform.localTransform.copy(tempMatrix);
@@ -1071,7 +1067,7 @@ export default class Graphics extends Container
 
         canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
 
-        const texture = Texture.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode);
+        const texture = Texture.fromCanvas(canvasRenderer.view, scaleMode);
 
         texture.baseTexture.resolution = resolution;
         texture.baseTexture.update();
