@@ -46,40 +46,6 @@ export default class NineSlicePlane extends Plane
     {
         super(texture, 4, 4);
 
-        const uvs = this.uvs;
-
-        // right and bottom uv's are always 1
-        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
-        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
-
-        this._origWidth = texture.orig.width;
-        this._origHeight = texture.orig.height;
-        this._uvw = 1 / this._origWidth;
-        this._uvh = 1 / this._origHeight;
-
-        /**
-         * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-         *
-         * @member {number}
-         * @memberof PIXI.NineSlicePlane#
-         * @override
-         */
-        this.width = this._origWidth;
-
-        /**
-         * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-         *
-         * @member {number}
-         * @memberof PIXI.NineSlicePlane#
-         * @override
-         */
-        this.height = this._origHeight;
-
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * leftWidth;
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * rightWidth);
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * topHeight;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * bottomHeight);
-
         /**
          * The width of the left column (a)
          *
@@ -87,7 +53,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
+        this._leftWidth = typeof leftWidth !== 'undefined' ? leftWidth : DEFAULT_BORDER_SIZE;
 
         /**
          * The width of the right column (b)
@@ -96,7 +62,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
+        this._rightWidth = typeof rightWidth !== 'undefined' ? rightWidth : DEFAULT_BORDER_SIZE;
 
         /**
          * The height of the top row (c)
@@ -105,7 +71,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
+        this._topHeight = typeof topHeight !== 'undefined' ? topHeight : DEFAULT_BORDER_SIZE;
 
         /**
          * The height of the bottom row (d)
@@ -114,19 +80,150 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+        this._bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
 
         this.refresh(true);
     }
 
     /**
-     * Updates the horizontal vertices.
+     * The width of the left column
      *
+     * @member {number}
+     */
+    get leftWidth()
+    {
+        return this._leftWidth;
+    }
+
+    set leftWidth(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._leftWidth === value)
+        {
+            return;
+        }
+        this._leftWidth = value;
+        this._verticesID++;
+    }
+
+    /**
+     * The width of the right column
+     *
+     * @member {number}
+     */
+    get rightWidth()
+    {
+        return this._rightWidth;
+    }
+
+    set rightWidth(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._rightWidth === value)
+        {
+            return;
+        }
+        this._rightWidth = value;
+        this._verticesID++;
+    }
+
+    /**
+     * The height of the top row
+     *
+     * @member {number}
+     */
+    get topHeight()
+    {
+        return this._topHeight;
+    }
+
+    set topHeight(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._topHeight === value)
+        {
+            return;
+        }
+        this._topHeight = value;
+        this._verticesID++;
+    }
+
+    /**
+     * The height of the bottom row
+     *
+     * @member {number}
+     */
+    get bottomHeight()
+    {
+        return this._bottomHeight;
+    }
+
+    set bottomHeight(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._bottomHeight === value)
+        {
+            return;
+        }
+        this._bottomHeight = value;
+        this._verticesID++;
+    }
+
+    /**
+     * refreshes both vertices and uvs
+     *
+     * @private
+     */
+    _refreshVertices()
+    {
+        this.updateHorizontalVertices();
+        this.updateVerticalVertices();
+
+        const vertices = this.vertices;
+        const offsetX = this._anchor._x * this.width;
+        const offsetY = this._anchor._y * this.height;
+
+        for (let i = 0; i < 32; i += 2)
+        {
+            vertices[i] += offsetX;
+            vertices[i + 1] += offsetY;
+        }
+        this.dirty++;
+    }
+
+    /**
+     * does nothing
+     *
+     * @private
+     */
+    _refreshUvs()
+    {
+        this._uvsID = this._lastUvsID;
+
+        const uvs = this.uvs;
+        const texture = this._texture;
+        const width = texture.orig.width;
+        const height = texture.orig.height;
+
+        uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._leftWidth / width;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._rightWidth / width);
+        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
+
+        uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._topHeight / height;
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._bottomHeight / height);
+        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
+
+        this.dirty++;
+
+        this.multiplyUvs();
+    }
+
+    /**
+     * Updates the horizontal vertices.
      */
     updateHorizontalVertices()
     {
         const vertices = this.vertices;
 
+        vertices[1] = vertices[3] = vertices[5] = vertices[7] = 0;
         vertices[9] = vertices[11] = vertices[13] = vertices[15] = this._topHeight;
         vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - this._bottomHeight;
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
@@ -140,6 +237,7 @@ export default class NineSlicePlane extends Plane
     {
         const vertices = this.vertices;
 
+        vertices[0] = vertices[8] = vertices[16] = vertices[24] = 0;
         vertices[2] = vertices[10] = vertices[18] = vertices[26] = this._leftWidth;
         vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - this._rightWidth;
         vertices[6] = vertices[14] = vertices[22] = vertices[30] = this._width;
@@ -153,6 +251,20 @@ export default class NineSlicePlane extends Plane
      */
     _renderCanvas(renderer)
     {
+        // no texture - no drawImage
+        if (!this._texture.valid)
+        {
+            return;
+        }
+
+        // advanced rendering - allow texture rotates
+        if (this._texture.rotate)
+        {
+            super._renderCanvas(renderer);
+
+            return;
+        }
+
         const context = renderer.context;
 
         context.globalAlpha = this.worldAlpha;
@@ -249,129 +361,5 @@ export default class NineSlicePlane extends Plane
         }
 
         context.drawImage(textureSource, uvs[x1] * w, uvs[y1] * h, sw, sh, vertices[x1], vertices[y1], dw, dh);
-    }
-
-    /**
-     * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-     *
-     * @member {number}
-     */
-    get width()
-    {
-        return this._width;
-    }
-
-    set width(value) // eslint-disable-line require-jsdoc
-    {
-        this._width = value;
-        this.updateVerticalVertices();
-    }
-
-    /**
-     * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-     *
-     * @member {number}
-     */
-    get height()
-    {
-        return this._height;
-    }
-
-    set height(value) // eslint-disable-line require-jsdoc
-    {
-        this._height = value;
-        this.updateHorizontalVertices();
-    }
-
-    /**
-     * The width of the left column
-     *
-     * @member {number}
-     */
-    get leftWidth()
-    {
-        return this._leftWidth;
-    }
-
-    set leftWidth(value) // eslint-disable-line require-jsdoc
-    {
-        this._leftWidth = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
-        vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
-
-        this.dirty = true;
-    }
-
-    /**
-     * The width of the right column
-     *
-     * @member {number}
-     */
-    get rightWidth()
-    {
-        return this._rightWidth;
-    }
-
-    set rightWidth(value) // eslint-disable-line require-jsdoc
-    {
-        this._rightWidth = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * value);
-        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
-
-        this.dirty = true;
-    }
-
-    /**
-     * The height of the top row
-     *
-     * @member {number}
-     */
-    get topHeight()
-    {
-        return this._topHeight;
-    }
-
-    set topHeight(value) // eslint-disable-line require-jsdoc
-    {
-        this._topHeight = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
-        vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
-
-        this.dirty = true;
-    }
-
-    /**
-     * The height of the bottom row
-     *
-     * @member {number}
-     */
-    get bottomHeight()
-    {
-        return this._bottomHeight;
-    }
-
-    set bottomHeight(value) // eslint-disable-line require-jsdoc
-    {
-        this._bottomHeight = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * value);
-        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
-
-        this.dirty = true;
     }
 }
