@@ -350,7 +350,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(20);
     });
 
-    it('should register correct width/height with an a Text Object', function ()
+    it('should register correct width/height with a Text Object', function ()
     {
         const parent = new PIXI.Container();
 

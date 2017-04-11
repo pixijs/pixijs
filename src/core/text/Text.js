@@ -43,12 +43,15 @@ export default class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.fromCanvas(canvas);
+        const texture = Texture.fromCanvas(canvas, settings.SCALE_MODE, 'text');
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();
 
         super(texture);
+
+        // base texture is already automatically added to the cache, now adding the actual texture
+        Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheIds[0]);
 
         /**
          * The canvas element that everything is drawn to

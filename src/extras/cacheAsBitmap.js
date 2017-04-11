@@ -1,4 +1,7 @@
 import * as core from '../core';
+import Texture from '../core/textures/Texture';
+import BaseTexture from '../core/textures/BaseTexture';
+import { uid } from '../core/utils';
 
 const DisplayObject = core.DisplayObject;
 const _tempMatrix = new core.Matrix();
@@ -20,6 +23,8 @@ class CacheData
      */
     constructor()
     {
+        this.textureCacheId = null;
+
         this.originalRenderWebGL = null;
         this.originalRenderCanvas = null;
         this.originalCalculateBounds = null;
@@ -185,6 +190,13 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
+    const textureCacheId = `cacheAsBitmap_${uid()}`;
+
+    this._cacheData.textureCacheId = textureCacheId;
+
+    BaseTexture.addToCache(renderTexture.baseTexture, textureCacheId);
+    Texture.addToCache(renderTexture, textureCacheId);
+
     // need to set //
     const m = _tempMatrix;
 
@@ -289,6 +301,13 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
+    const textureCacheId = `cacheAsBitmap_${uid()}`;
+
+    this._cacheData.textureCacheId = textureCacheId;
+
+    BaseTexture.addToCache(renderTexture.baseTexture, textureCacheId);
+    Texture.addToCache(renderTexture, textureCacheId);
+
     // need to set //
     const m = _tempMatrix;
 
@@ -371,6 +390,11 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
 {
     this._cacheData.sprite._texture.destroy(true);
     this._cacheData.sprite = null;
+
+    BaseTexture.removeFromCache(this._cacheData.textureCacheId);
+    Texture.removeFromCache(this._cacheData.textureCacheId);
+
+    this._cacheData.textureCacheId = null;
 };
 
 /**
