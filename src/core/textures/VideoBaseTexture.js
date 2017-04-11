@@ -193,7 +193,7 @@ export default class VideoBaseTexture extends BaseTexture
 
         if (this.source && this.source._pixiId)
         {
-            delete BaseTextureCache[this.source._pixiId];
+            BaseTexture.removeFromCache(this.source._pixiId);
             delete this.source._pixiId;
         }
 
@@ -220,7 +220,7 @@ export default class VideoBaseTexture extends BaseTexture
         if (!baseTexture)
         {
             baseTexture = new VideoBaseTexture(video, scaleMode);
-            BaseTextureCache[video._pixiId] = baseTexture;
+            BaseTexture.addToCache(baseTexture, video._pixiId);
         }
 
         return baseTexture;
