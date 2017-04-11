@@ -1642,7 +1642,8 @@ export default class InteractionManager extends EventEmitter
      * @private
      * @param {PIXI.interaction.InteractionEvent} interactionEvent - The event to be configured
      * @param {PointerEvent} pointerEvent - The DOM event that will be paired with the InteractionEvent
-     * @param {PIXI.interaction.InteractionData} interactionData - The InteractionData that will be paired with the InteractionEvent
+     * @param {PIXI.interaction.InteractionData} interactionData - The InteractionData that will be paired
+     *        with the InteractionEvent
      * @return {PIXI.interaction.InteractionEvent} the interaction event that was passed in
      */
     configureInteractionEventForDOMEvent(interactionEvent, pointerEvent, interactionData)
