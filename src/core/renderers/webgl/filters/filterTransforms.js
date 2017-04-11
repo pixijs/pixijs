@@ -1,6 +1,6 @@
 import { Matrix } from '../../../math';
 
-/*
+/**
  * Calculates the mapped matrix
  * @param filterArea {Rectangle} The filter area
  * @param sprite {Sprite} the target sprite
