@@ -473,6 +473,41 @@ export default class TextStyle
             this.styleID++;
         }
     }
+
+    /**
+     * Generates a font style string to use for `TextMetrics.measureFont()`.
+     *
+     * @return {string} Font style string, for passing to `TextMetrics.measureFont()`
+     */
+    toFontString()
+    {
+        // build canvas api font setting from individual components. Convert a numeric this.fontSize to px
+        const fontSizeString = (typeof this.fontSize === 'number') ? `${this.fontSize}px` : this.fontSize;
+
+        // Clean-up fontFamily property by quoting each font name
+        // this will support font names with spaces
+        let fontFamilies = this.fontFamily;
+
+        if (!Array.isArray(this.fontFamily))
+        {
+            fontFamilies = this.fontFamily.split(',');
+        }
+
+        for (let i = fontFamilies.length - 1; i >= 0; i--)
+        {
+            // Trim any extra white-space
+            let fontFamily = fontFamilies[i].trim();
+
+            // Check if font already contains strings
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily))
+            {
+                fontFamily = `"${fontFamily}"`;
+            }
+            fontFamilies[i] = fontFamily;
+        }
+
+        return `${this.fontStyle} ${this.fontVariant} ${this.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
+    }
 }
 
 /**
