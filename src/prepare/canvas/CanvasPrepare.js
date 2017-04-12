@@ -43,7 +43,7 @@ export default class CanvasPrepare extends BasePrepare
         this.ctx = this.canvas.getContext('2d');
 
         // Add textures to upload
-        this.register(findBaseTextures, uploadBaseTextures);
+        this.registerUploadHook(uploadBaseTextures);
     }
 
     /**
@@ -82,41 +82,6 @@ function uploadBaseTextures(prepare, item)
         // Only a small subsections is required to be drawn to have the whole texture uploaded to the GPU
         // A smaller draw can be faster.
         prepare.ctx.drawImage(image, 0, 0, imageWidth, imageHeight, 0, 0, prepare.canvas.width, prepare.canvas.height);
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find textures from Sprites.
- *
- * @private
- * @param {PIXI.DisplayObject} item  -Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
- */
-function findBaseTextures(item, queue)
-{
-    // Objects with textures, like Sprites/Text
-    if (item instanceof core.BaseTexture)
-    {
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
-        }
-
-        return true;
-    }
-    else if (item._texture && item._texture instanceof core.Texture)
-    {
-        const texture = item._texture.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
-        }
 
         return true;
     }

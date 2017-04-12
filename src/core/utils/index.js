@@ -9,6 +9,21 @@ let nextUid = 0;
 let saidHello = false;
 
 /**
+ * Generalized convenience utilities for PIXI.
+ * @example
+ * // Extend PIXI's internal Event Emitter.
+ * class MyEmitter extends PIXI.utils.EventEmitter {
+ *   constructor() {
+ *      super();
+ *      console.log("Emitter created!");
+ *   }
+ * }
+ *
+ * // Get info on current device
+ * console.log(PIXI.utils.isMobile);
+ *
+ * // Convert hex color to string
+ * console.log(PIXI.utils.hex2string(0xff00ff)); // returns: "#ff00ff"
  * @namespace PIXI.utils
  */
 export {
@@ -353,7 +368,7 @@ export function removeItems(arr, startIdx, removeCount)
  * @memberof PIXI.utils
  * @private
  */
-export const TextureCache = {};
+export const TextureCache = Object.create(null);
 
 /**
  * @todo Describe property usage
@@ -361,7 +376,7 @@ export const TextureCache = {};
  * @memberof PIXI.utils
  * @private
  */
-export const BaseTextureCache = {};
+export const BaseTextureCache = Object.create(null);
 
 /**
  * Destroys all texture in the cache

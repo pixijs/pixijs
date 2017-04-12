@@ -4,6 +4,8 @@ import { default as Mesh } from '../Mesh';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+const matrixIdentity = core.Matrix.IDENTITY;
+
 /**
  * WebGL renderer plugin for tiling sprites
  *
@@ -104,6 +106,17 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         renderer.state.setBlendMode(mesh.blendMode);
 
+        if (glData.shader.uniforms.uTransform)
+        {
+            if (mesh.uploadUvTransform)
+            {
+                glData.shader.uniforms.uTransform = mesh._uvTransform.mapCoord.toArray(true);
+            }
+            else
+            {
+                glData.shader.uniforms.uTransform = matrixIdentity.toArray(true);
+            }
+        }
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
         glData.shader.uniforms.alpha = mesh.worldAlpha;
         glData.shader.uniforms.tint = mesh.tintRgb;

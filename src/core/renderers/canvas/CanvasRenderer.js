@@ -17,10 +17,11 @@ import settings from '../../settings';
  */
 export default class CanvasRenderer extends SystemRenderer
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {number} [screenWidth=800] - the width of the screen
-     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
@@ -34,9 +35,9 @@ export default class CanvasRenderer extends SystemRenderer
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
-    constructor(screenWidth, screenHeight, options = {})
+    constructor(options, arg2, arg3)
     {
-        super('Canvas', screenWidth, screenHeight, options);
+        super('Canvas', options, arg2, arg3);
 
         this.type = RENDERER_TYPE.CANVAS;
 
@@ -96,7 +97,19 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = null;
         this.renderingToScreen = false;
 
-        this.resize(screenWidth, screenHeight);
+        this.resize(this.options.width, this.options.height);
+
+        /**
+         * Fired after rendering finishes.
+         *
+         * @event PIXI.CanvasRenderer#postrender
+         */
+
+        /**
+         * Fired before rendering starts.
+         *
+         * @event PIXI.CanvasRenderer#prerender
+         */
     }
 
     /**
@@ -298,5 +311,26 @@ export default class CanvasRenderer extends SystemRenderer
         }
     }
 }
+
+/**
+ * Collection of installed plugins. These are included by default in PIXI, but can be excluded
+ * by creating a custom build. Consult the README for more information about creating custom
+ * builds and excluding plugins.
+ * @name PIXI.CanvasRenderer#plugins
+ * @type {object}
+ * @readonly
+ * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+ * @property {PIXI.extract.CanvasExtract} extract Extract image data from renderer.
+ * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+ * @property {PIXI.prepare.CanvasPrepare} prepare Pre-render display objects.
+ */
+
+/**
+ * Adds a plugin to the renderer.
+ *
+ * @method PIXI.CanvasRenderer#registerPlugin
+ * @param {string} pluginName - The name of the plugin.
+ * @param {Function} ctor - The constructor function or class for the plugin.
+ */
 
 pluginTarget.mixin(CanvasRenderer);

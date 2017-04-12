@@ -18,6 +18,7 @@ describe('PIXI.Spritesheet', function ()
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
                 expect(textures[id].width).to.equal(spritesheet.data.frames[id].frame.w / spritesheet.resolution);
                 expect(textures[id].height).to.equal(spritesheet.data.frames[id].frame.h / spritesheet.resolution);
+                expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
                 expect(spritesheet.baseTexture).to.be.null;

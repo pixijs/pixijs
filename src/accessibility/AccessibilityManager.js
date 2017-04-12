@@ -21,12 +21,12 @@ const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
 /**
- * The Accessibility manager reacreates the ability to tab and and have content read by screen
+ * The Accessibility manager recreates the ability to tab and have content read by screen
  * readers. This is very important as it can possibly help people with disabilities access pixi
  * content.
  *
  * Much like interaction any DisplayObject can be made accessible. This manager will map the
- * events as if the mouse was being used, minimizing the efferot required to implement.
+ * events as if the mouse was being used, minimizing the effort required to implement.
  *
  * An instance of this class is automatically created by default, and can be found at renderer.plugins.accessibility
  *
@@ -80,7 +80,7 @@ export default class AccessibilityManager
         this.renderId = 0;
 
         /**
-         * Setting this to true will visually show the divs
+         * Setting this to true will visually show the divs.
          *
          * @type {boolean}
          */
@@ -110,7 +110,7 @@ export default class AccessibilityManager
         this._onMouseMove = this._onMouseMove.bind(this);
 
         /**
-         * stores the state of the manager. If there are no accessible objects or the mouse is moving the will be false.
+         * stores the state of the manager. If there are no accessible objects or the mouse is moving, this will be false.
          *
          * @member {Array<*>}
          * @private
@@ -151,7 +151,7 @@ export default class AccessibilityManager
 
     /**
      * Activating will cause the Accessibility layer to be shown. This is called when a user
-     * preses the tab key
+     * preses the tab key.
      *
      * @private
      */
@@ -177,7 +177,7 @@ export default class AccessibilityManager
 
     /**
      * Deactivating will cause the Accessibility layer to be hidden. This is called when a user moves
-     * the mouse
+     * the mouse.
      *
      * @private
      */
@@ -202,7 +202,7 @@ export default class AccessibilityManager
     }
 
     /**
-     * This recursive function will run throught he scene graph and add any new accessible objects to the DOM layer.
+     * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
      *
      * @private
      * @param {PIXI.Container} displayObject - The DisplayObject to check.
@@ -409,7 +409,7 @@ export default class AccessibilityManager
     }
 
     /**
-     * Maps the div focus events to pixis InteractionManager (mouseover)
+     * Maps the div focus events to pixi's InteractionManager (mouseover)
      *
      * @private
      * @param {FocusEvent} e - The focus event.
@@ -422,7 +422,7 @@ export default class AccessibilityManager
     }
 
     /**
-     * Maps the div focus events to pixis InteractionManager (mouseout)
+     * Maps the div focus events to pixi's InteractionManager (mouseout)
      *
      * @private
      * @param {FocusEvent} e - The focusout event.

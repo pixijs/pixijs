@@ -1,4 +1,5 @@
 import * as core from '../core';
+import { default as TextureTransform } from '../extras/TextureTransform';
 
 const tempPoint = new core.Point();
 const tempPolygon = new core.Polygon();
@@ -28,7 +29,7 @@ export default class Mesh extends core.Container
          * @member {PIXI.Texture}
          * @private
          */
-        this._texture = null;
+        this._texture = texture;
 
         /**
          * The Uvs of the Mesh
@@ -52,8 +53,10 @@ export default class Mesh extends core.Container
             100, 100,
             0, 100]);
 
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
+        /**
+         * An array containing the indices of the vertices
+         *
+         * @member {Uint16Array}
          */
         //  TODO auto generate this based on draw mode!
         this.indices = indices || new Uint16Array([0, 1, 3, 2]);
@@ -98,9 +101,6 @@ export default class Mesh extends core.Container
          */
         this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
 
-        // run texture setter;
-        this.texture = texture;
-
         /**
          * The default shader that is used if a mesh doesn't have a more specific one.
          *
@@ -125,9 +125,27 @@ export default class Mesh extends core.Container
         this._glDatas = {};
 
         /**
+         * transform that is applied to UV to get the texture coords
+         * its updated independently from texture uvTransform
+         * updates of uvs are tied to that thing
+         *
+         * @member {PIXI.extras.TextureTransform}
+         * @private
+         */
+        this._uvTransform = new TextureTransform(texture);
+
+        /**
+         * whether or not upload uvTransform to shader
+         * if its false, then uvs should be pre-multiplied
+         * if you change it for generated mesh, please call 'refresh(true)'
+         * @member {boolean}
+         * @default false
+         */
+        this.uploadUvTransform = false;
+
+        /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_renderWebGL' & '_renderCanvas' methods.
-         *
          * @member {string}
          * @default 'mesh'
          */
@@ -142,6 +160,7 @@ export default class Mesh extends core.Container
      */
     _renderWebGL(renderer)
     {
+        this.refresh();
         renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
     }
@@ -154,6 +173,7 @@ export default class Mesh extends core.Container
      */
     _renderCanvas(renderer)
     {
+        this.refresh();
         renderer.plugins[this.pluginName].render(this);
     }
 
@@ -163,6 +183,43 @@ export default class Mesh extends core.Container
      * @private
      */
     _onTextureUpdate()
+    {
+        this._uvTransform.texture = this._texture;
+        this.refresh();
+    }
+
+    /**
+     * multiplies uvs only if uploadUvTransform is false
+     * call it after you change uvs manually
+     * make sure that texture is valid
+     */
+    multiplyUvs()
+    {
+        if (!this.uploadUvTransform)
+        {
+            this._uvTransform.multiplyUvs(this.uvs);
+        }
+    }
+
+    /**
+     * Refreshes uvs for generated meshes (rope, plane)
+     * sometimes refreshes vertices too
+     *
+     * @param {boolean} [forceUpdate=false] if true, matrices will be updated any case
+     */
+    refresh(forceUpdate)
+    {
+        if (this._uvTransform.update(forceUpdate))
+        {
+            this._refresh();
+        }
+    }
+
+    /**
+     * re-calculates mesh coords
+     * @protected
+     */
+    _refresh()
     {
         /* empty */
     }

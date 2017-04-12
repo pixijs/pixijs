@@ -22,12 +22,11 @@ export default class WebGLPrepare extends BasePrepare
         this.uploadHookHelper = this.renderer;
 
         // Add textures and graphics to upload
-        this.register(findBaseTextures, uploadBaseTextures)
-            .register(findGraphics, uploadGraphics);
+        this.registerFindHook(findGraphics);
+        this.registerUploadHook(uploadBaseTextures);
+        this.registerUploadHook(uploadGraphics);
     }
-
 }
-
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
  *
@@ -71,41 +70,6 @@ function uploadGraphics(renderer, item)
         if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID])
         {
             renderer.plugins.graphics.updateGraphics(item);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Built-in hook to find textures from Sprites.
- *
- * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
- */
-function findBaseTextures(item, queue)
-{
-    // Objects with textures, like Sprites/Text
-    if (item instanceof core.BaseTexture)
-    {
-        if (queue.indexOf(item) === -1)
-        {
-            queue.push(item);
-        }
-
-        return true;
-    }
-    else if (item._texture && item._texture instanceof core.Texture)
-    {
-        const texture = item._texture.baseTexture;
-
-        if (queue.indexOf(texture) === -1)
-        {
-            queue.push(texture);
         }
 
         return true;
