@@ -6,7 +6,7 @@ import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import settings from '../settings';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache, getResolutionOfUrl, uid } from '../utils';
+import { TextureCache, getResolutionOfUrl } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -161,13 +161,13 @@ export default class Texture extends EventEmitter
         this.transform = null;
 
         /**
-         * The id under which this Texture has been added to the texture cache. This is
-         * automatically set in certain cases, but may not always be accurate, particularly if
-         * the texture is in the cache under multiple ids.
+         * The ids under which this Texture has been added to the texture cache. This is
+         * automatically set as long as Texture.addToCache is used, but may not be set if a
+         * Texture is added directly to the TextureCache array.
          *
-         * @member {string}
+         * @member {string[]}
          */
-        this.textureCacheId = null;
+        this.textureCacheIds = [];
     }
 
     /**
@@ -219,7 +219,7 @@ export default class Texture extends EventEmitter
                 // this only needs to be removed if the base texture is actually destroyed too..
                 if (TextureCache[this.baseTexture.imageUrl])
                 {
-                    delete TextureCache[this.baseTexture.imageUrl];
+                    Texture.removeFromCache(this.baseTexture.imageUrl);
                 }
 
                 this.baseTexture.destroy();
@@ -234,17 +234,11 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
-        this.textureCacheId = null;
 
         this.valid = false;
 
-        for (const prop in TextureCache)
-        {
-            if (TextureCache[prop] === this)
-            {
-                delete TextureCache[prop];
-            }
-        }
+        Texture.removeFromCache(this);
+        this.textureCacheIds = null;
     }
 
     /**
@@ -272,6 +266,95 @@ export default class Texture extends EventEmitter
         this._uvs.set(this._frame, this.baseTexture, this.rotate);
 
         this._updateID++;
+    }
+
+    /**
+     * Helper function that creates a Texture object from the given image url.
+     * If the image is not in the texture cache it will be  created and loaded.
+     *
+     * @static
+     * @param {string} imageUrl - The image url of the texture
+     * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
+     * @return {PIXI.Texture} The newly created texture
+     */
+    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
+    {
+        let texture = TextureCache[imageUrl];
+
+        if (!texture)
+        {
+            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
+            Texture.addToCache(texture, imageUrl);
+        }
+
+        return texture;
+    }
+
+    /**
+     * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+     * The frame ids are created when a Texture packer file has been loaded
+     *
+     * @static
+     * @param {string} frameId - The frame Id of the texture in the cache
+     * @return {PIXI.Texture} The newly created texture
+     */
+    static fromFrame(frameId)
+    {
+        const texture = TextureCache[frameId];
+
+        if (!texture)
+        {
+            throw new Error(`The frameId "${frameId}" does not exist in the texture cache`);
+        }
+
+        return texture;
+    }
+
+    /**
+     * Helper function that creates a new Texture based on the given canvas element.
+     *
+     * @static
+     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {string} [origin='canvas'] - A string origin of who created the base texture
+     * @return {PIXI.Texture} The newly created texture
+     */
+    static fromCanvas(canvas, scaleMode, origin = 'canvas')
+    {
+        return new Texture(BaseTexture.fromCanvas(canvas, scaleMode, origin));
+    }
+
+    /**
+     * Helper function that creates a new Texture based on the given video element.
+     *
+     * @static
+     * @param {HTMLVideoElement|string} video - The URL or actual element of the video
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @return {PIXI.Texture} The newly created texture
+     */
+    static fromVideo(video, scaleMode)
+    {
+        if (typeof video === 'string')
+        {
+            return Texture.fromVideoUrl(video, scaleMode);
+        }
+
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+    }
+
+    /**
+     * Helper function that creates a new Texture based on the video url.
+     *
+     * @static
+     * @param {string} videoUrl - URL of the video
+     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+     * @return {PIXI.Texture} The newly created texture
+     */
+    static fromVideoUrl(videoUrl, scaleMode)
+    {
+        return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
     }
 
     /**
@@ -338,8 +421,6 @@ export default class Texture extends EventEmitter
                                             settings.SCALE_MODE,
                                             getResolutionOfUrl(imageUrl));
 
-
-       /// console.log('base width ' + baseTexture.width);
         const texture = new Texture(baseTexture);
 
         // No name, use imageUrl instead
@@ -349,51 +430,88 @@ export default class Texture extends EventEmitter
         }
 
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-        BaseTextureCache[name] = baseTexture;
-        TextureCache[name] = texture;
-        texture.textureCacheId = name;
+        BaseTexture.addToCache(texture.baseTexture, name);
+        Texture.addToCache(texture, name);
 
         // also add references by url if they are different.
         if (name !== imageUrl)
         {
-            BaseTextureCache[imageUrl] = baseTexture;
-            TextureCache[imageUrl] = texture;
+            BaseTexture.addToCache(texture.baseTexture, imageUrl);
+            Texture.addToCache(texture, imageUrl);
         }
 
         return texture;
     }
 
     /**
-     * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
+     * Adds a Texture to the global TextureCache. This cache is shared across the whole PIXI object.
      *
      * @static
      * @param {PIXI.Texture} texture - The Texture to add to the cache.
-     * @param {string} id - The id that the texture will be stored against.
+     * @param {string} id - The id that the Texture will be stored against.
      */
-    static addTextureToCache(texture, id)
+    static addToCache(texture, id)
     {
-        if (!texture.textureCacheId)
+        if (id)
         {
-            texture.textureCacheId = id;
+            if (texture.textureCacheIds.indexOf(id) === -1)
+            {
+                texture.textureCacheIds.push(id);
+            }
+
+            // @if DEBUG
+            /* eslint-disable no-console */
+            if (TextureCache[id])
+            {
+                console.warn(`Texture added to the cache with an id [${id}] that already had an entry`);
+            }
+            /* eslint-enable no-console */
+            // @endif
+
+            TextureCache[id] = texture;
         }
-        TextureCache[id] = texture;
     }
 
     /**
-     * Remove a texture from the global TextureCache.
+     * Remove a Texture from the global TextureCache.
      *
      * @static
-     * @param {string} id - The id of the texture to be removed
-     * @return {PIXI.Texture} The texture that was removed
+     * @param {string|PIXI.Texture} texture - id of a Texture to be removed, or a Texture instance itself
+     * @return {PIXI.Texture|null} The Texture that was removed
      */
-    static removeTextureFromCache(id)
+    static removeFromCache(texture)
     {
-        const texture = TextureCache[id];
+        if (typeof texture === 'string')
+        {
+            const textureFromCache = TextureCache[texture];
 
-        delete TextureCache[id];
-        delete BaseTextureCache[id];
+            if (textureFromCache)
+            {
+                const index = textureFromCache.textureCacheIds.indexOf(texture);
 
-        return texture;
+                if (index > -1)
+                {
+                    textureFromCache.textureCacheIds.splice(index, 1);
+                }
+
+                delete TextureCache[texture];
+
+                return textureFromCache;
+            }
+        }
+        else
+        {
+            for (let i = 0; i < texture.textureCacheIds.length; ++i)
+            {
+                delete TextureCache[texture.textureCacheIds[i]];
+            }
+
+            texture.textureCacheIds.length = 0;
+
+            return texture;
+        }
+
+        return null;
     }
 
     /**

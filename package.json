@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.4.4",
+  "version": "4.5.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -23,7 +23,7 @@
     "start": "parallelshell \"npm run watch\" \"npm run watch:lint\" \"npm run watch:lib\"",
     "watch": "npm run dist -- --watch",
     "watch:lib": "npm run lib -- --watch",
-    "watch:lint": "watch \"eslint scripts src test || exit 0\" src --silent",
+    "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
     "test": "floss --path test/index.js",
     "test:debug": "npm test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
@@ -44,7 +44,8 @@
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish",
     "postversion": "npm run clean && npm run build && npm run lib && npm test",
-    "postpublish": "git push && git push --tags"
+    "postpublish": "git push && git push --tags && npm run release",
+    "release": "node scripts/release"
   },
   "files": [
     "dist/",
@@ -60,6 +61,7 @@
     "eventemitter3": "^2.0.0",
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
+    "pixi-gl-core": "^1.0.3",
     "resource-loader": "^2.0.6"
   },
   "devDependencies": {
@@ -72,6 +74,7 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
+    "gh-pages": "^0.12.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "^3.4.2",

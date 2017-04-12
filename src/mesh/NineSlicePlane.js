@@ -52,8 +52,8 @@ export default class NineSlicePlane extends Plane
         uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
         uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
 
-        this._origWidth = texture.width;
-        this._origHeight = texture.height;
+        this._origWidth = texture.orig.width;
+        this._origHeight = texture.orig.height;
         this._uvw = 1 / this._origWidth;
         this._uvh = 1 / this._origHeight;
 
@@ -64,7 +64,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.width = texture.width;
+        this.width = this._origWidth;
 
         /**
          * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
@@ -73,7 +73,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.height = texture.height;
+        this.height = this._origHeight;
 
         uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * leftWidth;
         uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * rightWidth);
@@ -115,6 +115,8 @@ export default class NineSlicePlane extends Plane
          * @override
          */
         this.bottomHeight = typeof bottomHeight !== 'undefined' ? bottomHeight : DEFAULT_BORDER_SIZE;
+
+        this.refresh(true);
     }
 
     /**

@@ -695,6 +695,49 @@ core.Text.prototype.setText = function setText(text)
 };
 
 /**
+ * Calculates the ascent, descent and fontSize of a given fontStyle
+ *
+ * @name PIXI.Text.calculateFontProperties
+ * @see PIXI.TextMetrics.measureFont
+ * @deprecated since version 4.5.0
+ * @param {string} font - String representing the style of the font
+ * @return {Object} Font properties object
+ */
+core.Text.calculateFontProperties = function calculateFontProperties(font)
+{
+    warn(`Text.calculateFontProperties is now deprecated, please use the TextMetrics.measureFont`);
+
+    return core.TextMetrics.measureFont(font);
+};
+
+Object.defineProperties(core.Text, {
+    fontPropertiesCache: {
+        get()
+        {
+            warn(`Text.fontPropertiesCache is deprecated`);
+
+            return core.TextMetrics._fonts;
+        },
+    },
+    fontPropertiesCanvas: {
+        get()
+        {
+            warn(`Text.fontPropertiesCanvas is deprecated`);
+
+            return core.TextMetrics._canvas;
+        },
+    },
+    fontPropertiesContext: {
+        get()
+        {
+            warn(`Text.fontPropertiesContext is deprecated`);
+
+            return core.TextMetrics._context;
+        },
+    },
+});
+
+/**
  * @method
  * @name PIXI.Text#setStyle
  * @see PIXI.Text#style
@@ -710,7 +753,7 @@ core.Text.prototype.setStyle = function setStyle(style)
 /**
  * @method
  * @name PIXI.Text#determineFontProperties
- * @see PIXI.Text#calculateFontProperties
+ * @see PIXI.Text#measureFontProperties
  * @deprecated since version 4.2.0
  * @private
  * @param {string} fontStyle - String representing the style of the font
@@ -718,10 +761,31 @@ core.Text.prototype.setStyle = function setStyle(style)
  */
 core.Text.prototype.determineFontProperties = function determineFontProperties(fontStyle)
 {
-    warn('determineFontProperties is now deprecated, please use the static calculateFontProperties method, '
-        + 'e.g : Text.calculateFontProperties(fontStyle);');
+    warn('determineFontProperties is now deprecated, please use TextMetrics.measureFont method');
 
-    return core.Text.calculateFontProperties(fontStyle);
+    return core.TextMetrics.measureFont(fontStyle);
+};
+
+/**
+ * @method
+ * @name PIXI.Text.getFontStyle
+ * @see PIXI.TextMetrics.getFontStyle
+ * @deprecated since version 4.5.0
+ * @param {PIXI.TextStyle} style - The style to use.
+ * @return {string} Font string
+ */
+core.Text.getFontStyle = function getFontStyle(style)
+{
+    warn('getFontStyle is now deprecated, please use TextStyle.toFontString() instead');
+
+    style = style || {};
+
+    if (!(style instanceof core.TextStyle))
+    {
+        style = new core.TextStyle(style);
+    }
+
+    return style.toFontString();
 };
 
 Object.defineProperties(core.TextStyle.prototype, {
@@ -828,6 +892,41 @@ core.Texture.prototype.setFrame = function setFrame(frame)
 {
     this.frame = frame;
     warn('setFrame is now deprecated, please use the frame property, e.g: myTexture.frame = frame;');
+};
+
+/**
+ * @static
+ * @function
+ * @name PIXI.Texture.addTextureToCache
+ * @see PIXI.Texture.addToCache
+ * @deprecated since 4.5.0
+ * @param {PIXI.Texture} texture - The Texture to add to the cache.
+ * @param {string} id - The id that the texture will be stored against.
+ */
+core.Texture.addTextureToCache = function addTextureToCache(texture, id)
+{
+    core.Texture.addToCache(texture, id);
+    warn('Texture.addTextureToCache is deprecated, please use Texture.addToCache from now on.');
+};
+
+/**
+ * @static
+ * @function
+ * @name PIXI.Texture.removeTextureFromCache
+ * @see PIXI.Texture.removeFromCache
+ * @deprecated since 4.5.0
+ * @param {string} id - The id of the texture to be removed
+ * @return {PIXI.Texture|null} The texture that was removed
+ */
+core.Texture.removeTextureFromCache = function removeTextureFromCache(id)
+{
+    warn('Texture.removeTextureFromCache is deprecated, please use Texture.removeFromCache from now on. '
+     + 'Be aware that Texture.removeFromCache does not automatically its BaseTexture from the BaseTextureCache. '
+     + 'For that, use BaseTexture.removeFromCache');
+
+    core.BaseTexture.removeFromCache(id);
+
+    return core.Texture.removeFromCache(id);
 };
 
 Object.defineProperties(filters, {

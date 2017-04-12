@@ -115,6 +115,8 @@ export default class BaseTexture extends EventEmitter
 
         this.validate();
 
+        this.textureCacheIds = [];
+
         /**
          * Fired when a not-immediately-available source finishes loading.
          *
@@ -125,6 +127,22 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * Fired when a not-immediately-available source fails to load.
+         *
+         * @protected
+         * @event PIXI.BaseTexture#error
+         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         */
+
+        /**
+         * Fired when BaseTexture is updated.
+         *
+         * @protected
+         * @event PIXI.BaseTexture#loaded
+         * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
+         */
+
+        /**
+         * Fired when BaseTexture is destroyed.
          *
          * @protected
          * @event PIXI.BaseTexture#error
@@ -253,8 +271,6 @@ export default class BaseTexture extends EventEmitter
      */
     destroy()
     {
-        // remove from the cache..
-
         if (this.cacheId)
         {
             delete BaseTextureCache[this.cacheId];
@@ -272,7 +288,10 @@ export default class BaseTexture extends EventEmitter
         }
 
         // finally let the webGL renderer know..
-        this.dispose()
+        this.dispose();
+
+        BaseTexture.removeFromCache(this);
+        this.textureCacheIds = null;
     }
 
     /**
@@ -280,6 +299,7 @@ export default class BaseTexture extends EventEmitter
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
      *
+     * @fires PIXI.BaseTexture#dispose
      */
     dispose()
     {
@@ -320,10 +340,9 @@ export default class BaseTexture extends EventEmitter
         {
             baseTexture = new BaseTexture(source);
             baseTexture.cacheId = cacheId;
-            BaseTextureCache[cacheId] = baseTexture;
+            BaseTexture.addToCache(baseTexture, cacheId);
         }
 
-        // lets assume its a base texture!
         return baseTexture;
     }
 
@@ -355,6 +374,76 @@ export default class BaseTexture extends EventEmitter
         return texture;
     }
 
+    /**
+     * Adds a BaseTexture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
+     *
+     * @static
+     * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
+     * @param {string} id - The id that the BaseTexture will be stored against.
+     */
+    static addToCache(baseTexture, id)
+    {
+        if (id)
+        {
+            if (baseTexture.textureCacheIds.indexOf(id) === -1)
+            {
+                baseTexture.textureCacheIds.push(id);
+            }
+
+            // @if DEBUG
+            /* eslint-disable no-console */
+            if (BaseTextureCache[id])
+            {
+                console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);
+            }
+            /* eslint-enable no-console */
+            // @endif
+
+            BaseTextureCache[id] = baseTexture;
+        }
+    }
+
+    /**
+     * Remove a BaseTexture from the global BaseTextureCache.
+     *
+     * @static
+     * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
+     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
+     */
+    static removeFromCache(baseTexture)
+    {
+        if (typeof baseTexture === 'string')
+        {
+            const baseTextureFromCache = BaseTextureCache[baseTexture];
+
+            if (baseTextureFromCache)
+            {
+                const index = baseTextureFromCache.textureCacheIds.indexOf(baseTexture);
+
+                if (index > -1)
+                {
+                    baseTextureFromCache.textureCacheIds.splice(index, 1);
+                }
+
+                delete BaseTextureCache[baseTexture];
+
+                return baseTextureFromCache;
+            }
+        }
+        else
+        {
+            for (let i = 0; i < baseTexture.textureCacheIds.length; ++i)
+            {
+                delete BaseTextureCache[baseTexture.textureCacheIds[i]];
+            }
+
+            baseTexture.textureCacheIds.length = 0;
+
+            return baseTexture;
+        }
+
+        return null;
+    }
 }
 
 BaseTexture.fromImage = BaseTexture.from;
