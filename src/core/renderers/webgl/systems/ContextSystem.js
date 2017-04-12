@@ -75,7 +75,7 @@ export default class ContextSystem extends WebGLSystem
      */
     createContext(canvas, options)
     {
-        var gl = //canvas.getContext('webgl2', options) ||
+        var gl = canvas.getContext('webgl2', options) ||
              canvas.getContext('webgl', options) ||
              canvas.getContext('experimental-webgl', options);
 

@@ -22,7 +22,8 @@ export default function getTestContext()
         canvas.height = 1;
 
 
-        context = canvas.getContext('webgl', options) ||
+        context = canvas.getContext('webgl2', options) ||
+        canvas.getContext('webgl', options) ||
         canvas.getContext('experimental-webgl', options);
 
         if (!context)
