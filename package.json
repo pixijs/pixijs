@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.4.4",
+  "version": "4.5.0",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -40,11 +40,12 @@
     "lib": "babel src --out-dir lib -s",
     "predocs": "rimraf docs/**",
     "docs": "jsdoc -c scripts/jsdoc.conf.json -R README.md",
-    "publish:patch": "npm version patch --no-git-tag-version && npm publish",
-    "publish:minor": "npm version minor --no-git-tag-version && npm publish",
-    "publish:major": "npm version major --no-git-tag-version && npm publish",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish",
     "postversion": "npm run clean && npm run build && npm run lib && npm test",
-    "postpublish": "node scripts/release.js"
+    "postpublish": "git push && git push --tags && npm run release",
+    "release": "node scripts/release"
   },
   "files": [
     "dist/",
@@ -73,7 +74,7 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
-    "gh-pages": "^0.11.0",
+    "gh-pages": "^0.12.0",
     "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "^3.4.2",

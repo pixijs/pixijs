@@ -90,6 +90,15 @@ export default class Loader extends ResourceLoader
     {
         Loader._pixiMiddleware.push(fn);
     }
+
+    /**
+     * Destroy the loader, removes references.
+     */
+    destroy()
+    {
+        this.removeAllListeners();
+        this.reset();
+    }
 }
 
 // Copy EE3 prototype (mixin)

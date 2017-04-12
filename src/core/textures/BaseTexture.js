@@ -196,12 +196,6 @@ export default class BaseTexture extends EventEmitter
         this._enabled = 0;
         this._virtalBoundId = -1;
 
-        // if no source passed don't try to load
-        if (source)
-        {
-            this.loadSource(source);
-        }
-
         /**
          * If the object has been destroyed via destroy(). If true, it should not be used.
          *
@@ -212,26 +206,57 @@ export default class BaseTexture extends EventEmitter
         this._destroyed = false;
 
         /**
+         * The ids under which this BaseTexture has been added to the base texture cache. This is
+         * automatically set as long as BaseTexture.addToCache is used, but may not be set if a
+         * BaseTexture is added directly to the BaseTextureCache array.
+         *
+         * @member {string[]}
+         */
+        this.textureCacheIds = [];
+
+        // if no source passed don't try to load
+        if (source)
+        {
+            this.loadSource(source);
+        }
+
+        /**
          * Fired when a not-immediately-available source finishes loading.
          *
          * @protected
-         * @event loaded
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#loaded
+         * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
          */
 
         /**
          * Fired when a not-immediately-available source fails to load.
          *
          * @protected
-         * @event error
-         * @memberof PIXI.BaseTexture#
+         * @event PIXI.BaseTexture#error
+         * @param {PIXI.BaseTexture} baseTexture - Resource errored.
+         */
+
+        /**
+         * Fired when BaseTexture is updated.
+         *
+         * @protected
+         * @event PIXI.BaseTexture#update
+         * @param {PIXI.BaseTexture} baseTexture - Instance of texture being updated.
+         */
+
+        /**
+         * Fired when BaseTexture is destroyed.
+         *
+         * @protected
+         * @event PIXI.BaseTexture#dispose
+         * @param {PIXI.BaseTexture} baseTexture - Instance of texture being destroyed.
          */
     }
 
     /**
      * Updates the texture on all the webgl renderers, this also assumes the src has changed.
      *
-     * @fires update
+     * @fires PIXI.BaseTexture#update
      */
     update()
     {
@@ -524,7 +549,7 @@ export default class BaseTexture extends EventEmitter
      *
      * @param  {string} svgString SVG source as string
      *
-     * @fires loaded
+     * @fires PIXI.BaseTexture#loaded
      */
     _loadSvgSourceUsingString(svgString)
     {
@@ -561,7 +586,7 @@ export default class BaseTexture extends EventEmitter
         this.source = canvas;
 
         // Add also the canvas in cache (destroy clears by `imageUrl` and `source._pixiId`)
-        BaseTextureCache[canvas._pixiId] = this;
+        BaseTexture.addToCache(this, canvas._pixiId);
 
         this.isLoading = false;
         this._sourceLoaded();
@@ -588,7 +613,6 @@ export default class BaseTexture extends EventEmitter
     {
         if (this.imageUrl)
         {
-            delete BaseTextureCache[this.imageUrl];
             delete TextureCache[this.imageUrl];
 
             this.imageUrl = null;
@@ -598,15 +622,13 @@ export default class BaseTexture extends EventEmitter
                 this.source.src = '';
             }
         }
-        // An svg source has both `imageUrl` and `__pixiId`, so no `else if` here
-        if (this.source && this.source._pixiId)
-        {
-            delete BaseTextureCache[this.source._pixiId];
-        }
 
         this.source = null;
 
         this.dispose();
+
+        BaseTexture.removeFromCache(this);
+        this.textureCacheIds = null;
 
         this._destroyed = true;
     }
@@ -616,6 +638,7 @@ export default class BaseTexture extends EventEmitter
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
      *
+     * @fires PIXI.BaseTexture#dispose
      */
     dispose()
     {
@@ -674,7 +697,7 @@ export default class BaseTexture extends EventEmitter
 
             image.src = imageUrl; // Setting this triggers load
 
-            BaseTextureCache[imageUrl] = baseTexture;
+            BaseTexture.addToCache(baseTexture, imageUrl);
         }
 
         return baseTexture;
@@ -686,13 +709,14 @@ export default class BaseTexture extends EventEmitter
      * @static
      * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {string} [origin='canvas'] - A string origin of who created the base texture
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static fromCanvas(canvas, scaleMode)
+    static fromCanvas(canvas, scaleMode, origin = 'canvas')
     {
         if (!canvas._pixiId)
         {
-            canvas._pixiId = `canvas_${uid()}`;
+            canvas._pixiId = `${origin}_${uid()}`;
         }
 
         let baseTexture = BaseTextureCache[canvas._pixiId];
@@ -700,7 +724,7 @@ export default class BaseTexture extends EventEmitter
         if (!baseTexture)
         {
             baseTexture = new BaseTexture(canvas, scaleMode);
-            BaseTextureCache[canvas._pixiId] = baseTexture;
+            BaseTexture.addToCache(baseTexture, canvas._pixiId);
         }
 
         return baseTexture;
@@ -740,7 +764,7 @@ export default class BaseTexture extends EventEmitter
                 // if there is an @2x at the end of the url we are going to assume its a highres image
                 baseTexture.resolution = getResolutionOfUrl(imageUrl);
 
-                BaseTextureCache[imageUrl] = baseTexture;
+                BaseTexture.addToCache(baseTexture, imageUrl);
             }
 
             return baseTexture;
@@ -752,5 +776,76 @@ export default class BaseTexture extends EventEmitter
 
         // lets assume its a base texture!
         return source;
+    }
+
+    /**
+     * Adds a BaseTexture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
+     *
+     * @static
+     * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
+     * @param {string} id - The id that the BaseTexture will be stored against.
+     */
+    static addToCache(baseTexture, id)
+    {
+        if (id)
+        {
+            if (baseTexture.textureCacheIds.indexOf(id) === -1)
+            {
+                baseTexture.textureCacheIds.push(id);
+            }
+
+            // @if DEBUG
+            /* eslint-disable no-console */
+            if (BaseTextureCache[id])
+            {
+                console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);
+            }
+            /* eslint-enable no-console */
+            // @endif
+
+            BaseTextureCache[id] = baseTexture;
+        }
+    }
+
+    /**
+     * Remove a BaseTexture from the global BaseTextureCache.
+     *
+     * @static
+     * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
+     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
+     */
+    static removeFromCache(baseTexture)
+    {
+        if (typeof baseTexture === 'string')
+        {
+            const baseTextureFromCache = BaseTextureCache[baseTexture];
+
+            if (baseTextureFromCache)
+            {
+                const index = baseTextureFromCache.textureCacheIds.indexOf(baseTexture);
+
+                if (index > -1)
+                {
+                    baseTextureFromCache.textureCacheIds.splice(index, 1);
+                }
+
+                delete BaseTextureCache[baseTexture];
+
+                return baseTextureFromCache;
+            }
+        }
+        else
+        {
+            for (let i = 0; i < baseTexture.textureCacheIds.length; ++i)
+            {
+                delete BaseTextureCache[baseTexture.textureCacheIds[i]];
+            }
+
+            baseTexture.textureCacheIds.length = 0;
+
+            return baseTexture;
+        }
+
+        return null;
     }
 }

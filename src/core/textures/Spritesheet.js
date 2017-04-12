@@ -1,5 +1,5 @@
 import { Rectangle, Texture } from '../';
-import { getResolutionOfUrl, TextureCache } from '../utils';
+import { getResolutionOfUrl } from '../utils';
 
 /**
  * Utility class for maintaining reference to a collection
@@ -207,7 +207,7 @@ export default class Spritesheet
                 );
 
                 // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
-                TextureCache[i] = this.textures[i];
+                Texture.addToCache(this.textures[i], i);
             }
 
             frameIndex++;

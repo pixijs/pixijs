@@ -30,7 +30,10 @@ export default class InteractionData
         /**
          * When passed to an event handler, this will be the original DOM Event that was captured
          *
-         * @member {Event}
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent
+         * @member {MouseEvent|TouchEvent|PointerEvent}
          */
         this.originalEvent = null;
 

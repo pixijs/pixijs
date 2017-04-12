@@ -18,6 +18,18 @@ core.settings.UPLOADS_PER_FRAME = 4;
  * basic queuing functionality and is extended by {@link PIXI.prepare.WebGLPrepare} and {@link PIXI.prepare.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
  *
+ * @example
+ * // Create a sprite
+ * const sprite = new PIXI.Sprite.fromImage('something.png');
+ *
+ * // Load object into GPU
+ * app.renderer.plugins.prepare.upload(sprite, () => {
+ *
+ *     //Texture(s) has been uploaded to GPU
+ *     app.stage.addChild(sprite);
+ *
+ * })
+ *
  * @abstract
  * @class
  * @memberof PIXI.prepare
@@ -100,8 +112,16 @@ export default class BasePrepare
             this.prepareItems();
         };
 
-        this.register(findText, drawText);
-        this.register(findTextStyle, calculateTextStyle);
+        // hooks to find the correct texture
+        this.registerFindHook(findText);
+        this.registerFindHook(findTextStyle);
+        this.registerFindHook(findMultipleBaseTextures);
+        this.registerFindHook(findBaseTexture);
+        this.registerFindHook(findTexture);
+
+        // upload hooks
+        this.registerUploadHook(drawText);
+        this.registerUploadHook(calculateTextStyle);
     }
 
     /**
@@ -138,7 +158,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.addOnce(this.tick, this);
+                SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -208,26 +228,36 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            SharedTicker.addOnce(this.tick, this);
+            SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
         }
     }
 
     /**
-     * Adds hooks for finding and uploading items.
+     * Adds hooks for finding items.
      *
-     * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
-              function must return `true` if it was able to add item to the queue.
-     * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
-     *        function must return `true` if it was able to handle upload of item.
-     * @return {PIXI.CanvasPrepare} Instance of plugin for chaining.
+     * @param {Function} addHook - Function call that takes two parameters: `item:*, queue:Array`
+     *          function must return `true` if it was able to add item to the queue.
+     * @return {PIXI.BasePrepare} Instance of plugin for chaining.
      */
-    register(addHook, uploadHook)
+    registerFindHook(addHook)
     {
         if (addHook)
         {
             this.addHooks.push(addHook);
         }
 
+        return this;
+    }
+
+    /**
+     * Adds hooks for uploading items.
+     *
+     * @param {Function} uploadHook - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+     *          function must return `true` if it was able to handle upload of item.
+     * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+     */
+    registerUploadHook(uploadHook)
+    {
         if (uploadHook)
         {
             this.uploadHooks.push(uploadHook);
@@ -287,6 +317,88 @@ export default class BasePrepare
         this.uploadHookHelper = null;
     }
 
+}
+
+/**
+ * Built-in hook to find multiple textures from objects like AnimatedSprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findMultipleBaseTextures(item, queue)
+{
+    let result = false;
+
+    // Objects with mutliple textures
+    if (item && item._textures && item._textures.length)
+    {
+        for (let i = 0; i < item._textures.length; i++)
+        {
+            if (item._textures[i] instanceof core.Texture)
+            {
+                const baseTexture = item._textures[i].baseTexture;
+
+                if (queue.indexOf(baseTexture) === -1)
+                {
+                    queue.push(baseTexture);
+                    result = true;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Built-in hook to find BaseTextures from Sprites.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findBaseTexture(item, queue)
+{
+    // Objects with textures, like Sprites/Text
+    if (item instanceof core.BaseTexture)
+    {
+        if (queue.indexOf(item) === -1)
+        {
+            queue.push(item);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Built-in hook to find textures from objects.
+ *
+ * @private
+ * @param {PIXI.DisplayObject} item - Display object to check
+ * @param {Array<*>} queue - Collection of items to upload
+ * @return {boolean} if a PIXI.Texture object was found.
+ */
+function findTexture(item, queue)
+{
+    if (item._texture && item._texture instanceof core.Texture)
+    {
+        const texture = item._texture.baseTexture;
+
+        if (queue.indexOf(texture) === -1)
+        {
+            queue.push(texture);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /**

@@ -10,7 +10,7 @@ describe('PIXI.prepare.BasePrepare', function ()
         expect(prep.renderer).to.equal(renderer);
         expect(prep.uploadHookHelper).to.be.null;
         expect(prep.queue).to.be.empty;
-        expect(prep.addHooks).to.have.lengthOf(2);
+        expect(prep.addHooks).to.have.lengthOf(5);
         expect(prep.uploadHooks).to.have.lengthOf(2);
         expect(prep.completes).to.be.empty;
 
@@ -23,10 +23,11 @@ describe('PIXI.prepare.BasePrepare', function ()
         function uploadHook() { /* empty */ }
         const prep = new PIXI.prepare.BasePrepare();
 
-        prep.register(addHook, uploadHook);
+        prep.registerFindHook(addHook);
+        prep.registerUploadHook(uploadHook);
 
         expect(prep.addHooks).to.contain(addHook);
-        expect(prep.addHooks).to.have.lengthOf(3);
+        expect(prep.addHooks).to.have.lengthOf(6);
         expect(prep.uploadHooks).to.contain(uploadHook);
         expect(prep.uploadHooks).to.have.lengthOf(3);
 
@@ -58,7 +59,8 @@ describe('PIXI.prepare.BasePrepare', function ()
         });
         const complete = sinon.spy(function () { /* empty */ });
 
-        prep.register(addHook, uploadHook);
+        prep.registerFindHook(addHook);
+        prep.registerUploadHook(uploadHook);
         prep.upload(uploadItem, complete);
 
         expect(prep.queue).to.contain(uploadItem);
@@ -82,7 +84,7 @@ describe('PIXI.prepare.BasePrepare', function ()
         }
         const complete = sinon.spy(function () { /* empty */ });
 
-        prep.register(addHook);
+        prep.registerFindHook(addHook);
         prep.upload({}, complete);
 
         expect(complete.calledOnce).to.be.true;
@@ -106,7 +108,8 @@ describe('PIXI.prepare.BasePrepare', function ()
         });
         const complete = sinon.spy(function () { /* empty */ });
 
-        prep.register(addHook, uploadHook);
+        prep.registerFindHook(addHook);
+        prep.registerUploadHook(uploadHook);
         prep.upload({}, complete);
 
         expect(prep.queue).to.have.lengthOf(1);
@@ -137,7 +140,8 @@ describe('PIXI.prepare.BasePrepare', function ()
         });
         const complete = sinon.spy(function () { /* empty */ });
 
-        prep.register(addHook, uploadHook);
+        prep.registerFindHook(addHook);
+        prep.registerUploadHook(uploadHook);
         const item = {};
 
         prep.upload(item, complete);
@@ -181,7 +185,8 @@ describe('PIXI.prepare.BasePrepare', function ()
             done();
         }
 
-        prep.register(addHook, uploadHook);
+        prep.registerFindHook(addHook);
+        prep.registerUploadHook(uploadHook);
         prep.upload({}, complete);
 
         expect(prep.queue).to.have.lengthOf(1);

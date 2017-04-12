@@ -26,6 +26,7 @@ export { default as CanvasTinter } from './sprites/canvas/CanvasTinter';
 export { default as SpriteRenderer } from './sprites/webgl/SpriteRenderer';
 export { default as Text } from './text/Text';
 export { default as TextStyle } from './text/TextStyle';
+export { default as TextMetrics } from './text/TextMetrics';
 export { default as Graphics } from './graphics/Graphics';
 export { default as GraphicsData } from './graphics/GraphicsData';
 export { default as GraphicsRenderer } from './graphics/webgl/GraphicsRenderer';

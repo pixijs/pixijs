@@ -313,10 +313,10 @@ export default class ParticleContainer extends core.Container
                 frame.y * resolution,
                 frame.width * resolution,
                 frame.height * resolution,
-                positionX * resolution,
-                positionY * resolution,
-                finalWidth * resolution,
-                finalHeight * resolution
+                positionX * renderer.resolution,
+                positionY * renderer.resolution,
+                finalWidth * renderer.resolution,
+                finalHeight * renderer.resolution
             );
         }
     }

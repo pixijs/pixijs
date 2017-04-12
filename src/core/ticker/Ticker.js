@@ -1,12 +1,10 @@
 import settings from '../settings';
-import EventEmitter from 'eventemitter3';
-
-// Internal event used by composed emitter
-const TICK = 'tick';
+import { UPDATE_PRIORITY } from '../const';
+import TickerListener from './TickerListener';
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around an EventEmitter object to add listeners
+ * This class is composed around listeners
  * meant for execution on the next requested animation frame.
  * Animation frames are requested only when necessary,
  * e.g. When the ticker is started and the emitter has listeners.
@@ -22,10 +20,11 @@ export default class Ticker
     constructor()
     {
         /**
-         * Internal emitter used to fire 'tick' event
+         * The first listener. All new listeners added are chained on this.
          * @private
+         * @type {TickerListener}
          */
-        this._emitter = new EventEmitter();
+        this._head = new TickerListener(null, null, Infinity);
 
         /**
          * Internal current frame request ID
@@ -131,7 +130,7 @@ export default class Ticker
                 // Invoke listeners now
                 this.update(time);
                 // Listener side effects may have modified ticker state.
-                if (this.started && this._requestId === null && this._emitter.listeners(TICK, true))
+                if (this.started && this._requestId === null && this._head.next)
                 {
                     this._requestId = requestAnimationFrame(this._tick);
                 }
@@ -148,7 +147,7 @@ export default class Ticker
      */
     _requestIfNeeded()
     {
-        if (this._requestId === null && this._emitter.listeners(TICK, true))
+        if (this._requestId === null && this._head.next)
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
@@ -193,35 +192,72 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Register a handler for tick events. Calls continuously unless
+     * it is removed or the ticker is stopped.
      *
      * @param {Function} fn - The listener function to be added for updates
      * @param {Function} [context] - The listener context
+     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    add(fn, context)
+    add(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
-        this._emitter.on(TICK, fn, context);
-
-        this._startIfPossible();
-
-        return this;
+        return this._addListener(new TickerListener(fn, context, priority));
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
-     * internal 'tick' event. It checks if the emitter has listeners,
-     * and if so it requests a new animation frame at this point.
+     * Add a handler for the tick event which is only execute once.
      *
      * @param {Function} fn - The listener function to be added for one update
      * @param {Function} [context] - The listener context
+     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
-    addOnce(fn, context)
+    addOnce(fn, context, priority = UPDATE_PRIORITY.NORMAL)
     {
-        this._emitter.once(TICK, fn, context);
+        return this._addListener(new TickerListener(fn, context, priority, true));
+    }
+
+    /**
+     * Internally adds the event handler so that it can be sorted by priority.
+     * Priority allows certain handler (user, AnimatedSprite, Interaction) to be run
+     * before the rendering.
+     *
+     * @private
+     * @param {TickerListener} listener - Current listener being added.
+     * @returns {PIXI.ticker.Ticker} This instance of a ticker
+     */
+    _addListener(listener)
+    {
+        // For attaching to head
+        let current = this._head.next;
+        let previous = this._head;
+
+        // Add the first item
+        if (!current)
+        {
+            listener.connect(previous);
+        }
+        else
+        {
+            // Go from highest to lowest priority
+            while (current)
+            {
+                if (listener.priority >= current.priority)
+                {
+                    listener.connect(previous);
+                    break;
+                }
+                previous = current;
+                current = current.next;
+            }
+
+            // Not yet connected
+            if (!listener.previous)
+            {
+                listener.connect(previous);
+            }
+        }
 
         this._startIfPossible();
 
@@ -229,19 +265,33 @@ export default class Ticker
     }
 
     /**
-     * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
-     * It checks if the emitter has listeners for 'tick' event.
-     * If it does, then it cancels the animation frame.
+     * Removes any handlers matching the function and context parameters.
+     * If no handlers are left after removing, then it cancels the animation frame.
      *
-     * @param {Function} [fn] - The listener function to be removed
+     * @param {Function} fn - The listener function to be removed
      * @param {Function} [context] - The listener context to be removed
      * @returns {PIXI.ticker.Ticker} This instance of a ticker
      */
     remove(fn, context)
     {
-        this._emitter.off(TICK, fn, context);
+        let listener = this._head.next;
 
-        if (!this._emitter.listeners(TICK, true))
+        while (listener)
+        {
+            // We found a match, lets remove it
+            // no break to delete all possible matches
+            // incase a listener was added 2+ times
+            if (listener.match(fn, context))
+            {
+                listener = listener.destroy();
+            }
+            else
+            {
+                listener = listener.next;
+            }
+        }
+
+        if (!this._head.next)
         {
             this._cancelIfNeeded();
         }
@@ -273,6 +323,25 @@ export default class Ticker
             this.started = false;
             this._cancelIfNeeded();
         }
+    }
+
+    /**
+     * Destroy the ticker and don't use after this. Calling
+     * this method removes all references to internal events.
+     */
+    destroy()
+    {
+        this.stop();
+
+        let listener = this._head.next;
+
+        while (listener)
+        {
+            listener = listener.destroy(true);
+        }
+
+        this._head.destroy();
+        this._head = null;
     }
 
     /**
@@ -320,8 +389,22 @@ export default class Ticker
 
             this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
 
+            // Cache a local reference, in-case ticker is destroyed
+            // during the emit, we can still check for head.next
+            const head = this._head;
+
             // Invoke listeners added to internal emitter
-            this._emitter.emit(TICK, this.deltaTime);
+            let listener = head.next;
+
+            while (listener)
+            {
+                listener = listener.emit(this.deltaTime);
+            }
+
+            if (!head.next)
+            {
+                this._cancelIfNeeded();
+            }
         }
         else
         {
