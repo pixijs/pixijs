@@ -2,6 +2,8 @@ import * as core from '../../core';
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
 
+const matrixIdentity = core.Matrix.IDENTITY;
+
 /**
  * WebGL renderer plugin for tiling sprites
  *
@@ -63,6 +65,7 @@ export default class MeshRenderer extends core.ObjectRenderer
         // then render it
         mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
+
 
     /**
      * draws mesh

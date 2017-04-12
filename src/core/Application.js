@@ -1,6 +1,8 @@
 import { autoDetectRenderer } from './autoDetectRenderer';
 import Container from './display/Container';
 import { shared, Ticker } from './ticker';
+import settings from './settings';
+import { UPDATE_PRIORITY } from './const';
 
 /**
  * Convenience class to create a new PIXI application.
@@ -22,28 +24,52 @@ import { shared, Ticker } from './ticker';
  */
 export default class Application
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {number} [width=800] - the width of the renderers view
-     * @param {number} [height=600] - the height of the renderers view
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the renderers view
+     * @param {number} [options.height=600] - the height of the renderers view
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
-     * @param {boolean} [noWebGL=false] - prevents selection of WebGL renderer, even if such is present
+     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present
      * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
      * with older / less advanced devices. If you experience unexplained flickering try setting this to true.
-     * @param {boolean} [useSharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
+     * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
+     * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.loaders.shared, `false` to create new Loader.
      */
-    constructor(width, height, options, noWebGL, useSharedTicker = false)
+    constructor(options, arg2, arg3, arg4, arg5)
     {
+        // Support for constructor(width, height, options, noWebGL, useSharedTicker)
+        if (typeof options === 'number')
+        {
+            options = Object.assign({
+                width: options,
+                height: arg2 || settings.RENDER_OPTIONS.height,
+                forceCanvas: !!arg4,
+                sharedTicker: !!arg5,
+            }, arg3);
+        }
+
+        /**
+         * The default options, so we mixin functionality later.
+         * @member {object}
+         * @protected
+         */
+        this._options = options = Object.assign({
+            sharedTicker: false,
+            forceCanvas: false,
+            sharedLoader: false,
+        }, options);
+
         /**
          * WebGL renderer if available, otherwise CanvasRenderer
          * @member {PIXI.WebGLRenderer|PIXI.CanvasRenderer}
          */
-        this.renderer = autoDetectRenderer(width, height, options, noWebGL);
+        this.renderer = autoDetectRenderer(options);
 
         /**
          * The root display container that's rendered.
@@ -63,7 +89,7 @@ export default class Application
          * @member {PIXI.ticker.Ticker}
          * @default PIXI.ticker.shared
          */
-        this.ticker = useSharedTicker ? shared : new Ticker();
+        this.ticker = options.sharedTicker ? shared : new Ticker();
 
         // Start the rendering
         this.start();
@@ -78,7 +104,7 @@ export default class Application
         this._ticker = ticker;
         if (ticker)
         {
-            ticker.add(this.render, this);
+            ticker.add(this.render, this, UPDATE_PRIORITY.LOW);
         }
     }
     get ticker() // eslint-disable-line require-jsdoc
@@ -136,13 +162,18 @@ export default class Application
      */
     destroy(removeView)
     {
-        this.stop();
+        const oldTicker = this._ticker;
+
         this.ticker = null;
+
+        oldTicker.destroy();
 
         this.stage.destroy();
         this.stage = null;
 
         this.renderer.destroy(removeView);
         this.renderer = null;
+
+        this._options = null;
     }
 }

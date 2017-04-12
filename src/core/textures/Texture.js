@@ -147,9 +147,9 @@ export default class Texture extends EventEmitter
         /**
          * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
          *
-         * @event update
-         * @memberof PIXI.Texture#
+         * @event PIXI.Texture#update
          * @protected
+         * @param {PIXI.Texture} texture - Instance of texture being updated.
          */
 
         this._updateID = 0;
@@ -159,6 +159,15 @@ export default class Texture extends EventEmitter
          * @type {Object}
          */
         this.transform = null;
+
+        /**
+         * The id under which this Texture has been added to the texture cache. This is
+         * automatically set in certain cases, but may not always be accurate, particularly if
+         * the texture is in the cache under multiple ids.
+         *
+         * @member {string}
+         */
+        this.textureCacheId = null;
     }
 
     /**
@@ -225,11 +234,17 @@ export default class Texture extends EventEmitter
         this._uvs = null;
         this.trim = null;
         this.orig = null;
+        this.textureCacheId = null;
 
         this.valid = false;
 
-        this.off('dispose', this.dispose, this);
-        this.off('update', this.update, this);
+        for (const prop in TextureCache)
+        {
+            if (TextureCache[prop] === this)
+            {
+                delete TextureCache[prop];
+            }
+        }
     }
 
     /**
@@ -315,13 +330,14 @@ export default class Texture extends EventEmitter
      */
     static fromLoader(source, imageUrl, name)
     {
-       // console.log('added from loader...')
+        // console.log('added from loader...')
         const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
 
-      //  console.log('base resource ' + resource.width);
+        //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource,
                                             settings.SCALE_MODE,
                                             getResolutionOfUrl(imageUrl));
+
 
        /// console.log('base width ' + baseTexture.width);
         const texture = new Texture(baseTexture);
@@ -335,6 +351,7 @@ export default class Texture extends EventEmitter
         // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
         BaseTextureCache[name] = baseTexture;
         TextureCache[name] = texture;
+        texture.textureCacheId = name;
 
         // also add references by url if they are different.
         if (name !== imageUrl)
@@ -355,6 +372,10 @@ export default class Texture extends EventEmitter
      */
     static addTextureToCache(texture, id)
     {
+        if (!texture.textureCacheId)
+        {
+            texture.textureCacheId = id;
+        }
         TextureCache[id] = texture;
     }
 
@@ -495,6 +516,7 @@ function removeAllHandlers(tex)
  */
 Texture.EMPTY = new Texture(new BaseTexture());
 removeAllHandlers(Texture.EMPTY);
+removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
  * A white texture of 10x10 size, used for graphics and other things
@@ -505,3 +527,4 @@ removeAllHandlers(Texture.EMPTY);
  */
 Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);
+removeAllHandlers(Texture.WHITE.baseTexture);

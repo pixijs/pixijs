@@ -15,7 +15,7 @@ var mapSize = function(gl, type)
         }
     }
 
-  return GL_TABLE[type];
+    return GL_TABLE[type];
 };
 
 var GL_TABLE = null;

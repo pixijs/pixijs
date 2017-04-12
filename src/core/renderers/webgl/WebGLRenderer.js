@@ -31,11 +31,12 @@ import Runner from 'mini-runner';
  */
 export default class WebGLRenderer extends SystemRenderer
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
      *
-     * @param {number} [screenWidth=800] - the width of the screen
-     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
@@ -55,9 +56,9 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
      * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      */
-    constructor(screenWidth, screenHeight, options = {})
+    constructor(options, arg2, arg3)
     {
-        super('WebGL', screenWidth, screenHeight, options);
+        super('WebGL', options, arg2, arg3);
 
         /**
          * The type of this renderer as a standardised const
@@ -89,12 +90,6 @@ export default class WebGLRenderer extends SystemRenderer
         };
 
 
-        /**
-         * The options passed in to create a new webgl context.
-         *
-         * @member {object}
-         * @private
-         */
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
 
         this.globalUniforms = new UniformGroup({
@@ -117,6 +112,13 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.initPlugins();
 
+
+        /**
+         * The options passed in to create a new webgl context.
+         *
+         * @member {object}
+         * @private
+         */
         if(options.context)
         {
             this.context.initFromContext(options.context);
@@ -169,6 +171,25 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         return this;
+
+        /**
+         * Fired after rendering finishes.
+         *
+         * @event PIXI.WebGLRenderer#postrender
+         */
+
+        /**
+         * Fired before rendering starts.
+         *
+         * @event PIXI.WebGLRenderer#prerender
+         */
+
+        /**
+         * Fired when the WebGL context is set.
+         *
+         * @event PIXI.WebGLRenderer#context
+         * @param {WebGLRenderingContext} gl - WebGL context.
+         */
     }
 
     /**
@@ -294,5 +315,26 @@ export default class WebGLRenderer extends SystemRenderer
         this.gl = null;
     }
 }
+
+/**
+ * Collection of installed plugins. These are included by default in PIXI, but can be excluded
+ * by creating a custom build. Consult the README for more information about creating custom
+ * builds and excluding plugins.
+ * @name PIXI.WebGLRenderer#plugins
+ * @type {object}
+ * @readonly
+ * @property {PIXI.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+ * @property {PIXI.extract.WebGLExtract} extract Extract image data from renderer.
+ * @property {PIXI.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+ * @property {PIXI.prepare.WebGLPrepare} prepare Pre-render display objects.
+ */
+
+/**
+ * Adds a plugin to the renderer.
+ *
+ * @method PIXI.WebGLRenderer#registerPlugin
+ * @param {string} pluginName - The name of the plugin.
+ * @param {Function} ctor - The constructor function or class for the plugin.
+ */
 
 pluginTarget.mixin(WebGLRenderer);

@@ -11,7 +11,7 @@ const tempArray = new Float32Array(4);
  * WebGL renderer plugin for tiling sprites
  *
  * @class
- * @memberof PIXI
+ * @memberof PIXI.extras
  * @extends PIXI.ObjectRenderer
  */
 export default class TilingSpriteRenderer extends core.ObjectRenderer
@@ -118,7 +118,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         tempMat.invert();
         if (isSimple)
         {
-            tempMat.append(uv.mapCoord);
+            tempMat.prepend(uv.mapCoord);
         }
         else
         {

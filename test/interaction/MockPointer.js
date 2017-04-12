@@ -11,13 +11,43 @@ class MockPointer
      * @param {PIXI.Container} stage - The root of the scene tree
      * @param {number} [width=100] - Width of the renderer
      * @param {number} [height=100] - Height of the renderer
+     * @param {boolean} [ensurePointerEvents=false] - If we should make sure that PointerEvents are 'supported'
      */
-    constructor(stage, width, height)
+    constructor(stage, width, height, ensurePointerEvents)
     {
+        // fake PointerEvent existing
+        if (ensurePointerEvents && !window.PointerEvent)
+        {
+            window.PointerEvent = class PointerEvent extends MouseEvent
+            {
+                //eslint-disable-next-line
+                constructor(type, opts)
+                {
+                    super(type, opts);
+                    this.pointerType = opts.pointerType;
+                }
+            };
+            this.createdPointerEvent = true;
+        }
+
         this.stage = stage;
         this.renderer = new PIXI.CanvasRenderer(width || 100, height || 100);
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
+        this.interaction.supportsTouchEvents = true;
+        PIXI.ticker.shared.remove(this.interaction.update, this.interaction);
+    }
+
+    /**
+     * Cleans up after tests
+     */
+    cleanup()
+    {
+        if (this.createdPointerEvent)
+        {
+            delete window.PointerEvent;
+        }
+        this.renderer.destroy();
     }
 
     /**
@@ -45,14 +75,29 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mousemove(x, y)
+    mousemove(x, y, asPointer)
     {
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
+        let mouseEvent;
+
+        if (asPointer)
+        {
+            mouseEvent = new PointerEvent('pointermove', {
+                pointerType: 'mouse',
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            });
+        }
+        else
+        {
+            mouseEvent = new MouseEvent('mousemove', {
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            });
+        }
 
         this.setPosition(x, y);
         this.render();
@@ -97,9 +142,15 @@ class MockPointer
      */
     mousedown(x, y)
     {
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: x,
+            clientY: y,
+            preventDefault: sinon.stub(),
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onMouseDown({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
+        this.interaction.onPointerDown(mouseEvent);
     }
 
     /**
@@ -108,47 +159,83 @@ class MockPointer
      */
     mouseup(x, y)
     {
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onMouseUp({ clientX: 0, clientY: 0, preventDefault: sinon.stub() });
-    }
-
-    /**
-     * @param {number} x - pointer x position
-     * @param {number} y - pointer y position
-     */
-    tap(x, y)
-    {
-        this.touchstart(x, y);
-        this.touchend(x, y);
-    }
-
-    /**
-     * @param {number} x - pointer x position
-     * @param {number} y - pointer y position
-     */
-    touchstart(x, y)
-    {
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onTouchStart({
+        const mouseEvent = new MouseEvent('mouseup', {
+            clientX: x,
+            clientY: y,
             preventDefault: sinon.stub(),
-            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
         });
+
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onPointerUp(mouseEvent);
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
      */
-    touchend(x, y)
+    tap(x, y, identifier)
     {
+        this.touchstart(x, y, identifier);
+        this.touchend(x, y, identifier);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    touchstart(x, y, identifier)
+    {
+        const touchEvent = new TouchEvent('touchstart', {
+            preventDefault: sinon.stub(),
+            changedTouches: [
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
+            ],
+        });
+
         this.setPosition(x, y);
         this.render();
-        this.interaction.onTouchEnd({
+        this.interaction.onPointerDown(touchEvent);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    touchend(x, y, identifier)
+    {
+        const touchEvent = new TouchEvent('touchend', {
             preventDefault: sinon.stub(),
-            changedTouches: [new Touch({ identifier: 0, target: this.renderer.view })],
+            changedTouches: [
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
+            ],
         });
+
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onPointerUp(touchEvent);
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    touchleave(x, y, identifier)
+    {
+        const touchEvent = new TouchEvent('touchleave', {
+            preventDefault: sinon.stub(),
+            changedTouches: [
+                new Touch({ identifier: identifier || 0, target: this.renderer.view }),
+            ],
+        });
+
+        this.setPosition(x, y);
+        this.render();
+        this.interaction.onPointerOut(touchEvent);
     }
 }
 

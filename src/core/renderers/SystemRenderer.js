@@ -19,11 +19,12 @@ const tempMatrix = new Matrix();
  */
 export default class SystemRenderer extends EventEmitter
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} system - The name of the system this renderer is for.
-     * @param {number} [screenWidth=800] - the width of the screen
-     * @param {number} [screenHeight=600] - the height of the screen
      * @param {object} [options] - The optional renderer parameters
+     * @param {number} [options.width=800] - the width of the screen
+     * @param {number} [options.height=600] - the height of the screen
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
@@ -37,27 +38,31 @@ export default class SystemRenderer extends EventEmitter
      * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
-    constructor(system, screenWidth, screenHeight, options)
+    constructor(system, options, arg2, arg3)
     {
         super();
 
         sayHello(system);
 
-        // prepare options
-        if (options)
+        // Support for constructor(system, screenWidth, screenHeight, options)
+        if (typeof options === 'number')
         {
-            for (const i in settings.RENDER_OPTIONS)
-            {
-                if (typeof options[i] === 'undefined')
-                {
-                    options[i] = settings.RENDER_OPTIONS[i];
-                }
-            }
+            options = Object.assign({
+                width: options,
+                height: arg2 || settings.RENDER_OPTIONS.height,
+            }, arg3);
         }
-        else
-        {
-            options = settings.RENDER_OPTIONS;
-        }
+
+        // Add the default render options
+        options = Object.assign({}, settings.RENDER_OPTIONS, options);
+
+        /**
+         * The supplied constructor options.
+         *
+         * @member {Object}
+         * @readOnly
+         */
+        this.options = options;
 
         /**
          * The type of the renderer.
@@ -75,7 +80,7 @@ export default class SystemRenderer extends EventEmitter
          *
          * @member {PIXI.Rectangle}
          */
-        this.screen = new Rectangle(0, 0, screenWidth || 800, screenHeight || 600);
+        this.screen = new Rectangle(0, 0, options.width, options.height);
 
         /**
          * The canvas element that everything is drawn to
@@ -278,6 +283,8 @@ export default class SystemRenderer extends EventEmitter
         this.autoResize = false;
 
         this.blendModes = null;
+
+        this.options = null;
 
         this.preserveDrawingBuffer = false;
         this.clearBeforeRender = false;

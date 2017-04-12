@@ -111,7 +111,7 @@ export default class FilterSystem extends WebGLSystem
 
             // TODO we should fit the rect around the transform..
         }
-        else
+        else if (filters[0].autoFit)
         {
             sourceFrame.fit(filterData.stack[0].destinationFrame);
         }

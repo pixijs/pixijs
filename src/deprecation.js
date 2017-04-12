@@ -918,6 +918,35 @@ Object.defineProperty(core.utils, '_saidHello', {
 });
 
 /**
+ * @method
+ * @name PIXI.prepare.BasePrepare#register
+ * @see PIXI.prepare.BasePrepare#registerFindHook
+ * @deprecated since version 4.4.2
+ * @param {Function} [addHook] - Function call that takes two parameters: `item:*, queue:Array`
+ *        function must return `true` if it was able to add item to the queue.
+ * @param {Function} [uploadHook] - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
+ *        function must return `true` if it was able to handle upload of item.
+ * @return {PIXI.BasePrepare} Instance of plugin for chaining.
+ */
+prepare.BasePrepare.prototype.register = function register(addHook, uploadHook)
+{
+    warn('renderer.plugins.prepare.register is now deprecated, '
+        + 'please use renderer.plugins.prepare.registerFindHook & renderer.plugins.prepare.registerUploadHook');
+
+    if (addHook)
+    {
+        this.registerFindHook(addHook);
+    }
+
+    if (uploadHook)
+    {
+        this.registerUploadHook(uploadHook);
+    }
+
+    return this;
+};
+
+/**
  * The number of graphics or textures to upload to the GPU.
  *
  * @name PIXI.prepare.canvas.UPLOADS_PER_FRAME
@@ -969,67 +998,73 @@ Object.defineProperty(prepare.webgl, 'UPLOADS_PER_FRAME', {
     },
 });
 
-Object.defineProperties(loaders.Resource.prototype, {
-    isJson: {
-        get()
-        {
-            warn('The isJson property is deprecated, please use `resource.type === Resource.TYPE.JSON`.');
+if (loaders.Loader)
+{
+    const Resource = loaders.Resource;
+    const Loader = loaders.Loader;
 
-            return this.type === loaders.Loader.Resource.TYPE.JSON;
+    Object.defineProperties(Resource.prototype, {
+        isJson: {
+            get()
+            {
+                warn('The isJson property is deprecated, please use `resource.type === Resource.TYPE.JSON`.');
+
+                return this.type === Resource.TYPE.JSON;
+            },
         },
-    },
-    isXml: {
-        get()
-        {
-            warn('The isXml property is deprecated, please use `resource.type === Resource.TYPE.XML`.');
+        isXml: {
+            get()
+            {
+                warn('The isXml property is deprecated, please use `resource.type === Resource.TYPE.XML`.');
 
-            return this.type === loaders.Loader.Resource.TYPE.XML;
+                return this.type === Resource.TYPE.XML;
+            },
         },
-    },
-    isImage: {
-        get()
-        {
-            warn('The isImage property is deprecated, please use `resource.type === Resource.TYPE.IMAGE`.');
+        isImage: {
+            get()
+            {
+                warn('The isImage property is deprecated, please use `resource.type === Resource.TYPE.IMAGE`.');
 
-            return this.type === loaders.Loader.Resource.TYPE.IMAGE;
+                return this.type === Resource.TYPE.IMAGE;
+            },
         },
-    },
-    isAudio: {
-        get()
-        {
-            warn('The isAudio property is deprecated, please use `resource.type === Resource.TYPE.AUDIO`.');
+        isAudio: {
+            get()
+            {
+                warn('The isAudio property is deprecated, please use `resource.type === Resource.TYPE.AUDIO`.');
 
-            return this.type === loaders.Loader.Resource.TYPE.AUDIO;
+                return this.type === Resource.TYPE.AUDIO;
+            },
         },
-    },
-    isVideo: {
-        get()
-        {
-            warn('The isVideo property is deprecated, please use `resource.type === Resource.TYPE.VIDEO`.');
+        isVideo: {
+            get()
+            {
+                warn('The isVideo property is deprecated, please use `resource.type === Resource.TYPE.VIDEO`.');
 
-            return this.type === loaders.Loader.Resource.TYPE.VIDEO;
+                return this.type === Resource.TYPE.VIDEO;
+            },
         },
-    },
-});
+    });
 
-Object.defineProperties(loaders.Loader.prototype, {
-    before: {
-        get()
-        {
-            warn('The before() method is deprecated, please use pre().');
+    Object.defineProperties(Loader.prototype, {
+        before: {
+            get()
+            {
+                warn('The before() method is deprecated, please use pre().');
 
-            return this.pre;
+                return this.pre;
+            },
         },
-    },
-    after: {
-        get()
-        {
-            warn('The after() method is deprecated, please use use().');
+        after: {
+            get()
+            {
+                warn('The after() method is deprecated, please use use().');
 
-            return this.use;
+                return this.use;
+            },
         },
-    },
-});
+    });
+}
 
 /**
  * @name PIXI.interaction.interactiveTarget#defaultCursor

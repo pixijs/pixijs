@@ -1,6 +1,6 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
 import generateUniformsSync from './generateUniformsSync';
-import glCore from 'pixi-gl-core';
+import shaderUtils from '../renderers/webgl/systems/shader/shader';
 import { ProgramCache } from '../utils';
 import getTestContext from '../utils/getTestContext';
 
@@ -64,13 +64,16 @@ class Program
         }
         else
         {
-            vertexSrc = glCore.shader.setPrecision(vertexSrc, 'mediump');
-            fragmentSrc = glCore.shader.setPrecision(fragmentSrc, 'mediump');
+            vertexSrc = shaderUtils.setPrecision(vertexSrc, 'mediump');
+            fragmentSrc = shaderUtils.setPrecision(fragmentSrc, 'mediump');
 
-            const program = glCore.shader.compileProgram(gl, vertexSrc, fragmentSrc);
+            const program = shaderUtils.compileProgram(gl, vertexSrc, fragmentSrc);
+            console.log("<<<<<<<extracting data<<<<>>>><<");
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
+
+            console.log(this.uniformData);
 
             //gl.deleteProgram(program);
         }
@@ -95,13 +98,13 @@ class Program
         for (let i = 0; i < totalAttributes; i++)
         {
             const attribData = gl.getActiveAttrib(program, i);
-            const type = glCore.shader.mapType(gl, attribData.type);
+            const type = shaderUtils.mapType(gl, attribData.type);
 
             /*eslint-disable */
             const data = {
                 type: type,
                 name: attribData.name,
-                size: glCore.shader.mapSize(type),
+                size: shaderUtils.mapSize(type),
                 location: 0,
             };
             /*eslint-enable */
@@ -137,13 +140,14 @@ class Program
 
         // TODO expose this as a prop?
        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
-        const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
+        //const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
         for (let i = 0; i < totalUniforms; i++)
         {
             const uniformData = gl.getActiveUniform(program, i);
             const name = uniformData.name.replace(/\[.*?\]/, '');
-            const type = glCore.shader.mapType(gl, uniformData.type);
+            const type = shaderUtils.mapType(gl, uniformData.type);
+            console.log('mapping ' + uniformData.type + ' to ' + type);
 
            // if (!name.match(maskRegex))
             {
@@ -151,7 +155,7 @@ class Program
                 uniforms[name] = {
                     type: type,
                     size: uniformData.size,
-                    value: glCore.shader.defaultValue(type, uniformData.size),
+                    value: shaderUtils.defaultValue(type, uniformData.size),
                 };
                 /*eslint-enable */
             }

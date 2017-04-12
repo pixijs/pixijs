@@ -60,11 +60,46 @@ describe('PIXI.loaders.spritesheetParser', function ()
                 .that.is.an.instanceof(PIXI.Texture);
     });
 
+    it('should build the image url', function ()
+    {
+        function getResourcePath(url, image)
+        {
+            return PIXI.loaders.getResourcePath({
+                url,
+                data: { meta: { image } },
+            });
+        }
+
+        let result = getResourcePath('http://some.com/spritesheet.json', 'img.png');
+
+        expect(result).to.be.equals('http://some.com/img.png');
+
+        result = getResourcePath('http://some.com/some/dir/spritesheet.json', 'img.png');
+        expect(result).to.be.equals('http://some.com/some/dir/img.png');
+
+        result = getResourcePath('http://some.com/some/dir/spritesheet.json', './img.png');
+        expect(result).to.be.equals('http://some.com/some/dir/img.png');
+
+        result = getResourcePath('http://some.com/some/dir/spritesheet.json', '../img.png');
+        expect(result).to.be.equals('http://some.com/some/img.png');
+
+        result = getResourcePath('/spritesheet.json', 'img.png');
+        expect(result).to.be.equals('/img.png');
+
+        result = getResourcePath('/some/dir/spritesheet.json', 'img.png');
+        expect(result).to.be.equals('/some/dir/img.png');
+
+        result = getResourcePath('/some/dir/spritesheet.json', './img.png');
+        expect(result).to.be.equals('/some/dir/img.png');
+
+        result = getResourcePath('/some/dir/spritesheet.json', '../img.png');
+        expect(result).to.be.equals('/some/img.png');
+    });
+
     // TODO: Test that rectangles are created correctly.
     // TODO: Test that bathc processing works correctly.
     // TODO: Test that resolution processing works correctly.
     // TODO: Test that metadata is honored.
-    // TODO: Test data-url code paths.
 });
 
 function createMockResource(type, data)
