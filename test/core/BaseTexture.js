@@ -101,4 +101,12 @@ describe('BaseTexture', function ()
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
     });
+
+    it('destroying a destroyed BaseTexture should not throw an error', function ()
+    {
+        const baseTexture = new PIXI.BaseTexture();
+
+        baseTexture.destroy();
+        baseTexture.destroy();
+    });
 });

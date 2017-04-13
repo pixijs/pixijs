@@ -127,4 +127,12 @@ describe('PIXI.Texture', function ()
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.TextureCache[NAME2]).to.equal(texture);
     });
+
+    it('destroying a destroyed texture should not throw an error', function ()
+    {
+        const texture = new PIXI.Texture(new PIXI.BaseTexture());
+
+        texture.destroy(true);
+        texture.destroy(true);
+    });
 });
