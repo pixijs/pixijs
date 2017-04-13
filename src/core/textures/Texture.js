@@ -517,7 +517,7 @@ export default class Texture extends EventEmitter
                 return textureFromCache;
             }
         }
-        else
+        else if (texture && texture.textureCacheIds)
         {
             for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {
