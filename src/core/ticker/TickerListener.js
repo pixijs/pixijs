@@ -91,12 +91,12 @@ export default class TickerListener
             this.fn(deltaTime);
         }
 
+        const redirect = this.next;
+
         if (this.once)
         {
-            this.destroy();
+            this.destroy(true);
         }
-
-        const redirect = this.next;
 
         // Soft-destroying should remove
         // the next reference
