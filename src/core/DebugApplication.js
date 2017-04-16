@@ -16,12 +16,13 @@ import { UPDATE_PRIORITY } from './const';
  */
 export default class DebugApplication extends Application
 {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {Object} [options] See {@link PIXI.Application} for options.
      */
-    constructor(options)
+    constructor(options, arg2, arg3, arg4, arg5)
     {
-        super(options);
+        super(options, arg2, arg3, arg4, arg5);
 
         /**
          * Graphics to render the bounds
