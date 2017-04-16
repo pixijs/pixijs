@@ -47,4 +47,5 @@ export { default as Quad } from './renderers/webgl/utils/Quad';
 export { default as SpriteMaskFilter } from './renderers/webgl/filters/spriteMask/SpriteMaskFilter';
 export { default as Filter } from './renderers/webgl/filters/Filter';
 export { default as Application } from './Application';
+export { default as DebugApplication } from './DebugApplication';
 export { autoDetectRenderer } from './autoDetectRenderer';
