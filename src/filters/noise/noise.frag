@@ -15,11 +15,7 @@ void main()
 {
     vec4 color = texture2D(uSampler, vTextureCoord);
 
-    float diff = (rand(gl_FragCoord.xy) - 0.5) * noise;
-
-    color.r += diff;
-    color.g += diff;
-    color.b += diff;
+    color *= rand(gl_FragCoord.xy * noise);
 
     gl_FragColor = color;
 }
