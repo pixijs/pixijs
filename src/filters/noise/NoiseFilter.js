@@ -28,22 +28,22 @@ export default class NoiseFilter extends core.Filter
             readFileSync(join(__dirname, './noise.frag'), 'utf8')
         );
 
-        this.noise = 0.5;
+        this.noise = Math.random();
     }
 
     /**
-     * The amount of noise to apply.
+     * The amount of noise to apply, this value should be in the range (0, 1].
      *
      * @member {number}
      * @default 0.5
      */
     get noise()
     {
-        return this.uniforms.noise;
+        return this.uniforms.uNoise;
     }
 
     set noise(value) // eslint-disable-line require-jsdoc
     {
-        this.uniforms.noise = value;
+        this.uniforms.uNoise = value;
     }
 }
