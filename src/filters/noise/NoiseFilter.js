@@ -19,7 +19,7 @@ export default class NoiseFilter extends core.Filter
     /**
      *
      */
-    constructor()
+    constructor(noise = 0.5, seed = Math.random())
     {
         super(
             // vertex shader
@@ -28,8 +28,8 @@ export default class NoiseFilter extends core.Filter
             readFileSync(join(__dirname, './noise.frag'), 'utf8')
         );
 
-        this.noise = 0.5;
-        this.seed = Math.random();
+        this.noise = noise;
+        this.seed = seed;
     }
 
     /**
