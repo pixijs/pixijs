@@ -28,7 +28,8 @@ export default class NoiseFilter extends core.Filter
             readFileSync(join(__dirname, './noise.frag'), 'utf8')
         );
 
-        this.noise = Math.random();
+        this.noise = 0.5;
+        this.seed = Math.random();
     }
 
     /**
@@ -45,5 +46,20 @@ export default class NoiseFilter extends core.Filter
     set noise(value) // eslint-disable-line require-jsdoc
     {
         this.uniforms.uNoise = value;
+    }
+
+    /**
+     * A seed value to apply to the random noise generation. `Math.random()` is a good value to use.
+     *
+     * @member {number}
+     */
+    get seed()
+    {
+        return this.uniforms.uSeed;
+    }
+
+    set seed(value) // eslint-disable-line require-jsdoc
+    {
+        this.uniforms.uSeed = value;
     }
 }
