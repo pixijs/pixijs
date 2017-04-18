@@ -162,7 +162,6 @@ export default class GraphicsRenderer extends ObjectRenderer
         {
             const data = graphics.graphicsData[i];
 
-
             // TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);
 
@@ -211,6 +210,7 @@ export default class GraphicsRenderer extends ObjectRenderer
      * @private
      * @param {WebGLRenderingContext} gl - the current WebGL drawing context
      * @param {number} type - TODO @Alvin
+     * @param {number} nativeLines - indicate whether the webGLData use for nativeLines.
      * @return {*} TODO
      */
     getWebGLData(gl, type, nativeLines)
