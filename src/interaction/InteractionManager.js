@@ -1217,6 +1217,10 @@ export default class InteractionManager extends EventEmitter
 
         const eventLen = events.length;
 
+        // if the event wasn't targeting our canvas, then consider it to be pointerupoutside
+        // in all cases (unless it was a pointercancel)
+        const eventAppend = originalEvent.target !== this.interactionDOMElement ? 'outside' : '';
+
         for (let i = 0; i < eventLen; i++)
         {
             const event = events[i];
@@ -1227,19 +1231,20 @@ export default class InteractionManager extends EventEmitter
 
             interactionEvent.data.originalEvent = originalEvent;
 
-            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, true);
+            // perform hit testing for events targeting our canvas or cancel events
+            this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, func, cancelled || !eventAppend);
 
-            this.emit(cancelled ? 'pointercancel' : 'pointerup', interactionEvent);
+            this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
             if (event.pointerType === 'mouse')
             {
                 const isRightButton = event.button === 2 || event.which === 3;
 
-                this.emit(isRightButton ? 'rightup' : 'mouseup', interactionEvent);
+                this.emit(isRightButton ? `rightup${eventAppend}` : `mouseup${eventAppend}`, interactionEvent);
             }
             else if (event.pointerType === 'touch')
             {
-                this.emit(cancelled ? 'touchcancel' : 'touchend', interactionEvent);
+                this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}`, interactionEvent);
                 this.releaseInteractionDataForPointerId(event.pointerId, interactionData);
             }
         }
