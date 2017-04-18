@@ -71,6 +71,25 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
+        it('should call mouseupoutside handler on mouseup on different elements', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseupoutside', eventSpy);
+
+            pointer.mousedown(10, 10);
+            pointer.mouseup(10, 10, false);
+
+            expect(eventSpy).to.have.been.called;
+        });
+
         it('should call mouseover handler', function ()
         {
             const stage = new PIXI.Container();

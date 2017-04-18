@@ -99,6 +99,7 @@ class MockPointer
             });
         }
 
+        Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
         this.setPosition(x, y);
         this.render();
         // mouseOverRenderer state should be correct, so mouse position to view rect
@@ -148,6 +149,8 @@ class MockPointer
             preventDefault: sinon.stub(),
         });
 
+        Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
+
         this.setPosition(x, y);
         this.render();
         this.interaction.onPointerDown(mouseEvent);
@@ -156,14 +159,20 @@ class MockPointer
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {boolean} [onCanvas=true] - if the event happend on the Canvas element or not
      */
-    mouseup(x, y)
+    mouseup(x, y, onCanvas = true)
     {
         const mouseEvent = new MouseEvent('mouseup', {
             clientX: x,
             clientY: y,
             preventDefault: sinon.stub(),
         });
+
+        if (onCanvas)
+        {
+            Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
+        }
 
         this.setPosition(x, y);
         this.render();
@@ -195,6 +204,8 @@ class MockPointer
             ],
         });
 
+        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
+
         this.setPosition(x, y);
         this.render();
         this.interaction.onPointerDown(touchEvent);
@@ -214,6 +225,8 @@ class MockPointer
             ],
         });
 
+        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
+
         this.setPosition(x, y);
         this.render();
         this.interaction.onPointerUp(touchEvent);
@@ -232,6 +245,8 @@ class MockPointer
                 new Touch({ identifier: identifier || 0, target: this.renderer.view }),
             ],
         });
+
+        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
 
         this.setPosition(x, y);
         this.render();
