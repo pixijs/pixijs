@@ -42,7 +42,7 @@ export {
 };
 
 // Apply the deprecations
-if (typeof deprecation === "function")
+if (typeof deprecation === 'function')
 {
     deprecation(exports);
 }
