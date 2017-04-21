@@ -74,35 +74,96 @@ class MockPointer
     }
 
     /**
+     * [createEvent description]
+     * @param  {string} eventType  `type` of event
+     * @param  {number} x          pointer x position
+     * @param  {number} y          pointer y position
+     * @param  {number} [identifier] pointer id for touch events
+     * @param  {boolean} [asPointer]  If it should be a PointerEvent from a mouse or touch
+     * @param  {boolean} [onCanvas=true] If the event should be on the canvas (as opposed to a different element)
+     * @return {Event} Generated MouseEvent, TouchEvent, or PointerEvent
+     */
+    createEvent(eventType, x, y, identifier, asPointer, onCanvas = true)
+    {
+        let event;
+
+        if (eventType.startsWith('mouse'))
+        {
+            if (asPointer)
+            {
+                event = new PointerEvent(eventType.replace('mouse', 'pointer'), {
+                    pointerType: 'mouse',
+                    clientX: x,
+                    clientY: y,
+                    preventDefault: sinon.stub(),
+                });
+            }
+            else
+            {
+                event = new MouseEvent(eventType, {
+                    clientX: x,
+                    clientY: y,
+                    preventDefault: sinon.stub(),
+                });
+            }
+            if (onCanvas)
+            {
+                Object.defineProperty(event, 'target', { value: this.renderer.view });
+            }
+        }
+        else if (asPointer)
+        {
+            eventType = eventType.replace('touch', 'pointer').replace('start', 'down').replace('end', 'up');
+            event = new PointerEvent(eventType, {
+                pointerType: 'touch',
+                pointerId: identifier || 0,
+                clientX: x,
+                clientY: y,
+                preventDefault: sinon.stub(),
+            });
+            Object.defineProperty(event, 'target', { value: this.renderer.view });
+        }
+        else
+        {
+            const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+
+            if (eventType.endsWith('start'))
+            {
+                this.activeTouches.push(touch);
+            }
+            else if (eventType.endsWith('end') || eventType.endsWith('leave'))
+            {
+                for (let i = 0; i < this.activeTouches.length; ++i)
+                {
+                    if (this.activeTouches[i].identifier === touch.identifier)
+                    {
+                        this.activeTouches.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            event = new TouchEvent(eventType, {
+                preventDefault: sinon.stub(),
+                changedTouches: [touch],
+                touches: this.activeTouches,
+            });
+
+            Object.defineProperty(event, 'target', { value: this.renderer.view });
+        }
+
+        this.setPosition(x, y);
+        this.render();
+
+        return event;
+    }
+
+    /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
     mousemove(x, y, asPointer)
     {
-        let mouseEvent;
-
-        if (asPointer)
-        {
-            mouseEvent = new PointerEvent('pointermove', {
-                pointerType: 'mouse',
-                clientX: x,
-                clientY: y,
-                preventDefault: sinon.stub(),
-            });
-        }
-        else
-        {
-            mouseEvent = new MouseEvent('mousemove', {
-                clientX: x,
-                clientY: y,
-                preventDefault: sinon.stub(),
-            });
-        }
-
-        Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
-        this.setPosition(x, y);
-        this.render();
         // mouseOverRenderer state should be correct, so mouse position to view rect
         const rect = new PIXI.Rectangle(0, 0, this.renderer.width, this.renderer.height);
 
@@ -110,187 +171,102 @@ class MockPointer
         {
             if (!this.interaction.mouseOverRenderer)
             {
-                this.interaction.onPointerOver(new MouseEvent('mouseover', {
-                    clientX: x,
-                    clientY: y,
-                    preventDefault: sinon.stub(),
-                }));
+                this.interaction.onPointerOver(this.createEvent('mouseover', x, y, null, asPointer));
             }
-            this.interaction.onPointerMove(mouseEvent);
+            this.interaction.onPointerMove(this.createEvent('mousemove', x, y, null, asPointer));
         }
         else
         {
-            this.interaction.onPointerOut(new MouseEvent('mouseout', {
-                clientX: x,
-                clientY: y,
-                preventDefault: sinon.stub(),
-            }));
+            this.interaction.onPointerOut(this.createEvent('mouseout', x, y, null, asPointer));
         }
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    click(x, y)
+    click(x, y, asPointer)
     {
-        this.mousedown(x, y);
-        this.mouseup(x, y);
+        this.mousedown(x, y, asPointer);
+        this.mouseup(x, y, asPointer);
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mousedown(x, y)
+    mousedown(x, y, asPointer)
     {
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
-
-        Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerDown(mouseEvent);
+        this.interaction.onPointerDown(this.createEvent('mousedown', x, y, null, asPointer));
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {boolean} [onCanvas=true] - if the event happend on the Canvas element or not
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mouseup(x, y, onCanvas = true)
+    mouseup(x, y, onCanvas = true, asPointer = false)
     {
-        const mouseEvent = new MouseEvent('mouseup', {
-            clientX: x,
-            clientY: y,
-            preventDefault: sinon.stub(),
-        });
-
-        if (onCanvas)
-        {
-            Object.defineProperty(mouseEvent, 'target', { value: this.renderer.view });
-        }
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerUp(mouseEvent);
+        this.interaction.onPointerUp(this.createEvent('mouseup', x, y, null, asPointer, onCanvas));
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    tap(x, y, identifier)
+    tap(x, y, identifier, asPointer)
     {
-        this.touchstart(x, y, identifier);
-        this.touchend(x, y, identifier);
+        this.touchstart(x, y, identifier, asPointer);
+        this.touchend(x, y, identifier, asPointer);
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    touchstart(x, y, identifier)
+    touchstart(x, y, identifier, asPointer)
     {
-        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
-
-        this.activeTouches.push(touch);
-        const touchEvent = new TouchEvent('touchstart', {
-            preventDefault: sinon.stub(),
-            changedTouches: [touch],
-            touches: this.activeTouches,
-        });
-
-        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerDown(touchEvent);
+        this.interaction.onPointerDown(this.createEvent('touchstart', x, y, identifier, asPointer));
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    touchmove(x, y, identifier)
+    touchmove(x, y, identifier, asPointer)
     {
-        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
-        const touchEvent = new TouchEvent('touchmove', {
-            preventDefault: sinon.stub(),
-            changedTouches: [touch],
-            touches: this.activeTouches,
-        });
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerMove(touchEvent);
+        this.interaction.onPointerMove(this.createEvent('touchmove', x, y, identifier, asPointer));
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    touchend(x, y, identifier)
+    touchend(x, y, identifier, asPointer)
     {
-        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
-
-        for (let i = 0; i < this.activeTouches.length; ++i)
-        {
-            if (this.activeTouches[i].identifier === touch.identifier)
-            {
-                this.activeTouches.splice(i, 1);
-                break;
-            }
-        }
-        const touchEvent = new TouchEvent('touchend', {
-            preventDefault: sinon.stub(),
-            changedTouches: [touch],
-            touches: this.activeTouches,
-        });
-
-        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerUp(touchEvent);
+        this.interaction.onPointerUp(this.createEvent('touchend', x, y, identifier, asPointer));
     }
 
     /**
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    touchleave(x, y, identifier)
+    touchleave(x, y, identifier, asPointer)
     {
-        const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
-
-        for (let i = 0; i < this.activeTouches.length; ++i)
-        {
-            if (this.activeTouches[i].identifier === touch.identifier)
-            {
-                this.activeTouches.splice(i, 1);
-                break;
-            }
-        }
-        const touchEvent = new TouchEvent('touchleave', {
-            preventDefault: sinon.stub(),
-            changedTouches: [touch],
-            touches: this.activeTouches,
-        });
-
-        Object.defineProperty(touchEvent, 'target', { value: this.renderer.view });
-
-        this.setPosition(x, y);
-        this.render();
-        this.interaction.onPointerOut(touchEvent);
+        this.interaction.onPointerOut(this.createEvent('touchleave', x, y, identifier, asPointer));
     }
 }
 

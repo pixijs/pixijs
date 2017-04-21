@@ -732,7 +732,6 @@ export default class InteractionManager extends EventEmitter
             window.addEventListener('pointercancel', this.onPointerCancel, true);
             window.addEventListener('pointerup', this.onPointerUp, true);
         }
-
         else
         {
             window.document.addEventListener('mousemove', this.onPointerMove, true);
@@ -740,14 +739,17 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
             this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
             window.addEventListener('mouseup', this.onPointerUp, true);
+        }
 
-            if (this.supportsTouchEvents)
-            {
-                this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
-                this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-                this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
-                this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
-            }
+        // always look directly for touch events so that we can provide original data
+        // In a future version we should change this to being just a fallback and rely solely on
+        // PointerEvents whenever available
+        if (this.supportsTouchEvents)
+        {
+            this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
+            this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
+            this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
+            this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
         }
 
         this.eventsAdded = true;
@@ -793,14 +795,14 @@ export default class InteractionManager extends EventEmitter
             this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
             this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
             window.removeEventListener('mouseup', this.onPointerUp, true);
+        }
 
-            if (this.supportsTouchEvents)
-            {
-                this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
-                this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-                this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
-                this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
-            }
+        if (this.supportsTouchEvents)
+        {
+            this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
+            this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+            this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
+            this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
         }
 
         this.interactionDOMElement = null;
@@ -1116,6 +1118,9 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerDown(originalEvent)
     {
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+
         const events = this.normalizeToPointerData(originalEvent);
 
         /**
@@ -1258,6 +1263,9 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerCancel(event)
     {
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && event.pointerType === 'touch') return;
+
         this.onPointerComplete(event, true, this.processPointerCancel);
     }
 
@@ -1294,6 +1302,9 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerUp(event)
     {
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && event.pointerType === 'touch') return;
+
         this.onPointerComplete(event, false, this.processPointerUp);
     }
 
@@ -1393,6 +1404,9 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerMove(originalEvent)
     {
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+
         const events = this.normalizeToPointerData(originalEvent);
 
         if (events[0].pointerType === 'mouse')
@@ -1472,6 +1486,9 @@ export default class InteractionManager extends EventEmitter
      */
     onPointerOut(originalEvent)
     {
+        // if we support touch events, then only use those for touch events, not pointer events
+        if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+
         const events = this.normalizeToPointerData(originalEvent);
 
         // Only mouse and pointer can call onPointerOut, so events will always be length 1
