@@ -1441,4 +1441,61 @@ describe('PIXI.interaction.InteractionManager', function ()
                     'second touch should still not be primary after first is done').to.be.false;
         });
     });
+
+    describe('mouse events from pens', function ()
+    {
+        it('should call mousedown handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mousedown', eventSpy);
+
+            pointer.pendown(10, 10);
+
+            expect(eventSpy).to.have.been.calledOnce;
+        });
+
+        it('should call mousemove handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mousemove', eventSpy);
+
+            pointer.penmove(10, 10);
+
+            expect(eventSpy).to.have.been.calledOnce;
+        });
+
+        it('should call mouseup handler', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const eventSpy = sinon.spy();
+            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.on('mouseup', eventSpy);
+
+            pointer.penup(10, 10);
+
+            expect(eventSpy).to.have.been.calledOnce;
+        });
+    });
 });

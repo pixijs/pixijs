@@ -111,43 +111,57 @@ class MockPointer
                 Object.defineProperty(event, 'target', { value: this.renderer.view });
             }
         }
-        else if (asPointer)
+        else if (eventType.startsWith('touch'))
         {
-            eventType = eventType.replace('touch', 'pointer').replace('start', 'down').replace('end', 'up');
+            if (asPointer)
+            {
+                eventType = eventType.replace('touch', 'pointer').replace('start', 'down').replace('end', 'up');
+                event = new PointerEvent(eventType, {
+                    pointerType: 'touch',
+                    pointerId: identifier || 0,
+                    clientX: x,
+                    clientY: y,
+                    preventDefault: sinon.stub(),
+                });
+                Object.defineProperty(event, 'target', { value: this.renderer.view });
+            }
+            else
+            {
+                const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+
+                if (eventType.endsWith('start'))
+                {
+                    this.activeTouches.push(touch);
+                }
+                else if (eventType.endsWith('end') || eventType.endsWith('leave'))
+                {
+                    for (let i = 0; i < this.activeTouches.length; ++i)
+                    {
+                        if (this.activeTouches[i].identifier === touch.identifier)
+                        {
+                            this.activeTouches.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                event = new TouchEvent(eventType, {
+                    preventDefault: sinon.stub(),
+                    changedTouches: [touch],
+                    touches: this.activeTouches,
+                });
+
+                Object.defineProperty(event, 'target', { value: this.renderer.view });
+            }
+        }
+        else
+        {
             event = new PointerEvent(eventType, {
-                pointerType: 'touch',
+                pointerType: 'pen',
                 pointerId: identifier || 0,
                 clientX: x,
                 clientY: y,
                 preventDefault: sinon.stub(),
             });
-            Object.defineProperty(event, 'target', { value: this.renderer.view });
-        }
-        else
-        {
-            const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
-
-            if (eventType.endsWith('start'))
-            {
-                this.activeTouches.push(touch);
-            }
-            else if (eventType.endsWith('end') || eventType.endsWith('leave'))
-            {
-                for (let i = 0; i < this.activeTouches.length; ++i)
-                {
-                    if (this.activeTouches[i].identifier === touch.identifier)
-                    {
-                        this.activeTouches.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-            event = new TouchEvent(eventType, {
-                preventDefault: sinon.stub(),
-                changedTouches: [touch],
-                touches: this.activeTouches,
-            });
-
             Object.defineProperty(event, 'target', { value: this.renderer.view });
         }
 
@@ -217,7 +231,7 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
-     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
     tap(x, y, identifier, asPointer)
     {
@@ -229,7 +243,7 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
-     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
     touchstart(x, y, identifier, asPointer)
     {
@@ -240,7 +254,7 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
-     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
     touchmove(x, y, identifier, asPointer)
     {
@@ -251,7 +265,7 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
-     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
     touchend(x, y, identifier, asPointer)
     {
@@ -262,11 +276,41 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
-     * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
+     * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
     touchleave(x, y, identifier, asPointer)
     {
         this.interaction.onPointerOut(this.createEvent('touchleave', x, y, identifier, asPointer));
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    pendown(x, y, identifier)
+    {
+        this.interaction.onPointerDown(this.createEvent('pointerdown', x, y, identifier, true));
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    penmove(x, y, identifier)
+    {
+        this.interaction.onPointerMove(this.createEvent('pointermove', x, y, identifier, true));
+    }
+
+    /**
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id
+     */
+    penup(x, y, identifier)
+    {
+        this.interaction.onPointerUp(this.createEvent('pointerup', x, y, identifier, true));
     }
 }
 

@@ -1155,9 +1155,10 @@ export default class InteractionManager extends EventEmitter
             {
                 this.emit('touchstart', interactionEvent);
             }
-            else if (event.pointerType === 'mouse')
+            // emit a mouse event for "pen" pointers, the way a browser would emit a fallback event
+            else if (event.pointerType === 'mouse' || event.pointerType === 'pen')
             {
-                const isRightButton = event.button === 2 || event.which === 3;
+                const isRightButton = event.button === 2;
 
                 this.emit(isRightButton ? 'rightdown' : 'mousedown', this.eventData);
             }
@@ -1174,8 +1175,7 @@ export default class InteractionManager extends EventEmitter
      */
     processPointerDown(interactionEvent, displayObject, hit)
     {
-        const e = interactionEvent.data.originalEvent;
-
+        const data = interactionEvent.data;
         const id = interactionEvent.data.identifier;
 
         if (hit)
@@ -1186,13 +1186,13 @@ export default class InteractionManager extends EventEmitter
             }
             this.dispatchEvent(displayObject, 'pointerdown', interactionEvent);
 
-            if (e.type === 'touchstart' || e.pointerType === 'touch')
+            if (data.pointerType === 'touch')
             {
                 this.dispatchEvent(displayObject, 'touchstart', interactionEvent);
             }
-            else if (e.type === 'mousedown' || e.pointerType === 'mouse')
+            else if (data.pointerType === 'mouse' || data.pointerType === 'pen')
             {
-                const isRightButton = e.button === 2 || e.which === 3;
+                const isRightButton = data.button === 2;
 
                 if (isRightButton)
                 {
@@ -1241,9 +1241,9 @@ export default class InteractionManager extends EventEmitter
 
             this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
 
-            if (event.pointerType === 'mouse')
+            if (event.pointerType === 'mouse' || event.pointerType === 'pen')
             {
-                const isRightButton = event.button === 2 || event.which === 3;
+                const isRightButton = event.button === 2;
 
                 this.emit(isRightButton ? `rightup${eventAppend}` : `mouseup${eventAppend}`, interactionEvent);
             }
@@ -1278,7 +1278,7 @@ export default class InteractionManager extends EventEmitter
      */
     processPointerCancel(interactionEvent, displayObject)
     {
-        const e = interactionEvent.data.originalEvent;
+        const data = interactionEvent.data;
 
         const id = interactionEvent.data.identifier;
 
@@ -1287,7 +1287,7 @@ export default class InteractionManager extends EventEmitter
             delete displayObject.trackedPointers[id];
             this.dispatchEvent(displayObject, 'pointercancel', interactionEvent);
 
-            if (e.type === 'touchcancel' || e.pointerType === 'touch')
+            if (data.pointerType === 'touch')
             {
                 this.dispatchEvent(displayObject, 'touchcancel', interactionEvent);
             }
@@ -1318,20 +1318,20 @@ export default class InteractionManager extends EventEmitter
      */
     processPointerUp(interactionEvent, displayObject, hit)
     {
-        const e = interactionEvent.data.originalEvent;
+        const data = interactionEvent.data;
 
         const id = interactionEvent.data.identifier;
 
         const trackingData = displayObject.trackedPointers[id];
 
-        const isTouch = (e.type === 'touchend' || e.pointerType === 'touch');
+        const isTouch = data.pointerType === 'touch';
 
-        const isMouse = (e.type.indexOf('mouse') === 0 || e.pointerType === 'mouse');
+        const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
         // Mouse only
         if (isMouse)
         {
-            const isRightButton = e.button === 2 || e.which === 3;
+            const isRightButton = data.button === 2;
 
             const flags = InteractionTrackingData.FLAGS;
 
@@ -1438,7 +1438,7 @@ export default class InteractionManager extends EventEmitter
             );
             this.emit('pointermove', interactionEvent);
             if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
-            if (event.pointerType === 'mouse') this.emit('mousemove', interactionEvent);
+            if (event.pointerType === 'mouse' || event.pointerType === 'pen') this.emit('mousemove', interactionEvent);
         }
 
         if (events[0].pointerType === 'mouse')
@@ -1459,11 +1459,11 @@ export default class InteractionManager extends EventEmitter
      */
     processPointerMove(interactionEvent, displayObject, hit)
     {
-        const e = interactionEvent.data.originalEvent;
+        const data = interactionEvent.data;
 
-        const isTouch = (e.type === 'touchmove' || e.pointerType === 'touch');
+        const isTouch = data.pointerType === 'touch';
 
-        const isMouse = (e.type === 'mousemove' || e.pointerType === 'mouse');
+        const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
         if (isMouse)
         {
@@ -1509,7 +1509,7 @@ export default class InteractionManager extends EventEmitter
         this.processInteractive(interactionEvent, this.renderer._lastObjectRendered, this.processPointerOverOut, false);
 
         this.emit('pointerout', interactionEvent);
-        if (event.pointerType === 'mouse')
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen')
         {
             this.emit('mouseout', interactionEvent);
         }
@@ -1531,11 +1531,11 @@ export default class InteractionManager extends EventEmitter
      */
     processPointerOverOut(interactionEvent, displayObject, hit)
     {
-        const e = interactionEvent.data.originalEvent;
+        const data = interactionEvent.data;
 
         const id = interactionEvent.data.identifier;
 
-        const isMouse = (e.type === 'mouseover' || e.type === 'mouseout' || e.pointerType === 'mouse');
+        const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
 
         let trackingData = displayObject.trackedPointers[id];
 
@@ -1607,7 +1607,7 @@ export default class InteractionManager extends EventEmitter
         }
 
         this.emit('pointerover', interactionEvent);
-        if (event.pointerType === 'mouse')
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen')
         {
             this.emit('mouseover', interactionEvent);
         }
