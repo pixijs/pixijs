@@ -82,13 +82,16 @@ export default class TickerListener
      */
     emit(deltaTime)
     {
-        if (this.context)
+        if (this.fn)
         {
-            this.fn.call(this.context, deltaTime);
-        }
-        else
-        {
-            this.fn(deltaTime);
+            if (this.context)
+            {
+                this.fn.call(this.context, deltaTime);
+            }
+            else
+            {
+                this.fn(deltaTime);
+            }
         }
 
         const redirect = this.next;
