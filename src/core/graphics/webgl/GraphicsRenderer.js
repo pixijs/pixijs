@@ -103,7 +103,7 @@ export default class GraphicsRenderer extends ObjectRenderer
 
             renderer.bindVao(webGLData.vao);
 
-            if (graphics.nativeLines)
+            if (webGLData.nativeLines)
             {
                 gl.drawArrays(gl.LINES, 0, webGLData.points.length / 6);
             }
@@ -153,6 +153,7 @@ export default class GraphicsRenderer extends ObjectRenderer
         }
 
         let webGLData;
+        let webGLDataNativeLines;
 
         // loop through the graphics datas and construct each one..
         // if the object is a complex fill then the new stencil buffer technique will be used
@@ -164,21 +165,27 @@ export default class GraphicsRenderer extends ObjectRenderer
             // TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);
 
+            if (data.nativeLines && data.lineWidth)
+            {
+                webGLDataNativeLines = this.getWebGLData(webGL, 0, true);
+                webGL.lastIndex++;
+            }
+
             if (data.type === SHAPES.POLY)
             {
-                buildPoly(data, webGLData);
+                buildPoly(data, webGLData, webGLDataNativeLines);
             }
             if (data.type === SHAPES.RECT)
             {
-                buildRectangle(data, webGLData);
+                buildRectangle(data, webGLData, webGLDataNativeLines);
             }
             else if (data.type === SHAPES.CIRC || data.type === SHAPES.ELIP)
             {
-                buildCircle(data, webGLData);
+                buildCircle(data, webGLData, webGLDataNativeLines);
             }
             else if (data.type === SHAPES.RREC)
             {
-                buildRoundedRectangle(data, webGLData);
+                buildRoundedRectangle(data, webGLData, webGLDataNativeLines);
             }
 
             webGL.lastIndex++;
@@ -203,17 +210,18 @@ export default class GraphicsRenderer extends ObjectRenderer
      * @private
      * @param {WebGLRenderingContext} gl - the current WebGL drawing context
      * @param {number} type - TODO @Alvin
+     * @param {number} nativeLines - indicate whether the webGLData use for nativeLines.
      * @return {*} TODO
      */
-    getWebGLData(gl, type)
+    getWebGLData(gl, type, nativeLines)
     {
         let webGLData = gl.data[gl.data.length - 1];
 
-        if (!webGLData || webGLData.points.length > 320000)
+        if (!webGLData || webGLData.nativeLines !== nativeLines || webGLData.points.length > 320000)
         {
             webGLData = this.graphicsDataPool.pop()
                 || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
-
+            webGLData.nativeLines = nativeLines;
             webGLData.reset(type);
             gl.data.push(webGLData);
         }

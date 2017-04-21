@@ -42,7 +42,10 @@ export {
 };
 
 // Apply the deprecations
-deprecation(exports);
+if (typeof deprecation === 'function')
+{
+    deprecation(exports);
+}
 
 // Always export pixi globally.
 global.PIXI = exports; // eslint-disable-line

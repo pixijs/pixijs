@@ -243,7 +243,7 @@ export default class Ticker
             // Go from highest to lowest priority
             while (current)
             {
-                if (listener.priority >= current.priority)
+                if (listener.priority > current.priority)
                 {
                     listener.connect(previous);
                     break;
