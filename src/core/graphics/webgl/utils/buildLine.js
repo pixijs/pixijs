@@ -10,12 +10,13 @@ import { hex2rgb } from '../../../utils';
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
+ * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function (graphicsData, webGLData)
+export default function (graphicsData, webGLData, webGLDataNativeLines)
 {
     if (graphicsData.nativeLines)
     {
-        buildNativeLine(graphicsData, webGLData);
+        buildNativeLine(graphicsData, webGLDataNativeLines);
     }
     else
     {
