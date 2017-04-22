@@ -489,7 +489,7 @@ export default class Text extends Sprite
                 currentIteration += 1;
                 for (let j = 0; j < fill.length; j++)
                 {
-                    if (fillGradientStops[j])
+                    if (typeof fillGradientStops[j] === 'number')
                     {
                         stop = (fillGradientStops[j] / lines.length) + (i / lines.length);
                     }
@@ -514,7 +514,7 @@ export default class Text extends Sprite
 
             for (let i = 0; i < fill.length; i++)
             {
-                if (fillGradientStops[i])
+                if (typeof fillGradientStops[i] === 'number')
                 {
                     stop = fillGradientStops[i];
                 }
