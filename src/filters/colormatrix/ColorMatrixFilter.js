@@ -37,7 +37,7 @@ export default class ColorMatrixFilter extends core.Filter
             0, 0, 1, 0, 0,
             0, 0, 0, 1, 0];
 
-        this.interpolation = 1;
+        this.alpha = 1;
     }
 
     /**
@@ -579,7 +579,7 @@ export default class ColorMatrixFilter extends core.Filter
     }
 
     /**
-     * The interpolation value to use when mixing the original and resultant colors.
+     * The opacity value to use when mixing the original and resultant colors.
      *
      * When the value is 0, the original color is used without modification.
      * When the value is 1, the result color is used.
@@ -588,14 +588,14 @@ export default class ColorMatrixFilter extends core.Filter
      * @member {number}
      * @default 1
      */
-    get interpolation()
+    get alpha()
     {
-        return this.uniforms.uInterpolation;
+        return this.uniforms.uAlpha;
     }
 
-    set interpolation(value) // eslint-disable-line require-jsdoc
+    set alpha(value) // eslint-disable-line require-jsdoc
     {
-        this.uniforms.uInterpolation = value;
+        this.uniforms.uAlpha = value;
     }
 }
 

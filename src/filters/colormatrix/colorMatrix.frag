@@ -1,13 +1,13 @@
 varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
 uniform float m[20];
-uniform float uInterpolation;
+uniform float uAlpha;
 
 void main(void)
 {
     vec4 c = texture2D(uSampler, vTextureCoord);
 
-    if (uInterpolation == 0.0) {
+    if (uAlpha == 0.0) {
         gl_FragColor = c;
         return;
     }
@@ -43,7 +43,7 @@ void main(void)
        result.a += (m[18] * c.a);
        result.a += m[19];
 
-    vec3 rgb = mix(c.rgb, result.rgb, uInterpolation);
+    vec3 rgb = mix(c.rgb, result.rgb, uAlpha);
 
     // Premultiply alpha again.
     rgb *= result.a;
