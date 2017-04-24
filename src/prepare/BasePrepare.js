@@ -436,10 +436,7 @@ function calculateTextStyle(helper, item)
     {
         const font = item.toFontString();
 
-        if (!core.TextMetrics._fonts[font])
-        {
-            core.TextMetrics.measureFont(font);
-        }
+        core.TextMetrics.measureFont(font);
 
         return true;
     }
