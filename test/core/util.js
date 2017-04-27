@@ -282,7 +282,7 @@ describe('PIXI.utils', function ()
     {
         it('should exist', function ()
         {
-            expect(PIXI.utils.removeItems).to.be.an('object');
+            expect(PIXI.utils.removeItems).to.be.a('function');
         });
     });
 
