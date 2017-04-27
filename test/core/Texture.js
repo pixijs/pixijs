@@ -70,26 +70,6 @@ describe('PIXI.Texture', function ()
         expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
     });
 
-    it('should be added to the texture cache correctly using legacy addTextureToCache, '
-     + 'and should remove also remove the base texture from its cache with removeTextureFromCache', function ()
-    {
-        cleanCache();
-
-        const texture = new PIXI.Texture(new PIXI.BaseTexture());
-
-        PIXI.BaseTexture.addToCache(texture.baseTexture, NAME);
-        PIXI.Texture.addTextureToCache(texture, NAME);
-        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(0);
-        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(0);
-        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
-        expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
-        PIXI.Texture.removeTextureFromCache(NAME);
-        expect(texture.baseTexture.textureCacheIds.indexOf(NAME)).to.equal(-1);
-        expect(texture.textureCacheIds.indexOf(NAME)).to.equal(-1);
-        expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
-        expect(PIXI.utils.TextureCache[NAME]).to.equal(undefined);
-    });
-
     it('should remove Texture from entire cache using removeFromCache (by Texture instance)', function ()
     {
         cleanCache();

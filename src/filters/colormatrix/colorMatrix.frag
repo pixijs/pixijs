@@ -1,15 +1,24 @@
 varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
 uniform float m[20];
+uniform float uAlpha;
 
 void main(void)
 {
     vec4 c = texture2D(uSampler, vTextureCoord);
+
+    if (uAlpha == 0.0) {
+        gl_FragColor = c;
+        return;
+    }
+
     // Un-premultiply alpha before applying the color matrix. See issue #3539.
     if (c.a > 0.0) {
       c.rgb /= c.a;
     }
+
     vec4 result;
+
     result.r = (m[0] * c.r);
         result.r += (m[1] * c.g);
         result.r += (m[2] * c.b);
@@ -34,8 +43,10 @@ void main(void)
        result.a += (m[18] * c.a);
        result.a += m[19];
 
-    // Premultiply alpha again.
-    result.rgb *= result.a;
+    vec3 rgb = mix(c.rgb, result.rgb, uAlpha);
 
-    gl_FragColor = result;
+    // Premultiply alpha again.
+    rgb *= result.a;
+
+    gl_FragColor = vec4(rgb, result.a);
 }
