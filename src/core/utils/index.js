@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
-import * as removeItems from 'remove-array-items';
+import removeItems from 'remove-array-items';
 
 let nextUid = 0;
 let saidHello = false;
