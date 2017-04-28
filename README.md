@@ -45,7 +45,7 @@ Pixi.js has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamle
 
 It's easy to get started with Pixi.js! Simply download a [prebuilt build](https://github.com/pixijs/pixi.js/wiki/FAQs#where-can-i-get-a-build)!
 
-Alternatively, Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [npm](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page.
+Alternatively, Pixi.js can be installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page.
 
 #### NPM Install
 
