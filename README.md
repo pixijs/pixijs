@@ -47,12 +47,6 @@ It's easy to get started with Pixi.js! Simply download a [prebuilt build](https:
 
 Alternatively, Pixi.js can be installed with [Bower](https://bower.io/#getting-started), [npm](https://docs.npmjs.com/getting-started/what-is-npm) or simply using a content delivery network (CDN) URL to embed Pixi.js directly on your HTML page.
 
-#### Bower Install
-
-```
-$> bower install pixi.js
-```
-
 #### NPM Install
 
 ```
@@ -62,10 +56,10 @@ $> npm install pixi.js
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
 ```
 
-_Note: `4.4.3` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
