@@ -68,13 +68,10 @@ class Program
             fragmentSrc = shaderUtils.setPrecision(fragmentSrc, 'mediump');
 
             const program = shaderUtils.compileProgram(gl, vertexSrc, fragmentSrc);
-            console.log("<<<<<<<extracting data<<<<>>>><<");
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
-
             console.log(this.uniformData);
-
             //gl.deleteProgram(program);
         }
     }
@@ -147,7 +144,6 @@ class Program
             const uniformData = gl.getActiveUniform(program, i);
             const name = uniformData.name.replace(/\[.*?\]/, '');
             const type = shaderUtils.mapType(gl, uniformData.type);
-            console.log('mapping ' + uniformData.type + ' to ' + type);
 
            // if (!name.match(maskRegex))
             {

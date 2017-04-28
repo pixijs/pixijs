@@ -15,6 +15,7 @@ var mapSize = function(gl, type)
         }
     }
 
+  //  console.log(gl)
     return GL_TABLE[type];
 };
 
@@ -41,7 +42,8 @@ var GL_TO_GLSL_TYPES = {
   'FLOAT_MAT4':  'mat4',
 
   'SAMPLER_2D':  'sampler2D',
-  'SAMPLER_CUBE':  'samplerCube'
+  'SAMPLER_CUBE':  'samplerCube',
+  'SAMPLER_2D_ARRAY':  'sampler2DArray'
 };
 
 module.exports = mapSize;

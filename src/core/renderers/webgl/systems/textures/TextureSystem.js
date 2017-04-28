@@ -96,7 +96,6 @@ export default class TextureSystem extends WebGLSystem
             {
 
                 const glTexture = texture._glTextures[this.CONTEXT_UID] || this.initTexture(texture);
-
                 gl.bindTexture(texture.target, glTexture.texture);
 
                 if(glTexture.dirtyId !== texture.dirtyId)
@@ -204,6 +203,55 @@ export default class TextureSystem extends WebGLSystem
                                   texture.format,
                                   texture.type,
                                   null);
+                }
+            }
+        }
+        if(texture.target === gl.TEXTURE_2D_ARRAY)
+        {
+            console.log("REMEMBER THIS IS TOO MANY!")
+            gl.texImage3D(gl.TEXTURE_2D_ARRAY,
+                              0,
+                              texture.format,
+                              texture.width,
+                              texture.height,
+                              6,
+                              0,
+                              texture.format,
+                              texture.type,
+                              null);
+
+            for (var i = 0; i < texture.array.length; i++)
+            {
+                // TODO - we should only upload what changed..
+                // but im sure this is not  going to be a problem just yet!
+                var texturePart = texture.array[i];
+
+                if(texturePart.resource)
+                {
+                  //  void gl.texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, ImageBitmap? pixels);
+                    console.log(texturePart.resource.source)
+
+                    if(texturePart.resource.loaded)
+                    {
+                        console.log("UPOAD..")
+                        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
+                                  0,
+                                  0,//xoffset
+                                  0,//yoffset
+                                  i,//zoffset
+                                  texturePart.resource.width,
+                                  texturePart.resource.height,
+                                  1,
+                                  texture.format,
+                                  texture.type,
+                                  texturePart.resource.source);
+                    }
+
+                }
+                else
+                {
+
+
                 }
             }
         }

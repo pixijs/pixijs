@@ -166,6 +166,17 @@ export default class BaseTexture extends EventEmitter
          */
     }
 
+    updateResolution()
+    {
+        const resource = this.resource;
+
+        if(resource && resource.width !== -1 && resource.hight !== -1)
+        {
+            this.width = resource.width / this.resolution;
+            this.height = resource.height / this.resolution;
+        }
+    }
+
     setResource(resource)
     {
         // TODO currently a resource can only be set once..
@@ -198,17 +209,10 @@ export default class BaseTexture extends EventEmitter
 
     resourceLoaded(resource)
     {
-       // console.log(this)
-       // console.log("****** LOADED...")
-        if(resource === resource)
+        if(this.resource === resource)
         {
-            if(resource.width !== -1 && resource.hight !== -1)
-            {
-                this.width = resource.width / this.resolution;
-                this.height = resource.height / this.resolution;
-            }
+            this.updateResolution();
 
-           // console.log(this.width, this.height)
             this.validate();
 
             if(this.valid)

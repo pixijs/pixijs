@@ -390,8 +390,8 @@ export default class Texture extends EventEmitter
         {
             texture = new Texture(new BaseTexture(source));
             texture.baseTexture.cacheId = cacheId;
-            TextureCache[cacheId] = texture;
-            BaseTextureCache[cacheId] = texture.baseTexture;
+            BaseTexture.addToCache(texture.baseTexture, cacheId);
+            Texture.addToCache(texture, cacheId);
         }
         else
         {

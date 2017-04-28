@@ -17,9 +17,26 @@ export default class ImageResource extends TextureResource
                 source.onerror = null;
                 this.width = source.width;
                 this.height = source.height;
-                resolve(this);
+
+                if(window.createImageBitmap)
+                {
+                    createImageBitmap(source).then((imageBitmap)=>{
+
+                        this.source = imageBitmap;
+
+                        resolve(this);
+
+                    })
+                }
+                else
+                {
+                    resolve(this);
+                }
+
+
 
             }
+
 
 
             if(source.complete && source.src)
@@ -29,8 +46,21 @@ export default class ImageResource extends TextureResource
                 source.onerror = null;
                 this.width = source.width;
                 this.height = source.height;
-        //        console.log("image")
-                resolve(this);
+
+                if(window.createImageBitmap)
+                {
+                    createImageBitmap(source).then((imageBitmap)=>{
+
+                        this.source = imageBitmap;
+
+                        resolve(this);
+
+                    })
+                }
+                else
+                {
+                    resolve(this);
+                }
             }
 
         //    source.onerror = () => {
