@@ -96,19 +96,19 @@ export default class WebGLRenderer extends SystemRenderer
             projectionMatrix:new Matrix()
         }, false)
 
-        this.addSystem(MaskSystem)
-        .addSystem(ContextSystem)
-        .addSystem(StateSystem)
-        .addSystem(ShaderSystem)
+        this.addSystem(MaskSystem, 'mask')
+        .addSystem(ContextSystem, 'context')
+        .addSystem(StateSystem, 'state')
+        .addSystem(ShaderSystem, 'shader')
         .addSystem(TextureSystem, 'texture')
-        .addSystem(GeometrySystem)
-        .addSystem(FramebufferSystem)
-        .addSystem(StencilSystem)
-        .addSystem(ProjectionSystem)
+        .addSystem(GeometrySystem, 'geometry')
+        .addSystem(FramebufferSystem, 'framebuffer')
+        .addSystem(StencilSystem, 'stencil')
+        .addSystem(ProjectionSystem, 'projection')
         //.addSystem(TextureGCSystem)
-        .addSystem(FilterSystem)
-        .addSystem(RenderTextureSystem)
-        .addSystem(BatchSystem)
+        .addSystem(FilterSystem, 'filter')
+        .addSystem(RenderTextureSystem, 'renderTexture')
+        .addSystem(BatchSystem,'batch')
 
         this.initPlugins();
 
@@ -149,11 +149,14 @@ export default class WebGLRenderer extends SystemRenderer
         }
 
         //TODO - read name from class.name..
+
+        /*
         if(name.includes('System'))
         {
             name = name.replace('System', '');
             name = name.charAt(0).toLowerCase() + name.slice(1);
         }
+        */
 
         const system = new _class(this);
 

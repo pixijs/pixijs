@@ -6,7 +6,7 @@ import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import settings from '../settings';
 import { Rectangle } from '../math';
-import { TextureCache, getResolutionOfUrl } from '../utils';
+import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
