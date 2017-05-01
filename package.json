@@ -63,6 +63,7 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
+    "remove-array-items": "^1.0.0",
     "resource-loader": "^2.0.6"
   },
   "devDependencies": {
