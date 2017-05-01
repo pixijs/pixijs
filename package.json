@@ -24,7 +24,7 @@
     "watch": "npm run dist -- --watch",
     "watch:lib": "npm run lib -- --watch",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
-    "test": "npm run build && npm run coverage",
+    "test": "npm run dist && npm run coverage",
     "tests": "floss --path test/index.js",
     "tests:debug": "npm run tests -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
