@@ -1194,7 +1194,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(pointer.renderer.view.style.display).to.equal('none');
         });
 
-        it('should not change cursor style if no cursor style provided', function ()
+        it('should not change cursor style if null cursor style provided', function ()
         {
             const stage = new PIXI.Container();
             const graphics = new PIXI.Graphics();
@@ -1213,6 +1213,22 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             pointer.mousemove(60, 60);
             expect(pointer.renderer.view.style.cursor).to.equal('');
+        });
+
+        it.only('should use cursor property as css if no style entry', function ()
+        {
+            const stage = new PIXI.Container();
+            const graphics = new PIXI.Graphics();
+            const pointer = this.pointer = new MockPointer(stage);
+
+            stage.addChild(graphics);
+            graphics.beginFill(0xFFFFFF);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.interactive = true;
+            graphics.cursor = 'text';
+
+            pointer.mousemove(10, 10);
+            expect(pointer.renderer.view.style.cursor).to.equal('text');
         });
     });
 
