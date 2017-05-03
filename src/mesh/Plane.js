@@ -59,6 +59,11 @@ export default class Plane extends Mesh
 
         this._lastVerticesID = -1;
 
+        /*
+         * @member {Float32Array} Generated vertices positions, useful as starting position for vertices
+         */
+        this.calculatedVertices = null;
+
         /**
          *  Version counter for uvs updates
          *
@@ -254,12 +259,12 @@ export default class Plane extends Mesh
      */
     refresh(forceUpdate)
     {
+        this.refreshDimensions(forceUpdate);
+
         if (this._texture.noFrame)
         {
             return;
         }
-
-        this.refreshDimensions(forceUpdate);
 
         if (this._lastWidth !== this.width
             || this._lastHeight !== this.height)
