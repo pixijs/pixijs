@@ -46,16 +46,8 @@ export default class NineSlicePlane extends Plane
     {
         super(texture, 4, 4);
 
-        const uvs = this.uvs;
-
-        // right and bottom uv's are always 1
-        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
-        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
-
         this._origWidth = texture.orig.width;
         this._origHeight = texture.orig.height;
-        this._uvw = 1 / this._origWidth;
-        this._uvh = 1 / this._origHeight;
 
         /**
          * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
@@ -64,7 +56,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.width = this._origWidth;
+        this._width = this._origWidth;
 
         /**
          * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
@@ -73,12 +65,7 @@ export default class NineSlicePlane extends Plane
          * @memberof PIXI.NineSlicePlane#
          * @override
          */
-        this.height = this._origHeight;
-
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * leftWidth;
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * rightWidth);
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * topHeight;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * bottomHeight);
+        this._height = this._origHeight;
 
         /**
          * The width of the left column (a)
@@ -264,7 +251,7 @@ export default class NineSlicePlane extends Plane
     set width(value) // eslint-disable-line require-jsdoc
     {
         this._width = value;
-        this.updateVerticalVertices();
+        this._refresh();
     }
 
     /**
@@ -280,7 +267,7 @@ export default class NineSlicePlane extends Plane
     set height(value) // eslint-disable-line require-jsdoc
     {
         this._height = value;
-        this.updateHorizontalVertices();
+        this._refresh();
     }
 
     /**
@@ -296,14 +283,7 @@ export default class NineSlicePlane extends Plane
     set leftWidth(value) // eslint-disable-line require-jsdoc
     {
         this._leftWidth = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = this._uvw * value;
-        vertices[2] = vertices[10] = vertices[18] = vertices[26] = value;
-
-        this.dirty = true;
+        this._refresh();
     }
 
     /**
@@ -319,14 +299,7 @@ export default class NineSlicePlane extends Plane
     set rightWidth(value) // eslint-disable-line require-jsdoc
     {
         this._rightWidth = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (this._uvw * value);
-        vertices[4] = vertices[12] = vertices[20] = vertices[28] = this._width - value;
-
-        this.dirty = true;
+        this._refresh();
     }
 
     /**
@@ -342,14 +315,7 @@ export default class NineSlicePlane extends Plane
     set topHeight(value) // eslint-disable-line require-jsdoc
     {
         this._topHeight = value;
-
-        const uvs = this.uvs;
-        const vertices = this.vertices;
-
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = this._uvh * value;
-        vertices[9] = vertices[11] = vertices[13] = vertices[15] = value;
-
-        this.dirty = true;
+        this._refresh();
     }
 
     /**
@@ -365,13 +331,40 @@ export default class NineSlicePlane extends Plane
     set bottomHeight(value) // eslint-disable-line require-jsdoc
     {
         this._bottomHeight = value;
+        this._refresh();
+    }
+
+    /**
+     * Refreshes NineSlicePlane coords. All of them.
+     */
+    _refresh()
+    {
+        super._refresh();
 
         const uvs = this.uvs;
-        const vertices = this.vertices;
+        const texture = this._texture;
 
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (this._uvh * value);
-        vertices[17] = vertices[19] = vertices[21] = vertices[23] = this._height - value;
+        this._origWidth = texture.orig.width;
+        this._origHeight = texture.orig.height;
+
+        const _uvw = 1.0 / this._origWidth;
+        const _uvh = 1.0 / this._origHeight;
+
+        uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
+        uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
+        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
+        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
+
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = _uvw * this._leftWidth;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = _uvh * this._topHeight;
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
+
+        this.updateHorizontalVertices();
+        this.updateVerticalVertices();
 
         this.dirty = true;
+
+        this.multiplyUvs();
     }
 }
