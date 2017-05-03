@@ -229,6 +229,7 @@ export default class SpriteRenderer extends ObjectRenderer
         let nextTexture;
         let currentTexture;
         let groupCount = 1;
+        let textureId = 0;
         let textureCount = 0;
         let currentGroup = groups[0];
         let vertexData;
@@ -254,77 +255,59 @@ export default class SpriteRenderer extends ObjectRenderer
         {
             // upload the sprite elemetns...
             // they have all ready been calculated so we just need to push them into the buffer.
-            const sprite = sprites[i];
+
+            // upload the sprite elemetns...
+            // they have all ready been calculated so we just need to push them into the buffer.
+            var sprite = sprites[i];
 
             nextTexture = sprite._texture.baseTexture;
+            textureId = nextTexture._id;
 
-            if (blendMode !== sprite.blendMode)
+
+            if(blendMode !== sprite.blendMode)
             {
-                // finish a group..
                 blendMode = sprite.blendMode;
 
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = MAX_TEXTURES;
+                textureCount = this.MAX_TEXTURES;
                 TICK++;
             }
 
-            if (currentTexture !== nextTexture)
+            if(currentTexture !== nextTexture)
             {
                 currentTexture = nextTexture;
 
-                if (nextTexture._enabled !== TICK)
+                if(nextTexture._enabled !== TICK)
                 {
-                    if (textureCount === MAX_TEXTURES)
+                    if(textureCount === this.MAX_TEXTURES)
                     {
                         TICK++;
 
-                        currentGroup.size = i - currentGroup.start;
-
                         textureCount = 0;
 
+                        currentGroup.size = i - currentGroup.start;
+
                         currentGroup = groups[groupCount++];
-                        currentGroup.blend = blendMode;
                         currentGroup.textureCount = 0;
+                        currentGroup.blend = blendMode;
                         currentGroup.start = i;
                     }
 
-                    nextTexture.touched = touch;
-
-                    if (nextTexture._virtalBoundId === -1)
-                    {
-                        for (let j = 0; j < MAX_TEXTURES; ++j)
-                        {
-                            const tIndex = (j + TEXTURE_TICK) % MAX_TEXTURES;
-
-                            const t = boundTextures[tIndex];
-
-                            if (t._enabled !== TICK)
-                            {
-                                TEXTURE_TICK++;
-
-                                t._virtalBoundId = -1;
-
-                                nextTexture._virtalBoundId = tIndex;
-
-                                boundTextures[tIndex] = nextTexture;
-                                break;
-                            }
-                        }
-                    }
-
                     nextTexture._enabled = TICK;
+                    nextTexture._id = textureCount;
 
-                    currentGroup.textureCount++;
-                    currentGroup.ids[textureCount] = nextTexture._virtalBoundId;
-                    currentGroup.textures[textureCount++] = nextTexture;
+                    currentGroup.textures[currentGroup.textureCount++] = nextTexture;
+                    textureCount++;
                 }
+
             }
 
             vertexData = sprite.vertexData;
 
             // TODO this sum does not need to be set each frame..
             uvs = sprite._texture._uvs.uvsUint32;
+            textureId = nextTexture._id;
 
             if (this.renderer.roundPixels)
             {
@@ -373,7 +356,7 @@ export default class SpriteRenderer extends ObjectRenderer
             /* eslint-disable max-len */
             uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (Math.min(sprite.worldAlpha, 1) * 255 << 24);
 
-            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
+            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
             /* eslint-enable max-len */
 
             index += 20;
@@ -421,11 +404,32 @@ export default class SpriteRenderer extends ObjectRenderer
             this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
         }
 
-        for (i = 0; i < MAX_TEXTURES; ++i)
-        {
-            rendererBoundTextures[i]._virtalBoundId = -1;
-        }
+        /// render the groups..
+        for (i = 0; i < groupCount; i++) {
 
+            var group = groups[i];
+            var groupTextureCount = group.textureCount;
+            //shader = this.shaders[groupTextureCount-1];
+
+            //if(!shader)
+           // {
+          //      shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
+                //console.log("SHADER generated for " + textureCount + " textures")
+            //}
+
+          ///  this.renderer.shader.bind(shader);
+
+            for (var j = 0; j < groupTextureCount; j++)
+            {
+                this.renderer.texture.bind(group.textures[j], j);
+            }
+
+            // set the blend mode..
+            //this.renderer.state.setBlendMode( group.blend );
+
+            gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
+        }
+/*
         // render the groups..
         for (i = 0; i < groupCount; ++i)
         {
@@ -452,7 +456,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
             gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
         }
-
+*/
         // reset elements for the next flush
         this.currentIndex = 0;
     }

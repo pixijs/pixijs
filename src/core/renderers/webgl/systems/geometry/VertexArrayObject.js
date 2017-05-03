@@ -24,6 +24,7 @@ function VertexArrayObject(gl, state)
         this.instanceExt = gl.getExtension("ANGLE_instanced_arrays");
     }
 
+
     this.nativeState = state;
 
     if(this.nativeVaoExtension)
