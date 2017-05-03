@@ -120,8 +120,6 @@ const CanvasTinter = {
             crop.width,
             crop.height
         );
-
-        document.body.appendChild(canvas);
     },
 
     /**
