@@ -254,12 +254,12 @@ export default class Plane extends Mesh
      */
     refresh(forceUpdate)
     {
+        this.refreshDimensions(forceUpdate);
+
         if (this._texture.noFrame)
         {
             return;
         }
-
-        this.refreshDimensions(forceUpdate);
 
         if (this._lastWidth !== this.width
             || this._lastHeight !== this.height)
