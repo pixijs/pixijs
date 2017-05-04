@@ -1,5 +1,6 @@
 import * as core from '../core';
 import ObservablePoint from '../core/math/ObservablePoint';
+import settings from '../core/settings';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -469,7 +470,7 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-        const res = texture.baseTexture.resolution || PIXI.settings.RESOLUTION;
+        const res = texture.baseTexture.resolution || settings.RESOLUTION;
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
