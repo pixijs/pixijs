@@ -324,12 +324,18 @@ export default class TilingSprite extends core.Sprite
     }
 
     /**
-     * Destroys this tiling sprite
+     * Destroys this sprite and optionally its texture and children
      *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
+     *      method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
+     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    destroy()
+    destroy(options)
     {
-        super.destroy();
+        super.destroy(options);
 
         this.tileTransform = null;
         this.uvTransform = null;
