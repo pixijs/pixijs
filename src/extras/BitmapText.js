@@ -469,7 +469,7 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-		const res = texture.baseTexture.resolution || 1;
+        const res = texture.baseTexture.resolution || PIXI.settings.RESOLUTION;
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
