@@ -1215,7 +1215,7 @@ describe('PIXI.interaction.InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal('');
         });
 
-        it.only('should use cursor property as css if no style entry', function ()
+        it('should use cursor property as css if no style entry', function ()
         {
             const stage = new PIXI.Container();
             const graphics = new PIXI.Graphics();
