@@ -375,18 +375,18 @@ export default class SpriteRenderer extends ObjectRenderer
 
                 /* eslint-disable max-len */
 
-                var attributeData = shader.program.attributeData;
+                var attributeData = this.shader.program.attributeData;
 
                 // build the vao object that will render..
-                this.vaos[this.vertexCount] = this.renderer.createVao()
+                this.vaos[this.vertexCount] = this.renderer.geometry.createVao()
                     .addIndex(this.indexBuffer)
                     .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
                     .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
 
-                if (this.shader.attributes.aTextureId)
+                if (attributeData.aTextureId)
                 {
-                    this.vaos[this.vertexCount].addAttribute(this.vertexBuffers[this.vertexCount], this.shader.attributes.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                    this.vaos[this.vertexCount].addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
                 }
 
                 /* eslint-enable max-len */
