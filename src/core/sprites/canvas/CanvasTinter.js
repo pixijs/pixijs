@@ -26,16 +26,27 @@ const CanvasTinter = {
 
         texture.tintCache = texture.tintCache || {};
 
-        if (texture.tintCache[stringColor])
+        const cachedTexture = texture.tintCache[stringColor];
+
+        let canvas;
+
+        if (cachedTexture)
         {
-            return texture.tintCache[stringColor];
+            if (cachedTexture.tintId === texture._updateID)
+            {
+                return texture.tintCache[stringColor];
+            }
+
+            canvas = texture.tintCache[stringColor];
+        }
+        else
+        {
+            canvas = CanvasTinter.canvas || document.createElement('canvas');
         }
 
-        // clone texture..
-        const canvas = CanvasTinter.canvas || document.createElement('canvas');
-
-        // CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
         CanvasTinter.tintMethod(texture, color, canvas);
+
+        canvas.tintId = texture._updateID;
 
         if (CanvasTinter.convertTintToImage)
         {
