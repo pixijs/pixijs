@@ -486,8 +486,8 @@ export default class BitmapText extends core.Container
             const charCode = parseInt(letter.getAttribute('id'), 10);
 
             const textureRect = new core.Rectangle(
-                parseInt(letter.getAttribute('x'), 10) / res + (texture.frame.x / res),
-                parseInt(letter.getAttribute('y'), 10) / res + (texture.frame.y / res),
+                (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
                 parseInt(letter.getAttribute('width'), 10) / res,
                 parseInt(letter.getAttribute('height'), 10) / res
             );
