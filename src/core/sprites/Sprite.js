@@ -404,6 +404,19 @@ export default class Sprite extends Container
     }
 
     /**
+     * Update texture if the content of texture has changed.
+     * e.g. If texture is based on a canvas , and after the canvas changed, please call this method.
+     */
+    updateTexture()
+    {
+        const baseTexture = this._texture.baseTexture;
+
+        this._onTextureUpdate();
+
+        baseTexture.emit('update', baseTexture);
+    }
+
+    /**
      * Destroys this sprite and optionally its texture and children
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
@@ -590,5 +603,45 @@ export default class Sprite extends Container
                 value.once('update', this._onTextureUpdate, this);
             }
         }
+    }
+
+    /**
+     * The orig of the texture
+     *
+     * @member {PIXI.Rectangle}
+     */
+    get orig()
+    {
+        return this._texture.orig;
+    }
+
+    /**
+     * The frame of the texture
+     *
+     * @member {PIXI.Rectangle}
+     */
+    get frame()
+    {
+        return this._texture.frame;
+    }
+
+    /**
+     * The trim of the texture
+     *
+     * @member {PIXI.Rectangle}
+     */
+    get trim()
+    {
+        return this._texture.trim;
+    }
+
+    /**
+     * The baseTexture of the texture
+     *
+     * @member {PIXI.BaseTexture}
+     */
+    get baseTexture()
+    {
+        return this._texture.baseTexture;
     }
 }
