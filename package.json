@@ -24,7 +24,7 @@
     "watch": "npm run dist -- --watch",
     "watch:lib": "npm run lib -- --watch",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
-    "test": "npm run dist && npm run coverage",
+    "test": "npm run lint && npm run dist && npm run coverage",
     "unit-test": "floss --path test/index.js",
     "unit-test:debug": "npm run unit-test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
@@ -63,6 +63,7 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
+    "remove-array-items": "^1.0.0",
     "resource-loader": "^2.0.6"
   },
   "devDependencies": {

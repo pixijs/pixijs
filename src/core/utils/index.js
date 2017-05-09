@@ -4,6 +4,7 @@ import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
+import removeItems from 'remove-array-items';
 
 let nextUid = 0;
 let saidHello = false;
@@ -35,6 +36,15 @@ export {
      * @type {Object}
      */
     isMobile,
+
+    /**
+     * @see {@link https://github.com/mreinstein/remove-array-items}
+     *
+     * @memberof PIXI.utils
+     * @function removeItems
+     * @type {Object}
+     */
+    removeItems,
     /**
      * @see {@link https://github.com/primus/eventemitter3}
      *
@@ -330,36 +340,6 @@ export function sign(n)
     if (n === 0) return 0;
 
     return n < 0 ? -1 : 1;
-}
-
-/**
- * Remove a range of items from an array
- *
- * @memberof PIXI.utils
- * @function removeItems
- * @param {Array<*>} arr The target array
- * @param {number} startIdx The index to begin removing from (inclusive)
- * @param {number} removeCount How many items to remove
- */
-export function removeItems(arr, startIdx, removeCount)
-{
-    const length = arr.length;
-
-    if (startIdx >= length || removeCount === 0)
-    {
-        return;
-    }
-
-    removeCount = (startIdx + removeCount > length ? length - startIdx : removeCount);
-
-    const len = length - removeCount;
-
-    for (let i = startIdx; i < len; ++i)
-    {
-        arr[i] = arr[i + removeCount];
-    }
-
-    arr.length = len;
 }
 
 /**

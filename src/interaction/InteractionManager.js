@@ -911,6 +911,12 @@ export default class InteractionManager extends EventEmitter
                     break;
             }
         }
+        else if (typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode))
+        {
+            // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
+            // for the mode, then assume that the dev wants it to be CSS for the cursor.
+            this.interactionDOMElement.style.cursor = mode;
+        }
     }
 
     /**
