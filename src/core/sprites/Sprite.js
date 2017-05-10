@@ -70,9 +70,9 @@ export default class Sprite extends Container
          * @member {number}
          * @default 0xFFFFFF
          */
+        this.tint = 0xFFFFFF;
         this._tint = null;
         this._tintRGB = null;
-        this.tint = 0xFFFFFF;
 
         /**
          * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
