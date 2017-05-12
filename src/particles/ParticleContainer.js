@@ -121,6 +121,16 @@ export default class ParticleContainer extends core.Container
         this.baseTexture = null;
 
         this.setProperties(properties);
+
+        /**
+         * The tint applied to the whole container.
+         * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+         *
+         * @private
+         * @member {number}
+         * @default 0xFFFFFF
+         */
+        this._tint = 0xFFFFFF;
     }
 
     /**
@@ -150,6 +160,23 @@ export default class ParticleContainer extends core.Container
         // TODO don't need to!
         this.displayObjectUpdateTransform();
         //  PIXI.Container.prototype.updateTransform.call( this );
+    }
+
+    /**
+     * The tint applied to the whole container. This is a hex value.
+     * A value of 0xFFFFFF will remove any tint effect.
+     *
+     * @member {number}
+     * @default 0xFFFFFF
+     */
+    get tint()
+    {
+        return this._tint;
+    }
+
+    set tint(value) // eslint-disable-line require-jsdoc
+    {
+        this._tint = value;
     }
 
     /**
