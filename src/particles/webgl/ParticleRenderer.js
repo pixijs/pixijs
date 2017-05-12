@@ -1,5 +1,4 @@
 import * as core from '../../core';
-import { hex2rgb } from '../../core/utils';
 import ParticleShader from './ParticleShader';
 import ParticleBuffer from './ParticleBuffer';
 
@@ -154,7 +153,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
 
         this.shader.uniforms.projectionMatrix = m.toArray(true);
         this.shader.uniforms.uAlpha = container.worldAlpha;
-        this.shader.uniforms.tint = hex2rgb(container.tint);
+        this.shader.uniforms.tint = container._tintRGB;
 
         // make sure the texture is bound..
         const baseTexture = children[0]._texture.baseTexture;

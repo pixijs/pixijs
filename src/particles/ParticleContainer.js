@@ -1,4 +1,5 @@
 import * as core from '../core';
+import { hex2rgb } from '../core/utils';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -130,7 +131,9 @@ export default class ParticleContainer extends core.Container
          * @member {number}
          * @default 0xFFFFFF
          */
-        this._tint = 0xFFFFFF;
+        this._tint = null;
+        this._tintRGB = [];
+        this.tint = 0xFFFFFF;
     }
 
     /**
@@ -177,6 +180,7 @@ export default class ParticleContainer extends core.Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
+        hex2rgb(value, this._tintRGB);
     }
 
     /**
