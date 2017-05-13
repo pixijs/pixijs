@@ -2,6 +2,7 @@ import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache } from '../utils';
 import { shared } from '../ticker';
 import { UPDATE_PRIORITY } from '../const';
+import determineCrossOrigin from '../utils/determineCrossOrigin';
 
 /**
  * A texture of a [playing] Video.
@@ -236,9 +237,10 @@ export default class VideoBaseTexture extends BaseTexture
      * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
      *  the url's extension will be used as the second part of the mime type.
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
-    static fromUrl(videoSrc, scaleMode)
+    static fromUrl(videoSrc, scaleMode, crossorigin)
     {
         const video = document.createElement('video');
 
@@ -248,6 +250,13 @@ export default class VideoBaseTexture extends BaseTexture
         // array of objects or strings
         if (Array.isArray(videoSrc))
         {
+            const url = videoSrc[0].src || videoSrc[0];
+
+            if (crossorigin === undefined && url.indexOf('data:') !== 0)
+            {
+                video.crossOrigin = determineCrossOrigin(url);
+            }
+
             for (let i = 0; i < videoSrc.length; ++i)
             {
                 video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
@@ -256,7 +265,14 @@ export default class VideoBaseTexture extends BaseTexture
         // single object or string
         else
         {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+            const url = videoSrc.src || videoSrc;
+
+            if (crossorigin === undefined && url.indexOf('data:') !== 0)
+            {
+                video.crossOrigin = determineCrossOrigin(url);
+            }
+
+            video.appendChild(createSource(url, videoSrc.mime));
         }
 
         video.load();
