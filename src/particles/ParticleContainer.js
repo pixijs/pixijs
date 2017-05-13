@@ -124,7 +124,7 @@ export default class ParticleContainer extends core.Container
         this.setProperties(properties);
 
         /**
-         * The tint applied to the whole container.
+         * The tint applied to the container.
          * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
          *
          * @private
@@ -166,9 +166,9 @@ export default class ParticleContainer extends core.Container
     }
 
     /**
-     * The tint applied to the whole container. This is a hex value.
+     * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
-     *
+     ** IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
      * @member {number}
      * @default 0xFFFFFF
      */
