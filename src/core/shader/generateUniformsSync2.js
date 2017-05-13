@@ -38,6 +38,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
 
     sampler2D: 'gl.uniform1i(location, value)',
     samplerCube: 'gl.uniform1i(location, value)',
+    sampler2DArray: 'gl.uniform1i(location, value)',
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
@@ -60,6 +61,7 @@ const GLSL_TO_ARRAY_SETTERS = {
 
     sampler2D: 'gl.uniform1iv(location, value)',
     samplerCube: 'gl.uniform1iv(location, value)',
+    sampler2DArray: 'gl.uniform1iv(location, value)',
 };
 
 export default function generateUniformsSync2(group, uniformData)
@@ -96,7 +98,7 @@ export default function generateUniformsSync2(group, uniformData)
     gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
 }\n`;
         }
-        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube') && data.size === 1)
+        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
@@ -181,8 +183,8 @@ ${template};\n`;
         }
     }
 
-    //console.log(' --------------- ')
-    //console.log(func);
+    console.log(' --------------- ')
+    console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
 }

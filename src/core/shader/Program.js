@@ -71,7 +71,6 @@ class Program
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
-
             //gl.deleteProgram(program);
         }
     }

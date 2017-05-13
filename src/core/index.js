@@ -35,6 +35,7 @@ export { default as Spritesheet } from './textures/Spritesheet';
 export { default as FrameBuffer } from './textures/FrameBuffer';
 export { default as CubeTexture } from './textures/CubeTexture';
 export { default as BaseTexture } from './textures/BaseTexture';
+export { default as ArrayTexture } from './textures/ArrayTexture';
 export { default as Texture } from './textures/Texture';
 export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
