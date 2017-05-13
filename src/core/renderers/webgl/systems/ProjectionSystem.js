@@ -19,44 +19,15 @@ export default class ProjectionSystem extends WebGLSystem
         this.projectionMatrix = new Matrix();
     }
 
-    update(destinationFrame, sourceFrame, root)
+    update(destinationFrame, sourceFrame, resolution, root)
     {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
         this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
 
-        this.calculateProjection(this.destinationFrame, this.sourceFrame, root);
+        this.calculateProjection(this.destinationFrame, this.sourceFrame, resolution, root);
 
         this.renderer.globalUniforms.uniforms.projectionMatrix = this.projectionMatrix;
         this.renderer.globalUniforms.update();
-
-        const gl = this.renderer.gl;
-
-        // TODO this is bot needed here?
-        const resolution = 1;
-
-        // TODO add a check as them may be the same!
-        if (this.destinationFrame !== this.sourceFrame)
-        {
-//            gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(
-                this.destinationFrame.x | 0,
-                this.destinationFrame.y | 0,
-                (this.destinationFrame.width * resolution) | 0,
-                (this.destinationFrame.height * resolution) | 0
-            );
-        }
-        else
-        {
-  //          gl.disable(gl.SCISSOR_TEST);
-        }
-
-        // TODO - does not need to be updated all the time??
-        gl.viewport(
-            this.destinationFrame.x | 0,
-            this.destinationFrame.y | 0,
-            (this.destinationFrame.width * resolution) | 0,
-            (this.destinationFrame.height * resolution) | 0
-        );
     }
 
     /**
@@ -65,7 +36,7 @@ export default class ProjectionSystem extends WebGLSystem
      * @param {Rectangle} destinationFrame - The destination frame.
      * @param {Rectangle} sourceFrame - The source frame.
      */
-    calculateProjection(destinationFrame, sourceFrame, root)
+    calculateProjection(destinationFrame, sourceFrame, resolution, root)
     {
         const pm = this.projectionMatrix;
 
@@ -79,6 +50,7 @@ export default class ProjectionSystem extends WebGLSystem
 
             pm.tx = -1 - (sourceFrame.x * pm.a);
             pm.ty = -1 - (sourceFrame.y * pm.d);
+
         }
         else
         {
@@ -88,6 +60,11 @@ export default class ProjectionSystem extends WebGLSystem
             pm.tx = -1 - (sourceFrame.x * pm.a);
             pm.ty = 1 - (sourceFrame.y * pm.d);
         }
+
+        // apply the resolution..
+        // TODO - prob should apply this to x and y too!
+        pm.a  *= resolution;
+        pm.d  *= resolution;
     }
 
 

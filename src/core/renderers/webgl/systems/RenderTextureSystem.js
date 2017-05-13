@@ -34,9 +34,11 @@ export default class RenderTextureSystem extends WebGLSystem
 
         if(renderTexture)
         {
-            this.renderer.framebuffer.bind(renderTexture.baseTexture.frameBuffer);
-            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, false);
-            this.renderer.stencil.setMaskStack(renderTexture.baseTexture.stencilMaskStack);
+            const baseTexture = renderTexture.baseTexture;
+
+            this.renderer.framebuffer.bind(baseRenderTexture.frameBuffer);
+            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, baseRenderTexture.resolution, false);
+            this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
 
         }
         else
@@ -46,7 +48,7 @@ export default class RenderTextureSystem extends WebGLSystem
             tempRect.width = renderer.width;
             tempRect.height = renderer.height;
             // TODO store this..
-            this.renderer.projection.update(tempRect, tempRect, true);
+            this.renderer.projection.update(tempRect, tempRect, this.renderer.resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
         }
 

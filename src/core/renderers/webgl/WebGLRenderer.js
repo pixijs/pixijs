@@ -136,8 +136,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this.renderingToScreen = true;
 
-        this._nextTextureLocation = 0;
-
         this._initContext();
     }
 
@@ -242,7 +240,6 @@ export default class WebGLRenderer extends SystemRenderer
         {
             return;
         }
-        this._nextTextureLocation = 0;
 
         if (!renderTexture)
         {
