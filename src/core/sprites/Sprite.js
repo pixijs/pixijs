@@ -421,7 +421,7 @@ export default class Sprite extends Container
 
         const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
 
-        if (destroyTexture)
+        if (destroyTexture && this._texture)
         {
             const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
 
