@@ -45,14 +45,15 @@ export default class MeshRenderer extends core.ObjectRenderer
     render(mesh)
     {
         // bind the shader..
-        const glShader = this.renderer.shader.bind(mesh.shader, true);
 
         // set the shader props..
-        //if (glShader.uniformData.translationMatrix)
-        //{
+        if (mesh.shader.uniforms.translationMatrix)
+        {
             // the transform!
-          //  glShader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
-        //}
+            mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
+        }
+
+        const glShader = this.renderer.shader.bind(mesh.shader, true);
 
         // set unifomrs..
         this.renderer.shader.syncUniformGroup(mesh.shader.uniformGroup);
@@ -63,7 +64,7 @@ export default class MeshRenderer extends core.ObjectRenderer
         // bind the geometry...
         this.renderer.geometry.bind(mesh.geometry, glShader);
         // then render it
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
+        this.renderer.geometry.draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 
 

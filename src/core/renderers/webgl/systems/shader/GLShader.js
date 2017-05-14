@@ -5,6 +5,8 @@ var compileProgram = require('./shader/compileProgram'),
 	setPrecision = require('./shader/setPrecision'),
 	generateUniformAccessObject = require('./shader/generateUniformAccessObject');
 
+var ID = 0;
+
 /**
  * Helper class to create a webGL Shader
  *
@@ -65,6 +67,8 @@ var Shader = function(gl, vertexSrc, fragmentSrc, precision, attributeLocations)
 	this.uniforms = generateUniformAccessObject( gl, this.uniformData );
 
 	this.uniformGroups = {};
+
+	this.id = ID++;
 };
 /**
  * Uses this shader

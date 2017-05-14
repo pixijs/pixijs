@@ -22,7 +22,9 @@ export default class GeometrySystem extends WebGLSystem
     {
         super(renderer);
 
+        this._activeGeometry = null;
         this._activeVao = null;
+
     }
 
     /**
@@ -43,9 +45,28 @@ export default class GeometrySystem extends WebGLSystem
      */
     bind(geometry, glShader)
     {
-        const vao = geometry.glVertexArrayObjects[this.CONTEXT_UID] || this.initGeometryVao(geometry, glShader);
+        const gl = this.gl;
 
-        this.bindVao(vao);
+        // not sure the best way to address this..
+        // currently different shaders require different VAOs for the same geometry
+        // Still mulling over the best way to solve this one..
+        // will likely need to modify the shader attribute locations at run time!
+        let vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
+
+        if(!vaos)
+        {
+            vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID] = {};
+        }
+
+        const vao = vaos[glShader.id] || this.initGeometryVao(geometry, glShader);
+
+        this._activeGeometry = geometry;
+
+        if(this._activeVao !== vao)
+        {
+            this._activeVao = vao;
+            gl.bindVertexArray(vao);
+        }
 
         // TODO - optimise later!
         // don't need to loop through if nothing changed!
@@ -65,6 +86,21 @@ export default class GeometrySystem extends WebGLSystem
         }
     }
 
+    checkCompatability(geometry, glShader)
+    {
+        // geometry must have at least all the attributes that the shader requires.
+        const geometryAttributes = geometry.attributes;
+        const shaderAttributes = glShader.attributes;
+
+        for (const j in shaderAttributes)
+        {
+            if(!geometryAttributes[j])
+            {
+                throw new Error('shader and geometry incompatible, geometry missing the "' + j + '" attribute');
+            }
+        }
+    }
+
     /**
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
@@ -73,12 +109,10 @@ export default class GeometrySystem extends WebGLSystem
      */
     initGeometryVao(geometry, glShader)
     {
+        this.checkCompatability(geometry, glShader);
+
         const gl = this.gl;
-
-        this.bindVao(null);
-
-        const vao = this.createVao();
-
+        const CONTEXT_UID = this.CONTEXT_UID;
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
 
@@ -87,24 +121,18 @@ export default class GeometrySystem extends WebGLSystem
         {
             const buffer = buffers[i];
 
-            if (!buffer._glBuffers[this.CONTEXT_UID])
+            if (!buffer._glBuffers[CONTEXT_UID])
             {
                 if (buffer.index)
                 {
-                    buffer._glBuffers[this.CONTEXT_UID] = GLBuffer.createIndexBuffer(gl, buffer.data);
+                    buffer._glBuffers[CONTEXT_UID] = GLBuffer.createIndexBuffer(gl, buffer.data);
                 }
                 else
                 {
                     /* eslint-disable max-len */
-                    buffer._glBuffers[this.CONTEXT_UID] = GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+                    buffer._glBuffers[CONTEXT_UID] = GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
                 }
             }
-        }
-
-        if (geometry.indexBuffer)
-        {
-            // first update the index buffer if we have one..
-            vao.addIndex(geometry.indexBuffer._glBuffers[this.CONTEXT_UID]);
         }
 
         const tempStride = {};
@@ -118,17 +146,24 @@ export default class GeometrySystem extends WebGLSystem
 
         for (const j in attributes)
         {
-            tempStride[attributes[j].buffer] += glShader.attributes[j].size * byteSizeMap[attributes[j].type];
+            if(!attributes[j].size && glShader.attributes[j])
+            {
+                attributes[j].size = glShader.attributes[j].size;
+            }
+
+            tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap[attributes[j].type];
         }
 
         for (const j in attributes)
         {
             const attribute = attributes[j];
-            const glAttribute = glShader.attributes[j];
+            const attribSize = attribute.size;
+
+            // must be careful that the geometry has attributes not used by this shader..
 
             if (attribute.stride === undefined)
             {
-                if (tempStride[attribute.buffer] === glAttribute.size * byteSizeMap[attribute.type])
+                if (tempStride[attribute.buffer] === attribSize * byteSizeMap[attribute.type])
                 {
                     attribute.stride = 0;
                 }
@@ -142,37 +177,95 @@ export default class GeometrySystem extends WebGLSystem
             {
                 attribute.start = tempStart[attribute.buffer];
 
-                tempStart[attribute.buffer] += glAttribute.size * byteSizeMap[attribute.type];
+                tempStart[attribute.buffer] += attribSize * byteSizeMap[attribute.type];
             }
         }
 
-        // next update the attributes buffer..
+        const vao = gl.createVertexArray();
+
+        gl.bindVertexArray(vao);
+
+        if (geometry.indexBuffer)
+        {
+            // first update the index buffer if we have one..
+            geometry.indexBuffer._glBuffers[CONTEXT_UID].bind();
+        }
+
+        let lastBuffer = null;
+
+        // add a new one!
         for (const j in attributes)
         {
             const attribute = attributes[j];
             const buffer = buffers[attribute.buffer];
+            const glBuffer = buffer._glBuffers[CONTEXT_UID];
 
-            const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
+            if(glShader.attributes[j])
+            {
+                if(lastBuffer !== glBuffer)
+                {
+                    glBuffer.bind();
+                    lastBuffer = glBuffer;
+                }
 
-            // need to know the shader as it means we can be lazy and let pixi do the work for us..
-            // stride, start, type?
-            vao.addAttribute(glBuffer,
-                            glShader.attributes[j],
-                            attribute.type || 5126, // (5126 = FLOAT)
-                            attribute.normalized,
-                            attribute.stride,
-                            attribute.start,
-                            attribute.instance);
+                const location = glShader.attributes[j].location;
+
+                gl.enableVertexAttribArray(location);
+
+                gl.vertexAttribPointer(location,
+                                       attribute.size,
+                                       attribute.type || gl.FLOAT,
+                                       attribute.normalized,
+                                       attribute.stride,
+                                       attribute.start);
+
+                if(attribute.instance)
+                {
+                    gl.vertexAttribDivisor(location, 1);
+                }
+            }
         }
 
-        geometry.glVertexArrayObjects[this.CONTEXT_UID] = vao;
+        geometry.glVertexArrayObjects[CONTEXT_UID][glShader.id] = vao;
+
+        gl.bindVertexArray(null);
 
         return vao;
     }
 
+
     draw(type, size, start, instanceCount)
     {
-    	this._activeVao.draw(type, size, start, instanceCount);
+        const gl = this.gl;
+        const geometry = this._activeGeometry;
+
+        //TODO.. this should not change so maybe cache the function?
+
+        if(geometry.indexBuffer)
+        {
+            if(geometry.instanced)
+            {
+                gl.drawElementsInstanced(type, size || this.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
+            }
+            else
+            {
+                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2 );
+            }
+        }
+        else
+        {
+            if(geometry.instanced)
+            {
+                // TODO need a better way to calculate size..
+                gl.drawArrayInstanced(type, start, size || geometry.getSize(), instanceCount || 1);
+            }
+            else
+            {
+                gl.drawArrays(type, start, size || geometry.getSize());
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -193,23 +286,5 @@ export default class GeometrySystem extends WebGLSystem
      */
     bindVao(vao)
     {
-        if (this._activeVao === vao)
-        {
-            return this;
-        }
-
-        if (vao)
-        {
-            vao.bind();
-        }
-        else if (this._activeVao)
-        {
-            // TODO this should always be true i think?
-            this._activeVao.unbind();
-        }
-
-        this._activeVao = vao;
-
-        return this;
     }
 }

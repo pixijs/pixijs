@@ -57,8 +57,13 @@ export default class Geometry
          * @type {Array<VertexArrayObject>}
          */
         this.glVertexArrayObjects = [];
+        this.glVertexArrayObjects2 = [];
 
         this.id = UID++;
+
+        this.instanced = false;
+
+        this._size = null;
     }
 
     /**
@@ -116,6 +121,9 @@ export default class Geometry
 
         this.attributes[id] = new Attribute(bufferIndex, size, normalised, type, stride, start, instance);
 
+        // assuming that if there is instanced data then this will be drawn with instancing!
+        this.instanced = this.instanced || instance;
+        this._si
         return this;
     }
 
@@ -221,6 +229,20 @@ export default class Geometry
 
         return this;
     }
+
+    getSize()
+    {
+        for (var i in this.attributes)
+        {
+            const attribute = this.attributes[i];
+            const buffer = this.buffers[attribute.buffer];
+
+            return buffer.data.length / (( attribute.stride/4 ) || attribute.size);
+        }
+
+        return 0;
+    };
+
 
     /**
      * Destroys the geometry.
