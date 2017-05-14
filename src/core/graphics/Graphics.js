@@ -994,10 +994,10 @@ export default class Graphics extends Container
         const padding = this.boundsPadding;
 
         this._localBounds.minX = minX - padding;
-        this._localBounds.maxX = maxX + (padding * 2);
+        this._localBounds.maxX = maxX + padding;
 
         this._localBounds.minY = minY - padding;
-        this._localBounds.maxY = maxY + (padding * 2);
+        this._localBounds.maxY = maxY + padding;
     }
 
     /**
