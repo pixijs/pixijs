@@ -71,6 +71,15 @@ export default class GeometrySystem extends WebGLSystem
         // TODO - optimise later!
         // don't need to loop through if nothing changed!
         // maybe look to add an 'autoupdate' to geometry?
+        this.updateBuffers(geometry);
+
+    }
+
+
+    updateBuffers(geometry)
+    {
+        const gl = this.gl;
+
         for (let i = 0; i < geometry.buffers.length; i++)
         {
             const buffer = geometry.buffers[i];
@@ -80,8 +89,23 @@ export default class GeometrySystem extends WebGLSystem
             if (buffer._updateID !== glBuffer._updateID)
             {
                 glBuffer._updateID = buffer._updateID;
-                // TODO - partial upload??
-                glBuffer.upload(buffer.data, 0);
+
+                // can cache this on buffer! maybe added a getter / setter?
+                const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+                const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+
+                gl.bindBuffer(type, glBuffer.buffer);
+
+                if(glBuffer.byteLength >= buffer.data.byteLength)
+                {
+                    // offset is always zero for now!
+                    gl.bufferSubData(type, 0, buffer.data);
+                }
+                else
+                {
+                    gl.bufferData(type, buffer.data, drawType);
+                }
+
             }
         }
     }
@@ -123,15 +147,7 @@ export default class GeometrySystem extends WebGLSystem
 
             if (!buffer._glBuffers[CONTEXT_UID])
             {
-                if (buffer.index)
-                {
-                    buffer._glBuffers[CONTEXT_UID] = GLBuffer.createIndexBuffer(gl, buffer.data);
-                }
-                else
-                {
-                    /* eslint-disable max-len */
-                    buffer._glBuffers[CONTEXT_UID] = GLBuffer.createVertexBuffer(gl, buffer.data, buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
-                }
+                buffer._glBuffers[CONTEXT_UID] = new GLBufferData(gl.createBuffer());
             }
         }
 
@@ -181,6 +197,7 @@ export default class GeometrySystem extends WebGLSystem
             }
         }
 
+
         const vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
@@ -188,7 +205,7 @@ export default class GeometrySystem extends WebGLSystem
         if (geometry.indexBuffer)
         {
             // first update the index buffer if we have one..
-            geometry.indexBuffer._glBuffers[CONTEXT_UID].bind();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometry.indexBuffer._glBuffers[CONTEXT_UID].buffer);
         }
 
         let lastBuffer = null;
@@ -204,7 +221,8 @@ export default class GeometrySystem extends WebGLSystem
             {
                 if(lastBuffer !== glBuffer)
                 {
-                    glBuffer.bind();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer.buffer);
+
                     lastBuffer = glBuffer;
                 }
 
@@ -226,13 +244,14 @@ export default class GeometrySystem extends WebGLSystem
             }
         }
 
+        // TODO - maybe make this a data object?
+        // lets wait to see if we need to first!
         geometry.glVertexArrayObjects[CONTEXT_UID][glShader.id] = vao;
 
         gl.bindVertexArray(null);
 
         return vao;
     }
-
 
     draw(type, size, start, instanceCount)
     {
@@ -245,7 +264,7 @@ export default class GeometrySystem extends WebGLSystem
         {
             if(geometry.instanced)
             {
-                gl.drawElementsInstanced(type, size || this.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
+                gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
             }
             else
             {
@@ -286,5 +305,15 @@ export default class GeometrySystem extends WebGLSystem
      */
     bindVao(vao)
     {
+    }
+}
+
+class GLBufferData
+{
+    constructor(buffer)
+    {
+        this.buffer = buffer;
+        this.updateID = -1;
+        this.byteLength = -1;
     }
 }
