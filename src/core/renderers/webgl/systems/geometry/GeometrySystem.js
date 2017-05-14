@@ -71,13 +71,14 @@ export default class GeometrySystem extends WebGLSystem
         // TODO - optimise later!
         // don't need to loop through if nothing changed!
         // maybe look to add an 'autoupdate' to geometry?
-        this.updateBuffers(geometry);
+        this.updateBuffers();
 
     }
 
 
-    updateBuffers(geometry)
+    updateBuffers()
     {
+        const geometry = this._activeGeometry;
         const gl = this.gl;
 
         for (let i = 0; i < geometry.buffers.length; i++)

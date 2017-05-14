@@ -1,5 +1,5 @@
 import RawMesh from './RawMesh';
-import Geometry from './geometry/Geometry';
+import Geometry from '../core/geometry/Geometry';
 import * as core from '../core';
 import { readFileSync } from 'fs';
 import { join } from 'path';
