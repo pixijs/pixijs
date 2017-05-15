@@ -80,18 +80,6 @@ export default class ShaderSystem extends WebGLSystem
         shader.syncUniforms(glShader.uniformData, uniforms, this.renderer);
     }
 
-    setUniformsGroups(uniformGroups)
-    {
-
-        const glShader = this.getGLShader();
-
-        const group = uniformGroups[0];
-        const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSynGroups(group);
-
-        syncFunc(glShader.uniformData, group.uniforms, this.renderer);
-
-    }
-
     syncUniformGroup(group)
     {
         const glShader = this.getGLShader();
