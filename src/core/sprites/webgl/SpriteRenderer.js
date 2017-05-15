@@ -9,6 +9,7 @@ import settings from '../../settings';
 import bitTwiddle from 'bit-twiddle';
 import Geometry from '../../geometry/Geometry';
 import Buffer_GEOM from '../../geometry/Buffer';
+import UniformGroup from '../../shader/UniformGroup';
 
 let TICK = 0;
 let TEXTURE_TICK = 0;
@@ -105,7 +106,7 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        if (this.renderer.legacy)
+        if (true)//this.renderer.legacy)
         {
             this.MAX_TEXTURES = 1;
         }
@@ -118,8 +119,6 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-        const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
-
         const sampleValues = new Int32Array(this.MAX_TEXTURES);
 
         for (let i = 0; i < this.MAX_TEXTURES; i++)
@@ -127,8 +126,13 @@ export default class SpriteRenderer extends ObjectRenderer
             sampleValues[i] = i;
         }
 
-        shader.uniformGroup.add('default', {uSamplers:sampleValues}, true);//this.renderer.globalUniforms;
-        shader.uniforms.globals = this.renderer.globalUniforms;
+        const uniforms = {
+            default:UniformGroup.from({uSamplers:sampleValues}, true),
+            globals:this.renderer.globalUniforms
+        }
+
+        // generate generateMultiTextureProgram, may be a better move?
+        this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES, uniforms);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
@@ -350,31 +354,23 @@ export default class SpriteRenderer extends ObjectRenderer
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
-                this.vertexBuffers[this.vertexCount] = GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+
+                let buffer = new Buffer_GEOM(null, false);
 
                 /* eslint-disable max-len */
-
-                var attributeData = this.shader.program.attributeData;
-
-                // build the vao object that will render..
-                this.vaos[this.vertexCount] = this.renderer.geometry.createVao()
-                    .addIndex(this.indexBuffer)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
-
-
-                if (attributeData.aTextureId)
-                {
-                    this.vaos[this.vertexCount].addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
-                }
-
+                this.vaos[this.vertexCount] = new Geometry()
+                .addAttribute('aVertexPosition', buffer, 2, false,  gl.FLOAT)
+                .addAttribute('aTextureCoord', buffer, 2, true,  gl.UNSIGNED_SHORT)
+                .addAttribute('aColor', buffer, 4, true,  gl.UNSIGNED_BYTE)
+                .addAttribute('aTextureId', buffer, 1, true,  gl.FLOAT)
+                .addIndex(this.indexBuffer)
                 /* eslint-enable max-len */
+
+                this.vertexBuffers[this.vertexCount] = buffer;
             }
 
-            this.renderer.geometry.bindVao(this.vaos[this.vertexCount]);
-
-            this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
+            this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
+            this.renderer.geometry.bind(this.vaos[this.vertexCount]);
 
             this.vertexCount++;
         }
@@ -412,14 +408,12 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-       // this.renderer._bindGLShader(this.shader);
-        const glShader = this.renderer.shader.bind(this.shader, true);
-        this.renderer.shader.syncUniformGroup(this.shader.uniformGroup);
+        this.renderer.shader.bind(this.shader);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)
         {
             // bind buffer #0, we don't need others
-            this.renderer.geometry.bind(this.vaos[this.vertexCount], glShader);
+            this.renderer.geometry.bind(this.vaos[this.vertexCount]);
         }
     }
 

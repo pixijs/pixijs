@@ -142,6 +142,8 @@ class Program
         {
             const uniformData = gl.getActiveUniform(program, i);
             const name = uniformData.name.replace(/\[.*?\]/, '');
+
+            const isArray = uniformData.name.match(/\[.*?\]/, '');
             const type = shaderUtils.mapType(gl, uniformData.type);
 
            // if (!name.match(maskRegex))
@@ -150,6 +152,7 @@ class Program
                 uniforms[name] = {
                     type: type,
                     size: uniformData.size,
+                    isArray:isArray,
                     value: shaderUtils.defaultValue(type, uniformData.size),
                 };
                 /*eslint-enable */

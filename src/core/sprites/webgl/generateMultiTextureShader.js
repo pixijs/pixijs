@@ -18,7 +18,7 @@ const fragTemplate = [
     '}',
 ].join('\n');
 
-export default function generateMultiTextureShader(gl, maxTextures)
+export default function generateMultiTextureShader(gl, maxTextures, uniforms)
 {
     const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
     let fragmentSrc = fragTemplate;
@@ -27,7 +27,7 @@ export default function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
     const shaderold = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
-    const shader = Shader.from(vertexSrc, fragmentSrc);//, PRECISION.DEFAULT);
+    const shader = Shader.from(vertexSrc, fragmentSrc, uniforms);//, PRECISION.DEFAULT);
 
     const sampleValues = [];
 

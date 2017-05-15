@@ -76,7 +76,7 @@ export default function generateUniformsSync2(group, uniformData)
     {
         const data = uniformData[i];
         //group.uniforms[i];
-       //  console.log(i, data);
+         //console.log(i, data);
         if(!data)
         {
             if(group.uniforms[i].group)
@@ -98,7 +98,7 @@ export default function generateUniformsSync2(group, uniformData)
     gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
 }\n`;
         }
-        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1)
+        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
         {
             func += `\nif (uniformValues.${i}.baseTexture)
 {
@@ -183,8 +183,8 @@ ${template};\n`;
         }
     }
 
-    console.log(' --------------- ')
-    console.log(func);
+    //console.log(' --------------- ')
+  //  console.log(func);
 
     return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
 }

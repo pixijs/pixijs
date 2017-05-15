@@ -45,7 +45,10 @@ export default class GeometrySystem extends WebGLSystem
      */
     bind(geometry, glShader)
     {
+        glShader = glShader || this.renderer.shader.getGLShader();
+
         const gl = this.gl;
+
 
         // not sure the best way to address this..
         // currently different shaders require different VAOs for the same geometry
