@@ -348,6 +348,8 @@ export default class AnimatedSprite extends core.Sprite
                 this._durations.push(value[i].time);
             }
         }
+        this.gotoAndStop(0);
+        this.updateTexture();
     }
 
     /**
