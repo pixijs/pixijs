@@ -865,6 +865,19 @@ export default class Graphics extends Container
             {
                 if (data.shape.contains(tempPoint.x, tempPoint.y))
                 {
+                    if (data.holes)
+                    {
+                        for (let i = 0; i < data.holes.length; i++)
+                        {
+                            const hole = data.holes[i];
+
+                            if (hole.contains(tempPoint.x, tempPoint.y))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
                     return true;
                 }
             }
