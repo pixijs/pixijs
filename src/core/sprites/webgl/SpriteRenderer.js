@@ -252,7 +252,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
             nextTexture = sprite._texture.baseTexture;
 
-            const spriteBlendMode = correctBlendMode(sprite.blendMode, nextTexture);
+            const spriteBlendMode = correctBlendMode(sprite.blendMode, nextTexture.premultipliedAlpha);
 
             if (blendMode !== spriteBlendMode)
             {
