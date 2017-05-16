@@ -106,7 +106,6 @@ export default class GeometrySystem extends WebGLSystem
         // don't need to loop through if nothing changed!
         // maybe look to add an 'autoupdate' to geometry?
         this.updateBuffers();
-
     }
 
 
@@ -280,6 +279,8 @@ export default class GeometrySystem extends WebGLSystem
 
                 const location = program.attributeData[j].location;
 
+                //TODO introduce state again
+                //we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
                 gl.vertexAttribPointer(location,
