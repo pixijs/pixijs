@@ -94,15 +94,7 @@ export default class ParticleContainer extends core.Container
          */
         this.interactiveChildren = false;
 
-        /**
-         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
-         * to reset the blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
-        this.blendMode = core.BLEND_MODES.NORMAL;
+        this._blendMode = core.BlendMode.values[0];
 
         /**
          * Used for canvas renderering. If true then the elements will be positioned at the
@@ -163,6 +155,29 @@ export default class ParticleContainer extends core.Container
         // TODO don't need to!
         this.displayObjectUpdateTransform();
         //  PIXI.Container.prototype.updateTransform.call( this );
+    }
+
+    /**
+     * The blend mode to be applied to the particle container.
+     * Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {PIXI.BlendMode}
+     */
+    get blendMode()
+    {
+        return this._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        if (typeof value === 'number')
+        {
+            this._blendMode = core.BlendMode.values[value];
+        }
+        else
+        {
+            this._blendMode = value;
+        }
     }
 
     /**

@@ -12,7 +12,7 @@ import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
 import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
 import glCore from 'pixi-gl-core';
-import { RENDERER_TYPE } from '../../const';
+import { RENDERER_TYPE, BLEND_MODES } from '../../const';
 
 let CONTEXT_UID = 0;
 
@@ -43,7 +43,7 @@ export default class WebGLRenderer extends SystemRenderer
      *  FXAA is faster, but may not always look as great
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
@@ -186,7 +186,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._nextTextureLocation = 0;
 
-        this.setBlendMode(0);
+        this.setBlendMode(BLEND_MODES.NORMAL);
 
         /**
          * Fired after rendering finishes.
@@ -227,7 +227,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._activeShader = null;
         this._activeVao = null;
-
         this.boundTextures = new Array(maxTextures);
         this.emptyTextures = new Array(maxTextures);
 
@@ -382,11 +381,30 @@ export default class WebGLRenderer extends SystemRenderer
     /**
      * Resizes the webGL view to the specified width and height.
      *
-     * @param {number} blendMode - the desired blend mode
+     * @param {PIXI.BlendMode} blendMode - the desired blend mode
      */
     setBlendMode(blendMode)
     {
         this.state.setBlendMode(blendMode);
+    }
+
+    /**
+     * binds texture and sets corresponding blendMode, takes into account premultiplied alpha
+     *
+     * @param {PIXI.BlendMode} blendMode - the desired blend mode
+     * @param {PIXI.Texture} texture - the new texture
+     * @param {number} [location] - the suggested texture location
+     * @param {boolean} [forceLocation] - force the location
+     * @return {number} Returns location for bound texture
+     */
+    setTextureBlend(blendMode, texture, location, forceLocation)
+    {
+        const baseTexture = texture.baseTexture || texture;
+        const res = this.bindTexture(baseTexture, location, forceLocation);
+
+        this.state.setBlendMode(blendMode.npm[Number(baseTexture.premultipliedAlpha)]);
+
+        return res;
     }
 
     /**
@@ -527,7 +545,7 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {PIXI.Texture} texture - the new texture
      * @param {number} location - the suggested texture location
      * @param {boolean} forceLocation - force the location
-     * @return {number} bound texture location
+     * @return {number} Returns location for bound texture
      */
     bindTexture(texture, location, forceLocation)
     {

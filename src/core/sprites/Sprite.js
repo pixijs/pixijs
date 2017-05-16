@@ -1,6 +1,6 @@
 import { Point, ObservablePoint, Rectangle } from '../math';
 import { sign, TextureCache } from '../utils';
-import { BLEND_MODES } from '../const';
+import BlendMode from '../BlendMode';
 import Texture from '../textures/Texture';
 import Container from '../display/Container';
 
@@ -74,14 +74,7 @@ export default class Sprite extends Container
         this._tintRGB = null;
         this.tint = 0xFFFFFF;
 
-        /**
-         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
-        this.blendMode = BLEND_MODES.NORMAL;
+        this._blendMode = BlendMode.values[0];
 
         /**
          * The shader that will be used to render the sprite. Set to null to remove a current shader.
@@ -481,6 +474,28 @@ export default class Sprite extends Container
     static fromImage(imageId, crossorigin, scaleMode)
     {
         return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
+    }
+
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {PIXI.BlendMode}
+     */
+    get blendMode()
+    {
+        return this._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        if (typeof value === 'number')
+        {
+            this._blendMode = BlendMode.values[value];
+        }
+        else
+        {
+            this._blendMode = value;
+        }
     }
 
     /**

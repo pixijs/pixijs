@@ -1,7 +1,6 @@
 import SystemRenderer from '../SystemRenderer';
 import CanvasMaskManager from './utils/CanvasMaskManager';
 import CanvasRenderTarget from './utils/CanvasRenderTarget';
-import mapCanvasBlendModesToPixi from './utils/mapCanvasBlendModesToPixi';
 import { pluginTarget } from '../../utils';
 import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '../../const';
 import settings from '../../settings';
@@ -100,7 +99,6 @@ export default class CanvasRenderer extends SystemRenderer
 
         this.initPlugins();
 
-        this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
 
         this.renderingToScreen = false;
@@ -201,7 +199,7 @@ export default class CanvasRenderer extends SystemRenderer
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
-        context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
+        this.setBlendMode(BLEND_MODES.NORMAL);
 
         if (navigator.isCocoonJS && this.view.screencanvas)
         {
@@ -264,7 +262,7 @@ export default class CanvasRenderer extends SystemRenderer
     /**
      * Sets the blend mode of the renderer.
      *
-     * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
+     * @param {PIXI.BlendMode} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
      */
     setBlendMode(blendMode)
     {
@@ -274,7 +272,7 @@ export default class CanvasRenderer extends SystemRenderer
         }
 
         this._activeBlendMode = blendMode;
-        this.context.globalCompositeOperation = this.blendModes[blendMode];
+        this.context.globalCompositeOperation = blendMode.compositionMode;
     }
 
     /**

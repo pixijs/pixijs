@@ -5,7 +5,7 @@ import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
 import settings from '../../settings';
-import { premultiplyBlendMode, premultiplyTint } from '../../utils';
+import { premultiplyTint } from '../../utils';
 import glCore from 'pixi-gl-core';
 import bitTwiddle from 'bit-twiddle';
 
@@ -227,8 +227,7 @@ export default class SpriteRenderer extends ObjectRenderer
         let currentGroup = groups[0];
         let vertexData;
         let uvs;
-        let blendMode = premultiplyBlendMode[
-            sprites[0]._texture.baseTexture.premultipliedAlpha ? 1 : 0][sprites[0].blendMode];
+        let blendMode = sprites[0]._blendMode.npm[Number(sprites[0].texture.baseTexture.premultipliedAlpha)];
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -253,7 +252,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
             nextTexture = sprite._texture.baseTexture;
 
-            const spriteBlendMode = premultiplyBlendMode[Number(nextTexture.premultipliedAlpha)][sprite.blendMode];
+            const spriteBlendMode = sprite._blendMode.npm[Number(nextTexture.premultipliedAlpha)];
 
             if (blendMode !== spriteBlendMode)
             {

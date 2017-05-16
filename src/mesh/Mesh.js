@@ -75,15 +75,7 @@ export default class Mesh extends core.Container
          */
         this.indexDirty = 0;
 
-        /**
-         * The blend mode to be applied to the sprite. Set to `PIXI.BLEND_MODES.NORMAL` to remove
-         * any blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
-        this.blendMode = core.BLEND_MODES.NORMAL;
+        this._blendMode = core.BlendMode.values[0];
 
         /**
          * Triangles in canvas mode are automatically antialiased, use this value to force triangles
@@ -275,6 +267,28 @@ export default class Mesh extends core.Container
         }
 
         return false;
+    }
+
+    /**
+     * The blend mode to be applied to the mesh. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     *
+     * @member {PIXI.BlendMode}
+     */
+    get blendMode()
+    {
+        return this._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        if (typeof value === 'number')
+        {
+            this._blendMode = core.BlendMode.values[value];
+        }
+        else
+        {
+            this._blendMode = value;
+        }
     }
 
     /**

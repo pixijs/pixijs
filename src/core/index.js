@@ -14,6 +14,7 @@ export { settings, utils, ticker, CanvasRenderer, WebGLRenderer };
 
 export { default as glCore } from 'pixi-gl-core';
 
+export { default as BlendMode } from './BlendMode';
 export { default as Bounds } from './display/Bounds';
 export { default as DisplayObject } from './display/DisplayObject';
 export { default as Container } from './display/Container';

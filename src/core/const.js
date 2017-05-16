@@ -1,3 +1,5 @@
+import BlendMode from './BlendMode';
+
 /**
  * String of the current PIXI version.
  *
@@ -67,46 +69,43 @@ export const RENDERER_TYPE = {
  * @constant
  * @memberof PIXI
  * @name BLEND_MODES
- * @type {object}
- * @property {number} NORMAL
- * @property {number} ADD
- * @property {number} MULTIPLY
- * @property {number} SCREEN
- * @property {number} OVERLAY
- * @property {number} DARKEN
- * @property {number} LIGHTEN
- * @property {number} COLOR_DODGE
- * @property {number} COLOR_BURN
- * @property {number} HARD_LIGHT
- * @property {number} SOFT_LIGHT
- * @property {number} DIFFERENCE
- * @property {number} EXCLUSION
- * @property {number} HUE
- * @property {number} SATURATION
- * @property {number} COLOR
- * @property {number} LUMINOSITY
+ * @type {BlendMode}
+ * @property {BlendMode} NORMAL
+ * @property {BlendMode} ADD
+ * @property {BlendMode} MULTIPLY
+ * @property {BlendMode} SCREEN
+ * @property {BlendMode} OVERLAY
+ * @property {BlendMode} DARKEN
+ * @property {BlendMode} LIGHTEN
+ * @property {BlendMode} COLOR_DODGE
+ * @property {BlendMode} COLOR_BURN
+ * @property {BlendMode} HARD_LIGHT
+ * @property {BlendMode} SOFT_LIGHT
+ * @property {BlendMode} DIFFERENCE
+ * @property {BlendMode} EXCLUSION
+ * @property {BlendMode} HUE
+ * @property {BlendMode} SATURATION
+ * @property {BlendMode} COLOR
+ * @property {BlendMode} LUMINOSITY
  */
 export const BLEND_MODES = {
-    NORMAL:         0,
-    ADD:            1,
-    MULTIPLY:       2,
-    SCREEN:         3,
-    OVERLAY:        4,
-    DARKEN:         5,
-    LIGHTEN:        6,
-    COLOR_DODGE:    7,
-    COLOR_BURN:     8,
-    HARD_LIGHT:     9,
-    SOFT_LIGHT:     10,
-    DIFFERENCE:     11,
-    EXCLUSION:      12,
-    HUE:            13,
-    SATURATION:     14,
-    COLOR:          15,
-    LUMINOSITY:     16,
-    NORMAL_NPM:     17,
-    ADD_NPM:        18,
-    SCREEN_NPM:     19,
+    NORMAL:         BlendMode.values[0],
+    ADD:            BlendMode.values[1],
+    MULTIPLY:       BlendMode.values[2],
+    SCREEN:         BlendMode.values[3],
+    OVERLAY:        BlendMode.values[4],
+    DARKEN:         BlendMode.values[5],
+    LIGHTEN:        BlendMode.values[6],
+    COLOR_DODGE:    BlendMode.values[7],
+    COLOR_BURN:     BlendMode.values[8],
+    HARD_LIGHT:     BlendMode.values[9],
+    SOFT_LIGHT:     BlendMode.values[10],
+    DIFFERENCE:     BlendMode.values[11],
+    EXCLUSION:      BlendMode.values[12],
+    HUE:            BlendMode.values[13],
+    SATURATION:     BlendMode.values[14],
+    COLOR:          BlendMode.values[15],
+    LUMINOSITY:     BlendMode.values[16],
 };
 
 /**

@@ -1,10 +1,9 @@
-import mapWebGLBlendModesToPixi from './utils/mapWebGLBlendModesToPixi';
+import BlendMode from '../../BlendMode';
 
 const BLEND = 0;
-const DEPTH_TEST = 1;
-const FRONT_FACE = 2;
-const CULL_FACE = 3;
-const BLEND_FUNC = 4;
+const DEPTH_TEST = 0;
+const FRONT_FACE = 1;
+const CULL_FACE = 2;
 
 /**
  * A WebGL state machines
@@ -25,6 +24,13 @@ export default class WebGLState
          * @member {Uint8Array}
          */
         this.activeState = new Uint8Array(16);
+
+        /**
+         * active blend mode
+         *
+         * @member {BlendMode}
+         */
+        this.activeBlendMode = null;
 
         /**
          * The default state
@@ -53,6 +59,14 @@ export default class WebGLState
         this.stack = [];
 
         /**
+         * The stack holding blendModes for states
+         *
+         * @member {Array<BlendMode>}
+         * @private
+         */
+        this.stackBlendMode = [];
+
+        /**
          * The current WebGL rendering context
          *
          * @member {WebGLRenderingContext}
@@ -65,8 +79,6 @@ export default class WebGLState
             tempAttribState: new Array(this.maxAttribs),
             attribState: new Array(this.maxAttribs),
         };
-
-        this.blendModes = mapWebGLBlendModesToPixi(gl);
 
         // check we have vao..
         this.nativeVaoExtension = (
@@ -96,6 +108,7 @@ export default class WebGLState
         for (let i = 0; i < this.activeState.length; i++)
         {
             state[i] = this.activeState[i];
+            this.stackBlendMode[this.stackIndex] = this.activeBlendMode;
         }
     }
 
@@ -105,12 +118,14 @@ export default class WebGLState
     pop()
     {
         const state = this.stack[--this.stackIndex];
+        const blendMode = this.stackBlendMode[this.stackIndex];
 
         this.setState(state);
+        this.setBlendMode(blendMode);
     }
 
     /**
-     * Sets the current state
+     * Sets the current state, without blendMode
      *
      * @param {*} state - The state to set.
      */
@@ -120,7 +135,6 @@ export default class WebGLState
         this.setDepthTest(state[DEPTH_TEST]);
         this.setFrontFace(state[FRONT_FACE]);
         this.setCullFace(state[CULL_FACE]);
-        this.setBlendMode(state[BLEND_FUNC]);
     }
 
     /**
@@ -144,27 +158,19 @@ export default class WebGLState
     /**
      * Sets the blend mode.
      *
-     * @param {number} value - The blend mode to set to.
+     * @param {PIXI.BlendMode} value - The blend mode to set to.
      */
     setBlendMode(value)
     {
-        if (value === this.activeState[BLEND_FUNC])
+        if (value === this.activeBlendMode)
         {
             return;
         }
 
-        this.activeState[BLEND_FUNC] = value;
+        this.activeBlendMode = value;
 
-        const mode = this.blendModes[value];
-
-        if (mode.length === 2)
-        {
-            this.gl.blendFunc(mode[0], mode[1]);
-        }
-        else
-        {
-            this.gl.blendFuncSeparate(mode[0], mode[1], mode[2], mode[3]);
-        }
+        this.gl.blendFuncSeparate(value.srcRGB, value.dstRGB, value.srcAlpha, value.dstAlpha);
+        this.gl.blendEquationSeparate(value.modeRGB, value.modeAlpha);
     }
 
     /**
@@ -266,6 +272,9 @@ export default class WebGLState
         }
 
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+        this.activeBlendMode = null;
+        this.setBlendMode(BlendMode.values[0]);
 
         this.setState(this.defaultState);
     }
