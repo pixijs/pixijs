@@ -223,6 +223,9 @@ export default class WebGLRenderer extends SystemRenderer
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
+        this._activeShader = null;
+        this._activeVao = null;
+
         this.boundTextures = new Array(maxTextures);
         this.emptyTextures = new Array(maxTextures);
 
@@ -674,8 +677,8 @@ export default class WebGLRenderer extends SystemRenderer
      */
     handleContextRestored()
     {
-        this._initContext();
         this.textureManager.removeAll();
+        this._initContext();
     }
 
     /**
