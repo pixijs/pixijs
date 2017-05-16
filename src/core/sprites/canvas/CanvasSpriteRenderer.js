@@ -126,7 +126,7 @@ export default class CanvasSpriteRenderer
 
             if (sprite.tint !== 0xFFFFFF)
             {
-                if (sprite.cachedTint !== sprite.tint)
+                if (sprite.cachedTint !== sprite.tint || sprite.tintedTexture.tintId !== sprite._texture._updateID)
                 {
                     sprite.cachedTint = sprite.tint;
 

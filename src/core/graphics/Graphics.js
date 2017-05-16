@@ -865,6 +865,19 @@ export default class Graphics extends Container
             {
                 if (data.shape.contains(tempPoint.x, tempPoint.y))
                 {
+                    if (data.holes)
+                    {
+                        for (let i = 0; i < data.holes.length; i++)
+                        {
+                            const hole = data.holes[i];
+
+                            if (hole.contains(tempPoint.x, tempPoint.y))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
                     return true;
                 }
             }
@@ -994,10 +1007,10 @@ export default class Graphics extends Container
         const padding = this.boundsPadding;
 
         this._localBounds.minX = minX - padding;
-        this._localBounds.maxX = maxX + (padding * 2);
+        this._localBounds.maxX = maxX + padding;
 
         this._localBounds.minY = minY - padding;
-        this._localBounds.maxY = maxY + (padding * 2);
+        this._localBounds.maxY = maxY + padding;
     }
 
     /**
