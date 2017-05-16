@@ -9,7 +9,7 @@ import settings from '../../settings';
 import bitTwiddle from 'bit-twiddle';
 import Geometry from '../../geometry/Geometry';
 import Buffer_GEOM from '../../geometry/Buffer';
-import UniformGroup from '../../shader/UniformGroup';
+
 
 let TICK = 0;
 let TEXTURE_TICK = 0;
@@ -106,7 +106,7 @@ export default class SpriteRenderer extends ObjectRenderer
     {
         const gl = this.renderer.gl;
 
-        if (true)//this.renderer.legacy)
+        if (this.renderer.legacy)
         {
             this.MAX_TEXTURES = 1;
         }
@@ -119,20 +119,9 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-        const sampleValues = new Int32Array(this.MAX_TEXTURES);
-
-        for (let i = 0; i < this.MAX_TEXTURES; i++)
-        {
-            sampleValues[i] = i;
-        }
-
-        const uniforms = {
-            default:UniformGroup.from({uSamplers:sampleValues}, true),
-            globals:this.renderer.globalUniforms
-        }
 
         // generate generateMultiTextureProgram, may be a better move?
-        this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES, uniforms);
+        this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.

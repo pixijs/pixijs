@@ -43,12 +43,11 @@ export default class GeometrySystem extends WebGLSystem
      * @private
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to bind
      */
-    bind(geometry, glShader)
+    bind(geometry, shader)
     {
-        glShader = glShader || this.renderer.shader.getGLShader();
+        shader = shader || this.renderer.shader.shader;
 
         const gl = this.gl;
-
 
         // not sure the best way to address this..
         // currently different shaders require different VAOs for the same geometry
@@ -61,7 +60,7 @@ export default class GeometrySystem extends WebGLSystem
             vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID] = {};
         }
 
-        const vao = vaos[glShader.id] || this.initGeometryVao(geometry, glShader);
+        const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program);
 
         this._activeGeometry = geometry;
 
@@ -114,11 +113,11 @@ export default class GeometrySystem extends WebGLSystem
         }
     }
 
-    checkCompatability(geometry, glShader)
+    checkCompatability(geometry, program)
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
-        const shaderAttributes = glShader.attributes;
+        const shaderAttributes = program.attributeData;
 
         for (const j in shaderAttributes)
         {
@@ -135,9 +134,9 @@ export default class GeometrySystem extends WebGLSystem
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
      * @return {PIXI.VertexArrayObject} Returns a fresh vao.
      */
-    initGeometryVao(geometry, glShader)
+    initGeometryVao(geometry, program)
     {
-        this.checkCompatability(geometry, glShader);
+        this.checkCompatability(geometry, program);
 
         const gl = this.gl;
         const CONTEXT_UID = this.CONTEXT_UID;
@@ -166,9 +165,9 @@ export default class GeometrySystem extends WebGLSystem
 
         for (const j in attributes)
         {
-            if(!attributes[j].size && glShader.attributes[j])
+            if(!attributes[j].size && program.attributeData[j])
             {
-                attributes[j].size = glShader.attributes[j].size;
+                attributes[j].size = program.attributeData[j].size;
             }
 
             tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap[attributes[j].type];
@@ -221,7 +220,7 @@ export default class GeometrySystem extends WebGLSystem
             const buffer = buffers[attribute.buffer];
             const glBuffer = buffer._glBuffers[CONTEXT_UID];
 
-            if(glShader.attributes[j])
+            if(program.attributeData[j])
             {
                 if(lastBuffer !== glBuffer)
                 {
@@ -230,7 +229,7 @@ export default class GeometrySystem extends WebGLSystem
                     lastBuffer = glBuffer;
                 }
 
-                const location = glShader.attributes[j].location;
+                const location = program.attributeData[j].location;
 
                 gl.enableVertexAttribArray(location);
 
@@ -250,7 +249,7 @@ export default class GeometrySystem extends WebGLSystem
 
         // TODO - maybe make this a data object?
         // lets wait to see if we need to first!
-        geometry.glVertexArrayObjects[CONTEXT_UID][glShader.id] = vao;
+        geometry.glVertexArrayObjects[CONTEXT_UID][program.id] = vao;
 
         gl.bindVertexArray(null);
 

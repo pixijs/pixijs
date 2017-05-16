@@ -46,23 +46,24 @@ export default class MeshRenderer extends core.ObjectRenderer
     {
         // bind the shader..
 
+        // TODO
         // set the shader props..
-        if (mesh.shader.uniforms.translationMatrix)
+        // probably only need to set once!
+        // as its then a refference..
+        if (mesh.shader.program.uniformData.translationMatrix)
         {
             // the transform!
             mesh.shader.uniforms.translationMatrix = mesh.transform.worldTransform.toArray(true);
         }
 
-        const glShader = this.renderer.shader.bind(mesh.shader, true);
+        // bind and sync uniforms..
+        this.renderer.shader.bind(mesh.shader);
 
-        // set unifomrs..
-        this.renderer.shader.syncUniformGroup(mesh.shader.uniformGroup);
-
-        // sync uniforms..
+        // set state..
         this.renderer.state.setState(mesh.state);
 
         // bind the geometry...
-        this.renderer.geometry.bind(mesh.geometry, glShader);
+        this.renderer.geometry.bind(mesh.geometry, mesh.shader);
         // then render it
         this.renderer.geometry.draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }

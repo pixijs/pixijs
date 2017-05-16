@@ -93,8 +93,8 @@ export default class WebGLRenderer extends SystemRenderer
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
 
         this.globalUniforms = new UniformGroup({
-            projectionMatrix:new Matrix()
-        }, false)
+            projectionMatrix:new Matrix(),
+        }, true)
 
         this.addSystem(MaskSystem, 'mask')
         .addSystem(ContextSystem, 'context')

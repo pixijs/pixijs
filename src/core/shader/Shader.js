@@ -40,17 +40,7 @@ class Shader
         // does the trick for now though!
         for (const i in program.uniformData)
         {
-            const exists = this.checkUniformExists(i, this.uniformGroup);//this.uniformGroup.uniforms[i];
-
-            if (!exists) // bad as we need check wher ethe uniforms are..
-            {
-                //console.log("uniform does not exist " + i)
-                // search within other groups to find the property
-                // failing that, create it on the root uniform object
-                this.uniformGroup.uniforms[i] = program.uniformData[i].value;
-
-            }
-            else if (this.uniformGroup.uniforms[i] instanceof Array)
+            if (this.uniformGroup.uniforms[i] instanceof Array)
             {
                 this.uniformGroup.uniforms[i] = new Float32Array(uniform);
             }

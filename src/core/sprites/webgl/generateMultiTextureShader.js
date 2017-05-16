@@ -1,5 +1,5 @@
-import { GLShader } from 'pixi-gl-core';
 import Shader from '../../shader/Shader';
+import UniformGroup from '../../shader/UniformGroup';
 import { PRECISION } from '../../const';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -18,8 +18,20 @@ const fragTemplate = [
     '}',
 ].join('\n');
 
-export default function generateMultiTextureShader(gl, maxTextures, uniforms)
+export default function generateMultiTextureShader(gl, maxTextures)
 {
+    const sampleValues = new Int32Array(maxTextures);
+
+    for (let i = 0; i < maxTextures; i++)
+    {
+        sampleValues[i] = i;
+    }
+
+    const uniforms = {
+        default:UniformGroup.from({uSamplers:sampleValues}, true),
+    }
+
+
     const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
     let fragmentSrc = fragTemplate;
 

@@ -47,12 +47,13 @@ export default class ShaderSystem extends WebGLSystem
      */
     bind(shader, dontSync)
     {
+        // maybe a better place for this...
+        shader.uniforms.globals = this.renderer.globalUniforms;
+
         const program = shader.program;
         const glShader = program.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
-        // if (this.shader !== shader)
-        // {
         if (this.shader !== shader)
         {
             this.shader = shader;
@@ -87,19 +88,20 @@ export default class ShaderSystem extends WebGLSystem
         if(!group.static || group.dirtyId !== glShader.uniformGroups[group.id])
         {
             glShader.uniformGroups[group.id] = group.dirtyId;
-            const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSynGroups(group);
+            const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
             syncFunc(glShader.uniformData, group.uniforms, this.renderer);
         }
 
     }
 
-    createSynGroups(group)
+    createSyncGroups(group)
     {
         group.syncUniforms[this.shader.program.id] = generateUniformsSync(group, this.shader.program.uniformData);
 
         return group.syncUniforms[this.shader.program.id];
     }
+
     /**
      * Returns the underlying GLShade rof the currently bound shader.
      * This can be handy for when you to have a little more control over the setting of your uniforms.
@@ -129,6 +131,8 @@ export default class ShaderSystem extends WebGLSystem
     {
         const program = shader.program;
         const attribMap = {};
+
+        // insert the global properties too!
 
         for (const i in program.attributeData)
         {
