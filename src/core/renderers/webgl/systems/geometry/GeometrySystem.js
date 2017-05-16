@@ -25,6 +25,7 @@ export default class GeometrySystem extends WebGLSystem
         this._activeGeometry = null;
         this._activeVao = null;
 
+        this.hasVao = true;
     }
 
     /**
@@ -34,8 +35,30 @@ export default class GeometrySystem extends WebGLSystem
      */
     contextChange()
     {
-        this.gl = this.renderer.gl;
+        const gl = this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
+
+        if(!gl.createVertexArray)
+        {
+            // webgl 1!
+            const nativeVaoExtension = gl.getExtension('OES_vertex_array_object') ||
+                                  gl.getExtension('MOZ_OES_vertex_array_object') ||
+                                  gl.getExtension('WEBKIT_OES_vertex_array_object');
+
+            if(nativeVaoExtension)
+            {
+                gl.createVertexArray = nativeVaoExtension.createVertexArrayOES;
+                gl.bindVertexArray = nativeVaoExtension.bindVertexArrayOES;
+                gl.deleteVertexArray = nativeVaoExtension.deleteVertexArrayOES;
+            }
+            else
+            {
+                this.hasVao = false;
+                gl.createVertexArray = ()=>{return {}}
+                gl.bindVertexArray = ()=>{}
+                gl.deleteVertexArray = ()=>{}
+            }
+        }
     }
 
     /**
@@ -48,6 +71,7 @@ export default class GeometrySystem extends WebGLSystem
         shader = shader || this.renderer.shader.shader;
 
         const gl = this.gl;
+
 
         // not sure the best way to address this..
         // currently different shaders require different VAOs for the same geometry
@@ -67,7 +91,15 @@ export default class GeometrySystem extends WebGLSystem
         if(this._activeVao !== vao)
         {
             this._activeVao = vao;
-            gl.bindVertexArray(vao);
+
+            if(this.hasVao)
+            {
+                gl.bindVertexArray(vao);
+            }
+            else
+            {
+                this.activateVao(geometry, shader.program);
+            }
         }
 
         // TODO - optimise later!
@@ -93,7 +125,7 @@ export default class GeometrySystem extends WebGLSystem
             {
                 glBuffer._updateID = buffer._updateID;
 
-                // can cache this on buffer! maybe added a getter / setter?
+                // TODO can cache this on buffer! maybe added a getter / setter?
                 const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
                 const drawType = buffer.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
@@ -200,10 +232,27 @@ export default class GeometrySystem extends WebGLSystem
             }
         }
 
-
+        // TODO - maybe make this a data object?
+        // lets wait to see if we need to first!
         const vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
+
+        this.activateVao(geometry, program);
+
+        gl.bindVertexArray(null);
+
+        geometry.glVertexArrayObjects[CONTEXT_UID][program.id] = vao;
+
+    }
+
+    activateVao(geometry, program)
+    {
+        const gl = this.gl;
+        const CONTEXT_UID = this.CONTEXT_UID;
+        const buffers = geometry.buffers;
+        const attributes = geometry.attributes;
+
 
         if (geometry.indexBuffer)
         {
@@ -246,14 +295,6 @@ export default class GeometrySystem extends WebGLSystem
                 }
             }
         }
-
-        // TODO - maybe make this a data object?
-        // lets wait to see if we need to first!
-        geometry.glVertexArrayObjects[CONTEXT_UID][program.id] = vao;
-
-        gl.bindVertexArray(null);
-
-        return vao;
     }
 
     draw(type, size, start, instanceCount)
