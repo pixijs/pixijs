@@ -118,8 +118,9 @@ export default class MeshRenderer extends core.ObjectRenderer
             }
         }
         glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
-        glData.shader.uniforms.alpha = mesh.worldAlpha;
-        glData.shader.uniforms.tint = mesh.tintRgb;
+
+        glData.shader.uniforms.uColor = core.utils.premultiplyRgba(mesh._tintRgb,
+            mesh.worldAlpha, texture.baseTexture.premultiplyAlpha);
 
         const drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
