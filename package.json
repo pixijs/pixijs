@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "4.5.1",
+  "version": "4.5.2",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -24,12 +24,13 @@
     "watch": "npm run dist -- --watch",
     "watch:lib": "npm run lib -- --watch",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
-    "test": "floss --path test/index.js",
-    "test:debug": "npm test -- --debug",
+    "test": "npm run lint && npm run dist && npm run coverage",
+    "unit-test": "floss --path test/index.js",
+    "unit-test:debug": "npm run unit-test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
     "renders": "electron scripts/renders",
     "precoverage": "rimraf coverage",
-    "coverage": "npm test -- -c dist/pixi.js -s -h",
+    "coverage": "npm run unit-test -- -c dist/pixi.js -s -h",
     "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint",
@@ -43,7 +44,7 @@
     "publish:patch": "npm version patch && npm publish",
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish",
-    "postversion": "npm run clean && npm run build && npm run lib && npm test",
+    "postversion": "npm run clean && npm run build && npm run lib && npm run unit-test",
     "postpublish": "git push && git push --tags && npm run release",
     "release": "node scripts/release"
   },
@@ -62,6 +63,7 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
+    "remove-array-items": "^1.0.0",
     "resource-loader": "^2.0.6"
   },
   "devDependencies": {
