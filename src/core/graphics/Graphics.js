@@ -708,7 +708,12 @@ export default class Graphics extends Container
         }
 
         this.currentPath = null;
-        this._spriteRect = null;
+
+        if (this._spriteRect)
+        {
+            this._spriteRect.destroy({ texture: true });
+            this._spriteRect = null;
+        }
 
         return this;
     }
