@@ -38,6 +38,7 @@ export default class GeometrySystem extends WebGLSystem
         const gl = this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
+        // webgl2
         if(!gl.createVertexArray)
         {
             // webgl 1!

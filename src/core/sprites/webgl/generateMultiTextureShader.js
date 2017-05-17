@@ -38,19 +38,7 @@ export default function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    const shaderold = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
     const shader = Shader.from(vertexSrc, fragmentSrc, uniforms);//, PRECISION.DEFAULT);
-
-    const sampleValues = [];
-
-    for (let i = 0; i < maxTextures; i++)
-    {
-        sampleValues[i] = i;
-    }
-
-   // shader.bind();
-   // shader.uniforms.uSamplers = new Int32Array(sampleValues);
-   // shader.uniformGroup.static = true;
 
     return shader;
 }

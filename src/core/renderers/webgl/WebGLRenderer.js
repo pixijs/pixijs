@@ -1,4 +1,5 @@
 import SystemRenderer from '../SystemRenderer';
+import { sayHello } from '../../utils';
 import MaskSystem from './systems/MaskSystem';
 import StencilSystem from './systems/StencilSystem';
 import FilterSystem from './systems/FilterSystem';
@@ -137,6 +138,8 @@ export default class WebGLRenderer extends SystemRenderer
         this.renderingToScreen = true;
 
         this._initContext();
+
+        sayHello(this.context.webGLVersion === 2 ? 'WebGL' : 'WebGL 2');
     }
 
     addSystem(_class, name)

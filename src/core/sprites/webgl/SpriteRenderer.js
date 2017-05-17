@@ -8,6 +8,7 @@ import Buffer from './BatchBuffer';
 import settings from '../../settings';
 import bitTwiddle from 'bit-twiddle';
 import Geometry from '../../geometry/Geometry';
+//TODO rename this
 import Buffer_GEOM from '../../geometry/Buffer';
 
 
