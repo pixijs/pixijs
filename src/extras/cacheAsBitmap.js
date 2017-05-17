@@ -314,8 +314,8 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     this.transform.localTransform.copy(m);
     m.invert();
 
-    m.tx -= bounds.x;
-    m.ty -= bounds.y;
+    m.tx = -bounds.x;
+    m.ty = -bounds.y;
 
     // m.append(this.transform.worldTransform.)
      // set all properties to there original so we can render to a texture
