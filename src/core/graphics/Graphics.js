@@ -745,6 +745,7 @@ export default class Graphics extends Container
         if (this._fastRect)
         {
             this._renderSpriteRect(renderer);
+            renderer.flush();
         }
         else
         {
