@@ -5,7 +5,7 @@ import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
-import * as premultiplyBlendMode from './premultiplyBlendMode';
+import * as mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
 
 let nextUid = 0;
 let saidHello = false;
@@ -61,12 +61,6 @@ export {
      */
     pluginTarget,
     mixins,
-
-    /**
-     * @memberof PIXI.utils
-     * @type {Array<number[]>} maps premultiply flag and blendMode to adjusted blendMode
-     */
-    premultiplyBlendMode,
 };
 
 /**
@@ -404,6 +398,13 @@ export function clearTextureCache()
         delete BaseTextureCache[key];
     }
 }
+
+/**
+ * @memberof PIXI.utils
+ * @const premultiplyBlendMode
+ * @type {Array<number[]>} maps premultiply flag and blendMode to adjusted blendMode
+ */
+export const premultiplyBlendMode = mapPremultipliedBlendModes();
 
 /**
  * changes blendMode according to texture format

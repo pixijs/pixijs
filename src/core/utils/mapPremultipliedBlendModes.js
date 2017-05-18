@@ -4,13 +4,13 @@ import { BLEND_MODES } from '../const';
  * Corrects pixi blend, takes premultiplied alpha into account
  *
  * @memberof PIXI
- * @function mapWebGLPremultipliedBlendModesToPixi
+ * @function mapPremultipliedBlendModes
  * @private
  * @param {Array<number[]>} [array] - The array to output into.
  * @return {Array<number[]>} Mapped modes.
  */
 
-function mapWebGLPremultipliedBlendModesToPixi()
+export default function mapPremultipliedBlendModes()
 {
     const pm = [];
     const npm = [];
@@ -36,5 +36,3 @@ function mapWebGLPremultipliedBlendModesToPixi()
 
     return array;
 }
-
-export default mapWebGLPremultipliedBlendModesToPixi();
