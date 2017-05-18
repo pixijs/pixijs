@@ -5,7 +5,7 @@ import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
-import * as mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
+import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
 
 let nextUid = 0;
 let saidHello = false;
