@@ -26,6 +26,7 @@ export default class GeometrySystem extends WebGLSystem
         this._activeVao = null;
 
         this.hasVao = true;
+        this.hasInstance = true;
     }
 
     /**
@@ -60,6 +61,19 @@ export default class GeometrySystem extends WebGLSystem
                 gl.deleteVertexArray = ()=>{}
             }
         }
+
+        if(!gl.vertexAttribDivisor)
+        {
+            const instanceExt = gl.getExtension("ANGLE_instanced_arrays");
+
+            if(instanceExt)
+            {
+                gl.vertexAttribDivisor = instanceExt.vertexAttribDivisorANGLE;
+                gl.drawElementsInstanced = instanceExt.drawElementsInstancedANGLE;
+                gl.drawArrayInstanced = instanceExt.drawArraysInstancedANGLE;
+            }
+        }
+
     }
 
     /**
@@ -293,7 +307,14 @@ export default class GeometrySystem extends WebGLSystem
 
                 if(attribute.instance)
                 {
-                    gl.vertexAttribDivisor(location, 1);
+                    if(this.hasInstance)
+                    {
+                        gl.vertexAttribDivisor(location, 1);
+                    }
+                    else
+                    {
+                        throw new Error('geometry error, GPU Instancing is not supported on this device');
+                    }
                 }
             }
         }
