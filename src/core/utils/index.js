@@ -1,10 +1,11 @@
-import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION, BLEND_MODES } from '../const';
+import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
 import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
+import * as premultiplyBlendMode from './premultiplyBlendMode';
 
 let nextUid = 0;
 let saidHello = false;
@@ -60,6 +61,12 @@ export {
      */
     pluginTarget,
     mixins,
+
+    /**
+     * @memberof PIXI.utils
+     * @type {Array<number[]>} maps premultiply flag and blendMode to adjusted blendMode
+     */
+    premultiplyBlendMode,
 };
 
 /**
@@ -409,46 +416,7 @@ export function clearTextureCache()
  */
 export function correctBlendMode(blendMode, premultiplied)
 {
-    if (premultiplied)
-    {
-        if (blendMode < BLEND_MODES.NORMAL_NPM)
-        {
-            return blendMode;
-        }
-        if (blendMode === BLEND_MODES.NORMAL_NPM)
-        {
-            return BLEND_MODES.NORMAL;
-        }
-        if (blendMode === BLEND_MODES.ADD_NPM)
-        {
-            return BLEND_MODES.ADD;
-        }
-        if (blendMode === BLEND_MODES.SCREEN_NPM)
-        {
-            return BLEND_MODES.SCREEN;
-        }
-    }
-    else
-    {
-        if (blendMode > BLEND_MODES.SCREEN)
-        {
-            return blendMode;
-        }
-        if (blendMode === BLEND_MODES.NORMAL)
-        {
-            return BLEND_MODES.NORMAL_NPM;
-        }
-        if (blendMode === BLEND_MODES.ADD)
-        {
-            return BLEND_MODES.ADD_NPM;
-        }
-        if (blendMode === BLEND_MODES.SCREEN)
-        {
-            return BLEND_MODES.SCREEN_NPM;
-        }
-    }
-
-    return blendMode;
+    return premultiplyBlendMode[Number(premultiplied)][blendMode];
 }
 
 /**
