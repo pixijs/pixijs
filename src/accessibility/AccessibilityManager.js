@@ -50,7 +50,7 @@ export default class AccessibilityManager
 
         div.style.width = `${DIV_TOUCH_SIZE}px`;
         div.style.height = `${DIV_TOUCH_SIZE}px`;
-        div.style.position = 'absolute';
+        div.style.position = 'fixed';
         div.style.top = `${DIV_TOUCH_POS_X}px`;
         div.style.left = `${DIV_TOUCH_POS_Y}px`;
         div.style.zIndex = DIV_TOUCH_ZINDEX;
