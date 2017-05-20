@@ -1,5 +1,5 @@
-import { GLShader } from 'pixi-gl-core';
 import Shader from '../../shader/Shader';
+import UniformGroup from '../../shader/UniformGroup';
 import { PRECISION } from '../../const';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -20,25 +20,25 @@ const fragTemplate = [
 
 export default function generateMultiTextureShader(gl, maxTextures)
 {
-    const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
-    let fragmentSrc = fragTemplate;
-
-    fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
-    fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
-
-    const shaderold = new GLShader(gl, vertexSrc, fragmentSrc, PRECISION.DEFAULT);
-    const shader = Shader.from(vertexSrc, fragmentSrc);//, PRECISION.DEFAULT);
-
-    const sampleValues = [];
+    const sampleValues = new Int32Array(maxTextures);
 
     for (let i = 0; i < maxTextures; i++)
     {
         sampleValues[i] = i;
     }
 
-   // shader.bind();
-   // shader.uniforms.uSamplers = new Int32Array(sampleValues);
-   // shader.uniformGroup.static = true;
+    const uniforms = {
+        default:UniformGroup.from({uSamplers:sampleValues}, true),
+    }
+
+
+    const vertexSrc = readFileSync(join(__dirname, './texture.vert'), 'utf8');
+    let fragmentSrc = fragTemplate;
+
+    fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
+    fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
+
+    const shader = Shader.from(vertexSrc, fragmentSrc, uniforms);//, PRECISION.DEFAULT);
 
     return shader;
 }

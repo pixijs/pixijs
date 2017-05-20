@@ -1,4 +1,5 @@
 import SystemRenderer from '../SystemRenderer';
+import { sayHello } from '../../utils';
 import MaskSystem from './systems/MaskSystem';
 import StencilSystem from './systems/StencilSystem';
 import FilterSystem from './systems/FilterSystem';
@@ -93,8 +94,8 @@ export default class WebGLRenderer extends SystemRenderer
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
 
         this.globalUniforms = new UniformGroup({
-            projectionMatrix:new Matrix()
-        }, false)
+            projectionMatrix:new Matrix(),
+        }, true)
 
         this.addSystem(MaskSystem, 'mask')
         .addSystem(ContextSystem, 'context')
@@ -137,6 +138,8 @@ export default class WebGLRenderer extends SystemRenderer
         this.renderingToScreen = true;
 
         this._initContext();
+
+        sayHello(this.context.webGLVersion === 2 ? 'WebGL' : 'WebGL 2');
     }
 
     addSystem(_class, name)

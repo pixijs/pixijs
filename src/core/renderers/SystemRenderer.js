@@ -42,7 +42,7 @@ export default class SystemRenderer extends EventEmitter
     {
         super();
 
-        sayHello(system);
+
 
         // Support for constructor(system, screenWidth, screenHeight, options)
         if (typeof options === 'number')

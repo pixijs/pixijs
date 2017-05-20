@@ -206,9 +206,8 @@ export default class TextureSystem extends WebGLSystem
                 }
             }
         }
-        if(texture.target === gl.TEXTURE_2D_ARRAY)
+        else if(texture.target === gl.TEXTURE_2D_ARRAY)
         {
-            console.log("REMEMBER THIS IS TOO MANY!")
             gl.texImage3D(gl.TEXTURE_2D_ARRAY,
                               0,
                               texture.format,
@@ -228,12 +227,8 @@ export default class TextureSystem extends WebGLSystem
 
                 if(texturePart.resource)
                 {
-                  //  void gl.texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, ImageBitmap? pixels);
-                    console.log(texturePart.resource.source)
-
                     if(texturePart.resource.loaded)
                     {
-                        console.log("UPOAD..")
                         gl.texSubImage3D(gl.TEXTURE_2D_ARRAY,
                                   0,
                                   0,//xoffset
@@ -246,12 +241,6 @@ export default class TextureSystem extends WebGLSystem
                                   texture.type,
                                   texturePart.resource.source);
                     }
-
-                }
-                else
-                {
-
-
                 }
             }
         }

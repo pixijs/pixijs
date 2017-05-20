@@ -1,153 +1,190 @@
+
+
+//cv = CachedValue
+//v = value
+//ud = uniformData
+//uv = uniformValue
+//l = loaction
 const GLSL_TO_SINGLE_SETTERS_CACHED = {
 
-    float:    `if(cacheValue !== value)
-{
-    cacheValue.value = value;
-    gl.uniform1f(location, value)
-}`,
+    float:`
+    if(cv !== v)
+    {
+        cv.v = v;
+        gl.uniform1f(location, v)
+    }`,
 
-    vec2:     `if(cacheValue[0] !== value[0] || cacheValue[1] !== value[1])
-{
-    cacheValue[0] = value[0];
-    cacheValue[1] = value[1];
-    gl.uniform2f(location, value[0], value[1])
-}`,
-    vec3:     `if(cacheValue[0] !== value[0] || cacheValue[1] !== value[1] || cacheValue[2] !== value[2])
-{
-    cacheValue[0] = value[0];
-    cacheValue[1] = value[1];
-    cacheValue[2] = value[2];
+    vec2:`
+    if(cv[0] !== v[0] || cv[1] !== v[1])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        gl.uniform2f(location, v[0], v[1])
+    }`,
 
-    gl.uniform3f(location, value[0], value[1], value[2])
-}`,
-    vec4:     'gl.uniform4f(location, value[0], value[1], value[2], value[3])',
+    vec3:`
+    if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
+    {
+        cv[0] = v[0];
+        cv[1] = v[1];
+        cv[2] = v[2];
 
-    int:      'gl.uniform1i(location, value)',
-    ivec2:    'gl.uniform2i(location, value[0], value[1])',
-    ivec3:    'gl.uniform3i(location, value[0], value[1], value[2])',
-    ivec4:    'gl.uniform4i(location, value[0], value[1], value[2], value[3])',
+        gl.uniform3f(location, v[0], v[1], v[2])
+    }`,
 
-    bool:     'gl.uniform1i(location, value)',
-    bvec2:    'gl.uniform2i(location, value[0], value[1])',
-    bvec3:    'gl.uniform3i(location, value[0], value[1], value[2])',
-    bvec4:    'gl.uniform4i(location, value[0], value[1], value[2], value[3])',
+    vec4:     'gl.uniform4f(location, v[0], v[1], v[2], v[3])',
 
-    mat2:     'gl.uniformMatrix2fv(location, false, value)',
-    mat3:     'gl.uniformMatrix3fv(location, false, value)',
-    mat4:     'gl.uniformMatrix4fv(location, false, value)',
+    int:      'gl.uniform1i(location, v)',
+    ivec2:    'gl.uniform2i(location, v[0], v[1])',
+    ivec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
+    ivec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
 
-    sampler2D: 'gl.uniform1i(location, value)',
-    samplerCube: 'gl.uniform1i(location, value)'
+    bool:     'gl.uniform1i(location, v)',
+    bvec2:    'gl.uniform2i(location, v[0], v[1])',
+    bvec3:    'gl.uniform3i(location, v[0], v[1], v[2])',
+    bvec4:    'gl.uniform4i(location, v[0], v[1], v[2], v[3])',
+
+    mat2:     'gl.uniformMatrix2fv(location, false, v)',
+    mat3:     'gl.uniformMatrix3fv(location, false, v)',
+    mat4:     'gl.uniformMatrix4fv(location, false, v)',
+
+    sampler2D:      'gl.uniform1i(location, v)',
+    samplerCube:    'gl.uniform1i(location, v)',
+    sampler2DArray: 'gl.uniform1i(location, v)',
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
 
-    float:    `gl.uniform1fv(location, value)`,
+    float:    `gl.uniform1fv(location, v)`,
 
-    vec2:     `gl.uniform2fv(location, value)`,
-    vec3:     `gl.uniform3fv(location, value)`,
-    vec4:     'gl.uniform4fv(location, value)',
+    vec2:     `gl.uniform2fv(location, v)`,
+    vec3:     `gl.uniform3fv(location, v)`,
+    vec4:     'gl.uniform4fv(location, v)',
 
-    int:      'gl.uniform1iv(location, value)',
-    ivec2:    'gl.uniform2iv(location, value)',
-    ivec3:    'gl.uniform3iv(location, value)',
-    ivec4:    'gl.uniform4iv(location, value)',
+    int:      'gl.uniform1iv(location, v)',
+    ivec2:    'gl.uniform2iv(location, v)',
+    ivec3:    'gl.uniform3iv(location, v)',
+    ivec4:    'gl.uniform4iv(location, v)',
 
-    bool:     'gl.uniform1iv(location, value)',
-    bvec2:    'gl.uniform2iv(location, value)',
-    bvec3:    'gl.uniform3iv(location, value)',
-    bvec4:    'gl.uniform4iv(location, value)',
+    bool:     'gl.uniform1iv(location, v)',
+    bvec2:    'gl.uniform2iv(location, v)',
+    bvec3:    'gl.uniform3iv(location, v)',
+    bvec4:    'gl.uniform4iv(location, v)',
 
-    sampler2D: 'gl.uniform1iv(location, value)',
-    samplerCube: 'gl.uniform1iv(location, value)'
+    sampler2D:      'gl.uniform1iv(location, v)',
+    samplerCube:    'gl.uniform1iv(location, v)',
+    sampler2DArray: 'gl.uniform1iv(location, v)',
 };
-export default function generateUniformsSync(uniformData)
+
+export default function generateUniformsSync(group, uniformData)
 {
-    let textureCount = 1;
-    let func = `var value = null;
-    var cacheValue = null
+    let textureCount = 0;
+    let func = `var v = null;
+    var cv = null
     var gl = renderer.gl`;
 
-    for (const i in uniformData)
+    for (const i in group.uniforms)
     {
         const data = uniformData[i];
-        // console.log(i, data.size);
+
+        if(!data)
+        {
+            if(group.uniforms[i].group)
+            {
+                func += `
+                    renderer.shader.syncUniformGroup(uv.${i});
+                `
+            }
+
+            continue;
+        }
 
         // TODO && uniformData[i].value !== 0 <-- do we still need this?
         if (data.type === 'float' && data.size === 1)
         {
-            func += `\nif(uniformValues.${i} !== uniformData.${i}.value)
-{
-    uniformData.${i}.value = uniformValues.${i}
-    gl.uniform1f(uniformData.${i}.location, uniformValues.${i})
-}\n`;
+            func += `
+            if(uv.${i} !== ud.${i}.value)
+            {
+                ud.${i}.value = uv.${i}
+                gl.uniform1f(ud.${i}.location, uv.${i})
+            }\n`;
         }
-        else if (data.type === 'sampler2D' && data.size === 1)
+        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
         {
-            func += `\nif (uniformValues.${i}.baseTexture)
-{
-    var location = renderer.bindTexture(uniformValues.${i}.baseTexture, ${textureCount++}, false);
+            func += `
+            renderer.texture.bind(uv.${i}, ${textureCount});
 
-    if(uniformData.${i}.value !== location)
-    {
-        uniformData.${i}.value = location;
-        gl.uniform1i(uniformData.${i}.location, location);\n; // eslint-disable-line max-len
-    }
-}
-else
-{
-    uniformData.${i}.value = ${textureCount};
-    renderer.boundTextures[${textureCount}] = renderer.emptyTextures[${textureCount}];
-    gl.activeTexture(gl.TEXTURE0 + ${textureCount++});
+            if(ud.${i}.value !== ${textureCount})
+            {
+                ud.${i}.value = ${textureCount};
+                gl.uniform1i(ud.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
+            }\n`
 
-    uniformValues.${i}.bind();
-}`;
+            textureCount++;
         }
         else if (data.type === 'mat3' && data.size === 1)
         {
-            func += `\nvalue = uniformValues.${i};
-gl.uniformMatrix3fv(uniformData.${i}.location, false, (value.a === undefined) ? value : value.toArray(true));\n`;
+            if(group.uniforms[i].a !== undefined)
+            {
+                // TODO and some smart caching dirty ids here!
+                func += `
+                gl.uniformMatrix3fv(ud.${i}.location, false, uv.${i}.toArray(true));
+                \n`;
+            }
+            else
+            {
+                func += `
+                gl.uniformMatrix3fv(ud.${i}.location, false, uv.${i});
+                \n`;
+            }
         }
         else if (data.type === 'vec2' && data.size === 1)
         {
             // TODO - do we need both here?
             // maybe we can get away with only using points?
-            func += `\ncacheValue = uniformData.${i}.value;
-value = uniformValues.${i};
+            if(group.uniforms[i].x !== undefined)
+            {
+                func += `
+                cv = ud.${i}.value;
+                v = uv.${i};
 
-if(value.x !== undefined)
-{
-    if(cacheValue[0] !== value.x || cacheValue[1] !== value.y)
-    {
-        cacheValue[0] = value.x;
-        cacheValue[1] = value.y;
-        gl.uniform2f(uniformData.${i}.location, value.x, value.y);
-    }
-}
-else
-{
-    if(cacheValue[0] !== value[0] || cacheValue[1] !== value[1])
-    {
-        cacheValue[0] = value[0];
-        cacheValue[1] = value[1];
-        gl.uniform2f(uniformData.${i}.location, value[0], value[1]);
-    }
-}\n`;
+                if(cv[0] !== v.x || cv[1] !== v.y)
+                {
+                    cv[0] = v.x;
+                    cv[1] = v.y;
+                    gl.uniform2f(ud.${i}.location, v.x, v.y);
+                }\n`;
+            }
+            else
+            {
+                func += `
+                cv = ud.${i}.value;
+                v = uv.${i};
+
+                    if(cv[0] !== v[0] || cv[1] !== v[1])
+                    {
+                        cv[0] = v[0];
+                        cv[1] = v[1];
+                        gl.uniform2f(ud.${i}.location, v[0], v[1]);
+                    }
+                }\n`;
+            }
         }
         else
         {
             const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
 
-            const template =  templateType[data.type].replace('location', `uniformData.${i}.location`);
+            const template =  templateType[data.type].replace('location', `ud.${i}.location`);
 
-            func += `\ncacheValue = uniformData.${i}.value;
-value = uniformValues.${i};
-${template};\n`;
+            func += `
+            cv = ud.${i}.value;
+            v = uv.${i};
+            ${template};\n`;
         }
     }
 
-    //console.log(' --------------- ')
-   // console.log(func);
+    // console.log(' --------------- ')
+    // console.log(func);
 
-    return new Function('uniformData', 'uniformValues', 'renderer', func); // eslint-disable-line no-new-func
+    return new Function('ud', 'uv', 'renderer', func); // eslint-disable-line no-new-func
 }

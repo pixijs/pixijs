@@ -7,6 +7,10 @@ import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfS
 import Buffer from './BatchBuffer';
 import settings from '../../settings';
 import bitTwiddle from 'bit-twiddle';
+import Geometry from '../../geometry/Geometry';
+//TODO rename this
+import Buffer_GEOM from '../../geometry/Buffer';
+
 
 let TICK = 0;
 let TEXTURE_TICK = 0;
@@ -65,6 +69,7 @@ export default class SpriteRenderer extends ObjectRenderer
          * @member {Uint16Array}
          */
         this.indices = createIndicesForQuads(this.size);
+        this.indexBuffer = new Buffer_GEOM(this.indices, true, true);
 
         /**
          * The default shaders that is used if a sprite doesn't have a more specific one.
@@ -115,50 +120,27 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-        const shader = this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
-        const sampleValues = new Int32Array(this.MAX_TEXTURES);
-
-        for (let i = 0; i < this.MAX_TEXTURES; i++)
-        {
-            sampleValues[i] = i;
-        }
-
-        shader.uniformGroup.add('default', {uSamplers:sampleValues}, true);//this.renderer.globalUniforms;
-        shader.uniforms.globals = this.renderer.globalUniforms;
-
-        this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
+        // generate generateMultiTextureProgram, may be a better move?
+        this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
         // we use the second shader as the first one depending on your browser may omit aTextureId
         // as it is not used by the shader so is optimized out.
-
-        this.renderer.geometry.bindVao(null);
-
         for (let i = 0; i < this.vaoMax; i++)
         {
-            this.vertexBuffers[i] = GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+            var buffer = new Buffer_GEOM(null, false);
+
             /* eslint-disable max-len */
-
-            var attributeData = shader.program.attributeData;
-            // build the vao object that will render..
-            this.vaos[i] = this.renderer.geometry.createVao()
-                .addIndex(this.indexBuffer)
-                .addAttribute(this.vertexBuffers[i], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                .addAttribute(this.vertexBuffers[i], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(this.vertexBuffers[i], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
-
-            if (attributeData.aTextureId)
-            {
-                this.vaos[i].addAttribute(this.vertexBuffers[i], attributeData.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
-            }
-
+            this.vaos[i] = new Geometry()
+            .addAttribute('aVertexPosition', buffer, 2, false,  gl.FLOAT)
+            .addAttribute('aTextureCoord', buffer, 2, true,  gl.UNSIGNED_SHORT)
+            .addAttribute('aColor', buffer, 4, true,  gl.UNSIGNED_BYTE)
+            .addAttribute('aTextureId', buffer, 1, true,  gl.FLOAT)
+            .addIndex(this.indexBuffer)
             /* eslint-enable max-len */
+
+            this.vertexBuffers[i] = buffer;
         }
-
-        this.vao = this.vaos[0];
-        this.currentBlendMode = 99999;
-
-        this.boundTextures = new Array(this.MAX_TEXTURES);
     }
 
     /**
@@ -221,9 +203,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
-        const boundTextures = this.boundTextures;
-        const rendererBoundTextures = this.renderer.boundTextures;
-        const touch = 0//this.renderer.textureGC.count;
+        const touch = 0;//this.renderer.textureGC.count;
 
         let index = 0;
         let nextTexture;
@@ -243,13 +223,6 @@ export default class SpriteRenderer extends ObjectRenderer
         TICK++;
 
         let i;
-
-        // copy textures..
-        for (i = 0; i < MAX_TEXTURES; ++i)
-        {
-            boundTextures[i] = rendererBoundTextures[i];
-            boundTextures[i]._virtalBoundId = i;
-        }
 
         for (i = 0; i < this.currentIndex; ++i)
         {
@@ -371,37 +344,32 @@ export default class SpriteRenderer extends ObjectRenderer
             if (this.vaoMax <= this.vertexCount)
             {
                 this.vaoMax++;
-                this.vertexBuffers[this.vertexCount] = GLBuffer.createVertexBuffer(gl, null, gl.DYNAMIC_DRAW);
+
+                let buffer = new Buffer_GEOM(null, false);
 
                 /* eslint-disable max-len */
-
-                var attributeData = this.shader.program.attributeData;
-
-                // build the vao object that will render..
-                this.vaos[this.vertexCount] = this.renderer.geometry.createVao()
-                    .addIndex(this.indexBuffer)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
-
-                if (attributeData.aTextureId)
-                {
-                    this.vaos[this.vertexCount].addAttribute(this.vertexBuffers[this.vertexCount], attributeData.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
-                }
-
+                this.vaos[this.vertexCount] = new Geometry()
+                .addAttribute('aVertexPosition', buffer, 2, false,  gl.FLOAT)
+                .addAttribute('aTextureCoord', buffer, 2, true,  gl.UNSIGNED_SHORT)
+                .addAttribute('aColor', buffer, 4, true,  gl.UNSIGNED_BYTE)
+                .addAttribute('aTextureId', buffer, 1, true,  gl.FLOAT)
+                .addIndex(this.indexBuffer)
                 /* eslint-enable max-len */
+
+                this.vertexBuffers[this.vertexCount] = buffer;
             }
 
-            this.renderer.geometry.bindVao(this.vaos[this.vertexCount]);
-
-            this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, false);
+            this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
+            this.renderer.geometry.bind(this.vaos[this.vertexCount]);
 
             this.vertexCount++;
         }
         else
         {
             // lets use the faster option, always use buffer number 0
-            this.vertexBuffers[this.vertexCount].upload(buffer.vertices, 0, true);
+            this.vertexBuffers[this.vertexCount].update(buffer.vertices, 0);
+
+            this.renderer.geometry.updateBuffers();
         }
 
         /// render the groups..
@@ -409,15 +377,6 @@ export default class SpriteRenderer extends ObjectRenderer
 
             var group = groups[i];
             var groupTextureCount = group.textureCount;
-            //shader = this.shaders[groupTextureCount-1];
-
-            //if(!shader)
-           // {
-          //      shader = this.shaders[groupTextureCount-1] = generateMultiTextureShader(gl, groupTextureCount);
-                //console.log("SHADER generated for " + textureCount + " textures")
-            //}
-
-          ///  this.renderer.shader.bind(shader);
 
             for (var j = 0; j < groupTextureCount; j++)
             {
@@ -425,38 +384,11 @@ export default class SpriteRenderer extends ObjectRenderer
             }
 
             // set the blend mode..
-            //this.renderer.state.setBlendMode( group.blend );
+            this.renderer.state.setBlendMode( group.blend );
 
             gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
         }
-/*
-        // render the groups..
-        for (i = 0; i < groupCount; ++i)
-        {
-            const group = groups[i];
-            const groupTextureCount = group.textureCount;
 
-            for (let j = 0; j < groupTextureCount; j++)
-            {
-                currentTexture = group.textures[j];
-
-                // reset virtual ids..
-                // lets do a quick check..
-                if (rendererBoundTextures[group.ids[j]] !== currentTexture)
-                {
-                    this.renderer.texture.bind(currentTexture, group.ids[j], true);
-                }
-
-                // reset the virtualId..
-                currentTexture._virtalBoundId = -1;
-            }
-
-            // set the blend mode..
-            this.renderer.state.setBlendMode(group.blend);
-
-            gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
-        }
-*/
         // reset elements for the next flush
         this.currentIndex = 0;
     }
@@ -466,16 +398,12 @@ export default class SpriteRenderer extends ObjectRenderer
      */
     start()
     {
-       // this.renderer._bindGLShader(this.shader);
-        this.renderer.shader.bind(this.shader, true);
-        this.renderer.shader.syncUniformGroup(this.shader.uniformGroup);
+        this.renderer.shader.bind(this.shader);
 
         if (settings.CAN_UPLOAD_SAME_BUFFER)
         {
             // bind buffer #0, we don't need others
-            this.renderer.geometry.bindVao(this.vaos[this.vertexCount]);
-
-            this.vertexBuffers[this.vertexCount].bind();
+            this.renderer.geometry.bind(this.vaos[this.vertexCount]);
         }
     }
 

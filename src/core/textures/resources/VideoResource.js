@@ -58,6 +58,7 @@ export default class VideoResource extends TextureResource
 
     update()
     {
+        //TODO - slow down and base on the videos framerate
         this.resourceUpdated.emit();
     }
 

@@ -12,7 +12,7 @@ export default class Buffer
     /**
      * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
      */
-    constructor(data)
+    constructor(data, _static = true, index = false)
     {
         /**
          * The data in the buffer, as a typed array
@@ -31,9 +31,9 @@ export default class Buffer
 
         this._updateID = 0;
 
-        this.index = false;
+        this.index = index;
 
-        this.static = true;
+        this.static = _static;
 
         this.id = UID++;
     }
