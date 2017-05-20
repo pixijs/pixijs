@@ -307,6 +307,7 @@ export default class GeometrySystem extends WebGLSystem
 
                 if(attribute.instance)
                 {
+                     //TODO calculate instance count based of this...
                     if(this.hasInstance)
                     {
                         gl.vertexAttribDivisor(location, 1);

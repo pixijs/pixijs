@@ -1,7 +1,7 @@
 import WebGLSystem from '../WebGLSystem';
 import GLShader from './GLShader';
 import { PRECISION } from '../../../../const';
-import generateUniformsSync from '../../../../shader/generateUniformsSync2';
+import generateUniformsSync from '../../../../shader/generateUniformsSync';
 
 let UID = 0;
 

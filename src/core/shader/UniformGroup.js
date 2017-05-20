@@ -1,5 +1,3 @@
-import Program from './Program';
-import generateUniformsSync from './generateUniformsSync';
 
 let UID = 0;
 

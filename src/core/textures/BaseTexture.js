@@ -450,6 +450,7 @@ export default class BaseTexture extends EventEmitter
     }
 }
 
+BaseTexture.fromFrame = BaseTexture.fromFrame;
 BaseTexture.fromImage = BaseTexture.from;
 BaseTexture.fromSVG = BaseTexture.from;
 BaseTexture.fromCanvas = BaseTexture.from;
