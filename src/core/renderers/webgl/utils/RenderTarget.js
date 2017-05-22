@@ -7,7 +7,8 @@ import { GLFramebuffer } from 'pixi-gl-core';
  * @class
  * @memberof PIXI
  */
-export default class RenderTarget {
+export default class RenderTarget
+{
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL drawing context
      * @param {number} [width=0] - the horizontal range of the filter
@@ -16,7 +17,8 @@ export default class RenderTarget {
      * @param {number} [resolution=1] - The current resolution / device pixel ratio
      * @param {boolean} [root=false] - Whether this object is the root element or not
      */
-    constructor(gl, width, height, scaleMode, resolution, root) {
+    constructor(gl, width, height, scaleMode, resolution, root)
+    {
         // TODO Resolution could go here ( eg low res blurs )
 
         /**
@@ -131,13 +133,16 @@ export default class RenderTarget {
          */
         this.root = root;
 
-        if (!this.root) {
+        if (!this.root)
+        {
             this.frameBuffer = GLFramebuffer.createRGBA(gl, 100, 100);
 
-            if (this.scaleMode === SCALE_MODES.NEAREST) {
+            if (this.scaleMode === SCALE_MODES.NEAREST)
+            {
                 this.frameBuffer.texture.enableNearestScaling();
             }
-            else {
+            else
+            {
                 this.frameBuffer.texture.enableLinearScaling();
             }
             /*
@@ -148,7 +153,8 @@ export default class RenderTarget {
             // this is used by the base texture
             this.texture = this.frameBuffer.texture;
         }
-        else {
+        else
+        {
             // make it a null framebuffer..
             this.frameBuffer = new GLFramebuffer(gl, 100, 100);
             this.frameBuffer.framebuffer = null;
@@ -164,7 +170,8 @@ export default class RenderTarget {
      *
      * @param {number[]} [clearColor=this.clearColor] - Array of [r,g,b,a] to clear the framebuffer
      */
-    clear(clearColor) {
+    clear(clearColor)
+    {
         const cc = clearColor || this.clearColor;
 
         this.frameBuffer.clear(cc[0], cc[1], cc[2], cc[3]);// r,g,b,a);
@@ -174,13 +181,15 @@ export default class RenderTarget {
      * Binds the stencil buffer.
      *
      */
-    attachStencilBuffer() {
+    attachStencilBuffer()
+    {
         // TODO check if stencil is done?
         /**
          * The stencil buffer is used for masking in pixi
          * lets create one and then add attach it to the framebuffer..
          */
-        if (!this.root) {
+        if (!this.root)
+        {
             this.frameBuffer.enableStencil();
         }
     }
@@ -191,7 +200,8 @@ export default class RenderTarget {
      * @param {Rectangle} destinationFrame - The destination frame.
      * @param {Rectangle} sourceFrame - The source frame.
      */
-    setFrame(destinationFrame, sourceFrame) {
+    setFrame(destinationFrame, sourceFrame)
+    {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
         this.sourceFrame = sourceFrame || this.sourceFrame || this.destinationFrame;
     }
@@ -200,7 +210,8 @@ export default class RenderTarget {
      * Binds the buffers and initialises the viewport.
      *
      */
-    activate() {
+    activate()
+    {
         // TOOD refactor usage of frame..
         const gl = this.gl;
 
@@ -209,12 +220,14 @@ export default class RenderTarget {
 
         this.calculateProjection(this.destinationFrame, this.sourceFrame);
 
-        if (this.transform) {
+        if (this.transform)
+        {
             this.projectionMatrix.append(this.transform);
         }
 
         // TODO add a check as them may be the same!
-        if (this.destinationFrame !== this.sourceFrame) {
+        if (this.destinationFrame !== this.sourceFrame)
+        {
             gl.enable(gl.SCISSOR_TEST);
             gl.scissor(
                 this.destinationFrame.x | 0,
@@ -223,7 +236,8 @@ export default class RenderTarget {
                 (this.destinationFrame.height * this.resolution) | 0
             );
         }
-        else {
+        else
+        {
             gl.disable(gl.SCISSOR_TEST);
         }
 
@@ -242,7 +256,8 @@ export default class RenderTarget {
      * @param {Rectangle} destinationFrame - The destination frame.
      * @param {Rectangle} sourceFrame - The source frame.
      */
-    calculateProjection(destinationFrame, sourceFrame) {
+    calculateProjection(destinationFrame, sourceFrame)
+    {
         const pm = this.projectionMatrix;
 
         sourceFrame = sourceFrame || destinationFrame;
@@ -250,14 +265,16 @@ export default class RenderTarget {
         pm.identity();
 
         // TODO: make dest scale source
-        if (!this.root) {
+        if (!this.root)
+        {
             pm.a = 1 / destinationFrame.width * 2;
             pm.d = 1 / destinationFrame.height * 2;
 
             pm.tx = -1 - (sourceFrame.x * pm.a);
             pm.ty = -1 - (sourceFrame.y * pm.d);
         }
-        else {
+        else
+        {
             pm.a = 1 / destinationFrame.width * 2;
             pm.d = -1 / destinationFrame.height * 2;
 
@@ -272,11 +289,13 @@ export default class RenderTarget {
      * @param {number} width - the new width of the texture
      * @param {number} height - the new height of the texture
      */
-    resize(width, height) {
+    resize(width, height)
+    {
         width = width | 0;
         height = height | 0;
 
-        if (this.size.width === width && this.size.height === height) {
+        if (this.size.width === width && this.size.height === height)
+        {
             return;
         }
 
@@ -297,7 +316,8 @@ export default class RenderTarget {
      * Destroys the render target.
      *
      */
-    destroy() {
+    destroy()
+    {
         this.frameBuffer.destroy();
 
         this.frameBuffer = null;
