@@ -19,7 +19,7 @@
         // Possible Errors
         "comma-dangle": [1, "always-multiline"],
         "no-cond-assign": [1, "except-parens"],
-        "no-console": 1,
+        "no-console": [1, { "allow": ["warn", "error"] }],
         "no-constant-condition": 1,
         "no-control-regex": 1,
         "no-debugger": 1,
@@ -45,7 +45,7 @@
         "no-unreachable": 1,
         "no-unsafe-finally": 1,
         "use-isnan": 1,
-        "valid-jsdoc": [1, { "requireReturn": false, "requireReturnType": true, "requireParamDescription": true, "requireReturnDescription": true }],
+        "valid-jsdoc": [0, { "requireReturn": false, "requireReturnType": true, "requireParamDescription": true, "requireReturnDescription": true }],
         "valid-typeof": 1,
 
         // Best Practices
@@ -205,7 +205,7 @@
         "padded-blocks": [1, "never"],
         "quote-props": [1, "as-needed"],
         "quotes": [1, "single", { "allowTemplateLiterals": true }],
-        "require-jsdoc": [1, { "require": { "FunctionDeclaration": false, "ClassDeclaration": true, "MethodDefinition": true } }],
+        "require-jsdoc": [0, { "require": { "FunctionDeclaration": false, "ClassDeclaration": true, "MethodDefinition": true } }],
         "semi": [1, "always"],
         "semi-spacing": [1, { "before": false, "after": true }],
         "sort-vars": 0,

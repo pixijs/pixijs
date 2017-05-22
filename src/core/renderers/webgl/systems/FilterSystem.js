@@ -2,7 +2,7 @@ import WebGLSystem from './WebGLSystem';
 import RenderTarget from '../utils/RenderTarget';
 import Quad from '../utils/Quad';
 import { Rectangle } from '../../../math';
-//import Shader from '../../../Shader';
+import Shader from '../../../shader/Shader';
 import * as filterTransforms from '../filters/filterTransforms';
 import bitTwiddle from 'bit-twiddle';
 
@@ -40,7 +40,6 @@ export default class FilterSystem extends WebGLSystem
     {
         super(renderer);
 
-
         this.shaderCache = {};
         // todo add default!
         this.pool = {};
@@ -53,7 +52,6 @@ export default class FilterSystem extends WebGLSystem
         this.gl = this.renderer.gl;
         // know about sprites!
         this.quad = new Quad(this.gl, this.renderer.state.attribState);
-
     }
 
     /**
@@ -62,7 +60,7 @@ export default class FilterSystem extends WebGLSystem
      * @param {PIXI.DisplayObject} target - The target of the filter to render.
      * @param {PIXI.Filter[]} filters - The filters to apply.
      */
-    pushFilter(target, filters)
+    push(target, filters)
     {
         const renderer = this.renderer;
 
@@ -70,7 +68,7 @@ export default class FilterSystem extends WebGLSystem
 
         if (!filterData)
         {
-            filterData = this.renderer._activeRenderTarget.filterStack;
+            filterData = this.renderer.renderTexture.current.filterStack;
 
             // add new stack
             const filterState = new FilterState();
@@ -146,7 +144,7 @@ export default class FilterSystem extends WebGLSystem
      * Pops off the filter and applies it.
      *
      */
-    popFilter()
+    pop()
     {
         const filterData = this.filterData;
 

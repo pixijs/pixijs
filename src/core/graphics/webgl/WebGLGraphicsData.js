@@ -13,9 +13,8 @@ export default class WebGLGraphicsData
     /**
      * @param {WebGLRenderingContext} gl - The current WebGL drawing context
      * @param {PIXI.Shader} shader - The shader
-     * @param {object} attribsState - The state for the VAO
      */
-    constructor(gl, shader, attribsState)
+    constructor(gl, shader)
     {
         /**
          * The current WebGL drawing context
@@ -60,7 +59,6 @@ export default class WebGLGraphicsData
          */
         this.dirty = true;
 
-
         /**
          *
          * @member {PIXI.Shader}
@@ -77,7 +75,6 @@ export default class WebGLGraphicsData
      */
     reset()
     {
-
         this.points.length = 0;
         this.indices.length = 0;
     }

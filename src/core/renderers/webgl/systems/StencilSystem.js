@@ -21,7 +21,7 @@ export default class StencilSystem extends WebGLSystem
      *
      * @param {PIXI.Graphics[]} stencilMaskStack - The mask stack
      */
-     setMaskStack(stencilMaskStack)
+    setMaskStack(stencilMaskStack)
     {
         this.stencilMaskStack = stencilMaskStack;
 

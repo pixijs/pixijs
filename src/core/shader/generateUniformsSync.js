@@ -1,20 +1,18 @@
-
-
-//cv = CachedValue
-//v = value
-//ud = uniformData
-//uv = uniformValue
-//l = loaction
+// cv = CachedValue
+// v = value
+// ud = uniformData
+// uv = uniformValue
+// l = loaction
 const GLSL_TO_SINGLE_SETTERS_CACHED = {
 
-    float:`
+    float: `
     if(cv !== v)
     {
         cv.v = v;
         gl.uniform1f(location, v)
     }`,
 
-    vec2:`
+    vec2: `
     if(cv[0] !== v[0] || cv[1] !== v[1])
     {
         cv[0] = v[0];
@@ -22,7 +20,7 @@ const GLSL_TO_SINGLE_SETTERS_CACHED = {
         gl.uniform2f(location, v[0], v[1])
     }`,
 
-    vec3:`
+    vec3: `
     if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
     {
         cv[0] = v[0];
@@ -87,13 +85,13 @@ export default function generateUniformsSync(group, uniformData)
     {
         const data = uniformData[i];
 
-        if(!data)
+        if (!data)
         {
-            if(group.uniforms[i].group)
+            if (group.uniforms[i].group)
             {
                 func += `
                     renderer.shader.syncUniformGroup(uv.${i});
-                `
+                `;
             }
 
             continue;
@@ -109,7 +107,9 @@ export default function generateUniformsSync(group, uniformData)
                 gl.uniform1f(ud.${i}.location, uv.${i})
             }\n`;
         }
-        else if ( (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
+        /* eslint-disable max-len */
+        else if ((data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray)
+        /* eslint-disable max-len */
         {
             func += `
             renderer.texture.bind(uv.${i}, ${textureCount});
@@ -118,13 +118,13 @@ export default function generateUniformsSync(group, uniformData)
             {
                 ud.${i}.value = ${textureCount};
                 gl.uniform1i(ud.${i}.location, ${textureCount});\n; // eslint-disable-line max-len
-            }\n`
+            }\n`;
 
             textureCount++;
         }
         else if (data.type === 'mat3' && data.size === 1)
         {
-            if(group.uniforms[i].a !== undefined)
+            if (group.uniforms[i].a !== undefined)
             {
                 // TODO and some smart caching dirty ids here!
                 func += `
@@ -142,7 +142,7 @@ export default function generateUniformsSync(group, uniformData)
         {
             // TODO - do we need both here?
             // maybe we can get away with only using points?
-            if(group.uniforms[i].x !== undefined)
+            if (group.uniforms[i].x !== undefined)
             {
                 func += `
                 cv = ud.${i}.value;

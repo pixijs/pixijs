@@ -1,18 +1,22 @@
 import WebGLSystem from '../WebGLSystem';
-import { Rectangle, Matrix } from '../../../../math';
-import VertexArrayObject from './VertexArrayObject';
-import GLBuffer from './GLBuffer';
-import setVertexAttribArrays from './setVertexAttribArrays';
-
 
 const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
+
+class GLBufferData
+{
+    constructor(buffer)
+    {
+        this.buffer = buffer;
+        this.updateID = -1;
+        this.byteLength = -1;
+    }
+}
 
 /**
  * @class
  * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
-
 export default class GeometrySystem extends WebGLSystem
 {
     /**
@@ -37,43 +41,63 @@ export default class GeometrySystem extends WebGLSystem
     contextChange()
     {
         const gl = this.gl = this.renderer.gl;
+
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
         // webgl2
-        if(!gl.createVertexArray)
+        if (!gl.createVertexArray)
         {
             // webgl 1!
-            const nativeVaoExtension = gl.getExtension('OES_vertex_array_object') ||
-                                  gl.getExtension('MOZ_OES_vertex_array_object') ||
-                                  gl.getExtension('WEBKIT_OES_vertex_array_object');
+            const nativeVaoExtension = gl.getExtension('OES_vertex_array_object')
+                                  || gl.getExtension('MOZ_OES_vertex_array_object')
+                                  || gl.getExtension('WEBKIT_OES_vertex_array_object');
 
-            if(nativeVaoExtension)
+            if (nativeVaoExtension)
             {
-                gl.createVertexArray = nativeVaoExtension.createVertexArrayOES;
-                gl.bindVertexArray = nativeVaoExtension.bindVertexArrayOES;
-                gl.deleteVertexArray = nativeVaoExtension.deleteVertexArrayOES;
+                gl.createVertexArray = () =>
+                    nativeVaoExtension.createVertexArrayOES();
+
+                gl.bindVertexArray = (vao) =>
+                {
+                    nativeVaoExtension.bindVertexArrayOES(vao);
+                };
+
+                gl.deleteVertexArray = (vao) =>
+                {
+                    nativeVaoExtension.deleteVertexArrayOES(vao);
+                };
             }
             else
             {
                 this.hasVao = false;
-                gl.createVertexArray = ()=>{return {}}
-                gl.bindVertexArray = ()=>{}
-                gl.deleteVertexArray = ()=>{}
+                gl.createVertexArray = () =>
+                {
+                    // empty
+                };
+
+                gl.bindVertexArray = () =>
+                {
+                    // empty
+                };
+
+                gl.deleteVertexArray = () =>
+                {
+                    // empty
+                };
             }
         }
 
-        if(!gl.vertexAttribDivisor)
+        if (!gl.vertexAttribDivisor)
         {
-            const instanceExt = gl.getExtension("ANGLE_instanced_arrays");
+            const instanceExt = gl.getExtension('ANGLE_instanced_arrays');
 
-            if(instanceExt)
+            if (instanceExt)
             {
                 gl.vertexAttribDivisor = instanceExt.vertexAttribDivisorANGLE;
                 gl.drawElementsInstanced = instanceExt.drawElementsInstancedANGLE;
-                gl.drawArrayInstanced = instanceExt.drawArraysInstancedANGLE;
+                gl.drawArraysInstanced = instanceExt.drawArraysInstancedANGLE;
             }
         }
-
     }
 
     /**
@@ -87,27 +111,26 @@ export default class GeometrySystem extends WebGLSystem
 
         const gl = this.gl;
 
-
         // not sure the best way to address this..
         // currently different shaders require different VAOs for the same geometry
         // Still mulling over the best way to solve this one..
         // will likely need to modify the shader attribute locations at run time!
         let vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
 
-        if(!vaos)
+        if (!vaos)
         {
-            vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID] = {};
+            geometry.glVertexArrayObjects[this.CONTEXT_UID] = vaos = {};
         }
 
         const vao = vaos[shader.program.id] || this.initGeometryVao(geometry, shader.program);
 
         this._activeGeometry = geometry;
 
-        if(this._activeVao !== vao)
+        if (this._activeVao !== vao)
         {
             this._activeVao = vao;
 
-            if(this.hasVao)
+            if (this.hasVao)
             {
                 gl.bindVertexArray(vao);
             }
@@ -123,7 +146,6 @@ export default class GeometrySystem extends WebGLSystem
         this.updateBuffers();
     }
 
-
     updateBuffers()
     {
         const geometry = this._activeGeometry;
@@ -135,9 +157,9 @@ export default class GeometrySystem extends WebGLSystem
 
             const glBuffer = buffer._glBuffers[this.CONTEXT_UID];
 
-            if (buffer._updateID !== glBuffer._updateID)
+            if (buffer._updateID !== glBuffer.updateID)
             {
-                glBuffer._updateID = buffer._updateID;
+                glBuffer.updateID = buffer._updateID;
 
                 // TODO can cache this on buffer! maybe added a getter / setter?
                 const type = buffer.index ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
@@ -145,7 +167,7 @@ export default class GeometrySystem extends WebGLSystem
 
                 gl.bindBuffer(type, glBuffer.buffer);
 
-                if(glBuffer.byteLength >= buffer.data.byteLength)
+                if (glBuffer.byteLength >= buffer.data.byteLength)
                 {
                     // offset is always zero for now!
                     gl.bufferSubData(type, 0, buffer.data);
@@ -154,7 +176,6 @@ export default class GeometrySystem extends WebGLSystem
                 {
                     gl.bufferData(type, buffer.data, drawType);
                 }
-
             }
         }
     }
@@ -167,9 +188,9 @@ export default class GeometrySystem extends WebGLSystem
 
         for (const j in shaderAttributes)
         {
-            if(!geometryAttributes[j])
+            if (!geometryAttributes[j])
             {
-                throw new Error('shader and geometry incompatible, geometry missing the "' + j + '" attribute');
+                throw new Error(`shader and geometry incompatible, geometry missing the "${j}" attribute`);
             }
         }
     }
@@ -178,7 +199,6 @@ export default class GeometrySystem extends WebGLSystem
      * Creates a Vao with the same structure as the geometry and stores it on the geometry.
      * @private
      * @param {PIXI.mesh.Geometry} geometry instance of geometry to to generate Vao for
-     * @return {PIXI.VertexArrayObject} Returns a fresh vao.
      */
     initGeometryVao(geometry, program)
     {
@@ -188,17 +208,6 @@ export default class GeometrySystem extends WebGLSystem
         const CONTEXT_UID = this.CONTEXT_UID;
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-
-        // first update - and create the buffers!
-        for (let i = 0; i < buffers.length; i++)
-        {
-            const buffer = buffers[i];
-
-            if (!buffer._glBuffers[CONTEXT_UID])
-            {
-                buffer._glBuffers[CONTEXT_UID] = new GLBufferData(gl.createBuffer());
-            }
-        }
 
         const tempStride = {};
         const tempStart = {};
@@ -211,7 +220,7 @@ export default class GeometrySystem extends WebGLSystem
 
         for (const j in attributes)
         {
-            if(!attributes[j].size && program.attributeData[j])
+            if (!attributes[j].size && program.attributeData[j])
             {
                 attributes[j].size = program.attributeData[j].size;
             }
@@ -223,8 +232,6 @@ export default class GeometrySystem extends WebGLSystem
         {
             const attribute = attributes[j];
             const attribSize = attribute.size;
-
-            // must be careful that the geometry has attributes not used by this shader..
 
             if (attribute.stride === undefined)
             {
@@ -246,6 +253,18 @@ export default class GeometrySystem extends WebGLSystem
             }
         }
 
+        // first update - and create the buffers!
+        // only create a gl buffer if it actually gets
+        for (let i = 0; i < buffers.length; i++)
+        {
+            const buffer = buffers[i];
+
+            if (!buffer._glBuffers[CONTEXT_UID])
+            {
+                buffer._glBuffers[CONTEXT_UID] = new GLBufferData(gl.createBuffer());
+            }
+        }
+
         // TODO - maybe make this a data object?
         // lets wait to see if we need to first!
         const vao = gl.createVertexArray();
@@ -256,8 +275,8 @@ export default class GeometrySystem extends WebGLSystem
 
         gl.bindVertexArray(null);
 
-        geometry.glVertexArrayObjects[CONTEXT_UID][program.id] = vao;
-
+        // add it to the cache!
+        geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
     }
 
     activateVao(geometry, program)
@@ -266,7 +285,6 @@ export default class GeometrySystem extends WebGLSystem
         const CONTEXT_UID = this.CONTEXT_UID;
         const buffers = geometry.buffers;
         const attributes = geometry.attributes;
-
 
         if (geometry.indexBuffer)
         {
@@ -283,9 +301,9 @@ export default class GeometrySystem extends WebGLSystem
             const buffer = buffers[attribute.buffer];
             const glBuffer = buffer._glBuffers[CONTEXT_UID];
 
-            if(program.attributeData[j])
+            if (program.attributeData[j])
             {
-                if(lastBuffer !== glBuffer)
+                if (lastBuffer !== glBuffer)
                 {
                     gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer.buffer);
 
@@ -294,8 +312,8 @@ export default class GeometrySystem extends WebGLSystem
 
                 const location = program.attributeData[j].location;
 
-                //TODO introduce state again
-                //we can optimise this for older devices that have no VAOs
+                // TODO introduce state again
+                // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
                 gl.vertexAttribPointer(location,
@@ -305,10 +323,10 @@ export default class GeometrySystem extends WebGLSystem
                                        attribute.stride,
                                        attribute.start);
 
-                if(attribute.instance)
+                if (attribute.instance)
                 {
-                     //TODO calculate instance count based of this...
-                    if(this.hasInstance)
+                     // TODO calculate instance count based of this...
+                    if (this.hasInstance)
                     {
                         gl.vertexAttribDivisor(location, 1);
                     }
@@ -326,62 +344,32 @@ export default class GeometrySystem extends WebGLSystem
         const gl = this.gl;
         const geometry = this._activeGeometry;
 
-        //TODO.. this should not change so maybe cache the function?
+        // TODO.. this should not change so maybe cache the function?
 
-        if(geometry.indexBuffer)
+        if (geometry.indexBuffer)
         {
-            if(geometry.instanced)
+            if (geometry.instanced)
             {
+                /* eslint-disable max-len */
                 gl.drawElementsInstanced(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2, instanceCount || 1);
+                /* eslint-enable max-len */
             }
             else
             {
-                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2 );
+                gl.drawElements(type, size || geometry.indexBuffer.data.length, gl.UNSIGNED_SHORT, (start || 0) * 2);
             }
         }
         else
-        {
-            if(geometry.instanced)
+        if (geometry.instanced)
             {
                 // TODO need a better way to calculate size..
-                gl.drawArrayInstanced(type, start, size || geometry.getSize(), instanceCount || 1);
-            }
+            gl.drawArraysInstanced(type, start, size || geometry.getSize(), instanceCount || 1);
+        }
             else
             {
-                gl.drawArrays(type, start, size || geometry.getSize());
-            }
+            gl.drawArrays(type, start, size || geometry.getSize());
         }
 
         return this;
-    }
-
-    /**
-     * Creates a new VAO from this renderer's context and state.
-     *
-     * @return {VertexArrayObject} The new VAO.
-     */
-    createVao()
-    {
-        return new VertexArrayObject(this.gl, this.renderer.state.attribState);
-    }
-
-    /**
-     * Changes the current Vao to the one given in parameter
-     *
-     * @param {PIXI.VertexArrayObject} vao - the new Vao
-     * @return {PIXI.WebGLRenderer} Returns itself.
-     */
-    bindVao(vao)
-    {
-    }
-}
-
-class GLBufferData
-{
-    constructor(buffer)
-    {
-        this.buffer = buffer;
-        this.updateID = -1;
-        this.byteLength = -1;
     }
 }

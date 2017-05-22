@@ -1,8 +1,5 @@
 import TextureResource from './TextureResource';
 import * as ticker from '../../ticker';
-import {
-    uid
-} from '../../utils';
 
 export default class VideoResource extends TextureResource
 {
@@ -34,7 +31,6 @@ export default class VideoResource extends TextureResource
         source.addEventListener('play', this._onPlayStart.bind(this));
         source.addEventListener('pause', this._onPlayStop.bind(this));
 
-
         if (!this._isSourceReady())
         {
             source.addEventListener('canplay', this._onCanPlay);
@@ -45,20 +41,20 @@ export default class VideoResource extends TextureResource
             this._onCanPlay();
         }
 
-        this.load = new Promise((resolve, reject) => {
-
+        this.load = new Promise((resolve) =>
+        {
             this.resolve = resolve;
 
-            if(this.loaded)
+            if (this.loaded)
             {
                 this.resolve(this);
             }
-        })
+        });
     }
 
     update()
     {
-        //TODO - slow down and base on the videos framerate
+        // TODO - slow down and base on the videos framerate
         this.resourceUpdated.emit();
     }
 
@@ -127,7 +123,6 @@ export default class VideoResource extends TextureResource
      */
     _onCanPlay()
     {
-
         if (this.source)
         {
             this.source.removeEventListener('canplay', this._onCanPlay);
@@ -140,7 +135,7 @@ export default class VideoResource extends TextureResource
             if (!this.loaded)
             {
                 this.loaded = true;
-                if(this.resolve)
+                if (this.resolve)
                 {
                     this.resolve(this);
                 }
@@ -154,7 +149,6 @@ export default class VideoResource extends TextureResource
             {
                 this.source.play();
             }
-
         }
     }
 
@@ -176,32 +170,6 @@ export default class VideoResource extends TextureResource
         }
 */
   //      super.destroy();
-    }
-
-    /**
-     * Mimic Pixi BaseTexture.from.... method.
-     *
-     * @static
-     * @param {HTMLVideoElement} video - Video to create texture from
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
-     */
-    static fromVideo(video, scaleMode)
-    {
-        if (!video._pixiId)
-        {
-            video._pixiId = `video_${uid()}`;
-        }
-
-        let baseTexture = BaseTextureCache[video._pixiId];
-
-        if (!baseTexture)
-        {
-            baseTexture = new VideoBaseTexture(video, scaleMode);
-            BaseTextureCache[video._pixiId] = baseTexture;
-        }
-
-        return baseTexture;
     }
 
     /**
@@ -271,9 +239,7 @@ export default class VideoResource extends TextureResource
         return new VideoResource(video, scaleMode);
     }
 
-
 }
-
 
 function createSource(path, type)
 {

@@ -4,7 +4,7 @@ export default class TextureResource
 {
     constructor(source)
     {
-    	this.source = source;
+        this.source = source;
 
         this.loaded = false; // TODO rename to ready?
 
@@ -21,6 +21,6 @@ export default class TextureResource
 
     destroy()
     {
-        console.warn(this, ' has no destroy function')
+        // somthing
     }
 }

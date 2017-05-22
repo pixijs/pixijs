@@ -1,4 +1,4 @@
-import { sayHello, hex2string, hex2rgb } from '../utils';
+import { hex2string, hex2rgb } from '../utils';
 import { Matrix, Rectangle } from '../math';
 import { RENDERER_TYPE } from '../const';
 import settings from '../settings';
@@ -41,8 +41,6 @@ export default class SystemRenderer extends EventEmitter
     constructor(system, options, arg2, arg3)
     {
         super();
-
-
 
         // Support for constructor(system, screenWidth, screenHeight, options)
         if (typeof options === 'number')

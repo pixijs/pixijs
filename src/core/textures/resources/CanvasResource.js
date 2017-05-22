@@ -6,16 +6,16 @@ export default class CanvasResource extends TextureResource
     {
         super(source);
 
-    	this.loaded = true; // TODO rename to ready?
+        this.loaded = true; // TODO rename to ready?
         this.width = source.width;
         this.height = source.height;
 
         this.uploadable = true;
 
-        this.load = new Promise((resolve, reject) => {
-
+        this.load = new Promise((resolve) =>
+        {
             resolve(this);
-        })
+        });
     }
 
     static from(canvas)

@@ -1,12 +1,11 @@
 import BaseTexture from './BaseTexture';
-import VideoBaseTexture from './VideoBaseTexture';
 import ImageResource from './resources/ImageResource';
 import CanvasResource from './resources/CanvasResource';
 import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import settings from '../settings';
 import { Rectangle } from '../math';
-import { TextureCache, BaseTextureCache, getResolutionOfUrl } from '../utils';
+import { uid, TextureCache, getResolutionOfUrl } from '../utils';
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -269,95 +268,6 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * Helper function that creates a Texture object from the given image url.
-     * If the image is not in the texture cache it will be  created and loaded.
-     *
-     * @static
-     * @param {string} imageUrl - The image url of the texture
-     * @param {boolean} [crossorigin] - Whether requests should be treated as crossorigin
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [sourceScale=(auto)] - Scale for the original image, used with SVG images.
-     * @return {PIXI.Texture} The newly created texture
-     */
-    static fromImage(imageUrl, crossorigin, scaleMode, sourceScale)
-    {
-        let texture = TextureCache[imageUrl];
-
-        if (!texture)
-        {
-            texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode, sourceScale));
-            Texture.addToCache(texture, imageUrl);
-        }
-
-        return texture;
-    }
-
-    /**
-     * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
-     * The frame ids are created when a Texture packer file has been loaded
-     *
-     * @static
-     * @param {string} frameId - The frame Id of the texture in the cache
-     * @return {PIXI.Texture} The newly created texture
-     */
-    static fromFrame(frameId)
-    {
-        const texture = TextureCache[frameId];
-
-        if (!texture)
-        {
-            throw new Error(`The frameId "${frameId}" does not exist in the texture cache`);
-        }
-
-        return texture;
-    }
-
-    /**
-     * Helper function that creates a new Texture based on the given canvas element.
-     *
-     * @static
-     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {string} [origin='canvas'] - A string origin of who created the base texture
-     * @return {PIXI.Texture} The newly created texture
-     */
-    static fromCanvas(canvas, scaleMode, origin = 'canvas')
-    {
-        return new Texture(BaseTexture.fromCanvas(canvas, scaleMode, origin));
-    }
-
-    /**
-     * Helper function that creates a new Texture based on the given video element.
-     *
-     * @static
-     * @param {HTMLVideoElement|string} video - The URL or actual element of the video
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.Texture} The newly created texture
-     */
-    static fromVideo(video, scaleMode)
-    {
-        if (typeof video === 'string')
-        {
-            return Texture.fromVideoUrl(video, scaleMode);
-        }
-
-        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
-    }
-
-    /**
-     * Helper function that creates a new Texture based on the video url.
-     *
-     * @static
-     * @param {string} videoUrl - URL of the video
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @return {PIXI.Texture} The newly created texture
-     */
-    static fromVideoUrl(videoUrl, scaleMode)
-    {
-        return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
-    }
-
-    /**
      * Helper function that creates a new Texture based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
@@ -366,9 +276,9 @@ export default class Texture extends EventEmitter
      *        source - Source to create texture from
      * @return {PIXI.Texture} The newly created texture
      */
-    static from(source, scaleMode, sourceScale)
+    static from(source, scaleMode)
     {
-        var cacheId = null;
+        let cacheId = null;
 
         if (typeof source === 'string')
         {
@@ -376,7 +286,7 @@ export default class Texture extends EventEmitter
         }
         else
         {
-            if(!source._pixiId)
+            if (!source._pixiId)
             {
                 source._pixiId = `pixiid_${uid()}`;
             }
@@ -388,15 +298,13 @@ export default class Texture extends EventEmitter
 
         if (!texture)
         {
-            texture = new Texture(new BaseTexture(source));
+            texture = new Texture(new BaseTexture(source, scaleMode));
             texture.baseTexture.cacheId = cacheId;
+
             BaseTexture.addToCache(texture.baseTexture, cacheId);
             Texture.addToCache(texture, cacheId);
         }
-        else
-        {
-          //  console.log(texture.baseTexture.width)
-        }
+
         // lets assume its a base texture!
         return texture;
     }
@@ -414,7 +322,7 @@ export default class Texture extends EventEmitter
     static fromLoader(source, imageUrl, name)
     {
         // console.log('added from loader...')
-        const resource = new ImageResource(source);//.from(imageUrl, crossorigin);// document.createElement('img');
+        const resource = new ImageResource(source);// .from(imageUrl, crossorigin);// document.createElement('img');
 
         //  console.log('base resource ' + resource.width);
         const baseTexture = new BaseTexture(resource,
@@ -594,7 +502,6 @@ export default class Texture extends EventEmitter
         return this.orig.height;
     }
 }
-
 
 Texture.fromImage = Texture.from;
 Texture.fromSVG = Texture.from;

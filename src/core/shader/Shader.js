@@ -19,15 +19,15 @@ class Shader
 
         // lets see whats been passed in
         // uniforms should be converted to a uniform group
-        if(uniforms)
+        if (uniforms)
         {
-            if(uniforms instanceof UniformGroup)
+            if (uniforms instanceof UniformGroup)
             {
                 this.uniformGroup = uniforms;
             }
             else
             {
-                this.uniformGroup = new UniformGroup(uniforms)
+                this.uniformGroup = new UniformGroup(uniforms);
             }
         }
         else
@@ -49,7 +49,7 @@ class Shader
 
     checkUniformExists(name, group)
     {
-        if(group.uniforms[name])
+        if (group.uniforms[name])
         {
             return true;
         }
@@ -58,9 +58,9 @@ class Shader
         {
             const uniform = group.uniforms[i];
 
-            if(uniform.group)
+            if (uniform.group)
             {
-                if( this.checkUniformExists(name, uniform) )
+                if (this.checkUniformExists(name, uniform))
                 {
                     return true;
                 }

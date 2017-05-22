@@ -43,7 +43,7 @@ export default class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.fromCanvas(canvas, settings.SCALE_MODE, 'text');
+        const texture = Texture.from(canvas, settings.SCALE_MODE, 'text');
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();
@@ -344,7 +344,7 @@ export default class Text extends Sprite
         // call sprite onTextureUpdate to update scale if _width or _height were set
         this._onTextureUpdate();
 
-        texture.baseTexture.update();//emit('update', texture.baseTexture);
+        texture.baseTexture.update();// emit('update', texture.baseTexture);
 
         this.dirty = false;
     }

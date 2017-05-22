@@ -2,8 +2,6 @@ import { hex2rgb } from '../../utils';
 import { SHAPES } from '../../const';
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
-import Geometry from '../../geometry/Geometry';
-import Buffer from '../../geometry/Buffer';
 import WebGLGraphicsData from './WebGLGraphicsData';
 import PrimitiveShader from './shaders/PrimitiveShader';
 
@@ -31,7 +29,7 @@ export default class GraphicsRenderer extends ObjectRenderer
         this.graphicsDataPool = [];
 
         this.primitiveShader = new PrimitiveShader();
-        this.primitiveShader.uniforms.globals = renderer.globalUniforms
+        this.primitiveShader.uniforms.globals = renderer.globalUniforms;
         this.gl = renderer.gl;
 
         // easy access!
@@ -100,11 +98,11 @@ export default class GraphicsRenderer extends ObjectRenderer
             shader.uniforms.alpha = graphics.worldAlpha;
 
             renderer.shader.bind(shader);
-            renderer.geometry.bind(webGLData.geometry, renderer.shader.getGLShader());
+            renderer.geometry.bind(webGLData.geometry);
 
             if (graphics.nativeLines)
             {
-                renderer.geometry.draw(gl.LINES, webGLData.indices.length/6);
+                renderer.geometry.draw(gl.LINES, webGLData.indices.length / 6);
             }
             else
             {
@@ -183,7 +181,7 @@ export default class GraphicsRenderer extends ObjectRenderer
             webGL.lastIndex++;
         }
 
-        //this.renderer.geometry.bindVao(null);
+        // this.renderer.geometry.bindVao(null);
 
         // upload all the dirty data...
         for (let i = 0; i < webGL.data.length; i++)
@@ -210,7 +208,11 @@ export default class GraphicsRenderer extends ObjectRenderer
 
         if (!webGLData || webGLData.points.length > 320000)
         {
-            webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
+            webGLData = this.graphicsDataPool.pop()
+            || new WebGLGraphicsData(this.renderer.gl,
+                                     this.primitiveShader,
+                                     this.renderer.state.attribsState);
+
             webGLData.reset(type);
             gl.data.push(webGLData);
         }

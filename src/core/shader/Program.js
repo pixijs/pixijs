@@ -1,6 +1,5 @@
 import extractUniformsFromSrc from './extractUniformsFromSrc';
-import generateUniformsSync from './generateUniformsSync';
-import shaderUtils from '../renderers/webgl/systems/shader/shader';
+import * as shaderUtils from '../renderers/webgl/systems/shader/shader';
 import { ProgramCache } from '../utils';
 import getTestContext from '../utils/getTestContext';
 
@@ -39,7 +38,7 @@ class Program
         // this is where we store shader references..
         this.glShaders = {};
 
-        this.syncUniforms = null;//generateUniformsSync(this.uniformData);
+        this.syncUniforms = null;
 
         this.id = UID++;
     }
@@ -71,7 +70,7 @@ class Program
 
             this.attributeData = this.getAttributeData(program, gl);
             this.uniformData = this.getUniformData(program, gl);
-            //gl.deleteProgram(program);
+            // gl.deleteProgram(program);
         }
     }
 
@@ -136,7 +135,7 @@ class Program
 
         // TODO expose this as a prop?
        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
-        //const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
+        // const maskRegex = new RegExp('^(projectionMatrix|uSampler|translationMatrix)$');
 
         for (let i = 0; i < totalUniforms; i++)
         {
@@ -146,17 +145,14 @@ class Program
             const isArray = uniformData.name.match(/\[.*?\]/, '');
             const type = shaderUtils.mapType(gl, uniformData.type);
 
-           // if (!name.match(maskRegex))
-            {
-                /*eslint-disable */
-                uniforms[name] = {
-                    type: type,
-                    size: uniformData.size,
-                    isArray:isArray,
-                    value: shaderUtils.defaultValue(type, uniformData.size),
-                };
-                /*eslint-enable */
-            }
+            /*eslint-disable */
+            uniforms[name] = {
+                type: type,
+                size: uniformData.size,
+                isArray:isArray,
+                value: shaderUtils.defaultValue(type, uniformData.size),
+            };
+            /*eslint-enable */
         }
 
         return uniforms;

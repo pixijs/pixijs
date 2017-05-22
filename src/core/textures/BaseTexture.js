@@ -1,14 +1,9 @@
 import {
-    uid, getUrlFileExtension, decomposeDataUri, getSvgSize,
-    getResolutionOfUrl, BaseTextureCache, TextureCache,
+    uid, BaseTextureCache, TextureCache,
 } from '../utils';
 
-import {FORMATS, TARGETS, TYPES, SCALE_MODES} from '../const';
-import ImageResource from './resources/ImageResource';
+import { FORMATS, TARGETS, TYPES, SCALE_MODES } from '../const';
 import BufferResource from './resources/BufferResource';
-import CanvasResource from './resources/CanvasResource';
-import SVGResource from './resources/SVGResource';
-import VideoResource from './resources/VideoResource';
 import createResource from './resources/createResource';
 
 import settings from '../settings';
@@ -17,7 +12,7 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource, scaleMode, resolution, width, height, format, type, mipmap)
+    constructor(resource, scaleMode, resolution, width, height, format, type, mipmap = settings.MIPMAP_TEXTURES)
     {
         super();
 
@@ -60,7 +55,9 @@ export default class BaseTexture extends EventEmitter
          *
          * @member {Boolean}
          */
-        this.mipmap = false;//settings.MIPMAP_TEXTURES;
+        //  TODO fix mipmapping..
+        mipmap = false;
+        this.mipmap = mipmap;
 
         /**
          * Set to true to enable pre-multiplied alpha
@@ -90,7 +87,7 @@ export default class BaseTexture extends EventEmitter
          * @member {Number}
          */
         this.format = format || FORMATS.RGBA;
-        this.type = type || TYPES.UNSIGNED_BYTE; //UNSIGNED_BYTE
+        this.type = type || TYPES.UNSIGNED_BYTE; // UNSIGNED_BYTE
 
         this.target = TARGETS.TEXTURE_2D; // gl.TEXTURE_2D
 
@@ -104,7 +101,7 @@ export default class BaseTexture extends EventEmitter
 
         this.resource = null;
 
-        if(resource)
+        if (resource)
         {
             // lets convert this to a resource..
             resource = createResource(resource);
@@ -170,7 +167,7 @@ export default class BaseTexture extends EventEmitter
     {
         const resource = this.resource;
 
-        if(resource && resource.width !== -1 && resource.hight !== -1)
+        if (resource && resource.width !== -1 && resource.hight !== -1)
         {
             this.width = resource.width / this.resolution;
             this.height = resource.height / this.resolution;
@@ -181,41 +178,38 @@ export default class BaseTexture extends EventEmitter
     {
         // TODO currently a resource can only be set once..
 
-        if(this.resource)
+        if (this.resource)
         {
             this.resource.resourceUpdated.remove(this);
         }
 
-
         this.resource = resource;
 
-        resource.resourceUpdated.add(this); //calls resourceUpaded
+        resource.resourceUpdated.add(this); // calls resourceUpaded
 
-        if(resource.loaded)
+        if (resource.loaded)
         {
-            this.resourceLoaded(resource)
+            this.resourceLoaded(resource);
         }
 
         resource.load
         .then(this.resourceLoaded.bind(this))
-        .catch((reason)=>{
-
+        .catch((reason) =>
+        {
             // failed to load - maybe resource was destroyed before it loaded.
             console.warn(reason);
-
-        })
-
+        });
     }
 
     resourceLoaded(resource)
     {
-        if(this.resource === resource)
+        if (this.resource === resource)
         {
             this.updateResolution();
 
             this.validate();
 
-            if(this.valid)
+            if (this.valid)
             {
                 this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
 
@@ -225,7 +219,6 @@ export default class BaseTexture extends EventEmitter
                 this.emit('loaded', this);
             }
         }
-
     }
 
     resourceUpdated()
@@ -251,7 +244,7 @@ export default class BaseTexture extends EventEmitter
     {
         let valid = true;
 
-        if(this.width === -1 || this.height === -1)
+        if (this.width === -1 || this.height === -1)
         {
             valid = false;
         }
@@ -285,7 +278,7 @@ export default class BaseTexture extends EventEmitter
 
         // remove and destroy the resource
 
-        if(this.resource)
+        if (this.resource)
         {
             this.resource.destroy();
             this.resource = null;
@@ -320,9 +313,9 @@ export default class BaseTexture extends EventEmitter
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
      * @return {PIXI.BaseTexture} The new base texture.
      */
-    static from(source, scaleMode, sourceScale)
+    static from(source, scaleMode)
     {
-        var cacheId = null;
+        let cacheId = null;
 
         if (typeof source === 'string')
         {
@@ -330,7 +323,7 @@ export default class BaseTexture extends EventEmitter
         }
         else
         {
-            if(!source._pixiId)
+            if (!source._pixiId)
             {
                 source._pixiId = `pixiid_${uid()}`;
             }
@@ -342,7 +335,7 @@ export default class BaseTexture extends EventEmitter
 
         if (!baseTexture)
         {
-            baseTexture = new BaseTexture(source);
+            baseTexture = new BaseTexture(source, scaleMode);
             baseTexture.cacheId = cacheId;
             BaseTexture.addToCache(baseTexture, cacheId);
         }
@@ -352,29 +345,31 @@ export default class BaseTexture extends EventEmitter
 
     static fromFloat32Array(width, height, float32Array)
     {
-        float32Array = float32Array || new Float32Array(width*height*4);
+        float32Array = float32Array || new Float32Array(width * height * 4);
 
-        var texture = new BaseTexture(new BufferResource(float32Array),
+        const texture = new BaseTexture(new BufferResource(float32Array),
                                   SCALE_MODES.NEAREST,
                                   1,
                                   width,
                                   height,
                                   FORMATS.RGBA,
                                   TYPES.FLOAT);
+
         return texture;
     }
 
     static fromUint8Array(width, height, uint8Array)
     {
-        uint8Array = uint8Array || new Uint8Array(width*height*4);
+        uint8Array = uint8Array || new Uint8Array(width * height * 4);
 
-        var texture = new BaseTexture(new BufferResource(uint8Array),
+        const texture = new BaseTexture(new BufferResource(uint8Array),
                                   SCALE_MODES.NEAREST,
                                   1,
                                   width,
                                   height,
                                   FORMATS.RGBA,
                                   TYPES.UNSIGNED_BYTE);
+
         return texture;
     }
 

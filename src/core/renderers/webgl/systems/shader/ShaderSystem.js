@@ -18,7 +18,6 @@ export default class ShaderSystem extends WebGLSystem
      */
     constructor(renderer)
     {
-
         super(renderer);
 
         /**
@@ -29,6 +28,7 @@ export default class ShaderSystem extends WebGLSystem
         this.gl = null;
 
         this.shader = null;
+        this.program = null;
 
         this.id = UID++;
     }
@@ -53,10 +53,12 @@ export default class ShaderSystem extends WebGLSystem
         const program = shader.program;
         const glShader = program.glShaders[this.renderer.CONTEXT_UID] || this.generateShader(shader);
 
+        this.shader = shader;
+
         // TODO - some current pixi plugins bypass this.. so it not safe to use yet..
-        if (this.shader !== shader)
+        if (this.program !== program)
         {
-            this.shader = shader;
+            this.program = program;
             glShader.bind();
         }
 
@@ -85,14 +87,13 @@ export default class ShaderSystem extends WebGLSystem
     {
         const glShader = this.getGLShader();
 
-        if(!group.static || group.dirtyId !== glShader.uniformGroups[group.id])
+        if (!group.static || group.dirtyId !== glShader.uniformGroups[group.id])
         {
             glShader.uniformGroups[group.id] = group.dirtyId;
             const syncFunc = group.syncUniforms[this.shader.program.id] || this.createSyncGroups(group);
 
             syncFunc(glShader.uniformData, group.uniforms, this.renderer);
         }
-
     }
 
     createSyncGroups(group)
@@ -110,14 +111,12 @@ export default class ShaderSystem extends WebGLSystem
      */
     getGLShader()
     {
-        if(this.shader)
+        if (this.shader)
         {
             return this.shader.program.glShaders[this.renderer.CONTEXT_UID];
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     /**

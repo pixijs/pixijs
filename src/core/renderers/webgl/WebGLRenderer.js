@@ -1,5 +1,5 @@
 import SystemRenderer from '../SystemRenderer';
-import { sayHello } from '../../utils';
+import { sayHello, pluginTarget } from '../../utils';
 import MaskSystem from './systems/MaskSystem';
 import StencilSystem from './systems/StencilSystem';
 import FilterSystem from './systems/FilterSystem';
@@ -12,12 +12,10 @@ import GeometrySystem from './systems/geometry/GeometrySystem';
 import ShaderSystem from './systems/shader/ShaderSystem';
 import ContextSystem from './systems/ContextSystem';
 import BatchSystem from './systems/BatchSystem';
-import TextureGCSystem from './systems/textures/TextureGCSystem';
-import { pluginTarget } from '../../utils';
-import VertexArrayObject from './systems/geometry/VertexArrayObject';
+// import TextureGCSystem from './systems/textures/TextureGCSystem';
 import { RENDERER_TYPE } from '../../const';
 import UniformGroup from '../../shader/UniformGroup';
-import { Rectangle, Matrix } from '../../math';
+import { Matrix } from '../../math';
 import Runner from 'mini-runner';
 
 /**
@@ -74,10 +72,7 @@ export default class WebGLRenderer extends SystemRenderer
         this.CONTEXT_UID = 0;
         this.legacy = !!options.legacy;
 
-        if (this.legacy)
-        {
-            VertexArrayObject.FORCE_NATIVE = true;
-        }
+        // TODO legacy!
 
         // runners!
         this.runners = {
@@ -90,12 +85,11 @@ export default class WebGLRenderer extends SystemRenderer
             resize:         new Runner('resize', 2),
         };
 
-
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
 
         this.globalUniforms = new UniformGroup({
-            projectionMatrix:new Matrix(),
-        }, true)
+            projectionMatrix: new Matrix(),
+        }, true);
 
         this.addSystem(MaskSystem, 'mask')
         .addSystem(ContextSystem, 'context')
@@ -106,13 +100,12 @@ export default class WebGLRenderer extends SystemRenderer
         .addSystem(FramebufferSystem, 'framebuffer')
         .addSystem(StencilSystem, 'stencil')
         .addSystem(ProjectionSystem, 'projection')
-        //.addSystem(TextureGCSystem)
+        // .addSystem(TextureGCSystem)
         .addSystem(FilterSystem, 'filter')
         .addSystem(RenderTextureSystem, 'renderTexture')
-        .addSystem(BatchSystem,'batch')
+        .addSystem(BatchSystem, 'batch');
 
         this.initPlugins();
-
 
         /**
          * The options passed in to create a new webgl context.
@@ -120,7 +113,7 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {object}
          * @private
          */
-        if(options.context)
+        if (options.context)
         {
             this.context.initFromContext(options.context);
         }
@@ -144,12 +137,12 @@ export default class WebGLRenderer extends SystemRenderer
 
     addSystem(_class, name)
     {
-        if(!name)
+        if (!name)
         {
             name = _class.name;
         }
 
-        //TODO - read name from class.name..
+        // TODO - read name from class.name..
 
         /*
         if(name.includes('System'))
@@ -161,15 +154,14 @@ export default class WebGLRenderer extends SystemRenderer
 
         const system = new _class(this);
 
-        if(this[name])
+        if (this[name])
         {
-            throw new Error('Whoops! ' + name + ' is already a manger');
-            return;
+            throw new Error(`Whoops! ${name} is already a manger`);
         }
 
         this[name] = system;
 
-        for(var i in this.runners)
+        for (const i in this.runners)
         {
             this.runners[i].add(system);
         }
@@ -239,7 +231,7 @@ export default class WebGLRenderer extends SystemRenderer
         this.emit('prerender');
 
         // no point rendering if our context has been blown up!
-        if(this.context.isLost)
+        if (this.context.isLost)
         {
             return;
         }
@@ -297,6 +289,7 @@ export default class WebGLRenderer extends SystemRenderer
     reset()
     {
         this.runners.reset.run();
+
         return this;
     }
 

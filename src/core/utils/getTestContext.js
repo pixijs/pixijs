@@ -1,7 +1,4 @@
-
-
 let context = null;
-
 
 /**
  * returns a little webGL context to use for program inspection.
@@ -13,7 +10,7 @@ let context = null;
 
 export default function getTestContext()
 {
-    if(!context)
+    if (!context)
     {
         const canvas = document.createElement('canvas');
         const options = {};
@@ -21,10 +18,9 @@ export default function getTestContext()
         canvas.width = 1;
         canvas.height = 1;
 
-
-        context = canvas.getContext('webgl2', options) ||
-        canvas.getContext('webgl', options) ||
-        canvas.getContext('experimental-webgl', options);
+        context = canvas.getContext('webgl2', options)
+                    || canvas.getContext('webgl', options)
+                    || canvas.getContext('experimental-webgl', options);
 
         if (!context)
         {

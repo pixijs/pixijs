@@ -1,6 +1,5 @@
 import WebGLSystem from './WebGLSystem';
 import ObjectRenderer from '../utils/ObjectRenderer';
-import { Rectangle, Matrix } from '../../../math';
 
 /**
  * @class
@@ -64,6 +63,6 @@ export default class BatchSystem extends WebGLSystem
 
     reset()
     {
-         this.setObjectRenderer(this.emptyRenderer);
+        this.setObjectRenderer(this.emptyRenderer);
     }
 }

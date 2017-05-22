@@ -7,39 +7,11 @@ export default class ImageResource extends TextureResource
     {
         super(source);
 
-        this.load = new Promise((resolve, reject) => {
-
+        this.load = new Promise((resolve) =>
+        {
             const source = this.source;
 
-            source.onload = () => {
-                this.loaded = true;
-                source.onload = null;
-                source.onerror = null;
-                this.width = source.width;
-                this.height = source.height;
-
-                if(window.createImageBitmap)
-                {
-                    createImageBitmap(source).then((imageBitmap)=>{
-
-                        this.source = imageBitmap;
-
-                        resolve(this);
-
-                    })
-                }
-                else
-                {
-                    resolve(this);
-                }
-
-
-
-            }
-
-
-
-            if(source.complete && source.src)
+            source.onload = () =>
             {
                 this.loaded = true;
                 source.onload = null;
@@ -47,15 +19,37 @@ export default class ImageResource extends TextureResource
                 this.width = source.width;
                 this.height = source.height;
 
-                if(window.createImageBitmap)
+                if (window.createImageBitmap)
                 {
-                    createImageBitmap(source).then((imageBitmap)=>{
-
+                    window.createImageBitmap(source).then((imageBitmap) =>
+                    {
                         this.source = imageBitmap;
 
                         resolve(this);
+                    });
+                }
+                else
+                {
+                    resolve(this);
+                }
+            };
 
-                    })
+            if (source.complete && source.src)
+            {
+                this.loaded = true;
+                source.onload = null;
+                source.onerror = null;
+                this.width = source.width;
+                this.height = source.height;
+
+                if (window.createImageBitmap)
+                {
+                    window.createImageBitmap(source).then((imageBitmap) =>
+                    {
+                        this.source = imageBitmap;
+
+                        resolve(this);
+                    });
                 }
                 else
                 {
@@ -65,8 +59,8 @@ export default class ImageResource extends TextureResource
 
         //    source.onerror = () => {
           //      reject('unable to load "' + source.src + '" resource cannot be found')
-            //}
-        })
+            // }
+        });
     }
 
     destroy()
@@ -76,7 +70,7 @@ export default class ImageResource extends TextureResource
 
     static from(url, crossorigin)
     {
-        var image = new Image();
+        const image = new Image();
 
         if (crossorigin === undefined && url.indexOf('data:') !== 0)
         {
@@ -84,8 +78,8 @@ export default class ImageResource extends TextureResource
         }
 
         image.src = url;
+
         return new ImageResource(image);
     }
-
 
 }

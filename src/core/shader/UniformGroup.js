@@ -1,4 +1,3 @@
-
 let UID = 0;
 
 // let math = require('../../../math');

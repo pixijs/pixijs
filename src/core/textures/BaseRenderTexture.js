@@ -1,6 +1,5 @@
 import BaseTexture from './BaseTexture';
 import FrameBuffer from './FrameBuffer';
-import settings from '../settings';
 
 /**
  * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -71,10 +70,12 @@ export default class BaseRenderTexture extends BaseTexture
          */
         this._canvasRenderTarget = null;
 
-        this.clearColor = [0,0,0,0];
+        this.clearColor = [0, 0, 0, 0];
 
         this.frameBuffer = new FrameBuffer(width, height)
         .addColorTexture(0, this);
+
+        // TODO - could this be added the systems?
 
         /**
          * The data structure for the stencil masks
@@ -82,6 +83,13 @@ export default class BaseRenderTexture extends BaseTexture
          * @member {PIXI.Graphics[]}
          */
         this.stencilMaskStack = [];
+
+        /**
+         * The data structure for the filters
+         *
+         * @member {PIXI.Graphics[]}
+         */
+        this.filterStack = [];
     }
 
     /**

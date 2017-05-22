@@ -1,5 +1,3 @@
-import glCore from 'pixi-gl-core';
-
 const fragTemplate = [
     'precision mediump float;',
     'void main(void){',

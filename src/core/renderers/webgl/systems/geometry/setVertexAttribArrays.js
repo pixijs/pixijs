@@ -5,13 +5,14 @@
  * @param attribs {*}
  * @param state {*}
  */
-var setVertexAttribArrays = function (gl, attribs, state)
+export default function setVertexAttribArrays(gl, attribs, state)
 {
-    var i;
-    if(state)
+    let i;
+
+    if (state)
     {
-        var tempAttribState = state.tempAttribState,
-            attribState = state.attribState;
+        const tempAttribState = state.tempAttribState;
+        const attribState = state.attribState;
 
         for (i = 0; i < tempAttribState.length; i++)
         {
@@ -40,16 +41,14 @@ var setVertexAttribArrays = function (gl, attribs, state)
                 }
             }
         }
-
     }
     else
     {
         for (i = 0; i < attribs.length; i++)
         {
-            var attrib = attribs[i];
+            const attrib = attribs[i];
+
             gl.enableVertexAttribArray(attrib.attribute.location);
         }
     }
-};
-
-module.exports = setVertexAttribArrays;
+}

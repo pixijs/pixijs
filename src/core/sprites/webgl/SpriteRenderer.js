@@ -1,6 +1,5 @@
 import ObjectRenderer from '../../renderers/webgl/utils/ObjectRenderer';
 import WebGLRenderer from '../../renderers/webgl/WebGLRenderer';
-import GLBuffer from '../../renderers/webgl/systems/geometry/GLBuffer';
 import createIndicesForQuads from '../../utils/createIndicesForQuads';
 import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
@@ -8,12 +7,11 @@ import Buffer from './BatchBuffer';
 import settings from '../../settings';
 import bitTwiddle from 'bit-twiddle';
 import Geometry from '../../geometry/Geometry';
-//TODO rename this
-import Buffer_GEOM from '../../geometry/Buffer';
-
+// TODO rename this
+import GeometryBuffer from '../../geometry/Buffer';
 
 let TICK = 0;
-let TEXTURE_TICK = 0;
+// const TEXTURE_TICK = 0;
 
 /**
  * Renderer dedicated to drawing and batching sprites.
@@ -69,7 +67,7 @@ export default class SpriteRenderer extends ObjectRenderer
          * @member {Uint16Array}
          */
         this.indices = createIndicesForQuads(this.size);
-        this.indexBuffer = new Buffer_GEOM(this.indices, true, true);
+        this.indexBuffer = new GeometryBuffer(this.indices, true, true);
 
         /**
          * The default shaders that is used if a sprite doesn't have a more specific one.
@@ -120,7 +118,6 @@ export default class SpriteRenderer extends ObjectRenderer
             this.MAX_TEXTURES = checkMaxIfStatmentsInShader(this.MAX_TEXTURES, gl);
         }
 
-
         // generate generateMultiTextureProgram, may be a better move?
         this.shader = generateMultiTextureShader(gl, this.MAX_TEXTURES);
 
@@ -128,15 +125,15 @@ export default class SpriteRenderer extends ObjectRenderer
         // as it is not used by the shader so is optimized out.
         for (let i = 0; i < this.vaoMax; i++)
         {
-            var buffer = new Buffer_GEOM(null, false);
+            const buffer = new GeometryBuffer(null, false);
 
             /* eslint-disable max-len */
             this.vaos[i] = new Geometry()
-            .addAttribute('aVertexPosition', buffer, 2, false,  gl.FLOAT)
-            .addAttribute('aTextureCoord', buffer, 2, true,  gl.UNSIGNED_SHORT)
-            .addAttribute('aColor', buffer, 4, true,  gl.UNSIGNED_BYTE)
-            .addAttribute('aTextureId', buffer, 1, true,  gl.FLOAT)
-            .addIndex(this.indexBuffer)
+            .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
+            .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
+            .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
+            .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
+            .addIndex(this.indexBuffer);
             /* eslint-enable max-len */
 
             this.vertexBuffers[i] = buffer;
@@ -203,7 +200,7 @@ export default class SpriteRenderer extends ObjectRenderer
         const float32View = buffer.float32View;
         const uint32View = buffer.uint32View;
 
-        const touch = 0;//this.renderer.textureGC.count;
+       // const touch = 0;// this.renderer.textureGC.count;
 
         let index = 0;
         let nextTexture;
@@ -231,29 +228,28 @@ export default class SpriteRenderer extends ObjectRenderer
 
             // upload the sprite elemetns...
             // they have all ready been calculated so we just need to push them into the buffer.
-            var sprite = sprites[i];
+            const sprite = sprites[i];
 
             nextTexture = sprite._texture.baseTexture;
             textureId = nextTexture._id;
 
-
-            if(blendMode !== sprite.blendMode)
+            if (blendMode !== sprite.blendMode)
             {
                 blendMode = sprite.blendMode;
 
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = this.MAX_TEXTURES;
+                textureCount = MAX_TEXTURES;
                 TICK++;
             }
 
-            if(currentTexture !== nextTexture)
+            if (currentTexture !== nextTexture)
             {
                 currentTexture = nextTexture;
 
-                if(nextTexture._enabled !== TICK)
+                if (nextTexture._enabled !== TICK)
                 {
-                    if(textureCount === this.MAX_TEXTURES)
+                    if (textureCount === MAX_TEXTURES)
                     {
                         TICK++;
 
@@ -273,7 +269,6 @@ export default class SpriteRenderer extends ObjectRenderer
                     currentGroup.textures[currentGroup.textureCount++] = nextTexture;
                     textureCount++;
                 }
-
             }
 
             vertexData = sprite.vertexData;
@@ -345,15 +340,15 @@ export default class SpriteRenderer extends ObjectRenderer
             {
                 this.vaoMax++;
 
-                let buffer = new Buffer_GEOM(null, false);
+                const buffer = new GeometryBuffer(null, false);
 
                 /* eslint-disable max-len */
                 this.vaos[this.vertexCount] = new Geometry()
-                .addAttribute('aVertexPosition', buffer, 2, false,  gl.FLOAT)
-                .addAttribute('aTextureCoord', buffer, 2, true,  gl.UNSIGNED_SHORT)
-                .addAttribute('aColor', buffer, 4, true,  gl.UNSIGNED_BYTE)
-                .addAttribute('aTextureId', buffer, 1, true,  gl.FLOAT)
-                .addIndex(this.indexBuffer)
+                .addAttribute('aVertexPosition', buffer, 2, false, gl.FLOAT)
+                .addAttribute('aTextureCoord', buffer, 2, true, gl.UNSIGNED_SHORT)
+                .addAttribute('aColor', buffer, 4, true, gl.UNSIGNED_BYTE)
+                .addAttribute('aTextureId', buffer, 1, true, gl.FLOAT)
+                .addIndex(this.indexBuffer);
                 /* eslint-enable max-len */
 
                 this.vertexBuffers[this.vertexCount] = buffer;
@@ -372,19 +367,19 @@ export default class SpriteRenderer extends ObjectRenderer
             this.renderer.geometry.updateBuffers();
         }
 
-        /// render the groups..
-        for (i = 0; i < groupCount; i++) {
+        // / render the groups..
+        for (i = 0; i < groupCount; i++)
+{
+            const group = groups[i];
+            const groupTextureCount = group.textureCount;
 
-            var group = groups[i];
-            var groupTextureCount = group.textureCount;
-
-            for (var j = 0; j < groupTextureCount; j++)
+            for (let j = 0; j < groupTextureCount; j++)
             {
                 this.renderer.texture.bind(group.textures[j], j);
             }
 
             // set the blend mode..
-            this.renderer.state.setBlendMode( group.blend );
+            this.renderer.state.setBlendMode(group.blend);
 
             gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
         }

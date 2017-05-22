@@ -1,10 +1,8 @@
-module.exports = {
-    compileProgram: require('./compileProgram'),
-    defaultValue: require('./defaultValue'),
-    extractAttributes: require('./extractAttributes'),
-    extractUniforms: require('./extractUniforms'),
-    generateUniformAccessObject: require('./generateUniformAccessObject'),
-    setPrecision: require('./setPrecision'),
-    mapSize: require('./mapSize'),
-    mapType: require('./mapType')
-};
+export { default as compileProgram } from './compileProgram';
+export { default as defaultValue } from './defaultValue';
+export { default as extractAttributes } from './extractAttributes';
+export { default as extractUniforms } from './extractUniforms';
+export { default as generateUniformAccessObject } from './generateUniformAccessObject';
+export { default as setPrecision } from './setPrecision';
+export { default as mapSize } from './mapSize';
+export { default as mapType } from './mapType';

@@ -1,4 +1,3 @@
-
 /**
  * @class
  * @memberof PIXI.glCore.shader
@@ -8,25 +7,24 @@
  * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations
  * @return {WebGLProgram} the shader program
  */
-var compileProgram = function(gl, vertexSrc, fragmentSrc, attributeLocations)
+export default function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations)
 {
-    var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
-    var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+    const glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
+    const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
 
-    var program = gl.createProgram();
+    let program = gl.createProgram();
 
     gl.attachShader(program, glVertShader);
     gl.attachShader(program, glFragShader);
 
     // optionally, set the attributes manually for the program rather than letting WebGL decide..
-    if(attributeLocations)
+    if (attributeLocations)
     {
-        for(var i in attributeLocations)
+        for (const i in attributeLocations)
         {
             gl.bindAttribLocation(program, attributeLocations[i], i);
         }
     }
-
 
     gl.linkProgram(program);
 
@@ -52,7 +50,7 @@ var compileProgram = function(gl, vertexSrc, fragmentSrc, attributeLocations)
     gl.deleteShader(glFragShader);
 
     return program;
-};
+}
 
 /**
  * @private
@@ -61,20 +59,17 @@ var compileProgram = function(gl, vertexSrc, fragmentSrc, attributeLocations)
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @return {WebGLShader} the shader
  */
-var compileShader = function (gl, type, src)
+function compileShader(gl, type, src)
 {
-    var shader = gl.createShader(type);
+    const shader = gl.createShader(type);
 
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
     {
-        console.log(gl.getShaderInfoLog(shader));
         return null;
     }
 
     return shader;
-};
-
-module.exports = compileProgram;
+}

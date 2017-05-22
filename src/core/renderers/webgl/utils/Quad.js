@@ -1,6 +1,6 @@
-import glCore from 'pixi-gl-core';
 import createIndicesForQuads from '../../../utils/createIndicesForQuads';
-import Geometry from '../../../geometry/Geometry'
+import Geometry from '../../../geometry/Geometry';
+
 /**
  * Helper class to create a quad
  *
@@ -51,7 +51,6 @@ export default class Quad extends Geometry
             this.interleaved[(i * 4) + 3] = this.uvs[(i * 2) + 1];
         }
 
-
         /*
          * @member {Uint16Array} An array containing the indices of the vertices
          *
@@ -92,7 +91,6 @@ export default class Quad extends Geometry
      */
     initVao(shader)
     {
-        return;
         this.vao.clear()
         .addIndex(this.indexBuffer)
         .addAttribute(this.vertexBuffer, shader.attributes.aVertexPosition, this.gl.FLOAT, false, 4 * 4, 0)
@@ -148,10 +146,9 @@ export default class Quad extends Geometry
      */
     upload()
     {
-       this.getAttribute('aVertexPosition').update();
-       this.getAttribute('aTextureCoord').update();
+        this.getAttribute('aVertexPosition').update();
+        this.getAttribute('aTextureCoord').update();
 
-       return;
         for (let i = 0; i < 4; i++)
         {
             this.interleaved[i * 4] = this.vertices[(i * 2)];

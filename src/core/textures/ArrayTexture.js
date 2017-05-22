@@ -1,6 +1,6 @@
 import Texture from './BaseTexture';
 import ImageResource from './resources/ImageResource';
-import {TARGETS} from './../const';
+import { TARGETS } from './../const';
 
 export default class ArrayTexture extends Texture
 {
@@ -16,41 +16,41 @@ export default class ArrayTexture extends Texture
 
     setResource(resource, index)
     {
-        var layer = this.array[index];
-        if(!layer)
+        let layer = this.array[index];
+
+        if (!layer)
         {
-            layer = this.array[index] = {index:index, texture:this, resource:null, texturePart:true, dirtyId:0};
+            layer = this.array[index] = { index, texture: this, resource: null, texturePart: true, dirtyId: 0 };
         }
 
         layer.resource = resource;
 
-        resource.load.then((resource) => {
-
-            if(layer.resource === resource)
+        resource.load.then((resource) =>
+{
+            if (layer.resource === resource)
             {
                 this.validate();
                 this.dirtyId++;
             }
-
-        })
+        });
     }
 
     validate()
     {
         let valid = true;
 
-        if(this.width === -1 || this.height === -1)
+        if (this.width === -1 || this.height === -1)
         {
             valid = false;
         }
 
-        if(this.array)
+        if (this.array)
         {
-            for (var i = 0; i < this.array.length; i++) {
-
+            for (let i = 0; i < this.array.length; i++)
+{
                 const layer = this.array[i];
 
-                if(layer.resource && !layer.resource.loaded)
+                if (layer.resource && !layer.resource.loaded)
                 {
                     valid = false;
                     break;
@@ -63,9 +63,9 @@ export default class ArrayTexture extends Texture
 
     static from(width, height, ...urls)
     {
-        var arrayTexture = new ArrayTexture(width, height);
+        const arrayTexture = new ArrayTexture(width, height);
 
-        for (var i = 0; i < 6; i++)
+        for (let i = 0; i < 6; i++)
         {
             arrayTexture.setResource(ImageResource.from(urls[i % urls.length]), i);
         }

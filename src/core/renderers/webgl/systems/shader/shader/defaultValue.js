@@ -4,7 +4,7 @@
  * @param type {String} Type of value
  * @param size {Number}
  */
-var defaultValue = function(type, size)
+export default function defaultValue(type, size)
 {
     switch (type)
     {
@@ -39,7 +39,7 @@ var defaultValue = function(type, size)
 
         case 'bvec2':
 
-            return booleanArray( 2 * size);
+            return booleanArray(2 * size);
 
         case 'bvec3':
             return booleanArray(3 * size);
@@ -49,31 +49,31 @@ var defaultValue = function(type, size)
 
         case 'mat2':
             return new Float32Array([1, 0,
-                                     0, 1]);
+                0, 1]);
 
         case 'mat3':
             return new Float32Array([1, 0, 0,
-                                     0, 1, 0,
-                                     0, 0, 1]);
+                0, 1, 0,
+                0, 0, 1]);
 
         case 'mat4':
             return new Float32Array([1, 0, 0, 0,
-                                     0, 1, 0, 0,
-                                     0, 0, 1, 0,
-                                     0, 0, 0, 1]);
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1]);
     }
-};
 
-var booleanArray = function(size)
+    return null;
+}
+
+function booleanArray(size)
 {
-    var array = new Array(size);
+    const array = new Array(size);
 
-    for (var i = 0; i < array.length; i++)
+    for (let i = 0; i < array.length; i++)
     {
         array[i] = false;
     }
 
     return array;
-};
-
-module.exports = defaultValue;
+}

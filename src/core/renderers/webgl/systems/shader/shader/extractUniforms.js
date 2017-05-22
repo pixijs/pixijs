@@ -1,5 +1,5 @@
-var mapType = require('./mapType');
-var defaultValue = require('./defaultValue');
+import mapType from './mapType';
+import defaultValue from './defaultValue';
 
 /**
  * Extracts the uniforms
@@ -9,27 +9,25 @@ var defaultValue = require('./defaultValue');
  * @param program {WebGLProgram} The shader program to get the uniforms from
  * @return uniforms {Object}
  */
-var extractUniforms = function(gl, program)
+export default function extractUniforms(gl, program)
 {
-	var uniforms = {};
+    const uniforms = {};
 
-    var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+    const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
-    for (var i = 0; i < totalUniforms; i++)
+    for (let i = 0; i < totalUniforms; i++)
     {
-    	var uniformData = gl.getActiveUniform(program, i);
-    	var name = uniformData.name.replace(/\[.*?\]/, "");
-        var type = mapType(gl, uniformData.type );
+        const uniformData = gl.getActiveUniform(program, i);
+        const name = uniformData.name.replace(/\[.*?\]/, '');
+        const type = mapType(gl, uniformData.type);
 
-    	uniforms[name] = {
-    		type:type,
-    		size:uniformData.size,
-    		location:gl.getUniformLocation(program, name),
-    		value:defaultValue(type, uniformData.size)
-    	};
+        uniforms[name] = {
+            type,
+            size: uniformData.size,
+            location: gl.getUniformLocation(program, name),
+            value: defaultValue(type, uniformData.size),
+        };
     }
 
-	return uniforms;
-};
-
-module.exports = extractUniforms;
+    return uniforms;
+}

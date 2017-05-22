@@ -62,6 +62,8 @@ export default class Geometry
 
         this.instanced = false;
 
+        this.instanceCount = 1;
+
         this._size = null;
     }
 
@@ -122,7 +124,7 @@ export default class Geometry
 
         // assuming that if there is instanced data then this will be drawn with instancing!
         this.instanced = this.instanced || instance;
-        this._si
+
         return this;
     }
 
@@ -231,17 +233,16 @@ export default class Geometry
 
     getSize()
     {
-        for (var i in this.attributes)
+        for (const i in this.attributes)
         {
             const attribute = this.attributes[i];
             const buffer = this.buffers[attribute.buffer];
 
-            return buffer.data.length / (( attribute.stride/4 ) || attribute.size);
+            return buffer.data.length / ((attribute.stride / 4) || attribute.size);
         }
 
         return 0;
-    };
-
+    }
 
     /**
      * Destroys the geometry.

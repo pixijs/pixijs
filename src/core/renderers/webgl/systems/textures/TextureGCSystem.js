@@ -9,7 +9,7 @@ import settings from '../../../../settings';
  * @class
  * @memberof PIXI
  */
-export default class TextureGCSystem  extends WebGLSystem
+export default class TextureGCSystem extends WebGLSystem
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this System works for.
@@ -24,7 +24,6 @@ export default class TextureGCSystem  extends WebGLSystem
         this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
         this.mode = settings.GC_MODE;
     }
-
 
     /**
      * Checks to see when the last time a texture was used

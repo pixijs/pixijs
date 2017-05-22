@@ -1,5 +1,4 @@
 import WebGLSystem from './WebGLSystem';
-import { Rectangle, Matrix } from '../../../math';
 
 let CONTEXT_UID = 0;
 
@@ -8,7 +7,6 @@ let CONTEXT_UID = 0;
  * @extends PIXI.WebGLSystem
  * @memberof PIXI
  */
-
 export default class ContextSystem extends WebGLSystem
 {
     /**
@@ -25,44 +23,38 @@ export default class ContextSystem extends WebGLSystem
 
         renderer.view.addEventListener('webglcontextlost', this.handleContextLost, false);
         renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
-
     }
 
     get isLost()
     {
-    	return (!this.gl || this.gl.isContextLost());
+        return (!this.gl || this.gl.isContextLost());
     }
 
     contextChange(gl)
     {
-    	this.gl = gl;
+        this.gl = gl;
 
         // restore a context if it was previously lost
         if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
         {
             gl.getExtension('WEBGL_lose_context').restoreContext();
         }
-
-        // setup the width/height properties and gl viewport
-        //this.resize(this.screen.width, this.screen.height);
-       // const renderer = this.renderer;
-
-     //   renderer.resize(renderer.screen.width, renderer.screen.height);
     }
 
     initFromContext(gl)
     {
-    	this.gl = gl;
-    	this.validateContext(gl);
-    	this.renderer.gl = gl;
-    	this.renderer.CONTEXT_UID = CONTEXT_UID++;
-    	this.renderer.runners.contextChange.run(gl);
+        this.gl = gl;
+        this.validateContext(gl);
+        this.renderer.gl = gl;
+        this.renderer.CONTEXT_UID = CONTEXT_UID++;
+        this.renderer.runners.contextChange.run(gl);
     }
 
     initFromOptions(options)
     {
-    	const gl = this.createContext(this.renderer.view, options);
-    	this.initFromContext(gl);
+        const gl = this.createContext(this.renderer.view, options);
+
+        this.initFromContext(gl);
     }
 
     /**
@@ -72,14 +64,14 @@ export default class ContextSystem extends WebGLSystem
      * @memberof PIXI.glCore
      * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
      * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
-     *                         see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
+     * see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
      * @return {WebGLRenderingContext} the WebGL context
      */
     createContext(canvas, options)
     {
-        var gl = canvas.getContext('webgl2', options);
+        let gl = canvas.getContext('webgl2', options);
 
-        if(gl)
+        if (gl)
         {
             this.webGLversion = 2;
         }
@@ -87,8 +79,8 @@ export default class ContextSystem extends WebGLSystem
         {
             this.webGLversion = 1;
 
-            canvas.getContext('webgl', options) ||
-            canvas.getContext('experimental-webgl', options);
+            gl = canvas.getContext('webgl', options)
+            || canvas.getContext('experimental-webgl', options);
 
             if (!gl)
             {
@@ -98,7 +90,7 @@ export default class ContextSystem extends WebGLSystem
         }
 
         return gl;
-    };
+    }
 
     /**
      * Handles a lost webgl context
@@ -118,17 +110,14 @@ export default class ContextSystem extends WebGLSystem
      */
     handleContextRestored()
     {
-        this.renderer.runners.contextChange.run(gl);
-
-        // TODO - tidy up textures?
-        //this.textureSystem.removeAll();
+        this.renderer.runners.contextChange.run(this.gl);
     }
 
     destroy()
     {
-    	const view = this.renderer.view;
+        const view = this.renderer.view;
 
-    	// remove listeners
+        // remove listeners
         view.removeEventListener('webglcontextlost', this.handleContextLost);
         view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
@@ -138,12 +127,11 @@ export default class ContextSystem extends WebGLSystem
         {
             this.gl.getExtension('WEBGL_lose_context').loseContext();
         }
-
     }
 
     postrender()
     {
-    	this.gl.flush();
+        this.gl.flush();
     }
 
     validateContext(gl)
@@ -153,9 +141,13 @@ export default class ContextSystem extends WebGLSystem
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (!attributes.stencil)
         {
+            /* eslint-disable max-len */
+
             /* eslint-disable no-console */
             console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
             /* eslint-enable no-console */
+
+            /* eslint-enable max-len */
         }
     }
 }

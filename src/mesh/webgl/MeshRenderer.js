@@ -1,9 +1,5 @@
 import * as core from '../../core';
 
-const byteSizeMap = { 5126: 4, 5123: 2, 5121: 1 };
-
-const matrixIdentity = core.Matrix.IDENTITY;
-
 /**
  * WebGL renderer plugin for tiling sprites
  *
@@ -66,16 +62,6 @@ export default class MeshRenderer extends core.ObjectRenderer
         this.renderer.geometry.bind(mesh.geometry, mesh.shader);
         // then render it
         this.renderer.geometry.draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
-    }
-
-
-    /**
-     * draws mesh
-     * @param {PIXI.mesh.RawMesh} mesh mesh instance
-     */
-    draw(mesh)
-    {
-        mesh.geometry.glVertexArrayObjects[this.CONTEXT_UID].draw(mesh.drawMode, mesh.size, mesh.start, mesh.geometry.instanceCount);
     }
 }
 

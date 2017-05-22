@@ -1,8 +1,7 @@
 import {
-    decomposeDataUri, getSvgSize, uid
+    decomposeDataUri, getSvgSize, uid,
 } from '../../utils';
 import TextureResource from './TextureResource';
-
 
 export default class SVGResource extends TextureResource
 {
@@ -16,12 +15,11 @@ export default class SVGResource extends TextureResource
 
         this.resolve = null;
 
-        this.load = new Promise((resolve, reject) => {
-
+        this.load = new Promise((resolve) =>
+{
             this.resolve = resolve;
             this._loadSvgSourceUsingXhr();
-
-        })
+        });
     }
 
     /**
@@ -86,12 +84,12 @@ export default class SVGResource extends TextureResource
     {
         const svgSize = getSvgSize(svgString);
 
-
         // TODO do we need to wait for this to load?
         // seems instant!
         //
         const tempImage =  new Image();
-        tempImage.src = 'data:image/svg+xml,' + svgString;
+
+        tempImage.src = `data:image/svg+xml,${svgString}`;
 
         const svgWidth = svgSize.width;
         const svgHeight = svgSize.height;
@@ -122,10 +120,9 @@ export default class SVGResource extends TextureResource
         this.resolve(this);
     }
 
-    static from(url, crossorigin)
+    static from(url)
     {
         return new SVGResource(url);
     }
-
 
 }

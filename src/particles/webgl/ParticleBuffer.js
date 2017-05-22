@@ -1,5 +1,5 @@
 import GLBuffer from '../../core/renderers/webgl/systems/geometry/GLBuffer';
-import VertexArrayObject from '../../core/renderers/webgl/systems/geometry/VertexArrayObject';
+// import VertexArrayObject from '../../core/renderers/webgl/systems/geometry/VertexArrayObject';
 
 import createIndicesForQuads from '../../core/utils/createIndicesForQuads';
 
@@ -157,8 +157,8 @@ export default class ParticleBuffer
         this.staticData = new Float32Array(this.size * this.staticStride * 4);
         this.staticBuffer = GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
 
-        this.vao = new VertexArrayObject(gl)
-        .addIndex(this.indexBuffer);
+        // this.vao = new VertexArrayObject(gl)
+        // .addIndex(this.indexBuffer);
 
         for (let i = 0; i < this.dynamicProperties.length; ++i)
         {

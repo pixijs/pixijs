@@ -1,6 +1,5 @@
 import * as core from '../../core';
 import { WRAP_MODES } from '../../core/const';
-import { GLShader } from 'pixi-gl-core';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -26,7 +25,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
     {
         super(renderer);
 
-        const uniforms = {globals:this.renderer.globalUniforms};
+        const uniforms = { globals: this.renderer.globalUniforms };
 
         this.shader = new core.Shader.from(
             readFileSync(join(__dirname, './tilingSprite.vert'), 'utf8'),
@@ -69,8 +68,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
             vertices[5] = vertices[7] = 1.0 - ts.anchor.y;
         }
 
-       // quad.upload();
-
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
         const lt = ts.tileTransform.localTransform;
@@ -95,7 +92,6 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         }
 
         const shader = isSimple ? this.simpleShader : this.shader;
-
 
         const w = tex.width;
         const h = tex.height;
@@ -135,7 +131,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         color[3] = ts.worldAlpha;
         shader.uniforms.uColor = color;
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
-        shader.uniforms.uSampler = tex;//renderer.texture.bind(tex.baseTexture, 0);
+        shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad, renderer.shader.getGLShader());

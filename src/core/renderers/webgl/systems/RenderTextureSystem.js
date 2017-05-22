@@ -1,5 +1,5 @@
 import WebGLSystem from './WebGLSystem';
-import { Rectangle, Matrix } from '../../../math';
+import { Rectangle } from '../../../math';
 
 const tempRect = new Rectangle();
 
@@ -22,24 +22,26 @@ export default class RenderTextureSystem extends WebGLSystem
 
         // TODO moe this property somewhere else!
         this.defaultMaskStack = [];
+
+        // empty render texture?
     }
 
     bind(renderTexture)
     {
         // TODO - do we want this??
-        if(this.renderTexture === renderTexture)return;
+        if (this.renderTexture === renderTexture) return;
         this.renderTexture = renderTexture;
+        this.current = renderTexture;
 
         const renderer = this.renderer;
 
-        if(renderTexture)
+        if (renderTexture)
         {
             const baseTexture = renderTexture.baseTexture;
 
-            this.renderer.framebuffer.bind(baseRenderTexture.frameBuffer);
-            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, baseRenderTexture.resolution, false);
+            this.renderer.framebuffer.bind(baseTexture.frameBuffer);
+            this.renderer.projection.update(renderTexture.frame, renderTexture.frame, baseTexture.resolution, false);
             this.renderer.stencil.setMaskStack(baseTexture.stencilMaskStack);
-
         }
         else
         {
@@ -47,16 +49,10 @@ export default class RenderTextureSystem extends WebGLSystem
 
             tempRect.width = renderer.width;
             tempRect.height = renderer.height;
+
             // TODO store this..
             this.renderer.projection.update(tempRect, tempRect, this.renderer.resolution, true);
             this.renderer.stencil.setMaskStack(this.defaultMaskStack);
-        }
-
-        const glShader = renderer.shader.getGLShader()
-
-        if (glShader)
-        {
-         //   glShader.uniforms.projectionMatrix = this.renderer.projection.projectionMatrix.toArray(true);
         }
     }
 
@@ -68,7 +64,7 @@ export default class RenderTextureSystem extends WebGLSystem
      */
     clear(clearColor)
     {
-        if(this.renderTexture)
+        if (this.renderTexture)
         {
             clearColor = clearColor || this.renderTexture.baseTexture.clearColor;
         }
@@ -80,9 +76,9 @@ export default class RenderTextureSystem extends WebGLSystem
         this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
     }
 
-    resize(screenWidth, screenHeight)
+    resize()// screenWidth, screenHeight)
     {
         // resize the root only!
-        this.bind(null)
+        this.bind(null);
     }
 }

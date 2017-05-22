@@ -1,6 +1,6 @@
 import Texture from './BaseTexture';
 import ImageResource from './resources/ImageResource';
-import {TARGETS} from './../const';
+import { TARGETS } from './../const';
 
 export default class CubeTexture extends Texture
 {
@@ -12,57 +12,57 @@ export default class CubeTexture extends Texture
 
         this.resources = [];
 
-        this.positiveX = {side:0, texture:this, resource:null, texturePart:true, dirtyId:0};
-        this.negativeX = {side:1, texture:this, resource:null, texturePart:true, dirtyId:0};
+        this.positiveX = { side: 0, texture: this, resource: null, texturePart: true, dirtyId: 0 };
+        this.negativeX = { side: 1, texture: this, resource: null, texturePart: true, dirtyId: 0 };
 
-        this.positiveY = {side:2, texture:this, resource:null, texturePart:true, dirtyId:0};
-        this.negativeY = {side:3, texture:this, resource:null, texturePart:true, dirtyId:0};
+        this.positiveY = { side: 2, texture: this, resource: null, texturePart: true, dirtyId: 0 };
+        this.negativeY = { side: 3, texture: this, resource: null, texturePart: true, dirtyId: 0 };
 
-        this.positiveZ = {side:4, texture:this, resource:null, texturePart:true, dirtyId:0};
-        this.negativeZ = {side:5, texture:this, resource:null, texturePart:true, dirtyId:0};
+        this.positiveZ = { side: 4, texture: this, resource: null, texturePart: true, dirtyId: 0 };
+        this.negativeZ = { side: 5, texture: this, resource: null, texturePart: true, dirtyId: 0 };
 
         this.sides = [this.positiveX, this.negativeX,
-                      this.positiveY, this.negativeY,
-                      this.positiveZ, this.negativeZ];
+            this.positiveY, this.negativeY,
+            this.positiveZ, this.negativeZ];
     }
 
     setResource(resource, index)
     {
-        var side = this.sides[index];
+        const side = this.sides[index];
+
         side.resource = resource;
 
-        resource.load.then((resource) => {
-
-            if(side.resource === resource)
+        resource.load.then((resource) =>
+{
+            if (side.resource === resource)
             {
                 this.width = resource.width;
                 this.height = resource.height;
                 // we have not swapped half way!
-                //side.dirtyId++;
+                // side.dirtyId++;
                 this.validate();
 
                 this.dirtyId++;
             }
-
-        })
+        });
     }
 
     validate()
     {
         let valid = true;
 
-        if(this.width === -1 || this.height === -1)
+        if (this.width === -1 || this.height === -1)
         {
             valid = false;
         }
 
-        if(this.sides)
+        if (this.sides)
         {
-            for (var i = 0; i < this.sides.length; i++) {
-
+            for (let i = 0; i < this.sides.length; i++)
+{
                 const side = this.sides[i];
 
-                if(side.resource && !side.resource.loaded)
+                if (side.resource && !side.resource.loaded)
                 {
                     valid = false;
                     break;
@@ -70,15 +70,14 @@ export default class CubeTexture extends Texture
             }
         }
 
-
         this.valid = valid;
     }
 
     static from(...urls)
     {
-        var cubeTexture = new CubeTexture();
+        const cubeTexture = new CubeTexture();
 
-        for (var i = 0; i < 6; i++)
+        for (let i = 0; i < 6; i++)
         {
             cubeTexture.setResource(ImageResource.from(urls[i % urls.length]), i);
         }

@@ -449,7 +449,7 @@ export default class Container extends DisplayObject
 
             if (this._enabledFilters.length)
             {
-                renderer.filterManager.pushFilter(this, this._enabledFilters);
+                renderer.filter.push(this, this._enabledFilters);
             }
         }
 
@@ -476,7 +476,7 @@ export default class Container extends DisplayObject
 
         if (filters && this._enabledFilters && this._enabledFilters.length)
         {
-            renderer.filterManager.popFilter();
+            renderer.filter.pop();
         }
     }
 

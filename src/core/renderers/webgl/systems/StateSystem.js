@@ -50,8 +50,6 @@ export default class StateSystem extends WebGLSystem
         this.defaultState = new WebGLState();
         this.defaultState.blend = true;
         this.defaultState.depth = true;
-
-
     }
 
     contextChange(gl)

@@ -4,15 +4,14 @@ export default class BufferResource extends TextureResource
 {
     constructor(source)
     {
-    	super(source);
+        super(source);
 
         this.uploadable = false;
 
-        this.load = new Promise((resolve, reject) => {
-
+        this.load = new Promise((resolve) =>
+        {
             resolve(this);
-
-        })
+        });
     }
 
     static from(array)
