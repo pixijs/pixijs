@@ -104,7 +104,7 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
 
-        renderer.state.setBlendMode(mesh.blendMode);
+        renderer.state.setBlendMode(core.utils.correctBlendMode(mesh.blendMode, texture.baseTexture.premultiplyAlpha));
 
         if (glData.shader.uniforms.uTransform)
         {

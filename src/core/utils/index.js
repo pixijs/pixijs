@@ -417,7 +417,7 @@ export const premultiplyBlendMode = mapPremultipliedBlendModes();
  */
 export function correctBlendMode(blendMode, premultiplied)
 {
-    return premultiplyBlendMode[Number(premultiplied)][blendMode];
+    return premultiplyBlendMode[premultiplied ? 1 : 0][blendMode];
 }
 
 /**

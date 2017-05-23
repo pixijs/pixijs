@@ -228,7 +228,7 @@ export default class SpriteRenderer extends ObjectRenderer
         let vertexData;
         let uvs;
         let blendMode = premultiplyBlendMode[
-            Number(sprites[0]._texture.baseTexture.premultipliedAlpha)][sprites[0].blendMode];
+            sprites[0]._texture.baseTexture.premultipliedAlpha ? 1 : 0][sprites[0].blendMode];
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
