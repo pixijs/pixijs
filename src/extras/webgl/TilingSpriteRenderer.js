@@ -140,7 +140,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-        shader.uniforms.uColor = core.utils.premultiplyTint(ts.tint, ts.worldAlpha,
+        shader.uniforms.uColor = core.utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
             shader.uniforms.uColor, baseTex.premultiplyAlpha);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
