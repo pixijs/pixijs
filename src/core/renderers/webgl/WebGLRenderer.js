@@ -133,7 +133,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._initContext();
 
-        sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL');
+        sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
     }
 
     addSystem(_class, name)
