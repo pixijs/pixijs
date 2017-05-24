@@ -489,9 +489,9 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
 export function premultiplyTintToRgba(tint, alpha, out, premultiply)
 {
     out = out || new Float32Array(4);
-    out[0] = ((tint >> 16) & 0xFF);
-    out[1] = ((tint >> 8) & 0xFF);
-    out[2] = (tint & 0xFF);
+    out[0] = ((tint >> 16) & 0xFF) / 255.0;
+    out[1] = ((tint >> 8) & 0xFF) / 255.0;
+    out[2] = (tint & 0xFF) / 255.0;
     if (premultiply || premultiply === undefined)
     {
         out[0] *= alpha;
