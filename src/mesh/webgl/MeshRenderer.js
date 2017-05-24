@@ -62,12 +62,16 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         let glData = mesh._glDatas[renderer.CONTEXT_UID];
+        const isTrimmed = texture.trim && (texture.trim.width < texture.orig.width
+            || texture.trim.height < texture.orig.height);
+        const shader = isTrimmed ? this.shaderTrim : this.shader;
 
         if (!glData)
         {
             renderer.bindVao(null);
 
             glData = {
+                shader,
                 vertexBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.vertices, gl.STREAM_DRAW),
                 uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.uvs, gl.STREAM_DRAW),
                 indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW),
@@ -80,8 +84,8 @@ export default class MeshRenderer extends core.ObjectRenderer
             // build the vao object that will render..
             glData.vao = new glCore.VertexArrayObject(gl)
                 .addIndex(glData.indexBuffer)
-                .addAttribute(glData.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
-                .addAttribute(glData.uvBuffer, this.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+                .addAttribute(glData.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+                .addAttribute(glData.uvBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
             mesh._glDatas[renderer.CONTEXT_UID] = glData;
         }
@@ -101,10 +105,6 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         glData.vertexBuffer.upload(mesh.vertices);
-
-        const isTrimmed = texture.trim && (texture.trim.width < texture.orig.width
-            || texture.trim.height < texture.orig.height);
-        const shader = isTrimmed ? this.shaderTrim : this.shader;
 
         renderer.bindShader(shader);
 
