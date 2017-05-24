@@ -1,5 +1,5 @@
 import { Point, ObservablePoint, Rectangle } from '../math';
-import { sign, TextureCache } from '../utils';
+import { sign, TextureCache, hex2rgb, rgb2hex } from '../utils';
 import { BLEND_MODES } from '../const';
 import Texture from '../textures/Texture';
 import Container from '../display/Container';
@@ -89,6 +89,15 @@ export default class Sprite extends Container
          * @member {PIXI.Filter|PIXI.Shader}
          */
         this.shader = null;
+
+        /**
+         * The tint applied to the mesh. This is a [r,g,b] value. A value of [1,1,1] will remove any
+         * tint effect.
+         *
+         * @member {number}
+         * @memberof PIXI.mesh.Mesh#
+         */
+        this._tintRgbFloat = new Float32Array([1, 1, 1]);
 
         /**
          * An internal cached value of the tint.
@@ -553,6 +562,32 @@ export default class Sprite extends Container
     {
         this._tint = value;
         this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintRgbFloat = hex2rgb(value, this._tintRgbFloat);
+    }
+
+    /**
+     * The tint applied to the sprite. This is a rgb value. A value of
+     * [1,1,1] will remove any tint effect.
+     *
+     * @member {Float32Array}
+     * @memberof PIXI.Sprite#
+     * @default [1.0,1.0,1.0]
+     */
+    get tintRgbFloat()
+    {
+        return this._tintRgbFloat;
+    }
+
+    /**
+     * Sets the tintRgb of the sprite.
+     *
+     * @param {number[]} value - The rgb array to set to.
+     */
+    set tintRgbFloat(value)
+    {
+        this._tint = rgb2hex(value);
+        this._tintRGB = (this._tint >> 16) + (this._tint & 0xff00) + ((this._tint & 0xff) << 16);
+        this._tintRgbFloat = value;
     }
 
     /**

@@ -109,4 +109,27 @@ describe('PIXI.Sprite', function ()
             expect(sprite.containsPoint(point)).to.be.false;
         });
     });
+
+    describe('tintRgbFloat', function ()
+    {
+        it('should return array[3] of floats', function ()
+        {
+            const texture = new PIXI.RenderTexture.create(20, 30);
+            const sprite = new PIXI.Sprite(texture);
+
+            sprite.tint = 0x012345;
+
+            const tintRgbFloat = sprite.tintRgbFloat;
+
+            expect(tintRgbFloat.length === 3).to.be.true;
+
+            expect(typeof tintRgbFloat[0] === 'number').to.be.true;
+            expect(typeof tintRgbFloat[1] === 'number').to.be.true;
+            expect(typeof tintRgbFloat[2] === 'number').to.be.true;
+            // check that the array elements are of type float
+            expect(tintRgbFloat[0] % 1 === 0).to.be.false;
+            expect(tintRgbFloat[1] % 1 === 0).to.be.false;
+            expect(tintRgbFloat[2] % 1 === 0).to.be.false;
+        });
+    });
 });
