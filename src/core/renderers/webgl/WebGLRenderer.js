@@ -124,6 +124,7 @@ export default class WebGLRenderer extends SystemRenderer
                 antialias: options.antialias,
                 premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
                 stencil: true,
+                forceWebGL1:!!options.forceWebGL1,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
             });
         }
@@ -132,7 +133,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._initContext();
 
-        sayHello(this.context.webGLVersion === 2 ? 'WebGL' : 'WebGL 2');
+        sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL');
     }
 
     addSystem(_class, name)

@@ -16,7 +16,7 @@ export default class ContextSystem extends WebGLSystem
     {
         super(renderer);
 
-        this.webGLversion = 1;
+        this.webGLVersion = 1;
 
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
@@ -69,15 +69,21 @@ export default class ContextSystem extends WebGLSystem
      */
     createContext(canvas, options)
     {
-        let gl = canvas.getContext('webgl2', options);
+
+        let gl;
+
+        if(!options.forceWebGL1)
+        {
+            gl = canvas.getContext('webgl2', options);
+        }
 
         if (gl)
         {
-            this.webGLversion = 2;
+            this.webGLVersion = 2;
         }
         else
         {
-            this.webGLversion = 1;
+            this.webGLVersion = 1;
 
             gl = canvas.getContext('webgl', options)
             || canvas.getContext('experimental-webgl', options);

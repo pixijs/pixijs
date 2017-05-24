@@ -1,6 +1,6 @@
 import * as core from './core';
 import * as mesh from './mesh';
-import * as particles from './particles';
+//import * as particles from './particles';
 import * as extras from './extras';
 import * as filters from './filters';
 import * as prepare from './prepare';
@@ -157,7 +157,7 @@ Object.defineProperties(core, {
      * @see PIXI.particles.ParticleContainer
      * @deprecated since version 4.0.0
      */
-    ParticleContainer: {
+    /*ParticleContainer: {
         enumerable: true,
         get()
         {
@@ -166,7 +166,7 @@ Object.defineProperties(core, {
 
             return particles.ParticleContainer;
         },
-    },
+    },*/
 
     /**
      * @class
