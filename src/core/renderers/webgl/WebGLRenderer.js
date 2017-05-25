@@ -451,6 +451,7 @@ export default class WebGLRenderer extends SystemRenderer
             this.unbindTexture(baseTexture);
 
             renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
+            renderTarget.clearColor = this._backgroundColorRgba;
             renderTarget.setFrame(renderTexture.frame);
         }
         else
