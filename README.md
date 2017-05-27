@@ -49,10 +49,10 @@ Alternatively, Pixi.js can be installed with [npm](https://docs.npmjs.com/gettin
 
 _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager has been dropped. Please see the [release notes](https://github.com/pixijs/pixi.js/releases/tag/v4.5.0) for more information._
 
-#### NPM Install
-
+#### npm Install
+Pixi.js is currently not released to npm. You will have to install it directly from the github release branch, to get lastest version.
 ```
-$> npm install pixi.js
+$> npm install https://github.com/pixijs/pixi.js.git#release
 ```
 
 #### CDN Install (via cdnjs)
