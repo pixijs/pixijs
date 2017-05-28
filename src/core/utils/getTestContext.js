@@ -18,9 +18,14 @@ export default function getTestContext()
         canvas.width = 1;
         canvas.height = 1;
 
-        context = canvas.getContext('webgl2', options)
-                    || canvas.getContext('webgl', options)
-                    || canvas.getContext('experimental-webgl', options);
+
+        context = canvas.getContext('webgl', options)
+               || canvas.getContext('experimental-webgl', options);
+
+
+        //canvas.getContext('webgl2', options)
+        var xt = context.getExtension('WEBGL_draw_buffers');
+
 
         if (!context)
         {

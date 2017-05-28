@@ -68,6 +68,8 @@ function compileShader(gl, type, src)
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
     {
+        console.log(src)
+        console.error(gl.getShaderInfoLog(shader));
         return null;
     }
 

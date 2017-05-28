@@ -72,7 +72,8 @@ export default class ContextSystem extends WebGLSystem
 
         let gl;
 
-        if(!options.forceWebGL1)
+        // disabled for now!
+        if(false)//!options.forceWebGL1)
         {
             gl = canvas.getContext('webgl2', options);
         }
@@ -84,7 +85,6 @@ export default class ContextSystem extends WebGLSystem
         else
         {
             this.webGLVersion = 1;
-
             gl = canvas.getContext('webgl', options)
             || canvas.getContext('experimental-webgl', options);
 
