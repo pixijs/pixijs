@@ -124,7 +124,6 @@ export default class WebGLRenderer extends SystemRenderer
                 antialias: options.antialias,
                 premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
                 stencil: true,
-                forceWebGL1:!!options.forceWebGL1,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
             });
         }

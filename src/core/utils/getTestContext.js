@@ -1,3 +1,5 @@
+import settings from '../settings';
+
 let context = null;
 
 /**
@@ -13,25 +15,34 @@ export default function getTestContext()
     if (!context)
     {
         const canvas = document.createElement('canvas');
-        const options = {};
 
-        canvas.width = 1;
-        canvas.height = 1;
+        let gl;
 
-
-        context = canvas.getContext('webgl', options)
-               || canvas.getContext('experimental-webgl', options);
-
-
-        //canvas.getContext('webgl2', options)
-        var xt = context.getExtension('WEBGL_draw_buffers');
-
-
-        if (!context)
+        if (settings.PREFER_WEBGL_2)
         {
-            // fail, not able to get a context
-            throw new Error('This browser does not support webGL. Try using the canvas renderer');
+            gl = canvas.getContext('webgl2', {});
         }
+
+        if (!gl)
+        {
+            gl = canvas.getContext('webgl', {})
+            || canvas.getContext('experimental-webgl', {});
+
+            if (!gl)
+            {
+                // fail, not able to get a context
+                throw new Error('This browser does not support webGL. Try using the canvas renderer');
+            }
+            else
+            {
+                // for shader testing..
+                gl.getExtension('WEBGL_draw_buffers');
+            }
+        }
+
+        context = gl;
+
+        return gl;
     }
 
     return context;

@@ -46,6 +46,8 @@ export default {
      */
     RESOLUTION: 1,
 
+    PREFER_WEBGL_2: false,
+
     /**
      * Default filter resolution.
      *
@@ -218,5 +220,4 @@ export default {
      * @type {boolean}
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
-
 };

@@ -47,6 +47,7 @@ class Shader
         }
     }
 
+    // TODO move to shader system..
     checkUniformExists(name, group)
     {
         if (group.uniforms[name])

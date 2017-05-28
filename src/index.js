@@ -13,7 +13,7 @@ import * as filters from './filters';
 import * as interaction from './interaction';
 import * as loaders from './loaders';
 import * as mesh from './mesh';
-//import * as particles from './particles';
+// import * as particles from './particles';
 import * as prepare from './prepare';
 
 // handle mixins now, after all code has been added, including deprecation

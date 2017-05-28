@@ -1,4 +1,5 @@
 import WebGLSystem from './WebGLSystem';
+import settings from '../../../settings';
 
 let CONTEXT_UID = 0;
 
@@ -20,6 +21,8 @@ export default class ContextSystem extends WebGLSystem
 
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
+
+        this.extensions = {};
 
         renderer.view.addEventListener('webglcontextlost', this.handleContextLost, false);
         renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -69,11 +72,9 @@ export default class ContextSystem extends WebGLSystem
      */
     createContext(canvas, options)
     {
-
         let gl;
 
-        // disabled for now!
-        if(false)//!options.forceWebGL1)
+        if (settings.PREFER_WEBGL_2)
         {
             gl = canvas.getContext('webgl2', options);
         }
@@ -85,6 +86,7 @@ export default class ContextSystem extends WebGLSystem
         else
         {
             this.webGLVersion = 1;
+
             gl = canvas.getContext('webgl', options)
             || canvas.getContext('experimental-webgl', options);
 
@@ -95,7 +97,31 @@ export default class ContextSystem extends WebGLSystem
             }
         }
 
+        this.gl = gl;
+
+        this.getExtensions();
+
         return gl;
+    }
+
+    getExtensions()
+    {
+        // time to set up default etensions that pixi uses..
+        const gl = this.gl;
+        const extensions = this.extensions;
+
+        if (this.webGLVersion === 1)
+        {
+            extensions.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
+            extensions.depthTexture = gl.getExtension('WEBKIT_WEBGL_depth_texture');
+            extensions.floatTexture = gl.getExtension('OES_texture_float');
+
+            extensions.vertexArrayObject = gl.getExtension('OES_vertex_array_object')
+                                        || gl.getExtension('MOZ_OES_vertex_array_object')
+                                        || gl.getExtension('WEBKIT_OES_vertex_array_object');
+        }
+
+        // we don't use any specific WebGL 2 ones yet!
     }
 
     /**

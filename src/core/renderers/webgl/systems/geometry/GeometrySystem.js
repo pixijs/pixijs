@@ -48,9 +48,7 @@ export default class GeometrySystem extends WebGLSystem
         if (!gl.createVertexArray)
         {
             // webgl 1!
-            const nativeVaoExtension = gl.getExtension('OES_vertex_array_object')
-                                  || gl.getExtension('MOZ_OES_vertex_array_object')
-                                  || gl.getExtension('WEBKIT_OES_vertex_array_object');
+            const nativeVaoExtension = this.renderer.context.extensions.vertexArrayObject;
 
             if (nativeVaoExtension)
             {
@@ -58,14 +56,10 @@ export default class GeometrySystem extends WebGLSystem
                     nativeVaoExtension.createVertexArrayOES();
 
                 gl.bindVertexArray = (vao) =>
-                {
                     nativeVaoExtension.bindVertexArrayOES(vao);
-                };
 
                 gl.deleteVertexArray = (vao) =>
-                {
                     nativeVaoExtension.deleteVertexArrayOES(vao);
-                };
             }
             else
             {

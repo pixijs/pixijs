@@ -17,7 +17,7 @@ export default class FramebufferSystem extends WebGLSystem
         this.gl = this.renderer.gl;
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
 
-        this.drawBufferExtension = this.gl.getExtension('WEBGL_draw_buffers');
+        this.drawBufferExtension = this.renderer.context.extensions.drawBuffers;
     }
 
     bind(framebuffer)
@@ -170,7 +170,7 @@ export default class FramebufferSystem extends WebGLSystem
 
         if (framebuffer.depthTexture)
         {
-            const depthTextureExt = gl.getExtension('WEBKIT_WEBGL_depth_texture');
+            const depthTextureExt = this.renderer.context.extensions.depthTexture;
 
             if (depthTextureExt)
             {
