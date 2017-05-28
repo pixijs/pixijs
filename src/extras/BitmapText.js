@@ -144,6 +144,7 @@ export default class BitmapText extends core.Container
         let line = 0;
         let lastSpace = -1;
         let lastSpaceWidth = 0;
+        let spacesRemoved = 0;
         let maxLineHeight = 0;
 
         for (let i = 0; i < this.text.length; i++)
@@ -170,9 +171,10 @@ export default class BitmapText extends core.Container
 
             if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
             {
-                core.utils.removeItems(chars, lastSpace, i - lastSpace);
+                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
                 i = lastSpace;
                 lastSpace = -1;
+                ++spacesRemoved;
 
                 lineWidths.push(lastSpaceWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
