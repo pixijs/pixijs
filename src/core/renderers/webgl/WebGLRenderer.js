@@ -301,11 +301,12 @@ export default class WebGLRenderer extends SystemRenderer
      */
     destroy(removeView)
     {
+        this.runners.destroy.run();
+
         // call base destroy
         super.destroy(removeView);
 
         this.destroyPlugins();
-        this.runners.destroy.run();
 
         // TODO nullify all the managers..
         this.gl = null;

@@ -7,6 +7,8 @@ export default class ImageResource extends TextureResource
     {
         super(source);
 
+        this.url = source.src;
+
         this.load = new Promise((resolve) =>
         {
             const source = this.source;

@@ -71,6 +71,13 @@ class Shader
         return false;
     }
 
+    destroy()
+    {
+        // usage count on programs?
+        // remove if not used!
+        this.uniformGroup = null;
+    }
+
     get uniforms()
     {
         return this.uniformGroup.uniforms;

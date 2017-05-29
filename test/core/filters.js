@@ -2,6 +2,7 @@
 
 describe('PIXI.filters', function ()
 {
+    /*
     it('should correctly form uniformData', function ()
     {
         const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
@@ -18,4 +19,5 @@ describe('PIXI.filters', function ()
         // it does have filterArea, but it is handled by FilterManager
         expect(!!fxaa.uniformData.filterArea).to.be.false;
     });
+    */
 });

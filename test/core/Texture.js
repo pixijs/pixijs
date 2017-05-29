@@ -25,7 +25,7 @@ describe('PIXI.Texture', function ()
 
         const texture = PIXI.Texture.fromLoader(image, URL, NAME);
 
-        expect(texture.baseTexture.imageUrl).to.equal('foo.png');
+        expect(texture.baseTexture.resource.url).to.equal('foo.png');
         expect(PIXI.utils.TextureCache[NAME]).to.equal(texture);
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(texture.baseTexture);
         expect(PIXI.utils.TextureCache[URL]).to.equal(texture);

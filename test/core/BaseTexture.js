@@ -17,6 +17,7 @@ function cleanCache()
 
 describe('BaseTexture', function ()
 {
+    /*
     describe('updateImageType', function ()
     {
         it('should allow no extension', function ()
@@ -31,6 +32,7 @@ describe('BaseTexture', function ()
             expect(baseTexture.imageType).to.be.equals('png');
         });
     });
+    */
 
     it('should remove Canvas BaseTexture from cache on destroy', function ()
     {

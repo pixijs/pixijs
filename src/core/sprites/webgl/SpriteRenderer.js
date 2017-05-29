@@ -436,7 +436,7 @@ export default class SpriteRenderer extends ObjectRenderer
 
         this.renderer.off('prerender', this.onPrerender, this);
 
-        super.destroy();
+
 
         if (this.shader)
         {
@@ -455,6 +455,8 @@ export default class SpriteRenderer extends ObjectRenderer
         {
             this.buffers[i].destroy();
         }
+
+        super.destroy();
     }
 }
 

@@ -115,6 +115,7 @@ export default class ContextSystem extends WebGLSystem
             extensions.drawBuffers = gl.getExtension('WEBGL_draw_buffers');
             extensions.depthTexture = gl.getExtension('WEBKIT_WEBGL_depth_texture');
             extensions.floatTexture = gl.getExtension('OES_texture_float');
+            extensions.loseContext = gl.getExtension('WEBGL_lose_context');
 
             extensions.vertexArrayObject = gl.getExtension('OES_vertex_array_object')
                                         || gl.getExtension('MOZ_OES_vertex_array_object')
@@ -155,9 +156,9 @@ export default class ContextSystem extends WebGLSystem
 
         this.gl.useProgram(null);
 
-        if (this.gl.getExtension('WEBGL_lose_context'))
+        if (this.extensions.loseContext)
         {
-            this.gl.getExtension('WEBGL_lose_context').loseContext();
+            this.extensions.loseContext.loseContext();
         }
     }
 

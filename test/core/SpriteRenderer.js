@@ -7,6 +7,7 @@ describe('SpriteRenderer', function ()
         const destroyable = { destroy: sinon.stub() };
         const webgl = {
             on: sinon.stub(),
+            runners:{contextChange:{remove:()=>{}, add:()=>{}}},
             off: sinon.stub(),
         };
         const renderer = new PIXI.SpriteRenderer(webgl);
@@ -24,6 +25,7 @@ describe('SpriteRenderer', function ()
     {
         const webgl = {
             on: sinon.stub(),
+            runners:{contextChange:{remove:()=>{}, add:()=>{}}},
             off: sinon.stub(),
         };
 
