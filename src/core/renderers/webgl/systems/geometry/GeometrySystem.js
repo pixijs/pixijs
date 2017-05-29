@@ -92,9 +92,14 @@ export default class GeometrySystem extends WebGLSystem
 
             if (instanceExt)
             {
-                gl.vertexAttribDivisor = instanceExt.vertexAttribDivisorANGLE;
-                gl.drawElementsInstanced = instanceExt.drawElementsInstancedANGLE;
-                gl.drawArraysInstanced = instanceExt.drawArraysInstancedANGLE;
+                gl.vertexAttribDivisor = (a, b) =>
+                    instanceExt.vertexAttribDivisorANGLE(a, b);
+
+                gl.drawElementsInstanced = (a, b, c, d, e) =>
+                    instanceExt.drawElementsInstancedANGLE(a, b, c, d, e);
+
+                gl.drawArraysInstanced = (a, b, c, d) =>
+                    instanceExt.drawArraysInstancedANGLE(a, b, c, d);
             }
         }
     }

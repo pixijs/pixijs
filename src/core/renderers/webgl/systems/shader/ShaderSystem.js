@@ -1,6 +1,6 @@
 import WebGLSystem from '../WebGLSystem';
 import GLShader from './GLShader';
-import { PRECISION } from '../../../../const';
+import settings from '../../../../settings';
 import generateUniformsSync from '../../../../shader/generateUniformsSync';
 
 let UID = 0;
@@ -138,7 +138,11 @@ export default class ShaderSystem extends WebGLSystem
             attribMap[i] = program.attributeData[i].location;
         }
 
-        const glShader = new GLShader(this.gl, program.vertexSrc, program.fragmentSrc, PRECISION.DEFAULT, attribMap);
+        const glShader = new GLShader(this.gl,
+                                      program.vertexSrc,
+                                      program.fragmentSrc,
+                                      settings.PRECISION_FRAGMENT,
+                                      attribMap);
 
         program.glShaders[this.renderer.CONTEXT_UID] = glShader;
 

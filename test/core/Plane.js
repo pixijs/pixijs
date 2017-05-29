@@ -18,7 +18,6 @@ describe('PIXI.mesh.Plane', function ()
             });
     });
 
-
     it('should create a new empty textured Plane', function ()
     {
         const plane = new PIXI.mesh.Plane(PIXI.Texture.EMPTY, 100, 100);
@@ -47,6 +46,5 @@ describe('PIXI.mesh.Plane', function ()
             expect(plane.containsPoint(point)).to.be.false;
         });
     });
-
      */
 });
