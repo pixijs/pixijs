@@ -50,7 +50,7 @@ export default class GeometrySystem extends WebGLSystem
             // webgl 1!
             let nativeVaoExtension = this.renderer.context.extensions.vertexArrayObject;
 
-            if(this.renderer.legacy)
+            if (this.renderer.legacy)
             {
                 nativeVaoExtension = null;
             }
@@ -97,7 +97,6 @@ export default class GeometrySystem extends WebGLSystem
                 gl.drawArraysInstanced = instanceExt.drawArraysInstancedANGLE;
             }
         }
-
     }
 
     /**

@@ -1,5 +1,12 @@
 'use strict';
 
+const mockrunner = {
+    contextChange: {
+        remove: () => 1,
+        add: () => 1,
+    },
+};
+
 describe('SpriteRenderer', function ()
 {
     it('can be destroyed', function ()
@@ -7,7 +14,7 @@ describe('SpriteRenderer', function ()
         const destroyable = { destroy: sinon.stub() };
         const webgl = {
             on: sinon.stub(),
-            runners:{contextChange:{remove:()=>{}, add:()=>{}}},
+            runners: mockrunner,
             off: sinon.stub(),
         };
         const renderer = new PIXI.SpriteRenderer(webgl);
@@ -25,7 +32,7 @@ describe('SpriteRenderer', function ()
     {
         const webgl = {
             on: sinon.stub(),
-            runners:{contextChange:{remove:()=>{}, add:()=>{}}},
+            runners: mockrunner,
             off: sinon.stub(),
         };
 

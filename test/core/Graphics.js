@@ -1,6 +1,6 @@
 'use strict';
 
-const MockPointer = require('../interaction/MockPointer');
+// const MockPointer = require('../interaction/MockPointer');
 const withGL = require('../withGL');
 
 describe('PIXI.Graphics', function ()
