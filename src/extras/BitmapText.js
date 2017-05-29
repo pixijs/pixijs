@@ -105,9 +105,9 @@ export default class BitmapText extends core.Container
          * ie: when trying to vertically align.
          *
          * @member {number}
-         * @readonly
+         * @private
          */
-        this.maxLineHeight = 0;
+        this._maxLineHeight = 0;
 
         /**
          * Text anchor. read-only
@@ -277,7 +277,7 @@ export default class BitmapText extends core.Container
                 this._glyphs[i].y -= this._textHeight * this.anchor.y;
             }
         }
-        this.maxLineHeight = maxLineHeight * scale;
+        this._maxLineHeight = maxLineHeight * scale;
     }
 
     /**
@@ -451,6 +451,20 @@ export default class BitmapText extends core.Container
         }
         this._maxWidth = value;
         this.dirty = true;
+    }
+
+    /**
+     * The max line height. This is useful when trying to use the total height of the Text,
+     * ie: when trying to vertically align.
+     *
+     * @member {number}
+     * @readonly
+     */
+    get maxLineHeight()
+    {
+        this.validate();
+
+        return this._maxLineHeight;
     }
 
     /**
