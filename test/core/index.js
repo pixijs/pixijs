@@ -25,6 +25,7 @@ require('./RoundedRectangle');
 require('./Circle');
 require('./Graphics');
 require('./SpriteRenderer');
+require('./CanvasRenderer');
 require('./WebGLRenderer');
 require('./Ellipse');
 require('./BaseTexture');
