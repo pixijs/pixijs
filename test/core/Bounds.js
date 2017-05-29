@@ -186,6 +186,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
+    /*
     it('should register correct width/height with a Mesh', function ()
     {
         const parent = new PIXI.Container();
@@ -216,6 +217,7 @@ describe('getBounds', function ()
         expect(bounds.width).to.equal(20);
         expect(bounds.height).to.equal(20);
     });
+    */
 
     it('should register correct width/height with an a DisplayObject is visible false', function ()
     {
