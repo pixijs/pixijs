@@ -142,8 +142,10 @@ export default class ParticleRenderer extends core.ObjectRenderer
             buffers = container._glBuffers[renderer.CONTEXT_UID] = this.generateBuffers(container);
         }
 
+        const baseTexture = children[0]._texture.baseTexture;
+
         // if the uvs have not updated then no point rendering just yet!
-        this.renderer.setBlendMode(container.blendMode);
+        this.renderer.setBlendMode(core.utils.correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
 
         const gl = renderer.gl;
 
@@ -152,12 +154,11 @@ export default class ParticleRenderer extends core.ObjectRenderer
         m.prepend(renderer._activeRenderTarget.projectionMatrix);
 
         this.shader.uniforms.projectionMatrix = m.toArray(true);
-        this.shader.uniforms.uAlpha = container.worldAlpha;
-        this.shader.uniforms.tint = container._tintRGB;
+
+        this.shader.uniforms.uColor = core.utils.premultiplyRgba(container.tintRgb,
+            container.worldAlpha, baseTexture.premultiplyAlpha);
 
         // make sure the texture is bound..
-        const baseTexture = children[0]._texture.baseTexture;
-
         this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
 
         // now lets upload and render the buffers..
