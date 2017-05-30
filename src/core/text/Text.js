@@ -163,16 +163,13 @@ export default class Text extends Sprite
 
         if (style.dropShadow)
         {
-            context.shadowBlur = style.dropShadowBlur;
+            context.fillStyle = style.dropShadowColor;
             context.globalAlpha = style.dropShadowAlpha;
+            context.shadowBlur = style.dropShadowBlur;
 
             if (style.dropShadowBlur > 0)
             {
                 context.shadowColor = style.dropShadowColor;
-            }
-            else
-            {
-                context.fillStyle = style.dropShadowColor;
             }
 
             const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
