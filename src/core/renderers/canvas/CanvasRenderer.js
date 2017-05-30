@@ -42,11 +42,18 @@ export default class CanvasRenderer extends SystemRenderer
         this.type = RENDERER_TYPE.CANVAS;
 
         /**
-         * The canvas 2d context that everything is drawn with.
+         * The root canvas 2d context that everything is drawn with.
          *
          * @member {CanvasRenderingContext2D}
          */
         this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+
+        /**
+         * The currently active canvas 2d context (could change with renderTextures)
+         *
+         * @member {CanvasRenderingContext2D}
+         */
+        this.context = this.rootContext;
 
         /**
          * Boolean flag controlling canvas refresh.
@@ -94,7 +101,6 @@ export default class CanvasRenderer extends SystemRenderer
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
 
-        this.context = null;
         this.renderingToScreen = false;
 
         this.resize(this.options.width, this.options.height);
