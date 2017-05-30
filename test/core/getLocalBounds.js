@@ -150,6 +150,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
+    /*
     it('should register correct local-bounds with a Mesh', function ()
     {
         const parent = new PIXI.Container();
@@ -170,6 +171,7 @@ describe('getLocalBounds', function ()
         expect(bounds.width).to.equal(10);
         expect(bounds.height).to.equal(10);
     });
+	*/
 
     it('should register correct local-bounds with a cachAsBitmap item inside after a render', function ()
     {
