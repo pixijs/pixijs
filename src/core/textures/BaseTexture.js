@@ -68,7 +68,7 @@ export default class BaseTexture extends EventEmitter
 
         /**
          * [wrapMode description]
-         * @type {[type]}
+         * @type {number}
          */
         this.wrapMode = settings.WRAP_MODE;
 
