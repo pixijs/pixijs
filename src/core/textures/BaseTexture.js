@@ -12,7 +12,7 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource, scaleMode, resolution, width, height, format, type, mipmap = settings.MIPMAP_TEXTURES)
+    constructor(resource, scaleMode = settings.SCALE_MODE, resolution, width, height, format, type, mipmap = settings.MIPMAP_TEXTURES)
     {
         super();
 
@@ -79,7 +79,7 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode || settings.SCALE_MODE;
+        this.scaleMode = scaleMode;// || settings.SCALE_MODE;
 
         /**
          * The pixel format of the texture. defaults to gl.RGBA
