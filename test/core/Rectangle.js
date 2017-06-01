@@ -135,7 +135,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should fit a rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(0, 0, -10, -10);
+        const rect1 = new PIXI.Rectangle(0, 0, 10, 10);
         const rect2 = new PIXI.Rectangle(-10, -10, 5, 5);
 
         rect2.fit(rect1);
