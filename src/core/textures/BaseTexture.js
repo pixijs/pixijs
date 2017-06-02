@@ -12,7 +12,15 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource, scaleMode = settings.SCALE_MODE, resolution, width, height, format, type, mipmap = settings.MIPMAP_TEXTURES)
+
+    constructor(resource,
+                scaleMode = settings.SCALE_MODE,
+                resolution,
+                width,
+                height,
+                format,
+                type,
+                mipmap = settings.MIPMAP_TEXTURES)
     {
         super();
 
