@@ -257,7 +257,7 @@ export default class AnimatedSprite extends core.Sprite
                     this.onLoop();
                 }
             }
-            
+
             this.updateTexture();
         }
     }
