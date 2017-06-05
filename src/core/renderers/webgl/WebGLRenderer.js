@@ -525,7 +525,7 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {PIXI.Texture} texture - the new texture
      * @param {number} location - the suggested texture location
      * @param {boolean} forceLocation - force the location
-     * @return {PIXI.WebGLRenderer} Returns itself.
+     * @return {number} bound texture location
      */
     bindTexture(texture, location, forceLocation)
     {
