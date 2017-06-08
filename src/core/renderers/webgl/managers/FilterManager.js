@@ -279,6 +279,8 @@ export default class FilterManager extends WebGLManager
     /**
      * Uploads the uniforms of the filter.
      *
+     * Texture unit 0 cant be used here!
+     *
      * @param {GLShader} shader - The underlying gl shader.
      * @param {PIXI.Filter} filter - The filter we are synchronizing.
      */
