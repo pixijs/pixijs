@@ -27,6 +27,8 @@ const defaultStyle = {
     miterLimit: 10,
     padding: 0,
     stroke: 'black',
+    strokeGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
+    strokeGradientStops: [],
     strokeThickness: 0,
     textBaseline: 'alphabetic',
     trim: false,
@@ -78,8 +80,13 @@ export default class TextStyle
      *      or increase the spikiness of rendered text.
      * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
      *     happening by adding padding to all sides of the text.
-     * @param {string|number} [style.stroke='black'] - A canvas fillstyle that will be used on the text stroke
-     *  e.g 'blue', '#FCFF00'
+     * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.stroke='black'] - A canvas
+     *  fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'. Can be an array to create a gradient
+     *  eg ['#000000','#FFFFFF']
+     * @param {number} [style.strokeGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If stroke is an array of colours
+     *  to create a gradient, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
+     * @param {number[]} [style.strokeGradientStops] - If strike is an array of colours to create a gradient, this array can set
+     * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
      * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
      *  Default is 0 (no stroke)
      * @param {boolean} [style.trim=false] - Trim transparent borders
@@ -405,6 +412,32 @@ export default class TextStyle
         if (this._stroke !== outputColor)
         {
             this._stroke = outputColor;
+            this.styleID++;
+        }
+    }
+
+    get strokeGradientType()
+    {
+        return this._strokeGradientType;
+    }
+    set strokeGradientType(strokeGradientType)
+    {
+        if (this._strokeGradientType !== strokeGradientType)
+        {
+            this._strokeGradientType = strokeGradientType;
+            this.styleID++;
+        }
+    }
+
+    get strokeGradientStops()
+    {
+        return this._strokeGradientStops;
+    }
+    set strokeGradientStops(strokeGradientStops)
+    {
+        if (!areArraysEqual(this._strokeGradientStops,strokeGradientStops))
+        {
+            this._strokeGradientStops = strokeGradientStops;
             this.styleID++;
         }
     }

@@ -151,8 +151,22 @@ export default class Text extends Sprite
 
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        const fillStyle = this._generateColorStyle(
+            lines,
+            style.fill,
+            style.fillGradientType,
+            style.fillGradientStops
+        );
+
+        const strokeStyle = this._generateColorStyle(
+            lines,
+            style.stroke,
+            style.strokeGradientType,
+            style.strokeGradientStops
+        );
+
         context.font = this._font;
-        context.strokeStyle = style.stroke;
+        context.strokeStyle = strokeStyle;
         context.lineWidth = style.strokeThickness;
         context.textBaseline = style.textBaseline;
         context.lineJoin = style.lineJoin;
@@ -215,7 +229,7 @@ export default class Text extends Sprite
         context.globalAlpha = 1;
 
         // set canvas text styles
-        context.fillStyle = this._generateFillStyle(style, lines);
+        context.fillStyle = fillStyle;
 
         // draw lines line by line
         for (let i = 0; i < lines.length; i++)
@@ -426,21 +440,24 @@ export default class Text extends Sprite
      * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
      *
      * @private
-     * @param {object} style - The style.
      * @param {string[]} lines - The lines of text.
+     * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} color - A canvas
+     *  fillstyle that will be used on the text
+     * @param {number} gradientType - The type/direction of the gradient
+     * @param {number[]} gradientStops - The stop points (numbers between 0 and 1) for the gradient
      * @return {string|number|CanvasGradient} The fill style
      */
-    _generateFillStyle(style, lines)
+    _generateColorStyle(lines, color, gradientType, gradientStops)
     {
-        if (!Array.isArray(style.fill))
+        if (!Array.isArray(color))
         {
-            return style.fill;
+            return color;
         }
 
         // cocoon on canvas+ cannot generate textures, so use the first colour instead
         if (navigator.isCocoonJS)
         {
-            return style.fill[0];
+            return color[0];
         }
 
         // the gradient will be evenly spaced out according to how large the array is.
@@ -454,76 +471,90 @@ export default class Text extends Sprite
         const height = this.canvas.height / this.resolution;
 
         // make a copy of the style settings, so we can manipulate them later
-        const fill = style.fill.slice();
-        const fillGradientStops = style.fillGradientStops.slice();
+        const colorArray = color.slice();
+        const gradientStopsArray = gradientStops.slice();
 
         // wanting to evenly distribute the fills. So an array of 4 colours should give fills of 0.25, 0.5 and 0.75
-        if (!fillGradientStops.length)
+        if (!gradientStopsArray.length)
         {
-            const lengthPlus1 = fill.length + 1;
+            const lengthPlus1 = colorArray.length + 1;
 
             for (let i = 1; i < lengthPlus1; ++i)
             {
-                fillGradientStops.push(i / lengthPlus1);
+                gradientStopsArray.push(i / lengthPlus1);
             }
         }
 
         // stop the bleeding of the last gradient on the line above to the top gradient of the this line
         // by hard defining the first gradient colour at point 0, and last gradient colour at point 1
-        fill.unshift(style.fill[0]);
-        fillGradientStops.unshift(0);
+        colorArray.unshift(color[0]);
+        gradientStopsArray.unshift(0);
 
-        fill.push(style.fill[style.fill.length - 1]);
-        fillGradientStops.push(1);
+        colorArray.push(color[color.length - 1]);
+        gradientStopsArray.push(1);
 
-        if (style.fillGradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
+        if (gradientType === TEXT_GRADIENT.LINEAR_VERTICAL)
         {
+            // We want this gradient setting to be repeated over each individual line.
+            // This differs from LINEAR_VERTICAL_NOREPEAT as this setting make each line have the same vertical gradient.
+            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
+
             // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
             gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
 
-            // we need to repeat the gradient so that each individual line of text has the same vertical gradient effect
-            // ['#FF0000', '#00FF00', '#0000FF'] over 2 lines would create stops at 0.125, 0.25, 0.375, 0.625, 0.75, 0.875
-            totalIterations = (fill.length + 1) * lines.length;
+            totalIterations = (colorArray.length + 1) * lines.length;
             currentIteration = 0;
             for (let i = 0; i < lines.length; i++)
             {
                 currentIteration += 1;
-                for (let j = 0; j < fill.length; j++)
+                for (let j = 0; j < colorArray.length; j++)
                 {
-                    if (typeof fillGradientStops[j] === 'number')
+                    if (typeof gradientStopsArray[j] === 'number')
                     {
-                        stop = (fillGradientStops[j] / lines.length) + (i / lines.length);
+                        stop = (gradientStopsArray[j] / lines.length) + (i / lines.length);
                     }
                     else
                     {
                         stop = currentIteration / totalIterations;
                     }
-                    gradient.addColorStop(stop, fill[j]);
+                    gradient.addColorStop(stop, colorArray[j]);
                     currentIteration++;
                 }
             }
         }
         else
         {
-            // start the gradient at the center left of the canvas, and end at the center right of the canvas
-            gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+            if (gradientType === TEXT_GRADIENT.LINEAR_VERTICAL_NOREPEAT)
+            {
+                // We want this gradient to just work once over all of the lines.
+                // This differs from LINEAR_VERTICAL as this setting will mean a different gradient color over each line
 
-            // can just evenly space out the gradients in this case, as multiple lines makes no difference
-            // to an even left to right gradient
-            totalIterations = fill.length + 1;
+                // start the gradient at the top center of the canvas, and end at the bottom middle of the canvas
+                gradient = this.context.createLinearGradient(width / 2, 0, width / 2, height);
+            }
+            else if (gradientType === TEXT_GRADIENT.LINEAR_HORIZONTAL)
+            {
+                // Can just evenly space out the gradients in this case, as multiple lines makes no difference
+                // to an even left to right gradient
+
+                // start the gradient at the center left of the canvas, and end at the center right of the canvas
+                gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+            }
+
+            totalIterations = colorArray.length + 1;
             currentIteration = 1;
 
-            for (let i = 0; i < fill.length; i++)
+            for (let i = 0; i < colorArray.length; i++)
             {
-                if (typeof fillGradientStops[i] === 'number')
+                if (typeof gradientStopsArray[i] === 'number')
                 {
-                    stop = fillGradientStops[i];
+                    stop = gradientStopsArray[i];
                 }
                 else
                 {
                     stop = currentIteration / totalIterations;
                 }
-                gradient.addColorStop(stop, fill[i]);
+                gradient.addColorStop(stop, colorArray[i]);
                 currentIteration++;
             }
         }

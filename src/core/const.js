@@ -305,12 +305,14 @@ export const TRANSFORM_MODE = {
  * @name TEXT_GRADIENT
  * @memberof PIXI
  * @type {object}
- * @property {number} LINEAR_VERTICAL Vertical gradient
- * @property {number} LINEAR_HORIZONTAL Linear gradient
+ * @property {number} LINEAR_VERTICAL Vertical gradient; maintains same gradient look over each line
+ * @property {number} LINEAR_HORIZONTAL Horizontal gradient
+ * @property {number} LINEAR_VERTICAL_NOREPEAT Vertical gradient; gradient applies over all lines; each will look different
  */
 export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,
     LINEAR_HORIZONTAL: 1,
+    LINEAR_VERTICAL_NOREPEAT: 2,
 };
 
 /**
