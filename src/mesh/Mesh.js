@@ -114,7 +114,7 @@ export default class Mesh extends core.Container
          *
          * @member {number}
          */
-        this.tintRgb = new Float32Array([1, 1, 1]);
+        this._tintRgb = new Float32Array([1, 1, 1]);
 
         /**
          * A map of renderer IDs to webgl render data
@@ -318,12 +318,12 @@ export default class Mesh extends core.Container
      */
     get tint()
     {
-        return core.utils.rgb2hex(this.tintRgb);
+        return core.utils.rgb2hex(this._tintRgb);
     }
 
     set tint(value) // eslint-disable-line require-jsdoc
     {
-        this.tintRgb = core.utils.hex2rgb(value, this.tintRgb);
+        this._tintRgb = core.utils.hex2rgb(value, this._tintRgb);
     }
 }
 
