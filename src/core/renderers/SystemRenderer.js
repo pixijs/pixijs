@@ -82,6 +82,11 @@ export default class SystemRenderer extends EventEmitter
          */
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
+        if (options.view === null)
+        {
+            console.warn('View was null, will create.'); // eslint-disable-line no-console
+        }
+
         /**
          * The canvas element that everything is drawn to
          *
