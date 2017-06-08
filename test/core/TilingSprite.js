@@ -30,7 +30,9 @@ describe('PIXI.TilingSprite', function ()
         const texture = new PIXI.Texture(new PIXI.BaseTexture());
         const tilingSprite = new PIXI.extras.TilingSprite(texture, 200, 300);
 
-        expect(tilingSprite.containsPoint(new PIXI.Point(1, 1))).to.equal(true);
+        expect(tilingSprite.containsPoint(new PIXI.Point(0, 0))).to.equal(true);
+        expect(tilingSprite.containsPoint(new PIXI.Point(10, 10))).to.equal(true);
+        expect(tilingSprite.containsPoint(new PIXI.Point(200, 300))).to.equal(false);
         expect(tilingSprite.containsPoint(new PIXI.Point(300, 400))).to.equal(false);
     });
 
