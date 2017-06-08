@@ -929,6 +929,7 @@ describe('PIXI.interaction.InteractionManager', function ()
                     scene.behindChild.interactive = true;
                     scene.behindChild.x = 25;
                     scene.parent.interactive = true;
+                    scene.parent.nonInteractiveChildrenTriggerInteractiveParent = false;
 
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);

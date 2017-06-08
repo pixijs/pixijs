@@ -1111,6 +1111,10 @@ export default class InteractionManager extends EventEmitter
                     func(interactionEvent, displayObject, !!hit);
                 }
             }
+            else if (displayObject.parent && !displayObject.parent.nonInteractiveChildrenTriggerInteractiveParent)
+            {
+                hit = false;
+            }
         }
 
         return hit;

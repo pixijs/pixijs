@@ -40,6 +40,14 @@ export default {
     interactiveChildren: true,
 
     /**
+     * Whether hits on non-interactive children should cause events to be raised
+     * against their interactive parent
+     *
+     * @inner {boolean}
+     */
+    nonInteractiveChildrenTriggerInteractiveParent: true,
+
+    /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      *
