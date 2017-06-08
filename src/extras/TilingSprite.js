@@ -310,11 +310,11 @@ export default class TilingSprite extends core.Sprite
         const height = this._height;
         const x1 = -width * this.anchor._x;
 
-        if (tempPoint.x > x1 && tempPoint.x < x1 + width)
+        if (tempPoint.x >= x1 && tempPoint.x < x1 + width)
         {
             const y1 = -height * this.anchor._y;
 
-            if (tempPoint.y > y1 && tempPoint.y < y1 + height)
+            if (tempPoint.y >= y1 && tempPoint.y < y1 + height)
             {
                 return true;
             }
