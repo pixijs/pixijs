@@ -136,11 +136,19 @@ export function rgb2hex(rgb)
  */
 export function getResolutionOfUrl(url, defaultValue)
 {
-    const resolution = settings.RETINA_PREFIX.exec(url);
-
-    if (resolution)
+    if (url)
     {
-        return parseFloat(resolution[1]);
+        const lastIndex = url.lastIndexOf('@');
+
+        if (lastIndex !== -1)
+        {
+            const resolution = settings.RETINA_PREFIX.exec(url.substring(lastIndex));
+
+            if (resolution)
+            {
+                return parseFloat(resolution[1]);
+            }
+        }
     }
 
     return defaultValue !== undefined ? defaultValue : 1;
