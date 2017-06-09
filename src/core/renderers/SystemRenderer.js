@@ -295,7 +295,6 @@ export default class SystemRenderer extends EventEmitter
         this._backgroundColorRgba = null;
         this._backgroundColorString = null;
 
-        this.backgroundColor = 0;
         this._tempDisplayObjectParent = null;
         this._lastObjectRendered = null;
     }

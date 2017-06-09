@@ -141,12 +141,12 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
 
         shader.uniforms.uTransform = tempMat.toArray(true);
         shader.uniforms.uColor = core.utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, baseTex.premultiplyAlpha);
+            shader.uniforms.uColor, baseTex.premultipliedAlpha);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
 
         shader.uniforms.uSampler = renderer.bindTexture(tex);
 
-        renderer.setBlendMode(core.utils.correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
+        renderer.setBlendMode(core.utils.correctBlendMode(ts.blendMode, baseTex.premultipliedAlpha));
 
         quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
