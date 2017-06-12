@@ -206,7 +206,8 @@ export default class TilingSprite extends core.Sprite
             }
             else
             {
-                tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+                tempCanvas.context.drawImage(baseTexture.source,
+                    -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
             }
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
         }
@@ -310,11 +311,11 @@ export default class TilingSprite extends core.Sprite
         const height = this._height;
         const x1 = -width * this.anchor._x;
 
-        if (tempPoint.x > x1 && tempPoint.x < x1 + width)
+        if (tempPoint.x >= x1 && tempPoint.x < x1 + width)
         {
             const y1 = -height * this.anchor._y;
 
-            if (tempPoint.y > y1 && tempPoint.y < y1 + height)
+            if (tempPoint.y >= y1 && tempPoint.y < y1 + height)
             {
                 return true;
             }

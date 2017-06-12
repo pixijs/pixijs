@@ -131,8 +131,8 @@ export default class ParticleContainer extends core.Container
          * @member {number}
          * @default 0xFFFFFF
          */
-        this._tint = null;
-        this._tintRGB = [];
+        this._tint = 0;
+        this.tintRgb = new Float32Array(4);
         this.tint = 0xFFFFFF;
     }
 
@@ -180,7 +180,7 @@ export default class ParticleContainer extends core.Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
-        hex2rgb(value, this._tintRGB);
+        hex2rgb(value, this.tintRgb);
     }
 
     /**

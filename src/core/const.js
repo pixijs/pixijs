@@ -104,6 +104,9 @@ export const BLEND_MODES = {
     SATURATION:     14,
     COLOR:          15,
     LUMINOSITY:     16,
+    NORMAL_NPM:     17,
+    ADD_NPM:        18,
+    SCREEN_NPM:     19,
 };
 
 /**
