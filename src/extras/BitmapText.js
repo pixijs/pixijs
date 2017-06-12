@@ -96,16 +96,18 @@ export default class BitmapText extends core.Container
          * Disable by setting value to 0
          *
          * @member {number}
+         * @private
          */
-        this.maxWidth = 0;
+        this._maxWidth = 0;
 
         /**
          * The max line height. This is useful when trying to use the total height of the Text,
          * ie: when trying to vertically align.
          *
          * @member {number}
+         * @private
          */
-        this.maxLineHeight = 0;
+        this._maxLineHeight = 0;
 
         /**
          * Text anchor. read-only
@@ -144,6 +146,7 @@ export default class BitmapText extends core.Container
         let line = 0;
         let lastSpace = -1;
         let lastSpaceWidth = 0;
+        let spacesRemoved = 0;
         let maxLineHeight = 0;
 
         for (let i = 0; i < this.text.length; i++)
@@ -168,11 +171,12 @@ export default class BitmapText extends core.Container
                 continue;
             }
 
-            if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
+            if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
             {
-                core.utils.removeItems(chars, lastSpace, i - lastSpace);
+                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
                 i = lastSpace;
                 lastSpace = -1;
+                ++spacesRemoved;
 
                 lineWidths.push(lastSpaceWidth);
                 maxLineWidth = Math.max(maxLineWidth, lastSpaceWidth);
@@ -275,7 +279,7 @@ export default class BitmapText extends core.Container
                 this._glyphs[i].y -= this._textHeight * this.anchor.y;
             }
         }
-        this.maxLineHeight = maxLineHeight * scale;
+        this._maxLineHeight = maxLineHeight * scale;
     }
 
     /**
@@ -427,6 +431,42 @@ export default class BitmapText extends core.Container
         }
         this._text = value;
         this.dirty = true;
+    }
+
+    /**
+     * The max width of this bitmap text in pixels. If the text provided is longer than the
+     * value provided, line breaks will be automatically inserted in the last whitespace.
+     * Disable by setting value to 0
+     *
+     * @member {number}
+     */
+    get maxWidth()
+    {
+        return this._maxWidth;
+    }
+
+    set maxWidth(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._maxWidth === value)
+        {
+            return;
+        }
+        this._maxWidth = value;
+        this.dirty = true;
+    }
+
+    /**
+     * The max line height. This is useful when trying to use the total height of the Text,
+     * ie: when trying to vertically align.
+     *
+     * @member {number}
+     * @readonly
+     */
+    get maxLineHeight()
+    {
+        this.validate();
+
+        return this._maxLineHeight;
     }
 
     /**

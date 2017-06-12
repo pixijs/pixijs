@@ -683,6 +683,10 @@ export default class BaseTexture extends EventEmitter
             {
                 image.crossOrigin = determineCrossOrigin(imageUrl);
             }
+            else if (crossorigin)
+            {
+                image.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+            }
 
             baseTexture = new BaseTexture(image, scaleMode);
             baseTexture.imageUrl = imageUrl;
