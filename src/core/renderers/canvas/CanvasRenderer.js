@@ -28,7 +28,9 @@ export default class CanvasRenderer extends SystemRenderer
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear the canvas or
+     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
+     *  enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
@@ -42,11 +44,18 @@ export default class CanvasRenderer extends SystemRenderer
         this.type = RENDERER_TYPE.CANVAS;
 
         /**
-         * The canvas 2d context that everything is drawn with.
+         * The root canvas 2d context that everything is drawn with.
          *
          * @member {CanvasRenderingContext2D}
          */
         this.rootContext = this.view.getContext('2d', { alpha: this.transparent });
+
+        /**
+         * The currently active canvas 2d context (could change with renderTextures)
+         *
+         * @member {CanvasRenderingContext2D}
+         */
+        this.context = this.rootContext;
 
         /**
          * Boolean flag controlling canvas refresh.
@@ -94,7 +103,6 @@ export default class CanvasRenderer extends SystemRenderer
         this.blendModes = mapCanvasBlendModesToPixi();
         this._activeBlendMode = null;
 
-        this.context = null;
         this.renderingToScreen = false;
 
         this.resize(this.options.width, this.options.height);

@@ -31,7 +31,9 @@ export default class SystemRenderer extends EventEmitter
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear the canvas or
+     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
+     *  enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
@@ -295,7 +297,6 @@ export default class SystemRenderer extends EventEmitter
         this._backgroundColorRgba = null;
         this._backgroundColorString = null;
 
-        this.backgroundColor = 0;
         this._tempDisplayObjectParent = null;
         this._lastObjectRendered = null;
     }

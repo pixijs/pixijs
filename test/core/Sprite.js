@@ -91,11 +91,26 @@ describe('PIXI.Sprite', function ()
 
     describe('containsPoint', function ()
     {
+        const texture = new PIXI.RenderTexture.create(20, 30);
+        const sprite = new PIXI.Sprite(texture);
+
         it('should return true when point inside', function ()
         {
             const point = new PIXI.Point(10, 10);
-            const texture = new PIXI.RenderTexture.create(20, 30);
-            const sprite = new PIXI.Sprite(texture);
+
+            expect(sprite.containsPoint(point)).to.be.true;
+        });
+
+        it('should return true when point on left edge', function ()
+        {
+            const point = new PIXI.Point(0, 15);
+
+            expect(sprite.containsPoint(point)).to.be.true;
+        });
+
+        it('should return true when point on top edge', function ()
+        {
+            const point = new PIXI.Point(10, 0);
 
             expect(sprite.containsPoint(point)).to.be.true;
         });
@@ -103,8 +118,6 @@ describe('PIXI.Sprite', function ()
         it('should return false when point outside', function ()
         {
             const point = new PIXI.Point(100, 100);
-            const texture = new PIXI.RenderTexture.create(20, 30);
-            const sprite = new PIXI.Sprite(texture);
 
             expect(sprite.containsPoint(point)).to.be.false;
         });
