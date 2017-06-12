@@ -43,7 +43,7 @@ export default class WebGLRenderer extends SystemRenderer
      *  FXAA is faster, but may not always look as great
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,

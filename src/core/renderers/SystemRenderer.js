@@ -33,7 +33,7 @@ export default class SystemRenderer extends EventEmitter
      *  resolution of the renderer retina would be 2.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
      *  enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear the canvas or
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
