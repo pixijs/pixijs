@@ -54,6 +54,8 @@ export default class WebGLRenderer extends SystemRenderer
      *  (shown if not transparent).
      * @param {boolean} [options.legacy=false] - If true PixiJS will aim to ensure compatibility
      * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
+     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
+     * for devices with dual graphics card
      */
     constructor(options, arg2, arg3)
     {
@@ -92,6 +94,7 @@ export default class WebGLRenderer extends SystemRenderer
             premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
             stencil: true,
             preserveDrawingBuffer: this.options.preserveDrawingBuffer,
+            powerPreference: this.options.powerPreference,
         };
 
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
