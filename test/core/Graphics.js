@@ -365,7 +365,7 @@ describe('PIXI.Graphics', function ()
                 graphics.drawRect(2, 3, 100, 100);
                 graphics.endFill();
                 graphics.tint = 0x101010;
-                graphics.blendMode = 2;
+                graphics.blendMode = PIXI.BLEND_MODES.MULTIPLY;
                 graphics.alpha = 0.3;
 
                 renderer.render(graphics);
@@ -376,7 +376,7 @@ describe('PIXI.Graphics', function ()
 
                 expect(sprite).to.not.be.equals(null);
                 expect(sprite.worldAlpha).to.equals(0.18);
-                expect(sprite.blendMode).to.equals(2);
+                expect(sprite.blendMode).to.equals(PIXI.BLEND_MODES.MULTIPLY);
                 expect(sprite.tint).to.equals(0x010203);
 
                 const bounds = sprite.getBounds();

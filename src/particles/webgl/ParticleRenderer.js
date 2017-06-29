@@ -144,9 +144,6 @@ export default class ParticleRenderer extends core.ObjectRenderer
 
         const baseTexture = children[0]._texture.baseTexture;
 
-        // if the uvs have not updated then no point rendering just yet!
-        this.renderer.setBlendMode(core.utils.correctBlendMode(container.blendMode, baseTexture.premultipliedAlpha));
-
         const gl = renderer.gl;
 
         const m = container.worldTransform.copy(this.tempMatrix);
@@ -159,7 +156,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
             container.worldAlpha, this.shader.uniforms.uColor, baseTexture.premultipliedAlpha);
 
         // make sure the texture is bound..
-        this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
+        this.shader.uniforms.uSampler = renderer.setTextureBlend(container._blendMode, baseTexture);
 
         // now lets upload and render the buffers..
         for (let i = 0, j = 0; i < totalChildren; i += batchSize, j += 1)
