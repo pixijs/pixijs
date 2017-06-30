@@ -1,7 +1,7 @@
 {
   "name": "pixi.js",
   "version": "4.5.3",
-  "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
+  "description": "PixiJS is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
