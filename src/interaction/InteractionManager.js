@@ -121,7 +121,7 @@ export default class InteractionManager extends EventEmitter
          * is over the object.
          * Setting to true will make things work more in line with how the DOM verison works.
          * Setting to false can make things easier for things like dragging
-         * It is currently set to false as this is how pixi used to work. This will be set to true in
+         * It is currently set to false as this is how PixiJS used to work. This will be set to true in
          * future versions of pixi.
          *
          * @member {boolean}
@@ -944,7 +944,7 @@ export default class InteractionManager extends EventEmitter
     }
 
     /**
-     * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The
+     * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
      *
@@ -1031,7 +1031,7 @@ export default class InteractionManager extends EventEmitter
 
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
-        // This will allow pixi to completely ignore and bypass checking the displayObjects children.
+        // This will allow PixiJS to completely ignore and bypass checking the displayObjects children.
         if (displayObject.interactiveChildren && displayObject.children)
         {
             const children = displayObject.children;

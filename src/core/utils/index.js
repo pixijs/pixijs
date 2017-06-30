@@ -263,7 +263,7 @@ export function sayHello(type)
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
-            `\n %c %c %c Pixi.js ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
+            `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
             'background: #ff66a5; padding:5px 0;',
             'background: #ff66a5; padding:5px 0;',
             'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -279,7 +279,7 @@ export function sayHello(type)
     }
     else if (window.console)
     {
-        window.console.log(`Pixi.js ${VERSION} - ${type} - http://www.pixijs.com/`);
+        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
     }
 
     saidHello = true;
@@ -400,9 +400,10 @@ export function clearTextureCache()
 }
 
 /**
+ * maps premultiply flag and blendMode to adjusted blendMode
  * @memberof PIXI.utils
  * @const premultiplyBlendMode
- * @type {Array<number[]>} maps premultiply flag and blendMode to adjusted blendMode
+ * @type {Array<number[]>}
  */
 export const premultiplyBlendMode = mapPremultipliedBlendModes();
 

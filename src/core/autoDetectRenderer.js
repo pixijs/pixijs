@@ -24,7 +24,7 @@ import WebGLRenderer from './renderers/webgl/WebGLRenderer';
  *   not before the new render pass.
  * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
  * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present
- * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
+ * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
  *  stopping pixel interpolation.
  * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
  *  FXAA is faster, but may not always look as great **webgl only**

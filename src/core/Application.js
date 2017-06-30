@@ -40,7 +40,7 @@ export default class Application
      *  (shown if not transparent).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *   not before the new render pass.
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
      *  FXAA is faster, but may not always look as great **webgl only**
