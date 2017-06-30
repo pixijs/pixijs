@@ -244,7 +244,7 @@ export default class ColorMatrixFilter extends core.Filter
     contrast(amount, multiply)
     {
         const v = (amount || 0) + 1;
-        const o = -128 * (v - 1);
+        const o = -0.5 * (v - 1);
 
         const matrix = [
             v, 0, 0, 0, o,
