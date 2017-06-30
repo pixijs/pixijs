@@ -89,7 +89,7 @@ export default class Filter
         this.enabled = true;
 
         /**
-         * If enabled, pixi will fit the filter area into boundaries for better performance.
+         * If enabled, PixiJS will fit the filter area into boundaries for better performance.
          * Switch it off if it does not work for specific shader.
          *
          * @member {boolean}

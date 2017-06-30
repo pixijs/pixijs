@@ -13,7 +13,7 @@ The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
-If you want to keep up to date with the latest pixi.js news then feel free to follow us on twitter
+If you want to keep up to date with the latest PixiJS news then feel free to follow us on twitter
 ([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
@@ -31,7 +31,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 ### Learn ###
 - Website: Find out more about PixiJS on the [offical website](http://www.pixijs.com/).
 - Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
-- Examples: Get stuck right in and play around with pixi code and features right [here](http://pixijs.github.io/examples/)!
+- Examples: Get stuck right in and play around with PixiJS code and features right [here](http://pixijs.github.io/examples/)!
 - Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.github.io/docs/).
 - Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
 
@@ -84,7 +84,7 @@ those last 2 examples and allowing us to share the source code :)
 
 ### Contribute ###
 
-Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker
+Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker
 together :) Whether you find a bug, have a great feature request or you fancy owning a task
 from the road map above feel free to get in touch.
 
@@ -149,9 +149,9 @@ PIXI.loader.add('bunny', 'bunny.png').load(function(loader, resources) {
 
 ### How to build ###
 
-Note that for most users you don't need to build this project. If all you want is to use pixi, then
+Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
 just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
-the only time you should need to build pixi.js is if you are developing it.
+the only time you should need to build PixiJS is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
@@ -167,7 +167,7 @@ $> npm run dist
 ```
 
 This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
-with all the plugins in the pixi.js project.
+with all the plugins in the PixiJS project.
 
 If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
 
@@ -189,7 +189,7 @@ The docs can be generated using npm:
 $> npm run docs
 ```
 
-The documentation uses [Jaguar.js](https://github.com/davidshimjs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
+The documentation uses [Jaguar.js](https://github.com/pixijs/jaguarjs-jsdoc) and the jsdoc format, the configuration file can be found at [scripts/jsdoc.conf.json](scripts/jsdoc.conf.json)
 
 ### License ###
 

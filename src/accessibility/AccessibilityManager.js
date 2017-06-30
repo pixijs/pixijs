@@ -45,7 +45,7 @@ export default class AccessibilityManager
             this.createTouchHook();
         }
 
-        // first we create a div that will sit over the pixi element. This is where the div overlays will go.
+        // first we create a div that will sit over the PixiJS element. This is where the div overlays will go.
         const div = document.createElement('div');
 
         div.style.width = `${DIV_TOUCH_SIZE}px`;
@@ -56,7 +56,7 @@ export default class AccessibilityManager
         div.style.zIndex = DIV_TOUCH_ZINDEX;
 
         /**
-         * This is the dom element that will sit over the pixi element. This is where the div overlays will go.
+         * This is the dom element that will sit over the PixiJS element. This is where the div overlays will go.
          *
          * @type {HTMLElement}
          * @private
