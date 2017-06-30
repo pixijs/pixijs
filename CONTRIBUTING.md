@@ -30,11 +30,11 @@ To setup for making changes you will need to take a few steps, we've outlined th
 1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
 pixi uses modern JS features, you will need a modern version of node. v4+ is recommended.
 
-2. Fork the [PixiJS][pixi] repository, if you are unsure how to do this GitHub has a guides
+2. Fork the **[pixi.js][pixi]** repository, if you are unsure how to do this GitHub has a guides
 for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
 
 3. Next, run `npm install` from within your clone of your fork. That will install dependencies
-necessary to build PixiJS
+necessary to build PixiJS.
 
 
 ### Making a Change
@@ -61,7 +61,7 @@ bug if it ever happens again. This prevents regressions from sneaking in.
 ### Submitting Your Change
 
 After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
-from your fork to the main PixiJS repository on the branch you used in the `Making a Change` section of this document.
+from your fork to the main **pixi.js** repository on the branch you used in the `Making a Change` section of this document.
 
 ## Quickie Code Style Guide
 
