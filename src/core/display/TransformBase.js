@@ -105,8 +105,7 @@ export default class TransformBase
         this._sx = Math.sin(this._rotation + this.skew._y);
         this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
         this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
-
-        this._localID ++;
+        this.onChange();
     }
 
     /**
@@ -114,25 +113,25 @@ export default class TransformBase
      */
     updateLocalTransform()
     {
-        const shouldUpdate = !this.cache || (this._localID !== this._currentLocalID);
-
-        if (shouldUpdate)
+        if (this.cache && this._localID === this._currentLocalID)
         {
-            const lt = this.localTransform;
-
-            // get the matrix values of the displayobject based on its transform properties..
-            lt.a = this._cx * this.scale._x;
-            lt.b = this._sx * this.scale._x;
-            lt.c = this._cy * this.scale._y;
-            lt.d = this._sy * this.scale._y;
-
-            lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
-            lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
-            this._currentLocalID = this._localID;
-
-            // force an update..
-            this._parentID = -1;
+            return;
         }
+
+        const lt = this.localTransform;
+
+        // get the matrix values of the displayobject based on its transform properties..
+        lt.a = this._cx * this.scale._x;
+        lt.b = this._sx * this.scale._x;
+        lt.c = this._cy * this.scale._y;
+        lt.d = this._sy * this.scale._y;
+
+        lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
+        lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
+        this._currentLocalID = this._localID;
+
+        // force an update..
+        this._parentID = -1;
     }
 
     /**
@@ -142,29 +141,14 @@ export default class TransformBase
      */
     updateTransform(parentTransform)
     {
-        const lt = this.localTransform;
-
-        if (!this.cache || (this._localID !== this._currentLocalID))
-        {
-            // get the matrix values of the displayobject based on its transform properties..
-            lt.a = this._cx * this.scale._x;
-            lt.b = this._sx * this.scale._x;
-            lt.c = this._cy * this.scale._y;
-            lt.d = this._sy * this.scale._y;
-
-            lt.tx = this.position._x - ((this.pivot._x * lt.a) + (this.pivot._y * lt.c));
-            lt.ty = this.position._y - ((this.pivot._x * lt.b) + (this.pivot._y * lt.d));
-            this._currentLocalID = this._localID;
-
-            // force an update..
-            this._parentID = -1;
-        }
+        this.updateLocalTransform();
 
         if (!this.cache || (this._parentID !== parentTransform._worldID))
         {
             // concat the parent matrix with the objects transform.
             const pt = parentTransform.worldTransform;
             const wt = this.worldTransform;
+            const lt = this.localTransform;
 
             wt.a = (lt.a * pt.a) + (lt.b * pt.c);
             wt.b = (lt.a * pt.b) + (lt.b * pt.d);
@@ -188,7 +172,7 @@ export default class TransformBase
     setFromMatrix(matrix)
     {
         matrix.decompose(this);
-        this._localID ++;
+        this.onChange();
     }
 
     /**
