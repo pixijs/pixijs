@@ -22,7 +22,7 @@ const defaultDestroyOptions = {
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * let text = new PIXI.Text('This is a pixi text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+ * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class

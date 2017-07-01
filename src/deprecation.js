@@ -67,14 +67,14 @@ export default function deprecation(core)
          * @name AssetLoader
          * @memberof PIXI
          * @see PIXI.loaders.Loader
-         * @throws {ReferenceError} The loader system was overhauled in pixi v3,
+         * @throws {ReferenceError} The loader system was overhauled in PixiJS v3,
          * please see the new PIXI.loaders.Loader class.
          * @deprecated since version 3.0.0
          */
         AssetLoader: {
             get()
             {
-                throw new ReferenceError('The loader system was overhauled in pixi v3, '
+                throw new ReferenceError('The loader system was overhauled in PixiJS v3, '
                     + 'please see the new PIXI.loaders.Loader class.');
             },
         },

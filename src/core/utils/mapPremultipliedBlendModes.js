@@ -1,7 +1,7 @@
 import { BLEND_MODES } from '../const';
 
 /**
- * Corrects pixi blend, takes premultiplied alpha into account
+ * Corrects PixiJS blend, takes premultiplied alpha into account
  *
  * @memberof PIXI
  * @function mapPremultipliedBlendModes
