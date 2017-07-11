@@ -11,6 +11,7 @@ const map = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
+    Uint8Array: Uint8Array,
     Uint16Array: Uint16Array,
 };
 
