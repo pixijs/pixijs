@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v5.0.0
- * Compiled Tue, 11 Jul 2017 10:57:19 UTC
+ * Compiled Wed, 12 Jul 2017 18:55:42 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -17631,7 +17631,6 @@ var WebGLRenderer = function (_SystemRenderer) {
 
         _this.initPlugins();
 
-        console.log(options);
         /**
          * The options passed in to create a new webgl context.
          *
@@ -22798,7 +22797,7 @@ exports.default = {
    * @type {PIXI.SCALE_MODES}
    * @default PIXI.SCALE_MODES.LINEAR
    */
-  SCALE_MODE: 0,
+  SCALE_MODE: 1,
 
   /**
    * Default specify float precision in vertex shader.
@@ -34867,7 +34866,9 @@ var TilingSpriteRenderer = function (_core$ObjectRenderer) {
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
-        renderer.geometry.bind(quad, renderer.shader.getGLShader());
+        renderer.geometry.bind(quad); //, renderer.shader.getGLShader());
+        renderer.state.setBlendMode(ts.blendMode);
+
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     };
 
