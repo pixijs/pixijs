@@ -170,6 +170,17 @@ Matrix.prototype.toMat4 = function(out) {
     return out;
 };
 
+Matrix.prototype.copyFromMat4 = function(m) {
+    var w = m[15];
+    this.a = m[0] / w;
+    this.b = m[1] / w;
+    this.c = m[4] / w;
+    this.d = m[5] / w;
+    this.tx = m[12] / w;
+    this.ty = m[13] / w;
+    return this;
+};
+
 Matrix.prototype.invertMat4 = function(out)
 {
     out = out || new Float32Array(16);

@@ -41,7 +41,7 @@ var calculateNormalizedScreenSpaceMatrix = function (outputMatrix, filterArea, t
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 var calculateSpriteMatrix = function (outputMatrix, filterArea, textureSize, sprite)
 {
-    var worldTransform = sprite.projectionMatrix2d.copy(math.Matrix.TEMP_MATRIX),
+    var worldTransform = sprite.projectionMatrixTo2d(math.Matrix.TEMP_MATRIX),
     texture = sprite._texture.baseTexture;
 
     // TODO unwrap?

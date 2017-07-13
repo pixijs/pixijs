@@ -727,6 +727,10 @@ DisplayObject.prototype.containsPoint = function(point) {
     return rc && rc.valid && rc.intersects;
 };
 
+DisplayObject.prototype.projectionMatrixTo2d = function(tempMat) {
+    return this.updateProjectedTransform().to2d(tempMat);
+};
+
 /**
  * Interaction local point
  * @param point

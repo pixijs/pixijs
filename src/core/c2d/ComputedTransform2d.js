@@ -82,6 +82,10 @@ ComputedTransform2d.prototype.updateTransform = function (parentTransform, local
     return true;
 };
 
+ComputedTransform2d.prototype.to2d = function(mat) {
+    return this.matrix2d.copy(mat);
+};
+
 ComputedTransform2d.prototype.updateSingleChild = function(computedTransform) {
     if (!computedTransform) {
         computedTransform = new ComputedTransform2d();

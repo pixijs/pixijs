@@ -117,11 +117,15 @@ ComputedTransform3d.prototype.updateSingle = function(parentTransform) {
     } else {
         parentTransform.matrix2d.toMat4(wt);
     }
-    
+
     this.eyeVec = parentTransform.eyeVec;
     this.updated = true;
     this.version++;
     return true;
+};
+
+ComputedTransform3d.prototype.to2d = function(mat) {
+    return mat.copyFromMat4(this.matrix3d);
 };
 
 ComputedTransform3d.prototype.updateRaycast = function (parentRaycast) {
