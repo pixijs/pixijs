@@ -218,6 +218,12 @@ export default class TextureManager
                 }
             }
         }
+
+        if (texture._glRenderTargets[this.renderer.CONTEXT_UID])
+        {
+            texture._glRenderTargets[this.renderer.CONTEXT_UID].destroy();
+            delete texture._glRenderTargets[this.renderer.CONTEXT_UID];
+        }
     }
 
     /**
