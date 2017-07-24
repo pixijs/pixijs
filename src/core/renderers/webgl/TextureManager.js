@@ -198,15 +198,19 @@ export default class TextureManager
             return;
         }
 
-        if (texture._glTextures[this.renderer.CONTEXT_UID])
+        const uid = this.renderer.CONTEXT_UID;
+        const glTextures = texture._glTextures;
+        const glRenderTargets = texture._glRenderTargets;
+
+        if (glTextures[uid])
         {
             this.renderer.unbindTexture(texture);
 
-            texture._glTextures[this.renderer.CONTEXT_UID].destroy();
+            glTextures[uid].destroy();
             texture.off('update', this.updateTexture, this);
             texture.off('dispose', this.destroyTexture, this);
 
-            delete texture._glTextures[this.renderer.CONTEXT_UID];
+            delete glTextures[uid];
 
             if (!skipRemove)
             {
@@ -219,10 +223,10 @@ export default class TextureManager
             }
         }
 
-        if (texture._glRenderTargets[this.renderer.CONTEXT_UID])
+        if (glRenderTargets && glRenderTargets[uid])
         {
-            texture._glRenderTargets[this.renderer.CONTEXT_UID].destroy();
-            delete texture._glRenderTargets[this.renderer.CONTEXT_UID];
+            glRenderTargets[uid].destroy();
+            delete glRenderTargets[uid];
         }
     }
 
