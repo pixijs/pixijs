@@ -41,7 +41,7 @@ import Texture from './Texture';
 export default class RenderTexture extends Texture
 {
     /**
-     * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
+     * @param {PIXI.BaseRenderTexture} [baseRenderTexture] - The renderer used for this RenderTexture
      * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
      */
     constructor(baseRenderTexture, frame)
