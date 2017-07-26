@@ -621,7 +621,11 @@ function createWhiteTexture()
     canvas.height = 10;
 
     const context = canvas.getContext('2d');
-
+    if(!context) 
+    {
+     return new Texture(new BaseTexture());   
+    }
+    
     context.fillStyle = 'white';
     context.fillRect(0, 0, 10, 10);
 
