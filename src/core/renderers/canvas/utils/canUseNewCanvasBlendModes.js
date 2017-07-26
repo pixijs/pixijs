@@ -13,7 +13,11 @@ function createColoredCanvas(color)
     canvas.height = 1;
 
     const context = canvas.getContext('2d');
-
+    if(!context)
+    {
+     return canvas;   
+    }
+    
     context.fillStyle = color;
     context.fillRect(0, 0, 6, 1);
 
@@ -41,7 +45,11 @@ export default function canUseNewCanvasBlendModes()
     canvas.height = 1;
 
     const context = canvas.getContext('2d');
-
+    if(!context)
+    {
+        return false;
+    }
+    
     context.globalCompositeOperation = 'multiply';
     context.drawImage(magenta, 0, 0);
     context.drawImage(yellow, 2, 0);
