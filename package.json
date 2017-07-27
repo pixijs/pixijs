@@ -1,7 +1,7 @@
 {
   "name": "pixi.js",
   "version": "4.5.4",
-  "description": "PixiJS is a fast lightweight 2D library that works across all devices.",
+  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
