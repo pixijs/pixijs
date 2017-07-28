@@ -61,6 +61,7 @@ export default class StencilManager extends WebGLManager
         sms.push(graphics);
 
         gl.colorMask(false, false, false, false);
+        gl.stencilFunc(gl.EQUAL, 0, sms.length);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
         this.renderer.plugins.graphics.render(graphics);
@@ -90,6 +91,7 @@ export default class StencilManager extends WebGLManager
         else
         {
             gl.colorMask(false, false, false, false);
+            gl.stencilFunc(gl.EQUAL, 0, sms.length);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
             this.renderer.plugins.graphics.render(graphics);

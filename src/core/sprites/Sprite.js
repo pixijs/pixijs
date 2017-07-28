@@ -357,7 +357,7 @@ export default class Sprite extends Container
             this._bounds.minX = this._texture.orig.width * -this._anchor._x;
             this._bounds.minY = this._texture.orig.height * -this._anchor._y;
             this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
-            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._x);
+            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
 
             if (!rect)
             {
