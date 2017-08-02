@@ -89,6 +89,7 @@ const CanvasTinter = {
         canvas.width = Math.ceil(crop.width);
         canvas.height = Math.ceil(crop.height);
 
+        context.save();
         context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
 
         context.fillRect(0, 0, crop.width, crop.height);
@@ -120,6 +121,7 @@ const CanvasTinter = {
             crop.width,
             crop.height
         );
+        context.restore();
     },
 
     /**
@@ -144,6 +146,7 @@ const CanvasTinter = {
         canvas.width = Math.ceil(crop.width);
         canvas.height = Math.ceil(crop.height);
 
+        context.save();
         context.globalCompositeOperation = 'copy';
         context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
         context.fillRect(0, 0, crop.width, crop.height);
@@ -162,6 +165,7 @@ const CanvasTinter = {
         );
 
         // context.globalCompositeOperation = 'copy';
+        context.restore();
     },
 
     /**
@@ -186,6 +190,7 @@ const CanvasTinter = {
         canvas.width = Math.ceil(crop.width);
         canvas.height = Math.ceil(crop.height);
 
+        context.save();
         context.globalCompositeOperation = 'copy';
         context.drawImage(
             texture.baseTexture.source,
@@ -198,6 +203,7 @@ const CanvasTinter = {
             crop.width,
             crop.height
         );
+        context.restore();
 
         const rgbValues = hex2rgb(color);
         const r = rgbValues[0];
