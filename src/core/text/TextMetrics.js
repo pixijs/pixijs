@@ -69,7 +69,7 @@ export default class TextMetrics
 
         const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
         let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
-            + ((lines.length - 1) * lineHeight);
+            + ((lines.length - 1) * (lineHeight + style.leading));
 
         if (style.dropShadow)
         {
@@ -83,7 +83,7 @@ export default class TextMetrics
             height,
             lines,
             lineWidths,
-            lineHeight,
+            lineHeight + style.leading,
             maxLineWidth,
             fontProperties
         );

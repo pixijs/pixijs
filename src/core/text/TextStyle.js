@@ -32,6 +32,7 @@ const defaultStyle = {
     trim: false,
     wordWrap: false,
     wordWrapWidth: 100,
+    leading: 0,
 };
 
 /**
@@ -86,6 +87,7 @@ export default class TextStyle
      * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
      * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
      * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
+     * @param {number} [style.leading=0] - The space between lines
      */
     constructor(style)
     {
@@ -352,6 +354,19 @@ export default class TextStyle
         if (this._lineHeight !== lineHeight)
         {
             this._lineHeight = lineHeight;
+            this.styleID++;
+        }
+    }
+    
+    get leading()
+    {
+        return this._leading;
+    }
+    set leading(leading)
+    {
+        if (this._leading !== leading)
+        {
+            this._leading = leading;
             this.styleID++;
         }
     }
