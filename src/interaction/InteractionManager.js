@@ -990,7 +990,7 @@ export default class InteractionManager extends EventEmitter
      */
     processInteractive(interactionEvent, displayObject, func, hitTest, interactive)
     {
-        if (!displayObject || !displayObject.visible)
+        if (!displayObject || !displayObject.visible || !displayObject.alpha)
         {
             return false;
         }
