@@ -42,6 +42,11 @@ export default class InteractionManager extends EventEmitter
      */
     constructor(renderer, options)
     {
+        if (!(renderer.view instanceof HTMLCanvasElement))
+        {
+            throw new core.utils.UnsupportedPluginTargetError();
+        }
+
         super();
 
         options = options || {};

@@ -233,7 +233,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to document', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
@@ -256,7 +256,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to window', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
@@ -281,7 +281,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove pointer events to element', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -304,7 +304,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to document', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
@@ -327,7 +327,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to window', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
@@ -350,7 +350,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove mouse events to element', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -374,7 +374,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove touch events to element without pointer events', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -398,7 +398,7 @@ describe('PIXI.interaction.InteractionManager', function ()
 
         it('should add and remove touch events to element with pointer events', function ()
         {
-            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const manager = new PIXI.interaction.InteractionManager({ view: document.createElement('canvas') });
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
@@ -1513,5 +1513,11 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(eventSpy).to.have.been.calledOnce;
         });
+    });
+
+    it('should throw UnsupportedError when the view is not a canvas element', function ()
+    {
+        expect(() => new PIXI.interaction.InteractionManager({ view: {} }))
+            .to.throw(PIXI.utils.UnsupportedPluginTargetError);
     });
 });

@@ -6,7 +6,8 @@
     },
     "globals": {
         "global": false,
-        "__VERSION__": false
+        "__VERSION__": false,
+        "OffscreenCanvas": false
     },
     "parserOptions": {
         "ecmaVersion": 6,

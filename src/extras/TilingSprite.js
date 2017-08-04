@@ -347,7 +347,8 @@ export default class TilingSprite extends core.Sprite
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement|OffscreenCanvas}
+           source - Source to create texture from
      * @param {number} width - the width of the tiling sprite
      * @param {number} height - the height of the tiling sprite
      * @return {PIXI.Texture} The newly created texture

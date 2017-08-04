@@ -4,7 +4,7 @@
  * @memberof PIXI
  * @function trimCanvas
  * @private
- * @param {HTMLCanvasElement} canvas - the canvas to trim
+ * @param {HTMLCanvasElement|OffscreenCanvas} canvas - the canvas to trim
  * @returns {object} Trim data
  */
 export default function trimCanvas(canvas)
