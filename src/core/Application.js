@@ -27,6 +27,9 @@ export default class Application
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {object} [options] - The optional renderer parameters
+     * @param {boolean} [options.autoStart=true] - automatically starts the rendering after the construction.
+     *     Note that setting this parameter to false does NOT stop the shared ticker even if you set
+     *     options.sharedTicker to true in case that it is already started. Stop it by your own.
      * @param {number} [options.width=800] - the width of the renderers view
      * @param {number} [options.height=600] - the height of the renderers view
      * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
@@ -68,6 +71,7 @@ export default class Application
          * @protected
          */
         this._options = options = Object.assign({
+            autoStart: true,
             sharedTicker: false,
             forceCanvas: false,
             sharedLoader: false,
@@ -100,7 +104,10 @@ export default class Application
         this.ticker = options.sharedTicker ? shared : new Ticker();
 
         // Start the rendering
-        this.start();
+        if (options.autoStart)
+        {
+            this.start();
+        }
     }
 
     set ticker(ticker) // eslint-disable-line require-jsdoc
