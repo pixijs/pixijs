@@ -100,7 +100,7 @@ export default {
      * @constant
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} view=null
+     * @property {HTMLCanvasElement|OffscreenCanvas} view=null
      * @property {number} resolution=1
      * @property {boolean} antialias=false
      * @property {boolean} forceFXAA=false

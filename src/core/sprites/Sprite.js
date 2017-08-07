@@ -439,7 +439,8 @@ export default class Sprite extends Container
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement} source Source to create texture from
+     * @param {number|string|PIXI.BaseTexture|HTMLCanvasElement|HTMLVideoElement|OffscreenCanvas}
+           source Source to create texture from
      * @return {PIXI.Sprite} The newly created sprite
      */
     static from(source)

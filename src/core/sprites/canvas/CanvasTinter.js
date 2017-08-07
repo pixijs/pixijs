@@ -14,7 +14,7 @@ const CanvasTinter = {
      * @memberof PIXI.CanvasTinter
      * @param {PIXI.Sprite} sprite - the sprite to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @return {HTMLCanvasElement} The tinted canvas
+     * @return {HTMLCanvasElement|OffscreenCanvas} The tinted canvas
      */
     getTintedTexture: (sprite, color) =>
     {
@@ -73,7 +73,7 @@ const CanvasTinter = {
      * @memberof PIXI.CanvasTinter
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {HTMLCanvasElement|OffscreenCanvas} canvas - the current canvas
      */
     tintWithMultiply: (texture, color, canvas) =>
     {
@@ -130,7 +130,7 @@ const CanvasTinter = {
      * @memberof PIXI.CanvasTinter
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {HTMLCanvasElement|OffscreenCanvas} canvas - the current canvas
      */
     tintWithOverlay(texture, color, canvas)
     {
@@ -174,7 +174,7 @@ const CanvasTinter = {
      * @memberof PIXI.CanvasTinter
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {HTMLCanvasElement|OffscreenCanvas} canvas - the current canvas
      */
     tintWithPerPixel: (texture, color, canvas) =>
     {
@@ -286,7 +286,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
  * @callback tintMethodFunctionType
  * @param texture {PIXI.Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
- * @param canvas {HTMLCanvasElement} the current canvas
+ * @param canvas {HTMLCanvasElement|OffscreenCanvas} the current canvas
  */
 
 export default CanvasTinter;

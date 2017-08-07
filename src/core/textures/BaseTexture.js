@@ -17,7 +17,7 @@ import bitTwiddle from 'bit-twiddle';
 export default class BaseTexture extends EventEmitter
 {
     /**
-     * @param {HTMLImageElement|HTMLCanvasElement} [source] - the source object of the texture.
+     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas} [source] - the source object of the texture.
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture
      */
@@ -107,7 +107,7 @@ export default class BaseTexture extends EventEmitter
          * TODO: Make this a setter that calls loadSource();
          *
          * @readonly
-         * @member {HTMLImageElement|HTMLCanvasElement}
+         * @member {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas}
          */
         this.source = null; // set in loadSource, if at all
 
@@ -302,7 +302,7 @@ export default class BaseTexture extends EventEmitter
      *     }
      *
      * @protected
-     * @param {HTMLImageElement|HTMLCanvasElement} source - the source object of the texture.
+     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas} source - the source object of the texture.
      */
     loadSource(source)
     {
@@ -711,7 +711,7 @@ export default class BaseTexture extends EventEmitter
      * Helper function that creates a base texture from the given canvas element.
      *
      * @static
-     * @param {HTMLCanvasElement} canvas - The canvas element source of the texture
+     * @param {HTMLCanvasElement|OffscreenCanvas} canvas - The canvas element source of the texture
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
      * @param {string} [origin='canvas'] - A string origin of who created the base texture
      * @return {PIXI.BaseTexture} The new base texture.
@@ -739,7 +739,7 @@ export default class BaseTexture extends EventEmitter
      * The source can be - image url, image element, canvas element.
      *
      * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
+     * @param {string|HTMLImageElement|HTMLCanvasElement|OffscreenCanvas} source - The source to create base texture from.
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
      * @return {PIXI.BaseTexture} The new base texture.
@@ -773,7 +773,7 @@ export default class BaseTexture extends EventEmitter
 
             return baseTexture;
         }
-        else if (source instanceof HTMLCanvasElement)
+        else if (source instanceof HTMLCanvasElement || source instanceof OffscreenCanvas)
         {
             return BaseTexture.fromCanvas(source, scaleMode);
         }
