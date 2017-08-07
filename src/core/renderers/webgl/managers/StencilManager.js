@@ -38,7 +38,7 @@ export default class StencilManager extends WebGLManager
     }
 
     /**
-     * Applies the Mask and adds it to the current filter stack. @alvin
+     * Applies the Mask and adds it to the current stencil stack. @alvin
      *
      * @param {PIXI.Graphics} graphics - The mask
      */
@@ -50,29 +50,29 @@ export default class StencilManager extends WebGLManager
 
         const gl = this.renderer.gl;
         const sms = this.stencilMaskStack;
+        const currentMasks = sms.length;
+        const sFuncMask = Math.pow(2, currentMasks+1) - 1;
 
-        if (sms.length === 0)
+        if (currentMasks === 0)
         {
             gl.enable(gl.STENCIL_TEST);
-            gl.clear(gl.STENCIL_BUFFER_BIT);
-            gl.stencilFunc(gl.ALWAYS, 1, 1);
         }
-
+        
         sms.push(graphics);
 
         gl.colorMask(false, false, false, false);
-        gl.stencilFunc(gl.EQUAL, 0, sms.length);
+        gl.stencilFunc(gl.EQUAL, currentMasks, sFuncMask);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
         this.renderer.plugins.graphics.render(graphics);
 
         gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);
+        gl.stencilFunc(gl.EQUAL, currentMasks + 1, sFuncMask);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }
 
     /**
-     * TODO @alvin
+     * Removes the last mask from the stencil stack. @alvin
      */
     popStencil()
     {
@@ -82,22 +82,26 @@ export default class StencilManager extends WebGLManager
         const sms = this.stencilMaskStack;
 
         const graphics = sms.pop();
+        const currentMasks = sms.length;
+        const sFuncMask = Math.pow(2, currentMasks) - 1;
 
-        if (sms.length === 0)
+        if (currentMasks === 0)
         {
             // the stack is empty!
             gl.disable(gl.STENCIL_TEST);
+            gl.clear(gl.STENCIL_BUFFER_BIT);
+            gl.clearStencil(0);
         }
         else
         {
             gl.colorMask(false, false, false, false);
-            gl.stencilFunc(gl.EQUAL, 0, sms.length);
+            gl.stencilFunc(gl.EQUAL, currentMasks+1, 2 * sFuncMask + 1);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
             this.renderer.plugins.graphics.render(graphics);
 
             gl.colorMask(true, true, true, true);
-            gl.stencilFunc(gl.NOTEQUAL, 0, sms.length);
+            gl.stencilFunc(gl.EQUAL, currentMasks, sFuncMask);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
         }
     }
