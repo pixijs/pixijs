@@ -1,12 +1,9 @@
-PixiJS — A 2D JavaScript Renderer
+PixiJS — The HTML5 Creation Engine
 =============
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/pixiV4_wide_full.jpg)
 
-
-
-
-[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
+[![Inline docs](http://inch-ci.org/github/pixijs/pixi.js.svg?branch=dev)](http://inch-ci.org/github/pixijs/pixi.js)
 [![Build Status](https://travis-ci.org/pixijs/pixi.js.svg?branch=dev)](https://travis-ci.org/pixijs/pixi.js)
 
 The aim of this project is to provide a fast lightweight 2D library that works
@@ -15,7 +12,7 @@ hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really 
 
 If you want to keep up to date with the latest PixiJS news then feel free to follow us on twitter
 ([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
-and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
+and we will keep you posted! You can also check back on [our site](http://www.pixijs.com)
 as any breakthroughs will be posted up there too!
 
 **Your support helps us make PixiJS even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
@@ -33,7 +30,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 - Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
 - Examples: Get stuck right in and play around with PixiJS code and features right [here](http://pixijs.github.io/examples/)!
 - Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.github.io/docs/).
-- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki/Resources).
+- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki).
 
 ### Community ###
 - Forums: Check out the [forum](http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your pixi questions.
@@ -65,7 +62,7 @@ _Note: `4.5.1` can be replaced by any [released](https://github.com/pixijs/pixi.
 
 ### Demos ###
 
-- [WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
+- [WebGL Filters!](http://pixijs.github.io/pixi-filters/examples/)
 - [Run pixie run](http://www.goodboydigital.com/runpixierun)
 - [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
 - [Flash vs HTML](http://flashvhtml.com)
@@ -108,7 +105,7 @@ before submitting changes.
 - Primitive Drawing
 - Masking
 - Filters
-- [User Plugins](https://github.com/pixijs/pixi.js/wiki/Pixi-v3-Plugins)
+- [User Plugins](https://github.com/pixijs/pixi.js/wiki/v3-Pixi-Plugins)
 
 ### Basic Usage Example ###
 
