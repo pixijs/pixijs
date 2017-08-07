@@ -55,7 +55,7 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {boolean} [options.legacy=false] - If true PixiJS will aim to ensure compatibility
      *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     * for devices with dual graphics card
+     *  for devices with dual graphics card
      */
     constructor(options, arg2, arg3)
     {
