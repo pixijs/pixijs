@@ -51,13 +51,13 @@ export default class StencilManager extends WebGLManager
         const gl = this.renderer.gl;
         const sms = this.stencilMaskStack;
         const currentMasks = sms.length;
-        const sFuncMask = Math.pow(2, currentMasks+1) - 1;
+        const sFuncMask = Math.pow(2, currentMasks + 1) - 1;
 
         if (currentMasks === 0)
         {
             gl.enable(gl.STENCIL_TEST);
         }
-        
+
         sms.push(graphics);
 
         gl.colorMask(false, false, false, false);
@@ -95,7 +95,7 @@ export default class StencilManager extends WebGLManager
         else
         {
             gl.colorMask(false, false, false, false);
-            gl.stencilFunc(gl.EQUAL, currentMasks+1, 2 * sFuncMask + 1);
+            gl.stencilFunc(gl.EQUAL, currentMasks + 1, (2 * sFuncMask) + 1);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
             this.renderer.plugins.graphics.render(graphics);
