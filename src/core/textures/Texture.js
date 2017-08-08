@@ -272,7 +272,7 @@ export default class Texture extends EventEmitter
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @static
-     * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture}
+     * @param {number|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|OffscreenCanvas|PIXI.BaseTexture}
      *        source - Source to create texture from
      * @return {PIXI.Texture} The newly created texture
      */
@@ -313,7 +313,7 @@ export default class Texture extends EventEmitter
      * Create a texture from a source and add to the cache.
      *
      * @static
-     * @param {HTMLImageElement|HTMLCanvasElement} source - The input source.
+     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas} source - The input source.
      * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
      * @param {String} [name] - Human readible name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.

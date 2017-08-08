@@ -28,7 +28,7 @@ export default function createResource(source)
     {
         return new ImageResource(source);
     }
-    else if (source instanceof HTMLCanvasElement)
+    else if (source instanceof HTMLCanvasElement || (self.OffscreenCanvas && source instanceof self.OffscreenCanvas))
     {
         return new CanvasResource(source);
     }

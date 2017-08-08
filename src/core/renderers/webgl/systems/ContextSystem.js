@@ -65,7 +65,7 @@ export default class ContextSystem extends WebGLSystem
      *
      * @class
      * @memberof PIXI.glCore
-     * @param canvas {HTMLCanvasElement} the canvas element that we will get the context from
+     * @param canvas {HTMLCanvasElement|OffscreenCanvas} the canvas element that we will get the context from
      * @param options {Object} An options object that gets passed in to the canvas element containing the context attributes,
      * see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext for the options available
      * @return {WebGLRenderingContext} the WebGL context

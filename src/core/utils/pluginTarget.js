@@ -1,4 +1,29 @@
 /**
+ * An object indicating an error caused by a target not supported by a plugin.
+ * The error would let the plugin initializer ignore the plugin for the target.
+ */
+export class UnsupportedTargetError extends Error
+{
+    /**
+     * The constructor of UnsupportedTargetError. Its behavior corresponds to
+     * one of the Error constructor.
+     * @param {string} message - The semantics is same with Error constructor.
+     */
+    constructor(message)
+    {
+        super(message);
+
+        // Extending builtins like Error and Array doesn't work in 6.x · Issue
+        // #3083 · babel/babel
+        // https://github.com/babel/babel/issues/3083
+        // A workaround for Babel ES2015 classes transform.
+        Object.setPrototypeOf(this, UnsupportedTargetError.prototype);
+    }
+}
+
+UnsupportedTargetError.prototype.name = 'UnsupportedPIXIPluginTargetError';
+
+/**
  * Mixins functionality to make an object have "plugins".
  *
  * @example
@@ -10,7 +35,7 @@
  * @memberof PIXI.utils
  * @param {object} obj - The object to mix into.
  */
-function pluginTarget(obj)
+function pluginTargetMixin(obj)
 {
     obj.__plugins = {};
 
@@ -35,7 +60,17 @@ function pluginTarget(obj)
 
         for (const o in obj.__plugins)
         {
-            this.plugins[o] = new (obj.__plugins[o])(this);
+            try
+            {
+                this.plugins[o] = new (obj.__plugins[o])(this);
+            }
+            catch (error)
+            {
+                if (!(error instanceof UnsupportedTargetError))
+                {
+                    throw error;
+                }
+            }
         }
     };
 
@@ -55,7 +90,7 @@ function pluginTarget(obj)
     };
 }
 
-export default {
+export const pluginTarget = {
     /**
      * Mixes in the properties of the pluginTarget into another object
      *
@@ -63,6 +98,6 @@ export default {
      */
     mixin: function mixin(obj)
     {
-        pluginTarget(obj);
+        pluginTargetMixin(obj);
     },
 };
