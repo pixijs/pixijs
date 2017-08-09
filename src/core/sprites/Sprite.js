@@ -357,7 +357,7 @@ export default class Sprite extends Container
             this._bounds.minX = this._texture.orig.width * -this._anchor._x;
             this._bounds.minY = this._texture.orig.height * -this._anchor._y;
             this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
-            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._x);
+            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
 
             if (!rect)
             {
@@ -390,11 +390,11 @@ export default class Sprite extends Container
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (tempPoint.x > x1 && tempPoint.x < x1 + width)
+        if (tempPoint.x >= x1 && tempPoint.x < x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (tempPoint.y > y1 && tempPoint.y < y1 + height)
+            if (tempPoint.y >= y1 && tempPoint.y < y1 + height)
             {
                 return true;
             }

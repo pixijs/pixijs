@@ -34,7 +34,7 @@ export default class Filter
          */
         this.fragmentSrc = fragmentSrc || Filter.defaultFragmentSrc;
 
-        this.blendMode = BLEND_MODES.NORMAL;
+        this._blendMode = BLEND_MODES.NORMAL;
 
         this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
 
@@ -87,6 +87,14 @@ export default class Filter
          * @member {boolean}
          */
         this.enabled = true;
+
+        /**
+         * If enabled, PixiJS will fit the filter area into boundaries for better performance.
+         * Switch it off if it does not work for specific shader.
+         *
+         * @member {boolean}
+         */
+        this.autoFit = true;
     }
 
     /**
@@ -110,6 +118,22 @@ export default class Filter
         filterManager.applyFilter(this, input, output, clear);
 
         // or just do a regular render..
+    }
+
+    /**
+     * Sets the blendmode of the filter
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
+    get blendMode()
+    {
+        return this._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        this._blendMode = value;
     }
 
     /**

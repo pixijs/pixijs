@@ -48,10 +48,10 @@ export default class ParticleShader extends Shader
                 'varying float vColor;',
 
                 'uniform sampler2D uSampler;',
-                'uniform float uAlpha;',
+                'uniform vec4 uColor;',
 
                 'void main(void){',
-                '  vec4 color = texture2D(uSampler, vTextureCoord) * vColor * uAlpha;',
+                '  vec4 color = texture2D(uSampler, vTextureCoord) * vColor * uColor;',
                 '  if (color.a == 0.0) discard;',
                 '  gl_FragColor = color;',
                 '}',

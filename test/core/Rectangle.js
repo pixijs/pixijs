@@ -12,6 +12,16 @@ describe('PIXI.Rectangle', function ()
         expect(rect.bottom).to.equal(6);
     });
 
+    it('should cast quantities to number types', function ()
+    {
+        const rect = new PIXI.Rectangle('5', '5', '1', '1');
+
+        expect(rect.left).to.equal(5);
+        expect(rect.top).to.equal(5);
+        expect(rect.right).to.equal(6);
+        expect(rect.bottom).to.equal(6);
+    });
+
     it('should clone a new rectangle', function ()
     {
         const rect1 = new PIXI.Rectangle(10, 10, 10, 10);
@@ -135,7 +145,7 @@ describe('PIXI.Rectangle', function ()
 
     it('should fit a rectangle', function ()
     {
-        const rect1 = new PIXI.Rectangle(0, 0, -10, -10);
+        const rect1 = new PIXI.Rectangle(0, 0, 10, 10);
         const rect2 = new PIXI.Rectangle(-10, -10, 5, 5);
 
         rect2.fit(rect1);

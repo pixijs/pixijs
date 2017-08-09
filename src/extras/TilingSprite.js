@@ -180,9 +180,9 @@ export default class TilingSprite extends core.Sprite
         const transform = this.worldTransform;
         const resolution = renderer.resolution;
         const baseTexture = texture.baseTexture;
-        const baseTextureResolution = texture.baseTexture.resolution;
-        const modX = (this.tilePosition.x / this.tileScale.x) % texture._frame.width;
-        const modY = (this.tilePosition.y / this.tileScale.y) % texture._frame.height;
+        const baseTextureResolution = baseTexture.resolution;
+        const modX = ((this.tilePosition.x / this.tileScale.x) % texture._frame.width) * baseTextureResolution;
+        const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
         // TODO this needs to be refreshed if texture changes..
@@ -206,7 +206,8 @@ export default class TilingSprite extends core.Sprite
             }
             else
             {
-                tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x, -texture._frame.y);
+                tempCanvas.context.drawImage(baseTexture.source,
+                    -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
             }
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
         }
@@ -310,11 +311,11 @@ export default class TilingSprite extends core.Sprite
         const height = this._height;
         const x1 = -width * this.anchor._x;
 
-        if (tempPoint.x > x1 && tempPoint.x < x1 + width)
+        if (tempPoint.x >= x1 && tempPoint.x < x1 + width)
         {
             const y1 = -height * this.anchor._y;
 
-            if (tempPoint.y > y1 && tempPoint.y < y1 + height)
+            if (tempPoint.y >= y1 && tempPoint.y < y1 + height)
             {
                 return true;
             }
@@ -324,12 +325,18 @@ export default class TilingSprite extends core.Sprite
     }
 
     /**
-     * Destroys this tiling sprite
+     * Destroys this sprite and optionally its texture and children
      *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
+     *      method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
+     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    destroy()
+    destroy(options)
     {
-        super.destroy();
+        super.destroy(options);
 
         this.tileTransform = null;
         this.uvTransform = null;
