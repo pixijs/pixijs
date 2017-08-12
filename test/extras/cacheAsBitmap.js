@@ -1,6 +1,6 @@
 'use strict';
 
-const withGL = require('../withGL')
+const withGL = require('../withGL');
 
 describe('PIXI.extras.cacheAsBitmap', function ()
 {
