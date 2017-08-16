@@ -404,6 +404,19 @@ export default class Sprite extends Container
     }
 
     /**
+     * Update texture if the content of texture has changed.
+     * e.g. If texture is based on a canvas , and after the canvas changed, please call this method.
+     */
+    updateTexture()
+    {
+        const baseTexture = this._texture.baseTexture;
+
+        this._onTextureUpdate();
+
+        baseTexture.emit('update', baseTexture);
+    }
+
+    /**
      * Destroys this sprite and optionally its texture and children
      *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
