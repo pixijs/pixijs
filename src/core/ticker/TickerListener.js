@@ -150,7 +150,7 @@ export default class TickerListener
         }
 
         // Redirect to the next item
-        const redirect = this.previous;
+        const redirect = this.next;
 
         // Remove references
         this.next = hard ? null : redirect;
