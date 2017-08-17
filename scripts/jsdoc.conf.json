@@ -24,9 +24,9 @@
         },
         "applicationName": "PixiJS",
         "footer"        : "Made with ♥ by Goodboy Digital (goodboydigital.com)",
-        "copyright"     : "PixiJS Copyright © 2013-2016 Mat Groves.",
+        "copyright"     : "PixiJS Copyright © 2013-2017 Mat Groves.",
         "disqus": "",
-        "googleAnalytics": "",
+        "googleAnalytics": "UA-103772589-5",
         "openGraph": {
             "title": "",
             "type": "website",

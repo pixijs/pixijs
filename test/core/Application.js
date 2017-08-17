@@ -34,4 +34,18 @@ describe('PIXI.Application', function ()
             done();
         });
     });
+
+    it('should not start application before calling start method if options.autoStart is false', function (done)
+    {
+        const app = new PIXI.Application({ autoStart: false });
+
+        expect(app.ticker.started).to.be.false;
+        app.start();
+
+        app.ticker.addOnce(() =>
+        {
+            app.destroy();
+            done();
+        });
+    });
 });
