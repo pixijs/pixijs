@@ -49,26 +49,22 @@ export default class StencilManager extends WebGLManager
         this.renderer._activeRenderTarget.attachStencilBuffer();
 
         const gl = this.renderer.gl;
-        const sms = this.stencilMaskStack;
-        const currentMasks = sms.length;
-        const sFuncMask = Math.pow(2, currentMasks + 1) - 1;
+        const prevMaskCount = this.stencilMaskStack.length;
 
-        if (currentMasks === 0)
+        if (prevMaskCount === 0)
         {
             gl.enable(gl.STENCIL_TEST);
         }
 
-        sms.push(graphics);
+        this.stencilMaskStack.push(graphics);
 
+        // Increment the refference stencil value where the new mask overlaps with the old ones.
         gl.colorMask(false, false, false, false);
-        gl.stencilFunc(gl.EQUAL, currentMasks, sFuncMask);
+        gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-
         this.renderer.plugins.graphics.render(graphics);
 
-        gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.EQUAL, currentMasks + 1, sFuncMask);
-        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+        this._useCurrent();
     }
 
     /**
@@ -79,13 +75,9 @@ export default class StencilManager extends WebGLManager
         this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
 
         const gl = this.renderer.gl;
-        const sms = this.stencilMaskStack;
+        const graphics = this.stencilMaskStack.pop();
 
-        const graphics = sms.pop();
-        const currentMasks = sms.length;
-        const sFuncMask = Math.pow(2, currentMasks) - 1;
-
-        if (currentMasks === 0)
+        if (this.stencilMaskStack.length === 0)
         {
             // the stack is empty!
             gl.disable(gl.STENCIL_TEST);
@@ -94,16 +86,35 @@ export default class StencilManager extends WebGLManager
         }
         else
         {
+            // Decrement the refference stencil value where the popped mask overlaps with the other ones
             gl.colorMask(false, false, false, false);
-            gl.stencilFunc(gl.EQUAL, currentMasks + 1, (2 * sFuncMask) + 1);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
-
             this.renderer.plugins.graphics.render(graphics);
 
-            gl.colorMask(true, true, true, true);
-            gl.stencilFunc(gl.EQUAL, currentMasks, sFuncMask);
-            gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+            this._useCurrent();
         }
+    }
+
+    /**
+     * Setup renderer to use the current stencil data.
+     */
+    _useCurrent()
+    {
+        const gl = this.renderer.gl;
+
+        gl.colorMask(true, true, true, true);
+        gl.stencilFunc(gl.EQUAL, this.stencilMaskStack.length, this._getBitwiseMask());
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+    }
+
+    /**
+     * Fill 1s equal to the number of acitve stencil masks.
+     *
+     * @return {number} The bitwise mask.
+     */
+    _getBitwiseMask()
+    {
+        return (1 << this.stencilMaskStack.length) - 1;
     }
 
     /**
