@@ -375,7 +375,8 @@ describe('PIXI.ticker.Ticker', function ()
         ticker.start();
     });
 
-    it('should Ticker call destroyed listener "next" pointer after destroy', function (done) {
+    it('should Ticker call destroyed listener "next" pointer after destroy', function (done)
+    {
         const ticker = new Ticker();
 
         const listener1 = sinon.spy();
