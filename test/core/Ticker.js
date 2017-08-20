@@ -379,11 +379,13 @@ describe('PIXI.ticker.Ticker', function ()
         const ticker = new Ticker();
 
         const listener1 = sinon.spy();
-        const listener2 = sinon.spy(() => {
+        const listener2 = sinon.spy(() =>
+        {
             ticker.remove(listener2);
         });
 
-        const listener3 = sinon.spy(() => {
+        const listener3 = sinon.spy(() =>
+        {
             ticker.stop();
 
             expect(listener1.calledOnce).to.be.true;
