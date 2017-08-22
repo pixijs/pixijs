@@ -1,5 +1,6 @@
 import * as core from '../core';
 import ObservablePoint from '../core/math/ObservablePoint';
+import settings from '../core/settings';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -509,10 +510,12 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
+        const selfContained = texture.textureCacheIds.join() === texture.baseTexture.textureCacheIds.join();
+        const res = selfContained ? (texture.baseTexture.resolution || settings.RESOLUTION) : 1;
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
-        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
+        data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10) / res;
         data.chars = {};
 
         // parse letters
@@ -524,16 +527,16 @@ export default class BitmapText extends core.Container
             const charCode = parseInt(letter.getAttribute('id'), 10);
 
             const textureRect = new core.Rectangle(
-                parseInt(letter.getAttribute('x'), 10) + texture.frame.x,
-                parseInt(letter.getAttribute('y'), 10) + texture.frame.y,
-                parseInt(letter.getAttribute('width'), 10),
-                parseInt(letter.getAttribute('height'), 10)
+                (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
+                (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
+                parseInt(letter.getAttribute('width'), 10) / res,
+                parseInt(letter.getAttribute('height'), 10) / res
             );
 
             data.chars[charCode] = {
-                xOffset: parseInt(letter.getAttribute('xoffset'), 10),
-                yOffset: parseInt(letter.getAttribute('yoffset'), 10),
-                xAdvance: parseInt(letter.getAttribute('xadvance'), 10),
+                xOffset: parseInt(letter.getAttribute('xoffset'), 10) / res,
+                yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
+                xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
                 texture: new core.Texture(texture.baseTexture, textureRect),
 
@@ -546,9 +549,9 @@ export default class BitmapText extends core.Container
         for (let i = 0; i < kernings.length; i++)
         {
             const kerning = kernings[i];
-            const first = parseInt(kerning.getAttribute('first'), 10);
-            const second = parseInt(kerning.getAttribute('second'), 10);
-            const amount = parseInt(kerning.getAttribute('amount'), 10);
+            const first = parseInt(kerning.getAttribute('first'), 10) / res;
+            const second = parseInt(kerning.getAttribute('second'), 10) / res;
+            const amount = parseInt(kerning.getAttribute('amount'), 10) / res;
 
             if (data.chars[second])
             {
