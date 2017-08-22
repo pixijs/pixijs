@@ -510,7 +510,8 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-        const res = texture.baseTexture.resolution || settings.RESOLUTION;
+        const selfContained = texture.textureCacheIds.join() === texture.baseTexture.textureCacheIds.join();
+        const res = selfContained ? (texture.baseTexture.resolution || settings.RESOLUTION) : 1;
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
