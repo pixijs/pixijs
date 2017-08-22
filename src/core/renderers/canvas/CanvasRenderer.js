@@ -201,6 +201,7 @@ export default class CanvasRenderer extends SystemRenderer
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
+        this._activeBlendMode = BLEND_MODES.NORMAL;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
 
         if (navigator.isCocoonJS && this.view.screencanvas)
@@ -317,6 +318,14 @@ export default class CanvasRenderer extends SystemRenderer
         {
             this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
         }
+    }
+
+    /**
+     * Checks if blend mode has changed.
+     */
+    invalidateBlendMode()
+    {
+        this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
     }
 }
 
