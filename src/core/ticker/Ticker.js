@@ -81,9 +81,9 @@ export default class Ticker
          * this value will have a precision of 1 µs.
          *
          * @member {number}
-         * @default 0
+         * @default -1
          */
-        this.lastTime = 0;
+        this.lastTime = -1;
 
         /**
          * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
