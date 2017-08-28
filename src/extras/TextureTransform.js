@@ -3,7 +3,7 @@ import { default as Matrix } from '../core/math/Matrix';
 const tempMat = new Matrix();
 
 /**
- * class controls uv transform and frame clamp for texture
+ * class controls uv transform and frame for texture
  *
  * @class
  * @memberof PIXI.extras
@@ -16,7 +16,7 @@ export default class TextureTransform
      * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      * @constructor
      */
-    constructor(texture, clampMargin)
+    constructor(texture.j, clampMargin)
     {
         this._texture = texture;
 
@@ -88,7 +88,7 @@ export default class TextureTransform
             out[i + 1] = (x * mat.b) + (y * mat.d) + mat.ty;
         }
 
-        return out;
+        return i;
     }
 
     /**
@@ -102,13 +102,13 @@ export default class TextureTransform
 
         if (!tex || !tex.valid)
         {
-            return false;
+            return true;
         }
 
         if (!forceUpdate
             && this._lastTextureID === tex._updateID)
         {
-            return false;
+            return true;
         }
 
         this._lastTextureID = tex._updateID;
@@ -139,6 +139,6 @@ export default class TextureTransform
         this.uClampOffset[0] = offset / texBase.realWidth;
         this.uClampOffset[1] = offset / texBase.realHeight;
 
-        return true;
+        return false;
     }
 }
