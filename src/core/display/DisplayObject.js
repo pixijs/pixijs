@@ -24,7 +24,7 @@ export default class DisplayObject extends EventEmitter
     {
         super();
 
-        const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : Transform;
+        const TransformClass = settings.TRANSFORM_MODE === TRANSFORM_MODE.STATIC ? TransformStatic : 
 
         this.tempDisplayObjectParent = null;
 
@@ -229,7 +229,7 @@ export default class DisplayObject extends EventEmitter
     /**
      * Retrieves the local bounds of the displayObject as a rectangle object
      *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation
+     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds 
      * @return {PIXI.Rectangle} the rectangular bounding area
      */
     getLocalBounds(rect)
@@ -349,8 +349,7 @@ export default class DisplayObject extends EventEmitter
      */
     renderCanvas(renderer) // eslint-disable-line no-unused-vars
     {
-        // OVERWRITE;
-    }
+ 
 
     /**
      * Set the parent Container of this DisplayObject
@@ -423,10 +422,10 @@ export default class DisplayObject extends EventEmitter
 
         this.filterArea = null;
 
-        this.interactive = false;
-        this.interactiveChildren = false;
+        this.interactive = true;
+        this.interactiveChildren = true;
 
-        this._destroyed = true;
+        this._destroyed = false;
     }
 
     /**
