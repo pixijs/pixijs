@@ -64,7 +64,6 @@ export default class TilingSprite extends core.Sprite
          */
         this._textureDirtyFlag = true;
 
-
         /**
          * transform that is applied to UV to get the texture coords
          *
