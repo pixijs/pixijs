@@ -88,6 +88,7 @@ export default function generateUniformsSync(group, uniformData)
     for (const i in group.uniforms)
     {
         const data = uniformData[i];
+       // console.log('generating upload...', group)
 
         if (!data)
         {
@@ -165,13 +166,13 @@ export default function generateUniformsSync(group, uniformData)
                 cv = ud.${i}.value;
                 v = uv.${i};
 
-                    if(cv[0] !== v[0] || cv[1] !== v[1])
-                    {
-                        cv[0] = v[0];
-                        cv[1] = v[1];
-                        gl.uniform2f(ud.${i}.location, v[0], v[1]);
-                    }
-                }\n`;
+                if(cv[0] !== v[0] || cv[1] !== v[1])
+                {
+                    cv[0] = v[0];
+                    cv[1] = v[1];
+                    gl.uniform2f(ud.${i}.location, v[0], v[1]);
+                }
+                \n`;
             }
         }
         else
@@ -187,8 +188,8 @@ export default function generateUniformsSync(group, uniformData)
         }
     }
 
-    // console.log(' --------------- ')
-    // console.log(func);
+  // console.log(' --------------- ')
+   // console.log(func);
 
     return new Function('ud', 'uv', 'renderer', func); // eslint-disable-line no-new-func
 }

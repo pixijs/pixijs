@@ -115,6 +115,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         if (isSimple)
         {
             tempMat.prepend(uv.mapCoord);
+
         }
         else
         {
@@ -122,6 +123,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
             shader.uniforms.uClampFrame = uv.uClampFrame;
             shader.uniforms.uClampOffset = uv.uClampOffset;
         }
+
 
         shader.uniforms.uTransform = tempMat.toArray(true);
 

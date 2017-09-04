@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v5.0.0
- * Compiled Wed, 12 Jul 2017 18:55:42 UTC
+ * Compiled Fri, 18 Aug 2017 16:41:32 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -5086,6 +5086,9 @@ var Resource = function () {
      *      element to use for loading, instead of creating one.
      * @param {boolean} [options.metadata.skipSource=false] - Skips adding source(s) to the load element. This
      *      is useful if you want to pass in a `loadElement` that you already added load sources to.
+     * @param {string|string[]} [options.metadata.mimeType] - The mime type to use for the source element of a video/audio
+     *      elment. If the urls are an array, you can pass this as an array as well where each index is the mime type to
+     *      use for the corresponding url index.
      */
 
 
@@ -5562,11 +5565,15 @@ var Resource = function () {
             if (navigator.isCocoonJS) {
                 this.data.src = Array.isArray(this.url) ? this.url[0] : this.url;
             } else if (Array.isArray(this.url)) {
+                var mimeTypes = this.metadata.mimeType;
+
                 for (var i = 0; i < this.url.length; ++i) {
-                    this.data.appendChild(this._createSource(type, this.url[i]));
+                    this.data.appendChild(this._createSource(type, this.url[i], Array.isArray(mimeTypes) ? mimeTypes[i] : mimeTypes));
                 }
             } else {
-                this.data.appendChild(this._createSource(type, this.url));
+                var _mimeTypes = this.metadata.mimeType;
+
+                this.data.appendChild(this._createSource(type, this.url, Array.isArray(_mimeTypes) ? _mimeTypes[0] : _mimeTypes));
             }
         }
 
@@ -5661,7 +5668,7 @@ var Resource = function () {
 
     Resource.prototype._createSource = function _createSource(type, url, mime) {
         if (!mime) {
-            mime = type + '/' + url.substr(url.lastIndexOf('.') + 1);
+            mime = type + '/' + this._getExtension(url);
         }
 
         var source = document.createElement('source');
@@ -5904,11 +5911,10 @@ var Resource = function () {
             ext = url.substring(slashIndex + 1, url.indexOf(';', slashIndex));
         } else {
             var queryStart = url.indexOf('?');
+            var hashStart = url.indexOf('#');
+            var index = Math.min(queryStart > -1 ? queryStart : url.length, hashStart > -1 ? hashStart : url.length);
 
-            if (queryStart !== -1) {
-                url = url.substring(0, queryStart);
-            }
-
+            url = url.substring(0, index);
             ext = url.substring(url.lastIndexOf('.') + 1);
         }
 
@@ -23364,6 +23370,7 @@ function generateUniformsSync(group, uniformData) {
 
     for (var i in group.uniforms) {
         var data = uniformData[i];
+        // console.log('generating upload...', group)
 
         if (!data) {
             if (group.uniforms[i].group) {
@@ -23397,7 +23404,7 @@ function generateUniformsSync(group, uniformData) {
                 if (group.uniforms[i].x !== undefined) {
                     func += '\n                cv = ud.' + i + '.value;\n                v = uv.' + i + ';\n\n                if(cv[0] !== v.x || cv[1] !== v.y)\n                {\n                    cv[0] = v.x;\n                    cv[1] = v.y;\n                    gl.uniform2f(ud.' + i + '.location, v.x, v.y);\n                }\n';
                 } else {
-                    func += '\n                cv = ud.' + i + '.value;\n                v = uv.' + i + ';\n\n                    if(cv[0] !== v[0] || cv[1] !== v[1])\n                    {\n                        cv[0] = v[0];\n                        cv[1] = v[1];\n                        gl.uniform2f(ud.' + i + '.location, v[0], v[1]);\n                    }\n                }\n';
+                    func += '\n                cv = ud.' + i + '.value;\n                v = uv.' + i + ';\n\n                if(cv[0] !== v[0] || cv[1] !== v[1])\n                {\n                    cv[0] = v[0];\n                    cv[1] = v[1];\n                    gl.uniform2f(ud.' + i + '.location, v[0], v[1]);\n                }\n                \n';
                 }
             } else {
                 var templateType = data.size === 1 ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
