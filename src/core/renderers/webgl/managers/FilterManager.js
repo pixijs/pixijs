@@ -492,10 +492,10 @@ export default class FilterManager extends WebGLManager
     /**
      * Destroys this Filter Manager.
      *
-     * @param {boolean} contextLost context was lost, do not free shaders
+     * @param {boolean} [contextLost=false] context was lost, do not free shaders
      *
      */
-    destroy(contextLost)
+    destroy(contextLost = false)
     {
         const renderer = this.renderer;
         const filters = this.managedFilters;
