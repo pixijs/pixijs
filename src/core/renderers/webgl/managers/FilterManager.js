@@ -327,7 +327,7 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            const type = uniformData[i].type.toLowerCase();
+            const type = uniformData[i].type;
 
             if (type === 'sampler2d' && uniforms[i] !== 0)
             {
