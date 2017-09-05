@@ -56,6 +56,15 @@ export default class TilingSprite extends core.Sprite
         this._canvasPattern = null;
 
         /**
+         * flag indicating the texture has changed but hasn't
+         * been updated yet
+         *
+         * @member {boolean}
+         * @private
+         */
+        this._textureDirtyFlag = true;
+
+        /**
          * transform that is applied to UV to get the texture coords
          *
          * @member {PIXI.extras.TextureTransform}
@@ -136,6 +145,7 @@ export default class TilingSprite extends core.Sprite
         {
             this.uvTransform.texture = this._texture;
         }
+        this._textureDirtyFlag = true;
     }
 
     /**
@@ -159,6 +169,7 @@ export default class TilingSprite extends core.Sprite
 
         renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
+        this._textureDirtyFlag = false;
     }
 
     /**
@@ -185,8 +196,7 @@ export default class TilingSprite extends core.Sprite
         const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
-        // TODO this needs to be refreshed if texture changes..
-        if (!this._canvasPattern)
+        if (this._textureDirtyFlag)
         {
             // cut an object from a spritesheet..
             const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
@@ -210,6 +220,7 @@ export default class TilingSprite extends core.Sprite
                     -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
             }
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
+            this._textureDirtyFlag = false;
         }
 
         // set context state..

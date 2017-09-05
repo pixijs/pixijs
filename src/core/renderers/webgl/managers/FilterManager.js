@@ -327,7 +327,9 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
+            const type = uniformData[i].type.toLowerCase();
+
+            if (type === 'sampler2d' && uniforms[i] !== 0)
             {
                 if (uniforms[i].baseTexture)
                 {
@@ -352,7 +354,7 @@ export default class FilterManager extends WebGLManager
 
                 textureCount++;
             }
-            else if (uniformData[i].type === 'mat3')
+            else if (type === 'mat3')
             {
                 // check if its PixiJS matrix..
                 if (uniforms[i].a !== undefined)
@@ -364,7 +366,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'vec2')
+            else if (type === 'vec2')
             {
                 // check if its a point..
                 if (uniforms[i].x !== undefined)
@@ -380,7 +382,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'float')
+            else if (type === 'float')
             {
                 if (shader.uniforms.data[i].value !== uniformData[i])
                 {
