@@ -562,7 +562,8 @@ export default class Texture extends EventEmitter
             const errorX = `X: ${x} + ${width} = ${x + width} > ${this.baseTexture.width}`;
             const errorY = `Y: ${y} + ${height} = ${y + height} > ${this.baseTexture.height}`;
 
-            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions: ${errorX} ${relationship} ${errorY}`);
+            throw new Error('Texture Error: frame does not fit inside the base Texture dimensions: '
+                + `${errorX} ${relationship} ${errorY}`);
         }
 
         // this.valid = width && height && this.baseTexture.source && this.baseTexture.hasLoaded;
