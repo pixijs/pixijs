@@ -558,10 +558,11 @@ export default class Texture extends EventEmitter
 
         if (xNotFit || yNotFit)
         {
-            const errorX = xNotFit ? `X: ${x} + ${width} = ${x + width} > ${this.baseTexture.width} ` : '';
-            const errorY = yNotFit ? `Y: ${y} + ${height} = ${y + height} > ${this.baseTexture.height}` : '';
+            const relationship = xNotFit && yNotFit ? 'and' : 'or';
+            const errorX = `X: ${x} + ${width} = ${x + width} > ${this.baseTexture.width}`;
+            const errorY = `Y: ${y} + ${height} = ${y + height} > ${this.baseTexture.height}`;
 
-            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions: ${errorX}${errorY}`);
+            throw new Error(`Texture Error: frame does not fit inside the base Texture dimensions: ${errorX} ${relationship} ${errorY}`);
         }
 
         // this.valid = width && height && this.baseTexture.source && this.baseTexture.hasLoaded;
