@@ -391,7 +391,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
      */
     uploadTint(children, startIndex, amount, array, stride, offset)
     {
-        for (let i = 0; i < amount; i++)
+        for (let i = 0; i < amount; ++i)
         {
             const sprite = children[startIndex + i];
             const premultiplied = sprite._texture.baseTexture.premultipliedAlpha;

@@ -128,7 +128,7 @@ export default class ParticleBuffer
 
         this.dynamicData = new Float32Array(dynBuffer);
         this.dynamicDataUint32 = new Uint32Array(dynBuffer);
-        this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
+        this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, dynBuffer, gl.STREAM_DRAW);
 
         // static //
         let staticOffset = 0;
@@ -144,11 +144,11 @@ export default class ParticleBuffer
             this.staticStride += property.size;
         }
 
-        const statBuffer = new Float32Array(this.size * this.staticStride * 4 * 4);
+        const statBuffer = new ArrayBuffer(this.size * this.staticStride * 4 * 4);
 
         this.staticData = new Float32Array(statBuffer);
         this.staticDataUint32 = new Uint32Array(statBuffer);
-        this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
+        this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, statBuffer, gl.STATIC_DRAW);
 
         this.vao = new glCore.VertexArrayObject(gl)
         .addIndex(this.indexBuffer);
