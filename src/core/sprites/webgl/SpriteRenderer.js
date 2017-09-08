@@ -31,11 +31,11 @@ export default class SpriteRenderer extends ObjectRenderer
 
         /**
          * Number of values sent in the vertex buffer.
-         * aVertexPosition(2), aTextureCoord(1), aColor(1), aTextureId(1) = 5
+         * aVertexPosition(2), aTextureCoord(1), aColor(1), aTintScale(1), aTextureId(1) = 6
          *
          * @member {number}
          */
-        this.vertSize = 5;
+        this.vertSize = 6;
 
         /**
          * The size of the vertex information in bytes.
@@ -139,11 +139,12 @@ export default class SpriteRenderer extends ObjectRenderer
                 .addIndex(this.indexBuffer)
                 .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                 .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+                .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                .addAttribute(vertexBuffer, attrs.aTintScale, gl.FLOAT, false, this.vertByteSize, 4 * 4);
 
             if (attrs.aTextureId)
             {
-                vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 5 * 4);
             }
 
             this.vaos[i] = vao;
@@ -332,16 +333,16 @@ export default class SpriteRenderer extends ObjectRenderer
                 float32View[index + 1] = ((vertexData[1] * resolution) | 0) / resolution;
 
                 // xy
-                float32View[index + 5] = ((vertexData[2] * resolution) | 0) / resolution;
-                float32View[index + 6] = ((vertexData[3] * resolution) | 0) / resolution;
+                float32View[index + 6] = ((vertexData[2] * resolution) | 0) / resolution;
+                float32View[index + 7] = ((vertexData[3] * resolution) | 0) / resolution;
 
                 // xy
-                float32View[index + 10] = ((vertexData[4] * resolution) | 0) / resolution;
-                float32View[index + 11] = ((vertexData[5] * resolution) | 0) / resolution;
+                float32View[index + 12] = ((vertexData[4] * resolution) | 0) / resolution;
+                float32View[index + 13] = ((vertexData[5] * resolution) | 0) / resolution;
 
                 // xy
-                float32View[index + 15] = ((vertexData[6] * resolution) | 0) / resolution;
-                float32View[index + 16] = ((vertexData[7] * resolution) | 0) / resolution;
+                float32View[index + 18] = ((vertexData[6] * resolution) | 0) / resolution;
+                float32View[index + 19] = ((vertexData[7] * resolution) | 0) / resolution;
             }
             else
             {
@@ -350,33 +351,36 @@ export default class SpriteRenderer extends ObjectRenderer
                 float32View[index + 1] = vertexData[1];
 
                 // xy
-                float32View[index + 5] = vertexData[2];
-                float32View[index + 6] = vertexData[3];
+                float32View[index + 6] = vertexData[2];
+                float32View[index + 7] = vertexData[3];
 
                 // xy
-                float32View[index + 10] = vertexData[4];
-                float32View[index + 11] = vertexData[5];
+                float32View[index + 12] = vertexData[4];
+                float32View[index + 13] = vertexData[5];
 
                 // xy
-                float32View[index + 15] = vertexData[6];
-                float32View[index + 16] = vertexData[7];
+                float32View[index + 18] = vertexData[6];
+                float32View[index + 19] = vertexData[7];
             }
 
             uint32View[index + 2] = uvs[0];
-            uint32View[index + 7] = uvs[1];
-            uint32View[index + 12] = uvs[2];
-            uint32View[index + 17] = uvs[3];
+            uint32View[index + 8] = uvs[1];
+            uint32View[index + 14] = uvs[2];
+            uint32View[index + 20] = uvs[3];
+
             /* eslint-disable max-len */
             const alpha = Math.min(sprite.worldAlpha, 1.0);
             // we dont call extra function if alpha is 1.0, that's faster
             const argb = alpha < 1.0 && nextTexture.premultipliedAlpha ? premultiplyTint(sprite._tintRGB, alpha)
                 : sprite._tintRGB + (alpha * 255 << 24);
 
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = argb;
-            float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = nextTexture._virtalBoundId;
+            uint32View[index + 3] = uint32View[index + 9] = uint32View[index + 15] = uint32View[index + 21] = argb;
+            float32View[index + 4] = float32View[index + 10] = float32View[index + 16] = float32View[index + 22] = sprite.tintScale;
+
+            float32View[index + 5] = float32View[index + 11] = float32View[index + 17] = float32View[index + 23] = nextTexture._virtalBoundId;
             /* eslint-enable max-len */
 
-            index += 20;
+            index += 24;
         }
 
         currentGroup.size = i - currentGroup.start;
@@ -400,11 +404,12 @@ export default class SpriteRenderer extends ObjectRenderer
                     .addIndex(this.indexBuffer)
                     .addAttribute(vertexBuffer, attrs.aVertexPosition, gl.FLOAT, false, this.vertByteSize, 0)
                     .addAttribute(vertexBuffer, attrs.aTextureCoord, gl.UNSIGNED_SHORT, true, this.vertByteSize, 2 * 4)
-                    .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4);
+                    .addAttribute(vertexBuffer, attrs.aColor, gl.UNSIGNED_BYTE, true, this.vertByteSize, 3 * 4)
+                    .addAttribute(vertexBuffer, attrs.aTintScale, gl.FLOAT, false, this.vertByteSize, 4 * 4);
 
                 if (attrs.aTextureId)
                 {
-                    vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 4 * 4);
+                    vao.addAttribute(vertexBuffer, attrs.aTextureId, gl.FLOAT, false, this.vertByteSize, 5 * 4);
                 }
 
                 this.vaos[this.vertexCount] = vao;
