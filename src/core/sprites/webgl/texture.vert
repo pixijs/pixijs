@@ -2,6 +2,7 @@ precision highp float;
 attribute vec2 aVertexPosition;
 attribute vec2 aTextureCoord;
 attribute vec4 aColor;
+attribute float aTintScale;
 attribute float aTextureId;
 
 uniform mat3 projectionMatrix;
@@ -16,4 +17,5 @@ void main(void){
     vTextureCoord = aTextureCoord;
     vTextureId = aTextureId;
     vColor = aColor;
+    vColor = vec4(aColor.rgb * aTintScale, aColor.a);
 }
