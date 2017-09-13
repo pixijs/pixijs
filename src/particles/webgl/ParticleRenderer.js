@@ -179,7 +179,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 {
                     break;
                 }
-                this.generateOneMoreBuffer(container);
+                buffers.push(this._generateOneMoreBuffer(container));
             }
 
             const buffer = buffers[j];
@@ -225,19 +225,17 @@ export default class ParticleRenderer extends core.ObjectRenderer
     /**
      * Creates one more particle buffer, because container has autoResize feature
      *
-     * @param {PIXI.ParticleContainer} container
-     * @returns {Array}
+     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
+     * @return {PIXI.ParticleBuffer} generated buffer
+     * @private
      */
-    generateOneMoreBuffer(container)
+    _generateOneMoreBuffer(container)
     {
         const gl = this.renderer.gl;
-        const buffers = [];
         const batchSize = container._batchSize;
         const dynamicPropertyFlags = container._properties;
 
-        buffers.push(new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize));
-
-        return buffers;
+        return new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize);
     }
 
     /**
