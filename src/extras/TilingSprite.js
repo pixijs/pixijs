@@ -146,6 +146,7 @@ export default class TilingSprite extends core.Sprite
             this.uvTransform.texture = this._texture;
         }
         this._textureDirtyFlag = true;
+        this.cachedTint = 0xFFFFFF;
     }
 
     /**
