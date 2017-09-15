@@ -28,7 +28,7 @@ import { hex2rgb } from '../core/utils';
 export default class ParticleContainer extends core.Container
 {
     /**
-     * @param {number} [maxSize=1500] - The maximum number of particles that can be renderer by the container.
+     * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
      * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
      * @param {boolean} [properties.scale=false] - When true, scale be uploaded and applied.
