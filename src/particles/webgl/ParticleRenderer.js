@@ -173,6 +173,15 @@ export default class ParticleRenderer extends core.ObjectRenderer
                 amount = batchSize;
             }
 
+            if (j >= buffers.length)
+            {
+                if (!container.autoResize)
+                {
+                    break;
+                }
+                buffers.push(this._generateOneMoreBuffer(container));
+            }
+
             const buffer = buffers[j];
 
             // we always upload the dynamic
@@ -211,6 +220,22 @@ export default class ParticleRenderer extends core.ObjectRenderer
         }
 
         return buffers;
+    }
+
+    /**
+     * Creates one more particle buffer, because container has autoResize feature
+     *
+     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
+     * @return {PIXI.ParticleBuffer} generated buffer
+     * @private
+     */
+    _generateOneMoreBuffer(container)
+    {
+        const gl = this.renderer.gl;
+        const batchSize = container._batchSize;
+        const dynamicPropertyFlags = container._properties;
+
+        return new ParticleBuffer(gl, this.properties, dynamicPropertyFlags, batchSize);
     }
 
     /**
