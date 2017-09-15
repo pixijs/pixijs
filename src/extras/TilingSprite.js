@@ -136,6 +136,17 @@ export default class TilingSprite extends core.Sprite
         this.tileTransform.position.copy(value);
     }
 
+    set tint(value) // eslint-disable-line require-jsdoc
+    {
+        if (this._tint === value)
+        {
+            return;
+        }
+        this._tint = value;
+        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._textureDirtyFlag = true;
+    }
+
     /**
      * @private
      */
