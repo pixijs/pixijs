@@ -56,15 +56,6 @@ export default class TilingSprite extends core.Sprite
         this._canvasPattern = null;
 
         /**
-         * flag indicating the texture has changed but hasn't
-         * been updated yet
-         *
-         * @member {boolean}
-         * @private
-         */
-        this._textureDirtyFlag = true;
-
-        /**
          * transform that is applied to UV to get the texture coords
          *
          * @member {PIXI.extras.TextureTransform}
@@ -145,7 +136,7 @@ export default class TilingSprite extends core.Sprite
         {
             this.uvTransform.texture = this._texture;
         }
-        this._textureDirtyFlag = true;
+        this.cachedTint = 0xFFFFFF;
     }
 
     /**
@@ -169,7 +160,6 @@ export default class TilingSprite extends core.Sprite
 
         renderer.setObjectRenderer(renderer.plugins[this.pluginName]);
         renderer.plugins[this.pluginName].render(this);
-        this._textureDirtyFlag = false;
     }
 
     /**
@@ -196,8 +186,9 @@ export default class TilingSprite extends core.Sprite
         const modY = ((this.tilePosition.y / this.tileScale.y) % texture._frame.height) * baseTextureResolution;
 
         // create a nice shiny pattern!
-        if (this._textureDirtyFlag)
+        if (this._textureID !== this._texture._updateID || this.cachedTint !== this.tint)
         {
+            this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
             const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
                                                         texture._frame.height,
@@ -206,12 +197,7 @@ export default class TilingSprite extends core.Sprite
             // Tint the tiling sprite
             if (this.tint !== 0xFFFFFF)
             {
-                if (this.cachedTint !== this.tint)
-                {
-                    this.cachedTint = this.tint;
-
-                    this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
-                }
+                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
                 tempCanvas.context.drawImage(this.tintedTexture, 0, 0);
             }
             else
@@ -219,8 +205,8 @@ export default class TilingSprite extends core.Sprite
                 tempCanvas.context.drawImage(baseTexture.source,
                     -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
             }
+            this.cachedTint = this.tint;
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
-            this._textureDirtyFlag = false;
         }
 
         // set context state..
