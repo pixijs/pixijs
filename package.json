@@ -66,6 +66,7 @@
     "resource-loader": "^2.0.9"
   },
   "devDependencies": {
+    "@pixi/jsdoc-template": "^2.0.0",
     "babel-cli": "^6.18.0",
     "babel-plugin-static-fs": "^1.1.0",
     "babel-plugin-version-inline": "^1.0.0",
@@ -75,7 +76,6 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
-    "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
     "jsdoc": "3.4.3",
     "minimist": "^1.2.0",
