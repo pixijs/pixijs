@@ -363,7 +363,7 @@ export default class NineSlicePlane extends Plane
         this.updateHorizontalVertices();
         this.updateVerticalVertices();
 
-        this.dirty = true;
+        this.dirty++;
 
         this.multiplyUvs();
     }

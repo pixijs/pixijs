@@ -521,7 +521,11 @@ export default class Texture extends EventEmitter
         {
             for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {
-                delete TextureCache[texture.textureCacheIds[i]];
+                // Check that texture matches the one being passed in before deleting it from the cache.
+                if (TextureCache[texture.textureCacheIds[i]] === texture)
+                {
+                    delete TextureCache[texture.textureCacheIds[i]];
+                }
             }
 
             texture.textureCacheIds.length = 0;
@@ -548,15 +552,22 @@ export default class Texture extends EventEmitter
 
         this.noFrame = false;
 
-        if (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+        const { x, y, width, height } = frame;
+        const xNotFit = x + width > this.baseTexture.width;
+        const yNotFit = y + height > this.baseTexture.height;
+
+        if (xNotFit || yNotFit)
         {
+            const relationship = xNotFit && yNotFit ? 'and' : 'or';
+            const errorX = `X: ${x} + ${width} = ${x + width} > ${this.baseTexture.width}`;
+            const errorY = `Y: ${y} + ${height} = ${y + height} > ${this.baseTexture.height}`;
+
             throw new Error('Texture Error: frame does not fit inside the base Texture dimensions: '
-                + `X: ${frame.x} + ${frame.width} > ${this.baseTexture.width} `
-                + `Y: ${frame.y} + ${frame.height} > ${this.baseTexture.height}`);
+                + `${errorX} ${relationship} ${errorY}`);
         }
 
-        // this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
-        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
+        // this.valid = width && height && this.baseTexture.source && this.baseTexture.hasLoaded;
+        this.valid = width && height && this.baseTexture.hasLoaded;
 
         if (!this.trim && !this.rotate)
         {

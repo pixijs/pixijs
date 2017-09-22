@@ -114,4 +114,20 @@ export default class BlurFilter extends core.Filter
         this.blurYFilter.blur = value;
         this.padding = Math.max(Math.abs(this.blurXFilter.strength), Math.abs(this.blurYFilter.strength)) * 2;
     }
+
+    /**
+     * Sets the blendmode of the filter
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
+    get blendMode()
+    {
+        return this.blurYFilter._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        this.blurYFilter._blendMode = value;
+    }
 }
