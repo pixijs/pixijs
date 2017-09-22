@@ -199,7 +199,8 @@ export default class CanvasRenderer extends SystemRenderer
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
-        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.save();
+        setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
         this._activeBlendMode = BLEND_MODES.NORMAL;
         context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
@@ -227,6 +228,8 @@ export default class CanvasRenderer extends SystemRenderer
             // TODO: implement background for CanvasRenderTarget or RenderTexture?
             // }
         }
+        
+        context.restore();
 
         // TODO RENDER TARGET STUFF HERE..
         const tempContext = this.context;
