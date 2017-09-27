@@ -256,6 +256,10 @@ export default class VideoBaseTexture extends BaseTexture
             {
                 video.crossOrigin = determineCrossOrigin(url);
             }
+            else if (crossorigin)
+            {
+                video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+            }
 
             for (let i = 0; i < videoSrc.length; ++i)
             {
@@ -270,6 +274,10 @@ export default class VideoBaseTexture extends BaseTexture
             if (crossorigin === undefined && url.indexOf('data:') !== 0)
             {
                 video.crossOrigin = determineCrossOrigin(url);
+            }
+            else if (crossorigin)
+            {
+                video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
             }
 
             video.appendChild(createSource(url, videoSrc.mime));
