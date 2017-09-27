@@ -20,6 +20,13 @@ export default function getBufferType(array)
             return 'Uint16Array';
         }
     }
+    else if (array.BYTES_PER_ELEMENT === 1)
+    {
+        if (array instanceof Uint8Array)
+        {
+            return 'Uint8Array';
+        }
+    }
 
     // TODO map out the rest of the array elements!
     return null;

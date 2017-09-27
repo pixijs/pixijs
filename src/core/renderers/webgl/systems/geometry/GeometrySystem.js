@@ -101,6 +101,10 @@ export default class GeometrySystem extends WebGLSystem
                 gl.drawArraysInstanced = (a, b, c, d) =>
                     instanceExt.drawArraysInstancedANGLE(a, b, c, d);
             }
+            else
+            {
+                this.hasInstance = false;
+            }
         }
     }
 

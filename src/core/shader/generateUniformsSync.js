@@ -59,6 +59,10 @@ const GLSL_TO_ARRAY_SETTERS = {
     vec3:     `gl.uniform3fv(location, v)`,
     vec4:     'gl.uniform4fv(location, v)',
 
+    mat4:     'gl.uniformMatrix4fv(location, false, v)',
+    mat3:     'gl.uniformMatrix3fv(location, false, v)',
+    mat2:     'gl.uniformMatrix2fv(location, false, v)',
+
     int:      'gl.uniform1iv(location, v)',
     ivec2:    'gl.uniform2iv(location, v)',
     ivec3:    'gl.uniform3iv(location, v)',
@@ -161,13 +165,13 @@ export default function generateUniformsSync(group, uniformData)
                 cv = ud.${i}.value;
                 v = uv.${i};
 
-                    if(cv[0] !== v[0] || cv[1] !== v[1])
-                    {
-                        cv[0] = v[0];
-                        cv[1] = v[1];
-                        gl.uniform2f(ud.${i}.location, v[0], v[1]);
-                    }
-                }\n`;
+                if(cv[0] !== v[0] || cv[1] !== v[1])
+                {
+                    cv[0] = v[0];
+                    cv[1] = v[1];
+                    gl.uniform2f(ud.${i}.location, v[0], v[1]);
+                }
+                \n`;
             }
         }
         else
