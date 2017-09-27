@@ -2,7 +2,7 @@ import BaseTexture from './BaseTexture';
 import settings from '../settings';
 
 /**
- * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
+ * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a BaseRenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.

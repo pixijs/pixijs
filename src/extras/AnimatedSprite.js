@@ -32,7 +32,7 @@ export default class AnimatedSprite extends core.Sprite
     /**
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
-     * @param {boolean} [autoUpdate=true] - Whether use PIXI.ticker.shared to auto update animation time.
+     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
      */
     constructor(textures, autoUpdate)
     {
@@ -87,6 +87,13 @@ export default class AnimatedSprite extends core.Sprite
          * @member {Function}
          */
         this.onFrameChange = null;
+
+         /**
+         * Function to call when 'loop' is true, and an AnimatedSprite is played and loops around to start again
+         *
+         * @member {Function}
+         */
+        this.onLoop = null;
 
         /**
          * Elapsed time since animation has been started, used internally to display current texture
@@ -239,6 +246,18 @@ export default class AnimatedSprite extends core.Sprite
         }
         else if (previousFrame !== this.currentFrame)
         {
+            if (this.loop && this.onLoop)
+            {
+                if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                {
+                    this.onLoop();
+                }
+                else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
+                {
+                    this.onLoop();
+                }
+            }
+
             this.updateTexture();
         }
     }
@@ -252,6 +271,7 @@ export default class AnimatedSprite extends core.Sprite
     {
         this._texture = this._textures[this.currentFrame];
         this._textureID = -1;
+        this.cachedTint = 0xFFFFFF;
 
         if (this.onFrameChange)
         {
@@ -262,11 +282,17 @@ export default class AnimatedSprite extends core.Sprite
     /**
      * Stops the AnimatedSprite and destroys it
      *
+     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
+     *      method called as well. 'options' will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
+     * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    destroy()
+    destroy(options)
     {
         this.stop();
-        super.destroy();
+        super.destroy(options);
     }
 
     /**
@@ -348,6 +374,8 @@ export default class AnimatedSprite extends core.Sprite
                 this._durations.push(value[i].time);
             }
         }
+        this.gotoAndStop(0);
+        this.updateTexture();
     }
 
     /**

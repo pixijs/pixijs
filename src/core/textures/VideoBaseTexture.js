@@ -7,7 +7,7 @@ import determineCrossOrigin from '../utils/determineCrossOrigin';
 /**
  * A texture of a [playing] Video.
  *
- * Video base textures mimic Pixi BaseTexture.from.... method in their creation process.
+ * Video base textures mimic PixiJS BaseTexture.from.... method in their creation process.
  *
  * This can be used in several ways, such as:
  *
@@ -202,7 +202,7 @@ export default class VideoBaseTexture extends BaseTexture
     }
 
     /**
-     * Mimic Pixi BaseTexture.from.... method.
+     * Mimic PixiJS BaseTexture.from.... method.
      *
      * @static
      * @param {HTMLVideoElement} video - Video to create texture from

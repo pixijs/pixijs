@@ -5,6 +5,7 @@ import pluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 import removeItems from 'remove-array-items';
+import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
 
 let nextUid = 0;
 let saidHello = false;
@@ -262,7 +263,7 @@ export function sayHello(type)
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
-            `\n %c %c %c Pixi.js ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
+            `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
             'background: #ff66a5; padding:5px 0;',
             'background: #ff66a5; padding:5px 0;',
             'color: #ff66a5; background: #030307; padding:5px 0;',
@@ -278,7 +279,7 @@ export function sayHello(type)
     }
     else if (window.console)
     {
-        window.console.log(`Pixi.js ${VERSION} - ${type} - http://www.pixijs.com/`);
+        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
     }
 
     saidHello = true;
@@ -396,4 +397,109 @@ export function clearTextureCache()
     {
         delete BaseTextureCache[key];
     }
+}
+
+/**
+ * maps premultiply flag and blendMode to adjusted blendMode
+ * @memberof PIXI.utils
+ * @const premultiplyBlendMode
+ * @type {Array<number[]>}
+ */
+export const premultiplyBlendMode = mapPremultipliedBlendModes();
+
+/**
+ * changes blendMode according to texture format
+ *
+ * @memberof PIXI.utils
+ * @function correctBlendMode
+ * @param {number} blendMode supposed blend mode
+ * @param {boolean} premultiplied  whether source is premultiplied
+ * @returns {number} true blend mode for this texture
+ */
+export function correctBlendMode(blendMode, premultiplied)
+{
+    return premultiplyBlendMode[premultiplied ? 1 : 0][blendMode];
+}
+
+/**
+ * premultiplies tint
+ *
+ * @param {number} tint integet RGB
+ * @param {number} alpha floating point alpha (0.0-1.0)
+ * @returns {number} tint multiplied by alpha
+ */
+export function premultiplyTint(tint, alpha)
+{
+    if (alpha === 1.0)
+    {
+        return (alpha * 255 << 24) + tint;
+    }
+    if (alpha === 0.0)
+    {
+        return 0;
+    }
+    let R = ((tint >> 16) & 0xFF);
+    let G = ((tint >> 8) & 0xFF);
+    let B = (tint & 0xFF);
+
+    R = ((R * alpha) + 0.5) | 0;
+    G = ((G * alpha) + 0.5) | 0;
+    B = ((B * alpha) + 0.5) | 0;
+
+    return (alpha * 255 << 24) + (R << 16) + (G << 8) + B;
+}
+
+/**
+ * combines rgb and alpha to out array
+ *
+ * @param {Float32Array|number[]} rgb input rgb
+ * @param {number} alpha alpha param
+ * @param {Float32Array} [out] output
+ * @param {boolean} [premultiply=true] do premultiply it
+ * @returns {Float32Array} vec4 rgba
+ */
+export function premultiplyRgba(rgb, alpha, out, premultiply)
+{
+    out = out || new Float32Array(4);
+    if (premultiply || premultiply === undefined)
+    {
+        out[0] = rgb[0] * alpha;
+        out[1] = rgb[1] * alpha;
+        out[2] = rgb[2] * alpha;
+    }
+    else
+    {
+        out[0] = rgb[0];
+        out[1] = rgb[1];
+        out[2] = rgb[2];
+    }
+    out[3] = alpha;
+
+    return out;
+}
+
+/**
+ * converts integer tint and float alpha to vec4 form, premultiplies by default
+ *
+ * @param {number} tint input tint
+ * @param {number} alpha alpha param
+ * @param {Float32Array} [out] output
+ * @param {boolean} [premultiply=true] do premultiply it
+ * @returns {Float32Array} vec4 rgba
+ */
+export function premultiplyTintToRgba(tint, alpha, out, premultiply)
+{
+    out = out || new Float32Array(4);
+    out[0] = ((tint >> 16) & 0xFF) / 255.0;
+    out[1] = ((tint >> 8) & 0xFF) / 255.0;
+    out[2] = (tint & 0xFF) / 255.0;
+    if (premultiply || premultiply === undefined)
+    {
+        out[0] *= alpha;
+        out[1] *= alpha;
+        out[2] *= alpha;
+    }
+    out[3] = alpha;
+
+    return out;
 }

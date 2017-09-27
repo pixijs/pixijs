@@ -43,15 +43,19 @@ export default class WebGLRenderer extends SystemRenderer
      *  FXAA is faster, but may not always look as great
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
      *  enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
-     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
-     * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
+     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent).
+     * @param {boolean} [options.legacy=false] - If true PixiJS will aim to ensure compatibility
+     *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
+     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
+     *  for devices with dual graphics card
      */
     constructor(options, arg2, arg3)
     {
@@ -90,6 +94,7 @@ export default class WebGLRenderer extends SystemRenderer
             premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
             stencil: true,
             preserveDrawingBuffer: this.options.preserveDrawingBuffer,
+            powerPreference: this.options.powerPreference,
         };
 
         this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
@@ -121,6 +126,19 @@ export default class WebGLRenderer extends SystemRenderer
          * @member {PIXI.ObjectRenderer}
          */
         this.currentRenderer = this.emptyRenderer;
+
+        /**
+         * Manages textures
+         * @member {PIXI.TextureManager}
+         */
+        this.textureManager = null;
+
+        /**
+         * Manages the filters.
+         *
+         * @member {PIXI.FilterManager}
+         */
+        this.filterManager = null;
 
         this.initPlugins();
 
@@ -173,12 +191,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._initContext();
 
-        /**
-         * Manages the filters.
-         *
-         * @member {PIXI.FilterManager}
-         */
-        this.filterManager = new FilterManager(this);
         // map some webGL blend and drawmodes..
         this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
@@ -223,11 +235,15 @@ export default class WebGLRenderer extends SystemRenderer
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
+        this._activeShader = null;
+        this._activeVao = null;
+
         this.boundTextures = new Array(maxTextures);
         this.emptyTextures = new Array(maxTextures);
 
         // create a texture manager...
         this.textureManager = new TextureManager(this);
+        this.filterManager = new FilterManager(this);
         this.textureGC = new TextureGarbageCollector(this);
 
         this.state.resetToDefault();
@@ -522,7 +538,7 @@ export default class WebGLRenderer extends SystemRenderer
      * @param {PIXI.Texture} texture - the new texture
      * @param {number} location - the suggested texture location
      * @param {boolean} forceLocation - force the location
-     * @return {PIXI.WebGLRenderer} Returns itself.
+     * @return {number} bound texture location
      */
     bindTexture(texture, location, forceLocation)
     {
@@ -674,8 +690,9 @@ export default class WebGLRenderer extends SystemRenderer
      */
     handleContextRestored()
     {
-        this._initContext();
         this.textureManager.removeAll();
+        this.filterManager.destroy(true);
+        this._initContext();
     }
 
     /**
