@@ -511,13 +511,23 @@ export default class Text extends Sprite
                 // if gradientAngle is positive, bottom-left corner is start point of gradient.
                 // if it is negative, top-left corner is start point of gradient.
                 // we have to calculate the parameter of createLinearGradient to let the gradient include canvas entirely.
-                const abs_angle = Math.abs(style.gradientAngle);
-                const tan = Math.tan(abs_angle);
-                const p = (width + height * tan)/(1+tan*tan);
-                gradient = style.gradientAngle>=0? this.context.createLinearGradient(0, height, p, -p * tan + height) : this.context.createLinearGradient(0, 0, p, p * tan);
+                const absAngle = Math.abs(style.gradientAngle);
+                const tan = Math.tan(absAngle);
+                const p = (width + (height * tan)) / (1 + (tan * tan));
+
+                if (style.gradientAngle >= 0)
+                {
+                    gradient = this.context.createLinearGradient(0, height, p, (-p * tan) + height);
+                }
+                else
+                {
+                    this.context.createLinearGradient(0, 0, p, (p * tan));
+                }
             }
-            else //LINEAR_HORIZONTAL
+            else // LINEAR_HORIZONTAL
+            {
                 gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+            }
 
             // can just evenly space out the gradients in this case, as multiple lines makes no difference
             // to an even left to right gradient
