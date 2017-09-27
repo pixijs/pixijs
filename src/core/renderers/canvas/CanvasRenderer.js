@@ -228,7 +228,7 @@ export default class CanvasRenderer extends SystemRenderer
             // TODO: implement background for CanvasRenderTarget or RenderTexture?
             // }
         }
-        
+
         context.restore();
 
         // TODO RENDER TARGET STUFF HERE..
