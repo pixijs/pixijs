@@ -199,6 +199,7 @@ export default class CanvasRenderer extends SystemRenderer
             // displayObject.hitArea = //TODO add a temp hit area
         }
 
+        context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
         this._activeBlendMode = BLEND_MODES.NORMAL;
@@ -234,6 +235,8 @@ export default class CanvasRenderer extends SystemRenderer
         this.context = context;
         displayObject.renderCanvas(this);
         this.context = tempContext;
+
+        context.restore();
 
         this.resolution = rootResolution;
 
