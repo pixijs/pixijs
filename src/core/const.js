@@ -307,10 +307,12 @@ export const TRANSFORM_MODE = {
  * @type {object}
  * @property {number} LINEAR_VERTICAL Vertical gradient
  * @property {number} LINEAR_HORIZONTAL Linear gradient
+ * @property {number} LINEAR_DIAGONAL diagonal gradient. the angle is specified by TextStyle.gradientAngle.
  */
 export const TEXT_GRADIENT = {
     LINEAR_VERTICAL: 0,
     LINEAR_HORIZONTAL: 1,
+    LINEAR_DIAGONAL: 2,
 };
 
 /**

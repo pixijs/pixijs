@@ -16,6 +16,7 @@ const defaultStyle = {
     fill: 'black',
     fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
     fillGradientStops: [],
+    gradientAngle: 0,
     fontFamily: 'Arial',
     fontSize: 26,
     fontStyle: 'normal',
@@ -62,6 +63,7 @@ export default class TextStyle
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fill is an array of colours
      *  to create a gradient, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
+     * @param {number} [style.gradientAngle=0] - gradient angle. It is used if fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_DIAGONAL
      * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient, this array can set
      * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
      * @param {string|string[]} [style.fontFamily='Arial'] - The font family
@@ -303,6 +305,26 @@ export default class TextStyle
         if (this._fillGradientType !== fillGradientType)
         {
             this._fillGradientType = fillGradientType;
+            this.styleID++;
+        }
+    }
+    /**
+     * If fillGradientType is LINEAR_DIAGONAL, this describes the angle of gradient.
+     * Positive value ( [0, PI/2) ) :  bottom-left corner is start point of gradient.
+     * Negative value ( (-PI/2, 0) ) : top-left corner is start point of gradient.
+     * See {@link PIXI.TEXT_GRADIENT}
+     *
+     * @member {number}
+     */
+    get gradientAngle()
+    {
+        return this._gradientAngle;
+    }
+    set gradientAngle(gradientAngle) // eslint-disable-line require-jsdoc
+    {
+        if (this._gradientAngle !== gradientAngle)
+        {
+            this._gradientAngle = gradientAngle;
             this.styleID++;
         }
     }
