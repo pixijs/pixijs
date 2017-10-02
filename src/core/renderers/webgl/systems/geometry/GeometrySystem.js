@@ -380,4 +380,11 @@ export default class GeometrySystem extends WebGLSystem
 
         return this;
     }
+
+    unbind()
+    {
+        this.gl.bindVertexArray(null);
+        this._activeVao = null;
+        this._activeGeometry = null;
+    }
 }
