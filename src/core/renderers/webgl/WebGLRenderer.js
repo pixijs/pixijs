@@ -664,6 +664,11 @@ export default class WebGLRenderer extends SystemRenderer
         this._activeShader = null;
         this._activeRenderTarget = this.rootRenderTarget;
 
+        for (let i = 0; i < this.boundTextures.length; i++)
+        {
+            this.boundTextures[i] = this.emptyTextures[i];
+        }
+
         // bind the main frame buffer (the screen);
         this.rootRenderTarget.activate();
 
