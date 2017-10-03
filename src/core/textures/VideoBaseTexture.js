@@ -247,20 +247,20 @@ export default class VideoBaseTexture extends BaseTexture
         video.setAttribute('webkit-playsinline', '');
         video.setAttribute('playsinline', '');
 
+        const url = Array.isArray(videoSrc) ? (videoSrc[0].src || videoSrc[0]) : (videoSrc.src || videoSrc);
+
+        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        {
+            video.crossOrigin = determineCrossOrigin(url);
+        }
+        else if (crossorigin)
+        {
+            video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+        }
+
         // array of objects or strings
         if (Array.isArray(videoSrc))
         {
-            const url = videoSrc[0].src || videoSrc[0];
-
-            if (crossorigin === undefined && url.indexOf('data:') !== 0)
-            {
-                video.crossOrigin = determineCrossOrigin(url);
-            }
-            else if (crossorigin)
-            {
-                video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
-            }
-
             for (let i = 0; i < videoSrc.length; ++i)
             {
                 video.appendChild(createSource(videoSrc[i].src || videoSrc[i], videoSrc[i].mime));
@@ -269,17 +269,6 @@ export default class VideoBaseTexture extends BaseTexture
         // single object or string
         else
         {
-            const url = videoSrc.src || videoSrc;
-
-            if (crossorigin === undefined && url.indexOf('data:') !== 0)
-            {
-                video.crossOrigin = determineCrossOrigin(url);
-            }
-            else if (crossorigin)
-            {
-                video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
-            }
-
             video.appendChild(createSource(url, videoSrc.mime));
         }
 
