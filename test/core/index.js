@@ -9,6 +9,7 @@ require('./getLocalBounds');
 require('./Sprite');
 require('./Spritesheet');
 require('./TilingSprite');
+require('./AnimatedSprite');
 require('./TextStyle');
 require('./Text');
 require('./toGlobal');
