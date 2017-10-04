@@ -263,7 +263,7 @@ export default class AnimatedSprite extends core.Sprite
         {
             const next = this._nextFrames[previousFrame];
 
-            if (next)
+            if (next || next === 0) // 0 is valid
             {
                 this.gotoAndPlay(next);
                 if (this.onNext)
@@ -395,12 +395,13 @@ export default class AnimatedSprite extends core.Sprite
         {
             this._textures = [];
             this._durations = [];
+            this._nextFrames = [];
 
             for (let i = 0; i < value.length; i++)
             {
                 this._textures.push(value[i].texture);
                 this._durations.push(value[i].time);
-                this._nextFrames.push(value[i].next)
+                this._nextFrames.push(value[i].next);
             }
         }
         this.gotoAndStop(0);
