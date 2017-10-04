@@ -5,7 +5,7 @@ import * as core from '../core';
  * @type {object}
  * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
  * @property {number} time - the duration of the frame in ms
- * @property {number} next - the next frame to play
+ * @property {number} [next] - the next frame to play
  */
 
 /**
