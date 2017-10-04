@@ -266,6 +266,10 @@ export default class AnimatedSprite extends core.Sprite
             if (next)
             {
                 this.gotoAndPlay(next);
+                if (this.onNext)
+                {
+                    this.onNext(next);
+                }
             }
             else
             {
