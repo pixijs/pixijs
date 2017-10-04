@@ -5,6 +5,7 @@ import * as core from '../core';
  * @type {object}
  * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
  * @property {number} time - the duration of the frame in ms
+ * @property {number} next - the next frame to play
  */
 
 /**
@@ -47,6 +48,13 @@ export default class AnimatedSprite extends core.Sprite
          * @private
          */
         this._durations = null;
+
+        /**
+         * Stores the optional next frame to play for each frame object passed in
+         * @type {Array<number>}
+         * @private
+         */
+        this._nextFrames = null;
 
         this.textures = textures;
 
@@ -94,6 +102,13 @@ export default class AnimatedSprite extends core.Sprite
          * @member {Function}
          */
         this.onLoop = null;
+
+        /**
+         * Function to call when an AnimatedSprite jumps to a frame defined in the 'next' property of a FrameObject
+         *
+         * @member {Fuction}
+         */
+        this.onNext = null;
 
         /**
          * Elapsed time since animation has been started, used internally to display current texture
@@ -246,19 +261,28 @@ export default class AnimatedSprite extends core.Sprite
         }
         else if (previousFrame !== this.currentFrame)
         {
-            if (this.loop && this.onLoop)
-            {
-                if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
-                {
-                    this.onLoop();
-                }
-                else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
-                {
-                    this.onLoop();
-                }
-            }
+            const next = this._nextFrames[previousFrame];
 
-            this.updateTexture();
+            if (next)
+            {
+                this.gotoAndPlay(next);
+            }
+            else
+            {
+                if (this.loop && this.onLoop)
+                {
+                    if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                    {
+                        this.onLoop();
+                    }
+                    else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
+                    {
+                        this.onLoop();
+                    }
+                }
+
+                this.updateTexture();
+            }
         }
     }
 
@@ -372,6 +396,7 @@ export default class AnimatedSprite extends core.Sprite
             {
                 this._textures.push(value[i].texture);
                 this._durations.push(value[i].time);
+                this._nextFrames.push(value[i].next)
             }
         }
         this.gotoAndStop(0);
