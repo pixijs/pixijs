@@ -11,8 +11,9 @@ import { hex2rgb } from '../../../utils';
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
+ * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildRoundedRectangle(graphicsData, webGLData)
+export default function buildRoundedRectangle(graphicsData, webGLData, webGLDataNativeLines)
 {
     const rrectData = graphicsData.shape;
     const x = rrectData.x;
@@ -70,7 +71,7 @@ export default function buildRoundedRectangle(graphicsData, webGLData)
 
         graphicsData.points = recPoints;
 
-        buildLine(graphicsData, webGLData);
+        buildLine(graphicsData, webGLData, webGLDataNativeLines);
 
         graphicsData.points = tempPoints;
     }

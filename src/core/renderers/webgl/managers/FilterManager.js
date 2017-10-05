@@ -49,6 +49,8 @@ export default class FilterManager extends WebGLManager
         this.pool = {};
 
         this.filterData = null;
+
+        this.managedFilters = [];
     }
 
     /**
@@ -232,6 +234,8 @@ export default class FilterManager extends WebGLManager
                 shader = filter.glShaders[renderer.CONTEXT_UID] = new Shader(this.gl, filter.vertexSrc, filter.fragmentSrc);
             }
 
+            this.managedFilters.push(filter);
+
             // TODO - this only needs to be done once?
             renderer.bindVao(null);
 
@@ -263,7 +267,7 @@ export default class FilterManager extends WebGLManager
         const tex = this.renderer.emptyTextures[0];
 
         this.renderer.boundTextures[0] = tex;
-        // this syncs the pixi filters  uniforms with glsl uniforms
+        // this syncs the PixiJS filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
@@ -287,7 +291,7 @@ export default class FilterManager extends WebGLManager
         const uniformData = filter.uniformData;
         const uniforms = filter.uniforms;
 
-        // 0 is reserved for the pixi texture so we start at 1!
+        // 0 is reserved for the PixiJS texture so we start at 1!
         let textureCount = 1;
         let currentState;
 
@@ -327,7 +331,9 @@ export default class FilterManager extends WebGLManager
         // TODO Cacheing layer..
         for (const i in uniformData)
         {
-            if (uniformData[i].type === 'sampler2D' && uniforms[i] !== 0)
+            const type = uniformData[i].type;
+
+            if (type === 'sampler2d' && uniforms[i] !== 0)
             {
                 if (uniforms[i].baseTexture)
                 {
@@ -352,9 +358,9 @@ export default class FilterManager extends WebGLManager
 
                 textureCount++;
             }
-            else if (uniformData[i].type === 'mat3')
+            else if (type === 'mat3')
             {
-                // check if its pixi matrix..
+                // check if its PixiJS matrix..
                 if (uniforms[i].a !== undefined)
                 {
                     shader.uniforms[i] = uniforms[i].toArray(true);
@@ -364,7 +370,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'vec2')
+            else if (type === 'vec2')
             {
                 // check if its a point..
                 if (uniforms[i].x !== undefined)
@@ -380,7 +386,7 @@ export default class FilterManager extends WebGLManager
                     shader.uniforms[i] = uniforms[i];
                 }
             }
-            else if (uniformData[i].type === 'float')
+            else if (type === 'float')
             {
                 if (shader.uniforms.data[i].value !== uniformData[i])
                 {
@@ -486,11 +492,32 @@ export default class FilterManager extends WebGLManager
     /**
      * Destroys this Filter Manager.
      *
+     * @param {boolean} [contextLost=false] context was lost, do not free shaders
+     *
      */
-    destroy()
+    destroy(contextLost = false)
     {
+        const renderer = this.renderer;
+        const filters = this.managedFilters;
+
+        for (let i = 0; i < filters.length; i++)
+        {
+            if (!contextLost)
+            {
+                filters[i].glShaders[renderer.CONTEXT_UID].destroy();
+            }
+            delete filters[i].glShaders[renderer.CONTEXT_UID];
+        }
+
         this.shaderCache = {};
-        this.emptyPool();
+        if (!contextLost)
+        {
+            this.emptyPool();
+        }
+        else
+        {
+            this.pool = {};
+        }
     }
 
     /**

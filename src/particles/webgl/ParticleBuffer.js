@@ -5,7 +5,7 @@ import createIndicesForQuads from '../../core/utils/createIndicesForQuads';
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * for creating the original pixi version!
+ * for creating the original PixiJS version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that
  * they now share 4 bytes on the vertex buffer
  *
@@ -38,20 +38,6 @@ export default class ParticleBuffer
         this.gl = gl;
 
         /**
-         * Size of a single vertex.
-         *
-         * @member {number}
-         */
-        this.vertSize = 2;
-
-        /**
-         * Size of a single vertex in bytes.
-         *
-         * @member {number}
-         */
-        this.vertByteSize = this.vertSize * 4;
-
-        /**
          * The number of particles the buffer can hold
          *
          * @member {number}
@@ -82,6 +68,7 @@ export default class ParticleBuffer
                 attribute: property.attribute,
                 size: property.size,
                 uploadFunction: property.uploadFunction,
+                unsignedByte: property.unsignedByte,
                 offset: property.offset,
             };
 
@@ -98,10 +85,12 @@ export default class ParticleBuffer
         this.staticStride = 0;
         this.staticBuffer = null;
         this.staticData = null;
+        this.staticDataUint32 = null;
 
         this.dynamicStride = 0;
         this.dynamicBuffer = null;
         this.dynamicData = null;
+        this.dynamicDataUint32 = null;
 
         this.initBuffers();
     }
@@ -135,8 +124,11 @@ export default class ParticleBuffer
             this.dynamicStride += property.size;
         }
 
-        this.dynamicData = new Float32Array(this.size * this.dynamicStride * 4);
-        this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.dynamicData, gl.STREAM_DRAW);
+        const dynBuffer = new ArrayBuffer(this.size * this.dynamicStride * 4 * 4);
+
+        this.dynamicData = new Float32Array(dynBuffer);
+        this.dynamicDataUint32 = new Uint32Array(dynBuffer);
+        this.dynamicBuffer = glCore.GLBuffer.createVertexBuffer(gl, dynBuffer, gl.STREAM_DRAW);
 
         // static //
         let staticOffset = 0;
@@ -152,8 +144,11 @@ export default class ParticleBuffer
             this.staticStride += property.size;
         }
 
-        this.staticData = new Float32Array(this.size * this.staticStride * 4);
-        this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.staticData, gl.STATIC_DRAW);
+        const statBuffer = new ArrayBuffer(this.size * this.staticStride * 4 * 4);
+
+        this.staticData = new Float32Array(statBuffer);
+        this.staticDataUint32 = new Uint32Array(statBuffer);
+        this.staticBuffer = glCore.GLBuffer.createVertexBuffer(gl, statBuffer, gl.STATIC_DRAW);
 
         this.vao = new glCore.VertexArrayObject(gl)
         .addIndex(this.indexBuffer);
@@ -162,28 +157,56 @@ export default class ParticleBuffer
         {
             const property = this.dynamicProperties[i];
 
-            this.vao.addAttribute(
-                this.dynamicBuffer,
-                property.attribute,
-                gl.FLOAT,
-                false,
-                this.dynamicStride * 4,
-                property.offset * 4
-            );
+            if (property.unsignedByte)
+            {
+                this.vao.addAttribute(
+                    this.dynamicBuffer,
+                    property.attribute,
+                    gl.UNSIGNED_BYTE,
+                    true,
+                    this.dynamicStride * 4,
+                    property.offset * 4
+                );
+            }
+            else
+            {
+                this.vao.addAttribute(
+                    this.dynamicBuffer,
+                    property.attribute,
+                    gl.FLOAT,
+                    false,
+                    this.dynamicStride * 4,
+                    property.offset * 4
+                );
+            }
         }
 
         for (let i = 0; i < this.staticProperties.length; ++i)
         {
             const property = this.staticProperties[i];
 
-            this.vao.addAttribute(
-                this.staticBuffer,
-                property.attribute,
-                gl.FLOAT,
-                false,
-                this.staticStride * 4,
-                property.offset * 4
-            );
+            if (property.unsignedByte)
+            {
+                this.vao.addAttribute(
+                    this.staticBuffer,
+                    property.attribute,
+                    gl.UNSIGNED_BYTE,
+                    true,
+                    this.staticStride * 4,
+                    property.offset * 4
+                );
+            }
+            else
+            {
+                this.vao.addAttribute(
+                    this.staticBuffer,
+                    property.attribute,
+                    gl.FLOAT,
+                    false,
+                    this.staticStride * 4,
+                    property.offset * 4
+                );
+            }
         }
     }
 
@@ -200,7 +223,9 @@ export default class ParticleBuffer
         {
             const property = this.dynamicProperties[i];
 
-            property.uploadFunction(children, startIndex, amount, this.dynamicData, this.dynamicStride, property.offset);
+            property.uploadFunction(children, startIndex, amount,
+                property.unsignedByte ? this.dynamicDataUint32 : this.dynamicData,
+                this.dynamicStride, property.offset);
         }
 
         this.dynamicBuffer.upload();
@@ -219,7 +244,9 @@ export default class ParticleBuffer
         {
             const property = this.staticProperties[i];
 
-            property.uploadFunction(children, startIndex, amount, this.staticData, this.staticStride, property.offset);
+            property.uploadFunction(children, startIndex, amount,
+                property.unsignedByte ? this.staticDataUint32 : this.staticData,
+                this.staticStride, property.offset);
         }
 
         this.staticBuffer.upload();

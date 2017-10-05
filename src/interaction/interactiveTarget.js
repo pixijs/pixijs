@@ -2,7 +2,7 @@
  * Default property values of interactive objects
  * Used by {@link PIXI.interaction.InteractionManager} to automatically give all DisplayObjects these properties
  *
- * @mixin
+ * @private
  * @name interactiveTarget
  * @memberof PIXI.interaction
  * @example
@@ -14,20 +14,28 @@
  *      );
  */
 export default {
+
     /**
-     * Determines if the displayObject be clicked/touched
+     * Enable interaction events for the DisplayObject. Touch, pointer and mouse
+     * events will not be emitted unless `interactive` is set to `true`.
      *
+     * @example
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.interactive = true;
+     * sprite.on('tap', (event) => {
+     *    //handle event
+     * });
      * @member {boolean}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.DisplayObject#
      */
     interactive: false,
 
     /**
      * Determines if the children to the displayObject can be clicked/touched
-     * Setting this to false allows pixi to bypass a recursive hitTest function
+     * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
      *
      * @member {boolean}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.Container#
      */
     interactiveChildren: true,
 
@@ -35,8 +43,12 @@ export default {
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      *
+     * @example
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.interactive = true;
+     * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
      * @member {PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.DisplayObject#
      */
     hitArea: null,
 
@@ -44,8 +56,12 @@ export default {
      * If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive
      * Setting this changes the 'cursor' property to `'pointer'`.
      *
+     * @example
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.interactive = true;
+     * sprite.buttonMode = true;
      * @member {boolean}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.DisplayObject#
      */
     get buttonMode()
     {
@@ -67,10 +83,14 @@ export default {
      * This defines what cursor mode is used when the mouse cursor
      * is hovered over the displayObject.
      *
+     * @example
+     * const sprite = new PIXI.Sprite(texture);
+     * sprite.interactive = true;
+     * sprite.cursor = 'wait';
      * @see https://developer.mozilla.org/en/docs/Web/CSS/cursor
      *
      * @member {string}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.DisplayObject#
      */
     cursor: null,
 
@@ -78,7 +98,7 @@ export default {
      * Internal set of all active pointers, by identifier
      *
      * @member {Map<number, InteractionTrackingData>}
-     * @memberof PIXI.interaction.interactiveTarget#
+     * @memberof PIXI.DisplayObject#
      * @private
      */
     get trackedPointers()

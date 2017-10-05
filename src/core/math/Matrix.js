@@ -1,7 +1,7 @@
 import Point from './Point';
 
 /**
- * The pixi Matrix class as an object, which makes it a lot faster,
+ * The PixiJS Matrix class as an object, which makes it a lot faster,
  * here is a representation of it :
  * | a | b | tx|
  * | c | d | ty|

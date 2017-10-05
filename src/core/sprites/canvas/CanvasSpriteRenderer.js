@@ -9,7 +9,7 @@ const canvasRenderWorldTransform = new Matrix();
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * for creating the original pixi version!
+ * for creating the original PixiJS version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now
  * share 4 bytes on the vertex buffer
  *
@@ -126,7 +126,7 @@ export default class CanvasSpriteRenderer
 
             if (sprite.tint !== 0xFFFFFF)
             {
-                if (sprite.cachedTint !== sprite.tint)
+                if (sprite.cachedTint !== sprite.tint || sprite.tintedTexture.tintId !== sprite._texture._updateID)
                 {
                     sprite.cachedTint = sprite.tint;
 

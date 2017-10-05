@@ -434,12 +434,9 @@ function calculateTextStyle(helper, item)
 {
     if (item instanceof core.TextStyle)
     {
-        const font = core.Text.getFontStyle(item);
+        const font = item.toFontString();
 
-        if (!core.Text.fontPropertiesCache[font])
-        {
-            core.Text.calculateFontProperties(font);
-        }
+        core.TextMetrics.measureFont(font);
 
         return true;
     }

@@ -62,6 +62,9 @@ export default class MeshRenderer extends core.ObjectRenderer
         }
 
         let glData = mesh._glDatas[renderer.CONTEXT_UID];
+        const isTrimmed = texture.trim && (texture.trim.width < texture.orig.width
+            || texture.trim.height < texture.orig.height);
+        const shader = isTrimmed ? this.shaderTrim : this.shader;
 
         if (!glData)
         {
@@ -80,8 +83,8 @@ export default class MeshRenderer extends core.ObjectRenderer
             // build the vao object that will render..
             glData.vao = new glCore.VertexArrayObject(gl)
                 .addIndex(glData.indexBuffer)
-                .addAttribute(glData.vertexBuffer, this.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
-                .addAttribute(glData.uvBuffer, this.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+                .addAttribute(glData.vertexBuffer, shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+                .addAttribute(glData.uvBuffer, shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
 
             mesh._glDatas[renderer.CONTEXT_UID] = glData;
         }
@@ -102,15 +105,11 @@ export default class MeshRenderer extends core.ObjectRenderer
 
         glData.vertexBuffer.upload(mesh.vertices);
 
-        const isTrimmed = texture.trim && (texture.trim.width < texture.orig.width
-            || texture.trim.height < texture.orig.height);
-        const shader = isTrimmed ? this.shaderTrim : this.shader;
-
         renderer.bindShader(shader);
 
         shader.uniforms.uSampler = renderer.bindTexture(texture);
 
-        renderer.state.setBlendMode(mesh.blendMode);
+        renderer.state.setBlendMode(core.utils.correctBlendMode(mesh.blendMode, texture.baseTexture.premultipliedAlpha));
 
         if (shader.uniforms.uTransform)
         {
@@ -128,8 +127,9 @@ export default class MeshRenderer extends core.ObjectRenderer
             shader.uniforms.uClampFrame = mesh._uvTransform.uClampFrame;
         }
         shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
-        shader.uniforms.alpha = mesh.worldAlpha;
-        shader.uniforms.tint = mesh.tintRgb;
+
+        shader.uniforms.uColor = core.utils.premultiplyRgba(mesh.tintRgb,
+            mesh.worldAlpha, shader.uniforms.uColor, texture.baseTexture.premultipliedAlpha);
 
         const drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 

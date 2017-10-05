@@ -81,9 +81,9 @@ export default class Ticker
          * this value will have a precision of 1 µs.
          *
          * @member {number}
-         * @default 0
+         * @default -1
          */
-        this.lastTime = 0;
+        this.lastTime = -1;
 
         /**
          * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
@@ -243,7 +243,7 @@ export default class Ticker
             // Go from highest to lowest priority
             while (current)
             {
-                if (listener.priority >= current.priority)
+                if (listener.priority > current.priority)
                 {
                     listener.connect(previous);
                     break;
@@ -389,15 +389,19 @@ export default class Ticker
 
             this.deltaTime = elapsedMS * settings.TARGET_FPMS * this.speed;
 
+            // Cache a local reference, in-case ticker is destroyed
+            // during the emit, we can still check for head.next
+            const head = this._head;
+
             // Invoke listeners added to internal emitter
-            let listener = this._head.next;
+            let listener = head.next;
 
             while (listener)
             {
                 listener = listener.emit(this.deltaTime);
             }
 
-            if (!this._head.next)
+            if (!head.next)
             {
                 this._cancelIfNeeded();
             }

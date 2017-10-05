@@ -297,8 +297,8 @@ export default class NineSlicePlane extends Plane
 
         const base = this._texture.baseTexture;
         const textureSource = base.source;
-        const w = base.width;
-        const h = base.height;
+        const w = base.width * base.resolution;
+        const h = base.height * base.resolution;
 
         this.drawSegment(context, textureSource, w, h, 0, 1, 10, 11);
         this.drawSegment(context, textureSource, w, h, 2, 3, 12, 13);
