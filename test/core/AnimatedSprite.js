@@ -123,9 +123,21 @@ describe('PIXI.extras.AnimatedSprite', function ()
             this.sprite.onNext = (next) =>
             {
                 expect(next).to.equal(this.frameObjects[this.randomFrame].next);
+                expect(this.sprite.currentFrame).to.equal(this.frameObjects[this.randomFrame].next);
                 done();
             };
             this.sprite.gotoAndPlay(this.randomFrame);
+        });
+
+        it('should navigate to the next frame instead of looping', function (done)
+        {
+            this.sprite.onNext = (next) =>
+            {
+                expect(next).to.equal(this.frameObjects[numTextures - 1].next);
+                expect(this.sprite.currentFrame).to.equal(this.frameObjects[numTextures - 1].next);
+                done();
+            };
+            this.sprite.gotoAndPlay(numTextures - 1);
         });
     });
 });
