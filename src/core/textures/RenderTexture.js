@@ -97,6 +97,9 @@ export default class RenderTexture extends Texture
      */
     resize(width, height, doNotResizeBaseTexture)
     {
+        width = Math.ceil(width);
+        height = Math.ceil(height);
+
         // TODO - could be not required..
         this.valid = (width > 0 && height > 0);
 
