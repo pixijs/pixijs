@@ -33,7 +33,7 @@ export default class AlphaFilter extends core.Filter
             readFileSync(join(__dirname, './alpha.frag'), 'utf8')
         );
 
-        this.uniforms.uAlpha = 1.0;
+        this.alpha = 1.0;
         this.glShaderKey = 'alpha';
     }
 
