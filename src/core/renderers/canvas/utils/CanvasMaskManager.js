@@ -160,6 +160,7 @@ export default class CanvasMaskManager
     popMask(renderer)
     {
         renderer.context.restore();
+        renderer.invalidateBlendMode();
     }
 
     /**

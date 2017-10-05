@@ -2,40 +2,6 @@
 
 describe('PIXI.Text', function ()
 {
-    describe('getFontStyle', function ()
-    {
-        it('should be a valid API', function ()
-        {
-            expect(PIXI.Text.getFontStyle).to.be.a.function;
-        });
-
-        it('should assume pixel fonts', function ()
-        {
-            const style = PIXI.Text.getFontStyle({ fontSize: 72 });
-
-            expect(style).to.be.a.string;
-            expect(style).to.have.string(' 72px ');
-        });
-
-        it('should handle multiple fonts as array', function ()
-        {
-            const style = PIXI.Text.getFontStyle({
-                fontFamily: ['Georgia', 'Arial', 'sans-serif'],
-            });
-
-            expect(style).to.have.string('"Georgia","Arial","sans-serif"');
-        });
-
-        it('should handle multiple fonts as string', function ()
-        {
-            const style = PIXI.Text.getFontStyle({
-                fontFamily: 'Georgia, "Arial", sans-serif',
-            });
-
-            expect(style).to.have.string('"Georgia","Arial","sans-serif"');
-        });
-    });
-
     describe('destroy', function ()
     {
         it('should call through to Sprite.destroy', function ()

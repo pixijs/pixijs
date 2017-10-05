@@ -2,7 +2,7 @@ import BaseTexture from './BaseTexture';
 import settings from '../settings';
 
 /**
- * A BaseRenderTexture is a special texture that allows any Pixi display object to be rendered to it.
+ * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
  *
  * __Hint__: All DisplayObjects (i.e. Sprites) that render to a BaseRenderTexture should be preloaded
  * otherwise black rectangles will be drawn instead.
@@ -54,8 +54,8 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.resolution = resolution || settings.RESOLUTION;
 
-        this.width = width;
-        this.height = height;
+        this.width = Math.ceil(width);
+        this.height = Math.ceil(height);
 
         this.realWidth = this.width * this.resolution;
         this.realHeight = this.height * this.resolution;
@@ -95,6 +95,9 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
+        width = Math.ceil(width);
+        height = Math.ceil(height);
+
         if (width === this.width && height === this.height)
         {
             return;

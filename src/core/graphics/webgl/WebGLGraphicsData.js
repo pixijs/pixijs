@@ -59,6 +59,12 @@ export default class WebGLGraphicsData
          */
         this.dirty = true;
 
+        /**
+         * Whether this graphics is nativeLines or not
+         * @member {boolean}
+         */
+        this.nativeLines = false;
+
         this.glPoints = null;
         this.glIndices = null;
 

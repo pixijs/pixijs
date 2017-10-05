@@ -13,7 +13,6 @@ import { Rectangle } from '../math';
  *
  * @class
  * @extends EventEmitter
- * @mixes PIXI.interaction.interactiveTarget
  * @memberof PIXI
  */
 export default class DisplayObject extends EventEmitter
@@ -122,6 +121,20 @@ export default class DisplayObject extends EventEmitter
          * @readonly
          */
         this._destroyed = false;
+
+        /**
+         * Fired when this DisplayObject is added to a Container.
+         *
+         * @event PIXI.DisplayObject#added
+         * @param {PIXI.Container} container - The container added to.
+         */
+
+        /**
+         * Fired when this DisplayObject is removed from a Container.
+         *
+         * @event PIXI.DisplayObject#removed
+         * @param {PIXI.Container} container - The container removed from.
+         */
     }
 
     /**

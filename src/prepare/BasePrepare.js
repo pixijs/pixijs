@@ -158,7 +158,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.addOnce(this.tick, this);
+                SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -228,7 +228,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            SharedTicker.addOnce(this.tick, this);
+            SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
         }
     }
 
@@ -434,12 +434,9 @@ function calculateTextStyle(helper, item)
 {
     if (item instanceof core.TextStyle)
     {
-        const font = core.Text.getFontStyle(item);
+        const font = item.toFontString();
 
-        if (!core.Text.fontPropertiesCache[font])
-        {
-            core.Text.calculateFontProperties(font);
-        }
+        core.TextMetrics.measureFont(font);
 
         return true;
     }

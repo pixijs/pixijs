@@ -1,7 +1,7 @@
 {
   "name": "pixi.js",
-  "version": "4.4.3",
-  "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
+  "version": "4.5.6",
+  "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
@@ -24,12 +24,13 @@
     "watch": "npm run dist -- --watch",
     "watch:lib": "npm run lib -- --watch",
     "watch:lint": "watch \"eslint scripts src test || exit 0\" src",
-    "test": "floss --path test/index.js",
-    "test:debug": "npm test -- --debug",
+    "test": "npm run lint && npm run dist && npm run coverage",
+    "unit-test": "floss --path test/index.js",
+    "unit-test:debug": "npm run unit-test -- --debug",
     "prerenders": "npm --prefix scripts/renders i scripts/renders",
     "renders": "electron scripts/renders",
     "precoverage": "rimraf coverage",
-    "coverage": "npm test -- -c dist/pixi.js -s -h",
+    "coverage": "npm run unit-test -- -c dist/pixi.js -s -h",
     "lint": "eslint scripts src test --max-warnings 0",
     "lintfix": "npm run lint --fix",
     "prebuild": "npm run lint",
@@ -43,7 +44,7 @@
     "publish:patch": "npm version patch && npm publish",
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish",
-    "postversion": "npm run clean && npm run build && npm run lib && npm test",
+    "postversion": "npm run clean && npm run build && npm run lib && npm run unit-test",
     "postpublish": "git push && git push --tags"
   },
   "files": [
@@ -61,9 +62,11 @@
     "ismobilejs": "^0.4.0",
     "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
-    "resource-loader": "^2.0.6"
+    "remove-array-items": "^1.0.0",
+    "resource-loader": "^2.0.9"
   },
   "devDependencies": {
+    "@pixi/jsdoc-template": "^2.0.0",
     "babel-cli": "^6.18.0",
     "babel-plugin-static-fs": "^1.1.0",
     "babel-plugin-version-inline": "^1.0.0",
@@ -73,9 +76,8 @@
     "electron": "^1.4.15",
     "eslint": "^3.5.0",
     "floss": "^2.0.1",
-    "jaguarjs-jsdoc": "^1.0.1",
     "js-md5": "^0.4.1",
-    "jsdoc": "^3.4.2",
+    "jsdoc": "3.4.3",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "parallelshell": "^2.0.0",

@@ -9,8 +9,8 @@ import EventEmitter from 'eventemitter3';
 const tempMatrix = new Matrix();
 
 /**
- * The SystemRenderer is the base for a Pixi Renderer. It is extended by the {@link PIXI.CanvasRenderer}
- * and {@link PIXI.WebGLRenderer} which can be used for rendering a Pixi scene.
+ * The SystemRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
+ * and {@link PIXI.WebGLRenderer} which can be used for rendering a PixiJS scene.
  *
  * @abstract
  * @class
@@ -31,11 +31,13 @@ export default class SystemRenderer extends EventEmitter
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
      *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear the canvas or
+     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
+     *  enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when rendering,
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when rendering,
      *  stopping pixel interpolation.
      */
     constructor(system, options, arg2, arg3)
@@ -128,8 +130,8 @@ export default class SystemRenderer extends EventEmitter
 
         /**
          * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
-         * If the scene is NOT transparent Pixi will use a canvas sized fillRect operation every
-         * frame to set the canvas background color. If the scene is transparent Pixi will use clearRect
+         * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every
+         * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
          * to clear the canvas every frame. Disable this by setting this to false. For example if
          * your game has a canvas filling background image you often don't need this set.
          *
@@ -139,7 +141,7 @@ export default class SystemRenderer extends EventEmitter
         this.clearBeforeRender = options.clearBeforeRender;
 
         /**
-         * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
          *
          * @member {boolean}
@@ -295,7 +297,6 @@ export default class SystemRenderer extends EventEmitter
         this._backgroundColorRgba = null;
         this._backgroundColorString = null;
 
-        this.backgroundColor = 0;
         this._tempDisplayObjectParent = null;
         this._lastObjectRendered = null;
     }

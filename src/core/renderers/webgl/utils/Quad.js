@@ -15,7 +15,7 @@ export default class Quad
      */
     constructor(gl, state)
     {
-        /*
+        /**
          * the current WebGL drawing context
          *
          * @member {WebGLRenderingContext}
@@ -56,23 +56,31 @@ export default class Quad
             this.interleaved[(i * 4) + 3] = this.uvs[(i * 2) + 1];
         }
 
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
+        /**
+         * An array containing the indices of the vertices
+         *
+         * @member {Uint16Array}
          */
         this.indices = createIndicesForQuads(1);
 
-        /*
-         * @member {glCore.GLBuffer} The vertex buffer
+        /**
+         * The vertex buffer
+         *
+         * @member {glCore.GLBuffer}
          */
         this.vertexBuffer = glCore.GLBuffer.createVertexBuffer(gl, this.interleaved, gl.STATIC_DRAW);
 
-        /*
-         * @member {glCore.GLBuffer} The index buffer
+        /**
+         * The index buffer
+         *
+         * @member {glCore.GLBuffer}
          */
         this.indexBuffer = glCore.GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
-        /*
-         * @member {glCore.VertexArrayObject} The index buffer
+        /**
+         * The vertex array object
+         *
+         * @member {glCore.VertexArrayObject}
          */
         this.vao = new glCore.VertexArrayObject(gl, state);
     }
