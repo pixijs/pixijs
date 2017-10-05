@@ -1,7 +1,7 @@
 import { DATA_URI, URL_FILE_EXTENSION, SVG_SIZE, VERSION } from '../const';
 import settings from '../settings';
 import EventEmitter from 'eventemitter3';
-import pluginTarget from './pluginTarget';
+import * as PluginTarget from './pluginTarget';
 import * as mixins from './mixin';
 import * as isMobile from 'ismobilejs';
 
@@ -43,14 +43,21 @@ export {
      * @type {EventEmitter}
      */
     EventEmitter,
-    /**
-     * @memberof PIXI.utils
-     * @function pluginTarget
-     * @type {mixin}
-     */
-    pluginTarget,
     mixins,
 };
+
+/**
+ * @memberof PIXI.utils
+ * @class UnsupportedPluginTargetError
+ */
+export const UnsupportedPluginTargetError = PluginTarget.UnsupportedTargetError;
+
+/**
+ * @memberof PIXI.utils
+ * @function pluginTarget
+ * @type {mixin}
+ */
+export const { pluginTarget } = PluginTarget;
 
 /**
  * Gets the next unique identifier

@@ -22,7 +22,7 @@ export default class CanvasRenderer extends SystemRenderer
      * @param {object} [options] - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
-     * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+     * @param {HTMLCanvasElement|OffscreenCanvas} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
      * @param {boolean} [options.autoResize=false] - If the render view is automatically resized, default false
      * @param {boolean} [options.antialias=false] - sets antialias (only applicable in chrome at the moment)

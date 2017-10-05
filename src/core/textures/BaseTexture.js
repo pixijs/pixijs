@@ -316,7 +316,7 @@ export default class BaseTexture extends EventEmitter
      * The source can be - image url, image element, canvas element.
      *
      * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement} source - The source to create base texture from.
+     * @param {string|HTMLImageElement|HTMLCanvasElement|OffscreenCanvas} source - The source to create base texture from.
      * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
      * @param {number} [sourceScale=(auto)] - Scale for the original image, used with Svg images.
      * @return {PIXI.BaseTexture} The new base texture.
