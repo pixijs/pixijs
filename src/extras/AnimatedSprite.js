@@ -263,7 +263,7 @@ export default class AnimatedSprite extends core.Sprite
         {
             const next = this._nextFrames[previousFrame];
 
-            if (next || next === 0) // 0 is valid
+            if (next !== undefined) // 0 is valid
             {
                 this.gotoAndPlay(next);
                 if (this.onNext)
