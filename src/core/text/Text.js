@@ -506,7 +506,28 @@ export default class Text extends Sprite
         else
         {
             // start the gradient at the center left of the canvas, and end at the center right of the canvas
-            gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+            if (style.fillGradientType === TEXT_GRADIENT.LINEAR_DIAGONAL)
+            {
+                // if gradientAngle is positive, bottom-left corner is start point of gradient.
+                // if it is negative, top-left corner is start point of gradient.
+                // we have to calculate the parameter of createLinearGradient to let the gradient include canvas entirely.
+                const absAngle = Math.abs(style.gradientAngle);
+                const tan = Math.tan(absAngle);
+                const p = (width + (height * tan)) / (1 + (tan * tan));
+
+                if (style.gradientAngle >= 0)
+                {
+                    gradient = this.context.createLinearGradient(0, height, p, (-p * tan) + height);
+                }
+                else
+                {
+                    this.context.createLinearGradient(0, 0, p, (p * tan));
+                }
+            }
+            else // LINEAR_HORIZONTAL
+            {
+                gradient = this.context.createLinearGradient(0, height / 2, width, height / 2);
+            }
 
             // can just evenly space out the gradients in this case, as multiple lines makes no difference
             // to an even left to right gradient
