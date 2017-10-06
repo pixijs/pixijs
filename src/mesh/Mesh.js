@@ -31,7 +31,7 @@ export default class Mesh extends core.Container
          */
         this._texture = texture;
 
-        if (!texture.baseTexture.hasLoaded)
+        if (texture && !texture.baseTexture.hasLoaded)
         {
             texture.once('update', this._onTextureUpdate, this);
         }
@@ -58,8 +58,10 @@ export default class Mesh extends core.Container
             100, 100,
             0, 100]);
 
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
+        /**
+         * An array containing the indices of the vertices
+         *
+         * @member {Uint16Array}
          */
         //  TODO auto generate this based on draw mode!
         this.indices = indices || new Uint16Array([0, 1, 3, 2]);
