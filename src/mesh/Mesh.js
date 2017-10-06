@@ -29,11 +29,11 @@ export default class Mesh extends core.Container
          * @member {PIXI.Texture}
          * @private
          */
-        this._texture = texture;
+        this._texture = texture || PIXI.texture.EMPTY;
 
-        if (texture && !texture.baseTexture.hasLoaded)
+        if (!this._texture.baseTexture.hasLoaded)
         {
-            texture.once('update', this._onTextureUpdate, this);
+            this._texture.once('update', this._onTextureUpdate, this);
         }
 
         /**
