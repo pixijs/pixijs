@@ -2,7 +2,6 @@ import * as core from '../core';
 import Texture from '../core/textures/Texture';
 import { default as TextureTransform } from '../extras/TextureTransform';
 
-
 const tempPoint = new core.Point();
 const tempPolygon = new core.Polygon();
 
