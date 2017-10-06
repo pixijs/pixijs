@@ -28,6 +28,7 @@ export default class Mesh extends core.Container
          * The texture of the Mesh
          *
          * @member {PIXI.Texture}
+         * @default PIXI.Texture.EMPTY
          * @private
          */
         this._texture = texture || Texture.EMPTY;
