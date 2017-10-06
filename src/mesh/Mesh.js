@@ -1,5 +1,7 @@
 import * as core from '../core';
+import Texture from '../core/textures/Texture';
 import { default as TextureTransform } from '../extras/TextureTransform';
+
 
 const tempPoint = new core.Point();
 const tempPolygon = new core.Polygon();
@@ -29,7 +31,7 @@ export default class Mesh extends core.Container
          * @member {PIXI.Texture}
          * @private
          */
-        this._texture = texture || PIXI.texture.EMPTY;
+        this._texture = texture || Texture.EMPTY;
 
         if (!this._texture.baseTexture.hasLoaded)
         {
