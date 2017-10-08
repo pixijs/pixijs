@@ -1,4 +1,5 @@
 import * as core from '../core';
+import Texture from '../core/textures/Texture';
 import { default as TextureTransform } from '../extras/TextureTransform';
 
 const tempPoint = new core.Point();
@@ -27,9 +28,10 @@ export default class Mesh extends core.Container
          * The texture of the Mesh
          *
          * @member {PIXI.Texture}
+         * @default PIXI.Texture.EMPTY
          * @private
          */
-        this._texture = texture;
+        this._texture = texture || Texture.EMPTY;
 
         /**
          * The Uvs of the Mesh
