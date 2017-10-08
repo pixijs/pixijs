@@ -12,12 +12,14 @@ describe('PIXI.Spritesheet', function ()
             spritesheet.parse(function (textures)
             {
                 const id = 'goldmine_10_5.png';
+                const width = Math.floor(spritesheet.data.frames[id].frame.w * spritesheet.baseTexture.sourceScale);
+                const height = Math.floor(spritesheet.data.frames[id].frame.h * spritesheet.baseTexture.sourceScale);
 
                 expect(Object.keys(textures).length).to.equal(1);
                 expect(Object.keys(spritesheet.textures).length).to.equal(1);
                 expect(textures[id]).to.be.an.instanceof(PIXI.Texture);
-                expect(textures[id].width).to.equal(spritesheet.data.frames[id].frame.w / spritesheet.resolution);
-                expect(textures[id].height).to.equal(spritesheet.data.frames[id].frame.h / spritesheet.resolution);
+                expect(textures[id].width).to.equal(width / spritesheet.resolution);
+                expect(textures[id].height).to.equal(height / spritesheet.resolution);
                 expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
@@ -66,6 +68,19 @@ describe('PIXI.Spritesheet', function ()
 
             this.validate(spritesheet, done);
         };
+    });
+
+    it('should create instance with BaseTexture source scale', function (done)
+    {
+        const data = require(path.resolve(this.resources, 'building1.json')); // eslint-disable-line global-require
+        const baseTexture = new PIXI.BaseTexture.fromImage(data.meta.image, undefined, undefined, 1.5);
+        const spritesheet = new PIXI.Spritesheet(baseTexture, data);
+
+        expect(data).to.be.an.object;
+        expect(data.meta.image).to.equal('building1.png');
+        expect(spritesheet.resolution).to.equal(0.5);
+
+        this.validate(spritesheet, done);
     });
 
     it('should create instance with filename resolution', function (done)

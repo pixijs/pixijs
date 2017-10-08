@@ -127,6 +127,19 @@ export default class WebGLRenderer extends SystemRenderer
          */
         this.currentRenderer = this.emptyRenderer;
 
+        /**
+         * Manages textures
+         * @member {PIXI.TextureManager}
+         */
+        this.textureManager = null;
+
+        /**
+         * Manages the filters.
+         *
+         * @member {PIXI.FilterManager}
+         */
+        this.filterManager = null;
+
         this.initPlugins();
 
         /**
@@ -178,12 +191,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         this._initContext();
 
-        /**
-         * Manages the filters.
-         *
-         * @member {PIXI.FilterManager}
-         */
-        this.filterManager = new FilterManager(this);
         // map some webGL blend and drawmodes..
         this.drawModes = mapWebGLDrawModesToPixi(this.gl);
 
@@ -236,6 +243,7 @@ export default class WebGLRenderer extends SystemRenderer
 
         // create a texture manager...
         this.textureManager = new TextureManager(this);
+        this.filterManager = new FilterManager(this);
         this.textureGC = new TextureGarbageCollector(this);
 
         this.state.resetToDefault();
@@ -654,7 +662,13 @@ export default class WebGLRenderer extends SystemRenderer
         this.setObjectRenderer(this.emptyRenderer);
 
         this._activeShader = null;
+        this._activeVao = null;
         this._activeRenderTarget = this.rootRenderTarget;
+
+        for (let i = 0; i < this.boundTextures.length; i++)
+        {
+            this.boundTextures[i] = this.emptyTextures[i];
+        }
 
         // bind the main frame buffer (the screen);
         this.rootRenderTarget.activate();
@@ -683,6 +697,7 @@ export default class WebGLRenderer extends SystemRenderer
     handleContextRestored()
     {
         this.textureManager.removeAll();
+        this.filterManager.destroy(true);
         this._initContext();
     }
 
