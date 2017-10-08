@@ -1,4 +1,5 @@
 import * as core from '../core';
+import Texture from '../core/textures/Texture';
 import { default as TextureTransform } from '../extras/TextureTransform';
 
 const tempPoint = new core.Point();
@@ -27,13 +28,14 @@ export default class Mesh extends core.Container
          * The texture of the Mesh
          *
          * @member {PIXI.Texture}
+         * @default PIXI.Texture.EMPTY
          * @private
          */
-        this._texture = texture;
+        this._texture = texture || Texture.EMPTY;
 
-        if (!texture.baseTexture.hasLoaded)
+        if (!this._texture.baseTexture.hasLoaded)
         {
-            texture.once('update', this._onTextureUpdate, this);
+            this._texture.once('update', this._onTextureUpdate, this);
         }
 
         /**
@@ -58,8 +60,10 @@ export default class Mesh extends core.Container
             100, 100,
             0, 100]);
 
-        /*
-         * @member {Uint16Array} An array containing the indices of the vertices
+        /**
+         * An array containing the indices of the vertices
+         *
+         * @member {Uint16Array}
          */
         //  TODO auto generate this based on draw mode!
         this.indices = indices || new Uint16Array([0, 1, 3, 2]);
