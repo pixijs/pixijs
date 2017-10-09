@@ -2,16 +2,18 @@ varying vec2 vMaskCoord;
 varying vec2 vTextureCoord;
 
 uniform sampler2D uSampler;
-uniform float alpha;
 uniform sampler2D mask;
+uniform float alpha;
+uniform vec4 maskClamp;
 
 void main(void)
 {
-    // check clip! this will stop the mask bleeding out from the edges
-    vec2 text = abs( vMaskCoord - 0.5 );
-    text = step(0.5, text);
+    float clip = step(3.5,
+        step(maskClamp.x, vMaskCoord.x) +
+        step(maskClamp.y, vMaskCoord.y) +
+        step(vMaskCoord.x, maskClamp.z) +
+        step(vMaskCoord.y, maskClamp.w));
 
-    float clip = 1.0 - max(text.y, text.x);
     vec4 original = texture2D(uSampler, vTextureCoord);
     vec4 masky = texture2D(mask, vMaskCoord);
 

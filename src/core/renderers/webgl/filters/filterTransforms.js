@@ -40,13 +40,13 @@ export function calculateNormalizedScreenSpaceMatrix(outputMatrix, filterArea, t
 // this will map the filter coord so that a texture can be used based on the transform of a sprite
 export function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite)
 {
-    const texture = sprite._texture.baseTexture;
+    const orig = sprite._texture.orig;
     const mappedMatrix = outputMatrix.set(textureSize.width, 0, 0, textureSize.height, filterArea.x, filterArea.y);
     const worldTransform = sprite.worldTransform.copy(Matrix.TEMP_MATRIX);
 
     worldTransform.invert();
     mappedMatrix.prepend(worldTransform);
-    mappedMatrix.scale(1.0 / texture.width, 1.0 / texture.height);
+    mappedMatrix.scale(1.0 / orig.width, 1.0 / orig.height);
     mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 
     return mappedMatrix;
