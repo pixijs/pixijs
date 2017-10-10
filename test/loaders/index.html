@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../dist/pixi.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var renderer = new PIXI.CanvasRenderer(400, 600, {backgroundColor: 0x1099bb});
+            var stage = new PIXI.Container();
+            document.body.appendChild(renderer.view);
+            setInterval(function() {
+                renderer.render(stage)
+            }, 33);
+
+            function clearCache() {
+                for (var font in PIXI.extras.BitmapText.fonts) {
+                    delete PIXI.extras.BitmapText.fonts[font];
+                }
+
+                for (var baseTexture in PIXI.utils.BaseTextureCache) {
+                    delete PIXI.utils.BaseTextureCache[baseTexture];
+                }
+
+                for (var texture in PIXI.utils.TextureCache) {
+                    delete PIXI.utils.TextureCache[texture];
+                }
+            }
+
+            function distributeStage() {
+                for (var i = 0, j = stage.children.length, s = 0; i < j; i++) {
+                    stage.children[i].y = s;
+                    s += stage.children[i].height;
+                }
+            }
+
+            var order = [loadBare, loadScaled, loadNested, loadNestedScaled];
+
+            function reset() {
+                clearCache();
+                distributeStage();
+                if (order.length) {
+                    setTimeout(order.shift(), 5);
+                }
+            }
+
+            reset();
+
+            // BARE
+            function loadBare() {
+                var bareFontLoader = new PIXI.loaders.Loader();
+                bareFontLoader.add(["resources/font.fnt"]);
+                bareFontLoader.once("complete", onBareFontComplete);
+                bareFontLoader.load();
+            }
+
+            function onBareFontComplete() {
+                stage.addChild(new PIXI.extras.BitmapText("ABCD", {font: "font"}));
+                reset();
+            }
+
+            // BARE SCALED
+            function loadScaled() {
+                var bareFontScaledLoader = new PIXI.loaders.Loader();
+                bareFontScaledLoader.add(["resources/font@0.5x.fnt"]);
+                bareFontScaledLoader.once("complete", onBareFontScaledComplete);
+                bareFontScaledLoader.load();
+            }
+
+            function onBareFontScaledComplete() {
+                stage.addChild(new PIXI.extras.BitmapText("ABCD", {font: "font"}));
+                reset();
+            }
+
+            // NESTED
+            function loadNested() {
+                var nestedLoader = new PIXI.loaders.Loader();
+                nestedLoader.use(parseNestedFonts);
+                nestedLoader.add(["resources/atlas.json"]);
+                nestedLoader.once("complete", onNestedLoaderComplete);
+                nestedLoader.load();
+            }
+
+            function onNestedLoaderComplete() {
+                stage.addChild(new PIXI.extras.BitmapText("ABCD", {font: "font"}));
+                reset();
+            }
+
+            function parseNestedFonts(resource, next) {
+                if (resource.url === "resources/atlas.png") {
+                    this.add("resources/font.fnt", {xhrType: "document", parentResource: resource}, next);
+                }
+                else {
+                    return next();
+                }
+
+            }
+
+            // NESTED SCALED
+            function loadNestedScaled() {
+                var nestedScaledLoader = new PIXI.loaders.Loader();
+                nestedScaledLoader.use(parseNestedScaledFonts);
+                nestedScaledLoader.add(["resources/atlas@0.5x.json"]);
+                nestedScaledLoader.once("complete", onNestedScaledComplete);
+                nestedScaledLoader.load();
+            }
+
+            function onNestedScaledComplete() {
+                stage.addChild(new PIXI.extras.BitmapText("ABCD", {font: "font"}));
+                reset();
+            }
+
+            function parseNestedScaledFonts(resource, next) {
+                if (resource.url === "resources/atlas@0.5x.png") {
+                    this.add("resources/font@0.5x.fnt", {xhrType: "document", parentResource: resource}, next);
+                }
+                else {
+                    return next();
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+
+</body>
+</html>
