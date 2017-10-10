@@ -49,7 +49,9 @@ export default class SpriteMaskFilter extends Filter
         }
         if (!tex.transform)
         {
-            tex.transform = new TextureTransform(tex);
+            // margin = 0.0, let it bleed a bit, shader code becomes easier
+            // assuming that atlas textures were made with 1-pixel padding
+            tex.transform = new TextureTransform(tex, 0.0);
         }
         tex.transform.update();
 
