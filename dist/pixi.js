@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v5.0.0
- * Compiled Tue, 10 Oct 2017 12:29:39 UTC
+ * Compiled Tue, 10 Oct 2017 15:11:00 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -32569,18 +32569,20 @@ var WebGLExtract = function () {
         }
 
         if (renderTexture) {
-            textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
-            resolution = textureBuffer.resolution;
+            resolution = renderTexture.baseTexture.resolution;
             frame = renderTexture.frame;
             flipY = false;
+            renderer.renderTexture.bind(renderTexture);
         } else {
-            textureBuffer = this.renderer.rootRenderTarget;
-            resolution = textureBuffer.resolution;
+            resolution = this.renderer.resolution;
+
             flipY = true;
 
             frame = TEMP_RECT;
-            frame.width = textureBuffer.size.width;
-            frame.height = textureBuffer.size.height;
+            frame.width = this.renderer.width;
+            frame.height = this.renderer.height;
+
+            renderer.renderTexture.bind(null);
         }
 
         var width = frame.width * resolution;
@@ -32588,9 +32590,11 @@ var WebGLExtract = function () {
 
         var canvasBuffer = new core.CanvasRenderTarget(width, height);
 
-        if (textureBuffer) {
+        //if (textureBuffer)
+        {
             // bind the buffer
-            renderer.bindRenderTarget(textureBuffer);
+            // renderer.bindRenderTarget(textureBuffer);
+
 
             // set up an array of pixels
             var webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
@@ -32644,9 +32648,12 @@ var WebGLExtract = function () {
         }
 
         if (renderTexture) {
-            textureBuffer = renderTexture.baseTexture._glRenderTargets[this.renderer.CONTEXT_UID];
+            //textureBuffer = renderTexture.baseTexture;//._glRenderTargets[this.renderer.CONTEXT_UID];
             resolution = textureBuffer.resolution;
             frame = renderTexture.frame;
+
+            // bind the buffer
+            renderer.renderTexture.bind(renderTexture);
         } else {
             textureBuffer = this.renderer.rootRenderTarget;
             resolution = textureBuffer.resolution;
@@ -32661,14 +32668,10 @@ var WebGLExtract = function () {
 
         var webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
-        if (textureBuffer) {
-            // bind the buffer
-            renderer.bindRenderTarget(textureBuffer);
-            // read pixels to the array
-            var gl = renderer.gl;
+        // read pixels to the array
+        var gl = renderer.gl;
 
-            gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webglPixels);
-        }
+        gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webglPixels);
 
         return webglPixels;
     };
