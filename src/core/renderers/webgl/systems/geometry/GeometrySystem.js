@@ -285,6 +285,8 @@ export default class GeometrySystem extends WebGLSystem
 
         // add it to the cache!
         geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+        return vao;
     }
 
     activateVao(geometry, program)
