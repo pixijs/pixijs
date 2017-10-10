@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v5.0.0
- * Compiled Fri, 18 Aug 2017 16:41:32 UTC
+ * Compiled Tue, 10 Oct 2017 12:29:39 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -20374,6 +20374,8 @@ var GeometrySystem = function (_WebGLSystem) {
 
         // add it to the cache!
         geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+        return vao;
     };
 
     GeometrySystem.prototype.activateVao = function activateVao(geometry, program) {
@@ -20444,6 +20446,12 @@ var GeometrySystem = function (_WebGLSystem) {
         }
 
         return this;
+    };
+
+    GeometrySystem.prototype.unbind = function unbind() {
+        this.gl.bindVertexArray(null);
+        this._activeVao = null;
+        this._activeGeometry = null;
     };
 
     return GeometrySystem;

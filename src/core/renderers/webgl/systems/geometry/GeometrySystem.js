@@ -285,6 +285,8 @@ export default class GeometrySystem extends WebGLSystem
 
         // add it to the cache!
         geometry.glVertexArrayObjects[this.CONTEXT_UID][program.id] = vao;
+
+        return vao;
     }
 
     activateVao(geometry, program)
@@ -330,7 +332,6 @@ export default class GeometrySystem extends WebGLSystem
                                        attribute.normalized,
                                        attribute.stride,
                                        attribute.start);
-
 
                 if (attribute.instance)
                 {
@@ -380,5 +381,12 @@ export default class GeometrySystem extends WebGLSystem
         }
 
         return this;
+    }
+
+    unbind()
+    {
+        this.gl.bindVertexArray(null);
+        this._activeVao = null;
+        this._activeGeometry = null;
     }
 }
