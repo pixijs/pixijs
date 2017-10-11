@@ -255,7 +255,7 @@ export default class SystemRenderer extends EventEmitter
         tempMatrix.tx = -bounds.x;
         tempMatrix.ty = -bounds.y;
 
-        this.render(displayObject, renderTexture, false, tempMatrix, true);
+        this.render(displayObject, renderTexture, false, tempMatrix);
 
         return renderTexture;
     }
