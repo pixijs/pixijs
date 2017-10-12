@@ -601,6 +601,13 @@ export default function deprecation(core)
         return this.generateCanvasTexture(scaleMode, resolution);
     };
 
+    core.GroupD8.isSwapWidthHeight = function isSwapWidthHeight(rotation)
+    {
+        warn('GroupD8.isSwapWidthHeight was renamed to GroupD8.isVertical');
+
+        return core.GroupD8.isVertical(rotation);
+    };
+
     core.RenderTexture.prototype.render = function render(displayObject, matrix, clear, updateTransform)
     {
         this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);
