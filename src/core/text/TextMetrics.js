@@ -1,3 +1,5 @@
+import createCanvas from '../utils/createCanvas'
+
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
  *
@@ -298,9 +300,7 @@ export default class TextMetrics
  * @property {number} fontSize - Font size from ascent to descent
  */
 
-const canvas = document.createElement('canvas');
-
-canvas.width = canvas.height = 10;
+const canvas = createCanvas(10, 10);
 
 /**
  * Cached canvas element for measuring text

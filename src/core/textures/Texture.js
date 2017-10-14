@@ -4,6 +4,7 @@ import TextureUvs from './TextureUvs';
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../math';
 import { TextureCache, getResolutionOfUrl } from '../utils';
+import createCanvas from '../utils/createCanvas';
 import settings from '../settings';
 
 /**
@@ -626,10 +627,7 @@ export default class Texture extends EventEmitter
 
 function createWhiteTexture()
 {
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 10;
-    canvas.height = 10;
+    const canvas = createCanvas(10, 10);
 
     const context = canvas.getContext('2d');
 
