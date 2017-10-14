@@ -9,6 +9,7 @@ import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
 
 let nextUid = 0;
 let saidHello = false;
+const root = typeof window === 'undefined' ? global : window
 
 /**
  * Generalized convenience utilities for PIXI.
@@ -260,7 +261,7 @@ export function sayHello(type)
         return;
     }
 
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+    if (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
             `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
@@ -275,11 +276,11 @@ export function sayHello(type)
             'color: #ff2424; background: #fff; padding:5px 0;',
         ];
 
-        window.console.log.apply(console, args);
+        root.console.log.apply(console, args);
     }
-    else if (window.console)
+    else if (root.console)
     {
-        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
+        root.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
     }
 
     saidHello = true;

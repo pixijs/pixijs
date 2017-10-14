@@ -2,22 +2,24 @@ import './Object.assign';
 import './requestAnimationFrame';
 import './Math.sign';
 
-if (!window.ArrayBuffer)
+const root = typeof window === 'undefined' ? global : window
+
+if (!root.ArrayBuffer)
 {
-    window.ArrayBuffer = Array;
+    root.ArrayBuffer = Array;
 }
 
-if (!window.Float32Array)
+if (!root.Float32Array)
 {
-    window.Float32Array = Array;
+    root.Float32Array = Array;
 }
 
-if (!window.Uint32Array)
+if (!root.Uint32Array)
 {
-    window.Uint32Array = Array;
+    root.Uint32Array = Array;
 }
 
-if (!window.Uint16Array)
+if (!root.Uint16Array)
 {
-    window.Uint16Array = Array;
+    root.Uint16Array = Array;
 }
