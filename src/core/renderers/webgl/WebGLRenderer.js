@@ -79,8 +79,11 @@ export default class WebGLRenderer extends SystemRenderer
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
 
-        this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
-        this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        if (typeof this.view.addEventListener !== 'undefined')
+        {
+            this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
+            this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        }
 
         /**
          * The options passed in to create a new webgl context.
@@ -706,8 +709,11 @@ export default class WebGLRenderer extends SystemRenderer
         this.destroyPlugins();
 
         // remove listeners
-        this.view.removeEventListener('webglcontextlost', this.handleContextLost);
-        this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        if (typeof this.view.addEventListener !== 'undefined')
+        {
+            this.view.removeEventListener('webglcontextlost', this.handleContextLost);
+            this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        }
 
         this.textureManager.destroy();
 
