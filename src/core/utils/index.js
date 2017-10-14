@@ -297,18 +297,32 @@ export function isWebGLSupported()
 {
     const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
 
+    let headlessGL = null
     try
     {
-        if (!window.WebGLRenderingContext)
+        headlessGL = require('gl')
+    }
+    catch (e) {}
+
+    try
+    {
+        if (!root.WebGLRenderingContext && !headlessGL)
         {
             return false;
         }
 
-        const canvas = document.createElement('canvas');
-        let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+        let gl
+        if (headlessGL !== null)
+        {
+            gl = headlessGL(100, 100)
+        }
+        else
+        {
+            const canvas = document.createElement('canvas');
+            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+        }
 
         const success = !!(gl && gl.getContextAttributes().stencil);
-
         if (gl)
         {
             const loseContext = gl.getExtension('WEBGL_lose_context');
