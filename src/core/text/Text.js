@@ -22,7 +22,7 @@ const defaultDestroyOptions = {
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * let text = new PIXI.Text('This is a pixi text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+ * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class
@@ -134,6 +134,7 @@ export default class Text extends Sprite
 
         this._font = this._style.toFontString();
 
+        const context = this.context;
         const measured = TextMetrics.measureText(this._text, this._style, this._style.wordWrap, this.canvas);
         const width = measured.width;
         const height = measured.height;
@@ -146,32 +147,29 @@ export default class Text extends Sprite
         this.canvas.width = Math.ceil((width + (style.padding * 2)) * this.resolution);
         this.canvas.height = Math.ceil((height + (style.padding * 2)) * this.resolution);
 
-        this.context.scale(this.resolution, this.resolution);
+        context.scale(this.resolution, this.resolution);
 
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.context.font = this._font;
-        this.context.strokeStyle = style.stroke;
-        this.context.lineWidth = style.strokeThickness;
-        this.context.textBaseline = style.textBaseline;
-        this.context.lineJoin = style.lineJoin;
-        this.context.miterLimit = style.miterLimit;
+        context.font = this._font;
+        context.strokeStyle = style.stroke;
+        context.lineWidth = style.strokeThickness;
+        context.textBaseline = style.textBaseline;
+        context.lineJoin = style.lineJoin;
+        context.miterLimit = style.miterLimit;
 
         let linePositionX;
         let linePositionY;
 
         if (style.dropShadow)
         {
-            this.context.shadowBlur = style.dropShadowBlur;
-            this.context.globalAlpha = style.dropShadowAlpha;
+            context.fillStyle = style.dropShadowColor;
+            context.globalAlpha = style.dropShadowAlpha;
+            context.shadowBlur = style.dropShadowBlur;
 
             if (style.dropShadowBlur > 0)
             {
-                this.context.shadowColor = style.dropShadowColor;
-            }
-            else
-            {
-                this.context.fillStyle = style.dropShadowColor;
+                context.shadowColor = style.dropShadowColor;
             }
 
             const xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
@@ -200,24 +198,24 @@ export default class Text extends Sprite
 
                     if (style.stroke && style.strokeThickness)
                     {
-                        this.context.strokeStyle = style.dropShadowColor;
+                        context.strokeStyle = style.dropShadowColor;
                         this.drawLetterSpacing(
                             lines[i],
                             linePositionX + xShadowOffset + style.padding, linePositionY + yShadowOffset + style.padding,
                             true
                         );
-                        this.context.strokeStyle = style.stroke;
+                        context.strokeStyle = style.stroke;
                     }
                 }
             }
         }
 
         // reset the shadow blur and alpha that was set by the drop shadow, for the regular text
-        this.context.shadowBlur = 0;
-        this.context.globalAlpha = 1;
+        context.shadowBlur = 0;
+        context.globalAlpha = 1;
 
         // set canvas text styles
-        this.context.fillStyle = this._generateFillStyle(style, lines);
+        context.fillStyle = this._generateFillStyle(style, lines);
 
         // draw lines line by line
         for (let i = 0; i < lines.length; i++)
@@ -314,27 +312,32 @@ export default class Text extends Sprite
      */
     updateTexture()
     {
+        const canvas = this.canvas;
+
         if (this._style.trim)
         {
-            const trimmed = trimCanvas(this.canvas);
+            const trimmed = trimCanvas(canvas);
 
-            this.canvas.width = trimmed.width;
-            this.canvas.height = trimmed.height;
+            canvas.width = trimmed.width;
+            canvas.height = trimmed.height;
             this.context.putImageData(trimmed.data, 0, 0);
         }
 
         const texture = this._texture;
         const style = this._style;
         const padding = style.trim ? 0 : style.padding;
+        const baseTexture = texture.baseTexture;
 
-        texture.baseTexture.valid = true;
-        texture.baseTexture.resolution = this.resolution;
+        baseTexture.hasLoaded = true;
+        baseTexture.resolution = this.resolution;
 
-        texture.baseTexture.width = this.canvas.width / this.resolution;
-        texture.baseTexture.height = this.canvas.height / this.resolution;
-        texture.trim.width = texture._frame.width = this.canvas.width / this.resolution;
-        texture.trim.height = texture._frame.height = this.canvas.height / this.resolution;
+        baseTexture.realWidth = canvas.width;
+        baseTexture.realHeight = canvas.height;
+        baseTexture.width = canvas.width / this.resolution;
+        baseTexture.height = canvas.height / this.resolution;
 
+        texture.trim.width = texture._frame.width = canvas.width / this.resolution;
+        texture.trim.height = texture._frame.height = canvas.height / this.resolution;
         texture.trim.x = -padding;
         texture.trim.y = -padding;
 
@@ -487,7 +490,7 @@ export default class Text extends Sprite
                 currentIteration += 1;
                 for (let j = 0; j < fill.length; j++)
                 {
-                    if (fillGradientStops[j])
+                    if (typeof fillGradientStops[j] === 'number')
                     {
                         stop = (fillGradientStops[j] / lines.length) + (i / lines.length);
                     }
@@ -512,7 +515,7 @@ export default class Text extends Sprite
 
             for (let i = 0; i < fill.length; i++)
             {
-                if (fillGradientStops[i])
+                if (typeof fillGradientStops[i] === 'number')
                 {
                     stop = fillGradientStops[i];
                 }

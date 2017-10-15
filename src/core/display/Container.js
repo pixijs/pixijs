@@ -66,7 +66,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            // if the child has a parent then lets remove it as Pixi objects can only exist in one place
+            // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
             if (child.parent)
             {
                 child.parent.removeChild(child);

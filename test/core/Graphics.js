@@ -140,6 +140,28 @@ describe('PIXI.Graphics', function ()
 
             expect(graphics.containsPoint(point)).to.be.false;
         });
+
+        it('should return false with hole', function ()
+        {
+            const point1 = new PIXI.Point(1, 1);
+            const point2 = new PIXI.Point(5, 5);
+            const graphics = new PIXI.Graphics();
+
+            graphics.beginFill(0)
+                .moveTo(0, 0)
+                .lineTo(10, 0)
+                .lineTo(10, 10)
+                .lineTo(0, 10)
+                // draw hole
+                .moveTo(2, 2)
+                .lineTo(8, 2)
+                .lineTo(8, 8)
+                .lineTo(2, 8)
+                .addHole();
+
+            expect(graphics.containsPoint(point1)).to.be.true;
+            expect(graphics.containsPoint(point2)).to.be.false;
+        });
     });
 
     describe('arc', function ()

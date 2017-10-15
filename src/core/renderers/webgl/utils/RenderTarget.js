@@ -203,7 +203,7 @@ export default class RenderTarget
     setFrame(destinationFrame, sourceFrame)
     {
         this.destinationFrame = destinationFrame || this.destinationFrame || this.defaultFrame;
-        this.sourceFrame = sourceFrame || this.sourceFrame || destinationFrame;
+        this.sourceFrame = sourceFrame || this.sourceFrame || this.destinationFrame;
     }
 
     /**

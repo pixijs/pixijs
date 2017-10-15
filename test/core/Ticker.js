@@ -150,6 +150,56 @@ describe('PIXI.ticker.Ticker', function ()
         expect(this.length()).to.equal(length);
     });
 
+    it('should call when adding same priority', function ()
+    {
+        const length = this.length();
+        const listener1 = sinon.spy();
+        const listener2 = sinon.spy();
+        const listener3 = sinon.spy();
+
+        shared.add(listener1)
+            .add(listener2)
+            .add(listener3);
+
+        shared.update();
+
+        expect(this.length()).to.equal(length + 3);
+
+        sinon.assert.callOrder(listener1, listener2, listener3);
+
+        shared.remove(listener1)
+            .remove(listener2)
+            .remove(listener3);
+
+        expect(this.length()).to.equal(length);
+    });
+
+    it('should remove once listener in a stack', function ()
+    {
+        const length = this.length();
+        const listener1 = sinon.spy();
+        const listener2 = sinon.spy();
+        const listener3 = sinon.spy();
+
+        shared.add(listener1, null, PIXI.UPDATE_PRIORITY.HIGH);
+        shared.addOnce(listener2, null, PIXI.UPDATE_PRIORITY.NORMAL);
+        shared.add(listener3, null, PIXI.UPDATE_PRIORITY.LOW);
+
+        shared.update();
+
+        expect(this.length()).to.equal(length + 2);
+
+        shared.update();
+
+        expect(listener1.calledTwice).to.be.true;
+        expect(listener2.calledOnce).to.be.true;
+        expect(listener3.calledTwice).to.be.true;
+
+        shared.remove(listener1).remove(listener3);
+
+        expect(this.length()).to.equal(length);
+    });
+
     it('should call inserted item with a lower priority', function ()
     {
         const length = this.length();

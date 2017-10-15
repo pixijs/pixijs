@@ -2,11 +2,12 @@ import BaseTexture from './BaseTexture';
 import { uid, BaseTextureCache } from '../utils';
 import { shared } from '../ticker';
 import { UPDATE_PRIORITY } from '../const';
+import determineCrossOrigin from '../utils/determineCrossOrigin';
 
 /**
  * A texture of a [playing] Video.
  *
- * Video base textures mimic Pixi BaseTexture.from.... method in their creation process.
+ * Video base textures mimic PixiJS BaseTexture.from.... method in their creation process.
  *
  * This can be used in several ways, such as:
  *
@@ -201,7 +202,7 @@ export default class VideoBaseTexture extends BaseTexture
     }
 
     /**
-     * Mimic Pixi BaseTexture.from.... method.
+     * Mimic PixiJS BaseTexture.from.... method.
      *
      * @static
      * @param {HTMLVideoElement} video - Video to create texture from
@@ -236,14 +237,26 @@ export default class VideoBaseTexture extends BaseTexture
      * @param {string} [videoSrc.mime] - The mimetype of the video (e.g. 'video/mp4'). If not specified
      *  the url's extension will be used as the second part of the mime type.
      * @param {number} scaleMode - See {@link PIXI.SCALE_MODES} for possible values
+     * @param {boolean} [crossorigin=(auto)] - Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
      * @return {PIXI.VideoBaseTexture} Newly created VideoBaseTexture
      */
-    static fromUrl(videoSrc, scaleMode)
+    static fromUrl(videoSrc, scaleMode, crossorigin)
     {
         const video = document.createElement('video');
 
         video.setAttribute('webkit-playsinline', '');
         video.setAttribute('playsinline', '');
+
+        const url = Array.isArray(videoSrc) ? (videoSrc[0].src || videoSrc[0]) : (videoSrc.src || videoSrc);
+
+        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        {
+            video.crossOrigin = determineCrossOrigin(url);
+        }
+        else if (crossorigin)
+        {
+            video.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+        }
 
         // array of objects or strings
         if (Array.isArray(videoSrc))
@@ -256,7 +269,7 @@ export default class VideoBaseTexture extends BaseTexture
         // single object or string
         else
         {
-            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+            video.appendChild(createSource(url, videoSrc.mime));
         }
 
         video.load();

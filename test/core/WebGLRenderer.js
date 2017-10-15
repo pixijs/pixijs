@@ -18,4 +18,18 @@ describe('PIXI.WebGLRenderer', function ()
             renderer.destroy();
         }
     }));
+
+    it('should allow clear() to work despite no containers added to the renderer', withGL(function ()
+    {
+        const renderer = new PIXI.WebGLRenderer(1, 1);
+
+        try
+        {
+            renderer.clear();
+        }
+        finally
+        {
+            renderer.destroy();
+        }
+    }));
 });
