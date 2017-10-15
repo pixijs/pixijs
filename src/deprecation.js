@@ -946,6 +946,22 @@ export default function deprecation(core)
                 return core.SpriteMaskFilter;
             },
         },
+
+        /**
+         * @class
+         * @private
+         * @name PIXI.filters.VoidFilter
+         * @see PIXI.filters.AlphaFilter
+         * @deprecated since version 4.5.7
+         */
+        VoidFilter: {
+            get()
+            {
+                warn('VoidFilter has been renamed to AlphaFilter, please use PIXI.filters.AlphaFilter');
+
+                return filters.AlphaFilter;
+            },
+        },
     });
 
     /**
