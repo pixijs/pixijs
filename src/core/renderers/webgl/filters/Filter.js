@@ -22,7 +22,39 @@ export default class Filter extends Shader
 
         super(program, uniforms);
 
-        this.blendMode = BLEND_MODES.NORMAL;
+        this._blendMode = BLEND_MODES.NORMAL;
+
+        this.uniformData = uniforms || extractUniformsFromSrc(this.vertexSrc, this.fragmentSrc, 'projectionMatrix|uSampler');
+
+        /**
+         * An object containing the current values of custom uniforms.
+         * @example <caption>Updating the value of a custom uniform</caption>
+         * filter.uniforms.time = performance.now();
+         *
+         * @member {object}
+         */
+        this.uniforms = {};
+
+        for (const i in this.uniformData)
+        {
+            this.uniforms[i] = this.uniformData[i].value;
+            if (this.uniformData[i].type)
+            {
+                this.uniformData[i].type = this.uniformData[i].type.toLowerCase();
+            }
+        }
+
+        // this is where we store shader references..
+        // TODO we could cache this!
+        this.glShaders = {};
+
+        // used for cacheing.. sure there is a better way!
+        if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
+        {
+            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
+        }
+
+        this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
 
         /**
          * The padding of the filter. Some filters require extra space to breath such as a blur.
@@ -49,7 +81,7 @@ export default class Filter extends Shader
         this.enabled = true;
 
         /**
-         * If enabled, pixi will fit the filter area into boundaries for better performance.
+         * If enabled, PixiJS will fit the filter area into boundaries for better performance.
          * Switch it off if it does not work for specific shader.
          *
          * @member {boolean}
@@ -75,5 +107,81 @@ export default class Filter extends Shader
         filterManager.applyFilter(this, input, output, clear, currentState);
 
         // or just do a regular render..
+    }
+
+    /**
+     * Sets the blendmode of the filter
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
+    get blendMode()
+    {
+        return this._blendMode;
+    }
+
+    set blendMode(value) // eslint-disable-line require-jsdoc
+    {
+        this._blendMode = value;
+    }
+
+    /**
+     * The default vertex shader source
+     *
+     * @static
+     * @constant
+     */
+    static get defaultVertexSrc()
+    {
+        return [
+            'attribute vec2 aVertexPosition;',
+            'attribute vec2 aTextureCoord;',
+
+            'uniform mat3 projectionMatrix;',
+            'uniform mat3 filterMatrix;',
+
+            'varying vec2 vTextureCoord;',
+            'varying vec2 vFilterCoord;',
+
+            'void main(void){',
+            '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+            '   vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;',
+            '   vTextureCoord = aTextureCoord ;',
+            '}',
+        ].join('\n');
+    }
+
+    /**
+     * The default fragment shader source
+     *
+     * @static
+     * @constant
+     */
+    static get defaultFragmentSrc()
+    {
+        return [
+            'varying vec2 vTextureCoord;',
+            'varying vec2 vFilterCoord;',
+
+            'uniform sampler2D uSampler;',
+            'uniform sampler2D filterSampler;',
+
+            'void main(void){',
+            '   vec4 masky = texture2D(filterSampler, vFilterCoord);',
+            '   vec4 sample = texture2D(uSampler, vTextureCoord);',
+            '   vec4 color;',
+            '   if(mod(vFilterCoord.x, 1.0) > 0.5)',
+            '   {',
+            '     color = vec4(1.0, 0.0, 0.0, 1.0);',
+            '   }',
+            '   else',
+            '   {',
+            '     color = vec4(0.0, 1.0, 0.0, 1.0);',
+            '   }',
+            // '   gl_FragColor = vec4(mod(vFilterCoord.x, 1.5), vFilterCoord.y,0.0,1.0);',
+            '   gl_FragColor = mix(sample, masky, 0.5);',
+            '   gl_FragColor *= sample.a;',
+            '}',
+        ].join('\n');
     }
 }

@@ -32,7 +32,7 @@ export default {
 
     /**
      * Determines if the children to the displayObject can be clicked/touched
-     * Setting this to false allows pixi to bypass a recursive `hitTest` function
+     * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
      *
      * @member {boolean}
      * @memberof PIXI.Container#

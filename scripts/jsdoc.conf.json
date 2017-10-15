@@ -22,11 +22,11 @@
         "default"       : {
             "outputSourceFiles" : true
         },
-        "applicationName": "PIXI",
+        "applicationName": "PixiJS",
         "footer"        : "Made with ♥ by Goodboy Digital (goodboydigital.com)",
-        "copyright"     : "PIXI Copyright © 2013-2016 Mat Groves.",
+        "copyright"     : "PixiJS Copyright © 2013-2017 Mat Groves.",
         "disqus": "",
-        "googleAnalytics": "",
+        "googleAnalytics": "UA-103772589-5",
         "openGraph": {
             "title": "",
             "type": "website",
@@ -35,9 +35,9 @@
             "url": ""
         },
         "meta": {
-            "title": "",
-            "description": "",
-            "keyword": ""
+            "title": "PixiJS API Documentation",
+            "description": "Documentation for PixiJS library",
+            "keyword": "docs, documentation, pixi, pixijs, renderer, html5, javascript, jsdoc"
         },
         "linenums"      : true
     },
@@ -51,6 +51,6 @@
         "private"       : false,
         "lenient"       : true,
         "destination"   : "./docs",
-        "template"      : "./node_modules/jaguarjs-jsdoc"
+        "template"      : "./node_modules/@pixi/jsdoc-template"
     }
 }

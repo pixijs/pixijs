@@ -103,4 +103,21 @@ describe('BaseTexture', function ()
         expect(PIXI.utils.BaseTextureCache[NAME]).to.equal(undefined);
         expect(PIXI.utils.BaseTextureCache[NAME2]).to.equal(baseTexture);
     });
+
+    it('should not throw an error destroying a destroyed BaseTexture', function ()
+    {
+        const baseTexture = new PIXI.BaseTexture();
+
+        baseTexture.destroy();
+        baseTexture.destroy();
+    });
+
+    it('should set source.crossOrigin to anonymous if explicitly set', function ()
+    {
+        cleanCache();
+
+        const baseTexture = PIXI.BaseTexture.fromImage(URL, true);
+
+        expect(baseTexture.source.crossOrigin).to.equal('anonymous');
+    });
 });

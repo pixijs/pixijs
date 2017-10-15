@@ -45,15 +45,19 @@ export default class WebGLRenderer extends SystemRenderer
      *  FXAA is faster, but may not always look as great
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
      *  The resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the CanvasRenderer will clear
+     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
      *  enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.roundPixels=false] - If true Pixi will Math.floor() x/y values when
+     * @param {boolean} [options.roundPixels=false] - If true PixiJS will Math.floor() x/y values when
      *  rendering, stopping pixel interpolation.
-     * @param {boolean} [options.legacy=false] - If true Pixi will aim to ensure compatibility
-     * with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
+     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent).
+     * @param {boolean} [options.legacy=false] - If true PixiJS will aim to ensure compatibility
+     *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
+     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
+     *  for devices with dual graphics card
      */
     constructor(options, arg2, arg3)
     {
@@ -85,8 +89,6 @@ export default class WebGLRenderer extends SystemRenderer
             resize:         new Runner('resize', 2),
         };
 
-        this._backgroundColorRgba[3] = this.transparent ? 0 : 1;
-
         this.globalUniforms = new UniformGroup({
             projectionMatrix: new Matrix(),
         }, true);
@@ -106,7 +108,6 @@ export default class WebGLRenderer extends SystemRenderer
         .addSystem(BatchSystem, 'batch');
 
         this.initPlugins();
-
         /**
          * The options passed in to create a new webgl context.
          *
@@ -125,12 +126,11 @@ export default class WebGLRenderer extends SystemRenderer
                 premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
+                powerPreference: this.options.powerPreference,
             });
         }
 
         this.renderingToScreen = true;
-
-        this._initContext();
 
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
     }
@@ -189,31 +189,6 @@ export default class WebGLRenderer extends SystemRenderer
     }
 
     /**
-     * Creates the WebGL context
-     *
-     * @private
-     */
-    _initContext()
-    {
-        const gl = this.gl;
-
-        const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
-        this.boundTextures = new Array(maxTextures);
-        this.emptyTextures = new Array(maxTextures);
-
-        const tempObj = { _glTextures: {} };
-
-        for (let i = 0; i < maxTextures; i++)
-        {
-            this.boundTextures[i] = tempObj;
-        }
-
-        // setup the width/height properties and gl viewport
-        this.resize(this.screen.width, this.screen.height);
-    }
-
-    /**
      * Renders the object to its webGL view
      *
      * @param {PIXI.DisplayObject} displayObject - the object to be rendered
@@ -266,6 +241,7 @@ export default class WebGLRenderer extends SystemRenderer
         this.batch.currentRenderer.flush();
 
         this.runners.postrender.run();
+
         this.emit('postrender');
     }
 
@@ -278,6 +254,7 @@ export default class WebGLRenderer extends SystemRenderer
     resize(screenWidth, screenHeight)
     {
         SystemRenderer.prototype.resize.call(this, screenWidth, screenHeight);
+
         this.runners.resize.run(screenWidth, screenHeight);
     }
 
@@ -289,7 +266,6 @@ export default class WebGLRenderer extends SystemRenderer
     reset()
     {
         this.runners.reset.run();
-
         return this;
     }
 
@@ -305,8 +281,6 @@ export default class WebGLRenderer extends SystemRenderer
 
         // call base destroy
         super.destroy(removeView);
-
-        this.destroyPlugins();
 
         // TODO nullify all the managers..
         this.gl = null;
