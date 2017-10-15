@@ -103,7 +103,7 @@ export default class WebGLExtract
             frame.width = this.renderer.width;
             frame.height = this.renderer.height;
 
-             renderer.renderTexture.bind(null);
+            renderer.renderTexture.bind(null);
         }
 
         const width = frame.width * resolution;
@@ -111,41 +111,33 @@ export default class WebGLExtract
 
         const canvasBuffer = new core.CanvasRenderTarget(width, height);
 
-        //if (textureBuffer)
+        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+
+        // read pixels to the array
+        const gl = renderer.gl;
+
+        gl.readPixels(
+            frame.x * resolution,
+            frame.y * resolution,
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            webglPixels
+        );
+
+        // add the pixels to the canvas
+        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+
+        canvasData.data.set(webglPixels);
+
+        canvasBuffer.context.putImageData(canvasData, 0, 0);
+
+        // pulling pixels
+        if (flipY)
         {
-            // bind the buffer
-           // renderer.bindRenderTarget(textureBuffer);
-
-
-            // set up an array of pixels
-            const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-            // read pixels to the array
-            const gl = renderer.gl;
-
-            gl.readPixels(
-                frame.x * resolution,
-                frame.y * resolution,
-                width,
-                height,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                webglPixels
-            );
-
-            // add the pixels to the canvas
-            const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-
-            canvasData.data.set(webglPixels);
-
-            canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-            // pulling pixels
-            if (flipY)
-            {
-                canvasBuffer.context.scale(1, -1);
-                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
-            }
+            canvasBuffer.context.scale(1, -1);
+            canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
         }
 
          // send the canvas back..

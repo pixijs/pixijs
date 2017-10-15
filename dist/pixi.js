@@ -1,6 +1,6 @@
 /*!
  * pixi.js - v5.0.0
- * Compiled Tue, 10 Oct 2017 15:11:00 UTC
+ * Compiled Tue, 10 Oct 2017 15:17:28 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -32590,32 +32590,24 @@ var WebGLExtract = function () {
 
         var canvasBuffer = new core.CanvasRenderTarget(width, height);
 
-        //if (textureBuffer)
-        {
-            // bind the buffer
-            // renderer.bindRenderTarget(textureBuffer);
+        var webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
+        // read pixels to the array
+        var gl = renderer.gl;
 
-            // set up an array of pixels
-            var webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+        gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webglPixels);
 
-            // read pixels to the array
-            var gl = renderer.gl;
+        // add the pixels to the canvas
+        var canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
 
-            gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webglPixels);
+        canvasData.data.set(webglPixels);
 
-            // add the pixels to the canvas
-            var canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+        canvasBuffer.context.putImageData(canvasData, 0, 0);
 
-            canvasData.data.set(webglPixels);
-
-            canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-            // pulling pixels
-            if (flipY) {
-                canvasBuffer.context.scale(1, -1);
-                canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
-            }
+        // pulling pixels
+        if (flipY) {
+            canvasBuffer.context.scale(1, -1);
+            canvasBuffer.context.drawImage(canvasBuffer.canvas, 0, -height);
         }
 
         // send the canvas back..
