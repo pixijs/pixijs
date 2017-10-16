@@ -1819,7 +1819,14 @@ export default class InteractionManager extends EventEmitter
 
         this._tempPoint = null;
     }
+
+    static isSupported () {
+        return typeof document !== 'undefined'
+    }
 }
 
-core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
-core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
+if (InteractionManager.isSupported())
+{
+    core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
+    core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
+}

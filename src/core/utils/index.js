@@ -9,6 +9,7 @@ import mapPremultipliedBlendModes from './mapPremultipliedBlendModes';
 
 let nextUid = 0;
 let saidHello = false;
+const root = typeof window === 'undefined' ? global : window
 
 /**
  * Generalized convenience utilities for PIXI.
@@ -260,7 +261,7 @@ export function sayHello(type)
         return;
     }
 
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+    if (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
             `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
@@ -275,11 +276,11 @@ export function sayHello(type)
             'color: #ff2424; background: #fff; padding:5px 0;',
         ];
 
-        window.console.log.apply(console, args);
+        root.console.log.apply(console, args);
     }
-    else if (window.console)
+    else if (root.console)
     {
-        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
+        root.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
     }
 
     saidHello = true;
@@ -296,18 +297,32 @@ export function isWebGLSupported()
 {
     const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
 
+    let headlessGL = null
     try
     {
-        if (!window.WebGLRenderingContext)
+        headlessGL = require('gl')
+    }
+    catch (e) {}
+
+    try
+    {
+        if (!root.WebGLRenderingContext && !headlessGL)
         {
             return false;
         }
 
-        const canvas = document.createElement('canvas');
-        let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+        let gl
+        if (headlessGL !== null)
+        {
+            gl = headlessGL(100, 100)
+        }
+        else
+        {
+            const canvas = document.createElement('canvas');
+            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+        }
 
         const success = !!(gl && gl.getContextAttributes().stencil);
-
         if (gl)
         {
             const loseContext = gl.getExtension('WEBGL_lose_context');

@@ -5,6 +5,7 @@ import settings from '../settings';
 import Container from '../display/Container';
 import RenderTexture from '../textures/RenderTexture';
 import EventEmitter from 'eventemitter3';
+import createCanvas from '../utils/createCanvas';
 
 const tempMatrix = new Matrix();
 
@@ -89,7 +90,7 @@ export default class SystemRenderer extends EventEmitter
          *
          * @member {HTMLCanvasElement}
          */
-        this.view = options.view || document.createElement('canvas');
+        this.view = options.view || createCanvas();
 
         /**
          * The resolution / device pixel ratio of the renderer

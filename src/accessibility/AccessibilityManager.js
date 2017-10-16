@@ -480,7 +480,15 @@ export default class AccessibilityManager
         this.children = null;
         this.renderer = null;
     }
+
+    static isSupported () {
+        return typeof document !== 'undefined'
+    }
 }
 
-core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
-core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+if (AccessibilityManager.isSupported())
+{
+    core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
+    core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+}
+
