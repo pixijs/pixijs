@@ -125,6 +125,6 @@ export default class StencilSystem extends WebGLSystem
     {
         super.destroy(this);
 
-        this.stencilMaskStack.stencilStack = null;
+        this.stencilMaskStack = null;
     }
 }
