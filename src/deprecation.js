@@ -601,6 +601,21 @@ export default function deprecation(core)
         return this.generateCanvasTexture(scaleMode, resolution);
     };
 
+    /**
+     * @method
+     * @name PIXI.GroupD8.isSwapWidthHeight
+     * @see PIXI.GroupD8.isVertical
+     * @param {number} rotation - The number to check.
+     * @returns {boolean} Whether or not the direction is vertical
+     * @deprecated since version 4.6.0
+     */
+    core.GroupD8.isSwapWidthHeight = function isSwapWidthHeight(rotation)
+    {
+        warn('GroupD8.isSwapWidthHeight was renamed to GroupD8.isVertical');
+
+        return core.GroupD8.isVertical(rotation);
+    };
+
     core.RenderTexture.prototype.render = function render(displayObject, matrix, clear, updateTransform)
     {
         this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);
@@ -944,6 +959,22 @@ export default function deprecation(core)
                 warn('filters.SpriteMaskFilter is an undocumented alias, please use SpriteMaskFilter from now on.');
 
                 return core.SpriteMaskFilter;
+            },
+        },
+
+        /**
+         * @class
+         * @private
+         * @name PIXI.filters.VoidFilter
+         * @see PIXI.filters.AlphaFilter
+         * @deprecated since version 4.5.7
+         */
+        VoidFilter: {
+            get()
+            {
+                warn('VoidFilter has been renamed to AlphaFilter, please use PIXI.filters.AlphaFilter');
+
+                return filters.AlphaFilter;
             },
         },
     });
