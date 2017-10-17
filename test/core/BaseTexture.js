@@ -116,8 +116,10 @@ describe('BaseTexture', function ()
     {
         cleanCache();
 
-        const baseTexture = PIXI.BaseTexture.fromImage(URL, true);
+        var imageResource = PIXI.ImageResource.from(URL, true);
 
-        expect(baseTexture.source.crossOrigin).to.equal('anonymous');
+        const baseTexture = new PIXI.BaseTexture(imageResource);
+
+        expect(baseTexture.resource.crossOrigin).to.equal('anonymous');
     });
 });

@@ -331,8 +331,6 @@ export default class Text extends Sprite
         baseTexture.hasLoaded = true;
         baseTexture.resolution = this.resolution;
 
-        baseTexture.realWidth = canvas.width;
-        baseTexture.realHeight = canvas.height;
         baseTexture.width = canvas.width / this.resolution;
         baseTexture.height = canvas.height / this.resolution;
 
