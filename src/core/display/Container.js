@@ -408,11 +408,7 @@ export default class Container extends DisplayObject
         {
             this._renderWebGL(renderer);
 
-            // simple render children!
-            for (let i = 0, j = this.children.length; i < j; ++i)
-            {
-                this.children[i].renderWebGL(renderer);
-            }
+            this.renderChildrenWebGL(renderer);
         }
     }
 
@@ -462,10 +458,7 @@ export default class Container extends DisplayObject
         this._renderWebGL(renderer);
 
         // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
-        {
-            this.children[i].renderWebGL(renderer);
-        }
+        this.renderChildrenWebGL(renderer);
 
         renderer.flush();
 
@@ -477,6 +470,20 @@ export default class Container extends DisplayObject
         if (filters && this._enabledFilters && this._enabledFilters.length)
         {
             renderer.filterManager.popFilter();
+        }
+    }
+
+    /**
+     * Simple render children with WebGL renderer
+     *
+     * @private
+     * @param {PIXI.WebGLRenderer} renderer - The renderer
+     */
+    renderChildrenWebGL(renderer)
+    {
+        for (let i = 0, j = this.children.length; i < j; i++)
+        {
+            this.children[i].renderWebGL(renderer);
         }
     }
 
@@ -521,14 +528,25 @@ export default class Container extends DisplayObject
         }
 
         this._renderCanvas(renderer);
-        for (let i = 0, j = this.children.length; i < j; ++i)
-        {
-            this.children[i].renderCanvas(renderer);
-        }
+        this.renderChildrenCanvas(renderer);
 
         if (this._mask)
         {
             renderer.maskManager.popMask(renderer);
+        }
+    }
+
+    /**
+     * Simple render children with Canvas renderer
+     *
+     * @private
+     * @param {PIXI.CanvasRenderer} renderer - The renderer
+     */
+    renderChildrenCanvas(renderer)
+    {
+        for (let i = 0, j = this.children.length; i < j; i++)
+        {
+            this.children[i].renderCanvas(renderer);
         }
     }
 
