@@ -266,6 +266,7 @@ export default class WebGLRenderer extends SystemRenderer
     reset()
     {
         this.runners.reset.run();
+
         return this;
     }
 
