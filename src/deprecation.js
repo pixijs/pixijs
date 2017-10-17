@@ -601,6 +601,21 @@ export default function deprecation(core)
         return this.generateCanvasTexture(scaleMode, resolution);
     };
 
+    /**
+     * @method
+     * @name PIXI.GroupD8.isSwapWidthHeight
+     * @see PIXI.GroupD8.isVertical
+     * @param {number} rotation - The number to check.
+     * @returns {boolean} Whether or not the direction is vertical
+     * @deprecated since version 4.6.0
+     */
+    core.GroupD8.isSwapWidthHeight = function isSwapWidthHeight(rotation)
+    {
+        warn('GroupD8.isSwapWidthHeight was renamed to GroupD8.isVertical');
+
+        return core.GroupD8.isVertical(rotation);
+    };
+
     core.RenderTexture.prototype.render = function render(displayObject, matrix, clear, updateTransform)
     {
         this.legacyRenderer.render(displayObject, this, clear, matrix, !updateTransform);

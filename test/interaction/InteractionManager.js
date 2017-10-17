@@ -279,13 +279,48 @@ describe('PIXI.interaction.InteractionManager', function ()
             removeSpy.restore();
         });
 
-        it('should add and remove pointer events to element', function ()
+        it('should add and remove pointer events to element seven times when touch events are supported', function ()
         {
             const manager = new PIXI.interaction.InteractionManager(sinon.stub());
             const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
 
             manager.interactionDOMElement = element;
             manager.supportsPointerEvents = true;
+            manager.supportsTouchEvents = true;
+
+            manager.addEvents();
+
+            expect(element.addEventListener).to.have.been.callCount(7);
+            expect(element.addEventListener).to.have.been.calledWith('pointerdown');
+            expect(element.addEventListener).to.have.been.calledWith('pointerleave');
+            expect(element.addEventListener).to.have.been.calledWith('pointerover');
+
+            expect(element.addEventListener).to.have.been.calledWith('touchstart');
+            expect(element.addEventListener).to.have.been.calledWith('touchcancel');
+            expect(element.addEventListener).to.have.been.calledWith('touchend');
+            expect(element.addEventListener).to.have.been.calledWith('touchmove');
+
+            manager.removeEvents();
+
+            expect(element.removeEventListener).to.have.been.callCount(7);
+            expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
+            expect(element.removeEventListener).to.have.been.calledWith('pointerleave');
+            expect(element.removeEventListener).to.have.been.calledWith('pointerover');
+
+            expect(element.removeEventListener).to.have.been.calledWith('touchstart');
+            expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
+            expect(element.removeEventListener).to.have.been.calledWith('touchend');
+            expect(element.removeEventListener).to.have.been.calledWith('touchmove');
+        });
+
+        it('should add and remove pointer events to element three times when touch events are not supported', function ()
+        {
+            const manager = new PIXI.interaction.InteractionManager(sinon.stub());
+            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+
+            manager.interactionDOMElement = element;
+            manager.supportsPointerEvents = true;
+            manager.supportsTouchEvents = false;
 
             manager.addEvents();
 
