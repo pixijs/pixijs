@@ -2,6 +2,8 @@ import Shader from '../../../shader/Shader';
 import Program from '../../../shader/Program';
 import { BLEND_MODES } from '../../../const';
 import settings from '../../../settings';
+import { uid } from '../../../utils';
+import extractUniformsFromSrc from './extractUniformsFromSrc';
 
 // let math = require('../../../math');
 /**
@@ -49,12 +51,12 @@ export default class Filter extends Shader
         this.glShaders = {};
 
         // used for cacheing.. sure there is a better way!
-        if (!SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
+        if (!Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc])
         {
-            SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
+            Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc] = uid();
         }
 
-        this.glShaderKey = SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
+        this.glShaderKey = Filter.SOURCE_KEY_MAP[this.vertexSrc + this.fragmentSrc];
 
         /**
          * The padding of the filter. Some filters require extra space to breath such as a blur.
@@ -185,3 +187,12 @@ export default class Filter extends Shader
         ].join('\n');
     }
 }
+
+/**
+ * Used for caching shader IDs
+ *
+ * @static
+ * @private
+ */
+Filter.SOURCE_KEY_MAP = {};
+

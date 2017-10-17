@@ -111,13 +111,14 @@ const GroupD8 = {
     rotate180: (rotation) => rotation ^ 4,
 
     /**
-     * I dont know why sometimes width and heights needs to be swapped. We'll fix it later.
+     * Direction of main vector can be horizontal, vertical or diagonal.
+     * Some objects work with vertical directions different.
      *
      * @memberof PIXI.GroupD8
      * @param {number} rotation - The number to check.
-     * @returns {boolean} Whether or not the width/height should be swapped.
+     * @returns {boolean} Whether or not the direction is vertical
      */
-    isSwapWidthHeight: (rotation) => (rotation & 3) === 2,
+    isVertical: (rotation) => (rotation & 3) === 2,
 
     /**
      * @memberof PIXI.GroupD8

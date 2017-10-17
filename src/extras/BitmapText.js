@@ -1,5 +1,6 @@
 import * as core from '../core';
 import ObservablePoint from '../core/math/ObservablePoint';
+import { getResolutionOfUrl } from '../core/utils';
 import settings from '../core/settings';
 
 /**
@@ -510,7 +511,8 @@ export default class BitmapText extends core.Container
         const data = {};
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
-        const res = texture.baseTexture.resolution || settings.RESOLUTION;
+        const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
+        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
