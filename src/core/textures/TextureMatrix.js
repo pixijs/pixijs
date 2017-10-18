@@ -4,8 +4,8 @@ const tempMat = new Matrix();
 
 /**
  * Class controls uv transform and frame clamp for texture
- * Can be used in Texture "uvMatrix" field, or separately, you can use different clamp settings on the same texture.
- * If you want to add support for texture region of certain feature or filter, that's what you're looking for
+ * Can be used in Texture "transform" field, or separately, you can use different clamp settings on the same texture.
+ * If you want to add support for texture region of certain feature or filter, that's what you're looking for.
  *
  * @see PIXI.Texture
  * @see PIXI.mesh.Mesh
