@@ -2,7 +2,7 @@ import Filter from '../Filter';
 import { Matrix } from '../../../../math';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { default as TextureTransform } from '../../../../../extras/TextureTransform';
+import { default as TextureMatrix } from '../../../../textures/TextureMatrix';
 
 /**
  * The SpriteMaskFilter class
@@ -51,7 +51,7 @@ export default class SpriteMaskFilter extends Filter
         {
             // margin = 0.0, let it bleed a bit, shader code becomes easier
             // assuming that atlas textures were made with 1-pixel padding
-            tex.transform = new TextureTransform(tex, 0.0);
+            tex.transform = new TextureMatrix(tex, 0.0);
         }
         tex.transform.update();
 
