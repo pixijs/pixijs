@@ -586,6 +586,28 @@ export default function deprecation(core)
         });
     }
 
+    if (extras)
+    {
+        Object.defineProperties(extras, {
+            /**
+             * @class
+             * @name TextureTransform
+             * @memberof PIXI.extras
+             * @see PIXI.TextureMatrix
+             * @deprecated since version 4.6.0
+             */
+            TextureTransform: {
+                get()
+                {
+                    warn('The TextureTransform class has been renamed to TextureMatrix, '
+                        + 'please use PIXI.TextureMatrix from now on.');
+
+                    return core.TextureMatrix;
+                },
+            },
+        });
+    }
+
     core.DisplayObject.prototype.generateTexture = function generateTexture(renderer, scaleMode, resolution)
     {
         warn('generateTexture has moved to the renderer, please use renderer.generateTexture(displayObject)');

@@ -1,6 +1,5 @@
 import * as core from '../core';
 import Texture from '../core/textures/Texture';
-import { default as TextureTransform } from '../extras/TextureTransform';
 
 const tempPoint = new core.Point();
 const tempPolygon = new core.Polygon();
@@ -131,10 +130,10 @@ export default class Mesh extends core.Container
          * its updated independently from texture uvTransform
          * updates of uvs are tied to that thing
          *
-         * @member {PIXI.extras.TextureTransform}
+         * @member {PIXI.TextureMatrix}
          * @private
          */
-        this._uvTransform = new TextureTransform(texture);
+        this._uvTransform = new core.TextureMatrix(this._texture);
 
         /**
          * whether or not upload uvTransform to shader

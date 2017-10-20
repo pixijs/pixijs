@@ -80,6 +80,7 @@ export default class Texture extends EventEmitter
 
         /**
          * This is the trimmed area of original texture, before it was put in atlas
+         * Please call `_updateUvs()` after you change coordinates of `trim` manually.
          *
          * @member {PIXI.Rectangle}
          */
@@ -153,8 +154,10 @@ export default class Texture extends EventEmitter
         this._updateID = 0;
 
         /**
-         * Extra field for extra plugins. May contain clamp settings and some matrices
-         * @type {Object}
+         * Contains data for uvs. May contain clamp settings and some matrices.
+         * Its a bit heavy, so by default that object is not created.
+         * @type {PIXI.TextureMatrix}
+         * @default null
          */
         this.transform = null;
 
@@ -266,9 +269,7 @@ export default class Texture extends EventEmitter
     }
 
     /**
-     * Updates the internal WebGL UV cache.
-     *
-     * @protected
+     * Updates the internal WebGL UV cache. Use it after you change `frame` or `trim` of the texture.
      */
     _updateUvs()
     {
@@ -538,6 +539,7 @@ export default class Texture extends EventEmitter
 
     /**
      * The frame specifies the region of the base texture that this texture uses.
+     * Please call `_updateUvs()` after you change coordinates of `frame` manually.
      *
      * @member {PIXI.Rectangle}
      */
