@@ -270,6 +270,12 @@ export default class WebGLRenderer extends SystemRenderer
         return this;
     }
 
+    clear()
+    {
+        this.framebuffer.bind();
+        this.framebuffer.clear();
+    }
+
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
      *
