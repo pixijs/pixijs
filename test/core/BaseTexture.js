@@ -120,6 +120,6 @@ describe('BaseTexture', function ()
 
         const baseTexture = new PIXI.BaseTexture(imageResource);
 
-        expect(baseTexture.resource.crossOrigin).to.equal('anonymous');
+        expect(baseTexture.resource.source.crossOrigin).to.equal('anonymous');
     });
 });

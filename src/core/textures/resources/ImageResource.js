@@ -78,6 +78,10 @@ export default class ImageResource extends TextureResource
         {
             image.crossOrigin = determineCrossOrigin(url);
         }
+        else if(crossorigin)
+        {
+            image.crossOrigin = 'anonymous'
+        }
 
         image.src = url;
 
