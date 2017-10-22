@@ -12,8 +12,8 @@ describe('PIXI.Spritesheet', function ()
             spritesheet.parse(function (textures)
             {
                 const id = 'goldmine_10_5.png';
-                const width = Math.floor(spritesheet.data.frames[id].frame.w * spritesheet.baseTexture.sourceScale);
-                const height = Math.floor(spritesheet.data.frames[id].frame.h * spritesheet.baseTexture.sourceScale);
+                const width = Math.floor(spritesheet.data.frames[id].frame.w);
+                const height = Math.floor(spritesheet.data.frames[id].frame.h);
 
                 expect(Object.keys(textures).length).to.equal(1);
                 expect(Object.keys(spritesheet.textures).length).to.equal(1);
@@ -42,6 +42,7 @@ describe('PIXI.Spritesheet', function ()
             frames: {},
             meta: {},
         };
+
         const spritesheet = new PIXI.Spritesheet(baseTexture, data);
 
         expect(spritesheet.data).to.equal(data);
@@ -65,7 +66,6 @@ describe('PIXI.Spritesheet', function ()
             expect(data).to.be.an.object;
             expect(data.meta.image).to.equal('building1.png');
             expect(spritesheet.resolution).to.equal(0.5);
-
             this.validate(spritesheet, done);
         };
     });
