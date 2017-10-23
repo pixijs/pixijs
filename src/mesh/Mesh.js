@@ -18,10 +18,11 @@ export default class Mesh extends core.Container
      * @param {Float32Array} [uvs] - if you want to specify the uvs
      * @param {Uint16Array} [indices] - if you want to specify the indices
      * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture, vertices, uvs, indices, drawMode)
+    constructor(texture, vertices, uvs, indices, drawMode, name = null)
     {
-        super();
+        super(name);
 
         /**
          * The texture of the Mesh

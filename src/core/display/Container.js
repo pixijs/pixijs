@@ -17,11 +17,11 @@ import DisplayObject from './DisplayObject';
 export default class Container extends DisplayObject
 {
     /**
-     *
+     * @param {string} name - The name of the display object.
      */
-    constructor()
+    constructor(name = null)
     {
-        super();
+        super(name);
 
         /**
          * The array of children of this container.

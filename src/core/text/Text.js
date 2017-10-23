@@ -35,8 +35,9 @@ export default class Text extends Sprite
      * @param {string} text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
+     * @param {string} name - The name of the display object.
      */
-    constructor(text, style, canvas)
+    constructor(text, style, canvas, name = null)
     {
         canvas = canvas || document.createElement('canvas');
 
@@ -48,7 +49,7 @@ export default class Text extends Sprite
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();
 
-        super(texture);
+        super(texture, name);
 
         // base texture is already automatically added to the cache, now adding the actual texture
         Texture.addToCache(this._texture, this._texture.baseTexture.textureCacheIds[0]);

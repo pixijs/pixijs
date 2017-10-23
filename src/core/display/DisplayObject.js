@@ -18,9 +18,9 @@ import { Rectangle } from '../math';
 export default class DisplayObject extends EventEmitter
 {
     /**
-     *
+     * @param {string} name - The name of the display object.
      */
-    constructor()
+    constructor(name = null)
     {
         super();
 
@@ -121,6 +121,13 @@ export default class DisplayObject extends EventEmitter
          * @readonly
          */
         this._destroyed = false;
+
+        /**
+         * The name of the object, in order to be easily identified when searching for a container or sprite
+         *
+         * @member {string}
+         */
+        this.name = name;
 
         /**
          * Fired when this DisplayObject is added to a Container.

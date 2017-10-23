@@ -20,10 +20,11 @@ export default class Rope extends Mesh
     /**
      * @param {PIXI.Texture} texture - The texture to use on the rope.
      * @param {PIXI.Point[]} points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture, points)
+    constructor(texture, points, name = null)
     {
-        super(texture);
+        super(texture, name);
 
         /**
          * An array of points that determine the rope
