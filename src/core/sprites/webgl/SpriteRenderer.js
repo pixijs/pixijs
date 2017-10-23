@@ -5,6 +5,7 @@ import generateMultiTextureShader from './generateMultiTextureShader';
 import checkMaxIfStatmentsInShader from '../../renderers/webgl/utils/checkMaxIfStatmentsInShader';
 import Buffer from './BatchBuffer';
 import settings from '../../settings';
+import { premultiplyBlendMode, premultiplyTint } from '../../utils';
 import bitTwiddle from 'bit-twiddle';
 import Geometry from '../../geometry/Geometry';
 // TODO rename this
@@ -211,7 +212,8 @@ export default class SpriteRenderer extends ObjectRenderer
         let currentGroup = groups[0];
         let vertexData;
         let uvs;
-        let blendMode = sprites[0].blendMode;
+        let blendMode = premultiplyBlendMode[
+            sprites[0]._texture.baseTexture.premultiplyAlpha ? 1 : 0][sprites[0].blendMode];
 
         currentGroup.textureCount = 0;
         currentGroup.start = 0;
@@ -226,16 +228,16 @@ export default class SpriteRenderer extends ObjectRenderer
             // upload the sprite elemetns...
             // they have all ready been calculated so we just need to push them into the buffer.
 
-            // upload the sprite elemetns...
-            // they have all ready been calculated so we just need to push them into the buffer.
             const sprite = sprites[i];
 
             nextTexture = sprite._texture.baseTexture;
             textureId = nextTexture._id;
 
-            if (blendMode !== sprite.blendMode)
+            const spriteBlendMode = premultiplyBlendMode[Number(nextTexture.premultiplyAlpha)][sprite.blendMode];
+
+            if (blendMode !== spriteBlendMode)
             {
-                blendMode = sprite.blendMode;
+                blendMode = spriteBlendMode;
 
                 // force the batch to break!
                 currentTexture = null;
@@ -320,9 +322,12 @@ export default class SpriteRenderer extends ObjectRenderer
             uint32View[index + 7] = uvs[1];
             uint32View[index + 12] = uvs[2];
             uint32View[index + 17] = uvs[3];
-
             /* eslint-disable max-len */
-            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = sprite._tintRGB + (Math.min(sprite.worldAlpha, 1) * 255 << 24);
+            const alpha = Math.min(sprite.worldAlpha, 1.0);
+            const argb = alpha < 1.0 && nextTexture.premultiplyAlpha ? premultiplyTint(sprite._tintRGB, alpha)
+                : sprite._tintRGB + (alpha * 255 << 24);
+
+            uint32View[index + 3] = uint32View[index + 8] = uint32View[index + 13] = uint32View[index + 18] = argb;
 
             float32View[index + 4] = float32View[index + 9] = float32View[index + 14] = float32View[index + 19] = textureId;
             /* eslint-enable max-len */

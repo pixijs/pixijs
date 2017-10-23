@@ -38,6 +38,7 @@ export { default as BaseTexture } from './textures/BaseTexture';
 export { default as ImageResource } from './textures/resources/ImageResource';
 export { default as ArrayTexture } from './textures/ArrayTexture';
 export { default as Texture } from './textures/Texture';
+export { default as TextureMatrix } from './textures/TextureMatrix';
 export { default as RenderTexture } from './textures/RenderTexture';
 export { default as BaseRenderTexture } from './textures/BaseRenderTexture';
 export { default as VideoBaseTexture } from './textures/VideoBaseTexture';

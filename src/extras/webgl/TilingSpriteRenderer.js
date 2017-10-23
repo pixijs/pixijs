@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const tempMat = new core.Matrix();
-const tempArray = new Float32Array(4);
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -124,19 +123,15 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-
-        const color = tempArray;
-
-        core.utils.hex2rgb(ts.tint, color);
-        color[3] = ts.worldAlpha;
-        shader.uniforms.uColor = color;
+        shader.uniforms.uColor = core.utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
+            shader.uniforms.uColor, baseTex.premultiplyAlpha);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
-        renderer.state.setBlendMode(ts.blendMode);
 
+        renderer.setBlendMode(core.utils.correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
