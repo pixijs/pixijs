@@ -41,10 +41,11 @@ export default class NineSlicePlane extends Plane
      * @param {int} [topHeight=10] size of the top horizontal bar (C)
      * @param {int} [rightWidth=10] size of the right vertical bar (B)
      * @param {int} [bottomHeight=10] size of the bottom horizontal bar (D)
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight)
+    constructor(texture, leftWidth, topHeight, rightWidth, bottomHeight, name = null)
     {
-        super(texture, 4, 4);
+        super(texture, 4, 4, name);
 
         this._origWidth = texture.orig.width;
         this._origHeight = texture.orig.height;

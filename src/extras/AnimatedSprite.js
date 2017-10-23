@@ -33,10 +33,11 @@ export default class AnimatedSprite extends core.Sprite
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
+     * @param {string} name - The name of the display object.
      */
-    constructor(textures, autoUpdate)
+    constructor(textures, autoUpdate, name = null)
     {
-        super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+        super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture, name);
 
         /**
          * @private

@@ -29,10 +29,11 @@ export default class Graphics extends Container
     /**
      *
      * @param {boolean} [nativeLines=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+     * @param {string} name - The name of the display object.
      */
-    constructor(nativeLines = false)
+    constructor(nativeLines = false, name = null)
     {
-        super();
+        super(name);
 
         /**
          * The alpha value used when filling the Graphics object.

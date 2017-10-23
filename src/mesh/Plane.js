@@ -21,10 +21,11 @@ export default class Plane extends Mesh
      * @param {PIXI.Texture} texture - The texture to use on the Plane.
      * @param {number} verticesX - The number of vertices in the x-axis
      * @param {number} verticesY - The number of vertices in the y-axis
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture, verticesX, verticesY)
+    constructor(texture, verticesX, verticesY, name = null)
     {
-        super(texture);
+        super(texture, name);
 
         /**
          * Tracker for if the Plane is ready to be drawn. Needed because Mesh ctor can

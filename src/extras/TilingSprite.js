@@ -17,10 +17,11 @@ export default class TilingSprite extends core.Sprite
      * @param {PIXI.Texture} texture - the texture of the tiling sprite
      * @param {number} [width=100] - the width of the tiling sprite
      * @param {number} [height=100] - the height of the tiling sprite
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture, width = 100, height = 100)
+    constructor(texture, width = 100, height = 100, name = null)
     {
-        super(texture);
+        super(texture, name);
 
         /**
          * Tile transform

@@ -23,10 +23,11 @@ export default class Sprite extends Container
 {
     /**
      * @param {PIXI.Texture} texture - The texture for this sprite
+     * @param {string} name - The name of the display object.
      */
-    constructor(texture)
+    constructor(texture, name = null)
     {
-        super();
+        super(name);
 
         /**
          * The anchor sets the origin point of the texture.

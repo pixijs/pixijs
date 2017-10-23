@@ -39,10 +39,11 @@ export default class ParticleContainer extends core.Container
      * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
      * @param {boolean} [autoResize=true] If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
+     * @param {string} name - The name of the display object.
      */
-    constructor(maxSize = 1500, properties, batchSize = 16384, autoResize = false)
+    constructor(maxSize = 1500, properties, batchSize = 16384, autoResize = false, name = null)
     {
-        super();
+        super(name);
 
         // Making sure the batch size is valid
         // 65535 is max vertex index in the index buffer (see ParticleRenderer)
