@@ -259,8 +259,6 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const baseTexture = new PIXI.BaseTexture(this.atlasScaledImage, null, 1);
         const spritesheet = new PIXI.Spritesheet(baseTexture, this.atlasScaledJSON);
 
-        spritesheet.resolution = 1;
-
         spritesheet.parse(() =>
         {
             const fontTexture  = PIXI.Texture.fromFrame('resources/font.png');

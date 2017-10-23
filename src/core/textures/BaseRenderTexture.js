@@ -52,6 +52,8 @@ export default class BaseRenderTexture extends BaseTexture
     {
         super(null, scaleMode, resolution, width, height);
 
+        this.width = Math.ceil(width);
+        this.height = Math.ceil(height);
         this.hasLoaded = true;
 
         /**
@@ -100,6 +102,8 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
+        this.width = Math.ceil(width);
+        this.height = Math.ceil(height);
         super.resize(width, height);
         this.frameBuffer.resize(width, height);
     }
