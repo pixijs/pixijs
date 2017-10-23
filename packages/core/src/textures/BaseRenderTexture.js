@@ -1,5 +1,6 @@
 import BaseTexture from './BaseTexture';
 import FrameBuffer from './FrameBuffer';
+import IResource from './resources/IResource';
 
 /**
  * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -50,11 +51,9 @@ export default class BaseRenderTexture extends BaseTexture
      */
     constructor(width = 100, height = 100, scaleMode, resolution)
     {
-        super(null, scaleMode, resolution, width, height);
-
-        this.width = Math.ceil(width);
-        this.height = Math.ceil(height);
-        this.hasLoaded = true;
+        super(BaseRenderTexture.resource);
+        this.setSize(Math.ceil(width), Math.ceil(height), resolution);
+        this.setStyle(scaleMode, false);
 
         /**
          * A map of renderer IDs to webgl renderTargets
@@ -74,7 +73,7 @@ export default class BaseRenderTexture extends BaseTexture
 
         this.clearColor = [0, 0, 0, 0];
 
-        this.frameBuffer = new FrameBuffer(width, height)
+        this.frameBuffer = new FrameBuffer(this.width, this.height)
             .addColorTexture(0, this);
 
         // TODO - could this be added the systems?
@@ -102,9 +101,8 @@ export default class BaseRenderTexture extends BaseTexture
      */
     resize(width, height)
     {
-        this.width = Math.ceil(width);
-        this.height = Math.ceil(height);
-        super.resize(width, height);
+        width = Math.ceil(width);
+        height = Math.ceil(height);
         this.frameBuffer.resize(width, height);
     }
 
@@ -118,3 +116,23 @@ export default class BaseRenderTexture extends BaseTexture
         this.renderer = null;
     }
 }
+
+class RenderTextureStubResource extends IResource
+{
+    onTextureUpload(renderer, texture, glTexture)
+    {
+        // was render texture resized?
+        if (glTexture.width === texture.realWidth
+                && glTexture.height === texture.realHeight
+                && glTexture.dirtyId >= 0)
+        {
+            // dont call glStorage
+            return true;
+        }
+
+        // call glStorage
+        return false;
+    }
+}
+
+BaseRenderTexture.resource = new RenderTextureStubResource();

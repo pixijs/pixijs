@@ -189,4 +189,15 @@ export default {
      * @type {boolean}
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
+
+    /**
+     * Enables bitmap creation before image load
+     *
+     * @static
+     * @constant
+     * @memberof PIXI
+     * @type {boolean}
+     * @default true
+     */
+    CREATE_IMAGE_BITMAP: true,
 };

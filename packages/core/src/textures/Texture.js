@@ -457,7 +457,6 @@ export default class Texture extends EventEmitter
                 + `${errorX} ${relationship} ${errorY}`);
         }
 
-        this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
         this.valid = width && height && this.baseTexture.valid;
 
         if (!this.trim && !this.rotate)

@@ -10,14 +10,8 @@ import bitTwiddle from 'bit-twiddle';
 
 export default class BaseTexture extends EventEmitter
 {
-    constructor(resource,
-        scaleMode = settings.SCALE_MODE,
-        resolution,
-        width,
-        height,
-        format,
-        type,
-        mipmap = settings.MIPMAP_TEXTURES)
+
+    constructor(resource)
     {
         super();
 
@@ -26,17 +20,20 @@ export default class BaseTexture extends EventEmitter
         this.touched = 0;
 
         /**
-         * The width of texture
+         * The width of the base texture set when the image has loaded
          *
-         * @member {Number}
+         * @readonly
+         * @member {number}
          */
-        this.width = width || -1;
+        this.width = 0;
+
         /**
-         * The height of texture
+         * The height of the base texture set when the image has loaded
          *
-         * @member {Number}
+         * @readonly
+         * @member {number}
          */
-        this.height = height || -1;
+        this.height = 0;
 
         /**
          * The resolution / device pixel ratio of the texture
@@ -44,7 +41,7 @@ export default class BaseTexture extends EventEmitter
          * @member {number}
          * @default 1
          */
-        this.resolution = resolution || settings.RESOLUTION;
+        this.resolution = settings.RESOLUTION;
 
         /**
          * Whether or not the texture is a power of two, try to use power of two textures as much
@@ -60,9 +57,7 @@ export default class BaseTexture extends EventEmitter
          *
          * @member {Boolean}
          */
-        //  TODO fix mipmapping..
-        mipmap = false;
-        this.mipmap = mipmap;
+        this.mipmap = settings.MIPMAP_TEXTURES;
 
         /**
          * Set to true to enable pre-multiplied alpha
@@ -84,40 +79,49 @@ export default class BaseTexture extends EventEmitter
          * @default PIXI.settings.SCALE_MODE
          * @see PIXI.SCALE_MODES
          */
-        this.scaleMode = scaleMode;// || settings.SCALE_MODE;
+        this.scaleMode = settings.SCALE_MODE;
 
         /**
          * The pixel format of the texture. defaults to gl.RGBA
          *
          * @member {Number}
          */
-        this.format = format || FORMATS.RGBA;
-        this.type = type || TYPES.UNSIGNED_BYTE; // UNSIGNED_BYTE
+        this.format = FORMATS.RGBA;
+        this.type = TYPES.UNSIGNED_BYTE; // UNSIGNED_BYTE
 
         this.target = TARGETS.TEXTURE_2D; // gl.TEXTURE_2D
 
         this._glTextures = {};
 
-        this._new = true;
+        /**
+         * Tag is just a string that is used by some of texture resources.
+         * @type {null}
+         */
+        this.tag = null;
 
         this.dirtyId = 0;
 
+        this.dirtyStyleId = 0;
+
         this.valid = false;
+
+        this.cacheId = null;
+
+        this.textureCacheIds = [];
+
+        this.destroyed = false;
 
         this.resource = null;
 
         if (resource)
         {
             // lets convert this to a resource..
-            resource = createResource(resource);
-            this.setResource(resource);
+            this.resource = createResource(resource);
+            if (this.resource.onTextureNew)
+            {
+                this.resource.onTextureNew(this);
+            }
         }
-
-        this.cacheId = null;
-
-        this.validate();
-
-        this.textureCacheIds = [];
 
         /**
          * Fired when a not-immediately-available source finishes loading.
@@ -168,111 +172,193 @@ export default class BaseTexture extends EventEmitter
          */
     }
 
-    updateResolution()
-    {
-        const resource = this.resource;
-
-        if (resource && resource.width !== -1 && resource.hight !== -1)
-        {
-            this.width = resource.width / this.resolution;
-            this.height = resource.height / this.resolution;
-        }
-    }
-
-    setResource(resource)
-    {
-        // TODO currently a resource can only be set once..
-
-        if (this.resource)
-        {
-            this.resource.resourceUpdated.remove(this);
-        }
-
-        this.resource = resource;
-
-        resource.resourceUpdated.add(this); // calls resourceUpaded
-
-        if (resource.loaded)
-        {
-            this.resourceLoaded(resource);
-        }
-
-        resource.load
-            .then(this.resourceLoaded.bind(this))
-            .catch((reason) =>
-            {
-            // failed to load - maybe resource was destroyed before it loaded.
-                console.warn(reason);
-            });
-    }
-
-    resourceLoaded(resource)
-    {
-        if (this.resource === resource)
-        {
-            this.updateResolution();
-
-            this.validate();
-
-            if (this.valid)
-            {
-                this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
-
-                // we have not swapped half way!
-                this.dirtyId++;
-
-                this.emit('loaded', this);
-            }
-        }
-    }
-
-    resourceUpdated()
-    {
-        // the resource was updated..
-        this.dirtyId++;
-    }
-
-    update()
-    {
-        this.dirtyId++;
-    }
-
-    resize(width, height)
-    {
-        this.width = width;
-        this.height = height;
-
-        this.dirtyId++;
-    }
-
-    validate()
-    {
-        let valid = true;
-
-        if (this.width === -1 || this.height === -1)
-        {
-            valid = false;
-        }
-
-        this.valid = valid;
-    }
-
+    /**
+     * Pixel width of the source of this texture
+     *
+     * @readonly
+     * @member {number}
+     */
     get realWidth()
     {
         return this.width * this.resolution;
     }
 
+    /**
+     * Pixel height of the source of this texture
+     *
+     * @readonly
+     * @member {number}
+     */
     get realHeight()
     {
         return this.height * this.resolution;
     }
 
     /**
-     * Destroys this base texture
+     * Changes style of BaseTexture
      *
+     * @param {number} scaleMode pixi scalemode
+     * @param {number} format webgl pixel format
+     * @param {number} type webgl pixel type
+     * @param {boolean} mipmap enable mipmaps
+     * @returns {BaseTexture} this
+     */
+    setStyle(scaleMode,
+             mipmap,
+             format,
+             type)
+    {
+        if (scaleMode !== undefined)
+        {
+            this.scaleMode = scaleMode;
+        }
+        if (mipmap !== undefined)
+        {
+            this.mipmap = mipmap;
+        }
+        if (format !== undefined)
+        {
+            this.format = format;
+        }
+        if (type !== undefined)
+        {
+            this.type = type;
+        }
+        this.dirtyStyleId++;
+    }
+
+    /**
+     * same as `valid`
+     *
+     * @readonly
+     * @member {boolean}
+     */
+    get hasLoaded()
+    {
+        return this.valid;
+    }
+
+    /**
+     * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
+     *
+     * @param {number} width w
+     * @param {number} height h
+     * @param {number} [resolution] res
+     * @returns {BaseTexture} this
+     */
+    setSize(width, height, resolution)
+    {
+        this.resolution = resolution || this.resolution;
+        this.width = width;
+        this.height = height;
+        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this.update();
+
+        return this;
+    }
+
+    /**
+     * Sets real size of baseTexture, preserves current resolution
+     *
+     * @param {number} realWidth w
+     * @param {number} realHeight h
+     * @param {number} [resolution] res
+     * @returns {BaseTexture} this
+     */
+    setRealSize(realWidth, realHeight, resolution)
+    {
+        this.width = realWidth / this.resolution;
+        this.height = realHeight / this.resolution;
+        this.isPowerOfTwo = bitTwiddle.isPow2(this.realWidth) && bitTwiddle.isPow2(this.realHeight);
+        this.update();
+    }
+
+    /**
+     * Performs secondary initialization according to assigned tag.
+     * Tag is just a string that i used by some of texture resources.
+     *
+     * @param {string} tag
+     * @returns {BaseTexture}
+     */
+    setTag(tag)
+    {
+        this.tag = tag;
+        if (this.resource && this.resource.onTextureTag)
+        {
+            this.resource.onTextureTag(this);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the resource if it wasnt set. Throws error if resource already present
+     *
+     * @param resource resource that is managing this basetexture
+     * @returns {BaseTexture} this
+     */
+    setResource(resource)
+    {
+        if (this.resource === resource)
+        {
+            return this;
+        }
+
+        if (this.resource)
+        {
+            throw new Error("Resource can be set only once");
+        }
+
+        this.resource = resource;
+        if (this.tag && this.resource.onTextureTag)
+        {
+            this.resource.onTextureTag(this);
+        }
+
+        return this;
+    }
+
+    /**
+     * Invalidates the object. Texture becomes valid if width and height are greater than zero.
+     */
+    update()
+    {
+        if (!this.valid)
+        {
+            if (this.width > 0 && this.height > 0)
+            {
+                this.valid = true;
+                this.emit('loaded', this);
+                this.emit('update', this);
+            }
+        }
+        else
+        {
+            this.dirtyId++;
+            this.dirtyStyleId++;
+            this.emit('update', this);
+        }
+    }
+
+    /**
+     * Destroys this base texture.
+     * The method stops if resource doesn't want this texture to be destroyed.
+     * Removes texture from all caches.
      */
     destroy()
     {
+        // remove and destroy the resource
+
+        if (this.resource)
+        {
+            if (this.resource.onTextureDestroy
+                && !this.resource.onTextureDestroy(this))
+            {
+                return;
+            }
+            this.resource = null;
+        }
+
         if (this.cacheId)
         {
             delete BaseTextureCache[this.cacheId];
@@ -281,19 +367,13 @@ export default class BaseTexture extends EventEmitter
             this.cacheId = null;
         }
 
-        // remove and destroy the resource
-
-        if (this.resource)
-        {
-            this.resource.destroy();
-            this.resource = null;
-        }
-
         // finally let the webGL renderer know..
         this.dispose();
 
         BaseTexture.removeFromCache(this);
         this.textureCacheIds = null;
+
+        this.destroyed = true;
     }
 
     /**
@@ -354,13 +434,8 @@ export default class BaseTexture extends EventEmitter
     {
         float32Array = float32Array || new Float32Array(width * height * 4);
 
-        const texture = new BaseTexture(new BufferResource(float32Array),
-            SCALE_MODES.NEAREST,
-            1,
-            width,
-            height,
-            FORMATS.RGBA,
-            TYPES.FLOAT);
+        const texture = new BaseTexture(new BufferResource(float32Array, width, height))
+                .setStyle(SCALE_MODES.NEAREST, FORMATS.RGBA, TYPES.FLOAT);
 
         return texture;
     }

@@ -5,7 +5,11 @@ import VideoResource from './VideoResource';
 
 export default function createResource(source)
 {
-    if (typeof source === 'string')
+    if (source.onTextureUpload)
+    {
+        return source;
+    }
+    else if (typeof source === 'string')
     {
         // search for file extension: period, 3-4 chars, then ?, # or EOL
         const result = (/\.(\w{3,4})(?:$|\?|#)/i).exec(source);
@@ -39,6 +43,8 @@ export default function createResource(source)
     {
         return new VideoResource(source);
     }
+
+    // resource that doesn't have onTextureUpload is invalid, shall we throw exception here?
 
     return source;
 }

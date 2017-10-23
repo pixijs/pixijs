@@ -81,12 +81,12 @@ export default class FrameBuffer
 
         for (let i = 0; i < this.colorTextures.length; i++)
         {
-            this.colorTextures[i].resize(width, height);
+            this.colorTextures[i].setSize(width, height);
         }
 
         if (this.depthTexture)
         {
-            this.depthTexture.resize(width, height);
+            this.depthTexture.setSize(width, height);
         }
     }
 }
