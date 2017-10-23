@@ -119,7 +119,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charA = font.chars['A'.charCodeAt(0) || 65];
 
         expect(charA).to.exist;
-        expect(charA.texture.baseTexture.source).to.equal(this.fontImage);
+        expect(charA.texture.baseTexture.resource.source).to.equal(this.fontImage);
         expect(charA.texture.frame.x).to.equal(2);
         expect(charA.texture.frame.y).to.equal(2);
         expect(charA.texture.frame.width).to.equal(19);
@@ -127,7 +127,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charB = font.chars['B'.charCodeAt(0) || 66];
 
         expect(charB).to.exist;
-        expect(charB.texture.baseTexture.source).to.equal(this.fontImage);
+        expect(charB.texture.baseTexture.resource.source).to.equal(this.fontImage);
         expect(charB.texture.frame.x).to.equal(2);
         expect(charB.texture.frame.y).to.equal(24);
         expect(charB.texture.frame.width).to.equal(15);
@@ -135,7 +135,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charC = font.chars['C'.charCodeAt(0) || 67];
 
         expect(charC).to.exist;
-        expect(charC.texture.baseTexture.source).to.equal(this.fontImage);
+        expect(charC.texture.baseTexture.resource.source).to.equal(this.fontImage);
         expect(charC.texture.frame.x).to.equal(23);
         expect(charC.texture.frame.y).to.equal(2);
         expect(charC.texture.frame.width).to.equal(18);
@@ -143,7 +143,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charD = font.chars['D'.charCodeAt(0) || 68];
 
         expect(charD).to.exist;
-        expect(charD.texture.baseTexture.source).to.equal(this.fontImage);
+        expect(charD.texture.baseTexture.resource.source).to.equal(this.fontImage);
         expect(charD.texture.frame.x).to.equal(19);
         expect(charD.texture.frame.y).to.equal(24);
         expect(charD.texture.frame.width).to.equal(17);
@@ -165,7 +165,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charA = font.chars['A'.charCodeAt(0) || 65];
 
         expect(charA).to.exist;
-        expect(charA.texture.baseTexture.source).to.equal(this.fontScaledImage);
+        expect(charA.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
         expect(charA.texture.frame.x).to.equal(4); // 2 / 0.5
         expect(charA.texture.frame.y).to.equal(4); // 2 / 0.5
         expect(charA.texture.frame.width).to.equal(38); // 19 / 0.5
@@ -173,7 +173,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charB = font.chars['B'.charCodeAt(0) || 66];
 
         expect(charB).to.exist;
-        expect(charB.texture.baseTexture.source).to.equal(this.fontScaledImage);
+        expect(charB.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
         expect(charB.texture.frame.x).to.equal(4); // 2 / 0.5
         expect(charB.texture.frame.y).to.equal(48); // 24 / 0.5
         expect(charB.texture.frame.width).to.equal(30); // 15 / 0.5
@@ -181,7 +181,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charC = font.chars['C'.charCodeAt(0) || 67];
 
         expect(charC).to.exist;
-        expect(charC.texture.baseTexture.source).to.equal(this.fontScaledImage);
+        expect(charC.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
         expect(charC.texture.frame.x).to.equal(46); // 23 / 0.5
         expect(charC.texture.frame.y).to.equal(4); // 2 / 0.5
         expect(charC.texture.frame.width).to.equal(36); // 18 / 0.5
@@ -189,7 +189,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const charD = font.chars['D'.charCodeAt(0) || 68];
 
         expect(charD).to.exist;
-        expect(charD.texture.baseTexture.source).to.equal(this.fontScaledImage);
+        expect(charD.texture.baseTexture.resource.source).to.equal(this.fontScaledImage);
         expect(charD.texture.frame.x).to.equal(38); // 19 / 0.5
         expect(charD.texture.frame.y).to.equal(48); // 24 / 0.5
         expect(charD.texture.frame.width).to.equal(34); // 17 / 0.5
@@ -218,7 +218,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charA = font.chars['A'.charCodeAt(0) || 65];
 
             expect(charA).to.exist;
-            expect(charA.texture.baseTexture.source).to.equal(this.atlasImage);
+            expect(charA.texture.baseTexture.resource.source).to.equal(this.atlasImage);
             expect(charA.texture.frame.x).to.equal(fontX + 2);
             expect(charA.texture.frame.y).to.equal(fontY + 2);
             expect(charA.texture.frame.width).to.equal(19);
@@ -226,7 +226,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charB = font.chars['B'.charCodeAt(0) || 66];
 
             expect(charB).to.exist;
-            expect(charB.texture.baseTexture.source).to.equal(this.atlasImage);
+            expect(charB.texture.baseTexture.resource.source).to.equal(this.atlasImage);
             expect(charB.texture.frame.x).to.equal(fontX + 2);
             expect(charB.texture.frame.y).to.equal(fontY + 24);
             expect(charB.texture.frame.width).to.equal(15);
@@ -234,7 +234,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charC = font.chars['C'.charCodeAt(0) || 67];
 
             expect(charC).to.exist;
-            expect(charC.texture.baseTexture.source).to.equal(this.atlasImage);
+            expect(charC.texture.baseTexture.resource.source).to.equal(this.atlasImage);
             expect(charC.texture.frame.x).to.equal(fontX + 23);
             expect(charC.texture.frame.y).to.equal(fontY + 2);
             expect(charC.texture.frame.width).to.equal(18);
@@ -242,7 +242,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charD = font.chars['D'.charCodeAt(0) || 68];
 
             expect(charD).to.exist;
-            expect(charD.texture.baseTexture.source).to.equal(this.atlasImage);
+            expect(charD.texture.baseTexture.resource.source).to.equal(this.atlasImage);
             expect(charD.texture.frame.x).to.equal(fontX + 19);
             expect(charD.texture.frame.y).to.equal(fontY + 24);
             expect(charD.texture.frame.width).to.equal(17);
@@ -259,6 +259,8 @@ describe('PIXI.loaders.bitmapFontParser', function ()
         const baseTexture = new PIXI.BaseTexture(this.atlasScaledImage, null, 1);
         const spritesheet = new PIXI.Spritesheet(baseTexture, this.atlasScaledJSON);
 
+        spritesheet.resolution = 1;
+
         spritesheet.parse(() =>
         {
             const fontTexture  = PIXI.Texture.fromFrame('resources/font.png');
@@ -272,7 +274,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charA = font.chars['A'.charCodeAt(0) || 65];
 
             expect(charA).to.exist;
-            expect(charA.texture.baseTexture.source).to.equal(this.atlasScaledImage);
+            expect(charA.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
             expect(charA.texture.frame.x).to.equal(fontX + 2);
             expect(charA.texture.frame.y).to.equal(fontY + 2);
             expect(charA.texture.frame.width).to.equal(19);
@@ -280,7 +282,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charB = font.chars['B'.charCodeAt(0) || 66];
 
             expect(charB).to.exist;
-            expect(charB.texture.baseTexture.source).to.equal(this.atlasScaledImage);
+            expect(charB.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
             expect(charB.texture.frame.x).to.equal(fontX + 2);
             expect(charB.texture.frame.y).to.equal(fontY + 24);
             expect(charB.texture.frame.width).to.equal(15);
@@ -288,7 +290,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charC = font.chars['C'.charCodeAt(0) || 67];
 
             expect(charC).to.exist;
-            expect(charC.texture.baseTexture.source).to.equal(this.atlasScaledImage);
+            expect(charC.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
             expect(charC.texture.frame.x).to.equal(fontX + 23);
             expect(charC.texture.frame.y).to.equal(fontY + 2);
             expect(charC.texture.frame.width).to.equal(18);
@@ -296,7 +298,7 @@ describe('PIXI.loaders.bitmapFontParser', function ()
             const charD = font.chars['D'.charCodeAt(0) || 68];
 
             expect(charD).to.exist;
-            expect(charD.texture.baseTexture.source).to.equal(this.atlasScaledImage);
+            expect(charD.texture.baseTexture.resource.source).to.equal(this.atlasScaledImage);
             expect(charD.texture.frame.x).to.equal(fontX + 19);
             expect(charD.texture.frame.y).to.equal(fontY + 24);
             expect(charD.texture.frame.width).to.equal(17);
