@@ -53,7 +53,8 @@ export default class Spritesheet
          * @type {number}
          */
         this.resolution = this._updateResolution(
-            resolutionFilename || this.baseTexture.imageUrl
+            resolutionFilename
+            || (this.baseTexture.resource ? this.baseTexture.resource.url : null)
         );
 
         /**
@@ -112,7 +113,7 @@ export default class Spritesheet
         if (resolution !== 1)
         {
             this.baseTexture.resolution = resolution;
-            this.baseTexture.update();
+            this.baseTexture.updateResolution();
         }
 
         return resolution;
@@ -151,7 +152,6 @@ export default class Spritesheet
     {
         let frameIndex = initialFrameIndex;
         const maxFrames = Spritesheet.BATCH_SIZE;
-        const sourceScale = this.baseTexture.sourceScale;
 
         while (frameIndex - initialFrameIndex < maxFrames && frameIndex < this._frameKeys.length)
         {
@@ -165,26 +165,26 @@ export default class Spritesheet
                 const orig = new Rectangle(
                     0,
                     0,
-                    Math.floor(this._frames[i].sourceSize.w * sourceScale) / this.resolution,
-                    Math.floor(this._frames[i].sourceSize.h * sourceScale) / this.resolution
+                    Math.floor(this._frames[i].sourceSize.w) / this.resolution,
+                    Math.floor(this._frames[i].sourceSize.h) / this.resolution
                 );
 
                 if (this._frames[i].rotated)
                 {
                     frame = new Rectangle(
-                        Math.floor(rect.x * sourceScale) / this.resolution,
-                        Math.floor(rect.y * sourceScale) / this.resolution,
-                        Math.floor(rect.h * sourceScale) / this.resolution,
-                        Math.floor(rect.w * sourceScale) / this.resolution
+                        Math.floor(rect.x) / this.resolution,
+                        Math.floor(rect.y) / this.resolution,
+                        Math.floor(rect.h) / this.resolution,
+                        Math.floor(rect.w) / this.resolution
                     );
                 }
                 else
                 {
                     frame = new Rectangle(
-                        Math.floor(rect.x * sourceScale) / this.resolution,
-                        Math.floor(rect.y * sourceScale) / this.resolution,
-                        Math.floor(rect.w * sourceScale) / this.resolution,
-                        Math.floor(rect.h * sourceScale) / this.resolution
+                        Math.floor(rect.x) / this.resolution,
+                        Math.floor(rect.y) / this.resolution,
+                        Math.floor(rect.w) / this.resolution,
+                        Math.floor(rect.h) / this.resolution
                     );
                 }
 
@@ -192,10 +192,10 @@ export default class Spritesheet
                 if (this._frames[i].trimmed)
                 {
                     trim = new Rectangle(
-                        Math.floor(this._frames[i].spriteSourceSize.x * sourceScale) / this.resolution,
-                        Math.floor(this._frames[i].spriteSourceSize.y * sourceScale) / this.resolution,
-                        Math.floor(rect.w * sourceScale) / this.resolution,
-                        Math.floor(rect.h * sourceScale) / this.resolution
+                        Math.floor(this._frames[i].spriteSourceSize.x) / this.resolution,
+                        Math.floor(this._frames[i].spriteSourceSize.y) / this.resolution,
+                        Math.floor(rect.w) / this.resolution,
+                        Math.floor(rect.h) / this.resolution
                     );
                 }
 

@@ -33,13 +33,13 @@ export default class PrimitiveShader extends Shader
             '}',
         ].join('\n'),
             // fragment shader
-            [
-                'varying vec4 vColor;',
+        [
+            'varying vec4 vColor;',
 
-                'void main(void){',
-                '   gl_FragColor = vColor;',
-                '}',
-            ].join('\n'));
+            'void main(void){',
+            '   gl_FragColor = vColor;',
+            '}',
+        ].join('\n'));
 
         super(program, {});
     }

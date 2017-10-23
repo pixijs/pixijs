@@ -335,10 +335,6 @@ export default class BaseTexture extends EventEmitter
             {
                 source._pixiId = `pixiid_${uid()}`;
             }
-            else if (crossorigin)
-            {
-                image.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
-            }
 
             cacheId = source._pixiId;
         }
