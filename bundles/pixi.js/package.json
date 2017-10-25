@@ -44,7 +44,6 @@
     "@pixi/filter-displacement": "^5.0.0-alpha",
     "@pixi/filter-fxaa": "^5.0.0-alpha",
     "@pixi/filter-noise": "^5.0.0-alpha",
-    "@pixi/fragments": "^5.0.0-alpha",
     "@pixi/interaction": "^5.0.0-alpha",
     "@pixi/loaders": "^5.0.0-alpha",
     "@pixi/mesh": "^5.0.0-alpha",

@@ -67,6 +67,7 @@ const plugins = [
 if (prod)
 {
     let first = true;
+
     plugins.push(uglify({
         mangle: true,
         compress: true,
@@ -78,6 +79,7 @@ if (prod)
                 if (type === 'comment2' && first)
                 {
                     first = false;
+
                     return value[0] === '!';
                 }
 
