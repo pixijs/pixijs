@@ -23,7 +23,8 @@
     "build:dev": "rollup -c && rollup -c -f umd",
     "build": "rollup -cp && rollup -cp -f umd",
     "watch": "rollup -cw",
-    "postversion": "npm run build"
+    "postversion": "npm run build",
+    "test": "exit 0"
   },
   "files": [
     "lib"
