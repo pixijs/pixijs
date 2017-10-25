@@ -1,5 +1,4 @@
-import * as core from '../core';
-import { hex2rgb } from '../core/utils';
+import { utils, Container, BLEND_MODES } from '@pixi/core';
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -25,7 +24,7 @@ import { hex2rgb } from '../core/utils';
  * @extends PIXI.Container
  * @memberof PIXI.particles
  */
-export default class ParticleContainer extends core.Container
+export default class ParticleContainer extends Container
 {
     /**
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
@@ -105,7 +104,7 @@ export default class ParticleContainer extends core.Container
          * @default PIXI.BLEND_MODES.NORMAL
          * @see PIXI.BLEND_MODES
          */
-        this.blendMode = core.BLEND_MODES.NORMAL;
+        this.blendMode = BLEND_MODES.NORMAL;
 
         /**
          * If true, container allocates more batches in case there are more than `maxSize` particles.
@@ -191,7 +190,7 @@ export default class ParticleContainer extends core.Container
     set tint(value) // eslint-disable-line require-jsdoc
     {
         this._tint = value;
-        hex2rgb(value, this.tintRgb);
+        utils.hex2rgb(value, this.tintRgb);
     }
 
     /**

@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { ObjectRenderer, WebGLRenderer } from '@pixi/core';
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -7,7 +7,7 @@ import * as core from '../../core';
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
-export default class MeshRenderer extends core.ObjectRenderer
+export default class MeshRenderer extends ObjectRenderer
 {
     /**
      * constructor for renderer
@@ -64,4 +64,4 @@ export default class MeshRenderer extends core.ObjectRenderer
     }
 }
 
-core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
+WebGLRenderer.registerPlugin('mesh', MeshRenderer);

@@ -1,10 +1,6 @@
-import * as core from '../core';
-import Texture from '../core/textures/Texture';
-import BaseTexture from '../core/textures/BaseTexture';
-import { uid } from '../core/utils';
+import { Sprite, Texture, BaseTexture, RenderTexture, utils, DisplayObject, Matrix } from '@pixi/core';
 
-const DisplayObject = core.DisplayObject;
-const _tempMatrix = new core.Matrix();
+const _tempMatrix = new Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = false;
@@ -188,9 +184,9 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -223,7 +219,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.filterArea = null;
 
     // create our cached sprite
-    const cachedSprite = new core.Sprite(renderTexture);
+    const cachedSprite = new Sprite(renderTexture);
 
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -(bounds.x / bounds.width);
@@ -299,9 +295,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = RenderTexture.create(bounds.width | 0, bounds.height | 0);
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -334,7 +330,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     this.filterArea = null;
 
     // create our cached sprite
-    const cachedSprite = new core.Sprite(renderTexture);
+    const cachedSprite = new Sprite(renderTexture);
 
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -(bounds.x / bounds.width);

@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter } from '@pixi/core';
 import vertex from '../fragments/default.vert';
 import fragment from './noise.frag';
 
@@ -14,7 +14,7 @@ import fragment from './noise.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class NoiseFilter extends core.Filter
+export default class NoiseFilter extends Filter
 {
     /**
      * @param {number} noise - The noise intensity, should be a normalized value in the range [0, 1].

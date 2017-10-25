@@ -1,6 +1,6 @@
 import { Resource } from 'resource-loader';
 import url from 'url';
-import { Spritesheet } from '../core';
+import { Spritesheet } from '@pixi/core';
 
 export default function ()
 {

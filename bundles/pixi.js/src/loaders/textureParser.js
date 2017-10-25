@@ -1,5 +1,5 @@
 import { Resource } from 'resource-loader';
-import Texture from '../core/textures/Texture';
+import { Texture } from '@pixi/core';
 
 export default function ()
 {

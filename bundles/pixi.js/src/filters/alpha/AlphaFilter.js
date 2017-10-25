@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter } from '@pixi/core';
 import vertex from '../fragments/default.vert';
 import fragment from './alpha.frag';
 
@@ -19,7 +19,7 @@ import fragment from './alpha.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class AlphaFilter extends core.Filter
+export default class AlphaFilter extends Filter
 {
     /**
      *

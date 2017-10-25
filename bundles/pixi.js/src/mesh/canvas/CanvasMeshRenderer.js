@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { DRAW_MODES, CanvasRenderer } from '@pixi/core';
 
 /**
  * Renderer dedicated to meshes.
@@ -55,7 +55,7 @@ export default class MeshSpriteRenderer
 
         renderer.setBlendMode(mesh.blendMode);
 
-        if (mesh.drawMode !== core.DRAW_MODES.TRIANGLES)
+        if (mesh.drawMode !== DRAW_MODES.TRIANGLES)
         {
             this._renderTriangleMesh(mesh);
         }
@@ -296,4 +296,4 @@ export default class MeshSpriteRenderer
     }
 }
 
-core.CanvasRenderer.registerPlugin('mesh', MeshSpriteRenderer);
+CanvasRenderer.registerPlugin('mesh', MeshSpriteRenderer);

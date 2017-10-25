@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter, settings } from '@pixi/core';
 import generateBlurVertSource from './generateBlurVertSource';
 import generateBlurFragSource from './generateBlurFragSource';
 import getMaxBlurKernelSize from './getMaxBlurKernelSize';
@@ -10,7 +10,7 @@ import getMaxBlurKernelSize from './getMaxBlurKernelSize';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class BlurYFilter extends core.Filter
+export default class BlurYFilter extends Filter
 {
     /**
      * @param {number} strength - The strength of the blur filter.
@@ -31,7 +31,7 @@ export default class BlurYFilter extends core.Filter
             fragSrc
         );
 
-        this.resolution = resolution || core.settings.RESOLUTION;
+        this.resolution = resolution || settings.RESOLUTION;
 
         this._quality = 0;
 

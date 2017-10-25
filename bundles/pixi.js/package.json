@@ -9,8 +9,8 @@
     "Chad Engler <chad@pantherdev.com>",
     "Richard Davey <rdavey@gmail.com>"
   ],
-  "main": "lib/pixi.min.js",
-  "module": "lib/pixi.min.es.js",
+  "main": "lib/pixi.js",
+  "module": "lib/pixi.es.js",
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -19,10 +19,9 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "scripts": {
-    "build:dev": "rollup -c -f umd -o lib/pixi.js",
-    "build:prod": "rollup -cp -f umd",
-    "build:es": "rollup -cp",
-    "build": "npm run build:dev && npm run build:prod && npm run build:es",
+    "build:prod": "rollup -c -f umd",
+    "build:es": "rollup -c",
+    "build": "npm run build:prod && npm run build:es",
     "watch": "rollup -cw -f umd",
     "postversion": "npm run build",
     "test": "npm run build && npm run coverage",
@@ -37,22 +36,18 @@
     "README.md"
   ],
   "devDependencies": {
+    "@pixi/core": "^5.0.0-alpha",
     "@pixi/polyfill": "^5.0.0-alpha",
     "@tools/build": "^5.0.0-alpha",
-    "bit-twiddle": "^1.0.2",
-    "earcut": "^2.0.7",
     "electron": "^1.7.9",
     "eventemitter3": "^2.0.0",
     "floss": "^2.1.2",
     "ismobilejs": "^0.4.0",
     "js-md5": "^0.6.1",
-    "mini-runner": "^1.0.1",
-    "object-assign": "^4.0.1",
     "pixi-gl-core": "^1.0.3",
-    "remove-array-items": "^1.0.0",
     "resource-loader": "^2.0.9",
     "rimraf": "^2.6.2",
-    "rollup": "^0.45.2",
+    "rollup": "^0.50.0",
     "rollup-watch": "^4.3.1"
   }
 }

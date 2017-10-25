@@ -1,13 +1,13 @@
-import * as core from '../core';
+import { utils, DisplayObject, Point, ticker, UPDATE_PRIORITY, WebGLRenderer, CanvasRenderer } from '@pixi/core';
 import InteractionData from './InteractionData';
 import InteractionEvent from './InteractionEvent';
 import InteractionTrackingData from './InteractionTrackingData';
 import EventEmitter from 'eventemitter3';
 import interactiveTarget from './interactiveTarget';
 
-// Mix interactiveTarget into core.DisplayObject.prototype, after deprecation has been handled
-core.utils.mixins.delayMixin(
-    core.DisplayObject.prototype,
+// Mix interactiveTarget into DisplayObject.prototype, after deprecation has been handled
+utils.mixins.delayMixin(
+    DisplayObject.prototype,
     interactiveTarget
 );
 
@@ -240,7 +240,7 @@ export default class InteractionManager extends EventEmitter
          * @private
          * @member {PIXI.Point}
          */
-        this._tempPoint = new core.Point();
+        this._tempPoint = new Point();
 
         /**
          * The current resolution / device pixel ratio.
@@ -704,7 +704,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        core.ticker.shared.add(this.update, this, core.UPDATE_PRIORITY.INTERACTION);
+        ticker.shared.add(this.update, this, UPDATE_PRIORITY.INTERACTION);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -767,7 +767,7 @@ export default class InteractionManager extends EventEmitter
             return;
         }
 
-        core.ticker.shared.remove(this.update, this);
+        ticker.shared.remove(this.update, this);
 
         if (window.navigator.msPointerEnabled)
         {
@@ -1821,5 +1821,5 @@ export default class InteractionManager extends EventEmitter
     }
 }
 
-core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
-core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
+WebGLRenderer.registerPlugin('interaction', InteractionManager);
+CanvasRenderer.registerPlugin('interaction', InteractionManager);

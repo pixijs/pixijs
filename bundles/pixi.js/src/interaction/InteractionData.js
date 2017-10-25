@@ -1,4 +1,4 @@
-import * as core from '../core';
+import { Point } from '@pixi/core';
 
 /**
  * Holds all information related to an Interaction event
@@ -18,7 +18,7 @@ export default class InteractionData
          *
          * @member {PIXI.Point}
          */
-        this.global = new core.Point();
+        this.global = new Point();
 
         /**
          * The target Sprite that was interacted with

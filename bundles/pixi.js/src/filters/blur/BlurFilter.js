@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter, settings } from '@pixi/core';
 import BlurXFilter from './BlurXFilter';
 import BlurYFilter from './BlurYFilter';
 
@@ -10,7 +10,7 @@ import BlurYFilter from './BlurYFilter';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class BlurFilter extends core.Filter
+export default class BlurFilter extends Filter
 {
     /**
      * @param {number} strength - The strength of the blur filter.
@@ -26,7 +26,7 @@ export default class BlurFilter extends core.Filter
         this.blurYFilter = new BlurYFilter(strength, quality, resolution, kernelSize);
 
         this.padding = 0;
-        this.resolution = resolution || core.settings.RESOLUTION;
+        this.resolution = resolution || settings.RESOLUTION;
         this.quality = quality || 4;
         this.blur = strength || 8;
     }

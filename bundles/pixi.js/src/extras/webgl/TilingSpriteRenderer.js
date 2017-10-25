@@ -1,10 +1,9 @@
-import * as core from '../../core';
-import { WRAP_MODES } from '../../core/const';
+import { WRAP_MODES, Matrix, ObjectRenderer, Shader, Quad, utils, WebGLRenderer } from '@pixi/core';
 import vertex from './tilingSprite.vert';
 import fragment from './tilingSprite.frag';
 import fragmentSimple from './tilingSprite_simple.frag';
 
-const tempMat = new core.Matrix();
+const tempMat = new Matrix();
 
 /**
  * WebGL renderer plugin for tiling sprites
@@ -13,7 +12,7 @@ const tempMat = new core.Matrix();
  * @memberof PIXI.extras
  * @extends PIXI.ObjectRenderer
  */
-export default class TilingSpriteRenderer extends core.ObjectRenderer
+export default class TilingSpriteRenderer extends ObjectRenderer
 {
     /**
      * constructor for renderer
@@ -26,11 +25,11 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
 
         const uniforms = { globals: this.renderer.globalUniforms };
 
-        this.shader = new core.Shader.from(vertex, fragment, uniforms);
+        this.shader = new Shader.from(vertex, fragment, uniforms);
 
-        this.simpleShader = new core.Shader.from(vertex, fragmentSimple, uniforms);
+        this.simpleShader = new Shader.from(vertex, fragmentSimple, uniforms);
 
-        this.quad = new core.Quad();
+        this.quad = new Quad();
     }
 
     /**
@@ -117,7 +116,7 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-        shader.uniforms.uColor = core.utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
+        shader.uniforms.uColor = utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
             shader.uniforms.uColor, baseTex.premultiplyAlpha);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
@@ -125,9 +124,9 @@ export default class TilingSpriteRenderer extends core.ObjectRenderer
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);// , renderer.shader.getGLShader());
 
-        renderer.setBlendMode(core.utils.correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
+        renderer.setBlendMode(utils.correctBlendMode(ts.blendMode, baseTex.premultiplyAlpha));
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
 
-core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
+WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);

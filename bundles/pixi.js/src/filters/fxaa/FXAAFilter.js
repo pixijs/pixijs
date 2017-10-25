@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter } from '@pixi/core';
 import vertex from './fxaa.vert';
 import fragment from './fxaa.frag';
 
@@ -15,7 +15,7 @@ import fragment from './fxaa.frag';
  * @memberof PIXI.filters
  *
  */
-export default class FXAAFilter extends core.Filter
+export default class FXAAFilter extends Filter
 {
     /**
      *

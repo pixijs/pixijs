@@ -1,7 +1,6 @@
-import GLBuffer from '../../core/renderers/webgl/systems/geometry/GLBuffer';
-// import VertexArrayObject from '../../core/renderers/webgl/systems/geometry/VertexArrayObject';
-
-import createIndicesForQuads from '../../core/utils/createIndicesForQuads';
+// import { VertexArrayObject } from 'pixi-gl-core';
+import { utils } from '@pixi/core';
+import { GLBuffer } from 'pixi-gl-core';
 
 /**
  * @author Mat Groves
@@ -112,7 +111,7 @@ export default class ParticleBuffer
          *
          * @member {Uint16Array}
          */
-        this.indices = createIndicesForQuads(this.size);
+        this.indices = utils.createIndicesForQuads(this.size);
         this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
 
         this.dynamicStride = 0;

@@ -2,7 +2,7 @@
 import '@pixi/polyfill';
 
 // export core
-export * from './core';
+export * from '@pixi/core';
 
 // export libs
 // import deprecation from './deprecation';
@@ -17,7 +17,7 @@ import * as mesh from './mesh';
 import * as prepare from './prepare';
 
 // handle mixins now, after all code has been added, including deprecation
-import { utils } from './core';
+import { utils } from '@pixi/core';
 utils.mixins.performMixins();
 
 /**

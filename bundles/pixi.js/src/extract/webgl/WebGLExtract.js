@@ -1,6 +1,6 @@
-import * as core from '../../core';
+import { Rectangle, RenderTexture, CanvasRenderTarget, WebGLRenderer } from '@pixi/core';
 
-const TEMP_RECT = new core.Rectangle();
+const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
 /**
@@ -76,7 +76,7 @@ export default class WebGLExtract
 
         if (target)
         {
-            if (target instanceof core.RenderTexture)
+            if (target instanceof RenderTexture)
             {
                 renderTexture = target;
             }
@@ -107,7 +107,7 @@ export default class WebGLExtract
         const width = frame.width * resolution;
         const height = frame.height * resolution;
 
-        const canvasBuffer = new core.CanvasRenderTarget(width, height);
+        const canvasBuffer = new CanvasRenderTarget(width, height);
 
         if (textureBuffer)
         {
@@ -167,7 +167,7 @@ export default class WebGLExtract
 
         if (target)
         {
-            if (target instanceof core.RenderTexture)
+            if (target instanceof RenderTexture)
             {
                 renderTexture = target;
             }
@@ -230,4 +230,4 @@ export default class WebGLExtract
     }
 }
 
-core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
+WebGLRenderer.registerPlugin('extract', WebGLExtract);

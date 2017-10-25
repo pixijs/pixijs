@@ -1,7 +1,7 @@
-import * as core from '../core';
+import { Point, Polygon, Container, DRAW_MODES, State } from '@pixi/core';
 
-const tempPoint = new core.Point();
-const tempPolygon = new core.Polygon();
+const tempPoint = new Point();
+const tempPolygon = new Polygon();
 
 /**
  * Base mesh class.
@@ -20,7 +20,7 @@ const tempPolygon = new core.Polygon();
  * @extends PIXI.Container
  * @memberof PIXI.mesh
  */
-export default class RawMesh extends core.Container
+export default class RawMesh extends Container
 {
     /**
      * @param {PIXI.mesh.Geometry} geometry  the geometry the mesh will use
@@ -28,7 +28,7 @@ export default class RawMesh extends core.Container
      * @param {PIXI.State} state  the state that the webGL context is required to be in to render the mesh
      * @param {number} drawMode  the drawMode, can be any of the PIXI.DRAW_MODES consts
      */
-    constructor(geometry, shader, state, drawMode = core.DRAW_MODES.TRIANGLES)
+    constructor(geometry, shader, state, drawMode = DRAW_MODES.TRIANGLES)
     {
         super();
 
@@ -48,7 +48,7 @@ export default class RawMesh extends core.Container
          * the webGL state the mesh requires to render
          * @type {PIXI.State}
          */
-        this.state = state || new core.State();
+        this.state = state || new State();
 
         /**
          * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.RawMesh.DRAW_MODES} consts

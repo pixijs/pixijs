@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { utils } from '../core';
+import { utils } from '@pixi/core';
 import { Resource } from 'resource-loader';
 import { BitmapText } from '../extras';
 

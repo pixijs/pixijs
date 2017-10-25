@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter } from '@pixi/core';
 import vertex from '../fragments/default.vert';
 import fragment from './colorMatrix.frag';
 
@@ -17,7 +17,7 @@ import fragment from './colorMatrix.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class ColorMatrixFilter extends core.Filter
+export default class ColorMatrixFilter extends Filter
 {
     /**
      *

@@ -1,7 +1,6 @@
-import * as core from '../../core';
+import { utils, ObjectRenderer, WebGLRenderer, Matrix } from '@pixi/core';
 import ParticleShader from './ParticleShader';
 import ParticleBuffer from './ParticleBuffer';
-import { premultiplyTint } from '../../core/utils';
 
 /**
  * @author Mat Groves
@@ -21,7 +20,7 @@ import { premultiplyTint } from '../../core/utils';
  * @private
  * @memberof PIXI
  */
-export default class ParticleRenderer extends core.ObjectRenderer
+export default class ParticleRenderer extends ObjectRenderer
 {
     /**
      * @param {PIXI.WebGLRenderer} renderer - The renderer this sprite batch works for.
@@ -47,7 +46,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
 
         this.properties = null;
 
-        this.tempMatrix = new core.Matrix();
+        this.tempMatrix = new Matrix();
 
         this.CONTEXT_UID = 0;
     }
@@ -147,7 +146,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
         const baseTexture = children[0]._texture.baseTexture;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.renderer.setBlendMode(core.utils.correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
+        this.renderer.setBlendMode(utils.correctBlendMode(container.blendMode, baseTexture.premultiplyAlpha));
 
         const gl = renderer.gl;
 
@@ -157,7 +156,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
 
         this.shader.uniforms.projectionMatrix = m.toArray(true);
 
-        this.shader.uniforms.uColor = core.utils.premultiplyRgba(container.tintRgb,
+        this.shader.uniforms.uColor = utils.premultiplyRgba(container.tintRgb,
             container.worldAlpha, this.shader.uniforms.uColor, baseTexture.premultiplyAlpha);
 
         // make sure the texture is bound..
@@ -422,7 +421,7 @@ export default class ParticleRenderer extends core.ObjectRenderer
             const premultiplied = sprite._texture.baseTexture.premultiplyAlpha;
             const alpha = sprite.alpha;
             // we dont call extra function if alpha is 1.0, that's faster
-            const argb = alpha < 1.0 && premultiplied ? premultiplyTint(sprite._tintRGB, alpha)
+            const argb = alpha < 1.0 && premultiplied ? utils.premultiplyTint(sprite._tintRGB, alpha)
                 : sprite._tintRGB + (alpha * 255 << 24);
 
             array[offset] = argb;
@@ -454,4 +453,4 @@ export default class ParticleRenderer extends core.ObjectRenderer
     }
 }
 
-core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
+WebGLRenderer.registerPlugin('particle', ParticleRenderer);

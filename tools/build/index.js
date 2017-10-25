@@ -11,8 +11,8 @@ const replace = require('rollup-plugin-replace');
 const preprocess = require('rollup-plugin-preprocess').default;
 
 const pkg = require(path.resolve('./package'));
-const name = path.basename(pkg.name);
-const entry = 'src/index.js';
+const safeName = path.basename(pkg.name);
+const input = 'src/index.js';
 
 const { prod, format, output } = minimist(process.argv.slice(2), {
     string: ['format', 'output'],
@@ -30,7 +30,7 @@ const { prod, format, output } = minimist(process.argv.slice(2), {
 });
 
 // Allow overriding output, but default to "module" and "main" fields
-const dest = output || (format === 'es' ? pkg.module : pkg.main);
+const file = output || (format === 'es' ? pkg.module : pkg.main);
 
 const plugins = [
     resolve({
@@ -51,7 +51,7 @@ const plugins = [
         ],
     }),
     replace({
-        __VERSION__: pkg.version,
+        '__VERSION__': pkg.version,
     }),
     preprocess({
         context: {
@@ -95,14 +95,17 @@ const banner = `/*!
  * http://www.opensource.org/licenses/mit-license
  */\n`;
 
-const moduleName = `__${name.replace(/-/g, '_')}`;
+const name = `__${safeName.replace(/-/g, '_')}`;
 
 module.exports = {
     banner,
-    format,
-    moduleName,
-    entry,
-    dest,
-    sourceMap: true,
+    name,
+    input,
+    output: {
+        file,
+        format
+    },
+    external: Object.keys(pkg.dependencies || []),
+    sourcemap: true,
     plugins,
 };

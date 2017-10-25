@@ -1,4 +1,4 @@
-import * as core from '../core';
+import { DisplayObject, Container } from '@pixi/core';
 
 /**
  * The instance name of the object.
@@ -6,7 +6,7 @@ import * as core from '../core';
  * @memberof PIXI.DisplayObject#
  * @member {string}
  */
-core.DisplayObject.prototype.name = null;
+DisplayObject.prototype.name = null;
 
 /**
  * Returns the display object in the container
@@ -15,7 +15,7 @@ core.DisplayObject.prototype.name = null;
  * @param {string} name - instance name
  * @return {PIXI.DisplayObject} The child with the specified name.
  */
-core.Container.prototype.getChildByName = function getChildByName(name)
+Container.prototype.getChildByName = function getChildByName(name)
 {
     for (let i = 0; i < this.children.length; i++)
     {

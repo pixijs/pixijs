@@ -1,6 +1,6 @@
-import * as core from '../../core';
+import { Rectangle, RenderTexture, CanvasRenderTarget, CanvasRenderer } from '@pixi/core';
 
-const TEMP_RECT = new core.Rectangle();
+const TEMP_RECT = new Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers.
@@ -74,7 +74,7 @@ export default class CanvasExtract
 
         if (target)
         {
-            if (target instanceof core.RenderTexture)
+            if (target instanceof RenderTexture)
             {
                 renderTexture = target;
             }
@@ -102,7 +102,7 @@ export default class CanvasExtract
         const width = frame.width * resolution;
         const height = frame.height * resolution;
 
-        const canvasBuffer = new core.CanvasRenderTarget(width, height);
+        const canvasBuffer = new CanvasRenderTarget(width, height);
         const canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
@@ -129,7 +129,7 @@ export default class CanvasExtract
 
         if (target)
         {
-            if (target instanceof core.RenderTexture)
+            if (target instanceof RenderTexture)
             {
                 renderTexture = target;
             }
@@ -168,4 +168,4 @@ export default class CanvasExtract
     }
 }
 
-core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
+CanvasRenderer.registerPlugin('extract', CanvasExtract);

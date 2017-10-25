@@ -1,4 +1,4 @@
-import * as core from '../core';
+import { DisplayObject, Point } from '@pixi/core';
 
 /**
  * Returns the global position of the displayObject. Does not depend on object scale, rotation and pivot.
@@ -10,7 +10,7 @@ import * as core from '../core';
  *  nice performance boost
  * @return {Point} The updated point
  */
-core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new core.Point(), skipUpdate = false)
+DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new Point(), skipUpdate = false)
 {
     if (this.parent)
     {

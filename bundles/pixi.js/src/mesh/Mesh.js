@@ -1,6 +1,5 @@
 import RawMesh from './RawMesh';
-import Geometry from '../core/geometry/Geometry';
-import * as core from '../core';
+import { Geometry, Program, Shader, BLEND_MODES, utils } from '@pixi/core';
 import vertex from './webgl/mesh.vert';
 import fragment from './webgl/mesh.frag';
 
@@ -27,7 +26,7 @@ export default class Mesh extends RawMesh
 
         if (!meshProgram)
         {
-            meshProgram = new core.Program(vertex, fragment);
+            meshProgram = new Program(vertex, fragment);
         }
 
         geometry.addAttribute('aVertexPosition', vertices)
@@ -42,7 +41,7 @@ export default class Mesh extends RawMesh
             tint: new Float32Array([1, 1, 1]),
         };
 
-        super(geometry, new core.Shader(meshProgram, uniforms), null, drawMode);
+        super(geometry, new Shader(meshProgram, uniforms), null, drawMode);
 
         this.uvs = geometry.getAttribute('aTextureCoord').data;
         this.vertices = geometry.getAttribute('aVertexPosition').data;
@@ -53,7 +52,7 @@ export default class Mesh extends RawMesh
         this._tint = 0xFFFFFF;
         this.tint = 0xFFFFFF;
 
-        this.blendMode = core.BLEND_MODES.NORMAL;
+        this.blendMode = BLEND_MODES.NORMAL;
     }
 
     /**
@@ -77,7 +76,7 @@ export default class Mesh extends RawMesh
     set tint(value)
     {
         this._tint = value;
-        core.utils.hex2rgb(this._tint, this.uniforms.tint);
+        utils.hex2rgb(this._tint, this.uniforms.tint);
     }
 
     /**

@@ -1,5 +1,5 @@
 import Mesh from './Mesh';
-import * as core from '../core';
+import { Point } from '@pixi/core';
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -67,8 +67,8 @@ export default class Rope extends Mesh
         const indices = indexBuffer.data;
 
         const textureUvs = this.texture._uvs;
-        const offset = new core.Point(textureUvs.x0, textureUvs.y0);
-        const factor = new core.Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
+        const offset = new Point(textureUvs.x0, textureUvs.y0);
+        const factor = new Point(textureUvs.x2 - textureUvs.x0, Number(textureUvs.y2 - textureUvs.y0));
 
         uvs[0] = 0 + offset.x;
         uvs[1] = 0 + offset.y;

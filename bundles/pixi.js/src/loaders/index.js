@@ -1,4 +1,4 @@
-import Application from '../core/Application';
+import { Application } from '@pixi/core';
 import Loader from './loader';
 
 /**

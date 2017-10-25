@@ -1,10 +1,10 @@
-import * as core from '../core';
+import { utils, DisplayObject, CanvasRenderer, WebGLRenderer } from '@pixi/core';
 import Device from 'ismobilejs';
 import accessibleTarget from './accessibleTarget';
 
 // add some extra variables to the container..
-core.utils.mixins.delayMixin(
-    core.DisplayObject.prototype,
+utils.mixins.delayMixin(
+    DisplayObject.prototype,
     accessibleTarget
 );
 
@@ -266,7 +266,7 @@ export default class AccessibilityManager
             {
                 child._accessibleActive = false;
 
-                core.utils.removeItems(this.children, i, 1);
+                utils.removeItems(this.children, i, 1);
                 this.div.removeChild(child._accessibleDiv);
                 this.pool.push(child._accessibleDiv);
                 child._accessibleDiv = null;
@@ -482,5 +482,5 @@ export default class AccessibilityManager
     }
 }
 
-core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
-core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
+WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
+CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);

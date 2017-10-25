@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { Filter, Matrix, Point } from '@pixi/core';
 import vertex from '../fragments/default-filter-matrix.vert';
 import fragment from './displacement.frag';
 
@@ -13,7 +13,7 @@ import fragment from './displacement.frag';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class DisplacementFilter extends core.Filter
+export default class DisplacementFilter extends Filter
 {
     /**
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
@@ -21,7 +21,7 @@ export default class DisplacementFilter extends core.Filter
      */
     constructor(sprite, scale)
     {
-        const maskMatrix = new core.Matrix();
+        const maskMatrix = new Matrix();
 
         sprite.renderable = false;
 
@@ -39,7 +39,7 @@ export default class DisplacementFilter extends core.Filter
             scale = 20;
         }
 
-        this.scale = new core.Point(scale, scale);
+        this.scale = new Point(scale, scale);
     }
 
     /**

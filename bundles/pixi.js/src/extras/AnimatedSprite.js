@@ -1,4 +1,4 @@
-import * as core from '../core';
+import { Sprite, Texture, ticker, UPDATE_PRIORITY } from '@pixi/core';
 
 /**
  * @typedef FrameObject
@@ -27,7 +27,7 @@ import * as core from '../core';
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
  */
-export default class AnimatedSprite extends core.Sprite
+export default class AnimatedSprite extends Sprite
 {
     /**
      * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
@@ -36,7 +36,7 @@ export default class AnimatedSprite extends core.Sprite
      */
     constructor(textures, autoUpdate)
     {
-        super(textures[0] instanceof core.Texture ? textures[0] : textures[0].texture);
+        super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
         /**
          * @private
@@ -126,7 +126,7 @@ export default class AnimatedSprite extends core.Sprite
         this.playing = false;
         if (this._autoUpdate)
         {
-            core.ticker.shared.remove(this.update, this);
+            ticker.shared.remove(this.update, this);
         }
     }
 
@@ -144,7 +144,7 @@ export default class AnimatedSprite extends core.Sprite
         this.playing = true;
         if (this._autoUpdate)
         {
-            core.ticker.shared.add(this.update, this, core.UPDATE_PRIORITY.HIGH);
+            ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH);
         }
     }
 
@@ -308,7 +308,7 @@ export default class AnimatedSprite extends core.Sprite
 
         for (let i = 0; i < frames.length; ++i)
         {
-            textures.push(core.Texture.fromFrame(frames[i]));
+            textures.push(Texture.fromFrame(frames[i]));
         }
 
         return new AnimatedSprite(textures);
@@ -327,7 +327,7 @@ export default class AnimatedSprite extends core.Sprite
 
         for (let i = 0; i < images.length; ++i)
         {
-            textures.push(core.Texture.fromImage(images[i]));
+            textures.push(Texture.fromImage(images[i]));
         }
 
         return new AnimatedSprite(textures);
@@ -358,7 +358,7 @@ export default class AnimatedSprite extends core.Sprite
 
     set textures(value) // eslint-disable-line require-jsdoc
     {
-        if (value[0] instanceof core.Texture)
+        if (value[0] instanceof Texture)
         {
             this._textures = value;
             this._durations = null;

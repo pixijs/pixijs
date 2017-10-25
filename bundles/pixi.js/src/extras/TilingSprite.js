@@ -1,7 +1,15 @@
-import * as core from '../core';
-import CanvasTinter from '../core/sprites/canvas/CanvasTinter';
+import {
+    Point,
+    CanvasTinter,
+    Sprite,
+    TransformStatic,
+    TextureMatrix,
+    CanvasRenderTarget,
+    Rectangle,
+    Texture,
+    utils } from '@pixi/core';
 
-const tempPoint = new core.Point();
+const tempPoint = new Point();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -10,7 +18,7 @@ const tempPoint = new core.Point();
  * @extends PIXI.Sprite
  * @memberof PIXI.extras
  */
-export default class TilingSprite extends core.Sprite
+export default class TilingSprite extends Sprite
 {
     /**
      * @param {PIXI.Texture} texture - the texture of the tiling sprite
@@ -26,7 +34,7 @@ export default class TilingSprite extends core.Sprite
          *
          * @member {PIXI.TransformStatic}
          */
-        this.tileTransform = new core.TransformStatic();
+        this.tileTransform = new TransformStatic();
 
         // /// private
 
@@ -59,7 +67,7 @@ export default class TilingSprite extends core.Sprite
          *
          * @member {PIXI.TextureMatrix}
          */
-        this.uvTransform = texture.transform || new core.TextureMatrix(texture);
+        this.uvTransform = texture.transform || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
@@ -189,7 +197,7 @@ export default class TilingSprite extends core.Sprite
         {
             this._textureID = this._texture._updateID;
             // cut an object from a spritesheet..
-            const tempCanvas = new core.CanvasRenderTarget(texture._frame.width,
+            const tempCanvas = new CanvasRenderTarget(texture._frame.width,
                 texture._frame.height,
                 baseTextureResolution);
 
@@ -281,7 +289,7 @@ export default class TilingSprite extends core.Sprite
             {
                 if (!this._localBoundsRect)
                 {
-                    this._localBoundsRect = new core.Rectangle();
+                    this._localBoundsRect = new Rectangle();
                 }
 
                 rect = this._localBoundsRect;
@@ -350,7 +358,7 @@ export default class TilingSprite extends core.Sprite
      */
     static from(source, width, height)
     {
-        return new TilingSprite(core.Texture.from(source), width, height);
+        return new TilingSprite(Texture.from(source), width, height);
     }
 
     /**
@@ -365,7 +373,7 @@ export default class TilingSprite extends core.Sprite
      */
     static fromFrame(frameId, width, height)
     {
-        const texture = core.utils.TextureCache[frameId];
+        const texture = utils.TextureCache[frameId];
 
         if (!texture)
         {
@@ -390,7 +398,7 @@ export default class TilingSprite extends core.Sprite
      */
     static fromImage(imageId, width, height, crossorigin, scaleMode)
     {
-        return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode), width, height);
+        return new TilingSprite(Texture.fromImage(imageId, crossorigin, scaleMode), width, height);
     }
 
     /**

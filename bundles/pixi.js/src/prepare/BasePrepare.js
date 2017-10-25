@@ -1,6 +1,14 @@
-import * as core from '../core';
+import {
+    ticker,
+    settings,
+    UPDATE_PRIORITY,
+    Container,
+    Texture,
+    BaseTexture,
+    Text,
+    TextStyle,
+    TextMetrics } from '@pixi/core';
 import CountLimiter from './limiters/CountLimiter';
-const SharedTicker = core.ticker.shared;
 
 /**
  * Default number of uploads per frame using prepare plugin.
@@ -11,7 +19,7 @@ const SharedTicker = core.ticker.shared;
  * @type {number}
  * @default 4
  */
-core.settings.UPLOADS_PER_FRAME = 4;
+settings.UPLOADS_PER_FRAME = 4;
 
 /**
  * The prepare manager provides functionality to upload content to the GPU. BasePrepare handles
@@ -45,7 +53,7 @@ export default class BasePrepare
          * The limiter to be used to control how quickly items are prepared.
          * @type {PIXI.prepare.CountLimiter|PIXI.prepare.TimeLimiter}
          */
-        this.limiter = new CountLimiter(core.settings.UPLOADS_PER_FRAME);
+        this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
 
         /**
          * Reference to the renderer.
@@ -158,7 +166,7 @@ export default class BasePrepare
             if (!this.ticking)
             {
                 this.ticking = true;
-                SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
+                ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
             }
         }
         else if (done)
@@ -228,7 +236,7 @@ export default class BasePrepare
         else
         {
             // if we are not finished, on the next rAF do this again
-            SharedTicker.addOnce(this.tick, this, core.UPDATE_PRIORITY.UTILITY);
+            ticker.shared.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
         }
     }
 
@@ -286,7 +294,7 @@ export default class BasePrepare
         }
 
         // Get childen recursively
-        if (item instanceof core.Container)
+        if (item instanceof Container)
         {
             for (let i = item.children.length - 1; i >= 0; i--)
             {
@@ -305,7 +313,7 @@ export default class BasePrepare
     {
         if (this.ticking)
         {
-            SharedTicker.remove(this.tick, this);
+            ticker.shared.remove(this.tick, this);
         }
         this.ticking = false;
         this.addHooks = null;
@@ -335,7 +343,7 @@ function findMultipleBaseTextures(item, queue)
     {
         for (let i = 0; i < item._textures.length; i++)
         {
-            if (item._textures[i] instanceof core.Texture)
+            if (item._textures[i] instanceof Texture)
             {
                 const baseTexture = item._textures[i].baseTexture;
 
@@ -362,7 +370,7 @@ function findMultipleBaseTextures(item, queue)
 function findBaseTexture(item, queue)
 {
     // Objects with textures, like Sprites/Text
-    if (item instanceof core.BaseTexture)
+    if (item instanceof BaseTexture)
     {
         if (queue.indexOf(item) === -1)
         {
@@ -385,7 +393,7 @@ function findBaseTexture(item, queue)
  */
 function findTexture(item, queue)
 {
-    if (item._texture && item._texture instanceof core.Texture)
+    if (item._texture && item._texture instanceof Texture)
     {
         const texture = item._texture.baseTexture;
 
@@ -410,7 +418,7 @@ function findTexture(item, queue)
  */
 function drawText(helper, item)
 {
-    if (item instanceof core.Text)
+    if (item instanceof Text)
     {
         // updating text will return early if it is not dirty
         item.updateText(true);
@@ -431,11 +439,11 @@ function drawText(helper, item)
  */
 function calculateTextStyle(helper, item)
 {
-    if (item instanceof core.TextStyle)
+    if (item instanceof TextStyle)
     {
         const font = item.toFontString();
 
-        core.TextMetrics.measureFont(font);
+        TextMetrics.measureFont(font);
 
         return true;
     }
@@ -453,7 +461,7 @@ function calculateTextStyle(helper, item)
  */
 function findText(item, queue)
 {
-    if (item instanceof core.Text)
+    if (item instanceof Text)
     {
         // push the text style to prepare it - this can be really expensive
         if (queue.indexOf(item.style) === -1)
@@ -489,7 +497,7 @@ function findText(item, queue)
  */
 function findTextStyle(item, queue)
 {
-    if (item instanceof core.TextStyle)
+    if (item instanceof TextStyle)
     {
         if (queue.indexOf(item) === -1)
         {

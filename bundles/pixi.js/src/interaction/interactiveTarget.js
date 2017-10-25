@@ -9,7 +9,7 @@
  *      function MyObject() {}
  *
  *      Object.assign(
- *          core.DisplayObject.prototype,
+ *          DisplayObject.prototype,
  *          PIXI.interaction.interactiveTarget
  *      );
  */

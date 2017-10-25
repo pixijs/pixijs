@@ -1,7 +1,4 @@
-import * as core from '../core';
-import ObservablePoint from '../core/math/ObservablePoint';
-import { getResolutionOfUrl } from '../core/utils';
-import settings from '../core/settings';
+import { Container, ObservablePoint, Point, utils, Sprite, settings, Rectangle, Texture } from '@pixi/core';
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -21,7 +18,7 @@ import settings from '../core/settings';
  * @extends PIXI.Container
  * @memberof PIXI.extras
  */
-export default class BitmapText extends core.Container
+export default class BitmapText extends Container
 {
     /**
      * @param {string} text - The copy that you would like the text to display
@@ -137,7 +134,7 @@ export default class BitmapText extends core.Container
     {
         const data = BitmapText.fonts[this._font.name];
         const scale = this._font.size / data.size;
-        const pos = new core.Point();
+        const pos = new Point();
         const chars = [];
         const lineWidths = [];
 
@@ -174,7 +171,7 @@ export default class BitmapText extends core.Container
 
             if (lastSpace !== -1 && this._maxWidth > 0 && pos.x * scale > this._maxWidth)
             {
-                core.utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
+                utils.removeItems(chars, lastSpace - spacesRemoved, i - lastSpace);
                 i = lastSpace;
                 lastSpace = -1;
                 ++spacesRemoved;
@@ -205,7 +202,7 @@ export default class BitmapText extends core.Container
                 texture: charData.texture,
                 line,
                 charCode,
-                position: new core.Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
+                position: new Point(pos.x + charData.xOffset, pos.y + charData.yOffset),
             });
             lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
             pos.x += charData.xAdvance;
@@ -247,7 +244,7 @@ export default class BitmapText extends core.Container
             }
             else
             {
-                c = new core.Sprite(chars[i].texture);
+                c = new Sprite(chars[i].texture);
                 this._glyphs.push(c);
             }
 
@@ -512,7 +509,7 @@ export default class BitmapText extends core.Container
         const info = xml.getElementsByTagName('info')[0];
         const common = xml.getElementsByTagName('common')[0];
         const fileName = xml.getElementsByTagName('page')[0].getAttribute('file');
-        const res = getResolutionOfUrl(fileName, settings.RESOLUTION);
+        const res = utils.getResolutionOfUrl(fileName, settings.RESOLUTION);
 
         data.font = info.getAttribute('face');
         data.size = parseInt(info.getAttribute('size'), 10);
@@ -527,7 +524,7 @@ export default class BitmapText extends core.Container
             const letter = letters[i];
             const charCode = parseInt(letter.getAttribute('id'), 10);
 
-            const textureRect = new core.Rectangle(
+            const textureRect = new Rectangle(
                 (parseInt(letter.getAttribute('x'), 10) / res) + (texture.frame.x / res),
                 (parseInt(letter.getAttribute('y'), 10) / res) + (texture.frame.y / res),
                 parseInt(letter.getAttribute('width'), 10) / res,
@@ -539,7 +536,7 @@ export default class BitmapText extends core.Container
                 yOffset: parseInt(letter.getAttribute('yoffset'), 10) / res,
                 xAdvance: parseInt(letter.getAttribute('xadvance'), 10) / res,
                 kerning: {},
-                texture: new core.Texture(texture.baseTexture, textureRect),
+                texture: new Texture(texture.baseTexture, textureRect),
 
             };
         }

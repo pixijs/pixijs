@@ -1,3 +1,5 @@
+import * as core from '@pixi/core';
+
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
@@ -38,7 +40,7 @@ function warn(msg)
     // @endif
 }
 
-export default function deprecation(core)
+export default function deprecation()
 {
     const { mesh, particles, extras, filters, prepare, loaders, interaction } = core;
 

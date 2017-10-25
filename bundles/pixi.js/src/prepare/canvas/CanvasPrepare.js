@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { BaseTexture, CanvasRenderer } from '@pixi/core';
 import BasePrepare from '../BasePrepare';
 
 const CANVAS_START_SIZE = 16;
@@ -68,7 +68,7 @@ export default class CanvasPrepare extends BasePrepare
  */
 function uploadBaseTextures(prepare, item)
 {
-    if (item instanceof core.BaseTexture)
+    if (item instanceof BaseTexture)
     {
         const image = item.source;
 
@@ -88,4 +88,4 @@ function uploadBaseTextures(prepare, item)
     return false;
 }
 
-core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+CanvasRenderer.registerPlugin('prepare', CanvasPrepare);

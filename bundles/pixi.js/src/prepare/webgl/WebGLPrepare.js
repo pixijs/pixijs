@@ -1,4 +1,4 @@
-import * as core from '../../core';
+import { WebGLRenderer, BaseTexture, Graphics } from '@pixi/core';
 import BasePrepare from '../BasePrepare';
 
 /**
@@ -37,7 +37,7 @@ export default class WebGLPrepare extends BasePrepare
  */
 function uploadBaseTextures(renderer, item)
 {
-    if (item instanceof core.BaseTexture)
+    if (item instanceof BaseTexture)
     {
         // if the texture already has a GL texture, then the texture has been prepared or rendered
         // before now. If the texture changed, then the changer should be calling texture.update() which
@@ -63,7 +63,7 @@ function uploadBaseTextures(renderer, item)
  */
 function uploadGraphics(renderer, item)
 {
-    if (item instanceof core.Graphics)
+    if (item instanceof Graphics)
     {
         // if the item is not dirty and already has webgl data, then it got prepared or rendered
         // before now and we shouldn't waste time updating it again
@@ -88,7 +88,7 @@ function uploadGraphics(renderer, item)
  */
 function findGraphics(item, queue)
 {
-    if (item instanceof core.Graphics)
+    if (item instanceof Graphics)
     {
         queue.push(item);
 
@@ -98,4 +98,4 @@ function findGraphics(item, queue)
     return false;
 }
 
-core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
+WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
