@@ -1,13 +1,13 @@
-# @pixi/polyfill
+# @pixi/filter-color-matrix
 
 ## Installation
 
 ```bash
-npm install @pixi/polyfill
+npm install @pixi/filter-color-matrix
 ```
 
 ## Usage
 
 ```js
-import '@pixi/polyfill';
+import '@pixi/filter-color-matrix';
 ```

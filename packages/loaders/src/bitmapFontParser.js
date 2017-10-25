@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { utils } from '@pixi/core';
 import { Resource } from 'resource-loader';
-import { BitmapText } from '../extras';
+import { BitmapText } from '@pixi/text-bitmap';
 
 /**
  * Register a BitmapText font from loader resource.

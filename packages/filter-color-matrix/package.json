@@ -1,8 +1,8 @@
 {
-  "name": "@pixi/polyfill",
+  "name": "@pixi/filter-color-matrix",
   "version": "5.0.0-alpha",
-  "main": "lib/polyfill.js",
-  "module": "lib/polyfill.es.js",
+  "main": "lib/filter-color-matrix.js",
+  "module": "lib/filter-color-matrix.es.js",
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",
   "contributors": [

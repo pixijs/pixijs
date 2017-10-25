@@ -51,7 +51,7 @@ const plugins = [
         ],
     }),
     replace({
-        '__VERSION__': pkg.version,
+        __VERSION__: pkg.version,
     }),
     preprocess({
         context: {
@@ -103,7 +103,7 @@ module.exports = {
     input,
     output: {
         file,
-        format
+        format,
     },
     external: Object.keys(pkg.dependencies || []),
     sourcemap: true,
