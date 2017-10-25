@@ -4,17 +4,13 @@
     },
     "source": {
         "include": [
-            "./src/"
+            "packages"
         ],
-        "exclude": [
-            "./src/polyfill/"
-        ],
-        "includePattern": ".+\\.js(doc)?$",
-        "excludePattern": "(^|\\/|\\\\)_"
+        "excludePattern": "(node_modules|lib|dist|test)"
     },
     "plugins": [
         "./node_modules/jsdoc/plugins/markdown",
-        "./scripts/jsdoc-fix"
+        "./node_modules/@pixi/jsdoc-template/plugins/es6-fix.js"
     ],
     "templates": {
         "cleverLinks"   : false,

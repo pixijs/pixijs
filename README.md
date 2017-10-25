@@ -160,22 +160,7 @@ $> npm install
 Then, to build the source, run:
 
 ```
-$> npm run dist
-```
-
-This will create a minified version at `dist/pixi.min.js` and a non-minified version at `dist/pixi.js`
-with all the plugins in the PixiJS project.
-
-If there are specific plugins you don't want, say "interaction" or "extras", you can exclude those:
-
-```
-$> npm run dist -- --exclude extras --exclude interaction
-```
-
-You can also use the short-form `-e`:
-
-```
-$> npm run dist -- -e extras -e interaction -e filters
+$> npm run build
 ```
 
 ### How to generate the documentation ###
