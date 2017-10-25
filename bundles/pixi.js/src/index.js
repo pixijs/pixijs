@@ -5,18 +5,17 @@ import '@pixi/polyfill';
 export * from '@pixi/core';
 
 // export libs
-// import deprecation from './deprecation';
-import * as accessibility from './accessibility';
-import * as extract from './extract';
+import * as accessibility from '@pixi/accessibility';
+import * as interaction from '@pixi/interaction';
+import * as extract from '@pixi/extract';
+import * as loaders from '@pixi/loaders';
+import * as mesh from '@pixi/mesh';
+import * as prepare from '@pixi/prepare';
+// import * as particles from '@pixi/particles';
 import * as extras from './extras';
 import * as filters from './filters';
-import * as interaction from './interaction';
-import * as loaders from './loaders';
-import * as mesh from './mesh';
-// import * as particles from './particles';
-import * as prepare from './prepare';
 
-// handle mixins now, after all code has been added, including deprecation
+// handle mixins now, after all code has been added
 import { utils } from '@pixi/core';
 utils.mixins.performMixins();
 
@@ -40,12 +39,6 @@ export {
     prepare,
     loader,
 };
-
-// Apply the deprecations
-// if (typeof deprecation === 'function')
-// {
-//   deprecation(exports);
-// }
 
 // Always export PixiJS globally.
 global.PIXI = exports; // eslint-disable-line
